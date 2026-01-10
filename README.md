@@ -17,6 +17,16 @@ EKiosk is a Qt-based C++ application for payment kiosk systems, handling device 
 
 ## Building
 
+### Using CMake (Recommended)
+
+1. Ensure Qt 5 and CMake are installed.
+2. Create build directory: `mkdir build && cd build`
+3. Configure: `cmake ..`
+4. Build: `cmake --build .`
+5. Executable will be in `../EKiosk/EKiosk.exe`.
+
+### Using QMake (Legacy)
+
 1. Ensure Qt 5 is installed and qmake is in PATH.
 2. Run `qmake ekiosk.pro` to generate Makefile.
 3. Run `make` (or `mingw32-make` on Windows) to build.

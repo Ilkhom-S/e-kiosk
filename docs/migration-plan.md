@@ -42,10 +42,10 @@ This plan outlines the step-by-step migration from Qt 4 to Qt 5 and adoption of 
 
 ### 4. Migrate Build System to CMake
 
-- [ ] Create `CMakeLists.txt` with Qt 5 support using `find_package(Qt5 REQUIRED COMPONENTS Core Widgets ...)`.
-- [ ] Configure source files, include directories, and libraries (rasapi32, etc.).
-- [ ] Set up executable target with `add_executable`.
-- [ ] Handle UI files with `qt5_wrap_ui`, resources with `qt5_add_resources`.
+- [x] Create `CMakeLists.txt` with Qt 5 support using `find_package(Qt5 REQUIRED COMPONENTS ...)`.
+- [x] Configure source files, include directories, and libraries (rasapi32, etc.).
+- [x] Set up executable target with `add_executable`.
+- [x] Handle UI files with `qt5_wrap_ui`, resources with `qt5_add_resources`.
 - [ ] Test CMake build on target platforms.
 - [ ] Update build instructions in README.
 
