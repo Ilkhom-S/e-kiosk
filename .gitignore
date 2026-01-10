@@ -1,0 +1,131 @@
+# Qt C++ .gitignore for Visual Studio, Qt Creator, Visual Studio Code, Windows, Linux, Mac
+
+# Qt specific
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+Makefile*
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.app
+build-*/
+debug/
+release/
+*.qm
+*.ts
+*.qmlc
+*.jsc
+
+# Visual Studio
+*.suo
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.log
+*.svclog
+*.scc
+*.pdb
+.vscode/
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.vcxproj
+
+# Qt Creator
+*.pro.user
+*.qbs.user
+*.qbs.user.*
+
+# Visual Studio Code
+.vscode/
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.stackdump
+[Dd]esktop.ini
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# General
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+.cache/
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# Build directories
+build/
+bin/
+obj/
+out/
+
+# IDEs
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/

@@ -1,0 +1,1085 @@
+#loading_about_company
+{
+    color: rgb(255, 255, 255);
+    font-size: 15pt;
+    font-weight: bold;
+}
+
+#loading_validator_info, #loading_validator_state, #loading_coin_acceptor_info, #loading_printer_info, #loading_modem_info, #loading_wd_info
+{
+    color: rgb(255, 255, 255);
+    font-size: 13pt;
+    font-family: Arial;
+}
+
+#loading_sim_info, #loading_copyrigh_info
+{
+    color: rgb(255, 255, 255);
+    font-size: 10pt;
+    font-family: Arial;
+}
+
+#lblcommentInfoGprs
+{
+    color: rgb(255, 255, 255);
+    background-color: rgba(255, 255, 255, 0);
+    border: 0px;
+    font-size: 13pt;
+    font-family: Arial;
+    text-align: center;
+}
+
+#loading_gprs_info{
+    color: rgb(255, 255, 255);
+    /*font: 75 11pt "Arial";*/
+    font-size: 11pt;
+    font-weight: bold;
+    font-family: Arial;
+}
+
+#frame, #frame_3{
+	background: transparent;
+}
+
+
+/*********************************** ADMINKA *******************************************/
+
+#AdminDialog, #wgtAdminBaground
+{
+    background-color: #fff;
+}
+
+#wgtSelectSearchParam, #wgtCreateNewConnection
+{
+    background-color: #fff;
+}
+
+#wgtKeyPudAdmin
+{
+    min-height: 350px;
+    max-height: 380px;
+}
+
+#btnAdminClose, #btnAdminOpenKeyPad, #btnkeypud, #btnAdminShoweExplorer, #btnAdminHideExplorer
+{
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0  rgb(150,150, 150), stop: 1.0  rgb(0, 0, 0));
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    padding: 5px;
+    color: rgb(255, 255, 255);
+    font: 16pt "Arial";
+    min-width: 120px;
+    min-height: 50px;
+    text-align: center;
+    background-repeat: no-repeat;
+}
+
+#btnSelectDataAllS, #btnShowSelectData, #btnCloseSelectDataS, #btnDeSelectDataAllS, #btnAdminUpdateLogData, #btnAdminSearchKeyParam, #btnAdminSelectLogParam, #btnAdminTestRestartModemReal, #btnAdminSaveTerminalAccept, #btnAdminSaveTerminaSecret
+{
+    background-color: #fff;
+    border: 4px solid #000;
+    border-radius: 8px;
+    padding: 3px;
+    color: #000;
+    font: 13pt "Arial";
+    min-width: 100px;
+    max-width: 250px;
+    min-height: 40px;
+    text-align: center;
+}
+
+#btnAdminCheckConnection, #btnAdminGetDataFromModem, #btnAdminRestartNetwork
+{
+    background-color: #f07e1b;
+    border: 3px solid #595959;
+    border-radius: 8px;
+    padding: 3px;
+    color: #000;
+    font: 14pt "Arial";
+    min-height: 60px;
+}
+
+#btnAdminGetActiveConnection, #btnAdminCreateNewConnections
+{
+    background-color: #f07e1b;
+    border: 3px solid #595959;
+    border-radius: 8px;
+    padding: 3px;
+    color: #000;
+    font: 14pt "Arial";
+    min-height: 60px;
+}
+
+#editBrowserLogView
+{
+    font: 11pt "Consolas";
+}
+
+#grpBoxAdminText
+{
+     background-color: #666;
+     border: 2px solid #fff;
+     border-radius: 5px;
+     font: 16pt "Arial";
+     color: #111;
+     margin-top: 5ex;
+}
+
+#grpBoxAdminText::title
+{
+     subcontrol-origin: margin;
+     subcontrol-position: top left;
+}
+
+#grpBoxAdminBalance, #grpBoxAdminIncashment, #grpAdminSetSettingsDevice, #grpAdminRestart, #grpAdminSetSettingsValidator, #grpAdminSetSettingsAcceptor, #grpAdminSetSettingsPrinter, #grpAdminSetSettingsModem, #grpAdminSimInfo, #grpAdminSettingsconnection, #grpAdminSettingModemReq, #grpAdminSmsSendParam, #gbxAdminWindowsPrinterParam, #gbxAdminCounter, #gbxAdminTotalPrinterParam, #gbxAdminAvtorizationTerminal, #gbxAdminAvtorizationToAdmin, #gbxAdminOtherSettings, #gbxAdminSetingsValidatorJam, #gbxAdminUpdateParame, #grpAdminSetSettingsWD
+{
+    border: 2px solid #f07e1b;
+    border-radius: 5px;
+    font: 75 14pt "Arial";
+    color: #000;
+    margin-top: 2ex;
+}
+
+#gbxAdminLogSetting, #grpAdminSearchDeviesParam, #grpLog
+{
+    border: 3px solid #f07e1b;
+    border-radius: 8px;
+    font: 14pt "Arial";
+    color: #000;
+    margin-top: 2ex;
+}
+
+#grpBoxAdminBalance::title, #grpBoxAdminIncashment::title, #grpAdminSetSettingsDevice::title, #grpAdminRestart::title, #grpAdminSetSettingsValidator::title, #grpAdminSetSettingsAcceptor::title, #grpAdminSetSettingsPrinter::title, #grpAdminSetSettingsModem::title, #grpAdminSimInfo::title, #grpAdminSettingsconnection::title, #grpAdminSettingModemReq::title, #grpAdminSmsSendParam::title, #gbxAdminWindowsPrinterParam::title, #gbxAdminCounter::title, #gbxAdminTotalPrinterParam::title, #gbxAdminAvtorizationTerminal::title, #gbxAdminAvtorizationToAdmin::title, #gbxAdminOtherSettings::title, #gbxAdminSetingsValidatorJam::title, #gbxAdminUpdateParame::title, #gbxAdminLogSetting::title, #grpAdminSearchDeviesParam::title, #grpAdminSetSettingsWD::title
+{
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+}
+
+#lblInfoAdminNumberNewPay, #lblAdminInfoDateIncashment
+{
+    color: #000;
+    font: 14pt "Arial";
+}
+
+#lblTextAdminNumberNewPay, #lblAdminInformationStateConnection
+{
+    color: #000;
+    font: bold 14pt "Arial";
+}
+
+#lblAdminInformationStateConnection, #lblAdminInfoGetDataFromModem, #lblAdminInformationTest
+{
+    color: #54d18c;
+    font: 12pt "Arial";
+}
+
+#lblAdminInfoWinPrinter1, #lblAdminInfoWinPrinter2, #lblAdminInfoWinPrinter3, #lblAdminInfoWinPrinter4, #lblAdminInfoWinPrinter5, #lblAdminInfoWinPrinter6, #lblAdminInfoWinPrinter7
+{
+    font: 14pt "Arial";
+	color: #000;
+}
+
+#lblAdminInfoCurentBalance, #lblAdminInfoPorocOtclucheniya, #lblAdminInfoOverdraft, #lblAdminTitleDevice2, #lblAdminTitleDevice3, #lblAdminTitleDevice5, #lblAdminTitleDevice6, #lblAdminTitleDevice8, #lblAdminTitleDevice9, #lblAdminTitleDevice11, #lblAdminTitleDevice12, #lblAdminInfoCounter1, #lblAdminInfoCounter2, #lblAdminInfoCounter3, #lblAdminTitleDevice, #lblAdminTitleDevice_2, #lblAdminTitleDevice_3
+{
+    color: #fff;
+    background-color: #444;
+    font: 10pt "Arial";
+    padding: 2px;
+    border: 2px solid #ccc;
+    border-bottom: 2px solid #aaa;
+
+}
+
+
+#lblAdminTitleDevice1, #lblAdminTitleDevice10, #lblAdminTitleDevice4, #lblAdminTitleDevice7
+{
+    background-color: #f07e1b;
+    border: 2px solid #000;
+}
+
+#lblTitleValidatorName, #lblTitleValidatorPort, #lblTitlePrinterName, #lblTitlePrinterPort, #lblTitleWatchdgName, #lblTitleWatchdgPort, #lblTitleModemName, #lblTitleModemPort
+{
+    color: #000;
+    font-size: 10pt;
+    font-family: Arial;
+}
+
+#lblAdminInfoNumberIncashment, #lblAdminInfoIdIncashment, #lblAdminInfoTranzactionPay, #lblAdminInfoCurentBalance, #lblAdminInfoPorocOtclucheniya, #lblAdminInfoOverdraft, #lblAdminInfoCounter1, #lblAdminInfoCounter2, #lblAdminInfoCounter3, #lblAdminInfoPrvSim, #lblAdminInfoNumberSim, #lblAdminInfoUrovanSignala, #lblAdminInfoBalanceSim, #lblAdminTitleNumberSMSCenterInf
+{
+    color: #000;
+    background-color: #f07e1b;
+    font: 14pt "Arial";
+    padding: 4px;
+    border: 2px solid #f07e1b;
+}
+
+#lblAdminTextNumberIncashment, #lblAdminTextIdIncashment, #lblAdminTextTranzactionPay, #lblAdminTextPrvSim, #lblAdminTextNumberSim, #lblAdminTextUrovanSignala, #lblAdminTextBalanceSim, #editAdminLengthOfRulon, #editAdminLengthOfCheck, #editAdminLengthOfCounter, #editSmsNumberPhone
+{
+    color: #000;
+    background-color: #fff;
+    font: 14pt "Arial";
+    padding: 4px;
+    border: 2px solid #000;
+}
+
+#lblAdminTextCurentBalance, #lblAdminTextPorocOtclucheniya, #lblAdminTextOverdraft
+{
+    color: #000;
+    background-color: #fff;
+    font: 18pt "Arial";
+    padding: 4px;
+    border: 2px solid #000;
+	min-height: 45px;
+}
+
+#lblAdminTitleRequestInf2, #lblAdminTitleRequestInfPos, #lblAdminTitleRequestInf, #lblAdminTitleSelectConnection, #chbxAdminCheckBalanceSim, #chbxAdminCheckNumberSim, #chbxAdminSMSerrValidator, #chbxAdminSMSerrPrinter, #chbxAdminSMSerrMoneyAgent, #chbxAdminSMSerrBalanceSim, #chbxAdminSMSerrLockTrm, #chbxAdminSMSerrNotConnect, #lblAdminTitleRebootTimer, #chbxAdminShowPrintDialog, #chbxAdminSmallLineText, #chbxAdminSmallCheck, #chbxAdminCounterExist, #chbxAdminSendErrorCodValidatorJam, #chbxAdminDoLockCodValidatorJam, #chbxAdminDoDoIncashmentOpenValidator, #chbxAdminTornOnAvtoUpdate, #chbxAdminShowAnimateButtonMain, #lblAdminLogSelectData, #lblAdminLogSettingsParam, #chbxAdminSearchValidator, #chbxAdminSearchPrinter, #chbxAdminSearchModem, #lblAdminSearchWithKey, #lblAdminLangSelected, #chbxAdminCounterPrinterExist, #chbxAdminSearchWD, #chbxAdminNominalDuplicate
+{
+    color: #000;
+    font: 16pt "Arial";
+	text-align: right;
+}
+
+#lblAdminSetingsInfo1, #lblAdminSetingsInfo2, #lblAdminSetingsInfo3, #lblAdminSetingsInfo4, #lblAdminSetingsInfo5, #lblAdminSetingsInfo6, #lblAdminServicesDataInfo
+{
+    color: #000;
+    font: bold 14pt "Arial";
+}
+
+#chbxSelectValidatorJam, #chbxSelectMoneyOut, #chbxSelectERROR, #chbxSelectPayDaemon, #chbxSelectStatusAso, #chbxSelectStatusPrinter, #chbxSelectStatusValidator, #chbxSelectConnectionState, #chbxSelectUpdater, #lblDialupSelectDevice, #lblDialupSelectConName, #lblDialupSelectPhoneNum, #lblDialupSelectUserName, #lblDialupSelectUserPass
+{
+    color: #000;
+    font: 14pt "Arial";
+}
+
+#editAdminNumberTrm, #editAdminLoginTrm, #editAdminPassTrm, #editAdminSecretNumber, #editAdminSecretLogin, #editAdminSecretPass, #dEditAdminSelectDataLog, #editSearchKeyParam
+{
+    font: 16pt "Arial";
+    color: #000;
+    border: 2px solid #f07e1b;
+    border-radius: 8px;
+    padding: 4px;
+}
+
+#dEditAdminSelectDataLog::drop-down {
+    image: url(:/assets/icons/down_arrow.png);
+	subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 30px;
+    border-left-width: 2px;
+    border-left-color: #f07e1b;
+    border-left-style: solid; /* только одна линия */
+    border-top-right-radius: 8px; /* тот же радиус закругления что и у QComboBox */
+    border-bottom-right-radius: 8px;
+}
+
+#lblAdminTextDeviceInf1, #lblAdminTextAcceptor, #lblAdminTextDeviceInf2, #lblAdminTextDeviceInf3, #lblAdminTextDeviceInfWD1, #lblAdminTextDeviceInfWD2
+{
+    color: #000;
+    background-color: #fff;
+    font: 12pt "Arial";
+    padding: 2px;
+    border: 2px solid #000;
+	border-left: 0px;
+	min-width: 250px;
+	max-height: 74px;
+	min-height: 74px;
+}
+
+#lblAnimateAdminBalance
+{
+    background-color: #fff;
+    min-height: 30px;
+    max-height: 55px;
+    color: #026a8f;
+    border-radius: 3px;
+    font-size: 18pt;
+    font-weight: bold;
+    font-family: Arial;
+}
+
+#cbxAdminTextDateIncashment, #cbxAdminConnectionList, #cbxAdminRasErrorReboot, #cbxDialupSelectDevice, #cbxDialupSelectConName, #cbxDialupSelectPhoneNum, #cbxDialupSelectUserName, #cbxDialupSelectUserPass
+{
+    border: 2px solid #f07e1b;
+    border-radius: 8px;
+    padding: 5px 18px 5px 5px;
+    color: #333;
+    font: 16pt "Arial";
+}
+
+#cbxAdminRequestBalanceSim, #cbxAdminPositionBalanceSim, #cbxAdminRequestNumberSim, #cbxAdminWidthWinprtCheck, #cbxAdminHeightWinprtCheck, #cbxAdminFontWinprtCheck, #cbxAdminLeftMarginWinprtCheck, #cbxAdminRightMarginWinprtCheck, #cbxAdminTopMarginWinprtCheck, #cbxAdminBottomMarginWinprtCheck, #cbxAdminWidthCheck, #cbxAdminLeftMarginCheck, #cbxAdminSelectCountStatusJam, #cbxAdminSelectMainLang, #cbxAdminPortWD, #cbxPrintingChek
+{
+    border: 2px solid #f07e1b;
+    border-radius: 8px;
+    padding: 5px 18px 5px 5px;
+    color: #333;
+    font: 16pt "Arial";
+}
+
+
+#cbxAdminNameValidator, #cbxAdminNameAcceptor, #cbxAdminNamePrinter, #cbxAdminPortValidator, #cbxAdminPortAcceptor, #cbxAdminPortPrinter, #cbxAdminWinprinter, #cbxAdminPortSpeed, #cbxAdminPortModem, #lblAdminTextDeviceInf4
+{
+
+	border: 2px solid #f07e1b;
+    border-radius: 8px;
+    padding: 5px 18px 5px 5px;
+    color: #333;
+    font: 14pt "Arial";
+}
+
+#cbxAdminTextDateIncashment:editable,#cbxAdminNameValidator:editable, #cbxAdminNameAcceptor:editable, #cbxAdminNamePrinter:editable, #cbxAdminPortValidator:editable, #cbxAdminPortAcceptor:editable, #cbxAdminPortPrinter:editable, #cbxAdminWinprinter:editable, #cbxAdminPortSpeed:editable, #cbxAdminPortModem:editable, #cbxAdminConnectionList:editable, #cbxAdminRasErrorReboot:editable, #cbxAdminRequestBalanceSim:editable, #cbxAdminPositionBalanceSim:editable, #cbxAdminRequestNumberSim:editable, #cbxAdminWidthWinprtCheck:editable, #cbxAdminHeightWinprtCheck:editable, #cbxAdminFontWinprtCheck:editable, #cbxAdminLeftMarginWinprtCheck:editable, #cbxAdminRightMarginWinprtCheck:editable, #cbxAdminTopMarginWinprtCheck:editable, #cbxAdminBottomMarginWinprtCheck:editable, #cbxAdminWidthCheck:editable, #cbxAdminLeftMarginCheck:editable, #cbxAdminSelectCountStatusJam:editable, #cbxAdminSelectMainLang:editable, #cbxDialupSelectDevice:editable, #cbxDialupSelectConName:editable, #cbxDialupSelectPhoneNum:editable, #cbxDialupSelectUserName:editable, #cbxDialupSelectUserPass:editable, #cbxAdminPortWD:editable
+{
+    background: white;
+}
+
+#cbxAdminTextDateIncashment:!editable, #cbxAdminNameValidator:!editable, #cbxAdminNameAcceptor:!editable, #cbxAdminNamePrinter:!editable, #cbxAdminPortValidator:!editable, #cbxAdminPortAcceptor:!editable, #cbxAdminPortPrinter:!editable, #cbxAdminWinprinter:!editable, #cbxAdminPortSpeed:!editable, #cbxAdminPortModem:!editable, #cbxAdminConnectionList:!editable,#cbxAdminRasErrorReboot:!editable, #cbxAdminRequestBalanceSim:!editable, #cbxAdminPositionBalanceSim:!editable, #cbxAdminRequestNumberSim:!editable, #cbxAdminWidthWinprtCheck:!editable, #cbxAdminHeightWinprtCheck:!editable, #cbxAdminFontWinprtCheck:!editable, #cbxAdminLeftMarginWinprtCheck:!editable, #cbxAdminRightMarginWinprtCheck:!editable, #cbxAdminTopMarginWinprtCheck:!editable, #cbxAdminBottomMarginWinprtCheck:!editable, #cbxAdminWidthCheck:!editable, #cbxAdminLeftMarginCheck:!editable, #cbxAdminSelectCountStatusJam:!editable, #cbxAdminSelectMainLang:!editable, #cbxDialupSelectDevice:!editable, #cbxDialupSelectConName:!editable, #cbxDialupSelectPhoneNum:!editable, #cbxDialupSelectUserName:!editable, #cbxDialupSelectUserPass:!editable, #cbxAdminPortWD:!editable
+{
+    border: 2px solid #f07e1b;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+#cbxAdminTextDateIncashment:!editable:on, #cbxAdminNameValidator:!editable:on, #cbxAdminNameAcceptor:!editable:on, #cbxAdminNamePrinter:!editable:on, #cbxAdminPortValidator:!editable:on, #cbxAdminPortAcceptor:!editable:on, #cbxAdminPortPrinter:!editable:on, #cbxAdminWinprinter:!editable:on, #cbxAdminPortSpeed:!editable:on, #cbxAdminPortModem:!editable:on, #cbxAdminConnectionList:!editable:on,#cbxAdminRasErrorReboot:!editable:on, #cbxAdminRequestBalanceSim:!editable:on, #cbxAdminPositionBalanceSim:!editable:on, #cbxAdminRequestNumberSim:!editable:on, #cbxAdminWidthWinprtCheck:!editable:on, #cbxAdminHeightWinprtCheck:!editable:on, #cbxAdminFontWinprtCheck:!editable:on, #cbxAdminLeftMarginWinprtCheck:!editable:on, #cbxAdminRightMarginWinprtCheck:!editable:on, #cbxAdminTopMarginWinprtCheck:!editable:on, #cbxAdminBottomMarginWinprtCheck:!editable:on, #cbxAdminWidthCheck:!editable:on, #cbxAdminLeftMarginCheck:!editable:on, #cbxAdminSelectCountStatusJam:!editable:on, #cbxAdminSelectMainLang:!editable:on, #cbxDialupSelectDevice:!editable:on, #cbxDialupSelectConName:!editable:on, #cbxDialupSelectPhoneNum:!editable:on, #cbxDialupSelectUserName:!editable:on, #cbxDialupSelectUserPass:!editable:on, #cbxAdminPortWD:!editable:on
+{
+    background-color: #fff;
+}
+
+#cbxAdminTextDateIncashment:on, #cbxAdminNameValidator:on, #cbxAdminNameAcceptor:on, #cbxAdminNamePrinter:on, #cbxAdminPortValidator:on, #cbxAdminPortAcceptor:on, #cbxAdminPortPrinter:on, #cbxAdminWinprinter:on, #cbxAdminPortSpeed:on, #cbxAdminPortModem:on, #cbxAdminConnectionList:on,#cbxAdminRasErrorReboot:on, #cbxAdminRequestBalanceSim:on, #cbxAdminPositionBalanceSim:on, #cbxAdminRequestNumberSim:on, #cbxAdminWidthWinprtCheck:on, #cbxAdminHeightWinprtCheck:on, #cbxAdminFontWinprtCheck:on, #cbxAdminLeftMarginWinprtCheck:on, #cbxAdminRightMarginWinprtCheck:on, #cbxAdminTopMarginWinprtCheck:on, #cbxAdminBottomMarginWinprtCheck:on, #cbxAdminWidthCheck:on, #cbxAdminLeftMarginCheck:on, #cbxAdminSelectCountStatusJam:on, #cbxAdminSelectMainLang:on, #cbxDialupSelectDevice:on, #cbxDialupSelectConName:on, #cbxDialupSelectPhoneNum:on, #cbxDialupSelectUserName:on, #cbxDialupSelectUserPass:on, #cbxAdminPortWD:on
+{
+    padding-top: 3px;
+    padding-left: 4px;
+}
+
+#cbxAdminTextDateIncashment::drop-down, #cbxAdminNameValidator:drop-down, #cbxAdminNameAcceptor:drop-down, #cbxAdminNamePrinter:drop-down, #cbxAdminPortValidator:drop-down, #cbxAdminPortAcceptor:drop-down, #cbxAdminPortPrinter:drop-down, #cbxAdminWinprinter:drop-down, #cbxAdminPortSpeed:drop-down, #cbxAdminPortModem:drop-down, #cbxAdminConnectionList:drop-down,#cbxAdminRasErrorReboot:drop-down, #cbxAdminRequestBalanceSim:drop-down, #cbxAdminPositionBalanceSim:drop-down, #cbxAdminRequestNumberSim:drop-down, #cbxAdminWidthWinprtCheck:drop-down, #cbxAdminHeightWinprtCheck:drop-down, #cbxAdminFontWinprtCheck:drop-down, #cbxAdminLeftMarginWinprtCheck:drop-down, #cbxAdminRightMarginWinprtCheck:drop-down, #cbxAdminTopMarginWinprtCheck:drop-down, #cbxAdminBottomMarginWinprtCheck:drop-down, #cbxAdminWidthCheck:drop-down, #cbxAdminLeftMarginCheck:drop-down, #cbxAdminSelectCountStatusJam:drop-down, #cbxAdminSelectMainLang:drop-down, #cbxDialupSelectConName:drop-down, #cbxDialupSelectPhoneNum:drop-down, #cbxDialupSelectUserName:drop-down, #cbxDialupSelectUserPass:drop-down, #cbxDialupSelectDevice:drop-down, cbxAdminPortWD:drop-down
+{
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 25px;
+    border-left-width: 2px;
+    border-left-color: #f07e1b;
+    border-left-style: solid; /* только одна линия */
+    border-top-right-radius: 8px; /* тот же радиус закругления что и у QComboBox */
+    border-bottom-right-radius: 8px;
+}
+
+
+QComboBox::down-arrow {
+     image: url(:/assets/icons/down_arrow.png);
+ }
+
+QComboBox::down-arrow:on { /* сдвиг стрелки когда выпадающий список раскрывается */
+     image: url(:/assets/icons/up_arrow.png);
+     top: 1px;
+     left: 1px;
+ }
+
+/****************************************************************************************/
+
+/***************************************  INCASACIYA  ************************************/
+
+#btnGetIncasaciya, #btnInterToAdmin, #btnCloseIncasaciya, #btnNullingCheck, #btnPrinterTest, #btnCheckBalance, #btnRestartAppTypeDevices, #btnRestartTypeDevices, #btnPowerOffTypeDevices, #btnSaveChangeTypeDevices, #btnAdminSaveTrmSettings2, #btnAdminGetServicesData, #btnAdminSavePrinterParam, #btnAdminSaveConnectionParams
+{
+	background-repeat: no-repeat;
+	border: 4px solid #f07e1b;
+	border-radius: 10px;
+	min-width: 140px;
+	padding-right: 4px;
+	color: #000;
+	font: 14pt "Arial";
+	min-height: 50px;
+}
+
+#btnAdminTestRestartValidator, #btnAdminTestRestartAcceptor, #btnAdminTestPrintCheck, #btnAdminTestRestartModem{
+	background-repeat: no-repeat;
+	border: 4px solid #f07e1b;
+	border-radius: 10px;
+	min-width: 100px;
+	padding-right: 4px;
+	color: #000;
+	font: 14pt "Arial";
+	min-height: 78px;
+	max-height: 78px;
+}
+
+#btnAdminCreateIncashment, #btnAdminCreatePreIncashment
+{
+	background-repeat: no-repeat;
+	border: 4px solid #f07e1b;
+	border-radius: 10px;
+	padding-right: 4px;
+	color: #000;
+	font: 12pt "Arial";
+	min-height: 50px;
+	min-width: 140px;
+}
+
+#btnAdminNavigationUp, #btnAdminNavigationDown
+{
+	border: 3px solid #000;
+	border-radius: 8px;
+	color: #000;
+	font: 12pt "Arial";
+	min-height: 80px;
+	min-width: 70px;
+
+}
+
+#btnAdminNavigationUp:pressed, #btnAdminNavigationDown:pressed
+{
+   color: #bbbbbb;
+   background-color: #e0e3ff;
+}
+
+
+#btnAdminCreateIncashment:pressed, #btnAdminCreatePreIncashment:pressed, #btnAdminClose:pressed, #btnAdminOpenKeyPad:pressed, #btnkeypud:pressed, #btnAdminShoweExplorer:pressed, #btnAdminHideExplorer:pressed, #btnCheckBalance:pressed, #btnAdminTestRestartValidator:pressed, #btnAdminTestRestartAcceptor:pressed, #btnAdminTestPrintCheck:pressed, #btnAdminTestRestartModem:pressed, #btnSaveChangeTypeDevices:pressed, #btnPowerOffTypeDevices:pressed, #btnRestartTypeDevices:pressed, #btnRestartAppTypeDevices:pressed, #btnAdminGetDataFromModem:pressed, #btnAdminRestartNetwork:pressed, #btnAdminGetActiveConnection:pressed, #btnAdminSavePrinterParam:pressed, #btnAdminCheckConnection:pressed,#btnAdminSaveTerminalAccept:pressed, #btnAdminSaveTerminaSecret:pressed, #btnAdminSaveTrmSettings2:pressed, #btnAdminSelectLogParam:pressed, #btnAdminGetServicesData:pressed, #btnSelectDataAllS:pressed, #btnShowSelectData:pressed, #btnCloseSelectDataS:pressed, #btnDeSelectDataAllS:pressed, #btnAdminUpdateLogData:pressed, #btnAdminSearchKeyParam:pressed, #btnTest:pressed, #btnAdminTestRestartModemReal:pressed, #btnAdminCreateNewConnections:pressed
+{
+       color: #bbbbbb;
+       background-color: #e0e3ff;
+}
+
+
+#btnGetIncasaciya:pressed, #btnInterToAdmin:pressed, #btnCloseIncasaciya:pressed, #btnNullingCheck:pressed, #btnPrinterTest:pressed
+{
+    color: #aaaaaa;
+    background-color: #cccccc;
+}
+
+#IncasaciyaFormWidget
+{
+    background-color: #fff;
+}
+
+#graphicsViewI
+{
+	border: 2px solid #f07e1b;
+}
+
+#lblIncasaciyaTitle
+{
+    color: #000;
+    font: 14pt "Arial";
+}
+#chbPrintTwoCheck
+{
+    color: rgb(255, 255, 255);
+    font: 8pt "Arial";
+}
+
+QProgressBar {
+    border-radius: 3px;
+    background-color: rgba(33, 150, 243, 0.3);
+}
+
+QProgressBar::chunk {
+    border-radius: 6px;
+    background-color: rgb(33, 150, 243);
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+QCheckBox::indicator {
+    width: 15px;
+    height: 15px;
+}
+
+QCheckBox::indicator:unchecked {
+    image: url(:/assets/icons/checkbox_unchecked.png);
+}
+
+QCheckBox::indicator:unchecked:hover {
+    image: url(:/assets/icons/checkbox_unchecked_hover.png);
+}
+
+QCheckBox::indicator:unchecked:pressed {
+    image: url(:/assets/icons/checkbox_unchecked_pressed.png);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/assets/icons/checkbox_checked.png);
+}
+
+QCheckBox::indicator:checked:hover {
+    image: url(:/assets/icons/checkbox_checked_hover.png);
+}
+
+QCheckBox::indicator:checked:pressed {
+    image: url(:/assets/icons/checkbox_checked_pressed.png);
+}
+
+
+/*****************************************************************************************/
+
+/* Key PUD */
+/* ############################################################################################################## */
+
+
+#wgtKeyPud, #wgtKeyPud_2, #wgtKeyPud_3 { /* The tab widget frame */
+	padding: 20px;
+	background-color: #b9bcc3;
+	border: 2px solid #9B9B9B;
+	border-radius: 8px;
+	min-height: 300px;
+}
+
+#wgtKeyPudReg {
+    padding: 10px;
+    background-color: #b9bcc3;
+    border: 2px solid #9B9B9B;
+    border-radius: 8px;
+    min-height: 240px;
+}
+
+#KEY_0, #KEY_1, #KEY_2, #KEY_3, #KEY_4, #KEY_5, #KEY_6, #KEY_7, #KEY_8, #KEY_9, #KEY_A, #KEY_B, #KEY_C, #KEY_D, #KEY_E, #KEY_F, #KEY_G, #KEY_H, #KEY_I, #KEY_J, #KEY_K, #KEY_L, #KEY_M, #KEY_N, #KEY_O, #KEY_P, #KEY_Q, #KEY_R, #KEY_S, #KEY_T, #KEY_U, #KEY_V, #KEY_W, #KEY_X, #KEY_Y, #KEY_Z, #KEY_COMMA, #KEY_MINUS, #KEY_PERIOD, #KEY_RAVNO, #KEY_SEMICOLON, #KEY_SLASH
+{
+    background-color: #f6f6f6;
+    border: 2px solid #74777e;
+    border-radius: 8px;
+
+    color: #74777e;
+    /*font: 17pt "MS Shell Dlg 2";*/
+    font-size: 24pt;
+    font-family: Arial;
+}
+
+#KEY_SPACE, #KEY_SPACE_2
+{
+    background-color: #ec801b;
+    border: 2px solid #74777e;
+    border-radius: 8px;
+
+    color: #74777e;
+    /*font: 17pt "MS Shell Dlg 2";*/
+    font-size: 24pt;
+    font-family: Arial;
+    max-width: 30px;
+}
+
+#KEY_TAB
+{
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0  rgb(84, 84, 252), stop: 1.0  rgb(9, 0, 131));
+    border: 1px solid #a0a0b0;
+    border-radius: 3px;
+
+    color: rgb(255, 255, 255);
+    /*font: 13pt "MS Shell Dlg 2";*/
+    font-size: 14pt;
+    font-weight: bold;
+    font-family: Arial;
+}
+
+#KEY_0:pressed, #KEY_1:pressed, #KEY_2:pressed, #KEY_3:pressed, #KEY_4:pressed, #KEY_5:pressed, #KEY_6:pressed, #KEY_7:pressed, #KEY_8:pressed, #KEY_9:pressed, #KEY_A:pressed, #KEY_B:pressed, #KEY_C:pressed, #KEY_D:pressed, #KEY_E:pressed, #KEY_F:pressed, #KEY_G:pressed, #KEY_H:pressed, #KEY_I:pressed, #KEY_J:pressed, #KEY_K:pressed, #KEY_L:pressed, #KEY_M:pressed, #KEY_N:pressed, #KEY_O:pressed, #KEY_P:pressed, #KEY_Q:pressed, #KEY_R:pressed, #KEY_S:pressed, #KEY_T:pressed, #KEY_U:pressed, #KEY_V:pressed, #KEY_W:pressed, #KEY_X:pressed, #KEY_Y:pressed, #KEY_Z:pressed, #KEY_COMMA:pressed, #KEY_ENTER:pressed, #KEY_MINUS:pressed, #KEY_PERIOD:pressed, #KEY_RAVNO:pressed, #KEY_SEMICOLON:pressed, #KEY_SHIFT:pressed, #KEY_SLASH:pressed, #KEY_TAB:pressed, #KEY_CLEAR:pressed, #KEY_BACKSPACE:pressed
+{
+    color: #bbbbbb;
+    background-color: #e0e3ff;
+}
+
+#KEY_CLEAR, #KEY_ENTER
+{
+   background-color: #ec801b;
+   border: 2px solid #74777e;
+   border-radius: 8px;
+
+   color: #000000;
+   /*font: 17pt "MS Shell Dlg 2";*/
+   font-size: 20pt;
+   font-family: Arial;
+   font-weight: normal;
+   min-width: 100px;
+}
+
+
+#KEY_BACKSPACE
+{
+   background-color: #ec801b;
+   border: 2px solid #74777e;
+   border-radius: 8px;
+
+   color: #000000;
+   /*font: 17pt "MS Shell Dlg 2";*/
+   font-size: 24pt;
+   font-family: Arial;
+   font-weight: normal;
+   min-width: 100px;
+}
+
+
+#KEY_SHIFT
+{
+   background-color: #ec801b;
+   border: 2px solid #74777e;
+   border-radius: 8px;
+
+   color: #000000;
+   /*font: 17pt "MS Shell Dlg 2";*/
+   font-size: 20pt;
+   font-family: Arial;
+   font-weight: normal;
+   min-width: 130px;
+}
+
+/* Registration Dialog */
+/* ============================================================================================================= */
+
+#RegistrationDialog
+{
+    background-color: #eeeeee;
+}
+
+#wgtRegCentral
+{
+    background-color: #f0f0f0;
+}
+
+#wgtRegContent
+{
+    background-color: #fff;
+    border-radius: 10px;
+    /*border: 3px solid #aaa;*/
+}
+
+#lblLoginReg, #lblOtpReg, #lblConfirmPasswordReg, #lblSecretNumReg, #lblSecretLoginReg, #lblSecretPasswordReg, #lblSecretConfirmPasswordReg, #lblRequestNumberSimReg, #lblPositionBalanceSimReg, #lblRequestBalanceSimReg
+{
+    color: #000;
+    /*font: 10pt "MS Shell Dlg 2";*/
+    font-size: 10pt;
+    font-family: Arial;
+	text-align: center;
+    color: #000;
+}
+
+#lblLoginToAdmin, #lblPasswordToAdmin
+{
+    color: #000000;
+    font-size: 16pt;
+    font-family: Arial;
+    text-align: center;
+}
+
+#lblTpl1, #lblTpl2 {
+    color: #000;
+    /*font: 10pt "MS Shell Dlg 2";*/
+    font-size: 11pt;
+    font-family: Arial;
+    text-align: center;
+    color: #000;
+}
+
+#line, #line_2 {
+    color: #f37946;
+}
+
+#grpConnection, #groupBoxValidator, #groupBoxPrinter, #groupBoxWatchDog, #groupBoxModem {
+    border: 1px solid gray;
+    border-color: gray;
+    margin-top: 8px;
+    border-radius: 3px;
+    font-size: 10pt;
+}
+
+#grpConnection::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 0 10px;
+}
+
+
+#listWidgetConnectionList {
+    font-size: 14pt;
+}
+
+#listWidgetConnectionList::item:selected {
+    color: #000;
+    background-color: #cde8ff;
+}
+
+#listWidgetConnectionList::item:selected:!active {
+    color: #000;
+    background-color: #cde8ff;
+}
+
+#listWidgetConnectionList::item:selected:active {
+    color: #000;
+    background-color: #cde8ff;
+}
+
+#lblAdminEnter
+{
+    color: #000;
+    /*font: 10pt "MS Shell Dlg 2";*/
+    font-size: 14pt;
+    font-family: Arial;
+    text-align: center;
+    color: #000;
+}
+
+QRadioButton {
+    color: #000000;
+    /*font: 10pt "MS Shell Dlg 2";*/
+    font-size: 16pt;
+    font-family: Arial;
+}
+
+QRadioButton::checked
+{
+    color: #000000;
+}
+
+QRadioButton::unchecked
+{
+    color: #474747;
+}
+
+QRadioButton::indicator {
+    width:                  10px;
+    height:                 10px;
+    border-radius:          7px;
+}
+
+QRadioButton::indicator::unchecked
+{
+    border: 2px solid darkgray;
+    border-radius: 7px;
+    background-color: white;
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+}
+
+QRadioButton::indicator::checked
+{
+    border: 2px solid #f07e1b;
+    border-radius: 7px;
+    background-color: #f07e1b;
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+}
+
+#lblInformation1Reg, #lblInformation2Reg, #lblInformation3Reg
+{
+    color: #222222;
+    /*font: 14pt "Arial";*/
+    font-size: 22pt;
+	font-weight: bold;
+    font-family: Arial;
+}
+
+#lblDialUpTitle
+{
+    color: #222222;
+    font-size: 16pt;
+	font-weight: bold;
+    font-family: Arial;
+}
+
+#tbnAddTerminalDataAvtorization
+{
+	background-color: #ffffff;
+}
+
+#tbnAddTerminalData::pane { /* The tab widget frame */
+	background-color: #ffffff;
+	border: 2px solid #f07e1b;
+	border-radius: 8px;
+	border-left: 1px dashed #f07e1b;
+}
+
+#editOtpReg, #editLoginReg, #editPasswordReg, #editConfirmPasswordReg, #editSecretNumReg, #editSecretLoginReg
+{
+    font: 20px Arial;
+    color: #333;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    padding: 5px;
+    min-height: 25px;
+}
+
+#editOtpReg:focus, #editLoginReg:focus, #editPasswordReg:focus, #editConfirmPasswordReg:focus, #editSecretNumReg:focus, #editSecretLoginReg:focus
+{
+    font: bold 24px Arial;
+    color: #000;
+    border: 2px solid #000;
+    border-radius: 6px;
+    padding: 5px;
+    background: #fff;
+}
+
+#editSecretPasswordReg, #editSecretPasswordConfirmReg
+{
+    font: 20px Arial;
+    color: #333;
+    border: 2px solid #ccc;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    padding: 5px;
+    border-right: 0px;
+    min-height: 25px;
+}
+
+#btnSecretPassword, #btnSecretPasswordConfirm {
+    font: 20px Arial;
+    color: #333;
+    border: 2px solid #ccc;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    padding: 5px 0px;
+    border-left: 0px;
+    min-height: 25px;
+    image: url(:/assets/icons/password_show.png);
+}
+
+#btnSecretPassword:checked, #btnSecretPasswordConfirm:checked {
+    image: url(:/assets/icons/password_hide.png);
+}
+
+#btnCancelReg1, #btnCancelReg2
+{
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0  rgb(150,150, 150), stop: 1.0  rgb(0, 0, 0));
+    border: 2px solid #bbb;
+    border-radius: 3px;
+    height: 40px;
+    color: rgb(255, 255, 255);
+    font-size: 14pt;
+    font-weight: bold;
+    font-family: Arial;
+}
+
+#btnClose, #btnKeyboard, #btnExplorer
+{
+	background-color: #fff;
+	border: 3px solid #f07e1b;
+	border-radius: 8px;
+	min-width: 100px;
+	min-height: 80px;
+	text-align: center;
+}
+
+
+#btnCloseReg
+{
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    min-width: 80px;
+    min-height: 80px;
+    text-align: center;
+}
+
+#btnNextReg
+{
+    background-color: #f37946;
+    border-radius: 10px;
+    height: 64px;
+    width: 160px;
+    color: rgb(255, 255, 255);
+    font-size: 22px;
+}
+
+#btnNextReg:pressed, #btnNewConnection:pressed
+{
+    background-color: #f36225;
+}
+
+#btnBackReg
+{
+    border-radius: 10px;
+    border: 2px solid #f37946;
+    height: 64px;
+    width: 160px;
+    color: #f37946;
+    font-size: 22px;
+}
+
+#btnBackReg:pressed, #btnEditValidator:pressed, #btnEditCoinAcceptor:pressed, #btnEditPrinter:pressed, #btnEditWatchDog:pressed, #btnEditModem:pressed
+{
+    border-color: #f36225;
+    color: #f36225;
+}
+
+#btnBackReg:disabled, #btnNextReg:disabled, #btnEditValidator:disabled, #btnEditCoinAcceptor:disabled, #btnEditPrinter:disabled, #btnEditWatchDog:disabled, #btnEditModem:disabled
+{
+    background-color: #e0e0e0;
+    color: #8b8b8b;
+    border-color: transparent;
+}
+
+#btnNewConnection, #btnSearchStart
+{
+    background-color: #f37946;
+    border-radius: 4px;
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+    padding: 6px 15px;
+}
+
+#btnEditValidator, #btnEditCoinAcceptor, #btnEditPrinter, #btnEditWatchDog, #btnEditModem
+{
+    border-radius: 4px;
+    border: 2px solid #f37946;
+    color: #f37946;
+    font-size: 16px;
+    padding: 6px 15px;
+}
+
+#btnTestValidator, #btnTestCoinAcceptor, #btnTestPrinter, #btnTestWatchDog, #btnTestModem
+{
+    background-color: #f37946;
+    border-radius: 6px;
+    height: 64px;
+    width: 120px;
+    color: rgb(255, 255, 255);
+    font-size: 22px;
+}
+
+#btnTestValidator:pressed, #btnTestCoinAcceptor:pressed, #btnTestPrinter:pressed, #btnTestWatchDog:pressed, #btnTestModem:pressed
+{
+    background-color: #f36225;
+}
+
+
+#lblRegTitle
+{
+    font-size: 28px;
+    font-family: Arial;
+    color: #333;
+}
+
+#lblStatus
+{
+    font-size: 18px;
+}
+
+#btnCancelReg1:pressed, #btnSaveReg2:pressed, #btnCancelReg2:pressed, #btnBack:pressed, #btnExplorer:pressed, #btnShowKeyboard:pressed, #btnKeyboard:pressed, #btnClose:pressed
+{
+    color: #aaaaaa;
+    background-color: #cccccc;
+}
+
+#btnTabReg1, #btnTabReg2, #btnSaveReg2, #btnSaveReg1, #btnRegCloseThis, #btnAdminSaveConnectionParam{
+	background-repeat: no-repeat;
+	border: 5px solid #f07e1b;
+	border-radius: 10px;
+	min-width: 150px;
+	color: #000;
+	min-height: 80px;
+}
+
+#btnEnterAdmin {
+	background-color: #fff;
+	color: #000;
+	border: 0px solid;
+	max-width: 120px;
+}
+
+#btnEnterAdmin:pressed
+{
+	border: 0px solid;
+	background-color: #fff;
+}
+
+#btnDialupCreateNewCon, #btnDialupCancel{
+	background-repeat: no-repeat;
+	border: 4px solid #f07e1b;
+	border-radius: 10px;
+	font: 16pt "Arial";
+	padding-left: 2px;
+	padding-right: 15px;
+	color: #000;
+}
+
+#btnAdminCreateNewConnection{
+	background-repeat: no-repeat;
+	border: 5px solid #f07e1b;
+	border-radius: 10px;
+	padding: 5px;
+	color: #000000;
+	font: 14pt Arial;
+	font-weight: bold;
+	min-width: 150px;
+	max-width: 250px;
+	min-height: 40px;
+	text-align: center;
+}
+
+#btnTabReg1:pressed, #btnTabReg2:pressed, #btnSaveReg2:pressed, #btnSaveReg1:pressed, #btnAdminCreateNewConnection:pressed, #btnRegCloseThis:pressed, #btnAdminSaveConnectionParam:pressed, #btnDialupCreateNewCon:pressed, #btnDialupCancel:pressed
+{
+	background-color: #f07e1b;
+}
+
+#btnNumTrmRegClear, #btnLoginRegClear, #btnPasswordRegClear, #btnConfirmPasswordRegClear{
+	background-repeat: no-repeat;
+	border: 2px solid #f07e1b;
+	border-radius: 10px;
+	width: 80px;
+	min-height:40px;
+	color: #ffffff;
+}
+
+#btnNumTrmRegClear:pressed, #btnLoginRegClear:pressed, #btnPasswordRegClear:pressed, #btnConfirmPasswordRegClear:pressed{
+	background-color: #cccccc;
+}
+
+#tbnAddTerminalData > QTabBar::tab {
+    background-color: #ffffff;
+    border: 1px solid #bbbbbb;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    min-width: 10px;
+    width: 140px;
+	height: 100px;
+	margin-right: -5px;
+    margin-top: 4px;
+	padding-bottom: 10px;
+}
+
+QTabWidget#tbnAddTerminalData > QTabBar::tab:selected {
+	border-width: 2px;
+    background-color: #ffffff;
+    border-color: #f07e1b;
+    border-right-color: #ffffff;
+    color: #ffffff;
+}
+
+QTabWidget#tbnAddTerminalData > QTabBar::tab:!selected {
+    margin-top: 4px;
+    background-color: #f07e1b;
+    border-color: #f07e1b;
+    margin-bottom: 1px;
+    color: #a6a6a6;
+ }
+
+#tabWidget::pane { /* The tab widget frame */
+	background-color: #ffffff;
+	border: 2px solid #f07e1b;
+	border-top: 1px dashed #f07e1b;
+}
+
+#tabWidget > QTabBar::tab {
+    background-color: #ffffff;
+    border: 1px solid #f07e1b;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    min-width: 10px;
+    width: 110px;
+	height: 90px;
+	padding-left: 30px;
+	margin-right: 5px;
+}
+
+QTabWidget#tabWidget > QTabBar::tab:selected {
+	border: 2px solid #f07e1b;
+    background-color: #ffffff;
+	border-bottom: 0px;
+    color: #ffffff;
+	margin-top: 4px;
+}
+
+QTabWidget#tabWidget > QTabBar::tab:!selected {
+    margin-top: 4px;
+    background-color: #f07e1b;
+    border-color: #f07e1b;
+    color: #a6a6a6;
+}
+
+#p_finedDevice, #p_loadGprs{
+	background-color: #000000;
+}

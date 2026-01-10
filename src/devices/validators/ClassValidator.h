@@ -1,0 +1,76 @@
+#ifndef CLASSVALIDATOR_H
+#define CLASSVALIDATOR_H
+
+#include "dev/CCNetSM.h"
+#include "dev/EBDS.h"
+
+namespace ValidatorModel
+{
+    const QString CashCodeCCNET = "CashCode_CCNET";
+    const QString MeiEBDS = "Mei";
+}
+
+class CCNetSm;
+
+class ClassValidator : public QThread
+{
+    Q_OBJECT
+
+public:
+    ClassValidator(QObject *parent = 0);
+
+    void setValidator(QString name);
+    void setPortName(QString portName);
+    void setPortListInfo(QStringList port_list);
+    void setPartNumber(QString partNumber);
+    void setDBError(bool error);
+
+    bool openPort();
+    bool isItYou(QStringList &comList,QString &validator_name, QString &com_str, QString &validator_coment);
+
+    void closeThis();
+    bool pollState();
+
+    QString nowValidatorName;
+    QString nowPortName;
+    QString nowComent;
+
+    QString vPartNumber;
+    QString vSerialNumber;
+
+    QVariantMap maxSum;
+    int status;
+
+    QString firmwareVersion;
+
+public slots:
+    void execCommand(int cmd);
+    void getStatusFromValidator(int sts, QString comment);
+
+private:
+    CCNetSm *CCNetValidator;
+    EBDS *EBDSValidator;
+
+    QString comPort;
+    QStringList portList;
+    QString validatorName;
+
+    bool CIsItYou(QString &validat_name);
+
+    int cmdExec;
+
+    virtual void run();
+
+signals:
+    void eNominal(int nominal);
+    void eNominalDuplicate(int nominal);
+    void showHideDialogAnimate(bool status);
+    void showHideDialogReturnNominal(bool status);
+    void emitStatusValidator(int sts, QString comment);
+    void emitLog(int status, QString title, QString text);
+    void emitValidatorLog(int status, QByteArray data, QString text);
+    void emitFirmwareUpdate(QString state);
+};
+
+
+#endif // CLASSVALIDATOR_H

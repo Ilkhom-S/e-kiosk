@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CreateDialupConnection</class>
+ <widget class="QDialog" name="CreateDialupConnection">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>450</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>600</width>
+    <height>450</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>600</width>
+    <height>450</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="margin" stdset="0">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QWidget" name="wgtCreateNewConnection" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,10,0,0">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
+         <number>20</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="lblDialUpTitle">
+          <property name="text">
+           <string>Создание Dial-up соединение</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <layout class="QGridLayout" name="gridLayout" columnstretch="0,1">
+          <property name="horizontalSpacing">
+           <number>20</number>
+          </property>
+          <property name="verticalSpacing">
+           <number>15</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="lblDialupSelectDevice">
+            <property name="text">
+             <string>Устройство:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="cbxDialupSelectDevice"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lblDialupSelectConName">
+            <property name="text">
+             <string>Соединение:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="cbxDialupSelectConName">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+            <item>
+             <property name="text">
+              <string>humo</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>tcell</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>megafon</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>babilon</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="lblDialupSelectPhoneNum">
+            <property name="text">
+             <string>Номер дозвона:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QComboBox" name="cbxDialupSelectPhoneNum">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+            <item>
+             <property name="text">
+              <string>*99#</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="lblDialupSelectUserName">
+            <property name="text">
+             <string>Имя пользователя:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QComboBox" name="cbxDialupSelectUserName">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+            <item>
+             <property name="text">
+              <string>wap</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>babilon</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>tcell</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>megafon</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="lblDialupSelectUserPass">
+            <property name="text">
+             <string>Пароль пользователя:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QComboBox" name="cbxDialupSelectUserPass">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+            <item>
+             <property name="text">
+              <string>wap</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>babilon</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>tcell</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>megafon</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnDialupCancel">
+          <property name="text">
+           <string>Отмена</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../../ekiosk.qrc">
+            <normaloff>:/assets/icons/reg_8.png</normaloff>:/assets/icons/reg_8.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>64</width>
+            <height>64</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnDialupCreateNewCon">
+          <property name="text">
+           <string>Создать</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../../ekiosk.qrc">
+            <normaloff>:/assets/icons/reg_6.png</normaloff>:/assets/icons/reg_6.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>64</width>
+            <height>64</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../../ekiosk.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>btnDialupCancel</sender>
+   <signal>clicked()</signal>
+   <receiver>CreateDialupConnection</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>442</x>
+     <y>374</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>462</x>
+     <y>504</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
