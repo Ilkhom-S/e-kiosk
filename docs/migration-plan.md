@@ -71,6 +71,7 @@ This plan outlines the step-by-step migration from Qt 4 to Qt 5 and adoption of 
 
 ### 8. Integrate Code Quality Tools
 
+- [x] Create .clang-format and .clang-tidy config files
 - [ ] Set up clang-tidy for static analysis and code quality checks.
 - [ ] Configure clang-format for consistent code styling.
 - [ ] Integrate tools into CMake build system (e.g., add targets for linting and formatting).

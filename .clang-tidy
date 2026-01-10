@@ -1,0 +1,46 @@
+---
+Checks: >
+  -*,
+  clang-analyzer-*,
+  clang-diagnostic-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  bugprone-*,
+  cppcoreguidelines-*,
+  -modernize-use-trailing-return-type,
+  -readability-magic-numbers,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -readability-braces-around-statements,
+  -readability-identifier-length,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-pro-type-vararg,
+  -bugprone-easily-swappable-parameters,
+  -modernize-avoid-c-arrays,
+  -readability-function-cognitive-complexity,
+  -performance-no-int-to-ptr
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+AnalyzeTemporaryDtors: false
+FormatStyle: file
+User: user
+CheckOptions:
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.FunctionCase
+    value: camelBack
+  - key: readability-identifier-naming.VariableCase
+    value: camelBack
+  - key: readability-identifier-naming.ParameterCase
+    value: camelBack
+  - key: readability-identifier-naming.MethodCase
+    value: camelBack
+  - key: readability-identifier-naming.NamespaceCase
+    value: CamelCase
+  - key: readability-identifier-naming.ClassMemberCase
+    value: camelBack
+  - key: readability-identifier-naming.PrivateMemberPrefix
+    value: 'm_'
+  - key: readability-identifier-naming.ProtectedMemberPrefix
+    value: 'm_'
