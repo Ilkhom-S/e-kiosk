@@ -21,7 +21,7 @@ namespace ValidatorConstants
 }
 
 namespace ValidatorCommands {
-    Q_NAMESPACE
+//    Q_NAMESPACE
 
     enum Enum {
         Reset             = 1,
@@ -43,7 +43,7 @@ namespace ValidatorCommands {
         Restart           = 17,
         FirmwareUpdate    = 18
     };
-    Q_ENUM_NS(Enum)
+//    Q_ENUM_NS(Enum)
 
 //    namespace NominalType {
 //        const QString nTJ = "TJ";

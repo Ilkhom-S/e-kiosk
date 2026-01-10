@@ -9,18 +9,88 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5 REQUIRED COMPONENTS
+# Find Qt - support both Qt5 and Qt6
+# Try Qt5 first (preferred), fall back to Qt6
+find_package(Qt5 QUIET COMPONENTS Core)
+if(Qt5_FOUND)
+    set(QT_VERSION_MAJOR 5)
+    message(STATUS "Using Qt5")
+else()
+    find_package(Qt6 QUIET COMPONENTS Core)
+    if(Qt6_FOUND)
+        set(QT_VERSION_MAJOR 6)
+        message(STATUS "Using Qt6")
+    else()
+        message(FATAL_ERROR "Neither Qt5 nor Qt6 found. Please install Qt and set CMAKE_PREFIX_PATH to the Qt installation directory (e.g., C:/Qt/6.10.1/msvc2022_64 for Qt6 or C:/Qt/Qt5.6.3/5.6.3/msvc2015 for Qt5)")
+    endif()
+endif()
+
+# Now find the actual Qt package with the detected version
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
+
+# Define common Qt components needed
+set(QT_COMMON_COMPONENTS
     Core
     Widgets
     Sql
-    SerialPort
-    WebKitWidgets
-    WebSockets
     PrintSupport
     Network
     Multimedia
     Xml
 )
+
+# SerialPort is optional - check if available
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS SerialPort QUIET)
+if(Qt${QT_VERSION_MAJOR}SerialPort_FOUND)
+    list(APPEND QT_COMMON_COMPONENTS SerialPort)
+    message(STATUS "Qt SerialPort component found")
+else()
+    message(WARNING "Qt SerialPort component not found - serial device functionality will be limited")
+endif()
+
+# WebSockets is optional - check if available
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS WebSockets QUIET)
+if(Qt${QT_VERSION_MAJOR}WebSockets_FOUND)
+    list(APPEND QT_COMMON_COMPONENTS WebSockets)
+    message(STATUS "Qt WebSockets component found")
+else()
+    message(WARNING "Qt WebSockets component not found - WebSocket functionality will be limited")
+endif()
+
+# Qt5-specific components
+if(QT_VERSION_MAJOR EQUAL 5)
+    # Try WebKitWidgets first (Qt5.5 and earlier), then WebEngineWidgets (Qt5.6+)
+    find_package(Qt5 COMPONENTS WebKitWidgets QUIET)
+    if(Qt5WebKitWidgets_FOUND)
+        list(APPEND QT_COMMON_COMPONENTS WebKitWidgets)
+        add_compile_definitions(HAS_WEBKIT)
+        message(STATUS "Qt5 WebKitWidgets component found")
+    else()
+        find_package(Qt5 COMPONENTS WebEngineWidgets QUIET)
+        if(Qt5WebEngineWidgets_FOUND)
+            list(APPEND QT_COMMON_COMPONENTS WebEngineWidgets)
+            add_compile_definitions(HAS_WEBENGINE)
+            message(STATUS "Qt5 WebEngineWidgets component found")
+        else()
+            message(WARNING "Neither Qt5 WebKitWidgets nor WebEngineWidgets found - web functionality will be limited")
+        endif()
+    endif()
+endif()
+
+# Qt6-specific adjustments
+if(QT_VERSION_MAJOR EQUAL 6)
+    # WebKit is not available in Qt6, WebEngine is the replacement
+    find_package(Qt6 COMPONENTS WebEngineWidgets QUIET)
+    if(Qt6WebEngineWidgets_FOUND)
+        list(APPEND QT_COMMON_COMPONENTS WebEngineWidgets)
+        add_compile_definitions(USE_WEBENGINE)
+    else()
+        message(WARNING "Qt6 WebEngine not found, web functionality may be limited")
+    endif()
+endif()
+
+# Find Qt with all required components
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS ${QT_COMMON_COMPONENTS})
 
 set(SOURCES
     src/main.cpp
@@ -88,6 +158,8 @@ set(SOURCES
     src/ui/registrationform.cpp
     src/ui/searchdevicesform.cpp
     src/ui/selectcategorylogview.cpp
+    src/updater/textprogressbar.cpp
+    src/updater/update.cpp
 )
 
 set(HEADERS
@@ -156,6 +228,9 @@ set(HEADERS
     src/ui/registrationform.h
     src/ui/searchdevicesform.h
     src/ui/selectcategorylogview.h
+    src/updater/CopyFile.h
+    src/updater/textprogressbar.h
+    src/updater/update.h
 )
 
 set(UI_FILES
@@ -179,30 +254,53 @@ set(RESOURCE_FILES
     ekiosk.qrc
 )
 
-qt5_wrap_ui(UI_HEADERS ${UI_FILES})
-qt5_add_resources(RESOURCE_SOURCES ${RESOURCE_FILES})
+if(QT_VERSION_MAJOR EQUAL 5)
+    qt5_add_resources(RESOURCE_SOURCES ${RESOURCE_FILES})
+else()
+    qt6_add_resources(RESOURCE_SOURCES ${RESOURCE_FILES})
+endif()
 
 add_executable(EKiosk
     ${SOURCES}
     ${HEADERS}
-    ${UI_HEADERS}
+    ${UI_FILES}
     ${RESOURCE_SOURCES}
 )
 
 target_include_directories(EKiosk PRIVATE src)
 
 target_link_libraries(EKiosk
-    Qt5::Core
-    Qt5::Widgets
-    Qt5::Sql
-    Qt5::SerialPort
-    Qt5::WebKitWidgets
-    Qt5::WebSockets
-    Qt5::PrintSupport
-    Qt5::Network
-    Qt5::Multimedia
-    Qt5::Xml
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::PrintSupport
+    Qt${QT_VERSION_MAJOR}::Network
+    Qt${QT_VERSION_MAJOR}::Multimedia
+    Qt${QT_VERSION_MAJOR}::Xml
 )
+
+# Add SerialPort if available
+if(Qt${QT_VERSION_MAJOR}SerialPort_FOUND)
+    target_link_libraries(EKiosk Qt${QT_VERSION_MAJOR}::SerialPort)
+endif()
+
+# Add WebSockets if available
+if(Qt${QT_VERSION_MAJOR}WebSockets_FOUND)
+    target_link_libraries(EKiosk Qt${QT_VERSION_MAJOR}::WebSockets)
+endif()
+
+# Add web component based on Qt version
+if(QT_VERSION_MAJOR EQUAL 5)
+    if(Qt5WebKitWidgets_FOUND)
+        target_link_libraries(EKiosk Qt5::WebKitWidgets)
+    elseif(Qt5WebEngineWidgets_FOUND)
+        target_link_libraries(EKiosk Qt5::WebEngineWidgets)
+    endif()
+else()
+    if(Qt6WebEngineWidgets_FOUND)
+        target_link_libraries(EKiosk Qt6::WebEngineWidgets)
+    endif()
+endif()
 
 if(WIN32)
     target_link_libraries(EKiosk
@@ -212,6 +310,11 @@ if(WIN32)
         user32
         Advapi32
     )
+endif()
+
+# MSVC-specific compiler flags to fix PDB file access issues
+if(MSVC)
+    target_compile_options(EKiosk PRIVATE /FS)
 endif()
 
 set_target_properties(EKiosk PROPERTIES

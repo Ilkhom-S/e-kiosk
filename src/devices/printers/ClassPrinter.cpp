@@ -813,7 +813,7 @@ void ClassPrinter::clearListPrinterData(QString name)
     WCHAR * wStr = new WCHAR[prtNameIn.length() + 1];
     MultiByteToWideChar( 0, 0, prtNameIn.toLatin1().data(), prtNameIn.length(), wStr, prtNameIn.length());
     wStr[prtNameIn.length()] = '\0';
-    LPTSTR lpszStr = wStr;
+    LPTSTR lpszStr = (LPTSTR)wStr;
 
 //    char buf[300];
 //    int temp = GetLastError();

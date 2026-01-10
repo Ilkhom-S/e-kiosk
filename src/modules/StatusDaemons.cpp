@@ -214,19 +214,19 @@ void StatusDaemons::sendStatusToServer(Sender::Data &a_Data)
                               "Баланс сим-карты          - %10 \n"
                               "Номер сим-карты           - %11 \n"
                               "Провайдер сим-карты       - %12 \n"
-                              "Тип соединения            - %13 \n").arg(a_Data.fullVersion,
-                                                                        a_Data.validator.port,
-                                                                        a_Data.validator.serial,
-                                                                        a_Data.validator.name,
-                                                                        a_Data.printer.port,
-                                                                        a_Data.printer.name,
-                                                                        a_Data.modem.port,
-                                                                        a_Data.modem.name,
-                                                                        a_Data.modem.signal,
-                                                                        a_Data.modem.balance,
-                                                                        a_Data.modem.number,
-                                                                        a_Data.modem.provider,
-                                                                        a_Data.connection);
+                              "Тип соединения            - %13 \n").arg(a_Data.fullVersion)
+                                                                        .arg(a_Data.validator.port)
+                                                                        .arg(a_Data.validator.serial)
+                                                                        .arg(a_Data.validator.name)
+                                                                        .arg(a_Data.printer.port)
+                                                                        .arg(a_Data.printer.name)
+                                                                        .arg(a_Data.modem.port)
+                                                                        .arg(a_Data.modem.name)
+                                                                        .arg(a_Data.modem.signal)
+                                                                        .arg(a_Data.modem.balance)
+                                                                        .arg(a_Data.modem.number)
+                                                                        .arg(a_Data.modem.provider)
+                                                                        .arg(a_Data.connection);
     }
 
     QString bill_str = QString("<bill>%1%2</bill>\n").arg(a_Data.validator.billInfo, a_Data.coinAcceptor.coinInfo);

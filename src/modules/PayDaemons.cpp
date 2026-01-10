@@ -324,7 +324,7 @@ QString PayDaemons::getReceiptInfo(QString tranz_id)
         date_create = "2018-01-01 11:11:11"; prv_name = "Babilon NGN"; account = "44-640-5544"; sum_from = "00"; sum_to = "00"; ratio_sum = "0"; ratio_persent = "0";
     }
 
-    rec = rec.arg(tranz_id, numTrm, date_create, kassir, "", prv_name, account, sum_from, sum_to, ratio_sum, phone);
+    rec = rec.arg(tranz_id).arg(numTrm).arg(date_create).arg(kassir).arg("").arg(prv_name).arg(account).arg(sum_from).arg(sum_to).arg(ratio_sum).arg(phone);
 
     return rec;
 }
@@ -601,7 +601,7 @@ QString PayDaemons::getCollectionId() {
     if (collectId == "") {
         auto dateCreate = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
         auto trnId      = "1" + QDateTime::currentDateTime().toString("yyyyMMddHHmmsszzz").right(15);
-        auto colId      = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        auto colId      = QUuid::createUuid().toString().mid(1, 36);
         auto xmlDenom   = "";
 
         strQuery = QString("INSERT INTO terminal_collect(collect_id, stack_id, date_create, denom, status)"

@@ -64,7 +64,7 @@ void SendRequest::sendRequestData()
     QUrl url(serverUrl);
 
     QSslConfiguration config = QSslConfiguration::defaultConfiguration();
-    config.setProtocol(QSsl::TlsV1_3);
+    config.setProtocol(QSsl::TlsV1_2);
     qDebug() << url;
     QNetworkRequest a_request;
     a_request.setUrl(url);

@@ -1,5 +1,8 @@
 #include "AbstractValidator.h"
 
+Q_DECLARE_METATYPE(ValidatorCommands::Enum)
+Q_DECLARE_METATYPE(ValidatorErrors::Enum)
+
 bool debugger = false;
 
 BaseValidatorDevices::BaseValidatorDevices(QObject *parent) : QThread(parent)

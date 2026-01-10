@@ -398,7 +398,7 @@ QString CitizenPPU700_PRINTER::getImage(QString fileName)
 {
 
     QImage image(fileName);
-    qDebug() << "image.byteCount(); - " << image.sizeInBytes();
+    qDebug() << "image.byteCount(); - " << image.byteCount();
     QByteArray ba;
 
     QBuffer buffer(&ba);

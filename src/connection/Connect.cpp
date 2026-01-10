@@ -41,7 +41,7 @@ void ConnectionPart::setDateTimeIn(QString dt)
     }
 
     QString privilege = "SeShutdownPrivilege";
-    LookupPrivilegeValue(NULL, (const wchar_t*)privilege.utf16(), &tkp.Privileges[0].Luid);
+    LookupPrivilegeValueW(NULL, (LPCWSTR)privilege.utf16(), &tkp.Privileges[0].Luid);
 
     tkp.PrivilegeCount = 1;
     tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
@@ -65,12 +65,12 @@ void ConnectionPart::setDateTimeIn(QString dt)
 
     GetLocalTime(systime);
 
-    systime->wYear = dt.midRef(0,4).toInt();
-    systime->wMonth = dt.midRef(5,2).toInt();
-    systime->wDay = dt.midRef(8,2).toInt();
-    systime->wHour = dt.midRef(11,2).toInt();
-    systime->wMinute = dt.midRef(14,2).toInt();
-    systime->wSecond = dt.midRef(17,2).toInt();
+    systime->wYear = dt.mid(0,4).toInt();
+    systime->wMonth = dt.mid(5,2).toInt();
+    systime->wDay = dt.mid(8,2).toInt();
+    systime->wHour = dt.mid(11,2).toInt();
+    systime->wMinute = dt.mid(14,2).toInt();
+    systime->wSecond = dt.mid(17,2).toInt();
 
     bool test_time = SetLocalTime(systime);
 
@@ -193,7 +193,7 @@ bool ConnectionPart::restartWindows(bool restart)
     }
 
     QString privilege = "SeShutdownPrivilege";
-    LookupPrivilegeValue(NULL, (const wchar_t*)privilege.utf16(), &tkp.Privileges[0].Luid);
+    LookupPrivilegeValueW(NULL, (LPCWSTR)privilege.utf16(), &tkp.Privileges[0].Luid);
 
     tkp.PrivilegeCount = 1;
     tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;

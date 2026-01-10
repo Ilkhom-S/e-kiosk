@@ -1180,7 +1180,7 @@ QByteArray CCNetSm::firmwareGet(QString version)
         QString content = in.readAll().trimmed();
 
         // Remove spaces and split by comma
-        QStringList hexList = content.remove(' ').remove('\n').split(',', Qt::SkipEmptyParts);
+        QStringList hexList = content.remove(' ').remove('\n').split(',', QString::SkipEmptyParts);
 
         for (const QString &hexStr : hexList) {
             if (hexStr.startsWith("0x", Qt::CaseInsensitive)) {

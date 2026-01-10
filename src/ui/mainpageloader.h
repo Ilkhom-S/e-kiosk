@@ -2,7 +2,14 @@
 #define MAINPAGELOADER_H
 
 #include <QWidget>
+#if defined(HAS_WEBKIT) || defined(HAS_WEBENGINE)
+#if defined(HAS_WEBKIT)
 #include <QtWebKitWidgets>
+#elif defined(HAS_WEBENGINE)
+#include <QtWebEngineWidgets>
+#include <QWebChannel>
+#endif
+#endif
 #include <QSound>
 #include "QSqlDatabase"
 #include <QFile>
@@ -129,7 +136,13 @@ public:
 
 private:
     // Web
+#if defined(HAS_WEBKIT) || defined(HAS_WEBENGINE)
+#if defined(HAS_WEBKIT)
     QWebView *webView;
+#elif defined(HAS_WEBENGINE)
+    QWebEngineView *webView;
+#endif
+#endif
 
 private:
     Ui::MainPageLoader *ui;

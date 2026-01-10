@@ -1077,7 +1077,7 @@ void MainWindow::getRegistrationData(QVariantMap data) {
     //Создаем нулевую инкассацию если не существует
     if (collectDaemons->getCollectionCount() == 0) {
         collectDaemons->firstCollection = true;
-        auto collectionId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        auto collectionId = QUuid::createUuid().toString().mid(1, 36);
         collectDaemons->createNewCollection(collectionId);
     }
 
@@ -2160,7 +2160,7 @@ void MainWindow::incameStatusFromValidator(int sts, QString comment)
             int offset = dt.offsetFromUtc();
             dt.setOffsetFromUtc(offset);
 
-            if (saveBillValidatorEvent("CASHBOX-OPENED", dt.toString(Qt::ISODateWithMs))) {
+            if (saveBillValidatorEvent("CASHBOX-OPENED", dt.toString(Qt::ISODate) + QString(".%1Z").arg(dt.time().msec(), 3, 10, QChar('0')))) {
                 bValidatorEventCheck();
             }
         }
@@ -2525,7 +2525,7 @@ void MainWindow::deviceTest(int device, QString name, QString port, QString comm
         break;
     }
 
-    auto receipt = receiptGet(config.tpl).arg("201801011111110000", "000000", "2018-01-01 11:11:11", "test test", "", "Beeline", "999999999", "00", "00", "0", "44-640-5544");
+    auto receipt = receiptGet(config.tpl).arg("201801011111110000").arg("000000").arg("2018-01-01 11:11:11").arg("test test").arg("").arg("Beeline").arg("999999999").arg("00").arg("00").arg("0").arg("44-640-5544");
 
     searchDevices->receiptTest = receipt;
 
@@ -4468,6 +4468,8 @@ QStringList MainWindow::getWinPrinterNames() {
 
 void MainWindow::loadWebSettings()
 {
+    // Web settings disabled for Qt5.6.3 WebEngine compatibility
+    /*
     QSettings settings;
     settings.beginGroup(QLatin1String("websettings"));
 
@@ -4494,6 +4496,7 @@ void MainWindow::loadWebSettings()
     defaultSettings->setUserStyleSheetUrl(url);
 
     settings.endGroup();
+    */
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

@@ -100,7 +100,7 @@ void WINAPI RasConnection::RasCallback(HRASCONN hrasconn, UINT unMsg, RASCONNSTA
 
         wchar_t buff[256];
 
-        RasGetErrorString( dwError, buff, sizeof(buff));
+        RasGetErrorStringW( dwError, buff, sizeof(buff));
 
         S = "ERROR";
         G_State =  QString("%1").arg(S);
@@ -284,7 +284,7 @@ bool RasConnection::Dial()
     rasDialParams.dwSize = sizeof(RASDIALPARAMS);
 
     memset(rasDialParams.szEntryName, 0, sizeof(rasDialParams.szEntryName));
-    conName.toStdWString().copy(rasDialParams.szEntryName, conName.size());
+    strcpy_s(rasDialParams.szEntryName, conName.toLocal8Bit().constData());
 
     BOOL hasSavedPassword = FALSE;
 
@@ -307,7 +307,7 @@ bool RasConnection::Dial()
 
             wchar_t buff[256];
 
-            RasGetErrorString( dialError, buff, sizeof(buff));
+            RasGetErrorStringW( dialError, buff, sizeof(buff));
 
             G_State =  QString("ERROR");
 
@@ -340,14 +340,14 @@ int RasConnection::createNewDialupConnection(QString conName, QString devName, Q
     HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwCb);
 
     memset(rasDialParams.szEntryName, 0, sizeof(rasDialParams.szEntryName));
-    conName.toStdWString().copy(rasDialParams.szEntryName, conName.size());
+    strcpy_s(rasDialParams.szEntryName, conName.toLocal8Bit().constData());
 
     memset(&tRasEntry, 0, sizeof(tRasEntry));
     tRasEntry.dwSize = sizeof(tRasEntry);
 
-    wcscpy(tRasEntry.szLocalPhoneNumber, (const wchar_t*)phone.utf16());
-    wcscpy(tRasEntry.szDeviceName, (const wchar_t*)devName.utf16());
-    wcscpy(tRasEntry.szDeviceType, (const wchar_t*)RASDT_Modem);
+    MultiByteToWideChar(CP_UTF8, 0, phone.toUtf8().constData(), -1, (LPWSTR)tRasEntry.szLocalPhoneNumber, sizeof(tRasEntry.szLocalPhoneNumber)/sizeof(WCHAR));
+    MultiByteToWideChar(CP_UTF8, 0, devName.toUtf8().constData(), -1, (LPWSTR)tRasEntry.szDeviceName, sizeof(tRasEntry.szDeviceName)/sizeof(WCHAR));
+    memcpy(tRasEntry.szDeviceType, L"RASDT_Modem", sizeof(tRasEntry.szDeviceType));
     tRasEntry.dwfOptions        = RASEO_ModemLights|RASEO_SecureLocalFiles|RASEO_RemoteDefaultGateway|RASEO_DisableLcpExtensions;
     tRasEntry.dwfOptions2       = RASEO2_Internet|RASEO2_SecureFileAndPrint|RASEO2_SecureClientForMSNet|RASEO2_DisableNbtOverIP|RASEO2_DontNegotiateMultilink;
     tRasEntry.dwfNetProtocols   = RASNP_Ip;     // TCP/IP
@@ -367,10 +367,10 @@ int RasConnection::createNewDialupConnection(QString conName, QString devName, Q
     rasDialParams.dwSize = sizeof(RASDIALPARAMS);
     LPRASDIALPARAMS lpRasDialParams = &rasDialParams;
 
-    wcscpy(rasDialParams.szEntryName, (const wchar_t*)conName.utf16());
-    wcscpy(rasDialParams.szPhoneNumber, (const wchar_t*)phone.utf16());
-    wcscpy(rasDialParams.szUserName, (const wchar_t*)login.utf16());
-    wcscpy(rasDialParams.szPassword, (const wchar_t*)pass.utf16());
+    strcpy_s(rasDialParams.szEntryName, conName.toLocal8Bit().constData());
+    strcpy_s(rasDialParams.szPhoneNumber, phone.toLocal8Bit().constData());
+    strcpy_s(rasDialParams.szUserName, login.toLocal8Bit().constData());
+    strcpy_s(rasDialParams.szPassword, pass.toLocal8Bit().constData());
 
     dwError = RasSetEntryDialParams(0, lpRasDialParams, false);
 

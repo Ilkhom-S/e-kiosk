@@ -411,7 +411,7 @@ bool CollectDaemons::parserCollectIntoOperation(const QString cid)
 
     while (selectCollect.next()) {
         QString operation_money_denom = selectCollect.value(recordCollect.indexOf("operation_money_denom")).toString();
-        QStringList list = operation_money_denom.split(",", Qt::SkipEmptyParts);
+        QStringList list = operation_money_denom.split(",", QString::SkipEmptyParts);
 
         for (auto &val : list) {
             if (val.contains("M")) {
@@ -625,7 +625,7 @@ bool CollectDaemons::getCheckText(QString &text, bool preCheck, QString dateP, Q
                 "[p]==============================\n"
                 "%10"
                 "[p]Купюр мимо: %11 на сумму: %12\n"
-            ).arg(collectId.left(8), numTrm, trnId, dateCreate, datePre, trnFrom, trnTo, bills, coins, total)
+            ).arg(collectId.left(8)).arg(numTrm).arg(trnId).arg(dateCreate).arg(datePre).arg(trnFrom).arg(trnTo).arg(bills).arg(coins).arg(total)
              .arg(moneyOutNum).arg(moneyOutSum);
 
 
@@ -958,7 +958,7 @@ bool CollectDaemons::sendCollection(QString &trnId, const QString collectionId, 
     dateCreate = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
     trnId = "1" + QDateTime::currentDateTime().toString("yyyyMMddHHmmsszzz").right(15);
 
-    auto colIdNext = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    auto colIdNext = QUuid::createUuid().toString().mid(1, 36);
 
     QSqlQuery selectCollect(db);
 

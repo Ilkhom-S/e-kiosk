@@ -97,7 +97,7 @@ void SendLogInfo::  sendLogInfoToServer(QString trn, QString date)
     QFileInfo vrmFileInf; vrmFileInf.setFile("log/" + vrmDate + ".txt");
 
 
-    QString dateCreate = vrmFileInf.birthTime().toString("yyyy-MM-dd HH:mm:ss");
+    QString dateCreate = vrmFileInf.created().toString("yyyy-MM-dd HH:mm:ss");
 
     QString center_xml  = QString("<messages>\n"
                                   "<message id=\"%1\" cmdtrn=\"%6\" datecreate=\"%2\">\n"
@@ -137,7 +137,7 @@ void SendLogInfo::sendLogValidatorToServer(QString trn, QString date, QString ac
     QFileInfo vrmFileInf; vrmFileInf.setFile("logvalidator/"+date+"/"+account+ ".txt");
 
 
-    QString dateCreate = vrmFileInf.birthTime().toString("yyyy-MM-dd HH:mm:ss");
+    QString dateCreate = vrmFileInf.created().toString("yyyy-MM-dd HH:mm:ss");
 
     QString center_xml  = QString("<messages>\n"
                                       "<message id=\"%1\" cmdtrn=\"%6\" datecreate=\"%2\">\n"

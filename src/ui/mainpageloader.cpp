@@ -24,6 +24,8 @@ MainPageLoader::MainPageLoader(QWidget *parent) :
     goInputSum->setSingleShot(true);
     connect(goInputSum,SIGNAL(timeout()),this,SLOT(btnGotoInputSumClc()));
 
+#if defined(HAS_WEBKIT) || defined(HAS_WEBENGINE)
+#if defined(HAS_WEBKIT)
     webView = new QWebView(this);
     webView->setAttribute(Qt::WA_NativeWindow, true);
     webView->setAttribute(Qt::WA_DeleteOnClose);
@@ -33,11 +35,23 @@ MainPageLoader::MainPageLoader(QWidget *parent) :
             this, SLOT(populateJavaScriptWindowObject()));
 
     ui->webViewLayout->addWidget(webView);
+#elif defined(HAS_WEBENGINE)
+    webView = new QWebEngineView(this);
+    webView->setContextMenuPolicy(Qt::NoContextMenu);
+
+    connect(webView->page(), SIGNAL(javaScriptWindowObjectCleared()),
+            this, SLOT(populateJavaScriptWindowObject()));
+
+    ui->webViewLayout->addWidget(webView);
+#endif
+#endif
 }
 
 void MainPageLoader::populateJavaScriptWindowObject()
 {
+#if defined(HAS_WEBKIT)
     webView->page()->mainFrame()->addToJavaScriptWindowObject("ctl", this);
+#endif
 }
 
 void MainPageLoader::setDbName(QSqlDatabase &dbName)
@@ -55,8 +69,16 @@ void MainPageLoader::setTemplate(QString tpl)
 
 void MainPageLoader::inspectEnable()
 {
+    // Web inspection disabled for Qt5.6.3 compatibility
+    /*
+#if defined(HAS_WEBKIT)
     webView->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     webView->setContextMenuPolicy(Qt::DefaultContextMenu);
+#elif defined(HAS_WEBENGINE)
+    webView->page()->setDevToolsPage(new QWebEnginePage(webView));
+    webView->setContextMenuPolicy(Qt::DefaultContextMenu);
+#endif
+    */
 }
 
 void MainPageLoader::playSound(QString fileName)
@@ -161,7 +183,9 @@ void MainPageLoader::showHideReturnNominal(bool status)
     //Показываем значения клиенту
     QString jsFunction = status ? QString("showReturnNominal(%1)").arg(amountMax) : "hideReturnNominal()";
 
+#if defined(HAS_WEBKIT)
     webView->page()->mainFrame()->evaluateJavaScript(jsFunction);
+#endif
 }
 
 void MainPageLoader::setPageStatus(PageIn::page page)
@@ -384,7 +408,9 @@ void MainPageLoader::jsonResponseSuccess(QVariantMap response, QString requestNa
         jsFunc = QString("transhSuccess()");
     }
 
+#if defined(HAS_WEBKIT)
     webView->page()->mainFrame()->evaluateJavaScript(jsFunc);
+#endif
 }
 
 QVariantMap MainPageLoader::orzuData() {
@@ -403,7 +429,11 @@ void MainPageLoader::jsonResponseError(QString error, QString requestName)
 
     QString jsFunc = QString("resultError(\"%1\")").arg(error);
 
+#if defined(HAS_WEBKIT) || defined(HAS_WEBENGINE)
+#if defined(HAS_WEBKIT)
     webView->page()->mainFrame()->evaluateJavaScript(jsFunc);
+#endif
+#endif
 
     emit emit_toLoging(2, "ORZU", error);
 }
@@ -674,7 +704,9 @@ void MainPageLoader::gotoPage(PageIn::page page)
 void MainPageLoader::setTerminalInfo(QString data)
 {
     QString jsFunc = QString("balanceInfo(\"%1\")").arg(data);
+#if defined(HAS_WEBKIT)
     webView->page()->mainFrame()->evaluateJavaScript( jsFunc );
+#endif
 }
 
 void MainPageLoader::setCheckOnlineResult(QString resultCode, QString status, QString message, QVariantList items)
@@ -700,7 +732,9 @@ void MainPageLoader::setCheckOnlineResult(QString resultCode, QString status, QS
         jsFunc = QString("resultSuccess(\"%1\")").arg(message);
     }
 
+#if defined(HAS_WEBKIT)
     webView->page()->mainFrame()->evaluateJavaScript( jsFunc );
+#endif
 }
 
 QVariantList MainPageLoader::precheckItems(){
@@ -729,7 +763,9 @@ void MainPageLoader::sendReceiptResult(QString resultCode, QString trn, QString 
         jsFunc = QString("resultError(\"%1\")").arg(message);
     }
 
+#if defined(HAS_WEBKIT)
     webView->page()->mainFrame()->evaluateJavaScript( jsFunc );
+#endif
 }
 
 void MainPageLoader::sendOtpResult(QString resultCode, QString otpId)
@@ -759,7 +795,9 @@ void MainPageLoader::sendOtpResult(QString resultCode, QString otpId)
         emit emit_toLoging(1, "OTP", message);
     }
 
+#if defined(HAS_WEBKIT)
     webView->page()->mainFrame()->evaluateJavaScript( jsFunc );
+#endif
 }
 
 void MainPageLoader::confirmOtpResult(QString resultCode)
@@ -786,7 +824,9 @@ void MainPageLoader::confirmOtpResult(QString resultCode)
         emit emit_toLoging(1, "OTP", message);
     }
 
+#if defined(HAS_WEBKIT)
     webView->page()->mainFrame()->evaluateJavaScript( jsFunc );
+#endif
 }
 
 QString MainPageLoader::getPrinterStatus(){
@@ -1015,7 +1055,9 @@ void MainPageLoader::inputNominal(int nominal, bool coin)
 
     //Показываем значения клиенту
     QString jsFunction = QString("insertNominal(%1, %2, %3, %4, %5)").arg(nominalCash).arg(_nominal).arg(nominalAmount).arg(gblCmsSum).arg(gblRatioPrv);
+#if defined(HAS_WEBKIT)
     webView->page()->mainFrame()->evaluateJavaScript(jsFunction);
+#endif
 }
 
 void MainPageLoader::getSumToFromMinusCommis(double amountFrom)
@@ -1232,7 +1274,7 @@ void MainPageLoader::playSoundRepeet(int page)
 void MainPageLoader::interfaceCacheClear()
 {
     //очищаем кеш
-    webView->page()->settings()->clearMemoryCaches();
+    // webView->page()->settings()->clearMemoryCaches(); // Disabled for compatibility
 }
 
 bool MainPageLoader::connectionCheck() {

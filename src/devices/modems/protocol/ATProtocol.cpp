@@ -85,7 +85,7 @@ bool ATProtocol::sendSMSParam(QString text)
     //    //Номер телефона
     //    this->numberPhoneSms    = numberPhone;
 
-    qfloat16 l = (text.length()-2) / 2;
+    float l = (text.length()-2) / 2.0f;
 
     this->GetLengthSMS = qRound(l);
 

@@ -133,7 +133,7 @@ void CheckConnection::sendRequest(QString address)
     abortTimer->start(30000);
 
     QSslConfiguration config = QSslConfiguration::defaultConfiguration();
-    config.setProtocol(QSsl::TlsV1_3);
+    config.setProtocol(QSsl::TlsV1_2);
 
     QNetworkRequest request;
     request.setUrl(QUrl(address));
