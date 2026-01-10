@@ -45,4 +45,9 @@ Data flows from UI → modules for service requests → devices/network for exec
 - **Reflect Changes in Docs**: Any architectural changes, new features, or significant updates must be documented in `docs/` (e.g., update `docs/architecture.md` for structural changes).
 - **Conventional Commits**: Use conventional commit format for all commits (e.g., `feat: add new module`, `fix: resolve device connection issue`). Follow [Conventional Commits](https://conventionalcommits.org/) standard.
 
+## External References
+
+- **Reference Project**: [TerminalClient](https://github.com/Ilkhom-S/TerminalClient) - A complete Qt5 C++ kiosk application. Use as reference for architecture, structure, codebase, and device implementations. Aim to align EKiosk with similar patterns or copy ready device codes.
+- **Migration Source**: [TCPKiosk](https://github.com/PVG-Kiosk/TCPKiosk) - A .NET 4 C# kiosk project. Migrate features and functionality to this C++ Qt 5/6 project.
+
 Reference: `ekiosk.pro` for build config, `src/mainwindow.cpp` for app entry, `src/devices/` for hardware patterns.
