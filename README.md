@@ -64,21 +64,26 @@ export QT6_DIR="/opt/Qt/6.10.1/gcc_64"
 
 Available presets:
 
-- `msvc`: MSVC build (Windows, recommended for Qt compatibility)
-- `default`: Default build
+- `msvc`: **MSVC build (Windows, recommended for Qt compatibility)**
+- `default`: Default build (may use MinGW on Windows)
 - `mingw`: MinGW build (Windows)
 - `release`: Release build
 
+**Important**: On Windows, use the `msvc` preset for proper Qt library linking.
+
 ```bash
-# Configure with MSVC preset (Windows)
+# Windows (recommended)
 cmake --preset msvc
+cmake --build build-msvc
 
-# Or configure with default preset
+# Cross-platform (with QT5_DIR/QT6_DIR set)
 cmake --preset default
-
-# Build
-cmake --build build-msvc  # or build (for default preset)
+cmake --build build
 ```
+
+### VS Code Configuration
+
+VS Code is configured to use the `msvc` preset by default (see `.vscode/settings.json`). The CMake extension will automatically configure the project when opened.
 
 ### Using QMake (Legacy)
 

@@ -15,6 +15,7 @@
     "source.fixAll.clang-tidy": "explicit"
   },
   "cmake.configureOnOpen": true,
+  "cmake.defaultActiveConfigurePreset": "msvc",
   "cmake.buildDirectory": "${workspaceFolder}/build",
   "cmake.generator": "Ninja",
   "cmake.configureArgs": [],
