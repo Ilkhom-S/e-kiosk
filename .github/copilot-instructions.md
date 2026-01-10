@@ -22,10 +22,10 @@ Data flows from UI → modules for service requests → devices/network for exec
 
 ## Build and Run Workflow
 
-- **Build**: Use qmake to generate Makefile from `ekiosk.pro`, then `make` (or `mingw32-make` on Windows). VS Code task: `dotnet build` (configured in `tasks.json` for Qt compatibility).
-- **Run**: Execute `../EKiosk/EKiosk.exe` (TARGET in .pro sets output path).
+- **Build**: Use CMake with presets for cross-platform builds. Set `QT5_DIR`/`QT6_DIR` environment variables for Qt detection. VS Code is configured to use MSVC preset by default on Windows for proper Qt compatibility.
+- **Run**: Execute `EKiosk/Debug/EKiosk.exe` (from MSVC build) or `../EKiosk/EKiosk.exe` (from qmake build).
 - **Debug**: Attach debugger to running process; use Qt Creator for GUI debugging. Check logs in `src/other/logger.h` for issues.
-- **Dependencies**: Requires Qt 5+ (widgets, webkit, serialport, etc.); Windows-specific libs (rasapi32, winspool).
+- **Dependencies**: Requires Qt 5+ (widgets, webkit, serialport, etc.); Windows-specific libs (rasapi32, winspool). Use setup scripts (`setup-qt-env.bat` on Windows, `setup-qt-env.sh` on Unix) for automatic Qt path detection.
 
 ## Integration Points
 
@@ -39,6 +39,8 @@ Data flows from UI → modules for service requests → devices/network for exec
 - Ensure `QT += widgets` in .pro for Qt 5 compatibility.
 - Device classes inherit from abstract bases; implement virtual methods.
 - Use `QSharedMemory` and `QSystemSemaphore` for single-instance checking (in `main.cpp`).
+- **Qt Compiler Compatibility**: On Windows, use MSVC preset (`cmake --preset msvc`) when Qt is compiled with MSVC. MinGW builds will fail with undefined `__imp__` symbols if Qt uses MSVC libraries.
+- **Environment Variables**: Set `QT5_DIR` or `QT6_DIR` for cross-platform Qt detection instead of hardcoded paths.
 
 ## Documentation and Commits
 
