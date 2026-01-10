@@ -63,16 +63,8 @@ set(QT_COMMON_COMPONENTS
     Multimedia
     Xml
     SerialPort
+    WebSockets
 )
-
-# WebSockets is optional - check if available
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS WebSockets QUIET)
-if(Qt${QT_VERSION_MAJOR}WebSockets_FOUND)
-    list(APPEND QT_COMMON_COMPONENTS WebSockets)
-    message(STATUS "Qt WebSockets component found")
-else()
-    message(WARNING "Qt WebSockets component not found - WebSocket functionality will be limited")
-endif()
 
 # Qt5-specific components
 if(QT_VERSION_MAJOR EQUAL 5)
@@ -295,12 +287,8 @@ target_link_libraries(EKiosk
     Qt${QT_VERSION_MAJOR}::Multimedia
     Qt${QT_VERSION_MAJOR}::Xml
     Qt${QT_VERSION_MAJOR}::SerialPort
+    Qt${QT_VERSION_MAJOR}::WebSockets
 )
-
-# Add WebSockets if available
-if(Qt${QT_VERSION_MAJOR}WebSockets_FOUND)
-    target_link_libraries(EKiosk Qt${QT_VERSION_MAJOR}::WebSockets)
-endif()
 
 # Add web component based on Qt version
 if(QT_VERSION_MAJOR EQUAL 5)
