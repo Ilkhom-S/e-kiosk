@@ -10,8 +10,16 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # Find Qt - support both Qt5 and Qt6
-# Try Qt5 first (preferred), fall back to Qt6
-if(DEFINED CMAKE_PREFIX_PATH)
+# Priority order: environment variables > CMAKE_PREFIX_PATH > default detection
+if(DEFINED ENV{QT5_DIR})
+    # Use QT5_DIR environment variable
+    set(CMAKE_PREFIX_PATH $ENV{QT5_DIR})
+    find_package(Qt5 QUIET COMPONENTS Core PATHS $ENV{QT5_DIR})
+elseif(DEFINED ENV{QT6_DIR})
+    # Use QT6_DIR environment variable
+    set(CMAKE_PREFIX_PATH $ENV{QT6_DIR})
+    find_package(Qt6 QUIET COMPONENTS Core PATHS $ENV{QT6_DIR})
+elseif(DEFINED CMAKE_PREFIX_PATH)
     # If CMAKE_PREFIX_PATH is set (e.g., from presets), use it
     find_package(Qt5 QUIET COMPONENTS Core PATHS ${CMAKE_PREFIX_PATH})
     if(NOT Qt5_FOUND)
@@ -20,6 +28,9 @@ if(DEFINED CMAKE_PREFIX_PATH)
 else()
     # Default behavior: try Qt5 first, fall back to Qt6
     find_package(Qt5 QUIET COMPONENTS Core)
+    if(NOT Qt5_FOUND)
+        find_package(Qt6 QUIET COMPONENTS Core)
+    endif()
 endif()
 
 if(Qt5_FOUND)
@@ -29,7 +40,14 @@ elseif(Qt6_FOUND)
     set(QT_VERSION_MAJOR 6)
     message(STATUS "Using Qt6")
 else()
-    message(FATAL_ERROR "Neither Qt5 nor Qt6 found. Please install Qt and set CMAKE_PREFIX_PATH to the Qt installation directory (e.g., C:/Qt/6.10.1/msvc2022_64 for Qt6 or C:/Qt/Qt5.6.3/5.6.3/msvc2015 for Qt5)")
+    message(FATAL_ERROR "Neither Qt5 nor Qt6 found. Please install Qt and set one of the following:\n"
+        "  - Environment variable QT5_DIR or QT6_DIR (recommended for cross-platform development)\n"
+        "  - CMAKE_PREFIX_PATH in presets or command line\n"
+        "  - Add Qt to PATH or use default installation location\n"
+        "Examples:\n"
+        "  - QT5_DIR=C:/Qt/5.15.2/msvc2019_64\n"
+        "  - QT6_DIR=C:/Qt/6.10.1/msvc2022_64\n"
+        "  - CMAKE_PREFIX_PATH=C:/Qt/Qt5.6.3/5.6.3/msvc2015")
 endif()
 
 # Now find the actual Qt package with the detected version

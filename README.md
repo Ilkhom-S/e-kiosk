@@ -17,13 +17,68 @@ EKiosk is a Qt-based C++ application for payment kiosk systems, handling device 
 
 ## Building
 
+### Environment Setup
+
+For cross-platform development and to avoid CMake configuration issues, set Qt environment variables:
+
+#### Windows
+
+Run the setup script:
+
+```cmd
+setup-qt-env.bat
+```
+
+Or manually set environment variables:
+
+```cmd
+setx QT5_DIR "C:\Qt\5.15.2\msvc2019_64"
+setx QT6_DIR "C:\Qt\6.10.1\msvc2022_64"
+```
+
+#### Linux/macOS
+
+Run the setup script:
+
+```bash
+chmod +x setup-qt-env.sh
+./setup-qt-env.sh
+```
+
+Or manually set environment variables:
+
+```bash
+export QT5_DIR="/opt/Qt/5.15.2/gcc_64"
+export QT6_DIR="/opt/Qt/6.10.1/gcc_64"
+```
+
 ### Using CMake (Recommended)
 
-1. Ensure Qt 5 and CMake are installed.
-2. Create build directory: `mkdir build && cd build`
-3. Configure: `cmake ..`
-4. Build: `cmake --build .`
-5. Executable will be in `../EKiosk/EKiosk.exe`.
+#### Option 1: Environment Variables (Cross-platform)
+
+1. Set `QT5_DIR` or `QT6_DIR` environment variable (see above)
+2. Configure: `cmake -S . -B build`
+3. Build: `cmake --build build`
+
+#### Option 2: CMake Presets
+
+Available presets:
+
+- `msvc`: MSVC build (Windows, recommended for Qt compatibility)
+- `default`: Default build
+- `mingw`: MinGW build (Windows)
+- `release`: Release build
+
+```bash
+# Configure with MSVC preset (Windows)
+cmake --preset msvc
+
+# Or configure with default preset
+cmake --preset default
+
+# Build
+cmake --build build-msvc  # or build (for default preset)
+```
 
 ### Using QMake (Legacy)
 
