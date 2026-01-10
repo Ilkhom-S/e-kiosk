@@ -12,6 +12,21 @@
       }
     },
     {
+      "name": "msvc",
+      "displayName": "MSVC Config",
+      "description": "MSVC build configuration for Qt compatibility",
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "${sourceDir}/build-msvc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_PREFIX_PATH": "C:/Qt/5.15.2/msvc2019_64"
+      },
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      }
+    },
+    {
       "name": "release",
       "displayName": "Release Config",
       "description": "Release build configuration",
@@ -40,6 +55,10 @@
     {
       "name": "default",
       "configurePreset": "default"
+    },
+    {
+      "name": "msvc",
+      "configurePreset": "msvc"
     },
     {
       "name": "release",

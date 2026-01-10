@@ -11,18 +11,25 @@ set(CMAKE_AUTOUIC ON)
 
 # Find Qt - support both Qt5 and Qt6
 # Try Qt5 first (preferred), fall back to Qt6
-find_package(Qt5 QUIET COMPONENTS Core)
+if(DEFINED CMAKE_PREFIX_PATH)
+    # If CMAKE_PREFIX_PATH is set (e.g., from presets), use it
+    find_package(Qt5 QUIET COMPONENTS Core PATHS ${CMAKE_PREFIX_PATH})
+    if(NOT Qt5_FOUND)
+        find_package(Qt6 QUIET COMPONENTS Core PATHS ${CMAKE_PREFIX_PATH})
+    endif()
+else()
+    # Default behavior: try Qt5 first, fall back to Qt6
+    find_package(Qt5 QUIET COMPONENTS Core)
+endif()
+
 if(Qt5_FOUND)
     set(QT_VERSION_MAJOR 5)
     message(STATUS "Using Qt5")
+elseif(Qt6_FOUND)
+    set(QT_VERSION_MAJOR 6)
+    message(STATUS "Using Qt6")
 else()
-    find_package(Qt6 QUIET COMPONENTS Core)
-    if(Qt6_FOUND)
-        set(QT_VERSION_MAJOR 6)
-        message(STATUS "Using Qt6")
-    else()
-        message(FATAL_ERROR "Neither Qt5 nor Qt6 found. Please install Qt and set CMAKE_PREFIX_PATH to the Qt installation directory (e.g., C:/Qt/6.10.1/msvc2022_64 for Qt6 or C:/Qt/Qt5.6.3/5.6.3/msvc2015 for Qt5)")
-    endif()
+    message(FATAL_ERROR "Neither Qt5 nor Qt6 found. Please install Qt and set CMAKE_PREFIX_PATH to the Qt installation directory (e.g., C:/Qt/6.10.1/msvc2022_64 for Qt6 or C:/Qt/Qt5.6.3/5.6.3/msvc2015 for Qt5)")
 endif()
 
 # Now find the actual Qt package with the detected version
