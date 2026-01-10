@@ -13,5 +13,11 @@
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.clang-tidy": "explicit"
-  }
+  },
+  "cmake.configureOnOpen": true,
+  "cmake.buildDirectory": "${workspaceFolder}/build",
+  "cmake.generator": "Ninja",
+  "cmake.configureArgs": [],
+  "cmake.buildArgs": [],
+  "cmake.ctestArgs": []
 }
