@@ -4,6 +4,7 @@
 
 - [x] Create qt4-fallback branch
 - [x] Update .pro for Qt 5
+- [ ] Migrate build system to CMake
 - [ ] Review code for Qt 4 deprecated APIs
 - [ ] Test build with Qt 5
 - [ ] Update documentation

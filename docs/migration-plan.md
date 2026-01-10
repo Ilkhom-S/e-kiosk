@@ -2,7 +2,7 @@
 
 ## Overview
 
-This plan outlines the step-by-step migration from Qt 4 to Qt 5 for the EKiosk project. Qt 5 introduces significant changes, including module separation and API updates.
+This plan outlines the step-by-step migration from Qt 4 to Qt 5 and adoption of CMake build system for the EKiosk project. Qt 5 introduces significant changes, including module separation and API updates. CMake provides better cross-platform build management.
 
 ## Prerequisites
 
@@ -33,13 +33,22 @@ This plan outlines the step-by-step migration from Qt 4 to Qt 5 for the EKiosk p
 - [ ] Update signal/slot connections if using old syntax (current code uses macros, which are compatible).
 - [ ] Check for `QVariant::toString()` changes or other type conversions.
 
-### 4. Update Build System
+### 4. Migrate Build System to CMake
 
-- [ ] Regenerate Makefiles with qmake for Qt 5.
+- [ ] Create `CMakeLists.txt` with Qt 5 support using `find_package(Qt5 REQUIRED COMPONENTS Core Widgets ...)`.
+- [ ] Configure source files, include directories, and libraries (rasapi32, etc.).
+- [ ] Set up executable target with `add_executable`.
+- [ ] Handle UI files with `qt5_wrap_ui`, resources with `qt5_add_resources`.
+- [ ] Test CMake build on target platforms.
+- [ ] Update build instructions in README.
+
+### 5. Update Build System
+
+- [ ] Regenerate Makefiles with qmake for Qt 5 (if keeping qmake as fallback).
 - [ ] Update any custom build scripts.
 - [ ] Test compilation on target platforms (Windows, Linux, Mac).
 
-### 5. Test Application
+### 6. Test Application
 
 - [ ] Build and run the application.
 - [ ] Verify UI rendering (widgets module).
@@ -47,19 +56,19 @@ This plan outlines the step-by-step migration from Qt 4 to Qt 5 for the EKiosk p
 - [ ] Check network functionality (WebSockets, JSON requests).
 - [ ] Validate logging and error handling.
 
-### 6. Address Any Issues
+### 7. Address Any Issues
 
 - [ ] Fix compilation errors related to API changes.
 - [ ] Update code for new Qt 5 features if beneficial (e.g., new signal/slot syntax).
 - [ ] Ensure single-instance checking works (`QSharedMemory`, `QSystemSemaphore`).
 
-### 7. Documentation and Cleanup
+### 8. Documentation and Cleanup
 
 - [ ] Update README and docs for Qt 5 requirements.
 - [ ] Remove any Qt 4 compatibility code.
 - [ ] Commit changes with clear messages.
 
-### 8. Final Validation
+### 9. Final Validation
 
 - [ ] Run full test suite (if exists).
 - [ ] Deploy to test environment.
