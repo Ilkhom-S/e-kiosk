@@ -62,16 +62,8 @@ set(QT_COMMON_COMPONENTS
     Network
     Multimedia
     Xml
+    SerialPort
 )
-
-# SerialPort is optional - check if available
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS SerialPort QUIET)
-if(Qt${QT_VERSION_MAJOR}SerialPort_FOUND)
-    list(APPEND QT_COMMON_COMPONENTS SerialPort)
-    message(STATUS "Qt SerialPort component found")
-else()
-    message(WARNING "Qt SerialPort component not found - serial device functionality will be limited")
-endif()
 
 # WebSockets is optional - check if available
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS WebSockets QUIET)
@@ -302,12 +294,8 @@ target_link_libraries(EKiosk
     Qt${QT_VERSION_MAJOR}::Network
     Qt${QT_VERSION_MAJOR}::Multimedia
     Qt${QT_VERSION_MAJOR}::Xml
+    Qt${QT_VERSION_MAJOR}::SerialPort
 )
-
-# Add SerialPort if available
-if(Qt${QT_VERSION_MAJOR}SerialPort_FOUND)
-    target_link_libraries(EKiosk Qt${QT_VERSION_MAJOR}::SerialPort)
-endif()
 
 # Add WebSockets if available
 if(Qt${QT_VERSION_MAJOR}WebSockets_FOUND)
