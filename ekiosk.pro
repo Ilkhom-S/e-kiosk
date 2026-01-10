@@ -1,4 +1,4 @@
-QT  += core gui
+QT  += core gui widgets
 QT  += sql
 QT  += serialport
 QT  += webkitwidgets
@@ -11,6 +11,8 @@ QT  += xml
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
+
+requires qt 5.0
 
 TARGET = ../EKiosk
 
