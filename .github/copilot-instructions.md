@@ -40,4 +40,9 @@ Data flows from UI → modules for service requests → devices/network for exec
 - Device classes inherit from abstract bases; implement virtual methods.
 - Use `QSharedMemory` and `QSystemSemaphore` for single-instance checking (in `main.cpp`).
 
+## Documentation and Commits
+
+- **Reflect Changes in Docs**: Any architectural changes, new features, or significant updates must be documented in `docs/` (e.g., update `docs/architecture.md` for structural changes).
+- **Conventional Commits**: Use conventional commit format for all commits (e.g., `feat: add new module`, `fix: resolve device connection issue`). Follow [Conventional Commits](https://conventionalcommits.org/) standard.
+
 Reference: `ekiosk.pro` for build config, `src/mainwindow.cpp` for app entry, `src/devices/` for hardware patterns.
