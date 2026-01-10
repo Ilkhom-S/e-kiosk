@@ -1,74 +1,188 @@
 {
-  "version": 3,
   "configurePresets": [
     {
-      "name": "default",
-      "displayName": "Default Config",
-      "description": "Default build configuration",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build",
+      "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
+        "BUILD_TESTING": "ON",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "YES"
+      },
+      "generator": "Ninja",
+      "hidden": true,
+      "name": "base"
     },
     {
-      "name": "msvc",
-      "displayName": "MSVC Config",
-      "description": "MSVC build configuration for Qt compatibility",
-      "generator": "Visual Studio 17 2022",
-      "binaryDir": "${sourceDir}/build-msvc",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      },
       "environment": {
-        "QT5_DIR": "C:/Qt/5.15.2/msvc2019_64"
+        "LINUX_QT_PATH": "/opt/Qt/6.10.1/gcc_64",
+        "MINGW_BIN_PATH": "C:/Qt/Tools/mingw810_64/bin",
+        "MINGW_X64_PATH": "C:/Qt/6.10.1/mingw_64",
+        "QT5_X64_PATH": "C:/Qt/5.15.2/msvc2019_64",
+        "QT5_X86_PATH": "C:/Qt/5.15.2/msvc2019",
+        "QT6_X64_PATH": "C:/Qt/6.10.1/msvc2022_64",
+        "QT6_X86_PATH": "C:/Qt/6.10.1/msvc2022"
       },
+      "hidden": true,
+      "name": "user-paths"
+    },
+    {
       "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      }
-    },
-    {
-      "name": "release",
-      "displayName": "Release Config",
-      "description": "Release build configuration",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build-release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
-    },
-    {
-      "name": "mingw",
-      "displayName": "MinGW Config",
-      "description": "MinGW build configuration",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build-mingw",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "strategy": "external",
+        "value": "x64"
       },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{QT6_X64_PATH}"
+      },
+      "displayName": "Win: Qt6 x64 Ninja",
+      "inherits": ["base", "user-paths"],
+      "name": "win-qt6-x64"
+    },
+    {
+      "architecture": {
+        "strategy": "external",
+        "value": "x64"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{QT5_X64_PATH}"
+      },
+      "displayName": "Win: Qt5 x64 Ninja",
+      "inherits": ["base", "user-paths"],
+      "name": "win-qt5-x64"
+    },
+    {
+      "architecture": {
+        "strategy": "external",
+        "value": "x86"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{QT6_X86_PATH}"
+      },
+      "displayName": "Win: Qt6 x86 Ninja",
+      "inherits": ["base", "user-paths"],
+      "name": "win-qt6-x86"
+    },
+    {
+      "architecture": {
+        "strategy": "external",
+        "value": "x86"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{QT5_X86_PATH}"
+      },
+      "displayName": "Win: Qt5 x86 Ninja",
+      "inherits": ["base", "user-paths"],
+      "name": "win-qt5-x86"
+    },
+    {
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "$env{MINGW_BIN_PATH}/g++.exe",
+        "CMAKE_C_COMPILER": "$env{MINGW_BIN_PATH}/gcc.exe",
+        "CMAKE_PREFIX_PATH": "$env{MINGW_X64_PATH}"
+      },
+      "displayName": "Win: MinGW x64",
       "environment": {
-        "CC": "gcc",
-        "CXX": "g++"
-      }
+        "PATH": "$env{MINGW_BIN_PATH};$penv{PATH}"
+      },
+      "inherits": ["base", "user-paths"],
+      "name": "win-mingw-x64"
+    },
+    {
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{LINUX_QT_PATH}"
+      },
+      "condition": {
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux",
+        "type": "equals"
+      },
+      "displayName": "Linux: Qt6 x64",
+      "inherits": ["base", "user-paths"],
+      "name": "linux-x64"
+    },
+    {
+      "architecture": {
+        "strategy": "external",
+        "value": "x64"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{QT6_X64_PATH}"
+      },
+      "displayName": "Win: Qt6 x64 MSVC",
+      "generator": "Visual Studio 17 2022",
+      "inherits": ["base", "user-paths"],
+      "name": "win-msvc-qt6-x64"
+    },
+    {
+      "architecture": {
+        "strategy": "external",
+        "value": "x64"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{QT5_X64_PATH}"
+      },
+      "displayName": "Win: Qt5 x64 MSVC",
+      "generator": "Visual Studio 16 2019",
+      "inherits": ["base", "user-paths"],
+      "name": "win-msvc-qt5-x64"
+    },
+    {
+      "architecture": {
+        "strategy": "external",
+        "value": "x86"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{QT6_X86_PATH}"
+      },
+      "displayName": "Win: Qt6 x86 MSVC",
+      "generator": "Visual Studio 17 2022",
+      "inherits": ["base", "user-paths"],
+      "name": "win-msvc-qt6-x86"
+    },
+    {
+      "architecture": {
+        "strategy": "external",
+        "value": "x86"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{QT5_X86_PATH}"
+      },
+      "displayName": "Win: Qt5 x86 MSVC",
+      "generator": "Visual Studio 16 2019",
+      "inherits": ["base", "user-paths"],
+      "name": "win-msvc-qt5-x86"
+    },
+    {
+      "architecture": {
+        "strategy": "external",
+        "value": "x86"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "$env{MINGW_BIN_PATH}/g++.exe",
+        "CMAKE_C_COMPILER": "$env{MINGW_BIN_PATH}/gcc.exe",
+        "CMAKE_PREFIX_PATH": "$env{MINGW_X64_PATH}"
+      },
+      "displayName": "Win: MinGW x86",
+      "environment": {
+        "PATH": "$env{MINGW_BIN_PATH};$penv{PATH}"
+      },
+      "inherits": ["base", "user-paths"],
+      "name": "win-mingw-x86"
+    },
+    {
+      "architecture": {
+        "strategy": "external",
+        "value": "x86"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{LINUX_QT_PATH}"
+      },
+      "condition": {
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux",
+        "type": "equals"
+      },
+      "displayName": "Linux: Qt6 x86",
+      "inherits": ["base", "user-paths"],
+      "name": "linux-x86"
     }
   ],
-  "buildPresets": [
-    {
-      "name": "default",
-      "configurePreset": "default"
-    },
-    {
-      "name": "msvc",
-      "configurePreset": "msvc"
-    },
-    {
-      "name": "release",
-      "configurePreset": "release"
-    },
-    {
-      "name": "mingw",
-      "configurePreset": "mingw"
-    }
-  ]
+  "version": 3
 }

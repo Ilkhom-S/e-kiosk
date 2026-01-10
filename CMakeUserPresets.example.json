@@ -1,0 +1,20 @@
+{
+  "configurePresets": [
+    {
+      "environment": {
+        "LINUX_QT_PATH": "/opt/Qt/6.10.1/gcc_64",
+        "MINGW_BIN_PATH": "C:/Qt/Tools/mingw810_64/bin",
+        "MINGW_X64_PATH": "C:/Qt/6.10.1/mingw_64",
+        "QT5_X64_PATH": "C:/Qt/5.15.2/msvc2019_64",
+        "QT5_X86_PATH": "C:/Qt/5.15.2/msvc2019",
+        "QT6_X64_PATH": "C:/Qt/6.10.1/msvc2022_64",
+        "QT6_X86_PATH": "C:/Qt/6.10.1/msvc2022"
+      },
+      "hidden": true,
+      "name": "user-paths"
+    }
+  ],
+  "version": 3
+}
+// Copy this file to CMakeUserPresets.json and edit the paths to match your local Qt installations.
+// This file is gitignored, so your personal paths won't be committed.

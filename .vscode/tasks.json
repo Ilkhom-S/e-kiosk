@@ -1,54 +1,54 @@
 {
-  "version": "2.0.0",
   "tasks": [
     {
-      "label": "build",
-      "type": "shell",
+      "args": ["--build", "${workspaceFolder}/build/msvc"],
       "command": "cmake",
-      "args": ["--build", "${workspaceFolder}/build"],
       "group": {
-        "kind": "build",
-        "isDefault": true
+        "isDefault": true,
+        "kind": "build"
       },
+      "label": "build",
       "presentation": {
         "echo": true,
-        "reveal": "silent",
         "focus": false,
-        "panel": "shared"
+        "panel": "shared",
+        "reveal": "silent"
       },
-      "problemMatcher": "$gcc"
+      "problemMatcher": "$gcc",
+      "type": "shell"
     },
     {
-      "label": "configure",
-      "type": "shell",
-      "command": "cmake",
       "args": [
         "-S",
         "${workspaceFolder}",
         "-B",
-        "${workspaceFolder}/build",
+        "${workspaceFolder}/build/msvc",
         "-DCMAKE_PREFIX_PATH=C:/Qt/Qt5.6.3/5.6.3/msvc2015"
       ],
+      "command": "cmake",
       "group": "build",
+      "label": "configure",
       "presentation": {
         "echo": true,
-        "reveal": "silent",
         "focus": false,
-        "panel": "shared"
-      }
+        "panel": "shared",
+        "reveal": "silent"
+      },
+      "type": "shell"
     },
     {
-      "label": "clean",
-      "type": "shell",
+      "args": ["--build", "${workspaceFolder}/build/msvc", "--target", "clean"],
       "command": "cmake",
-      "args": ["--build", "${workspaceFolder}/build", "--target", "clean"],
       "group": "build",
+      "label": "clean",
       "presentation": {
         "echo": true,
-        "reveal": "silent",
         "focus": false,
-        "panel": "shared"
-      }
+        "panel": "shared",
+        "reveal": "silent"
+      },
+      "type": "shell"
     }
-  ]
+  ],
+  "version": "2.0.0"
 }

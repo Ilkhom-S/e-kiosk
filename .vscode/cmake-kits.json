@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Qt 6.8.2 MSVC (x64)",
+    "preferredGenerator": {
+      "name": "Visual Studio 17 2022"
+    },
+    "cmakeSettings": {
+      "CMAKE_PREFIX_PATH": "C:/Qt/6.8.2/msvc2022_64"
+    },
+    "environmentVariables": {
+      "PATH": "C:/Qt/6.8.2/msvc2022_64/bin;${env:PATH}"
+    }
+  },
+  {
+    "name": "Qt 6.7.3 MSVC (x64)",
+    "preferredGenerator": {
+      "name": "Visual Studio 17 2022"
+    },
+    "cmakeSettings": {
+      "CMAKE_PREFIX_PATH": "C:/Qt/6.7.3/msvc2022_64"
+    },
+    "environmentVariables": {
+      "PATH": "C:/Qt/6.7.3/msvc2022_64/bin;${env:PATH}"
+    }
+  },
+  {
+    "name": "Qt 6.6.3 MSVC (x64)",
+    "preferredGenerator": {
+      "name": "Visual Studio 17 2022"
+    },
+    "cmakeSettings": {
+      "CMAKE_PREFIX_PATH": "C:/Qt/6.6.3/msvc2022_64"
+    },
+    "environmentVariables": {
+      "PATH": "C:/Qt/6.6.3/msvc2022_64/bin;${env:PATH}"
+    }
+  },
+  {
+    "name": "Qt 6.5.3 MSVC (x64)",
+    "preferredGenerator": {
+      "name": "Visual Studio 17 2022"
+    },
+    "cmakeSettings": {
+      "CMAKE_PREFIX_PATH": "C:/Qt/6.5.3/msvc2022_64"
+    },
+    "environmentVariables": {
+      "PATH": "C:/Qt/6.5.3/msvc2022_64/bin;${env:PATH}"
+    }
+  },
+  {
+    "name": "Qt 5.15.2 MSVC (x64)",
+    "preferredGenerator": {
+      "name": "Visual Studio 17 2022"
+    },
+    "cmakeSettings": {
+      "CMAKE_PREFIX_PATH": "C:/Qt/5.15.2/msvc2019_64"
+    },
+    "environmentVariables": {
+      "PATH": "C:/Qt/5.15.2/msvc2019_64/bin;${env:PATH}"
+    }
+  },
+  {
+    "name": "Qt 5.15.2 MinGW (x64)",
+    "preferredGenerator": {
+      "name": "MinGW Makefiles"
+    },
+    "cmakeSettings": {
+      "CMAKE_PREFIX_PATH": "C:/Qt/5.15.2/mingw81_64"
+    },
+    "environmentVariables": {
+      "PATH": "C:/Qt/5.15.2/mingw81_64/bin;${env:PATH}"
+    }
+  }
+]

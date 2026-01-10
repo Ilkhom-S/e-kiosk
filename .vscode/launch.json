@@ -3,38 +3,27 @@
   "configurations": [
     {
       "name": "Debug EKiosk",
-      "type": "cppdbg",
+      "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/EKiosk.exe",
+      "program": "${workspaceFolder}/build/msvc/Debug/EKiosk.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb.exe",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ],
-      "preLaunchTask": "build"
+      "console": "integratedTerminal",
+      "preLaunchTask": "CMake: build"
     },
     {
       "name": "Run EKiosk",
-      "type": "cppdbg",
+      "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/EKiosk.exe",
+      "program": "${workspaceFolder}/build/msvc/Debug/EKiosk.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
-      "externalConsole": true,
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb.exe",
-      "preLaunchTask": "build"
+      "console": "externalTerminal",
+      "preLaunchTask": "CMake: build"
     }
   ]
 }

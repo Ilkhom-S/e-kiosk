@@ -128,3 +128,6 @@ logs/
 # Temporary files
 tmp/
 temp/
+
+# CMake user presets
+CMakeUserPresets.json
