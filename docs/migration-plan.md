@@ -69,13 +69,21 @@ This plan outlines the step-by-step migration from Qt 4 to Qt 5 and adoption of 
 - [ ] Update code for new Qt 5 features if beneficial (e.g., new signal/slot syntax).
 - [ ] Ensure single-instance checking works (`QSharedMemory`, `QSystemSemaphore`).
 
-### 8. Documentation and Cleanup
+### 8. Integrate Code Quality Tools
+
+- [ ] Set up clang-tidy for static analysis and code quality checks.
+- [ ] Configure clang-format for consistent code styling.
+- [ ] Integrate tools into CMake build system (e.g., add targets for linting and formatting).
+- [ ] Run initial analysis and fix major issues.
+- [ ] Add pre-commit hooks or CI checks for code quality.
+
+### 9. Documentation and Cleanup
 
 - [ ] Update README and docs for Qt 5 requirements.
 - [ ] Remove any Qt 4 compatibility code.
 - [ ] Commit changes with clear messages.
 
-### 9. Final Validation
+### 10. Final Validation
 
 - [ ] Run full test suite (if exists).
 - [ ] Deploy to test environment.

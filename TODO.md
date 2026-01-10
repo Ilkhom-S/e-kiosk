@@ -5,6 +5,8 @@
 - [x] Create qt4-fallback branch
 - [x] Update .pro for Qt 5
 - [ ] Migrate build system to CMake
+- [ ] Integrate clang-tidy for static analysis
+- [ ] Set up clang-format for code styling
 - [ ] Review code for Qt 4 deprecated APIs
 - [ ] Test build with Qt 5
 - [ ] Update documentation
