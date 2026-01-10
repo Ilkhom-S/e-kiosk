@@ -1,12 +1,11 @@
-#include "mainwindow.h"
-
 #include <QApplication>
+#include <QProcess>
 #include <QSharedMemory>
 #include <QSystemSemaphore>
-#include <QProcess>
 
-int main(int argc, char *argv[])
-{
+#include "mainwindow.h"
+
+int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
     QSystemSemaphore semaphore(semaphoreName, 1);
@@ -41,7 +40,6 @@ int main(int argc, char *argv[])
     if (fi.fileName().toLower() != "ekiosk.exe") {
         return 0;
     }
-
 
     MainWindow w;
 
