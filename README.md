@@ -13,7 +13,7 @@ EKiosk is a Qt-based C++ application for payment kiosk systems, handling device 
 
 - Qt 5.0 or later
 - C++11 compatible compiler
-- Windows (with specific libs: rasapi32, winspool, etc.)
+- **Platforms**: Windows (minimum Windows 7 by end of 2026, currently Windows XP with caveats), Linux (primary), macOS (alternative)
 
 ## Building
 

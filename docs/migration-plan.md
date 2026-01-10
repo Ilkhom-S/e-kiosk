@@ -4,6 +4,13 @@
 
 This plan outlines the step-by-step migration from Qt 4 to Qt 5 and adoption of CMake build system for the EKiosk project. Qt 5 introduces significant changes, including module separation and API updates. CMake provides better cross-platform build management.
 
+## Platform Compatibility
+
+- **Primary Platforms**: Windows (minimum Windows 7 by end of 2026, currently Windows XP with caveats), Linux.
+- **Secondary Platforms**: macOS (alternative, ensure compatibility).
+- **Checks**: For each migration step, verify builds and functionality on Windows, Linux, and macOS.
+- **Windows XP**: Supported currently, but deprecated; plan to drop support for Windows XP and enforce Windows 7 minimum by December 2026.
+
 ## Prerequisites
 
 - Backup current code (branch `qt4-fallback` created).
