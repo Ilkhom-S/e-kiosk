@@ -49,7 +49,6 @@ release/
 *.svclog
 *.scc
 *.pdb
-.vscode/
 *.vcxproj.filters
 *.vcxproj.user
 *.sln
@@ -61,7 +60,7 @@ release/
 *.qbs.user.*
 
 # Visual Studio Code
-.vscode/
+# .vscode/  # Uncomment if not committing shared settings
 
 # Windows
 Thumbs.db
