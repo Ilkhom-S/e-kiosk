@@ -74,6 +74,9 @@ $RECYCLE.BIN/
 *~
 .directory
 .Trash-*
+# Logs
+log/
+logs/
 .fuse_hidden*
 .directory
 .Trash-*

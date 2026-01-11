@@ -5,11 +5,13 @@
       "name": "Debug EKiosk",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/msvc/Debug/EKiosk.exe",
+      "program": "${workspaceFolder}/build/EKiosk/EKiosk.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
-      "environment": [],
+      "environment": [
+        { "name": "PATH", "value": "d:/Qt/5.15.2/msvc2019_64/bin;${env:PATH}" }
+      ],
       "console": "integratedTerminal",
       "preLaunchTask": "CMake: build"
     },
@@ -17,11 +19,13 @@
       "name": "Run EKiosk",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/msvc/Debug/EKiosk.exe",
+      "program": "${workspaceFolder}/build/EKiosk/EKiosk.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
-      "environment": [],
+      "environment": [
+        { "name": "PATH", "value": "d:/Qt/5.15.2/msvc2019_64/bin;${env:PATH}" }
+      ],
       "console": "externalTerminal",
       "preLaunchTask": "CMake: build"
     }
