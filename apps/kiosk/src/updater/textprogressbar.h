@@ -3,9 +3,8 @@
 
 #include <QString>
 
-class TextProgressBar
-{
-public:
+class TextProgressBar {
+  public:
     TextProgressBar();
 
     void clear();
@@ -13,7 +12,7 @@ public:
     void setMessage(const QString &message);
     void setStatus(qint64 value, qint64 maximum);
 
-private:
+  private:
     QString message;
     qint64 value;
     qint64 maximum;

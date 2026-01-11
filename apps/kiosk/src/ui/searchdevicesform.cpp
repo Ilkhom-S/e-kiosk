@@ -1,19 +1,19 @@
 #include "searchdevicesform.h"
-#include "ui_searchdevicesform.h"
-#include <QStyleFactory>
-#include <QMovie>
 
-SearchDevicesForm::SearchDevicesForm(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::SearchDevicesForm)
-{
+#include <QMovie>
+#include <QStyleFactory>
+
+#include "ui_searchdevicesform.h"
+
+SearchDevicesForm::SearchDevicesForm(QWidget *parent)
+    : QWidget(parent), ui(new Ui::SearchDevicesForm) {
     ui->setupUi(this);
 
-//    ui->loading_validator_info->setVisible(false);
+    //    ui->loading_validator_info->setVisible(false);
     ui->loading_coin_acceptor_info->setVisible(false);
     ui->loading_coin_acceptor_search->setVisible(false);
-//    ui->loading_printer_info->setVisible(false);
-//    ui->loading_modem_info->setVisible(false);
+    //    ui->loading_printer_info->setVisible(false);
+    //    ui->loading_modem_info->setVisible(false);
 
     ui->loading_wd_info->setVisible(false);
 
@@ -42,18 +42,13 @@ SearchDevicesForm::SearchDevicesForm(QWidget *parent) :
     }
 }
 
-SearchDevicesForm::~SearchDevicesForm()
-{
-    delete ui;
+SearchDevicesForm::~SearchDevicesForm() { delete ui; }
+
+void SearchDevicesForm::setAboutCompany(QString text) {
+    // ui->loading_about_company->setText(text);
 }
 
-void SearchDevicesForm::setAboutCompany(QString text)
-{
-    //ui->loading_about_company->setText(text);
-}
-
-void SearchDevicesForm::setValidatorSearchText(int state, QString text)
-{
+void SearchDevicesForm::setValidatorSearchText(int state, QString text) {
     if (state == 0) {
         ui->loading_validator_search->setVisible(true);
         ui->loading_validator_search->setMovie(srchMovie);
@@ -75,17 +70,16 @@ void SearchDevicesForm::setValidatorSearchText(int state, QString text)
     ui->loading_validator_info->setText(text);
 }
 
-void SearchDevicesForm::setCoinAcceptorSearchText(int state, QString text)
-{
+void SearchDevicesForm::setCoinAcceptorSearchText(int state, QString text) {
     if (state == 0) {
         ui->loading_coin_acceptor_search->setVisible(true);
         ui->loading_coin_acceptor_search->setMovie(srchMovie);
         srchMovie->start();
-    }else if (state == 1) {
+    } else if (state == 1) {
         ui->loading_coin_acceptor_search->setVisible(false);
         ui->loading_coin_acceptor_state->setVisible(true);
         ui->loading_coin_acceptor_state->setPixmap(QPixmap(":/assets/icons/search_ok.png"));
-    }else if (state == 2) {
+    } else if (state == 2) {
         ui->loading_coin_acceptor_search->setVisible(false);
         ui->loading_coin_acceptor_state->setVisible(true);
         ui->loading_coin_acceptor_state->setPixmap(QPixmap(":/assets/icons/search_no.png"));
@@ -98,25 +92,23 @@ void SearchDevicesForm::setCoinAcceptorSearchText(int state, QString text)
     ui->loading_coin_acceptor_info->setText(text);
 }
 
-void SearchDevicesForm::setWDSearchText(int state, QString text)
-{
+void SearchDevicesForm::setWDSearchText(int state, QString text) {
     Q_UNUSED(state)
     Q_UNUSED(text)
-//    if(!ui->loading_wd_info->isVisible()) ui->loading_wd_info->setVisible(true);
-//    ui->loading_wd_info->setText(text);
+    //    if(!ui->loading_wd_info->isVisible()) ui->loading_wd_info->setVisible(true);
+    //    ui->loading_wd_info->setText(text);
 }
 
-void SearchDevicesForm::setPrinterSearchText(int state, QString text)
-{
+void SearchDevicesForm::setPrinterSearchText(int state, QString text) {
     if (state == 0) {
         ui->loading_printer_search->setVisible(true);
         ui->loading_printer_search->setMovie(srchMovie);
         srchMovie->start();
-    } else if (state == 1){
+    } else if (state == 1) {
         ui->loading_printer_search->setVisible(false);
         ui->loading_printer_state->setVisible(true);
         ui->loading_printer_state->setPixmap(QPixmap(":/assets/icons/search_ok.png"));
-    } else if (state == 2){
+    } else if (state == 2) {
         ui->loading_printer_search->setVisible(false);
         ui->loading_printer_state->setVisible(true);
         ui->loading_printer_state->setPixmap(QPixmap(":/assets/icons/search_no.png"));
@@ -129,8 +121,7 @@ void SearchDevicesForm::setPrinterSearchText(int state, QString text)
     ui->loading_printer_info->setText(text);
 }
 
-void SearchDevicesForm::setModemSearchText(int state, QString text)
-{
+void SearchDevicesForm::setModemSearchText(int state, QString text) {
     if (state == 0) {
         ui->loading_modem_search->setVisible(true);
         ui->loading_modem_search->setMovie(srchMovie);
@@ -139,7 +130,7 @@ void SearchDevicesForm::setModemSearchText(int state, QString text)
         ui->loading_modem_search->setVisible(false);
         ui->loading_modem_state->setVisible(true);
         ui->loading_modem_state->setPixmap(QPixmap(":/assets/icons/search_ok.png"));
-    } else if(state == 2) {
+    } else if (state == 2) {
         ui->loading_modem_search->setVisible(false);
         ui->loading_modem_state->setVisible(true);
         ui->loading_modem_state->setPixmap(QPixmap(":/assets/icons/search_no.png"));
@@ -152,8 +143,7 @@ void SearchDevicesForm::setModemSearchText(int state, QString text)
     ui->loading_modem_info->setText(text);
 }
 
-void SearchDevicesForm::setLogo(QString path)
-{
+void SearchDevicesForm::setLogo(QString path) {
     if (path.isEmpty()) {
         return;
     }
@@ -161,8 +151,7 @@ void SearchDevicesForm::setLogo(QString path)
     ui->loading_devices_logo->setStyleSheet(QString("image: url(%1);").arg(path));
 }
 
-void SearchDevicesForm::setCopirightText(QString text, QString version)
-{
+void SearchDevicesForm::setCopirightText(QString text, QString version) {
     Q_UNUSED(version)
 
     ui->loading_copyrigh_info->setText(text);

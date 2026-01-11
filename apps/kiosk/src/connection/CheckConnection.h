@@ -1,35 +1,29 @@
 #ifndef DIALUPCONNECTION_H
 #define DIALUPCONNECTION_H
 
-#include <QThread>
 #include <QProcess>
+#include <QThread>
 #include <QTimer>
 #include <QtNetwork>
 
 class QTcpSocket;
 class QAbstractSocket;
 
-namespace TypePing{
-    enum i_typeping{
-        Ping    = 1,
-        Socket  = 2,
-        Request = 3
-    };
+namespace TypePing {
+enum i_typeping { Ping = 1, Socket = 2, Request = 3 };
 }
 
+class CheckConnection : public QThread {
+    Q_OBJECT
 
-class CheckConnection : public QThread
-{
-     Q_OBJECT
-
-public:
+  public:
     CheckConnection(QObject *parent = 0);
     void setEndpoint(int timeOut, QString serverAddress);
     void checkConnection(int type);
 
-private:
+  private:
     QString serverAddress;
-    QTcpSocket* m_pTcpSocket;
+    QTcpSocket *m_pTcpSocket;
     QNetworkAccessManager *manager;
 
     QTimer *stsTimer;
@@ -44,17 +38,16 @@ private:
 
     void sendRequest(QString address);
 
-private slots:
+  private slots:
     void slotConnectedOk();
     void slotErrorConnected(QAbstractSocket::SocketError err);
     void timeOutDisconect();
-    void replyFinished(QNetworkReply* reply);
-    void handleSslErrors(QNetworkReply* reply, QList<QSslError> list);
+    void replyFinished(QNetworkReply *reply);
+    void handleSslErrors(QNetworkReply *reply, QList<QSslError> list);
 
-signals:
+  signals:
     void emit_Ping(bool sts);
-    void emit_toLoging(int sts,QString title,QString text);
+    void emit_toLoging(int sts, QString title, QString text);
 };
 
-
-#endif // DIALUPCONNECTION_H
+#endif  // DIALUPCONNECTION_H

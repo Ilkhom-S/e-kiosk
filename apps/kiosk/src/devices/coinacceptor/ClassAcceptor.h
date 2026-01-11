@@ -3,18 +3,16 @@
 
 #include "dev/CCTalk.h"
 
-namespace AcceptorModel
-{
-    const QString CCTalk = "CCTalk";
+namespace AcceptorModel {
+const QString CCTalk = "CCTalk";
 }
 
 class CCTalk;
 
-class ClassAcceptor : public QThread
-{
+class ClassAcceptor : public QThread {
     Q_OBJECT
 
-public:
+  public:
     ClassAcceptor(QObject *parent = 0);
 
     void setValidator(QString name);
@@ -22,7 +20,8 @@ public:
     void setPortListInfo(QStringList port_list);
     void setPartNumber(QString partNumber);
     bool openPort();
-    bool isItYou(QStringList &comList,QString &validator_name, QString &com_str, QString &validator_coment);
+    bool isItYou(QStringList &comList, QString &validator_name, QString &com_str,
+                 QString &validator_coment);
 
     void closeThis();
     bool pollState();
@@ -38,11 +37,11 @@ public:
 
     int status;
 
-public slots:
+  public slots:
     void execCommand(int cmd);
     void getStatusFromAcceptor(int sts, QString comment);
 
-private:
+  private:
     CCTalk *CCTalkAcceptor;
 
     QString comPort;
@@ -55,10 +54,10 @@ private:
 
     virtual void run();
 
-private slots:
+  private slots:
     void termanatedThread();
 
-signals:
+  signals:
     void eNominal(int nominal);
     void eNominalDuplicate(int nominal);
     void showHideDialogAnimate(bool status);
@@ -67,4 +66,4 @@ signals:
     void emitBillTable(QString bill_table);
 };
 
-#endif // CLASSACCEPTOR_H
+#endif  // CLASSACCEPTOR_H

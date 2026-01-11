@@ -19,6 +19,13 @@
 - [ ] Add error handling for network failures
 - [ ] Optimize UI responsiveness
 
+- [ ] Refactor explorer.exe (Windows shell) killing logic:
+  - Remove automatic killing of explorer.exe on startup.
+  - Make shell restriction (killing/hiding explorer.exe) runtime-configurable and only available to developers.
+  - Add UI control (e.g., toggle or button) to enable/disable shell restriction, similar to TCPKiosk's /aff mode.
+  - Ensure this feature is never enabled by default in production.
+  - Document safe usage and developer-only access.
+
 ## Documentation
 
 - [x] Create README.md

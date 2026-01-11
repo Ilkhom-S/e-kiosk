@@ -1,40 +1,35 @@
 #ifndef LOGGERVALIDATOR_H
 #define LOGGERVALIDATOR_H
 
-#include <QObject>
-#include <QThread>
-#include <QThread>
 #include <QDateTime>
-#include <QFile>
-#include <QTextStream>
-#include <QTimer>
-#include <QDir>
 #include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QObject>
+#include <QTextStream>
+#include <QThread>
+#include <QTimer>
 
-enum LogType {
-    Query        = 0,
-    Response     = 1
-};
+enum LogType { Query = 0, Response = 1 };
 
-class LoggerValidator : public QThread
-{
+class LoggerValidator : public QThread {
     Q_OBJECT
 
-public:
+  public:
     QTimer *writeTimer;
     QStringList lstLoging;
     QString account;
 
-    LoggerValidator(){
+    LoggerValidator() {
         writeTimer = new QTimer();
         writeTimer->setInterval(1000);
-        connect(writeTimer,SIGNAL(timeout()),this,SLOT(start()));
+        connect(writeTimer, SIGNAL(timeout()), this, SLOT(start()));
 
         QFile info;
 
         QString fileInit = "logvalidator";
         if (!info.exists(fileInit)) {
-            //Тут надо создать папку
+            // Тут надо создать папку
             QDir dir;
             dir.mkpath(fileInit);
         }
@@ -43,21 +38,19 @@ public:
     }
 
     void setLogingText(int state, QByteArray data, QString text) {
-
         QString answer;
         QString time = QDateTime::currentDateTime().toString("HH:mm:ss:zzz");
         QByteArray baTmp;
         baTmp.clear();
         baTmp = data.toHex().toUpper();
 
-        for (int i = 0; i < baTmp.size(); i+= 2) {
+        for (int i = 0; i < baTmp.size(); i += 2) {
             answer += QString(" %1%2").arg(baTmp.at(i)).arg(baTmp.at(i + 1));
         }
 
         QString stateInfo = "";
-        switch(state)
-        {
-            case LogType::Query :
+        switch (state) {
+            case LogType::Query:
                 stateInfo = "  запрос  ";
                 break;
 
@@ -71,24 +64,22 @@ public:
         lstLoging << time + stateInfo + " - " + answer + text;
     }
 
-    virtual void run()
-    {
+    virtual void run() {
         this->writeText();
         return;
     }
 
-private slots:
+  private slots:
 
-    void writeText(){
-
+    void writeText() {
         QString str_date = QDate::currentDate().toString("yyyy-MM-dd");
 
-        //проверяем если нету папки yyyy-MM-dd то создаем
+        // проверяем если нету папки yyyy-MM-dd то создаем
         QString fileByDate = "logvalidator/" + str_date;
 
         QFile info;
 
-        if(!info.exists(fileByDate)){
+        if (!info.exists(fileByDate)) {
             QDir dir;
             dir.mkpath(fileByDate);
         }
@@ -98,23 +89,23 @@ private slots:
 
             QString fileNameLocal = fileByDate + "/" + account + ".txt";
 
-            //Создаем указательна на файл номер.txt
+            // Создаем указательна на файл номер.txt
             QFile fileLogLocal(fileNameLocal);
 
-            //Локальные данные
-            if(fileLogLocal.exists()){
-                if (!fileLogLocal.open(QIODevice::Append | QIODevice::Text)){
-                    if(debugger) qDebug() << "error open file log QIODevice::Append";
+            // Локальные данные
+            if (fileLogLocal.exists()) {
+                if (!fileLogLocal.open(QIODevice::Append | QIODevice::Text)) {
+                    if (debugger) qDebug() << "error open file log QIODevice::Append";
                     return;
                 }
-            }else{
-                if (!fileLogLocal.open(QIODevice::WriteOnly | QIODevice::Text)){
-                    if(debugger) qDebug() << "error open file log QIODevice::WriteOnly";
+            } else {
+                if (!fileLogLocal.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                    if (debugger) qDebug() << "error open file log QIODevice::WriteOnly";
                     return;
                 }
             }
 
-            //Переводим в строку список
+            // Переводим в строку список
             QString logLiens = lstLoging.join("\n");
             QTextStream outExp(&fileLogLocal);
             outExp.setCodec("UTF-8");
@@ -127,4 +118,4 @@ private slots:
     }
 };
 
-#endif // LOGGERVALIDATOR_H
+#endif  // LOGGERVALIDATOR_H

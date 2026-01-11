@@ -1,90 +1,97 @@
 #include "registrationdialog.h"
-#include "ui_registrationdialog.h"
-#include <QTextStream>
-//#include <QTextCodec>
 
-RegistrationDialog::RegistrationDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::RegistrationDialog)
-{
+#include <QTextStream>
+
+#include "ui_registrationdialog.h"
+// #include <QTextCodec>
+
+RegistrationDialog::RegistrationDialog(QWidget* parent)
+    : QDialog(parent), ui(new Ui::RegistrationDialog) {
     ui->setupUi(this);
 
-    //Установка кодировки для интерфейса
-//    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
+    // Установка кодировки для интерфейса
+    //    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
 
     KeyPud = new keyPud(this);
     ui->layoutWgtKeyPud->addWidget(KeyPud);
 
-    this->connect(KeyPud,SIGNAL(characterGenerated(QChar)),this,SLOT(sendCharacter(QChar)));
+    this->connect(KeyPud, SIGNAL(characterGenerated(QChar)), this, SLOT(sendCharacter(QChar)));
 
-    this->connect(ui->btnTabReg1,SIGNAL(clicked()),this,SLOT(tabToRegistration1()));
-    this->connect(ui->btnTabReg2,SIGNAL(clicked()),this,SLOT(tabToRegistration2()));
+    this->connect(ui->btnTabReg1, SIGNAL(clicked()), this, SLOT(tabToRegistration1()));
+    this->connect(ui->btnTabReg2, SIGNAL(clicked()), this, SLOT(tabToRegistration2()));
 
     ui->btnSaveReg1->click();
-    //Надо поставить регулярные выражения
+    // Надо поставить регулярные выражения
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    //Номер терминала
-    QRegExpValidator* NumTrmReg = new QRegExpValidator(QRegExp("[1-9][0-9]{4,5}"), ui->editNumTrmReg);
+    // Номер терминала
+    QRegExpValidator* NumTrmReg =
+        new QRegExpValidator(QRegExp("[1-9][0-9]{4,5}"), ui->editNumTrmReg);
     ui->editNumTrmReg->setValidator(NumTrmReg);
 
-    //Логин пользователя
-    QRegExpValidator* loginRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editLoginReg);
+    // Логин пользователя
+    QRegExpValidator* loginRegValidator =
+        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editLoginReg);
     ui->editLoginReg->setValidator(loginRegValidator);
 
-    //Пароль пользователя
-    QRegExpValidator* passRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editPasswordReg);
+    // Пароль пользователя
+    QRegExpValidator* passRegValidator =
+        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editPasswordReg);
     ui->editPasswordReg->setValidator(passRegValidator);
 
-    QRegExpValidator* confPassRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editPasswordReg);
+    QRegExpValidator* confPassRegValidator =
+        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editPasswordReg);
     ui->editConfirmPasswordReg->setValidator(confPassRegValidator);
 
-    //Секретный номер
-    //QRegExpValidator* secretNumValidator = new QRegExpValidator(QRegExp("[1-9][0-9]{1,20}"), ui->editSecretNumReg);
-    //ui->editSecretNumReg->setValidator(secretNumValidator);
+    // Секретный номер
+    // QRegExpValidator* secretNumValidator = new QRegExpValidator(QRegExp("[1-9][0-9]{1,20}"),
+    // ui->editSecretNumReg); ui->editSecretNumReg->setValidator(secretNumValidator);
 
-    //Логин пользователя
-    QRegExpValidator* secLoginRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretLoginReg);
+    // Логин пользователя
+    QRegExpValidator* secLoginRegValidator =
+        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretLoginReg);
     ui->editSecretLoginReg->setValidator(secLoginRegValidator);
 
-    //Пароль пользователя
-    QRegExpValidator* secPassRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretPasswordReg);
+    // Пароль пользователя
+    QRegExpValidator* secPassRegValidator =
+        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretPasswordReg);
     ui->editSecretPasswordReg->setValidator(secPassRegValidator);
 
-    QRegExpValidator* secConfPassRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretConfirmPasswordReg);
+    QRegExpValidator* secConfPassRegValidator =
+        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretConfirmPasswordReg);
     ui->editSecretConfirmPasswordReg->setValidator(secConfPassRegValidator);
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     movie = new QMovie(this);
 
-    //Сохранить данные пользователя
-    this->connect(ui->btnSaveReg1,SIGNAL(clicked()),this,SLOT(save1BtnReg()));
+    // Сохранить данные пользователя
+    this->connect(ui->btnSaveReg1, SIGNAL(clicked()), this, SLOT(save1BtnReg()));
 
-    this->connect(ui->btnSaveReg2,SIGNAL(clicked()),this,SLOT(save2BtnReg()));
+    this->connect(ui->btnSaveReg2, SIGNAL(clicked()), this, SLOT(save2BtnReg()));
 
-    //Закрываем форму
-//    this->connect(ui->btnCancelReg1,SIGNAL(clicked()),this,SLOT(closeForm()));
-//    this->connect(ui->btnCancelReg2,SIGNAL(clicked()),this,SLOT(closeForm()));
+    // Закрываем форму
+    //    this->connect(ui->btnCancelReg1,SIGNAL(clicked()),this,SLOT(closeForm()));
+    //    this->connect(ui->btnCancelReg2,SIGNAL(clicked()),this,SLOT(closeForm()));
 
-    //Создание нового соединения
+    // Создание нового соединения
     createDialupConnection = new CreateDialupConnection(this);
-    connect(createDialupConnection,SIGNAL(emitDialupParam(QVariantMap)),SIGNAL(emitCreateNewConnection(QVariantMap)));
+    connect(createDialupConnection, SIGNAL(emitDialupParam(QVariantMap)),
+            SIGNAL(emitCreateNewConnection(QVariantMap)));
 
+    connect(ui->btnAdminCreateNewConnection, SIGNAL(clicked()), SLOT(createNewConnection()));
 
-    connect(ui->btnAdminCreateNewConnection,SIGNAL(clicked()),SLOT(createNewConnection()));
+    connect(ui->btnRegCloseThis, SIGNAL(clicked()), SLOT(closeForm()));
 
-    connect(ui->btnRegCloseThis,SIGNAL(clicked()),SLOT(closeForm()));
-
-    connect(ui->btnAdminSaveConnectionParam,SIGNAL(clicked()),SLOT(save3BtnReg()));
+    connect(ui->btnAdminSaveConnectionParam, SIGNAL(clicked()), SLOT(save3BtnReg()));
 
     connect(ui->btnTest, SIGNAL(clicked()), SLOT(btnTesTclc()));
 
-    ui->tbnAddTerminalData->setTabEnabled(3,false);
+    ui->tbnAddTerminalData->setTabEnabled(3, false);
 
-    connect(ui->btnBack,SIGNAL(clicked()),SLOT(btnBackClc()));
+    connect(ui->btnBack, SIGNAL(clicked()), SLOT(btnBackClc()));
 
-    //connect(ui->btnStartTest,SIGNAL(clicked()),SLOT(starttest()));
+    // connect(ui->btnStartTest,SIGNAL(clicked()),SLOT(starttest()));
 
     connect(ui->tbnAddTerminalData, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 
@@ -97,53 +104,45 @@ RegistrationDialog::RegistrationDialog(QWidget *parent) :
     ui->editNumTrmReg->setFocus();
 }
 
-void RegistrationDialog::tabChanged(int page)
-{
-    switch (page){
+void RegistrationDialog::tabChanged(int page) {
+    switch (page) {
         case 0:
             ui->layoutWgtKeyPud->addWidget(KeyPud);
-        break;
+            break;
         case 1:
             ui->layoutWgtKeyPud_2->addWidget(KeyPud);
-        break;
+            break;
         case 2:
             ui->layoutWgtKeyPud_3->addWidget(KeyPud);
-        break;
+            break;
         case 3:
-        break;
+            break;
     }
-
 }
 
-void RegistrationDialog::setDataListConnection(QStringList list)
-{
+void RegistrationDialog::setDataListConnection(QStringList list) {
     connListInfData.clear();
     connListInfData = list;
 
     ui->cbxAdminConnectionList->clear();
     ui->cbxAdminConnectionList->addItems(connListInfData);
-
 }
 
-void RegistrationDialog::showMsgDialog(QString title, QString text)
-{
-
+void RegistrationDialog::showMsgDialog(QString title, QString text) {
     QMessageBox messageBox1(this);
     messageBox1.setWindowTitle(title);
     messageBox1.setText(text);
     messageBox1.setStandardButtons(QMessageBox::Ok);
     messageBox1.setDefaultButton(QMessageBox::Ok);
     messageBox1.setIcon(QMessageBox::Information);
-    messageBox1.setButtonText(QMessageBox::Ok,QString("OK"));
+    messageBox1.setButtonText(QMessageBox::Ok, QString("OK"));
 
     messageBox1.exec();
 
     return;
-
 }
 
-void RegistrationDialog::createNewConnection()
-{
+void RegistrationDialog::createNewConnection() {
     createDialupConnection->conList = connListInfData;
     createDialupConnection->devList = dialupDevice;
 
@@ -152,14 +151,10 @@ void RegistrationDialog::createNewConnection()
     createDialupConnection->openThis();
 }
 
-RegistrationDialog::~RegistrationDialog()
-{
-    delete ui;
-}
+RegistrationDialog::~RegistrationDialog() { delete ui; }
 
-void RegistrationDialog::closeForm()
-{
-    //Спрашиваем хочет ли он сохранить данные
+void RegistrationDialog::closeForm() {
+    // Спрашиваем хочет ли он сохранить данные
     QMessageBox messageBox1(this);
     messageBox1.setWindowTitle("Закрыть приложение.");
     messageBox1.setText("Вы действительно хотите закрыть приложение?");
@@ -167,188 +162,202 @@ void RegistrationDialog::closeForm()
     messageBox1.setDefaultButton(QMessageBox::Yes);
     messageBox1.setEscapeButton(QMessageBox::Cancel);
     messageBox1.setIcon(QMessageBox::Question);
-    messageBox1.setButtonText(QMessageBox::Yes,QString("Да"));
-    messageBox1.setButtonText(QMessageBox::Cancel,QString("Отмена"));
+    messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
+    messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
 
     int rr = messageBox1.exec();
 
     if (rr == QMessageBox::Yes) {
+        // Тут надо сохранить данные.
+        this->close();
 
-            //Тут надо сохранить данные.
-            this->close();
+        return;
+    } else if (rr == QMessageBox::Cancel) {
+        // Тут ни чего не делаем
 
-            return;
-    }else if(rr == QMessageBox::Cancel){
-
-            //Тут ни чего не делаем
-
-            return;
+        return;
     }
 }
 
-void RegistrationDialog::save1BtnReg()
-{
+void RegistrationDialog::save1BtnReg() {
     qDebug() << "save1BtnReg";
 
-    //Проверяем все условия
-    if(ui->editNumTrmReg->hasAcceptableInput() && ui->editLoginReg->hasAcceptableInput() && ui->editPasswordReg->hasAcceptableInput() && ui->editConfirmPasswordReg->hasAcceptableInput() && (ui->editPasswordReg->text() == ui->editConfirmPasswordReg->text())){
-        //Запись в переменные
+    // Проверяем все условия
+    if (ui->editNumTrmReg->hasAcceptableInput() && ui->editLoginReg->hasAcceptableInput() &&
+        ui->editPasswordReg->hasAcceptableInput() &&
+        ui->editConfirmPasswordReg->hasAcceptableInput() &&
+        (ui->editPasswordReg->text() == ui->editConfirmPasswordReg->text())) {
+        // Запись в переменные
 
         qDebug() << "save1BtnReg - true";
         this->gblNumTrm = ui->editNumTrmReg->text();
-        this->gblLogin  = ui->editLoginReg->text();
-        this->gblPass   = ui->editPasswordReg->text();
+        this->gblLogin = ui->editLoginReg->text();
+        this->gblPass = ui->editPasswordReg->text();
 
-        //Переходим на второй шаг
+        // Переходим на второй шаг
         ui->tbnAddTerminalData->setCurrentIndex(1);
 
         return;
 
-    }else{
+    } else {
         qDebug() << "save1BtnReg - false";
-        //Что та не заполнина
-        if(!ui->editNumTrmReg->hasAcceptableInput()){
+        // Что та не заполнина
+        if (!ui->editNumTrmReg->hasAcceptableInput()) {
             ui->editNumTrmReg->setToolTip("Номер терминала состоит из 5-6 цифр.");
-//            ui->editNumTrmReg->setPlaceholderText("Номер терминала состоит из 5-6 цифр.");
-        }else{
+            //            ui->editNumTrmReg->setPlaceholderText("Номер терминала состоит из 5-6
+            //            цифр.");
+        } else {
             ui->editNumTrmReg->setToolTip("Номер терминала введен верно.");
-//            ui->editNumTrmReg->setPlaceholderText("Номер терминала введен верно.");
+            //            ui->editNumTrmReg->setPlaceholderText("Номер терминала введен верно.");
         }
 
-        if(!ui->editLoginReg->hasAcceptableInput()){
+        if (!ui->editLoginReg->hasAcceptableInput()) {
             ui->editLoginReg->setToolTip("Логин состоит из 1-30 цифр/букв/знаков.");
-//            ui->editLoginReg->setPlaceholderText("Логин состоит из 1-30 цифр/букв/знаков.");
-        }else{
+            //            ui->editLoginReg->setPlaceholderText("Логин состоит из 1-30
+            //            цифр/букв/знаков.");
+        } else {
             ui->editLoginReg->setToolTip("Логин введен верно.");
-//            ui->editLoginReg->setPlaceholderText("Логин введен верно.");
+            //            ui->editLoginReg->setPlaceholderText("Логин введен верно.");
         }
 
-        if(ui->editPasswordReg->text() != ui->editConfirmPasswordReg->text()){
+        if (ui->editPasswordReg->text() != ui->editConfirmPasswordReg->text()) {
             ui->editPasswordReg->setToolTip("Пароли не совпадают.");
-//            ui->editPasswordReg->setPlaceholderText("Пароли не совпадают.");
-        }else{
+            //            ui->editPasswordReg->setPlaceholderText("Пароли не совпадают.");
+        } else {
             ui->editPasswordReg->setToolTip("Пароли совпадают.");
-//            ui->editPasswordReg->setPlaceholderText("Пароли совпадают.");
+            //            ui->editPasswordReg->setPlaceholderText("Пароли совпадают.");
         }
-        if(ui->editPasswordReg->text() == ""){
+        if (ui->editPasswordReg->text() == "") {
             ui->editPasswordReg->setToolTip("Пароль состоит из 1-30 цифр/букв/знаков.");
-//            ui->editPasswordReg->setPlaceholderText("Пароль состоит из 1-30 цифр/букв/знаков.");
-        }else{
+            //            ui->editPasswordReg->setPlaceholderText("Пароль состоит из 1-30
+            //            цифр/букв/знаков.");
+        } else {
             ui->editPasswordReg->setToolTip("Пароль введен верно.");
-//            ui->editPasswordReg->setPlaceholderText("Пароль введен верно.");
+            //            ui->editPasswordReg->setPlaceholderText("Пароль введен верно.");
         }
 
-        if(ui->editConfirmPasswordReg->text() == ""){
+        if (ui->editConfirmPasswordReg->text() == "") {
             ui->editConfirmPasswordReg->setToolTip("Пароль состоит из 1-30 цифр/букв/знаков.");
-//            ui->editConfirmPasswordReg->setPlaceholderText("Пароль состоит из 1-30 цифр/букв/знаков.");
-        }else{
+            //            ui->editConfirmPasswordReg->setPlaceholderText("Пароль состоит из 1-30
+            //            цифр/букв/знаков.");
+        } else {
             ui->editConfirmPasswordReg->setToolTip("Пароль введен верно.");
-//            ui->editConfirmPasswordReg->setPlaceholderText("Пароль введен верно.");
+            //            ui->editConfirmPasswordReg->setPlaceholderText("Пароль введен верно.");
         }
         return;
-
     }
 }
 
-void RegistrationDialog::save2BtnReg()
-{
-    //Проверяем все условия
-    if(ui->editNumTrmReg->hasAcceptableInput() && ui->editLoginReg->hasAcceptableInput() && ui->editPasswordReg->hasAcceptableInput() && ui->editConfirmPasswordReg->hasAcceptableInput() && (ui->editPasswordReg->text() == ui->editConfirmPasswordReg->text())){
-        //Запись в переменные
+void RegistrationDialog::save2BtnReg() {
+    // Проверяем все условия
+    if (ui->editNumTrmReg->hasAcceptableInput() && ui->editLoginReg->hasAcceptableInput() &&
+        ui->editPasswordReg->hasAcceptableInput() &&
+        ui->editConfirmPasswordReg->hasAcceptableInput() &&
+        (ui->editPasswordReg->text() == ui->editConfirmPasswordReg->text())) {
+        // Запись в переменные
         this->gblNumTrm = ui->editNumTrmReg->text();
-        this->gblLogin  = ui->editLoginReg->text();
-        this->gblPass   = ui->editPasswordReg->text();
+        this->gblLogin = ui->editLoginReg->text();
+        this->gblPass = ui->editPasswordReg->text();
 
-    }else{
-        //Что та не заполнина
-        if(!ui->editNumTrmReg->hasAcceptableInput()){
+    } else {
+        // Что та не заполнина
+        if (!ui->editNumTrmReg->hasAcceptableInput()) {
             ui->editNumTrmReg->setToolTip("Номер терминала состоит из 5-6 цифр.");
-//            ui->editNumTrmReg->setPlaceholderText("Номер терминала состоит из 5-6 цифр.");
-        }else{
+            //            ui->editNumTrmReg->setPlaceholderText("Номер терминала состоит из 5-6
+            //            цифр.");
+        } else {
             ui->editNumTrmReg->setToolTip("Номер терминала введен верно.");
-//            ui->editNumTrmReg->setPlaceholderText("Номер терминала введен верно.");
+            //            ui->editNumTrmReg->setPlaceholderText("Номер терминала введен верно.");
         }
 
-        if(!ui->editLoginReg->hasAcceptableInput()){
+        if (!ui->editLoginReg->hasAcceptableInput()) {
             ui->editLoginReg->setToolTip("Логин состоит из 1-30 цифр/букв/знаков.");
-//            ui->editLoginReg->setPlaceholderText("Логин состоит из 1-30 цифр/букв/знаков.");
-        }else{
+            //            ui->editLoginReg->setPlaceholderText("Логин состоит из 1-30
+            //            цифр/букв/знаков.");
+        } else {
             ui->editLoginReg->setToolTip("Логин введен верно.");
-//            ui->editLoginReg->setPlaceholderText("Логин введен верно.");
+            //            ui->editLoginReg->setPlaceholderText("Логин введен верно.");
         }
 
-        if(ui->editPasswordReg->text() != ui->editConfirmPasswordReg->text()){
+        if (ui->editPasswordReg->text() != ui->editConfirmPasswordReg->text()) {
             ui->editPasswordReg->setToolTip("Пароли не совпадают.");
-//            ui->editPasswordReg->setPlaceholderText("Пароли не совпадают.");
-        }else{
+            //            ui->editPasswordReg->setPlaceholderText("Пароли не совпадают.");
+        } else {
             ui->editPasswordReg->setToolTip("Пароли совпадают.");
-//            ui->editPasswordReg->setPlaceholderText("Пароли совпадают.");
+            //            ui->editPasswordReg->setPlaceholderText("Пароли совпадают.");
         }
-        if(ui->editPasswordReg->text() == ""){
+        if (ui->editPasswordReg->text() == "") {
             ui->editPasswordReg->setToolTip("Пароль состоит из 1-30 цифр/букв/знаков.");
-//            ui->editPasswordReg->setPlaceholderText("Пароль состоит из 1-30 цифр/букв/знаков.");
-        }else{
+            //            ui->editPasswordReg->setPlaceholderText("Пароль состоит из 1-30
+            //            цифр/букв/знаков.");
+        } else {
             ui->editPasswordReg->setToolTip("Пароль введен верно.");
-//            ui->editPasswordReg->setPlaceholderText("Пароль введен верно.");
+            //            ui->editPasswordReg->setPlaceholderText("Пароль введен верно.");
         }
 
-        if(ui->editConfirmPasswordReg->text() == ""){
+        if (ui->editConfirmPasswordReg->text() == "") {
             ui->editConfirmPasswordReg->setToolTip("Пароль состоит из 1-30 цифр/букв/знаков.");
-//            ui->editConfirmPasswordReg->setPlaceholderText("Пароль состоит из 1-30 цифр/букв/знаков.");
-        }else{
+            //            ui->editConfirmPasswordReg->setPlaceholderText("Пароль состоит из 1-30
+            //            цифр/букв/знаков.");
+        } else {
             ui->editConfirmPasswordReg->setToolTip("Пароль введен верно.");
-//            ui->editConfirmPasswordReg->setPlaceholderText("Пароль введен верно.");
+            //            ui->editConfirmPasswordReg->setPlaceholderText("Пароль введен верно.");
         }
 
-        //Переходим на второй шаг
+        // Переходим на второй шаг
         ui->tbnAddTerminalData->setCurrentIndex(0);
 
         return;
-
     }
 
-    //Проверяем все условия
-    if(ui->editSecretLoginReg->hasAcceptableInput() && ui->editSecretPasswordReg->hasAcceptableInput() && ui->editSecretConfirmPasswordReg->hasAcceptableInput() && (ui->editSecretPasswordReg->text() == ui->editSecretConfirmPasswordReg->text())){
-        //Запись в переменные
-        //this->gblSecretNum      = ui->editSecretNumReg->text();
-        this->gblSecretLogin    = ui->editSecretLoginReg->text();
-        this->gblSecretPass     = ui->editSecretPasswordReg->text();
+    // Проверяем все условия
+    if (ui->editSecretLoginReg->hasAcceptableInput() &&
+        ui->editSecretPasswordReg->hasAcceptableInput() &&
+        ui->editSecretConfirmPasswordReg->hasAcceptableInput() &&
+        (ui->editSecretPasswordReg->text() == ui->editSecretConfirmPasswordReg->text())) {
+        // Запись в переменные
+        // this->gblSecretNum      = ui->editSecretNumReg->text();
+        this->gblSecretLogin = ui->editSecretLoginReg->text();
+        this->gblSecretPass = ui->editSecretPasswordReg->text();
 
-        //Тут переходим на страницу праметров соединения
+        // Тут переходим на страницу праметров соединения
         ui->tbnAddTerminalData->setCurrentIndex(2);
 
-    }else{
-        //Что та не заполнина
-//        if(!ui->editSecretNumReg->hasAcceptableInput()){
-//            ui->editSecretNumReg->setToolTip("Секретный номер состоит из 3-20 цифр.");
-//            ui->editSecretNumReg->setPlaceholderText("Секретный номер состоит из 3-20 цифр.");
-//        }
+    } else {
+        // Что та не заполнина
+        //        if(!ui->editSecretNumReg->hasAcceptableInput()){
+        //            ui->editSecretNumReg->setToolTip("Секретный номер состоит из 3-20 цифр.");
+        //            ui->editSecretNumReg->setPlaceholderText("Секретный номер состоит из 3-20
+        //            цифр.");
+        //        }
 
-        if(!ui->editSecretLoginReg->hasAcceptableInput()){
+        if (!ui->editSecretLoginReg->hasAcceptableInput()) {
             ui->editSecretLoginReg->setToolTip("Логин состоит из 1-30 цифр/букв/знаков.");
-//            ui->editSecretLoginReg->setPlaceholderText("Логин состоит из 1-30 цифр/букв/знаков.");
+            //            ui->editSecretLoginReg->setPlaceholderText("Логин состоит из 1-30
+            //            цифр/букв/знаков.");
         }
 
-        if(ui->editSecretPasswordReg->text() != ui->editSecretConfirmPasswordReg->text()){
+        if (ui->editSecretPasswordReg->text() != ui->editSecretConfirmPasswordReg->text()) {
             ui->editSecretPasswordReg->setToolTip("Пароли не совпадают.");
-//            ui->editSecretPasswordReg->setPlaceholderText("Пароли не совпадают.");
+            //            ui->editSecretPasswordReg->setPlaceholderText("Пароли не совпадают.");
         }
-        if(ui->editSecretPasswordReg->text() == ""){
-            ui->editSecretPasswordReg->setToolTip("Секретный пароль состоит из 1-30 цифр/букв/знаков.");
-//            ui->editSecretPasswordReg->setPlaceholderText("Секретный пароль состоит из 1-30 цифр/букв/знаков.");
+        if (ui->editSecretPasswordReg->text() == "") {
+            ui->editSecretPasswordReg->setToolTip(
+                "Секретный пароль состоит из 1-30 цифр/букв/знаков.");
+            //            ui->editSecretPasswordReg->setPlaceholderText("Секретный пароль состоит из
+            //            1-30 цифр/букв/знаков.");
         }
-        if(ui->editSecretConfirmPasswordReg->text() == ""){
-            ui->editSecretConfirmPasswordReg->setToolTip("Секретный пароль состоит из 1-30 цифр/букв/знаков.");
-//            ui->editSecretConfirmPasswordReg->setPlaceholderText("Секретный пароль состоит из 1-30 цифр/букв/знаков.");
+        if (ui->editSecretConfirmPasswordReg->text() == "") {
+            ui->editSecretConfirmPasswordReg->setToolTip(
+                "Секретный пароль состоит из 1-30 цифр/букв/знаков.");
+            //            ui->editSecretConfirmPasswordReg->setPlaceholderText("Секретный пароль
+            //            состоит из 1-30 цифр/букв/знаков.");
         }
         return;
-
     }
 }
 
-
-void RegistrationDialog::save3BtnReg()
-{
+void RegistrationDialog::save3BtnReg() {
     QVariantMap data;
     data["terminal_number"] = gblNumTrm;
     data["login"] = gblLogin;
@@ -369,8 +378,8 @@ void RegistrationDialog::save3BtnReg()
     messageBox1.setDefaultButton(QMessageBox::Yes);
     messageBox1.setEscapeButton(QMessageBox::Cancel);
     messageBox1.setIcon(QMessageBox::Question);
-    messageBox1.setButtonText(QMessageBox::Yes,QString("Да"));
-    messageBox1.setButtonText(QMessageBox::Cancel,QString("Отмена"));
+    messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
+    messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
 
     // Необходимо удалить данный платеж
     int rr = messageBox1.exec();
@@ -380,20 +389,18 @@ void RegistrationDialog::save3BtnReg()
     }
 }
 
-void RegistrationDialog::btnTesTclc()
-{
+void RegistrationDialog::btnTesTclc() {
     ui->tbnAddTerminalData->setCurrentIndex(3);
-    ui->tbnAddTerminalData->setTabEnabled(3,true);
-    ui->tbnAddTerminalData->setTabEnabled(0,false);
-    ui->tbnAddTerminalData->setTabEnabled(1,false);
-    ui->tbnAddTerminalData->setTabEnabled(2,false);
+    ui->tbnAddTerminalData->setTabEnabled(3, true);
+    ui->tbnAddTerminalData->setTabEnabled(0, false);
+    ui->tbnAddTerminalData->setTabEnabled(1, false);
+    ui->tbnAddTerminalData->setTabEnabled(2, false);
 
     this->starttest();
 }
 
-void RegistrationDialog::starttest()
-{
-    //Тут бере значение из и сохраняем
+void RegistrationDialog::starttest() {
+    // Тут бере значение из и сохраняем
     QString conName = ui->cbxAdminConnectionList->currentText().trimmed();
     QString balanceReq = ui->cbxAdminRequestBalanceSim->currentText().trimmed();
     QString positionReq = ui->cbxAdminPositionBalanceSim->currentText().trimmed();
@@ -407,18 +414,16 @@ void RegistrationDialog::starttest()
     ui->lblConnecStatusTest->setText("");
     ui->lblAvtorizationStatusTest->setText("");
 
-    emit emitStartTest(this->gblNumTrm,this->gblLogin,this->gblPass,this->gblSecretLogin,this->gblSecretPass,conName, balanceReq, positionReq, numberReq);
-
-
+    emit emitStartTest(this->gblNumTrm, this->gblLogin, this->gblPass, this->gblSecretLogin,
+                       this->gblSecretPass, conName, balanceReq, positionReq, numberReq);
 }
 
-void RegistrationDialog::btnBackClc()
-{
+void RegistrationDialog::btnBackClc() {
     ui->tbnAddTerminalData->setCurrentIndex(2);
-    ui->tbnAddTerminalData->setTabEnabled(3,false);
-    ui->tbnAddTerminalData->setTabEnabled(0,true);
-    ui->tbnAddTerminalData->setTabEnabled(1,true);
-    ui->tbnAddTerminalData->setTabEnabled(2,true);
+    ui->tbnAddTerminalData->setTabEnabled(3, false);
+    ui->tbnAddTerminalData->setTabEnabled(0, true);
+    ui->tbnAddTerminalData->setTabEnabled(1, true);
+    ui->tbnAddTerminalData->setTabEnabled(2, true);
 
     ui->lblValidatorText->setText("");
     ui->lblPrinterText->setText("");
@@ -429,17 +434,16 @@ void RegistrationDialog::btnBackClc()
     ui->lblAvtorizationStatusTest->setText("");
 }
 
-void RegistrationDialog::tabToRegistration1()
-{
-    if(ui->editNumTrmReg->hasFocus()){
+void RegistrationDialog::tabToRegistration1() {
+    if (ui->editNumTrmReg->hasFocus()) {
         ui->editLoginReg->setFocus();
         return;
     }
-    if(ui->editLoginReg->hasFocus()){
+    if (ui->editLoginReg->hasFocus()) {
         ui->editPasswordReg->setFocus();
         return;
     }
-    if(ui->editPasswordReg->hasFocus()){
+    if (ui->editPasswordReg->hasFocus()) {
         ui->editConfirmPasswordReg->setFocus();
         return;
     }
@@ -448,106 +452,85 @@ void RegistrationDialog::tabToRegistration1()
     return;
 }
 
-void RegistrationDialog::tabToRegistration2()
-{
-//    if(ui->editSecretNumReg->hasFocus()){
-//        ui->editSecretLoginReg->setFocus(Qt::TabFocusReason);
-//        return;
-//    }
-    if(ui->editSecretLoginReg->hasFocus()){
+void RegistrationDialog::tabToRegistration2() {
+    //    if(ui->editSecretNumReg->hasFocus()){
+    //        ui->editSecretLoginReg->setFocus(Qt::TabFocusReason);
+    //        return;
+    //    }
+    if (ui->editSecretLoginReg->hasFocus()) {
         ui->editSecretPasswordReg->setFocus(Qt::TabFocusReason);
         return;
     }
-    if(ui->editSecretPasswordReg->hasFocus()){
+    if (ui->editSecretPasswordReg->hasFocus()) {
         ui->editSecretConfirmPasswordReg->setFocus(Qt::TabFocusReason);
         return;
     }
 
-//    ui->editSecretNumReg->setFocus(Qt::TabFocusReason);
-//    return;
+    //    ui->editSecretNumReg->setFocus(Qt::TabFocusReason);
+    //    return;
 }
 
-void RegistrationDialog::setValidatorText(QString status)
-{
-    ui->lblValidatorText->setText(status);
-}
+void RegistrationDialog::setValidatorText(QString status) { ui->lblValidatorText->setText(status); }
 
-void RegistrationDialog::setPrinterText(QString status)
-{
-    ui->lblPrinterText->setText(status);
-}
-void RegistrationDialog::setWatchdogText(QString status)
-{
-    ui->lblWatchdogText->setText(status);
-}
-void RegistrationDialog::setModemText(QString status)
-{
-    ui->lblModemText->setText(status);
-}
-void RegistrationDialog::logForTest(int sts, QString log)
-{
-    switch(sts){
+void RegistrationDialog::setPrinterText(QString status) { ui->lblPrinterText->setText(status); }
+void RegistrationDialog::setWatchdogText(QString status) { ui->lblWatchdogText->setText(status); }
+void RegistrationDialog::setModemText(QString status) { ui->lblModemText->setText(status); }
+void RegistrationDialog::logForTest(int sts, QString log) {
+    switch (sts) {
         case 1:
-              ui->lblSearchDevStatusTest->setText(log);
-        break;
+            ui->lblSearchDevStatusTest->setText(log);
+            break;
 
         case 2:
-             ui->lblConnecStatusTest->setText(log);
-        break;
+            ui->lblConnecStatusTest->setText(log);
+            break;
         case 3:
             ui->lblAvtorizationStatusTest->setText(log);
-        break;
-     }
-    if(ui->lblAvtorizationStatusTest->text() == "") ui->lblAvtorizationStatusTest->setVisible(false);
-    else ui->lblAvtorizationStatusTest->setVisible(true);
+            break;
+    }
+    if (ui->lblAvtorizationStatusTest->text() == "")
+        ui->lblAvtorizationStatusTest->setVisible(false);
+    else
+        ui->lblAvtorizationStatusTest->setVisible(true);
 }
 
-void RegistrationDialog::LoadingAnim(bool start)
-{
-
+void RegistrationDialog::LoadingAnim(bool start) {
     movie->setFileName("assets/images/testing.gif");
 
-    if(start)
-    {
+    if (start) {
         ui->lblloadingTest->setMovie(movie);
-        //ui->btnStartTest->setEnabled(false);
+        // ui->btnStartTest->setEnabled(false);
         ui->btnBack->setEnabled(false);
         movie->start();
-    }
-    else
-    {
+    } else {
         movie->stop();
         ui->lblloadingTest->clear();
-        //ui->btnStartTest->setEnabled(true);
+        // ui->btnStartTest->setEnabled(true);
         ui->btnBack->setEnabled(true);
-
     }
-
 }
 
-void RegistrationDialog::sendCharacter(QChar character)
-{
+void RegistrationDialog::sendCharacter(QChar character) {
     QPointer<QWidget> w = focusWidget();
 
-    if (!w)
-    return;
+    if (!w) return;
 
     int un = character.unicode();
 
     QString a = QString(character);
-    if(un==15405){
+    if (un == 15405) {
         un = Qt::Key_Backspace;
         a = "";
     }
-    if(un==15934){
+    if (un == 15934) {
         un = Qt::Key_Tab;
         a = "";
     }
-    if(un==15917){
+    if (un == 15917) {
         un = Qt::Key_Enter;
         a = "";
     }
-    if(un==15420){
+    if (un == 15420) {
         return;
     }
 
@@ -555,29 +538,26 @@ void RegistrationDialog::sendCharacter(QChar character)
     QApplication::sendEvent(w, &keyPress);
 }
 
-void RegistrationDialog::on_btnNumTrmRegClear_clicked()
-{
+void RegistrationDialog::on_btnNumTrmRegClear_clicked() {
+    //    if(ui->editNumTrmReg->hasFocus()){
 
-//    if(ui->editNumTrmReg->hasFocus()){
+    //        ui->editNumTrmReg.
+    //        KeyPud->clickBackspace();
+    //        return;
+    //    }
+    //    if(ui->editLoginReg->hasFocus()){
+    //        ui->editPasswordReg->setFocus();
+    //        return;
+    //    }
+    //    if(ui->editPasswordReg->hasFocus()){
+    //        ui->editConfirmPasswordReg->setFocus();
+    //        return;
+    //    }
 
-//        ui->editNumTrmReg.
-//        KeyPud->clickBackspace();
-//        return;
-//    }
-//    if(ui->editLoginReg->hasFocus()){
-//        ui->editPasswordReg->setFocus();
-//        return;
-//    }
-//    if(ui->editPasswordReg->hasFocus()){
-//        ui->editConfirmPasswordReg->setFocus();
-//        return;
-//    }
-
-//    ui->editNumTrmReg->setFocus();
-//    return;
-//    qDebug()<<"adasd";
-//    if(ui->editNumTrmReg->hasFocus()){
-//        ui->editNumTrmReg->setFocus();
-//    }
-
+    //    ui->editNumTrmReg->setFocus();
+    //    return;
+    //    qDebug()<<"adasd";
+    //    if(ui->editNumTrmReg->hasFocus()){
+    //        ui->editNumTrmReg->setFocus();
+    //    }
 }

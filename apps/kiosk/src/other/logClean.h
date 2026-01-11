@@ -1,23 +1,22 @@
 #ifndef LOGCLEAN_H
 #define LOGCLEAN_H
 
-#include <QThread>
+#include <QDate>
 #include <QDir>
 #include <QDirIterator>
-#include <QDate>
+#include <QThread>
 
-class LogClean: public QThread
-{
-
-private:
+class LogClean : public QThread {
+  private:
     void removeTmpDir() {
         QDir _dir;
         QString parent_folder = _dir.absolutePath();
 
-        QDirIterator directories(parent_folder, QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot);
-        while(directories.hasNext()){
+        QDirIterator directories(parent_folder,
+                                 QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot);
+        while (directories.hasNext()) {
             directories.next();
-            if(directories.filePath().contains("tmp_")){
+            if (directories.filePath().contains("tmp_")) {
                 removeDir(directories.filePath());
             }
         }
@@ -28,7 +27,10 @@ private:
         QDir dir(dirName);
 
         if (dir.exists(dirName)) {
-            Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+            Q_FOREACH (QFileInfo info,
+                       dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden |
+                                             QDir::AllDirs | QDir::Files,
+                                         QDir::DirsFirst)) {
                 if (info.isDir()) {
                     result = removeDir(info.absoluteFilePath());
                 } else {
@@ -58,7 +60,7 @@ private:
         QDir dir(dirName);
 
         if (dir.exists(dirName)) {
-            Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::Files)) {
+            Q_FOREACH (QFileInfo info, dir.entryInfoList(QDir::Files)) {
                 QDate _logDate = QDate::fromString(info.fileName().left(10), "dd.MM.yyyy");
                 if (_logDate < QDate::currentDate().addDays(-61)) {
                     result = QFile::remove(info.absoluteFilePath());
@@ -80,7 +82,10 @@ private:
         QDir dir(dirPath);
 
         if (dir.exists(dirPath)) {
-            Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+            Q_FOREACH (QFileInfo info,
+                       dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden |
+                                             QDir::AllDirs | QDir::Files,
+                                         QDir::DirsFirst)) {
                 QDate _logDate = QDate::fromString(info.fileName().left(10), "yyyy-MM-dd");
 
                 if (_logDate < QDate::currentDate().addDays(-61)) {
@@ -94,9 +99,9 @@ private:
         }
     }
 
-protected:
+  protected:
     void run() {
-        //Удалим папки tmp updater-a
+        // Удалим папки tmp updater-a
         removeTmpDir();
         msleep(1000);
 
@@ -106,7 +111,6 @@ protected:
         removeOldValidatorLogs();
         msleep(1000);
     }
-
 };
 
-#endif // LOGCLEAN_H
+#endif  // LOGCLEAN_H

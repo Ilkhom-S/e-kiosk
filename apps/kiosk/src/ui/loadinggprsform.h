@@ -4,14 +4,13 @@
 #include <QWidget>
 
 namespace Ui {
-    class LoadingGprsForm;
+class LoadingGprsForm;
 }
 
-class LoadingGprsForm : public QWidget
-{
+class LoadingGprsForm : public QWidget {
     Q_OBJECT
 
-public:
+  public:
     explicit LoadingGprsForm(QWidget *parent = 0);
     ~LoadingGprsForm();
 
@@ -22,8 +21,8 @@ public:
     void setSimInfo(QString text);
     void setLogo(QString path);
 
-private:
+  private:
     Ui::LoadingGprsForm *ui;
 };
 
-#endif // LOADINGGPRSFORM_H
+#endif  // LOADINGGPRSFORM_H

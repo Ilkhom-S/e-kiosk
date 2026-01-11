@@ -1,22 +1,22 @@
 #ifndef CLASSMODEM_H
 #define CLASSMODEM_H
 
-#include "protocol/ATProtocol.h"
 #include <QStringList>
+
+#include "protocol/ATProtocol.h"
 class ATProtocol;
 
-class ClassModem : public QThread
-{
-
+class ClassModem : public QThread {
     Q_OBJECT
 
-public:
+  public:
     ClassModem(QObject *parent = 0);
 
-    bool execCommand(ModemProtocolCommands::Enum aCommand,bool thread);
+    bool execCommand(ModemProtocolCommands::Enum aCommand, bool thread);
     void setPort(QString port_name);
     bool isItYou(QString &modem_coment);
-    bool isItYou(QStringList &comList,QString &modem_name, QString &com_str, QString &modem_coment);
+    bool isItYou(QStringList &comList, QString &modem_name, QString &com_str,
+                 QString &modem_coment);
 
     QString nowModemName;
     QString nowModemComment;
@@ -24,7 +24,7 @@ public:
     QString nowProviderSim;
     QString nowNumberSim;
     QString nowBalanceSim;
-    bool    nowSimPresent;
+    bool nowSimPresent;
     QString nowModemQuality;
 
     QString ussdRequestBalanseSim;
@@ -32,25 +32,24 @@ public:
     int indexBalanceParse;
 
     QString SMSTEXT_TO;
-    void setBalanceRequest(QString text1,QString text2,int position);
-    void setSimNumberRequest(QString text1,QString text2);
+    void setBalanceRequest(QString text1, QString text2, int position);
+    void setSimNumberRequest(QString text1, QString text2);
     void sendSmsToAgentFew(QStringList smsId);
     void close();
 
-signals:
+  signals:
     void emit_balance_sim_parsed();
     void emit_number_sim_parsed();
     void emit_statusSmsSend(bool sts, QStringList lstId);
 
-private:
+  private:
     ATProtocol *ATDevice;
     QString command;
     QStringList smsIdIn;
 
-    static void msleep(int ms){ QThread::msleep(ms);}
+    static void msleep(int ms) { QThread::msleep(ms); }
     virtual void run();
     bool e_Data_Execute();
-
 };
 
-#endif // CLASSMODEM_H
+#endif  // CLASSMODEM_H

@@ -1,38 +1,36 @@
 #include "admindialog.h"
-#include "ui_admindialog.h"
-#include <QTextCodec>
+
+#include <QCloseEvent>
 #include <QDebug>
 #include <QEvent>
-#include <QCloseEvent>
-#include <QMessageBox>
 #include <QFile>
+#include <QMessageBox>
 #include <QScrollBar>
+#include <QTextCodec>
 
-AdminDialog::AdminDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::AdminDialog)
-{
+#include "ui_admindialog.h"
+
+AdminDialog::AdminDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AdminDialog) {
     ui->setupUi(this);
 
     KeyPud = new keyPud(this);
     ui->layoutWgtKeyPud->addWidget(KeyPud);
-    connect(KeyPud,SIGNAL(characterGenerated(QChar)),this,SLOT(sendCharacter(QChar)));
+    connect(KeyPud, SIGNAL(characterGenerated(QChar)), this, SLOT(sendCharacter(QChar)));
 
-    titleDataIncashment   = "Не инкасированные платежи";
+    titleDataIncashment = "Не инкасированные платежи";
 
-//    connect(ui->stackedWidget,SIGNAL(currentChanged(int)),this,SLOT(steckerClicked(int)));
+    //    connect(ui->stackedWidget,SIGNAL(currentChanged(int)),this,SLOT(steckerClicked(int)));
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(steckerClicked(int)));
 
     Debuger = 1;
 
-    //Таймер закрытия
+    // Таймер закрытия
     closeTimer = new QTimer(this);
     closeTimer->setSingleShot(true);
     closeTimer->setInterval(180000);
-    connect(closeTimer,SIGNAL(timeout()),this,SLOT(closeThis()));
+    connect(closeTimer, SIGNAL(timeout()), this, SLOT(closeThis()));
 
-
-    //Заполняем данные в странице перехода
+    // Заполняем данные в странице перехода
     lstAdminListTitle << "Основная страница"
                       << "Параметры устройств"
                       << "Параметры соединения"
@@ -40,58 +38,61 @@ AdminDialog::AdminDialog(QWidget *parent) :
                       << "Остальные настройки"
                       << "Просмотр логов";
 
-    //Получение баланса
-    connect(ui->btnCheckBalance,SIGNAL(clicked()),SLOT(checkBalance()));
-
+    // Получение баланса
+    connect(ui->btnCheckBalance, SIGNAL(clicked()), SLOT(checkBalance()));
 
     mveAnimateGB = new QMovie(this);
     mveAnimateGB->setFileName(":/assets/images/load.gif");
 
+    // Получение даты инкасации
+    connect(ui->cbxAdminTextDateIncashment, SIGNAL(currentIndexChanged(QString)), this,
+            SLOT(getCollectDate(QString)));
 
-    //Получение даты инкасации
-    connect(ui->cbxAdminTextDateIncashment,SIGNAL(currentIndexChanged(QString)),this,SLOT(getCollectDate(QString)));
-
-    //Выбор опций просмотра логов
+    // Выбор опций просмотра логов
     selectCategoryLogView = new SelectCategoryLogView(this);
-    connect(selectCategoryLogView,SIGNAL(emit_SelectOptions(bool,bool,bool,bool,bool,bool,bool,bool,bool)),SLOT(SelectOptionsForSearch(bool,bool,bool,bool,bool,bool,bool,bool,bool)));
+    connect(selectCategoryLogView,
+            SIGNAL(emit_SelectOptions(bool, bool, bool, bool, bool, bool, bool, bool, bool)),
+            SLOT(SelectOptionsForSearch(bool, bool, bool, bool, bool, bool, bool, bool, bool)));
 
-    //Создание нового соединения
+    // Создание нового соединения
     createDialupConnection = new CreateDialupConnection(this);
-    connect(createDialupConnection,SIGNAL(emitDialupParam(QVariantMap)),SLOT(getDialupParam(QVariantMap)));
+    connect(createDialupConnection, SIGNAL(emitDialupParam(QVariantMap)),
+            SLOT(getDialupParam(QVariantMap)));
 
     adminButtons = new AdminButton(this);
     connect(adminButtons, SIGNAL(explorerCliked()), SLOT(showExplorer()));
     connect(adminButtons, SIGNAL(keyboardClicked()), SLOT(showKeyPud()));
     connect(adminButtons, SIGNAL(closeClicked()), SLOT(closeThis()));
 
-    //Сделать инкасацию
-    connect(ui->btnAdminCreateIncashment,SIGNAL(clicked()),SLOT(doCollectExec()));
-    connect(ui->btnAdminCreatePreIncashment,SIGNAL(clicked()),SLOT(doCollectDateExec()));
-    connect(ui->btnAdminTestRestartValidator,SIGNAL(clicked()),SLOT(restartValidator()));
-    connect(ui->btnAdminTestPrintCheck,SIGNAL(clicked()),SLOT(printTestCheck()));
-    connect(ui->btnAdminTestRestartModem,SIGNAL(clicked()),SLOT(restartModem()));
-    connect(ui->btnRestartAppTypeDevices,SIGNAL(clicked()),SLOT(restartApp()));
-    connect(ui->btnRestartTypeDevices,SIGNAL(clicked()),SLOT(restartASO()));
-    connect(ui->btnPowerOffTypeDevices,SIGNAL(clicked()),SLOT(shutDounASO()));
-    connect(ui->btnSaveChangeTypeDevices,SIGNAL(clicked()),SLOT(saveDeviceParam()));
-    connect(ui->btnAdminCheckConnection,SIGNAL(clicked()),SLOT(checkConnection()));
-    connect(ui->btnAdminGetDataFromModem,SIGNAL(clicked()),SLOT(getModemDataInfo()));
-    connect(ui->btnAdminSaveTerminalAccept,SIGNAL(clicked()),SLOT(saveTrmAutorizationData()));
-    connect(ui->btnAdminSelectLogParam,SIGNAL(clicked()),SLOT(openSelectCategory()));
-    connect(ui->btnAdminUpdateLogData,SIGNAL(clicked()),SLOT(openLogInfoDate()));
-    connect(ui->btnAdminNavigationUp,SIGNAL(clicked()),SLOT(go_to_up_log()));
-    connect(ui->btnAdminNavigationDown,SIGNAL(clicked()),SLOT(go_to_doun_log()));
-    connect(ui->btnAdminSearchKeyParam,SIGNAL(clicked()),SLOT(searchWithKeyParam()));
-    connect(ui->btnAdminCreateNewConnections,SIGNAL(clicked()),SLOT(createNewConnection()));
-    connect(ui->btnAdminGetActiveConnection,SIGNAL(clicked()),SLOT(getActiveRasCon()));
-    connect(ui->btnAdminRestartNetwork,SIGNAL(clicked()),SLOT(cmdRestartNet()));
-    connect(ui->btnAdminSaveConnectionParams,SIGNAL(clicked()),SLOT(saveConnectionParam()));
-    connect(ui->btnAdminSavePrinterParam,SIGNAL(clicked()),SLOT(savePrinterParam()));
-    connect(ui->btnAdminGetServicesData,SIGNAL(clicked()),SLOT(getServices()));
-    connect(ui->btnAdminSaveTrmSettings2,SIGNAL(clicked()),SLOT(saveOtherSettings()));
-    connect(ui->btnAdminSaveTerminaSecret,SIGNAL(clicked()),SLOT(saveUserAutorizationData()));
-    connect(ui->btnAdminTestRestartModemReal,SIGNAL(clicked()),SLOT(restartModem()));
-    connect(ui->cbxAdminNamePrinter,SIGNAL(currentIndexChanged(int)),SLOT(printerNameChanged(int)));
+    // Сделать инкасацию
+    connect(ui->btnAdminCreateIncashment, SIGNAL(clicked()), SLOT(doCollectExec()));
+    connect(ui->btnAdminCreatePreIncashment, SIGNAL(clicked()), SLOT(doCollectDateExec()));
+    connect(ui->btnAdminTestRestartValidator, SIGNAL(clicked()), SLOT(restartValidator()));
+    connect(ui->btnAdminTestPrintCheck, SIGNAL(clicked()), SLOT(printTestCheck()));
+    connect(ui->btnAdminTestRestartModem, SIGNAL(clicked()), SLOT(restartModem()));
+    connect(ui->btnRestartAppTypeDevices, SIGNAL(clicked()), SLOT(restartApp()));
+    connect(ui->btnRestartTypeDevices, SIGNAL(clicked()), SLOT(restartASO()));
+    connect(ui->btnPowerOffTypeDevices, SIGNAL(clicked()), SLOT(shutDounASO()));
+    connect(ui->btnSaveChangeTypeDevices, SIGNAL(clicked()), SLOT(saveDeviceParam()));
+    connect(ui->btnAdminCheckConnection, SIGNAL(clicked()), SLOT(checkConnection()));
+    connect(ui->btnAdminGetDataFromModem, SIGNAL(clicked()), SLOT(getModemDataInfo()));
+    connect(ui->btnAdminSaveTerminalAccept, SIGNAL(clicked()), SLOT(saveTrmAutorizationData()));
+    connect(ui->btnAdminSelectLogParam, SIGNAL(clicked()), SLOT(openSelectCategory()));
+    connect(ui->btnAdminUpdateLogData, SIGNAL(clicked()), SLOT(openLogInfoDate()));
+    connect(ui->btnAdminNavigationUp, SIGNAL(clicked()), SLOT(go_to_up_log()));
+    connect(ui->btnAdminNavigationDown, SIGNAL(clicked()), SLOT(go_to_doun_log()));
+    connect(ui->btnAdminSearchKeyParam, SIGNAL(clicked()), SLOT(searchWithKeyParam()));
+    connect(ui->btnAdminCreateNewConnections, SIGNAL(clicked()), SLOT(createNewConnection()));
+    connect(ui->btnAdminGetActiveConnection, SIGNAL(clicked()), SLOT(getActiveRasCon()));
+    connect(ui->btnAdminRestartNetwork, SIGNAL(clicked()), SLOT(cmdRestartNet()));
+    connect(ui->btnAdminSaveConnectionParams, SIGNAL(clicked()), SLOT(saveConnectionParam()));
+    connect(ui->btnAdminSavePrinterParam, SIGNAL(clicked()), SLOT(savePrinterParam()));
+    connect(ui->btnAdminGetServicesData, SIGNAL(clicked()), SLOT(getServices()));
+    connect(ui->btnAdminSaveTrmSettings2, SIGNAL(clicked()), SLOT(saveOtherSettings()));
+    connect(ui->btnAdminSaveTerminaSecret, SIGNAL(clicked()), SLOT(saveUserAutorizationData()));
+    connect(ui->btnAdminTestRestartModemReal, SIGNAL(clicked()), SLOT(restartModem()));
+    connect(ui->cbxAdminNamePrinter, SIGNAL(currentIndexChanged(int)),
+            SLOT(printerNameChanged(int)));
 
     hideObjects();
 
@@ -100,17 +101,15 @@ AdminDialog::AdminDialog(QWidget *parent) :
     ui->cbxAdminWinprinter->setVisible(false);
 }
 
-void AdminDialog::restartModem()
-{
+void AdminDialog::restartModem() {
     closeTimer->start();
 
-    //ui->lblAdminInformationTest->setText("Начинаем перезагружать модем...");
+    // ui->lblAdminInformationTest->setText("Начинаем перезагружать модем...");
 
     emit emit_execToMain(AdminCommand::aCmdRestartModem);
 }
 
-void AdminDialog::hideObjects()
-{
+void AdminDialog::hideObjects() {
     ui->chbxAdminShowPrintDialog->setVisible(false);
     ui->cancel_PrintingChek->setVisible(false);
     ui->cbxPrintingChek->setVisible(false);
@@ -142,15 +141,16 @@ void AdminDialog::setLangList(QStringList langList) {
     ui->cbxAdminSelectMainLang->addItems(langList);
 }
 
-void AdminDialog::saveOtherSettings()
-{
+void AdminDialog::saveOtherSettings() {
     closeTimer->start();
 
     settings.clear();
 
     settings["status_validator_jam_in_box"] = ui->chbxAdminSendErrorCodValidatorJam->isChecked();
-    settings["status_validator_jam_in_box_value_counter"] = ui->cbxAdminSelectCountStatusJam->currentText().trimmed();
-    settings["status_validator_jam_in_box_lockers"] = ui->chbxAdminDoLockCodValidatorJam->isChecked();
+    settings["status_validator_jam_in_box_value_counter"] =
+        ui->cbxAdminSelectCountStatusJam->currentText().trimmed();
+    settings["status_validator_jam_in_box_lockers"] =
+        ui->chbxAdminDoLockCodValidatorJam->isChecked();
     settings["default_lang"] = ui->cbxAdminSelectMainLang->currentText().trimmed();
     settings["auto_update_status"] = ui->chbxAdminTornOnAvtoUpdate->isChecked();
     settings["printing_chek"] = ui->cbxPrintingChek->currentIndex();
@@ -162,13 +162,9 @@ void AdminDialog::saveOtherSettings()
     emit emit_execToMain(AdminCommand::aCmdSaveOtherSetting);
 }
 
-bool AdminDialog::unlockNominalDuplicate()
-{
-    return ui->chbxAdminNominalDuplicate->isChecked();
-}
+bool AdminDialog::unlockNominalDuplicate() { return ui->chbxAdminNominalDuplicate->isChecked(); }
 
-void AdminDialog::getServices()
-{
+void AdminDialog::getServices() {
     closeTimer->start();
 
     auto data = QVariantMap({{"message", "Начинаем получать конфигурацию..."}});
@@ -177,8 +173,7 @@ void AdminDialog::getServices()
     emit emit_execToMain(AdminCommand::aCmdGetServices);
 }
 
-void AdminDialog::savePrinterParam()
-{
+void AdminDialog::savePrinterParam() {
     closeTimer->start();
 
     settings.clear();
@@ -186,10 +181,14 @@ void AdminDialog::savePrinterParam()
     settings["prt_win_width"] = ui->cbxAdminWidthWinprtCheck->currentText().trimmed().toInt();
     settings["prt_win_height"] = ui->cbxAdminHeightWinprtCheck->currentText().trimmed().toInt();
     settings["prt_win_font_size"] = ui->cbxAdminFontWinprtCheck->currentText().trimmed().toInt();
-    settings["prt_win_left_margin"] = ui->cbxAdminLeftMarginWinprtCheck->currentText().trimmed().toInt();
-    settings["prt_win_right_margin"] = ui->cbxAdminRightMarginWinprtCheck->currentText().trimmed().toInt();
-    settings["prt_win_top_margin"] = ui->cbxAdminTopMarginWinprtCheck->currentText().trimmed().toInt();
-    settings["prt_win_bottom_margin"] = ui->cbxAdminBottomMarginWinprtCheck->currentText().trimmed().toInt();
+    settings["prt_win_left_margin"] =
+        ui->cbxAdminLeftMarginWinprtCheck->currentText().trimmed().toInt();
+    settings["prt_win_right_margin"] =
+        ui->cbxAdminRightMarginWinprtCheck->currentText().trimmed().toInt();
+    settings["prt_win_top_margin"] =
+        ui->cbxAdminTopMarginWinprtCheck->currentText().trimmed().toInt();
+    settings["prt_win_bottom_margin"] =
+        ui->cbxAdminBottomMarginWinprtCheck->currentText().trimmed().toInt();
     settings["chek_small_beetwen_string"] = ui->chbxAdminSmallLineText->isChecked();
     settings["chek_small_text"] = ui->chbxAdminSmallCheck->isChecked();
     settings["chek_width"] = ui->cbxAdminWidthCheck->currentText().trimmed().toInt();
@@ -202,11 +201,9 @@ void AdminDialog::savePrinterParam()
     settings["printing_chek"] = ui->cbxPrintingChek->currentIndex();
 
     emit emit_execToMain(AdminCommand::aCmdSavePrinterParam);
-
 }
 
-void AdminDialog::saveConnectionParam()
-{
+void AdminDialog::saveConnectionParam() {
     closeTimer->start();
 
     QString phoneNumber = ui->editSmsNumberPhone->text().trimmed();
@@ -218,7 +215,7 @@ void AdminDialog::saveConnectionParam()
         messageBox.setStandardButtons(QMessageBox::Ok);
         messageBox.setDefaultButton(QMessageBox::Ok);
         messageBox.setIcon(QMessageBox::Warning);
-        messageBox.setButtonText(QMessageBox::Ok,QString("OK"));
+        messageBox.setButtonText(QMessageBox::Ok, QString("OK"));
         messageBox.move(500, 200);
 
         messageBox.exec();
@@ -228,7 +225,8 @@ void AdminDialog::saveConnectionParam()
 
     settings.clear();
     settings["vpn_point"] = ui->cbxAdminConnectionList->currentText().trimmed();
-    settings["ras_error_interval_reboot"] = ui->cbxAdminRasErrorReboot->currentText().trimmed().toInt();
+    settings["ras_error_interval_reboot"] =
+        ui->cbxAdminRasErrorReboot->currentText().trimmed().toInt();
     settings["check_balance_sim"] = ui->chbxAdminCheckBalanceSim->isChecked();
     settings["check_number_sim"] = ui->chbxAdminCheckNumberSim->isChecked();
     settings["ussd_balance_sim"] = ui->cbxAdminRequestBalanceSim->currentText().trimmed();
@@ -241,14 +239,12 @@ void AdminDialog::saveConnectionParam()
     emit emit_execToMain(AdminCommand::aCmdSaveConnParam);
 }
 
-void AdminDialog::cmdRestartNet()
-{
+void AdminDialog::cmdRestartNet() {
     closeTimer->start();
     emit emit_execToMain(AdminCommand::aCmdRestartDialupCon);
 }
 
-void AdminDialog::getActiveRasCon()
-{
+void AdminDialog::getActiveRasCon() {
     closeTimer->start();
 
     auto data = QVariantMap({{"message", "Проверяем активное соединение..."}});
@@ -257,29 +253,26 @@ void AdminDialog::getActiveRasCon()
     emit emit_execToMain(AdminCommand::aCmdGetActiveDialup);
 }
 
-void AdminDialog::showMsgDialog(QString title, QString text)
-{
+void AdminDialog::showMsgDialog(QString title, QString text) {
     QMessageBox messageBox(this);
     messageBox.setWindowTitle(title);
     messageBox.setText(text);
     messageBox.setStandardButtons(QMessageBox::Ok);
     messageBox.setDefaultButton(QMessageBox::Ok);
     messageBox.setIcon(QMessageBox::Information);
-    messageBox.setButtonText(QMessageBox::Ok,QString("OK"));
+    messageBox.setButtonText(QMessageBox::Ok, QString("OK"));
     messageBox.move(500, 200);
 
     messageBox.exec();
 }
 
-void AdminDialog::getDialupParam(QVariantMap val)
-{
+void AdminDialog::getDialupParam(QVariantMap val) {
     data.clear();
     data = val;
     emit emit_execToMain(AdminCommand::aCmdRasConnCreate);
 }
 
-void AdminDialog::createNewConnection()
-{
+void AdminDialog::createNewConnection() {
     createDialupConnection->conList = connListInfData;
     createDialupConnection->devList = dialupDevice;
 
@@ -288,73 +281,56 @@ void AdminDialog::createNewConnection()
     createDialupConnection->openThis();
 }
 
-
-void AdminDialog::SelectOptionsForSearch(bool SelectValidatorJam,
-                            bool SelectMoneyOut,
-                            bool SelectERROR,
-                            bool SelectPayDaemon,
-                            bool SelectStatusAso,
-                            bool SelectStatusPrinter,
-                            bool SelectStatusValidator,
-                            bool SelectConnectionState,
-                            bool SelectUpdater)
-{
+void AdminDialog::SelectOptionsForSearch(bool SelectValidatorJam, bool SelectMoneyOut,
+                                         bool SelectERROR, bool SelectPayDaemon,
+                                         bool SelectStatusAso, bool SelectStatusPrinter,
+                                         bool SelectStatusValidator, bool SelectConnectionState,
+                                         bool SelectUpdater) {
     closeTimer->start();
 
     QString searchKey;
-    if(SelectValidatorJam)
-        searchKey += "MONEY_JAM;";
-    if(SelectMoneyOut)
-        searchKey += "MONEY_OUT;";
-    if(SelectERROR)
-        searchKey += "ERROR;";
-    if(SelectPayDaemon)
-        searchKey += "PAY_DAEMONS;";
-    if(SelectStatusAso)
-        searchKey += "STATUS_DAEMONS;";
-    if(SelectStatusPrinter)
-        searchKey += "PRINTER;";
-    if(SelectStatusValidator)
-        searchKey += "VALIDATOR;";
-    if(SelectConnectionState)
-        searchKey += "CONNECTION;";
-    if(SelectUpdater)
-        searchKey += "UPDATER;";
+    if (SelectValidatorJam) searchKey += "MONEY_JAM;";
+    if (SelectMoneyOut) searchKey += "MONEY_OUT;";
+    if (SelectERROR) searchKey += "ERROR;";
+    if (SelectPayDaemon) searchKey += "PAY_DAEMONS;";
+    if (SelectStatusAso) searchKey += "STATUS_DAEMONS;";
+    if (SelectStatusPrinter) searchKey += "PRINTER;";
+    if (SelectStatusValidator) searchKey += "VALIDATOR;";
+    if (SelectConnectionState) searchKey += "CONNECTION;";
+    if (SelectUpdater) searchKey += "UPDATER;";
 
-    if(searchKey.right(1) == ";")
-        searchKey = searchKey.left(searchKey.count() - 1);
+    if (searchKey.right(1) == ";") searchKey = searchKey.left(searchKey.count() - 1);
 
-    //Вставляем в поле поиска
+    // Вставляем в поле поиска
     ui->editSearchKeyParam->setText(searchKey);
 
-    //Нажимаем на кнопку поиск
+    // Нажимаем на кнопку поиск
     ui->btnAdminSearchKeyParam->click();
 }
 
-void AdminDialog::searchWithKeyParam()
-{
+void AdminDialog::searchWithKeyParam() {
     closeTimer->start();
 
     QStringList lstLog;
     QString string;
-    getLogDataFromFile(lstLog,string);
+    getLogDataFromFile(lstLog, string);
 
-    //Попробуем посмотреть что в поле поиска
+    // Попробуем посмотреть что в поле поиска
     QString searchString = ui->editSearchKeyParam->text();
-    if(searchString != ""){
+    if (searchString != "") {
         string = "";
         QStringList searchList = searchString.split(";");
-        //Делаем поиск
-        for(int i = 0; i < lstLog.count(); i++){
+        // Делаем поиск
+        for (int i = 0; i < lstLog.count(); i++) {
             QString line = lstLog.at(i);
             bool add = false;
-            for(int j = 0; j < searchList.count(); j++){
-                if(line.contains(searchList.at(j))){
-                    if(!add){
+            for (int j = 0; j < searchList.count(); j++) {
+                if (line.contains(searchList.at(j))) {
+                    if (!add) {
                         string += line + "\n";
                         add = true;
-                    }else{
-                        break ;
+                    } else {
+                        break;
                     }
                 }
             }
@@ -364,37 +340,33 @@ void AdminDialog::searchWithKeyParam()
     ui->editBrowserLogView->setText(string);
 }
 
-
-
-void AdminDialog::openLogInfoDate()
-{
+void AdminDialog::openLogInfoDate() {
     closeTimer->start();
 
-    //Очищаем поле поиска
+    // Очищаем поле поиска
     ui->editSearchKeyParam->setText("");
 
-    //Устанавливаем сегодняшную дату
+    // Устанавливаем сегодняшную дату
     ui->dEditAdminSelectDataLog->setDate(QDate::currentDate());
 
     QStringList lstLog;
     QString string;
-    getLogDataFromFile(lstLog,string);
+    getLogDataFromFile(lstLog, string);
 
     ui->editBrowserLogView->setText(string);
 
     QTimer::singleShot(500, this, SLOT(go_to_end_text_edit()));
 }
 
-void AdminDialog::getLogDataFromFile(QStringList &logLst, QString &all)
-{
+void AdminDialog::getLogDataFromFile(QStringList &logLst, QString &all) {
     logLst.clear();
     all = "";
-    //дата создания
+    // дата создания
     QString vrmDate = ui->dEditAdminSelectDataLog->text();
     QByteArray ba;
     QFile fileInfo(QString("log/%1.txt").arg(vrmDate));
 
-    if (!fileInfo.open(QIODevice::ReadOnly)){
+    if (!fileInfo.open(QIODevice::ReadOnly)) {
         ba = QString("File Log Not Present %1").arg(vrmDate).toLatin1();
     } else {
         ba.append(fileInfo.readAll());
@@ -407,41 +379,34 @@ void AdminDialog::getLogDataFromFile(QStringList &logLst, QString &all)
     return;
 }
 
-void AdminDialog::go_to_end_text_edit()
-{
-
-    QScrollBar * scrollBar = ui->editBrowserLogView->verticalScrollBar();
+void AdminDialog::go_to_end_text_edit() {
+    QScrollBar *scrollBar = ui->editBrowserLogView->verticalScrollBar();
     scrollBar->setSliderPosition(scrollBar->maximum());
 }
 
-void AdminDialog::go_to_up_log()
-{
+void AdminDialog::go_to_up_log() {
     closeTimer->start();
-    QScrollBar * scrollBar = ui->editBrowserLogView->verticalScrollBar();
-    int pos  = scrollBar->sliderPosition() - 500;
+    QScrollBar *scrollBar = ui->editBrowserLogView->verticalScrollBar();
+    int pos = scrollBar->sliderPosition() - 500;
     scrollBar->setSliderPosition(pos);
 }
 
-void AdminDialog::go_to_doun_log()
-{
+void AdminDialog::go_to_doun_log() {
     closeTimer->start();
-    QScrollBar * scrollBar = ui->editBrowserLogView->verticalScrollBar();
-    int pos  = scrollBar->sliderPosition() + 500;
+    QScrollBar *scrollBar = ui->editBrowserLogView->verticalScrollBar();
+    int pos = scrollBar->sliderPosition() + 500;
     scrollBar->setSliderPosition(pos);
 }
 
-
-void AdminDialog::openSelectCategory()
-{
+void AdminDialog::openSelectCategory() {
     closeTimer->start();
     selectCategoryLogView->setWindowModality(Qt::ApplicationModal);
-//    selectCategoryLogView->setWindowFlags(Qt::WindowTitleHint);
+    //    selectCategoryLogView->setWindowFlags(Qt::WindowTitleHint);
     selectCategoryLogView->setWindowTitle("Выберите опции для просмотра");
     selectCategoryLogView->show();
 }
 
-void AdminDialog::saveTrmAutorizationData()
-{
+void AdminDialog::saveTrmAutorizationData() {
     closeTimer->start();
 
     QString login = ui->editAdminLoginTrm->text().trimmed();
@@ -454,7 +419,7 @@ void AdminDialog::saveTrmAutorizationData()
         messageBox1.setStandardButtons(QMessageBox::Ok);
         messageBox1.setDefaultButton(QMessageBox::Ok);
         messageBox1.setIcon(QMessageBox::Warning);
-        messageBox1.setButtonText(QMessageBox::Ok,QString("OK"));
+        messageBox1.setButtonText(QMessageBox::Ok, QString("OK"));
         messageBox1.move(500, 200);
 
         messageBox1.exec();
@@ -471,13 +436,9 @@ void AdminDialog::saveTrmAutorizationData()
     emit emit_execToMain(AdminCommand::aCmdSaveTrmNumSett);
 }
 
-void AdminDialog::authButtonSet(bool enable)
-{
-    ui->btnAdminSaveTerminalAccept->setEnabled(enable);
-}
+void AdminDialog::authButtonSet(bool enable) { ui->btnAdminSaveTerminalAccept->setEnabled(enable); }
 
-void AdminDialog::saveUserAutorizationData()
-{
+void AdminDialog::saveUserAutorizationData() {
     closeTimer->start();
 
     QString secretLogin = ui->editAdminSecretLogin->text().trimmed();
@@ -490,7 +451,7 @@ void AdminDialog::saveUserAutorizationData()
         messageBox1.setStandardButtons(QMessageBox::Ok);
         messageBox1.setDefaultButton(QMessageBox::Ok);
         messageBox1.setIcon(QMessageBox::Warning);
-        messageBox1.setButtonText(QMessageBox::Ok,QString("OK"));
+        messageBox1.setButtonText(QMessageBox::Ok, QString("OK"));
         messageBox1.move(500, 200);
 
         messageBox1.exec();
@@ -505,8 +466,7 @@ void AdminDialog::saveUserAutorizationData()
     emit emit_execToMain(AdminCommand::aCmdSaveUserAvtoriza);
 }
 
-void AdminDialog::checkConnection()
-{
+void AdminDialog::checkConnection() {
     closeTimer->start();
 
     auto data = QVariantMap({{"message", "Начинаем проверять соединение..."}});
@@ -515,100 +475,88 @@ void AdminDialog::checkConnection()
     emit emit_execToMain(AdminCommand::aCmdCheckConnect);
 }
 
-void AdminDialog::getModemDataInfo()
-{
+void AdminDialog::getModemDataInfo() {
     closeTimer->start();
 
-    if(ui->cbxAdminConnectionList->currentText().toUpper() != "LOCAL CONNECTION"){
-        //Спрашиваем хочет ли он сохранить данные
+    if (ui->cbxAdminConnectionList->currentText().toUpper() != "LOCAL CONNECTION") {
+        // Спрашиваем хочет ли он сохранить данные
         QMessageBox messageBox1(this);
         messageBox1.setWindowTitle("Выполнение параметров.");
-        messageBox1.setText("Перед проверкой параметров SIM карты\n"
-                            "программа отключит соединение с сервером\n"
-                            "вы хотите проверить параметры SIM карты?\n");
+        messageBox1.setText(
+            "Перед проверкой параметров SIM карты\n"
+            "программа отключит соединение с сервером\n"
+            "вы хотите проверить параметры SIM карты?\n");
         messageBox1.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
         messageBox1.setDefaultButton(QMessageBox::Yes);
         messageBox1.setEscapeButton(QMessageBox::Cancel);
         messageBox1.setIcon(QMessageBox::Question);
-        messageBox1.setButtonText(QMessageBox::Yes,QString("Да"));
-        messageBox1.setButtonText(QMessageBox::Cancel,QString("Отмена"));
+        messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
+        messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
         messageBox1.move(500, 200);
 
-        //Необходимо удалить данный платеж
+        // Необходимо удалить данный платеж
         int rr = messageBox1.exec();
 
         if (rr == QMessageBox::Yes) {
-
-            //Надо дать команду сохранение с перезагрузкой
+            // Надо дать команду сохранение с перезагрузкой
             auto data = QVariantMap({{"message", "Начинаем проверять данные SIM карты..."}});
 
             setDataToAdmin(AdminCommand::aCmdConnectInfo, data);
 
             emit emit_execToMain(AdminCommand::aCmdGetSimInfo);
         }
-    }else{
-        showMsgDialog("Админ панель","Используется локальное соединение");
+    } else {
+        showMsgDialog("Админ панель", "Используется локальное соединение");
     }
 }
 
-void AdminDialog::restartApp()
-{
+void AdminDialog::restartApp() {
     closeTimer->start();
-    //Спрашиваем хочет ли он сохранить данные
+    // Спрашиваем хочет ли он сохранить данные
     QMessageBox messageBox1(this);
     messageBox1.setWindowTitle("Выполнение параметров.");
-    messageBox1.setText("Вы действительно хотите перезагрузить программу\n"
-                        );
+    messageBox1.setText("Вы действительно хотите перезагрузить программу\n");
     messageBox1.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     messageBox1.setDefaultButton(QMessageBox::Yes);
     messageBox1.setEscapeButton(QMessageBox::Cancel);
     messageBox1.setIcon(QMessageBox::Question);
-    messageBox1.setButtonText(QMessageBox::Yes,QString("Да"));
-    messageBox1.setButtonText(QMessageBox::Cancel,QString("Отмена"));
+    messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
+    messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
     messageBox1.move(500, 200);
 
-    //Необходимо удалить данный платеж
+    // Необходимо удалить данный платеж
     int rr = messageBox1.exec();
 
-    if (rr == QMessageBox::Yes){
-
-        //Надо дать команду сохранение с перезагрузкой
+    if (rr == QMessageBox::Yes) {
+        // Надо дать команду сохранение с перезагрузкой
         emit emit_execToMain(AdminCommand::aCmdRestartApp);
-
     }
-
 }
 
-void AdminDialog::restartASO()
-{
+void AdminDialog::restartASO() {
     closeTimer->start();
-    //Спрашиваем хочет ли он сохранить данные
+    // Спрашиваем хочет ли он сохранить данные
     QMessageBox messageBox1(this);
     messageBox1.setWindowTitle("Выполнение параметров.");
-    messageBox1.setText("Вы действительно хотите перезагрузить Терминал\n"
-                        );
+    messageBox1.setText("Вы действительно хотите перезагрузить Терминал\n");
     messageBox1.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     messageBox1.setDefaultButton(QMessageBox::Yes);
     messageBox1.setEscapeButton(QMessageBox::Cancel);
     messageBox1.setIcon(QMessageBox::Question);
-    messageBox1.setButtonText(QMessageBox::Yes,QString("Да"));
-    messageBox1.setButtonText(QMessageBox::Cancel,QString("Отмена"));
+    messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
+    messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
     messageBox1.move(500, 200);
 
-    //Необходимо удалить данный платеж
+    // Необходимо удалить данный платеж
     int rr = messageBox1.exec();
 
-    if (rr == QMessageBox::Yes){
-
-        //Надо дать команду сохранение с перезагрузкой
+    if (rr == QMessageBox::Yes) {
+        // Надо дать команду сохранение с перезагрузкой
         emit emit_execToMain(AdminCommand::aCmdRestartASO);
-
     }
-
 }
 
-void AdminDialog::saveDeviceParam()
-{
+void AdminDialog::saveDeviceParam() {
     closeTimer->start();
     auto cmd = AdminCommand::aCmdSaveDeviceParam;
 
@@ -619,43 +567,46 @@ void AdminDialog::saveDeviceParam()
     settings["coin_acceptor_port"] = ui->cbxAdminPortAcceptor->currentText();
 
     auto printerName = ui->cbxAdminNamePrinter->currentText();
-    settings["printer_name"]   = printerName;
-    settings["printer_comment"] = printerName == "WindowsPrinter" ? ui->cbxAdminWinprinter->currentText() : "";
-    settings["printer_port"]   = ui->cbxAdminPortPrinter->currentText();
-    settings["printer_port_speed"]   = ui->cbxAdminPortSpeed->currentIndex();
+    settings["printer_name"] = printerName;
+    settings["printer_comment"] =
+        printerName == "WindowsPrinter" ? ui->cbxAdminWinprinter->currentText() : "";
+    settings["printer_port"] = ui->cbxAdminPortPrinter->currentText();
+    settings["printer_port_speed"] = ui->cbxAdminPortSpeed->currentIndex();
 
-    settings["modem_port"]     = ui->cbxAdminPortModem->currentText();
-    settings["watchdog_port"]  = ui->cbxAdminPortWD->currentText();
+    settings["modem_port"] = ui->cbxAdminPortModem->currentText();
+    settings["watchdog_port"] = ui->cbxAdminPortWD->currentText();
 
     if (settings != deviceParam) {
-
-        //Спрашиваем хочет ли он сохранить данные
+        // Спрашиваем хочет ли он сохранить данные
         QMessageBox messageBox1(this);
         messageBox1.setWindowTitle("Сохранение параметров.");
-        messageBox1.setText("Для того чтобы изменённые данные\n"
-                            "вступили в силу необходимо перезагрузить программу");
+        messageBox1.setText(
+            "Для того чтобы изменённые данные\n"
+            "вступили в силу необходимо перезагрузить программу");
         messageBox1.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
         messageBox1.setDefaultButton(QMessageBox::Yes);
         messageBox1.setEscapeButton(QMessageBox::Cancel);
         messageBox1.setIcon(QMessageBox::Question);
-        messageBox1.setButtonText(QMessageBox::Yes,QString("Да"));
-        messageBox1.setButtonText(QMessageBox::Cancel,QString("Отмена"));
+        messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
+        messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
         messageBox1.move(500, 200);
 
         int rr = messageBox1.exec();
 
         if (rr == QMessageBox::Yes) {
-
-            //Надо дать команду сохранение с перезагрузкой
+            // Надо дать команду сохранение с перезагрузкой
             cmd = AdminCommand::aCmdSaveDeviceParamR;
 
-        }else if (rr == QMessageBox::Cancel) {
+        } else if (rr == QMessageBox::Cancel) {
+            ui->cbxAdminNameValidator->setCurrentText(
+                deviceParam.value("validator_name").toString());
+            ui->cbxAdminPortValidator->setCurrentText(
+                deviceParam.value("validator_port").toString());
 
-            ui->cbxAdminNameValidator->setCurrentText(deviceParam.value("validator_name").toString());
-            ui->cbxAdminPortValidator->setCurrentText(deviceParam.value("validator_port").toString());
-
-            ui->cbxAdminNameAcceptor->setCurrentText(deviceParam.value("coin_acceptor_name").toString());
-            ui->cbxAdminPortAcceptor->setCurrentText(deviceParam.value("coin_acceptor_port").toString());
+            ui->cbxAdminNameAcceptor->setCurrentText(
+                deviceParam.value("coin_acceptor_name").toString());
+            ui->cbxAdminPortAcceptor->setCurrentText(
+                deviceParam.value("coin_acceptor_port").toString());
 
             ui->cbxAdminNamePrinter->setCurrentText(deviceParam.value("printer_name").toString());
             ui->cbxAdminPortPrinter->setCurrentText(deviceParam.value("printer_port").toString());
@@ -679,81 +630,70 @@ void AdminDialog::saveDeviceParam()
     emit emit_execToMain(cmd);
 }
 
-void AdminDialog::shutDounASO()
-{
+void AdminDialog::shutDounASO() {
     closeTimer->start();
-    //Спрашиваем хочет ли он сохранить данные
+    // Спрашиваем хочет ли он сохранить данные
     QMessageBox messageBox1(this);
     messageBox1.setWindowTitle("Выполнение параметров.");
-    messageBox1.setText("Вы действительно выключить терминал?\n"
-                        );
+    messageBox1.setText("Вы действительно выключить терминал?\n");
     messageBox1.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     messageBox1.setDefaultButton(QMessageBox::Yes);
     messageBox1.setEscapeButton(QMessageBox::Cancel);
     messageBox1.setIcon(QMessageBox::Question);
-    messageBox1.setButtonText(QMessageBox::Yes,QString("Да"));
-    messageBox1.setButtonText(QMessageBox::Cancel,QString("Отмена"));
+    messageBox1.setButtonText(QMessageBox::Yes, QString("Да"));
+    messageBox1.setButtonText(QMessageBox::Cancel, QString("Отмена"));
     messageBox1.move(500, 200);
 
-    //Необходимо удалить данный платеж
+    // Необходимо удалить данный платеж
     int rr = messageBox1.exec();
 
-    if (rr == QMessageBox::Yes){
-
-        //Надо дать команду сохранение с перезагрузкой
+    if (rr == QMessageBox::Yes) {
+        // Надо дать команду сохранение с перезагрузкой
         emit emit_execToMain(AdminCommand::aCmdShutDounASO);
-
     }
-
 }
 
-void AdminDialog::printTestCheck()
-{
+void AdminDialog::printTestCheck() {
     closeTimer->start();
 
     if (ui->cbxAdminNamePrinter->currentText() != "") {
         printerName = ui->cbxAdminNamePrinter->currentText();
         printerPort = ui->cbxAdminPortPrinter->currentText();
         printerPortSpeed = QString("%1").arg(ui->cbxAdminPortSpeed->currentIndex());
-        printerComment = printerName == "WindowsPrinter" ? ui->cbxAdminWinprinter->currentText() : "";
+        printerComment =
+            printerName == "WindowsPrinter" ? ui->cbxAdminWinprinter->currentText() : "";
 
         emit emit_execToMain(AdminCommand::aCmdPrintTestCheck);
     }
 }
 
-void AdminDialog::restartValidator()
-{
+void AdminDialog::restartValidator() {
     closeTimer->start();
 
     emit emit_execToMain(AdminCommand::aCmdRestartValidator);
 }
 
-void AdminDialog::hideExplorer()
-{
+void AdminDialog::hideExplorer() {
     closeTimer->start();
     emit emit_execToMain(AdminCommand::aCmdHideExplorer);
 }
 
-void AdminDialog::showExplorer()
-{
+void AdminDialog::showExplorer() {
     closeTimer->start();
     emit emit_execToMain(AdminCommand::aCmdShowExplorer);
 }
 
-void AdminDialog::showKeyPud()
-{
+void AdminDialog::showKeyPud() {
     closeTimer->start();
     emit emit_execToMain(AdminCommand::aCmdShowKeyPud);
 }
 
-void AdminDialog::doCollectExec()
-{
+void AdminDialog::doCollectExec() {
     closeTimer->start();
     emit emit_execToMain(AdminCommand::aCmdExecIncashmant);
 }
 
-void AdminDialog::doCollectDateExec()
-{
+void AdminDialog::doCollectDateExec() {
     closeTimer->start();
     QString vrmDate = ui->cbxAdminTextDateIncashment->currentText();
 
@@ -765,56 +705,51 @@ void AdminDialog::doCollectDateExec()
 
         msgBox.move(500, 200);
 
-        msgBox.setText("Для распечатки чека\n"
-                    "за предыдущие инкасации\n"
-                    "выберите её в списке \"Дата инкасации:\".");
+        msgBox.setText(
+            "Для распечатки чека\n"
+            "за предыдущие инкасации\n"
+            "выберите её в списке \"Дата инкасации:\".");
 
         msgBox.exec();
     }
 }
 
-void AdminDialog::closeEvent(QCloseEvent *event)
-{
-        emit emit_unlockOpenAdminSts();
-        event->accept();
+void AdminDialog::closeEvent(QCloseEvent *event) {
+    emit emit_unlockOpenAdminSts();
+    event->accept();
 }
 
-void AdminDialog::getCollectDate(QString date)
-{
+void AdminDialog::getCollectDate(QString date) {
     dateCollectParam = date;
 
     emit emit_execToMain(AdminCommand::aCmdHtmlIncash);
 }
 
-void AdminDialog::setDataToAdmin(int cmd, QVariantMap data)
-{
+void AdminDialog::setDataToAdmin(int cmd, QVariantMap data) {
     switch (cmd) {
         case AdminCommand::aCmdGetBalance: {
             mveAnimateGB->stop();
-//            QMovie *movie;
+            //            QMovie *movie;
             ui->lblAnimateAdminBalance->setVisible(false);
-//            ui->lblAnimateAdminBalance->setMovie(movie);
+            //            ui->lblAnimateAdminBalance->setMovie(movie);
             ui->lblAnimateAdminBalance->setText("---");
 
-            //Вставляем значение баланса
+            // Вставляем значение баланса
             ui->lblAdminTextCurentBalance->setText(data.value("balance").toString());
-            //Вставляем значение овердрафта
+            // Вставляем значение овердрафта
             ui->lblAdminTextOverdraft->setText(data.value("overdraft").toString());
-            //Порог отключения
+            // Порог отключения
             ui->lblAdminTextPorocOtclucheniya->setText(data.value("threshold").toString());
-        }
-        break;
+        } break;
         case AdminCommand::aCmdGetNewOperation: {
-            //Новые платежи
+            // Новые платежи
             ui->lblTextAdminNumberNewPay->setText(data.value("payment_count").toString());
-        }
-        break;
+        } break;
         case AdminCommand::aCmdListAllIncash: {
-            //Делаем список инкассаций по датам
+            // Делаем список инкассаций по датам
             ui->cbxAdminTextDateIncashment->clear();
             ui->cbxAdminTextDateIncashment->addItems(data.value("encash_list").toStringList());
-        }
-        break;
+        } break;
         case AdminCommand::aCmdHtmlIncash: {
             auto html = data.value("html").toString();
             auto cId = data.value("c_id").toString();
@@ -822,77 +757,74 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data)
             auto trnFrom = data.value("trn_from").toString();
             auto trnTo = data.value("trn_to").toString();
 
-            //Делаем HTML инкассаций
+            // Делаем HTML инкассаций
             ui->textBrowser->setHtml(html);
             ui->lblAdminTextNumberIncashment->setText(cId);
             ui->lblAdminTextIdIncashment->setText(cTrn);
-            ui->lblAdminTextTranzactionPay->setText(QString("%1<font color=\"red\">/</font>%2").arg(trnFrom, trnTo));
-        }
-        break;
+            ui->lblAdminTextTranzactionPay->setText(
+                QString("%1<font color=\"red\">/</font>%2").arg(trnFrom, trnTo));
+        } break;
         case AdminCommand::aCmdShowAsoStatus: {
-            //Показываем статус асо
-            //ui->lblAdminGlobalStatus->setText(data.at(0));
-        }
-        break;
-        case AdminCommand::aCmdValidatorInform:
-        {
-            //Показываем информацию о валидаторе
+            // Показываем статус асо
+            // ui->lblAdminGlobalStatus->setText(data.at(0));
+        } break;
+        case AdminCommand::aCmdValidatorInform: {
+            // Показываем информацию о валидаторе
             ui->lblAdminTextDeviceInf1->setText(data.value("validator_info").toString());
 
-            //Список Валидаторов
+            // Список Валидаторов
             ui->cbxAdminNameValidator->clear();
             ui->cbxAdminNameValidator->addItems(data.value("validator_list").toStringList());
 
-            //Устанавливаем текущий
+            // Устанавливаем текущий
             ui->cbxAdminNameValidator->setCurrentText(data.value("validator_name").toString());
 
             deviceParam.clear();
             deviceParam["validator_name"] = ui->cbxAdminNameValidator->currentText();
 
-            //Список сом портов
+            // Список сом портов
             ui->cbxAdminPortValidator->clear();
             ui->cbxAdminPortValidator->addItems(data.value("validator_port_list").toStringList());
 
-            //Текущий порт
-            int index = ui->cbxAdminPortValidator->findText(data.value("validator_port").toString());
+            // Текущий порт
+            int index =
+                ui->cbxAdminPortValidator->findText(data.value("validator_port").toString());
             ui->cbxAdminPortValidator->setCurrentIndex(index);
 
             deviceParam["validator_port"] = ui->cbxAdminPortValidator->currentText();
-        }
-        break;
-        case AdminCommand::aCmdCoinAcceptorInf:
-        {
-            //Показываем информацию о монетоприемнике
+        } break;
+        case AdminCommand::aCmdCoinAcceptorInf: {
+            // Показываем информацию о монетоприемнике
             ui->lblAdminTextAcceptor->setText(data.value("coin_acceptor_info").toString());
 
-            //Список Валидаторов
+            // Список Валидаторов
             ui->cbxAdminNameAcceptor->clear();
             ui->cbxAdminNameAcceptor->addItems(data.value("coin_acceptor_list").toStringList());
 
-            //Устанавливаем текущий
+            // Устанавливаем текущий
             ui->cbxAdminNameAcceptor->setCurrentText(data.value("coin_acceptor_name").toString());
 
             deviceParam["coin_acceptor_name"] = ui->cbxAdminNameAcceptor->currentText();
 
-            //Список сом портов
+            // Список сом портов
             ui->cbxAdminPortAcceptor->clear();
-            ui->cbxAdminPortAcceptor->addItems(data.value("coin_acceptor_port_list").toStringList());
+            ui->cbxAdminPortAcceptor->addItems(
+                data.value("coin_acceptor_port_list").toStringList());
 
-            //Текущий порт
-            int index = ui->cbxAdminPortAcceptor->findText(data.value("coin_acceptor_port").toString());
+            // Текущий порт
+            int index =
+                ui->cbxAdminPortAcceptor->findText(data.value("coin_acceptor_port").toString());
             ui->cbxAdminPortAcceptor->setCurrentIndex(index);
 
             deviceParam["coin_acceptor"] = ui->cbxAdminPortAcceptor->currentText();
-        }
-        break;
-        case AdminCommand::aCmdPrinterInform:
-        {
-            //Показываем информацию
+        } break;
+        case AdminCommand::aCmdPrinterInform: {
+            // Показываем информацию
             auto printerComment = data.value("printer_comment").toString();
             ui->lblAdminTextDeviceInf2->setText(printerComment);
             ui->cbxAdminPortSpeed->setCurrentIndex(printerComment.toInt());
 
-            //Список
+            // Список
             ui->cbxAdminNamePrinter->clear();
             ui->cbxAdminNamePrinter->addItems(data.value("printer_list").toStringList());
 
@@ -900,7 +832,7 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data)
             ui->cbxAdminWinprinter->clear();
             ui->cbxAdminWinprinter->addItems(data.value("winprinter_list").toStringList());
 
-            //Устанавливаем текущий
+            // Устанавливаем текущий
             auto printerName = data.value("printer_name").toString();
             ui->cbxAdminNamePrinter->setCurrentText(printerName);
 
@@ -911,164 +843,155 @@ void AdminDialog::setDataToAdmin(int cmd, QVariantMap data)
             deviceParam["printer_name"] = ui->cbxAdminNamePrinter->currentText();
             deviceParam["printer_comment"] = printerComment;
 
-            //Список сом портов
+            // Список сом портов
             ui->cbxAdminPortPrinter->clear();
             ui->cbxAdminPortPrinter->addItems(data.value("printer_port_list").toStringList());
 
-            //Текущий порт
+            // Текущий порт
             int index = ui->cbxAdminPortPrinter->findText(data.value("printer_port").toString());
             ui->cbxAdminPortPrinter->setCurrentIndex(index);
 
-
             deviceParam["printer_port"] = ui->cbxAdminPortPrinter->currentText();
             deviceParam["printer_port_speed"] = ui->cbxAdminPortSpeed->currentIndex();
-        }
-        break;
+        } break;
         case AdminCommand::aCmdModemInform: {
-            //Показываем информацию
+            // Показываем информацию
             ui->lblAdminTextDeviceInf3->setText(data.value("modem_comment").toString());
             ui->lblAdminTextDeviceInf4->setText(data.value("modem_name").toString());
 
-            //Список сом портов
+            // Список сом портов
             ui->cbxAdminPortModem->clear();
             ui->cbxAdminPortModem->addItems(data.value("modem_port_list").toStringList());
 
-            //Текущий порт
+            // Текущий порт
             int index = ui->cbxAdminPortModem->findText(data.value("modem_port").toString());
             ui->cbxAdminPortModem->setCurrentIndex(index);
 
             deviceParam["modem_port"] = ui->cbxAdminPortModem->currentText();
-        }
-        break;
+        } break;
         case AdminCommand::aCmdWDInform: {
-            //Показываем информацию
+            // Показываем информацию
             ui->lblAdminTextDeviceInfWD1->setText(data.value("watchdog_comment").toString());
             ui->lblAdminTextDeviceInfWD2->setText(data.value("watchdog_name").toString());
 
-            //Список сом портов
+            // Список сом портов
             ui->cbxAdminPortWD->clear();
             ui->cbxAdminPortWD->addItems(data.value("watchdog_port_list").toStringList());
 
-            //Текущий порт
+            // Текущий порт
             int index = ui->cbxAdminPortWD->findText(data.value("watchdog_port").toString());
             ui->cbxAdminPortWD->setCurrentIndex(index);
 
             deviceParam["watchdog_port"] = ui->cbxAdminPortWD->currentText();
-        }
-        break;
+        } break;
         case AdminCommand::aCmdSearchParamRef: {
             ui->chbxAdminSearchValidator->setChecked(data.value("search_validator").toBool());
             ui->chbxAdminSearchPrinter->setChecked(data.value("search_printer").toBool());
             ui->chbxAdminSearchModem->setChecked(data.value("search_modem").toBool());
             ui->chbxAdminSearchWD->setChecked(data.value("search_watchdog").toBool());
-        }
-        break;
+        } break;
         case AdminCommand::aCmdInfrmationPanel: {
-//            ui->lblAdminInformationTest->setText(data.value("message").toString());
-        }
-        break;
+            //            ui->lblAdminInformationTest->setText(data.value("message").toString());
+        } break;
         case AdminCommand::aCmdSimInfoData: {
             ui->lblAdminTextPrvSim->setText(data.value("modem_sim_provider").toString());
             ui->lblAdminTextNumberSim->setText(data.value("modem_sim_number").toString());
             ui->lblAdminTextUrovanSignala->setText(data.value("modem_sim_rate").toString());
             ui->lblAdminTextBalanceSim->setText(data.value("modem_sim_balance").toString());
-        }
-        break;
+        } break;
         case AdminCommand::aCmdRasConnlist: {
-            //Список Соединений
-            //Для проверки при создание соединения
+            // Список Соединений
+            // Для проверки при создание соединения
             connListInfData.clear();
             connListInfData = data.value("connection_list").toStringList();
 
             ui->cbxAdminConnectionList->clear();
             ui->cbxAdminConnectionList->addItems(connListInfData);
 
-            //Текущий порт соединения
+            // Текущий порт соединения
             ui->cbxAdminConnectionList->setCurrentText(data.value("vpn_point").toString());
-        }
-        break;
+        } break;
         case AdminCommand::aCmdErrorRasReb: {
             auto val = data.value("ras_error_interval_reboot").toString();
             ui->cbxAdminRasErrorReboot->setCurrentText(val);
-        }
-        break;
+        } break;
         case AdminCommand::aCmdConnectInfo: {
             auto msg = data.value("message").toString();
             ui->lblAdminInfoGetDataFromModem->setText(msg);
-        }
-        break;
+        } break;
         case AdminCommand::aCmdModemInfData: {
             ui->chbxAdminCheckBalanceSim->setChecked(data.value("check_balance_sim").toBool());
             ui->chbxAdminCheckNumberSim->setChecked(data.value("check_number_sim").toBool());
-            ui->cbxAdminRequestBalanceSim->setCurrentText(data.value("ussd_balance_sim").toString());
-            ui->cbxAdminPositionBalanceSim->setCurrentText(data.value("index_check_balance").toString());
+            ui->cbxAdminRequestBalanceSim->setCurrentText(
+                data.value("ussd_balance_sim").toString());
+            ui->cbxAdminPositionBalanceSim->setCurrentText(
+                data.value("index_check_balance").toString());
             ui->cbxAdminRequestNumberSim->setCurrentText(data.value("ussd_number_sim").toString());
-        }
-        break;
+        } break;
         case AdminCommand::aCmdPrinterInfData: {
             ui->chbxAdminShowPrintDialog->setChecked(data.value("show_print_dialog").toBool());
-            ui->chbxAdminSmallLineText->setChecked(data.value("chek_small_beetwen_string").toBool());
+            ui->chbxAdminSmallLineText->setChecked(
+                data.value("chek_small_beetwen_string").toBool());
             ui->chbxAdminSmallCheck->setChecked(data.value("chek_small_text").toBool());
             ui->cbxAdminWidthCheck->setCurrentText(data.value("chek_width").toString());
             ui->cbxAdminLeftMarginCheck->setCurrentText(data.value("chek_left_size").toString());
             ui->cbxPrintingChek->setCurrentIndex(data.value("printing_chek").toInt());
-        }
-        break;
+        } break;
         case AdminCommand::aCmdSmsSending: {
             ui->editSmsNumberPhone->setText(data.value("sms_send_number").toString());
             ui->chbxAdminSMSerrValidator->setChecked(data.value("sms_err_validator").toBool());
-        }
-        break;
+        } break;
         case AdminCommand::aCmdWinPrinterParam: {
             ui->cbxAdminWidthWinprtCheck->setCurrentText(data.value("prt_win_width").toString());
             ui->cbxAdminHeightWinprtCheck->setCurrentText(data.value("prt_win_height").toString());
             ui->cbxAdminFontWinprtCheck->setCurrentText(data.value("prt_win_font_size").toString());
-            ui->cbxAdminLeftMarginWinprtCheck->setCurrentText(data.value("prt_win_left_margin").toString());
-            ui->cbxAdminRightMarginWinprtCheck->setCurrentText(data.value("prt_win_right_margin").toString());
-            ui->cbxAdminTopMarginWinprtCheck->setCurrentText(data.value("prt_win_top_margin").toString());
-            ui->cbxAdminBottomMarginWinprtCheck->setCurrentText(data.value("prt_win_bottom_margin").toString());
-        }
-        break;
+            ui->cbxAdminLeftMarginWinprtCheck->setCurrentText(
+                data.value("prt_win_left_margin").toString());
+            ui->cbxAdminRightMarginWinprtCheck->setCurrentText(
+                data.value("prt_win_right_margin").toString());
+            ui->cbxAdminTopMarginWinprtCheck->setCurrentText(
+                data.value("prt_win_top_margin").toString());
+            ui->cbxAdminBottomMarginWinprtCheck->setCurrentText(
+                data.value("prt_win_bottom_margin").toString());
+        } break;
         case AdminCommand::aCmdCounterCheckInf: {
             ui->chbxAdminCounterExist->setChecked(data.value("exist_counter_chek").toBool());
             ui->editAdminLengthOfRulon->setText(data.value("counter_len_rulon").toString());
             ui->editAdminLengthOfCheck->setText(data.value("counter_len_chek").toString());
             ui->editAdminLengthOfCounter->setText(data.value("counter_ring_value").toString());
-        }
-        break;
+        } break;
         case AdminCommand::aCmdCounterCheckVal: {
             ui->lblAdminResultCounterInfo->setText(data.value("counter_info").toString());
-        }
-        break;
+        } break;
         case AdminCommand::aCmdAvtorizationTrmP: {
             auto login = data.value("login").toString();
             auto secretLogin = data.value("secret_login").toString();
 
             ui->editAdminLoginTrm->setText(login);
             ui->editAdminSecretLogin->setText(secretLogin);
-        }
-        break;
+        } break;
         case AdminCommand::aCmdOtherSettings: {
-            ui->chbxAdminSendErrorCodValidatorJam->setChecked(data.value("status_validator_jam_in_box").toBool());
-            ui->chbxAdminDoLockCodValidatorJam->setChecked(data.value("status_validator_jam_in_box_lockers").toBool());
-            ui->cbxAdminSelectCountStatusJam->setCurrentText(data.value("status_validator_jam_in_box_value_counter").toString());
+            ui->chbxAdminSendErrorCodValidatorJam->setChecked(
+                data.value("status_validator_jam_in_box").toBool());
+            ui->chbxAdminDoLockCodValidatorJam->setChecked(
+                data.value("status_validator_jam_in_box_lockers").toBool());
+            ui->cbxAdminSelectCountStatusJam->setCurrentText(
+                data.value("status_validator_jam_in_box_value_counter").toString());
             ui->cbxAdminSelectMainLang->setCurrentText(data.value("default_lang").toString());
             ui->chbxAdminTornOnAvtoUpdate->setChecked(data.value("auto_update_status").toBool());
-            ui->chbxAdminCounterPrinterExist->setChecked(data.value("exist_counter_printer_chek").toBool());
-            ui->chbxAdminNominalDuplicate->setChecked(!data.value("lock_duplicate_nominal").toBool());
-        }
-        break;
+            ui->chbxAdminCounterPrinterExist->setChecked(
+                data.value("exist_counter_printer_chek").toBool());
+            ui->chbxAdminNominalDuplicate->setChecked(
+                !data.value("lock_duplicate_nominal").toBool());
+        } break;
         case AdminCommand::aCmdInfoGetServices: {
             auto msg = data.value("message").toString();
             ui->lblAdminServicesDataInfo->setText(msg);
-        }
-        break;
+        } break;
     }
-
 }
 
-void AdminDialog::checkBalance()
-{
+void AdminDialog::checkBalance() {
     closeTimer->start();
     mveAnimateGB->start();
     ui->lblAnimateAdminBalance->setVisible(true);
@@ -1077,30 +1000,23 @@ void AdminDialog::checkBalance()
     emit emit_execToMain(AdminCommand::aCmdGetBalance);
 }
 
-AdminDialog::~AdminDialog()
-{
-    delete ui;
+AdminDialog::~AdminDialog() { delete ui; }
 
-}
-
-void AdminDialog::steckerClicked(int stk)
-{
+void AdminDialog::steckerClicked(int stk) {
     closeTimer->start();
 
-    //Тут можно делать проверки какая страница нажата
-    switch(stk){
+    // Тут можно делать проверки какая страница нажата
+    switch (stk) {
         case AdminLisTitle::lSettingsLogInfo: {
             openLogInfoDate();
-        }
-        break;
+        } break;
     }
 
-    //Тут отображаем тайтл
-//    ui->grpBoxAdminText->setTitle(lstAdminListTitle.at(stk));
+    // Тут отображаем тайтл
+    //    ui->grpBoxAdminText->setTitle(lstAdminListTitle.at(stk));
 }
 
-void AdminDialog::closeThis()
-{
+void AdminDialog::closeThis() {
     closeTimer->stop();
 
     if (selectCategoryLogView->isVisible()) {
@@ -1114,8 +1030,7 @@ void AdminDialog::closeThis()
     this->close();
 }
 
-void AdminDialog::openThis()
-{
+void AdminDialog::openThis() {
     closeTimer->start();
 
     this->showFullScreen();
@@ -1132,8 +1047,7 @@ void AdminDialog::openThis()
     ui->tabWidget->setCurrentIndex(0);
 }
 
-void AdminDialog::sendCharacter(QChar character)
-{
+void AdminDialog::sendCharacter(QChar character) {
     bool a_key = false;
     QPointer<QWidget> w = focusWidget();
 
@@ -1164,9 +1078,9 @@ void AdminDialog::sendCharacter(QChar character)
     }
 
     if (un == 15420) {
-//        un = Qt::Key_Backspace;
+        //        un = Qt::Key_Backspace;
         a = "";
-        //clearTextIn();
+        // clearTextIn();
         return;
     }
 
@@ -1181,15 +1095,13 @@ void AdminDialog::sendCharacter(QChar character)
     }
 }
 
-void AdminDialog::printerNameChanged(int index)
-{
+void AdminDialog::printerNameChanged(int index) {
     auto show_port_speed = index == 7;
 
     ui->cbxAdminPortSpeed->setVisible(show_port_speed);
     ui->lblAdminTitleSpeed->setVisible(show_port_speed);
 
     auto isWinprinter = index == 8;
-
 
     ui->cbxAdminPortPrinter->setVisible(!isWinprinter);
     ui->cbxAdminWinprinter->setVisible(isWinprinter);

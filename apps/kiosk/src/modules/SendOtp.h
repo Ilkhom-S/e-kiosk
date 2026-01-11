@@ -4,28 +4,27 @@
 #include "SendRequest.h"
 class SendRequest;
 
-class SendOtp : public SendRequest
-{
+class SendOtp : public SendRequest {
     Q_OBJECT
 
-public:
-    SendOtp(QObject *parent = 0);
+  public:
+    SendOtp(QObject* parent = 0);
 
-private slots:
+  private slots:
     void resendRequest();
     void setDataNote(const QDomNode& domElement);
 
-public slots:
+  public slots:
     void sendOtpRequest(QString account);
 
-private:
+  private:
     void parcerNote(const QDomNode& domElement);
 
     QString resultCode;
     QString otpId;
 
-signals:
+  signals:
     void emit_SendOtpResult(QString resultCode, QString otpId);
 };
 
-#endif // SENDOTP_H
+#endif  // SENDOTP_H

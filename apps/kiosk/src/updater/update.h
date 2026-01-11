@@ -2,27 +2,26 @@
 #define UPDATE_H
 
 /// Подключаемые файлы
-#include "textprogressbar.h"
-
-#include <QFile>
 #include <QDir>
+#include <QFile>
 #include <QObject>
 #include <QThread>
 #include <QtSql>
-//#include <QQueue>
+
+#include "textprogressbar.h"
+// #include <QQueue>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QTime>
 #include <QUrl>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
 #include <QtXml>
 
 #include "CopyFile.h"
 
-class DownloadManager: public QThread
-{
+class DownloadManager : public QThread {
     Q_OBJECT
-public:
+  public:
     DownloadManager();
 
     void setUpdatePointName(QString name);
@@ -35,33 +34,33 @@ public:
 
     QString settingsPath;
 
-protected:
+  protected:
     void run();
 
-private:
+  private:
     QString getOldHash();
     QString fileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm);
 
     void createDirIfNotExist(QString dirPath);
     void createPathDirIfNotExist(QString dirPath);
     void openDocumentXml();
-    void traverseNode(const QDomNode& node);
+    void traverseNode(const QDomNode &node);
     void addToDatabaseFile();
     bool updateRecordFile(int id, QString fieldName, QString value);
-    bool updateRecordForMore(int id,QString hash,int size);
+    bool updateRecordForMore(int id, QString hash, int size);
     bool insertNewRecordFile(QString path, QString name, QString size, QString hash);
     void updateGlobalHash();
     void downloadFileResponse();
     void createFileList(QString path);
     void reCopyAllFiles();
-    QStringList getDirFiles( const QString& dirName  );
+    QStringList getDirFiles(const QString &dirName);
     bool isUpdaterLocked();
     int getAppFileSize();
 
     CopyFileQs *copyFile;
     QStringList allFilesList;
-    QMap <int, QMap<QString, QString> > ServerXmlMap;
-    QMap <int, QMap<QString, QString> > copyXmlMap;
+    QMap<int, QMap<QString, QString> > ServerXmlMap;
+    QMap<int, QMap<QString, QString> > copyXmlMap;
     QFile output;
     QNetworkReply *currentDownload;
     QNetworkAccessManager manager;
@@ -93,7 +92,7 @@ private:
 
     QDir dirCont;
 
-private slots:
+  private slots:
     void append(QUrl url);
     void startNextDownload();
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
@@ -106,10 +105,10 @@ private slots:
     void compliteUpdateIn();
     void toRestartTimer();
 
-public slots:
+  public slots:
     void startToUpdate();
 
-signals:
+  signals:
     void emit_Loging(int status, QString title, QString text);
     void emit_reDown();
     void emit_downOneByOne();
@@ -118,5 +117,4 @@ signals:
     void emit_replaceApp(QString query, QVariantMap data);
 };
 
-#endif // UPDATE_H
-
+#endif  // UPDATE_H

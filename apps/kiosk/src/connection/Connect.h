@@ -1,18 +1,17 @@
 #ifndef CONNECT_H
 #define CONNECT_H
 
-
-#include "RasConnection.h"
-#include "CheckConnection.h"
 #include <QNetworkInterface>
+
+#include "CheckConnection.h"
+#include "RasConnection.h"
 
 class RasConnection;
 
-class ConnectionPart : public QObject
-{
+class ConnectionPart : public QObject {
     Q_OBJECT
 
-public:
+  public:
     ConnectionPart(QObject *parent = 0);
 
     QStringList getLocalConnectionList();
@@ -29,30 +28,29 @@ public:
     void stopReconnect();
     void closeThis();
     bool restartWindows(bool restart);
-    int createNewDialupConnection(QString conName, QString devName, QString phone, QString login, QString pass);
+    int createNewDialupConnection(QString conName, QString devName, QString phone, QString login,
+                                  QString pass);
     bool hasInstalledModems(QStringList &lstModemList);
     int conState;
     QTimer *daemonTimer;
 
-private:
+  private:
     RasConnection *rasConn;
     CheckConnection *checkConn;
 
     QString connectionName;
 
-public slots:
+  public slots:
     void nowStateDialuping(int state);
     void setDateTimeIn(QString dt);
-signals:
-    void emit_connState(QString state,QString comment);
+  signals:
+    void emit_connState(QString state, QString comment);
     void emit_errorState(QString errNum, QString errComment);
     void emit_ConnectionUp();
     void emit_ConnectionError();
     void emit_Ping(bool sts);
     void emit_checkConState();
-    void emit_toLoging(int sts,QString title,QString text);
-
+    void emit_toLoging(int sts, QString title, QString text);
 };
 
-
-#endif // CONNECT_H
+#endif  // CONNECT_H

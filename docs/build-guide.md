@@ -25,6 +25,30 @@ This guide explains how to build EKiosk on supported platforms.
 
 4. Run the desired executable from `apps/`.
 
+## Test Mode (Developer/Debug)
+
+EKiosk supports a **test mode** that disables kiosk restrictions (e.g. killing `explorer.exe`, hiding the Windows shell, etc). This is useful for development and debugging.
+
+You can enable test mode in two ways:
+
+- **At runtime:** Launch the application with the `test` argument:
+
+  ```sh
+  ekiosk.exe test
+  ```
+
+- **At build time (IDE-agnostic):** Configure CMake with the test mode option:
+
+  ```sh
+  cmake -DEKIOSK_TEST_MODE=ON --preset <your-preset>
+  ```
+
+  This will build the app so that test mode is always enabled, regardless of launch arguments or IDE.
+
+**Recommended:** For IDE-agnostic development, use the CMake option. For quick tests, use the command-line argument.
+
+When test mode is enabled, the app will not kill `explorer.exe` or enforce kiosk shell restrictions.
+
 ## EKiosk CMake Helpers (Required)
 
 All new targets (applications, libraries, plugins, tests) **must** use the EKiosk CMake helper functions from the `cmake/` directory. This ensures a consistent, maintainable, and DRY build system for all developers.
@@ -43,6 +67,19 @@ See [cmake/README.md](../cmake/README.md) for detailed usage, rationale, and cop
 **Do not manually define targets or install rules—always use the helpers.**
 
 ---
+
+## Code Formatting (clang-format)
+
+All C++ code must be formatted using [clang-format](https://clang.llvm.org/docs/ClangFormat.html) and the project's [.clang-format](../.clang-format) file. Formatting is enforced in CI and by default in VS Code.
+
+- In VS Code: formatting is automatic on save.
+- From the command line:
+
+  ```sh
+  clang-format -i <file1> <file2> ...
+  ```
+
+Do not change the .clang-format file without team consensus.
 
 ## Troubleshooting
 

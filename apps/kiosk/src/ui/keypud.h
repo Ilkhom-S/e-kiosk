@@ -1,29 +1,28 @@
 #ifndef KEYPUD_H
 #define KEYPUD_H
 
-#include <QWidget>
-#include <QSignalMapper>
-#include <QMap>
 #include <QDebug>
+#include <QMap>
+#include <QSignalMapper>
+#include <QWidget>
 
 namespace Ui {
-    class keyPud;
+class keyPud;
 }
 
-class keyPud : public QWidget
-{
+class keyPud : public QWidget {
     Q_OBJECT
 
-public:
+  public:
     explicit keyPud(QWidget *parent = 0);
     ~keyPud();
 
     void clickBackspace();
 
-private:
+  private:
     Ui::keyPud *ui;
 
-//    QWidget *lastFocusedWidget;
+    //    QWidget *lastFocusedWidget;
     QSignalMapper signalMapper;
 
     QMap<QString, QChar> ScharMap;
@@ -35,19 +34,18 @@ private:
 
     QString gblLang;
 
-private slots:
+  private slots:
 
     void buttonClicked(QWidget *w);
 
-public slots:
-     void shiftClicked();
-     void fordouble(QString lang);
-     void changeToRU();
-     void changeToEN();
+  public slots:
+    void shiftClicked();
+    void fordouble(QString lang);
+    void changeToRU();
+    void changeToEN();
 
-
-signals:
+  signals:
     void characterGenerated(QChar character);
 };
 
-#endif // KEYPUD_H
+#endif  // KEYPUD_H

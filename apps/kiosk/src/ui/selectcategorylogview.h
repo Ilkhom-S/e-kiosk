@@ -4,35 +4,29 @@
 #include <QDialog>
 
 namespace Ui {
-    class SelectCategoryLogView;
+class SelectCategoryLogView;
 }
 
-class SelectCategoryLogView : public QDialog
-{
+class SelectCategoryLogView : public QDialog {
     Q_OBJECT
 
-public:
+  public:
     explicit SelectCategoryLogView(QWidget *parent = 0);
     ~SelectCategoryLogView();
 
-signals:
-    void emit_SelectOptions(bool SelectValidatorJam,
-                            bool SelectMoneyOut,
-                            bool SelectERROR,
-                            bool SelectPayDaemon,
-                            bool SelectStatusAso,
-                            bool SelectStatusPrinter,
-                            bool SelectStatusValidator,
-                            bool SelectConnectionState,
+  signals:
+    void emit_SelectOptions(bool SelectValidatorJam, bool SelectMoneyOut, bool SelectERROR,
+                            bool SelectPayDaemon, bool SelectStatusAso, bool SelectStatusPrinter,
+                            bool SelectStatusValidator, bool SelectConnectionState,
                             bool SelectUpdater);
 
-private:
+  private:
     Ui::SelectCategoryLogView *ui;
 
-private slots:
+  private slots:
     void selectAll();
     void deSelectAll();
     void showLikeThis();
 };
 
-#endif // SELECTCATEGORYLOGVIEW_H
+#endif  // SELECTCATEGORYLOGVIEW_H

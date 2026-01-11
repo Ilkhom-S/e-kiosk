@@ -9,9 +9,24 @@
 
 ## Formatting
 
+- All C++ code must be formatted using [clang-format](https://clang.llvm.org/docs/ClangFormat.html) with the project-provided [.clang-format](../.clang-format) file at the root of the repository.
 - Indent with 4 spaces.
 - Use braces for all control blocks.
 - Use descriptive variable and function names.
+- Do not use tabs (see .clang-format: `UseTab: Never`).
+- Run clang-format before committing code. VS Code and most IDEs can be configured to auto-format on save.
+- Formatting is enforced in CI and by default in VS Code (see .vscode/settings.json).
+
+**How to format:**
+
+- In VS Code: formatting is automatic on save (see .vscode/settings.json).
+- From the command line:
+
+```sh
+clang-format -i <file1> <file2> ...
+```
+
+**Do not change the .clang-format file without team consensus.**
 
 ## Commits
 

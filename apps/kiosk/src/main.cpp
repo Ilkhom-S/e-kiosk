@@ -49,7 +49,11 @@ int main(int argc, char *argv[]) {
         proc.startDetached(sheller, QStringList());
     }
 
+#ifdef EKIOSK_TEST_MODE
+    w.testMode = true;
+#else
     w.testMode = arguments.contains("test");
+#endif
 
     if (!w.testMode) {
         a.setOverrideCursor(Qt::BlankCursor);

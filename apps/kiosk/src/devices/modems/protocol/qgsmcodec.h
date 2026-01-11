@@ -20,14 +20,12 @@
 #ifndef QGSMCODEC_H
 #define QGSMCODEC_H
 
-
 #include <qstring.h>
 #include <qtextcodec.h>
 
-class QGsmCodec : public QTextCodec
-{
-public:
-    explicit QGsmCodec( bool noLoss=false );
+class QGsmCodec : public QTextCodec {
+  public:
+    explicit QGsmCodec(bool noLoss = false);
     ~QGsmCodec();
 
     QByteArray name() const;
@@ -39,11 +37,11 @@ public:
     static unsigned short twoByteFromUnicode(QChar ch);
     static QChar twoByteToUnicode(unsigned short ch);
 
-protected:
+  protected:
     QString convertToUnicode(const char *in, int length, ConverterState *state) const;
     QByteArray convertFromUnicode(const QChar *in, int length, ConverterState *state) const;
 
-private:
+  private:
     bool noLoss;
 };
 

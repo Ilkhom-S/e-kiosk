@@ -18,6 +18,7 @@
 ****************************************************************************/
 
 #include "qatresultparser.h"
+
 #include "qatresult.h"
 #include "qatutils.h"
 
@@ -25,7 +26,8 @@
     \class QAtResultParser
     \inpublicgroup QtBaseModule
 
-    \brief The QAtResultParser class provides support for parsing the response to AT modem commands and unsolicited notifications.
+    \brief The QAtResultParser class provides support for parsing the response to AT modem commands
+   and unsolicited notifications.
     \ingroup telephony::serial
 
     The following example demonstrates how to parse the response to a
@@ -47,11 +49,9 @@
     \sa QAtResult
 */
 
-class QAtResultParserPrivate
-{
-public:
-    QAtResultParserPrivate( const QString& content )
-    {
+class QAtResultParserPrivate {
+  public:
+    QAtResultParserPrivate(const QString& content) {
         response = content;
         posn = 0;
         linePosn = 0;
@@ -70,9 +70,8 @@ public:
     The caller will typically follow this with a call to next() to position
     the parser on the first line of relevant result data.
 */
-QAtResultParser::QAtResultParser( const QAtResult& result )
-{
-    d = new QAtResultParserPrivate( result.content() );
+QAtResultParser::QAtResultParser(const QAtResult& result) {
+    d = new QAtResultParserPrivate(result.content());
 }
 
 /*!
@@ -81,33 +80,27 @@ QAtResultParser::QAtResultParser( const QAtResult& result )
     expected to have the format \c{NAME: VALUE}.  The next() function
     will be called internally to position the parser at \c{VALUE}.
 */
-QAtResultParser::QAtResultParser( const QString& notification )
-{
-    d = new QAtResultParserPrivate( notification );
+QAtResultParser::QAtResultParser(const QString& notification) {
+    d = new QAtResultParserPrivate(notification);
     int posn = 0;
-    while ( posn < notification.length() && notification[posn] != ':' ) {
+    while (posn < notification.length() && notification[posn] != ':') {
         ++posn;
     }
-    if ( posn < notification.length() )
-        ++posn;     // Account for the colon.
-    next( notification.left( posn ) );
+    if (posn < notification.length()) ++posn;  // Account for the colon.
+    next(notification.left(posn));
     d->notification = true;
 }
 
 /*!
     Destruct this AT modem result parser.
 */
-QAtResultParser::~QAtResultParser()
-{
-    delete d;
-}
+QAtResultParser::~QAtResultParser() { delete d; }
 
 /*!
     Reset this AT modem result parser to the beginning of the content.
 */
-void QAtResultParser::reset()
-{
-    if ( d->notification ) {
+void QAtResultParser::reset() {
+    if (d->notification) {
         d->linePosn = 0;
     } else {
         d->line = QString();
@@ -122,33 +115,28 @@ void QAtResultParser::reset()
 
     \sa line(), lines(), readNumeric(), readString()
 */
-bool QAtResultParser::next( const QString& prefix )
-{
-    while ( d->posn < d->response.length() ) {
-
+bool QAtResultParser::next(const QString& prefix) {
+    while (d->posn < d->response.length()) {
         // Extract the next line.
         d->line = "";
         d->linePosn = 0;
-        while ( d->posn < d->response.length() &&
-                d->response[d->posn] != '\n' ) {
+        while (d->posn < d->response.length() && d->response[d->posn] != '\n') {
             d->line += d->response[(d->posn)++];
         }
-        if ( d->posn < d->response.length() ) {
+        if (d->posn < d->response.length()) {
             ++(d->posn);
         }
 
         // Bail out if the line starts with the expected prefix.
-        if ( d->line.startsWith( prefix ) ) {
+        if (d->line.startsWith(prefix)) {
             d->linePosn = prefix.length();
-            while ( d->linePosn < d->line.length() &&
-                    d->line[d->linePosn] == ' ' ) {
+            while (d->linePosn < d->line.length() && d->line[d->linePosn] == ' ') {
                 ++(d->linePosn);
             }
-            d->line = d->line.mid( d->linePosn );
+            d->line = d->line.mid(d->linePosn);
             d->linePosn = 0;
             return true;
         }
-
     }
     return false;
 }
@@ -159,37 +147,32 @@ bool QAtResultParser::next( const QString& prefix )
 
     \sa next(), readNumeric(), readString()
 */
-QString QAtResultParser::line()
-{
-    return d->line;
-}
+QString QAtResultParser::line() { return d->line; }
 
 /*!
     Read a numeric value from the current line.
 
     \sa readString(), skip()
 */
-uint QAtResultParser::readNumeric()
-{
+uint QAtResultParser::readNumeric() {
     uint value = 0;
-    while ( d->linePosn < d->line.length() &&
-            d->line[d->linePosn] >= '0' && d->line[d->linePosn] <= '9' ) {
+    while (d->linePosn < d->line.length() && d->line[d->linePosn] >= '0' &&
+           d->line[d->linePosn] <= '9') {
         value = value * 10 + (uint)(d->line[d->linePosn].unicode() - '0');
         ++(d->linePosn);
     }
-    if ( d->linePosn < d->line.length() && d->line[d->linePosn] == ',' ) {
+    if (d->linePosn < d->line.length() && d->line[d->linePosn] == ',') {
         ++(d->linePosn);
     }
-    while ( d->linePosn < d->line.length() && d->line[d->linePosn] == ' ' ) {
+    while (d->linePosn < d->line.length() && d->line[d->linePosn] == ' ') {
         ++(d->linePosn);
     }
     return value;
 }
 
-static QString nextString( const QString& buf, int& posn )
-{
+static QString nextString(const QString& buf, int& posn) {
     uint posn2 = (uint)posn;
-    QString result = QAtUtils::nextString( buf, posn2 );
+    QString result = QAtUtils::nextString(buf, posn2);
     posn = (int)posn2;
     return result;
 }
@@ -199,13 +182,12 @@ static QString nextString( const QString& buf, int& posn )
 
     \sa readNumeric(), skip()
 */
-QString QAtResultParser::readString()
-{
-    QString value = nextString( d->line, d->linePosn );
-    if ( d->linePosn < d->line.length() && d->line[d->linePosn] == ',' ) {
+QString QAtResultParser::readString() {
+    QString value = nextString(d->line, d->linePosn);
+    if (d->linePosn < d->line.length() && d->line[d->linePosn] == ',') {
         ++(d->linePosn);
     }
-    while ( d->linePosn < d->line.length() && d->line[d->linePosn] == ' ' ) {
+    while (d->linePosn < d->line.length() && d->line[d->linePosn] == ' ') {
         ++(d->linePosn);
     }
     return value;
@@ -216,12 +198,11 @@ QString QAtResultParser::readString()
 
     \sa readNumeric(), readString()
 */
-void QAtResultParser::skip()
-{
-    if ( d->linePosn < d->line.length() && d->line[d->linePosn] == ',' ) {
+void QAtResultParser::skip() {
+    if (d->linePosn < d->line.length() && d->line[d->linePosn] == ',') {
         ++(d->linePosn);
     }
-    while ( d->linePosn < d->line.length() && d->line[d->linePosn] != ',' ) {
+    while (d->linePosn < d->line.length() && d->line[d->linePosn] != ',') {
         ++(d->linePosn);
     }
 }
@@ -231,15 +212,13 @@ void QAtResultParser::skip()
     This is for results from commands such as \c{AT+CMGL} which place the
     PDU on a line of its own.
 */
-QString QAtResultParser::readNextLine()
-{
+QString QAtResultParser::readNextLine() {
     QString line = "";
 
-    while ( d->posn < d->response.length() &&
-            d->response[d->posn] != '\n' ) {
+    while (d->posn < d->response.length() && d->response[d->posn] != '\n') {
         line += d->response[(d->posn)++];
     }
-    if ( d->posn < d->response.length() ) {
+    if (d->posn < d->response.length()) {
         ++(d->posn);
     }
 
@@ -252,10 +231,9 @@ QString QAtResultParser::readNextLine()
 
     \sa next()
 */
-QStringList QAtResultParser::lines( const QString& prefix )
-{
+QStringList QAtResultParser::lines(const QString& prefix) {
     QStringList result;
-    while ( next( prefix ) ) {
+    while (next(prefix)) {
         result << d->line;
     }
     return result;
@@ -266,44 +244,39 @@ QStringList QAtResultParser::lines( const QString& prefix )
     complex command results that cannot be parsed with readNumeric()
     and readString().
 */
-QList<QAtResultParser::Node> QAtResultParser::readList()
-{
+QList<QAtResultParser::Node> QAtResultParser::readList() {
     QList<QAtResultParser::Node> list;
-    if ( d->linePosn < d->line.length() && d->line[d->linePosn] == '(' ) {
+    if (d->linePosn < d->line.length() && d->line[d->linePosn] == '(') {
         ++(d->linePosn);
-        while ( d->linePosn < d->line.length() &&
-                d->line[d->linePosn] != ')' ) {
+        while (d->linePosn < d->line.length() && d->line[d->linePosn] != ')') {
             uint ch = d->line[d->linePosn].unicode();
-            if ( ch >= '0' && ch <= '9' ) {
+            if (ch >= '0' && ch <= '9') {
                 // Parse a number or range.
                 uint number = readNumeric();
-                if ( d->linePosn < d->line.length() &&
-                     d->line[d->linePosn] == '-' ) {
+                if (d->linePosn < d->line.length() && d->line[d->linePosn] == '-') {
                     ++(d->linePosn);
                     uint last = readNumeric();
-                    list.append( QAtResultParser::Node( number, last ) );
+                    list.append(QAtResultParser::Node(number, last));
                 } else {
-                    list.append( QAtResultParser::Node( number ) );
+                    list.append(QAtResultParser::Node(number));
                 }
-            } else if ( ch == '"' ) {
+            } else if (ch == '"') {
                 // Parse a string.
-                list.append( QAtResultParser::Node( readString() ) );
+                list.append(QAtResultParser::Node(readString()));
             } else {
                 // Encountered something unknown - bail out at this point.
                 d->linePosn = d->line.length();
                 return list;
             }
         }
-        if ( d->linePosn < d->line.length() ) {
+        if (d->linePosn < d->line.length()) {
             // Skip the ')' at the end of the list.
             ++(d->linePosn);
-            if ( d->linePosn < d->line.length() &&
-                 d->line[d->linePosn] == ',' ) {
+            if (d->linePosn < d->line.length() && d->line[d->linePosn] == ',') {
                 // Skip a trailing comma.
                 ++(d->linePosn);
             }
-            while ( d->linePosn < d->line.length() &&
-                 d->line[d->linePosn] == ' ' ) {
+            while (d->linePosn < d->line.length() && d->line[d->linePosn] == ' ') {
                 // Skip trailing white space.
                 ++(d->linePosn);
             }
@@ -324,30 +297,26 @@ QList<QAtResultParser::Node> QAtResultParser::readList()
     \sa QAtResultParser::readList()
 */
 
-QAtResultParser::Node::Node( uint number )
-{
+QAtResultParser::Node::Node(uint number) {
     _kind = Number;
     _number = number;
     _list = 0;
 }
 
-QAtResultParser::Node::Node( uint first, uint last )
-{
+QAtResultParser::Node::Node(uint first, uint last) {
     _kind = Range;
     _number = first;
     _last = last;
     _list = 0;
 }
 
-QAtResultParser::Node::Node( const QString& str )
-{
+QAtResultParser::Node::Node(const QString& str) {
     _kind = String;
     _str = str;
     _list = 0;
 }
 
-QAtResultParser::Node::Node( QList<Node> *list )
-{
+QAtResultParser::Node::Node(QList<Node>* list) {
     _kind = List;
     _list = list;
 }
@@ -355,22 +324,19 @@ QAtResultParser::Node::Node( QList<Node> *list )
 /*!
     Create a new result list node from \a other.
 */
-QAtResultParser::Node::Node( const Node& other )
-{
+QAtResultParser::Node::Node(const Node& other) {
     _kind = other._kind;
     _number = other._number;
     _last = other._last;
     _str = other._str;
-    _list = ( other._list ? new QList<Node>( *other._list ) : 0 );
+    _list = (other._list ? new QList<Node>(*other._list) : 0);
 }
 
 /*!
     Destruct this node.
 */
-QAtResultParser::Node::~Node()
-{
-    if ( _list )
-        delete _list;
+QAtResultParser::Node::~Node() {
+    if (_list) delete _list;
 }
 
 /*!
@@ -416,7 +382,8 @@ QAtResultParser::Node::~Node()
 /*!
     \fn uint QAtResultParser::Node::asFirst() const
 
-    Returns the first number in a range that is contained within this node; otherwise returns zero if not a range.
+    Returns the first number in a range that is contained within this node; otherwise returns zero
+   if not a range.
 
     \sa isRange(), asLast()
 */
@@ -424,7 +391,8 @@ QAtResultParser::Node::~Node()
 /*!
     \fn uint QAtResultParser::Node::asLast() const
 
-    Returns the last number in a range that is contained within this node; otherwise returns zero if not a range.
+    Returns the last number in a range that is contained within this node; otherwise returns zero if
+   not a range.
 
     \sa isRange(), asFirst()
 */

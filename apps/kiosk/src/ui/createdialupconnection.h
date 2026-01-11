@@ -5,29 +5,27 @@
 #include <QVariantMap>
 
 namespace Ui {
-    class CreateDialupConnection;
+class CreateDialupConnection;
 }
 
-class CreateDialupConnection : public QDialog
-{
+class CreateDialupConnection : public QDialog {
     Q_OBJECT
 
-public:
+  public:
     explicit CreateDialupConnection(QWidget *parent = 0);
     QStringList conList;
     QStringList devList;
     void openThis();
     ~CreateDialupConnection();
 
-private:
+  private:
     Ui::CreateDialupConnection *ui;
 
-
-private slots:
+  private slots:
     void btnCreateNewConClc();
 
-signals:
+  signals:
     void emitDialupParam(QVariantMap data);
 };
 
-#endif // CREATEDIALUPCONNECTION_H
+#endif  // CREATEDIALUPCONNECTION_H

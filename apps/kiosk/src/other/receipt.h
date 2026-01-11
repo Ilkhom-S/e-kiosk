@@ -5,4 +5,4 @@
 
 QString receiptGet(QString tpl);
 
-#endif // RECEIPT_H
+#endif  // RECEIPT_H

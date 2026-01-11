@@ -22,5 +22,11 @@ ek_add_application(KioskApp
     $<$<PLATFORM_ID:Windows>:rasapi32;winspool;psapi;user32;Advapi32>
 )
 
+# Option to enable test mode (disables kiosk restrictions, e.g. killing explorer.exe)
+option(EKIOSK_TEST_MODE "Enable test mode (no kiosk restrictions)" OFF)
+if(EKIOSK_TEST_MODE)
+    target_compile_definitions(KioskApp PRIVATE EKIOSK_TEST_MODE)
+endif()
+
 # Static analysis (optional, but recommended)
 ek_enable_static_analysis(KioskApp CPPCHECK CLANG_TIDY)

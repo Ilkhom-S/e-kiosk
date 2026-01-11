@@ -1,29 +1,26 @@
 #ifndef SYSTEMINFO_H
 #define SYSTEMINFO_H
 
+#include <QDebug>
+#include <QDir>
 #include <QObject>
-#include <QThread>
-#include <QVariantMap>
 #include <QProcess>
 #include <QTextCodec>
-#include <QDir>
+#include <QThread>
+#include <QVariantMap>
 
-#include <QDebug>
-
-class SystemInfo: public QThread
-{
+class SystemInfo : public QThread {
     Q_OBJECT
 
-private:
-
+  private:
     QVariantMap sysInfo;
 
-    void getSystemInfo()
-    {
+    void getSystemInfo() {
         auto isWinXP = QSysInfo::windowsVersion() == QSysInfo::WV_XP;
 
         // "----------------- OS ----------------- ";
-        QVariantMap osInfo = getWmicInfo(QString("os get caption, version, csname, csdversion%1").arg(isWinXP ? "" : ", osarchitecture"));
+        QVariantMap osInfo = getWmicInfo(QString("os get caption, version, csname, csdversion%1")
+                                             .arg(isWinXP ? "" : ", osarchitecture"));
 
         if (isWinXP) {
             osInfo["osarchitecture"] = "x32";
@@ -36,12 +33,15 @@ private:
         sysInfo["cpu"] = cpuInfo;
 
         // "----------------- Motherboard ----------------- ";
-        QVariantMap mboardInfo = getWmicInfo("baseboard get product, manufacturer, version, serialnumber");
+        QVariantMap mboardInfo =
+            getWmicInfo("baseboard get product, manufacturer, version, serialnumber");
         sysInfo["mboard"] = mboardInfo;
 
         // "----------------- RAM ----------------- ";
 
-        QVariantMap ramInfo = getWmicInfo(QString("path win32_physicalmemory get devicelocator, manufacturer, capacity, speed, memorytype"), true);
+        QVariantMap ramInfo = getWmicInfo(QString("path win32_physicalmemory get devicelocator, "
+                                                  "manufacturer, capacity, speed, memorytype"),
+                                          true);
 
         int ramCapacityTotal = 0;
 
@@ -50,12 +50,13 @@ private:
             QString manufacturer = ram.value("manufacturer").toString();
             QString speed = ram.value("speed").toString();
             int memoryType = ram.value("memorytype").toInt();
-//            int smBiosMemorytype = ram.value("smbiosmemorytype").toInt();
+            //            int smBiosMemorytype = ram.value("smbiosmemorytype").toInt();
 
             QString divider = ramInfo.value("manufacturer").toString() != "" ? "|" : "";
 
             if (!ramInfo.value("manufacturer").toString().contains(manufacturer)) {
-                ramInfo["manufacturer"] = ramInfo.value("manufacturer").toString() + divider + manufacturer;
+                ramInfo["manufacturer"] =
+                    ramInfo.value("manufacturer").toString() + divider + manufacturer;
             }
 
             if (!ramInfo.value("speed").toString().contains(speed)) {
@@ -81,16 +82,21 @@ private:
             diskInfo = diskInfo.value("data").toList().at(0).toMap();
         }
 
-        diskInfo["serialnumber"] = getWmicInfo("path win32_physicalmedia where tag='\\\\\\\\.\\\\PHYSICALDRIVE0' get serialnumber").value("serialnumber").toString().trimmed();
+        diskInfo["serialnumber"] =
+            getWmicInfo(
+                "path win32_physicalmedia where tag='\\\\\\\\.\\\\PHYSICALDRIVE0' get serialnumber")
+                .value("serialnumber")
+                .toString()
+                .trimmed();
 
         if (isWinXP) {
             QString s = QByteArray::fromHex(diskInfo.value("serialnumber").toString().toLatin1());
             QString sn = "";
 
             if (s.length() > 2) {
-                for(int i = 1; i <= s.length(); i++){
-                    if(i % 2 == 0) {
-                        sn = sn + s.at(i-1) + s.at(i-2);
+                for (int i = 1; i <= s.length(); i++) {
+                    if (i % 2 == 0) {
+                        sn = sn + s.at(i - 1) + s.at(i - 2);
                     }
                 }
             }
@@ -111,7 +117,8 @@ private:
 
             QString divider = diskInfo.value("diskCaptions").toString() != "" ? ", " : "";
 
-            diskInfo["diskCaptions"] = diskInfo["diskCaptions"].toString() + divider + lDiskCaption.at(0);
+            diskInfo["diskCaptions"] =
+                diskInfo["diskCaptions"].toString() + divider + lDiskCaption.at(0);
 
             // system disk
             if (lDiskCaption == QDir::rootPath().left(2)) {
@@ -130,9 +137,7 @@ private:
         sysInfo["system_disk"] = systemDisk;
     }
 
-
     QVariantMap getWmicInfo(QString cmd, const bool getList = false) {
-
         QProcess proc;
         QString args = QString("%1 /value").arg(cmd);
         proc.setProcessChannelMode(QProcess::MergedChannels);
@@ -193,25 +198,32 @@ private:
 
     QString ramMemoryType(int type) {
         switch (type) {
-            case 20: return "DDR";
-            case 21: return "DDR2";
-            case 22: return "DDR2 FB-DIMM";
-            case 24: return "DDR3";
-            case 25: return "FBD2";
-            case 26: return "DDR4";
-            default: return "UNKNOWN";
+            case 20:
+                return "DDR";
+            case 21:
+                return "DDR2";
+            case 22:
+                return "DDR2 FB-DIMM";
+            case 24:
+                return "DDR3";
+            case 25:
+                return "FBD2";
+            case 26:
+                return "DDR4";
+            default:
+                return "UNKNOWN";
         }
     }
 
-protected:
+  protected:
     void run() {
         getSystemInfo();
 
         emit emitSystemInfo(sysInfo);
     }
 
-signals:
+  signals:
     void emitSystemInfo(QVariantMap data);
 };
 
-#endif // SYSTEMINFO_H
+#endif  // SYSTEMINFO_H

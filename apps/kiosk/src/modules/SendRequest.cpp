@@ -1,48 +1,38 @@
 #include "SendRequest.h"
 
-SendRequest::SendRequest(QObject *parent) : QThread(parent)
-{
+SendRequest::SendRequest(QObject *parent) : QThread(parent) {
     debugger = true;
     m_abort = true;
 
     abortTimer = new QTimer();
     abortTimer->setSingleShot(true);
 
-    connect(abortTimer,SIGNAL(timeout()),this,SLOT(slotQHttpAbort()));
+    connect(abortTimer, SIGNAL(timeout()), this, SLOT(slotQHttpAbort()));
 
-    connect(this,SIGNAL(emit_abortTimer(int)),abortTimer,SLOT(start(int)));
+    connect(this, SIGNAL(emit_abortTimer(int)), abortTimer, SLOT(start(int)));
 
-    connect(this,SIGNAL(send_req_data()),SLOT(sendRequestData()));
-    connect(this,SIGNAL(check_to_abortTimer()),SLOT(timerAbortStarted()));
+    connect(this, SIGNAL(send_req_data()), SLOT(sendRequestData()));
+    connect(this, SIGNAL(check_to_abortTimer()), SLOT(timerAbortStarted()));
 }
 
-void SendRequest::setDbConnect(QSqlDatabase &dbName)
-{
-    db = dbName;
-}
+void SendRequest::setDbConnect(QSqlDatabase &dbName) { db = dbName; }
 
-void SendRequest::setAuthData(const QString token, const QString uuid, const QString version)
-{
+void SendRequest::setAuthData(const QString token, const QString uuid, const QString version) {
     this->token = token;
     this->uuid = uuid;
     this->version = version;
 }
 
-void SendRequest::setUrl(QString url)
-{
-    serverUrl = url;
-}
+void SendRequest::setUrl(QString url) { serverUrl = url; }
 
-void SendRequest::timerAbortStarted()
-{
-    //Устанавливаем таймер разрыва
+void SendRequest::timerAbortStarted() {
+    // Устанавливаем таймер разрыва
     if (abortTimer->isActive()) {
         abortTimer->stop();
     }
 }
 
-void SendRequest::run()
-{
+void SendRequest::run() {
     toDebug("SendRequest::run()");
 
     mutex.lock();
@@ -57,8 +47,7 @@ void SendRequest::run()
     toDebug("SendRequest::run() end");
 }
 
-void SendRequest::sendRequestData()
-{
+void SendRequest::sendRequestData() {
     QByteArray timeOutRec = QString::number(reTimerStart).toUtf8();
     QByteArray headerPic = headerParamInit.toUtf8();
     QUrl url(serverUrl);
@@ -70,7 +59,8 @@ void SendRequest::sendRequestData()
     a_request.setUrl(url);
     a_request.setRawHeader("Host", QUrl::toAce(host()));
     a_request.setRawHeader("User-Agent", headerPic);
-    a_request.setRawHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+    a_request.setRawHeader("Accept",
+                           "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
     a_request.setRawHeader("Accept-Language", "ru,en-us;q=0.7,en;q=0.3");
     a_request.setRawHeader("Accept-Charset", "utf-8;q=0.7,*;q=0.7");
     a_request.setRawHeader("Keep-Alive", timeOutRec);
@@ -93,7 +83,8 @@ void SendRequest::sendRequestData()
     QByteArray postData = sendReqRes.toUtf8();
 
     reply = pManager.post(a_request, postData);
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(slotError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
+            SLOT(slotError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(finished()), this, SLOT(slotReadyRead()));
 }
 
@@ -109,8 +100,7 @@ QString SendRequest::host() {
     return host;
 }
 
-void SendRequest::stopProcess()
-{
+void SendRequest::stopProcess() {
     toDebug("SendRequest::stopProcess()");
 
     mutex.lock();
@@ -123,16 +113,14 @@ void SendRequest::stopProcess()
     toDebug("PROCESS STOPPED");
 }
 
-void SendRequest::slotError(QNetworkReply::NetworkError error)
-{
+void SendRequest::slotError(QNetworkReply::NetworkError error) {
     toDebug(QString("SendRequest::slotError(%1)").arg(error));
 }
 
-bool SendRequest::sendRequest(QString request, int timeOut)
-{
+bool SendRequest::sendRequest(QString request, int timeOut) {
     toDebug("SendRequest::sendRequest(QString request, int timeOut)");
 
-    //Проверим если остановлена ветка
+    // Проверим если остановлена ветка
     if (m_abort) {
         reTimerStart = timeOut;
         sendReqRes = request;
@@ -146,8 +134,7 @@ bool SendRequest::sendRequest(QString request, int timeOut)
     return false;
 }
 
-void SendRequest::slotQHttpAbort()
-{
+void SendRequest::slotQHttpAbort() {
     toDebug("SendRequest::slotQHttpAbort()");
     if (reply != NULL) {
         toDebug("if(reply != NULL){");
@@ -155,14 +142,13 @@ void SendRequest::slotQHttpAbort()
             toDebug("if(!reply->isFinished()){");
             reply->abort();
 
-            //Сигнал о том что нет ответа
+            // Сигнал о том что нет ответа
             emit emit_QHttpAbort();
         }
     }
 }
 
-void SendRequest::slotReadyRead()
-{
+void SendRequest::slotReadyRead() {
     toDebug("SendRequest::slotReadyRead()");
 
     if (abortTimer->isActive()) {
@@ -175,268 +161,223 @@ void SendRequest::slotReadyRead()
 
     toDebug("after reply->deleteLater()");
 
-    //Какая ошибка
+    // Какая ошибка
     int statusError = 0;
-    //Коментарий к ошибке
+    // Коментарий к ошибке
     QString statusErrorComment;
 
-    switch (error_id)
-    {
-        case QNetworkReply::NoError:
-        {
-           if (statusCode == 200) {
-               if (reply->bytesAvailable() > 0) {
-                   QByteArray bytes = reply->readAll();
-                   QString str(QString::fromUtf8(bytes));
+    switch (error_id) {
+        case QNetworkReply::NoError: {
+            if (statusCode == 200) {
+                if (reply->bytesAvailable() > 0) {
+                    QByteArray bytes = reply->readAll();
+                    QString str(QString::fromUtf8(bytes));
 
-                   toDebug("\n===============RESPONSE===============\n");
-                   toDebug(str);
+                    toDebug("\n===============RESPONSE===============\n");
+                    toDebug(str);
 
-                   QDomDocument domDoc;
+                    QDomDocument domDoc;
 
-                   if (domDoc.setContent(str.toUtf8())) {
-                       QDomElement domElement = domDoc.documentElement();
-                       emit emit_DomElement(domElement);
-                   } else {
-                       emit emit_Loging(2,senderName, "Пришел ответ от сервера Не верный формат XML.");
-                       statusError = 400;
-                   }
-               } else {
-                    emit emit_Loging(2,senderName, "Пришел пустой ответ от сервера.");
+                    if (domDoc.setContent(str.toUtf8())) {
+                        QDomElement domElement = domDoc.documentElement();
+                        emit emit_DomElement(domElement);
+                    } else {
+                        emit emit_Loging(2, senderName,
+                                         "Пришел ответ от сервера Не верный формат XML.");
+                        statusError = 400;
+                    }
+                } else {
+                    emit emit_Loging(2, senderName, "Пришел пустой ответ от сервера.");
                     statusError = 400;
-               }
-           }
-        }
-        break;
-        case  QNetworkReply::ConnectionRefusedError:
-        {
+                }
+            }
+        } break;
+        case QNetworkReply::ConnectionRefusedError: {
             statusError = 1;
-            statusErrorComment = "the remote server refused the connection (the server is not accepting requests)";
-        }
-        break;
-        case  QNetworkReply::RemoteHostClosedError:
-        {
+            statusErrorComment =
+                "the remote server refused the connection (the server is not accepting requests)";
+        } break;
+        case QNetworkReply::RemoteHostClosedError: {
             statusError = 2;
-            statusErrorComment = "the remote server closed the connection prematurely, before the entire reply was received and processed";
-        }
-        break;
-        case  QNetworkReply::HostNotFoundError:
-        {
+            statusErrorComment =
+                "the remote server closed the connection prematurely, before the entire reply was "
+                "received and processed";
+        } break;
+        case QNetworkReply::HostNotFoundError: {
             statusError = 3;
             statusErrorComment = "Имя удаленного хоста не найдено (неверное имя хоста)";
-        }
-        break;
-        case  QNetworkReply::TimeoutError:
-        {
+        } break;
+        case QNetworkReply::TimeoutError: {
             statusError = 4;
             statusErrorComment = "the connection to the remote server timed out";
-        }
-        break;
-        case  QNetworkReply::OperationCanceledError:
-        {
+        } break;
+        case QNetworkReply::OperationCanceledError: {
             statusError = 5;
             statusErrorComment = "Нет ответа от сервера( истёк таймаут ожидания запроса ).";
-        }
-        break;
-        case  QNetworkReply::SslHandshakeFailedError:
-        {
+        } break;
+        case QNetworkReply::SslHandshakeFailedError: {
             statusError = 6;
-            statusErrorComment = "the SSL/TLS handshake failed and the encrypted channel could not be established. The sslErrors() signal should have been emitted.";
-        }
-        break;
-        case  QNetworkReply::ProxyConnectionRefusedError:
-        {
+            statusErrorComment =
+                "the SSL/TLS handshake failed and the encrypted channel could not be established. "
+                "The sslErrors() signal should have been emitted.";
+        } break;
+        case QNetworkReply::ProxyConnectionRefusedError: {
             statusError = 101;
-            statusErrorComment = "the connection to the proxy server was refused (the proxy server is not accepting requests).";
-        }
-        break;
-        case  QNetworkReply::ProxyConnectionClosedError:
-        {
+            statusErrorComment =
+                "the connection to the proxy server was refused (the proxy server is not accepting "
+                "requests).";
+        } break;
+        case QNetworkReply::ProxyConnectionClosedError: {
             statusError = 102;
-            statusErrorComment = "the proxy server closed the connection prematurely, before the entire reply was received and processed";
-        }
-        break;
-        case  QNetworkReply::ProxyNotFoundError:
-        {
+            statusErrorComment =
+                "the proxy server closed the connection prematurely, before the entire reply was "
+                "received and processed";
+        } break;
+        case QNetworkReply::ProxyNotFoundError: {
             statusError = 103;
             statusErrorComment = "the proxy host name was not found (invalid proxy hostname).";
-        }
-        break;
-        case  QNetworkReply::ProxyTimeoutError:
-        {
+        } break;
+        case QNetworkReply::ProxyTimeoutError: {
             statusError = 104;
-            statusErrorComment = "the connection to the proxy timed out or the proxy did not reply in time to the request sent.";
-        }
-        break;
-        case  QNetworkReply::ProxyAuthenticationRequiredError:
-        {
+            statusErrorComment =
+                "the connection to the proxy timed out or the proxy did not reply in time to the "
+                "request sent.";
+        } break;
+        case QNetworkReply::ProxyAuthenticationRequiredError: {
             statusError = 105;
-            statusErrorComment = "the proxy requires authentication in order to honour the request but did not accept any credentials offered (if any).";
-        }
-        break;
-        case  QNetworkReply::ContentAccessDenied:
-        {
+            statusErrorComment =
+                "the proxy requires authentication in order to honour the request but did not "
+                "accept any credentials offered (if any).";
+        } break;
+        case QNetworkReply::ContentAccessDenied: {
             statusError = 201;
-            statusErrorComment = "the access to the remote content was denied (similar to HTTP error 401).";
-        }
-        break;
-        case  QNetworkReply::ContentOperationNotPermittedError:
-        {
+            statusErrorComment =
+                "the access to the remote content was denied (similar to HTTP error 401).";
+        } break;
+        case QNetworkReply::ContentOperationNotPermittedError: {
             statusError = 202;
             statusErrorComment = "the operation requested on the remote content is not permitted.";
-        }
-        break;
-        case  QNetworkReply::ContentNotFoundError:
-        {
+        } break;
+        case QNetworkReply::ContentNotFoundError: {
             statusError = 203;
-            statusErrorComment = "the remote content was not found at the server (similar to HTTP error 404).";
-        }
-        break;
-        case  QNetworkReply::AuthenticationRequiredError:
-        {
+            statusErrorComment =
+                "the remote content was not found at the server (similar to HTTP error 404).";
+        } break;
+        case QNetworkReply::AuthenticationRequiredError: {
             statusError = 204;
-            statusErrorComment = "the remote server requires authentication to serve the content but the credentials provided were not accepted (if any).";
-        }
-        break;
-        case  QNetworkReply::ContentReSendError:
-        {
+            statusErrorComment =
+                "the remote server requires authentication to serve the content but the "
+                "credentials provided were not accepted (if any).";
+        } break;
+        case QNetworkReply::ContentReSendError: {
             statusError = 205;
-            statusErrorComment = "the request needed to be sent again, but this failed for example because the upload data could not be read a second time.";
-        }
-        break;
-        case  QNetworkReply::ProtocolUnknownError:
-        {
+            statusErrorComment =
+                "the request needed to be sent again, but this failed for example because the "
+                "upload data could not be read a second time.";
+        } break;
+        case QNetworkReply::ProtocolUnknownError: {
             statusError = 301;
-            statusErrorComment = "the Network Access API cannot honor the request because the protocol is not known.";
-        }
-        break;
-        case  QNetworkReply::ProtocolInvalidOperationError:
-        {
+            statusErrorComment =
+                "the Network Access API cannot honor the request because the protocol is not "
+                "known.";
+        } break;
+        case QNetworkReply::ProtocolInvalidOperationError: {
             statusError = 302;
             statusErrorComment = "the requested operation is invalid for this protocol.";
-        }
-        break;
-        case  QNetworkReply::UnknownNetworkError:
-        {
+        } break;
+        case QNetworkReply::UnknownNetworkError: {
             statusError = 99;
-            statusErrorComment = "Неизвестная ошибка при передачи данных( нет зоны покрытия сети ).";
-        }
-        break;
-        case  QNetworkReply::UnknownProxyError:
-        {
+            statusErrorComment =
+                "Неизвестная ошибка при передачи данных( нет зоны покрытия сети ).";
+        } break;
+        case QNetworkReply::UnknownProxyError: {
             statusError = 199;
             statusErrorComment = "an unknown proxy-related error was detected.";
-        }
-        break;
-        case  QNetworkReply::UnknownContentError:
-        {
+        } break;
+        case QNetworkReply::UnknownContentError: {
             statusError = 299;
             statusErrorComment = "an unknown error related to the remote content was detected.";
-        }
-        break;
-        case  QNetworkReply::ProtocolFailure:
-        {
+        } break;
+        case QNetworkReply::ProtocolFailure: {
             statusError = 399;
-            statusErrorComment = "a breakdown in protocol was detected (parsing error, invalid or unexpected responses, etc.).";
-        }
-        break;
-//        case QNetworkReply::InternalServerError:
-//            statusError = 401;
-//        break;
+            statusErrorComment =
+                "a breakdown in protocol was detected (parsing error, invalid or unexpected "
+                "responses, etc.).";
+        } break;
+            //        case QNetworkReply::InternalServerError:
+            //            statusError = 401;
+            //        break;
     }
 
-    //Есть ошибка
+    // Есть ошибка
     if (statusError) {
         if (statusError != 400) {
-            emit emit_Loging(2,senderName, QString("Error - %1, %2\n").arg(statusError).arg(statusErrorComment));
+            emit emit_Loging(2, senderName,
+                             QString("Error - %1, %2\n").arg(statusError).arg(statusErrorComment));
             qDebug() << QString("Error - %1, %2\n").arg(statusError).arg(statusErrorComment);
         }
 
         emit emit_ErrResponse();
     }
 
-    //Останавливаем нить
+    // Останавливаем нить
     stopProcess();
 }
 
-QString SendRequest::getHeaderRequest(int type)
-{
+QString SendRequest::getHeaderRequest(int type) {
     QString title = "";
 
-    switch(type){
-
-        case Request::Type::GetServices :
-        {
+    switch (type) {
+        case Request::Type::GetServices: {
             title = Request::CommentType::GetServices;
-        }
-        break;
-        case Request::Type::SendMonitor :
-        {
+        } break;
+        case Request::Type::SendMonitor: {
             title = Request::CommentType::SendMonitor;
-        }
-        break;
-        case Request::Type::PayAuth :
-        {
+        } break;
+        case Request::Type::PayAuth: {
             title = Request::CommentType::PayAuth;
-        }
-        break;
-        case Request::Type::SendEncashment :
-        {
+        } break;
+        case Request::Type::SendEncashment: {
             title = Request::CommentType::SendEncashment;
-        }
-        break;
-        case Request::Type::GetAbonentInfo :
-        {
+        } break;
+        case Request::Type::GetAbonentInfo: {
             title = Request::CommentType::GetAbonentInfo;
-        }
-        break;
-        case Request::Type::SendCommandConfirm :
-        {
+        } break;
+        case Request::Type::SendCommandConfirm: {
             title = Request::CommentType::SendCommandConfirm;
-        }
-        break;
-        case Request::Type::SendLogInfo :
-        {
+        } break;
+        case Request::Type::SendLogInfo: {
             title = Request::CommentType::SendLogInfo;
-        }
-        break;
-        case Request::Type::GetBalance :
-        {
+        } break;
+        case Request::Type::GetBalance: {
             title = Request::CommentType::GetBalance;
-        }
-        break;
-        case Request::Type::CheckOnline :
-        {
+        } break;
+        case Request::Type::CheckOnline: {
             title = Request::CommentType::CheckOnline;
-        }
-        break;
-        case Request::Type::SendReceipt :
-        {
+        } break;
+        case Request::Type::SendReceipt: {
             title = Request::CommentType::SendReceipt;
-        }
-        break;
-        case Request::Type::SendOtp :
-        {
+        } break;
+        case Request::Type::SendOtp: {
             title = Request::CommentType::SendOtp;
-        }
-        break;
-        case Request::Type::ConfirmOtp :
-        {
+        } break;
+        case Request::Type::ConfirmOtp: {
             title = Request::CommentType::ConfirmOtp;
-        }
-        break;
+        } break;
     }
 
-    QString header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                    "<request>\n"
-                    "<requestNum>" + title + "</requestNum>\n";
+    QString header =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<request>\n"
+        "<requestNum>" +
+        title + "</requestNum>\n";
 
     return header;
 }
 
-QString SendRequest::getFooterRequest()
-{
-    return QString("<version>" + version + "</version>\n"
+QString SendRequest::getFooterRequest() {
+    return QString("<version>" + version +
+                   "</version>\n"
                    "<clientType>ASO</clientType>\n"
                    "</request>\n");
 }
