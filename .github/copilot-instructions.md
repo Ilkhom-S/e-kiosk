@@ -27,7 +27,11 @@ Use clear, descriptive scopes to indicate which part of the project is affected.
 - **src/**: Shared code and libraries, to be refactored from apps/kiosk/src as modularization proceeds.
 - **include/**: Public headers for use across modules and apps.
 - **thirdparty/**: External/third-party libraries.
-- **tests/**: Unit and integration tests, mirrors src/ structure.
+- **tests/**: Unit and integration tests for all apps and modules.
+  - Mirrors the structure of `src/` and `apps/` for test coverage.
+  - Each app/module can have its own test subfolder (e.g., `tests/kiosk/`, `tests/Updater/`).
+  - Use CMake to add test targets for each app/module; top-level `tests/CMakeLists.txt` adds all test subdirectories.
+  - Use Qt Test or another C++ testing framework.
 - **resources/**: Images, sounds, styles, etc.
 - **docs/**: Project documentation.
 - **cmake/**: Custom CMake modules.
