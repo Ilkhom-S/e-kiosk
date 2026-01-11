@@ -1,6 +1,9 @@
 {
+  "version": 3,
   "configurePresets": [
     {
+      "name": "user-paths",
+      "hidden": true,
       "environment": {
         "LINUX_QT_PATH": "/opt/Qt/6.10.1/gcc_64",
         "MINGW_BIN_PATH": "C:/Qt/Tools/mingw810_64/bin",
@@ -9,12 +12,22 @@
         "QT5_X86_PATH": "C:/Qt/5.15.2/msvc2019",
         "QT6_X64_PATH": "C:/Qt/6.10.1/msvc2022_64",
         "QT6_X86_PATH": "C:/Qt/6.10.1/msvc2022"
+      }
+    },
+    {
+      "name": "my-win-qt5-x64",
+      "inherits": ["base", "user-paths"],
+      "displayName": "My Win: Qt5 x64 Ninja (user-local)",
+      "architecture": {
+        "strategy": "external",
+        "value": "x64"
       },
-      "hidden": true,
-      "name": "user-paths"
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{QT5_X64_PATH}"
+      }
     }
-  ],
-  "version": 3
+  ]
 }
 // Copy this file to CMakeUserPresets.json and edit the paths to match your local Qt installations.
-// This file is gitignored, so your personal paths won't be committed.
+// You may add your own configure presets here, inheriting from project presets and user-paths as shown above.
+// This file is gitignored, so your personal paths and settings won't be committed.

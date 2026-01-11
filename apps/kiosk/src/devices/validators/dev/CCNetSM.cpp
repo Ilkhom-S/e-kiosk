@@ -2,142 +2,133 @@
 #include "CCNetFirmware.h"
 #include "CashPayment.h"
 
-typedef int (*SendFirmWareDataByPathFunc)(int, char*);
+typedef int (*SendFirmWareDataByPathFunc)(int, char *);
 typedef long (*GetDataStatusFunc)();
 
-CCNetSm::CCNetSm(QObject *parent) : BaseValidatorDevices(parent)
-{
+CCNetSm::CCNetSm(QObject *parent) : BaseValidatorDevices(parent) {
     preDateTime = QDateTime::currentDateTime().addSecs(-1);
 
     validatorLogEnable = false;
-    maxSumReject       = false;
-    hasDBError         = false;
-    escrowed           = false;
-    firmwareUpdating   = false;
-    nominalSum         = 0;
+    maxSumReject = false;
+    hasDBError = false;
+    escrowed = false;
+    firmwareUpdating = false;
+    nominalSum = 0;
 }
 
-bool CCNetSm::OpenPort()
-{
+bool CCNetSm::OpenPort() {
     this->openPort();
     return is_open;
 }
 
-void CCNetSm::sendStatusTo(int sts, QString comment)
-{
-//    qDebug() << "CCNetSm - STS - " << sts;
-    if(sts != status){
-//        qDebug() << "CCNetSm - STS - " << sts;
+void CCNetSm::sendStatusTo(int sts, QString comment) {
+    //    qDebug() << "CCNetSm - STS - " << sts;
+    if (sts != status) {
+        //        qDebug() << "CCNetSm - STS - " << sts;
         status = sts;
 
-        emit this->emitStatus(status,comment);
+        emit this->emitStatus(status, comment);
     }
     return;
 }
 
-bool CCNetSm::openPort()
-{
-    if(devicesCreated){
-        //Если девайс для работы с портом обявлен
+bool CCNetSm::openPort() {
+    if (devicesCreated) {
+        // Если девайс для работы с портом обявлен
         is_open = false;
 
-        //Даем девайсу название порта
+        // Даем девайсу название порта
         serialPort->setPortName(comName);
 
-        if (serialPort->open(QIODevice::ReadWrite)){
+        if (serialPort->open(QIODevice::ReadWrite)) {
 
-            //Устанавливаем параметры открытия порта
+            // Устанавливаем параметры открытия порта
             is_open = false;
 
             if (!serialPort->setDataBits(QSerialPort::Data8)) return false;
             if (!serialPort->setParity(QSerialPort::NoParity)) return false;
             if (!serialPort->setStopBits(QSerialPort::OneStop)) return false;
             if (!serialPort->setFlowControl(QSerialPort::NoFlowControl)) return false;
-//            if (!serialPort->setCharIntervalTimeout(ValidatorConstants::CCNetSm_CharTimeOut)) return false;
+            //            if
+            //            (!serialPort->setCharIntervalTimeout(ValidatorConstants::CCNetSm_CharTimeOut))
+            //            return false;
             if (!serialPort->setBaudRate(QSerialPort::Baud9600)) return false;
 
             is_open = true;
-        }else{
+        } else {
             is_open = false;
             statusDevices = ValidatorErrors::PortError;
-            //if(Debuger) qDebug() << "Error opened serial device " << devicePort->deviceName();
+            // if(Debuger) qDebug() << "Error opened serial device " << devicePort->deviceName();
         }
-    }else{
+    } else {
         is_open = false;
-        //if(Debuger) qDebug() << "Error create serial device " << devicePort->deviceName();
+        // if(Debuger) qDebug() << "Error create serial device " << devicePort->deviceName();
         statusDevices = ValidatorErrors::DevicesError;
     }
 
     return is_open;
 }
 
+// clang-format LLVM/Qt style applied
+#include "CCNetSM.h"
+#include "CCNetFirmware.h"
+#include "CashPayment.h"
 
-bool CCNetSm::isItYou()
-{
-
-    this->OpenPort();
-    if(this->isOpened()){
-        QByteArray respData;
-
-        this->execCommand(ValidatorCommands::Poll, respData);
-
-        if(respData[0] == '\x02' && respData[1] == '\x03' && respData[2] == '\x06' && respData[5] != '\x81'){
-            this->execCommand(ValidatorCommands::Idintification, respData);
-
-            this->ParsIdentification(respData);
-            return true;
-        }else{
-            if(checkBootloader()){
-                PartNumber = "BOOTLDR";
-                SerialNumber = "";
-                return true;
-            }
-
-            this->closePort();
-            return false;
-        }
-    }else{
-
-        return false;
-    }
-
-    return false;
-}
-
-bool CCNetSm::CmdGetStatus()
-{
-
-    QByteArray respData;
-
-    this->execCommand(ValidatorCommands::Poll, respData);
-
-    if (respData[3] == CCNetConstruct::States::PowerUp || respData[3] == CCNetConstruct::States::PowerUpInValidator || respData[3] == CCNetConstruct::States::PowerUpInStacker) {
+        respData[3] == CCNetConstruct::States::PowerUpInStacker) {
         this->CmdRestart();
 
-        this->execCommand(ValidatorCommands::Poll, respData);
-    }
+CCNetSm::CCNetSm(QObject *parent) : BaseValidatorDevices(parent) {
+    preDateTime = QDateTime::currentDateTime().addSecs(-1);
 
-    if (respData[3] == CCNetConstruct::States::Escrow) {
-        this->execCommand(ValidatorCommands::Stack, respData);
-        this->execCommand(ValidatorCommands::Poll, respData);
-    }
-
-    int nominal = 0;
-    nominal = this->readPollInfo(respData);
-
-    if (nominal > 0) {
-        emit this->emitNominal(nominal);
-    }
-
-    QCoreApplication::processEvents();
-    return true;
+    validatorLogEnable = false;
+    maxSumReject = false;
+    hasDBError = false;
+    escrowed = false;
+    firmwareUpdating = false;
+    nominalSum = 0;
 }
 
-ushort CCNetSm::calcCRC16(const QByteArray & aData)
-{
-    ushort CRC = 0;
 
-    for (int i = 0; i < aData.size(); ++i) {
+    this->openPort();
+    return is_open;
+}
+
+void CCNetSm::sendStatusTo(int sts, QString comment) {
+    //    qDebug() << "CCNetSm - STS - " << sts;
+    if (sts != status) {
+        //        qDebug() << "CCNetSm - STS - " << sts;
+        status = sts;
+        emit this->emitStatus(status, comment);
+    }
+    return;
+}
+
+        this->execCommand(ValidatorCommands::Poll, respData);
+    if (devicesCreated) {
+        // Если девайс для работы с портом обявлен
+        is_open = false;
+
+        // Даем девайсу название порта
+    }
+
+        if (serialPort->open(QIODevice::ReadWrite)) {
+            is_open = false;
+            if (!serialPort->setDataBits(QSerialPort::Data8)) return false;
+            if (!serialPort->setParity(QSerialPort::NoParity)) return false;
+            if (!serialPort->setStopBits(QSerialPort::OneStop)) return false;
+            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl)) return false;
+            if (!serialPort->setBaudRate(QSerialPort::Baud9600)) return false;
+            is_open = true;
+        } else {
+            is_open = false;
+            statusDevices = ValidatorErrors::PortError;
+        }
+    } else {
+        is_open = false;
+        statusDevices = ValidatorErrors::DevicesError;
+    }
+    return is_open;
+}
         ushort byteCRC = 0;
         ushort value = uchar(CRC ^ aData[i]);
 
@@ -153,8 +144,7 @@ ushort CCNetSm::calcCRC16(const QByteArray & aData)
     return CRC;
 }
 
-QByteArray CCNetSm::makeCustomRequest(int adr, int cmd, const QByteArray &data)
-{
+QByteArray CCNetSm::makeCustomRequest(int adr, int cmd, const QByteArray &data) {
 
     QByteArray request;
 
@@ -180,18 +170,19 @@ bool CCNetSm::execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdRespon
             QByteArray cmdRequest;
             QByteArray btm_data;
 
-            switch(cmdType){
+            switch (cmdType) {
 
-                case ValidatorCommands::Reset :
-                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,CCNetConstruct::CCReset,0);
-                break;
+                case ValidatorCommands::Reset:
+                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,
+                                                         CCNetConstruct::CCReset, 0);
+                    break;
 
-                case ValidatorCommands::GetNominalTable :
-                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,CCNetConstruct::CCGetBillTable,0);
-                break;
+                case ValidatorCommands::GetNominalTable:
+                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,
+                                                         CCNetConstruct::CCGetBillTable, 0);
+                    break;
 
-                case ValidatorCommands::SetEnabled :
-                {
+                case ValidatorCommands::SetEnabled: {
                     btm_data.clear();
                     btm_data.resize(6);
 
@@ -203,56 +194,60 @@ bool CCNetSm::execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdRespon
                     btm_data[4] = '\xFF';
                     btm_data[5] = '\xFF';
 
-                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,CCNetConstruct::CCEnableBillTypes,btm_data);
-                }
-                break;
+                    cmdRequest =
+                        this->makeCustomRequest(CCNetConstruct::PABillValidator,
+                                                CCNetConstruct::CCEnableBillTypes, btm_data);
+                } break;
 
-                case ValidatorCommands::Poll :
-                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,CCNetConstruct::CCPoll,0);
-                break;
+                case ValidatorCommands::Poll:
+                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,
+                                                         CCNetConstruct::CCPoll, 0);
+                    break;
 
-                case ValidatorCommands::Idintification :
-                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,CCNetConstruct::CCIdentification,0);
-                break;
+                case ValidatorCommands::Idintification:
+                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,
+                                                         CCNetConstruct::CCIdentification, 0);
+                    break;
 
-                case ValidatorCommands::SetSecurity :
-                {
+                case ValidatorCommands::SetSecurity: {
                     btm_data.clear();
                     btm_data.resize(6);
 
-                    for(int i=0; i < 3; i++){
+                    for (int i = 0; i < 3; i++) {
                         btm_data[i] = '\xFF';
                     }
 
-                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,CCNetConstruct::CCSetSecurity,btm_data);
-                }
-                break;
+                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,
+                                                         CCNetConstruct::CCSetSecurity, btm_data);
+                } break;
 
-                case ValidatorCommands::ACK :
-                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,CCNetConstruct::CCAck,0);
-                break;
+                case ValidatorCommands::ACK:
+                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,
+                                                         CCNetConstruct::CCAck, 0);
+                    break;
 
-                case ValidatorCommands::SetDisabled :
-                {
+                case ValidatorCommands::SetDisabled: {
                     btm_data.clear();
                     btm_data.resize(6);
-                    for(int i=0; i < 6; i++)
-                    btm_data[i] = 0x00;
+                    for (int i = 0; i < 6; i++) btm_data[i] = 0x00;
 
-                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,CCNetConstruct::CCEnableBillTypes,btm_data);
-                }
-                break;
+                    cmdRequest =
+                        this->makeCustomRequest(CCNetConstruct::PABillValidator,
+                                                CCNetConstruct::CCEnableBillTypes, btm_data);
+                } break;
 
-                case ValidatorCommands::Return :
-                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,CCNetConstruct::CCReturn,0);
-                break;
+                case ValidatorCommands::Return:
+                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,
+                                                         CCNetConstruct::CCReturn, 0);
+                    break;
 
-                case ValidatorCommands::Stack :
-                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,CCNetConstruct::CCStack,0);
-                break;
+                case ValidatorCommands::Stack:
+                    cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator,
+                                                         CCNetConstruct::CCStack, 0);
+                    break;
 
                 default:
-                break;
+                    break;
             }
 
             auto cmd = cmdName(cmdType);
@@ -281,25 +276,20 @@ bool CCNetSm::execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdRespon
 
             return false;
         }
-    }
-    catch(std::exception & e)
-    {
-       qDebug() << "Protocol CCNet: Exception : [execCommand] " << QString(e.what());
-       return false;
+    } catch (std::exception &e) {
+        qDebug() << "Protocol CCNet: Exception : [execCommand] " << QString(e.what());
+        return false;
     }
 
     return true;
 }
 
-
-TResult CCNetSm::processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData)
-{
+TResult CCNetSm::processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData) {
     // Выполняем команду
     int NAKCounter = 1;
     int checkingCounter = 1;
 
-    do
-    {
+    do {
         aAnswerData.clear();
 
         if (isOpened()) {
@@ -307,8 +297,8 @@ TResult CCNetSm::processCommand(const QByteArray &aCommandData, QByteArray &aAns
             serialPort->waitForBytesWritten(50);
         }
 
-        //Задержка после команды
-//        this->msleep(150);
+        // Задержка после команды
+        //        this->msleep(150);
 
         TResult result = getAnswer(aAnswerData);
 
@@ -323,14 +313,14 @@ TResult CCNetSm::processCommand(const QByteArray &aCommandData, QByteArray &aAns
         }
     }
 
-    while((NAKCounter <= CCNetConstruct::MaxRepeatPacket) && (checkingCounter <= CCNetConstruct::MaxRepeatPacket));
+    while ((NAKCounter <= CCNetConstruct::MaxRepeatPacket) &&
+           (checkingCounter <= CCNetConstruct::MaxRepeatPacket));
 
-    return (checkingCounter <= CCNetConstruct::MaxRepeatPacket) ? CommandResult::Transport : CommandResult::Protocol;
+    return (checkingCounter <= CCNetConstruct::MaxRepeatPacket) ? CommandResult::Transport
+                                                                : CommandResult::Protocol;
 }
 
-
-TResult CCNetSm::getAnswer(QByteArray & aAnswerData)
-{
+TResult CCNetSm::getAnswer(QByteArray &aAnswerData) {
     QList<QByteArray> answers;
 
     if (!readAnswers(answers, CCNetConstruct::poolingTimeout)) {
@@ -353,19 +343,20 @@ TResult CCNetSm::getAnswer(QByteArray & aAnswerData)
         }
     }
 
-//    for (int i = 0; i < answers.size(); ++i) {
-//        qDebug() << QString("CCNet: << {%1}").arg(answers[i].toHex().data());
-//    }
+    //    for (int i = 0; i < answers.size(); ++i) {
+    //        qDebug() << QString("CCNet: << {%1}").arg(answers[i].toHex().data());
+    //    }
 
     if (index == -1) {
-        if(debugger) qDebug() << "CCNet: Answer does not contains any logic data or it is incomplete answer";
+        if (debugger)
+            qDebug() << "CCNet: Answer does not contains any logic data or it is incomplete answer";
         return CommandResult::Protocol;
     }
 
     aAnswerData = answers[index];
 
     if (aAnswerData[3] == CCNetConstruct::NAK) {
-        if(debugger) qDebug() << "CCNet: Answer contains NAK, attemp to repeat command";
+        if (debugger) qDebug() << "CCNet: Answer contains NAK, attemp to repeat command";
         return CommandResult::Transport;
     }
 
@@ -374,12 +365,12 @@ TResult CCNetSm::getAnswer(QByteArray & aAnswerData)
     return CommandResult::OK;
 }
 
-
-QString CCNetSm::check(const QByteArray & aAnswer)
-{
+QString CCNetSm::check(const QByteArray &aAnswer) {
     // минимальный размер ответа
     if (aAnswer.size() < CCNetConstruct::MinAnswerSize) {
-        return QString("CCNet: Invalid answer length = %1, need %2 minimum").arg(aAnswer.size()).arg(CCNetConstruct::MinAnswerSize);
+        return QString("CCNet: Invalid answer length = %1, need %2 minimum")
+            .arg(aAnswer.size())
+            .arg(CCNetConstruct::MinAnswerSize);
     }
 
     // первый байт
@@ -399,7 +390,7 @@ QString CCNetSm::check(const QByteArray & aAnswer)
     // длина
     int length = uchar(aAnswer[2]);
 
-    if (length != aAnswer.size()){
+    if (length != aAnswer.size()) {
         return QString("CCNet: Invalid length = %1, need %2").arg(aAnswer.size()).arg(length);
     }
 
@@ -414,8 +405,7 @@ QString CCNetSm::check(const QByteArray & aAnswer)
     return "";
 }
 
-bool CCNetSm::readAnswers(QList<QByteArray> & aAnswers, int aTimeout)
-{
+bool CCNetSm::readAnswers(QList<QByteArray> &aAnswers, int aTimeout) {
     QByteArray answer;
 
     int length = 0;
@@ -427,11 +417,11 @@ bool CCNetSm::readAnswers(QList<QByteArray> & aAnswers, int aTimeout)
     do {
         QByteArray answerData;
 
-        if (!serialPort->waitForReadyRead(150)){
-            if (debugger) qDebug()<< "waitForReadyRead false";
+        if (!serialPort->waitForReadyRead(150)) {
+            if (debugger) qDebug() << "waitForReadyRead false";
         }
 
-        //Есть ответ
+        // Есть ответ
         answerData = serialPort->readAll();
 
         answer.append(answerData);
@@ -456,13 +446,12 @@ bool CCNetSm::readAnswers(QList<QByteArray> & aAnswers, int aTimeout)
                     index = begin;
                 }
             }
-        }
-        while (lastBegin != begin);
-    }
-    while ((clockTimer.elapsed() < aTimeout) && ((answer.mid(index).size() != length) || !length));
+        } while (lastBegin != begin);
+    } while ((clockTimer.elapsed() < aTimeout) &&
+             ((answer.mid(index).size() != length) || !length));
 
     if (answer.isEmpty()) {
-        if(debugger) qDebug() << "CCNet: << {}";
+        if (debugger) qDebug() << "CCNet: << {}";
         return true;
     }
 
@@ -490,15 +479,14 @@ bool CCNetSm::readAnswers(QList<QByteArray> & aAnswers, int aTimeout)
 
         int shift = (shiftLength <= 0) ? 1 : shiftLength;
         begin = answer.indexOf(0x02, begin + shift);
-    }
-    while (begin != -1);
+    } while (begin != -1);
 
     return true;
 }
 
-bool CCNetSm::sendACK()
-{
-    QByteArray cmdRequest = this->makeCustomRequest(CCNetConstruct::PABillValidator, CCNetConstruct::CCAck,0);
+bool CCNetSm::sendACK() {
+    QByteArray cmdRequest =
+        this->makeCustomRequest(CCNetConstruct::PABillValidator, CCNetConstruct::CCAck, 0);
 
     if (isOpened()) {
         serialPort->write(cmdRequest);
@@ -509,8 +497,7 @@ bool CCNetSm::sendACK()
     return false;
 }
 
-bool CCNetSm::CmdRestart()
-{
+bool CCNetSm::CmdRestart() {
     QByteArray respData;
 
     this->execCommand(ValidatorCommands::Reset, respData);
@@ -533,30 +520,26 @@ bool CCNetSm::CmdRestart()
     return true;
 }
 
-void CCNetSm::ParsIdentification(QByteArray respData)
-{
+void CCNetSm::ParsIdentification(QByteArray respData) {
     QByteArray pn;
     QByteArray sn;
 
-    for(int i = 3; i <= 17; i++)
-        pn.append(respData[i]);
+    for (int i = 3; i <= 17; i++) pn.append(respData[i]);
 
-    for(int i = 18; i <= 29; i++)
-        sn.append(respData[i]);
+    for (int i = 18; i <= 29; i++) sn.append(respData[i]);
 
     if (pn.startsWith("C100")) {
         pn = pn.left(5) + sn.trimmed();
     }
 
-    PartNumber   = "";
+    PartNumber = "";
     SerialNumber = "";
 
     PartNumber.append(pn);
     SerialNumber.append(sn);
 }
 
-void CCNetSm::CmdStartPoll()
-{
+void CCNetSm::CmdStartPoll() {
     validatorLogEnable = true;
 
     preDateTime = QDateTime::currentDateTime().addSecs(-1);
@@ -564,17 +547,19 @@ void CCNetSm::CmdStartPoll()
     stopPoll = false;
     QByteArray respData;
 
-    //Активируем bill
+    // Активируем bill
     this->execCommand(ValidatorCommands::SetEnabled, respData);
     toValidatorLog(1, respData, "SetEnabled Response");
 
-    while(!stopPoll){
+    while (!stopPoll) {
 
         this->execCommand(ValidatorCommands::Poll, respData);
         toValidatorLog(1, respData, "Poll Response");
 
-        if (respData[3] == CCNetConstruct::States::PowerUp || respData[3] == CCNetConstruct::States::PowerUpInValidator
-            || respData[3] == CCNetConstruct::States::PowerUpInStacker || respData[3] == CCNetConstruct::Errors::Pause) {
+        if (respData[3] == CCNetConstruct::States::PowerUp ||
+            respData[3] == CCNetConstruct::States::PowerUpInValidator ||
+            respData[3] == CCNetConstruct::States::PowerUpInStacker ||
+            respData[3] == CCNetConstruct::Errors::Pause) {
 
             this->CmdRestart();
             continue;
@@ -597,11 +582,18 @@ void CCNetSm::CmdStartPoll()
             if (escrowNominal > 0) {
                 if (hasDBError) {
                     this->execCommand(ValidatorCommands::Return, respData);
-                    emit emitLog(0, "CCNET", QString("Возвращаем купюру %1 смн, из за ошибки БД").arg(escrowNominal));
+                    emit emitLog(
+                        0, "CCNET",
+                        QString("Возвращаем купюру %1 смн, из за ошибки БД").arg(escrowNominal));
                     this->setReturnNominalState(true);
                 } else if (maxSumReject && (nominalSum + escrowNominal > maxSum)) {
                     this->execCommand(ValidatorCommands::Return, respData);
-                    emit emitLog(0, "CCNET", QString("Возвращаем купюру %1 смн, так как достигнута максимальная сумма %2").arg(escrowNominal).arg(maxSum));
+                    emit emitLog(
+                        0, "CCNET",
+                        QString(
+                            "Возвращаем купюру %1 смн, так как достигнута максимальная сумма %2")
+                            .arg(escrowNominal)
+                            .arg(maxSum));
                     this->setReturnNominalState(true);
                 } else {
                     nominalSum += escrowNominal;
@@ -620,8 +612,8 @@ void CCNetSm::CmdStartPoll()
         int nominal = 0;
         nominal = this->readPollInfo(respData);
 
-        //Проверяем есть ли номинал и нет ли повторений
-        if(nominal > 0 ){
+        // Проверяем есть ли номинал и нет ли повторений
+        if (nominal > 0) {
             QDateTime now = QDateTime::currentDateTime();
 
             qint64 sicPoint = preDateTime.msecsTo(now);
@@ -630,12 +622,12 @@ void CCNetSm::CmdStartPoll()
                 sicPoint = 1000;
             }
 
-            if(sicPoint > 500 && escrowed){
+            if (sicPoint > 500 && escrowed) {
                 toValidatorLog(1, " ", QString("Вставлена купюра %1 смн.").arg(nominal));
                 escrowed = false;
 
                 emit this->emitNominal(nominal);
-            }else{
+            } else {
                 emit emitNominalDuplicate(nominal);
             }
 
@@ -647,8 +639,7 @@ void CCNetSm::CmdStartPoll()
     this->CmdStopPoll();
 }
 
-void CCNetSm::CmdStopPoll()
-{
+void CCNetSm::CmdStopPoll() {
     QByteArray respData;
     this->execCommand(ValidatorCommands::SetDisabled, respData);
     toValidatorLog(1, respData, "SetDisabled Response");
@@ -656,28 +647,42 @@ void CCNetSm::CmdStopPoll()
     nominalSum = 0;
 }
 
-int CCNetSm::getNominal(const uchar nom)
-{
-    switch (nom)
-    {
-        case CCNetConstruct::Nominal_TJ::nom_1  : return 1;     break;
-        case CCNetConstruct::Nominal_TJ::nom_3  : return 3;     break;
-        case CCNetConstruct::Nominal_TJ::nom_5  : return 5;     break;
-        case CCNetConstruct::Nominal_TJ::nom_10 : return 10;    break;
-        case CCNetConstruct::Nominal_TJ::nom_20 : return 20;    break;
-        case CCNetConstruct::Nominal_TJ::nom_50 : return 50;    break;
-        case CCNetConstruct::Nominal_TJ::nom_100: return 100;   break;
-        case CCNetConstruct::Nominal_TJ::nom_200: return 200;   break;
-        case CCNetConstruct::Nominal_TJ::nom_500: return 500;   break;
+int CCNetSm::getNominal(const uchar nom) {
+    switch (nom) {
+        case CCNetConstruct::Nominal_TJ::nom_1:
+            return 1;
+            break;
+        case CCNetConstruct::Nominal_TJ::nom_3:
+            return 3;
+            break;
+        case CCNetConstruct::Nominal_TJ::nom_5:
+            return 5;
+            break;
+        case CCNetConstruct::Nominal_TJ::nom_10:
+            return 10;
+            break;
+        case CCNetConstruct::Nominal_TJ::nom_20:
+            return 20;
+            break;
+        case CCNetConstruct::Nominal_TJ::nom_50:
+            return 50;
+            break;
+        case CCNetConstruct::Nominal_TJ::nom_100:
+            return 100;
+            break;
+        case CCNetConstruct::Nominal_TJ::nom_200:
+            return 200;
+            break;
+        case CCNetConstruct::Nominal_TJ::nom_500:
+            return 500;
+            break;
     }
 
     return 0;
 }
 
-int CCNetSm::readPollInfo(QByteArray byte)
-{
-    if ( byte[3] == CCNetConstruct::States::Stacked )
-    {
+int CCNetSm::readPollInfo(QByteArray byte) {
+    if (byte[3] == CCNetConstruct::States::Stacked) {
         this->setBoolingDlgState(false);
         this->setReturnNominalState(false);
 
@@ -687,238 +692,398 @@ int CCNetSm::readPollInfo(QByteArray byte)
         }
     }
 
-    if ( byte[3] == CCNetConstruct::States::Returned )
-    {
-        emit emitLog(0, "CCNET", QString("Купюра возвращена")); this->setBoolingDlgState(false); return 0;
+    if (byte[3] == CCNetConstruct::States::Returned) {
+        emit emitLog(0, "CCNET", QString("Купюра возвращена"));
+        this->setBoolingDlgState(false);
+        return 0;
     }
 
-    if ( byte[3] == CCNetConstruct::States::Rejecting )
-    {
+    if (byte[3] == CCNetConstruct::States::Rejecting) {
         this->setBoolingDlgState(false);
-        switch (byte[4])
-        {
-            //Функциональная ошибка ввода
-            case CCNetConstruct::Rejects::Operation :
-            this->sendStatusTo(VStatus::Warning::Operation,QString("Функциональная ошибка ввода.(6A)")); return 0; break;
+        switch (byte[4]) {
+            // Функциональная ошибка ввода
+            case CCNetConstruct::Rejects::Operation:
+                this->sendStatusTo(VStatus::Warning::Operation,
+                                   QString("Функциональная ошибка ввода.(6A)"));
+                return 0;
+                break;
 
-            //Застряла купюра в купюраприемнике
-            case CCNetConstruct::Rejects::PreviouslyBillInHead :
-            this->sendStatusTo(VStatus::Warning::PreviouslyBillInHead,QString("Застряла купюра в купюраприемнике.(62)")); return 0; break;
+            // Застряла купюра в купюраприемнике
+            case CCNetConstruct::Rejects::PreviouslyBillInHead:
+                this->sendStatusTo(VStatus::Warning::PreviouslyBillInHead,
+                                   QString("Застряла купюра в купюраприемнике.(62)"));
+                return 0;
+                break;
 
-            //Rejecting due to Insertion.
-            case CCNetConstruct::Rejects::Insertion :
-            this->sendStatusTo(VStatus::Warning::Insertion,QString("Rejecting due to Insertion.(60)")); return 0; break;
+            // Rejecting due to Insertion.
+            case CCNetConstruct::Rejects::Insertion:
+                this->sendStatusTo(VStatus::Warning::Insertion,
+                                   QString("Rejecting due to Insertion.(60)"));
+                return 0;
+                break;
 
-            //Rejecting due to Magnetic.
-            case CCNetConstruct::Rejects::Dielectric :
-            this->sendStatusTo(VStatus::Warning::Dielectric,QString("Rejecting due to Magnetic.(61)")); return 0; break;
+            // Rejecting due to Magnetic.
+            case CCNetConstruct::Rejects::Dielectric:
+                this->sendStatusTo(VStatus::Warning::Dielectric,
+                                   QString("Rejecting due to Magnetic.(61)"));
+                return 0;
+                break;
 
-            //Rejecting due to Multiplying.
-            case CCNetConstruct::Rejects::Compensation :
-            this->sendStatusTo(VStatus::Warning::Compensation,QString("Rejecting due to Multiplying.(63)")); return 0; break;
+            // Rejecting due to Multiplying.
+            case CCNetConstruct::Rejects::Compensation:
+                this->sendStatusTo(VStatus::Warning::Compensation,
+                                   QString("Rejecting due to Multiplying.(63)"));
+                return 0;
+                break;
 
-            //Rejecting due to Conveying.
-            case CCNetConstruct::Rejects::BillTransport :
-            this->sendStatusTo(VStatus::Warning::BillTransport,QString("Rejecting due to Conveying. (64)")); return 0; break;
+            // Rejecting due to Conveying.
+            case CCNetConstruct::Rejects::BillTransport:
+                this->sendStatusTo(VStatus::Warning::BillTransport,
+                                   QString("Rejecting due to Conveying. (64)"));
+                return 0;
+                break;
 
-            //Rejecting due to Identification.
-            case CCNetConstruct::Rejects::Identification :
-            this->sendStatusTo(VStatus::Warning::Identification,QString("Rejecting due to Identification.(65)")); return 0; break;
+            // Rejecting due to Identification.
+            case CCNetConstruct::Rejects::Identification:
+                this->sendStatusTo(VStatus::Warning::Identification,
+                                   QString("Rejecting due to Identification.(65)"));
+                return 0;
+                break;
 
-            //Rejecting due to Verification.
-            case CCNetConstruct::Rejects::Verification :
-            this->sendStatusTo(VStatus::Warning::Verification,QString("Rejecting due to Verification.(66)")); return 0; break;
+            // Rejecting due to Verification.
+            case CCNetConstruct::Rejects::Verification:
+                this->sendStatusTo(VStatus::Warning::Verification,
+                                   QString("Rejecting due to Verification.(66)"));
+                return 0;
+                break;
 
-            //Rejecting due to Optic.
-            case CCNetConstruct::Rejects::Optical :
-            this->sendStatusTo(VStatus::Warning::Optical,QString("Rejecting due to Optic.(67)")); return 0; break;
+            // Rejecting due to Optic.
+            case CCNetConstruct::Rejects::Optical:
+                this->sendStatusTo(VStatus::Warning::Optical,
+                                   QString("Rejecting due to Optic.(67)"));
+                return 0;
+                break;
 
-            //Rejecting due to Inhibit.
-            case CCNetConstruct::Rejects::Inhibit :
-            this->sendStatusTo(VStatus::Warning::Inhibit,QString("Rejecting due to Inhibit.(68)")); return 0; break;
+            // Rejecting due to Inhibit.
+            case CCNetConstruct::Rejects::Inhibit:
+                this->sendStatusTo(VStatus::Warning::Inhibit,
+                                   QString("Rejecting due to Inhibit.(68)"));
+                return 0;
+                break;
 
-            //Rejecting due to Capacity.
-            case CCNetConstruct::Rejects::Capacitance :
-            this->sendStatusTo(VStatus::Warning::Capacitance,QString("Rejecting due to Capacity.(69)")); return 0; break;
+            // Rejecting due to Capacity.
+            case CCNetConstruct::Rejects::Capacitance:
+                this->sendStatusTo(VStatus::Warning::Capacitance,
+                                   QString("Rejecting due to Capacity.(69)"));
+                return 0;
+                break;
 
-            //Rejecting due to Length.
-            case CCNetConstruct::Rejects::Length :
-            this->sendStatusTo(VStatus::Warning::Length,QString("Rejecting due to Length.(6C)")); return 0; break;
+            // Rejecting due to Length.
+            case CCNetConstruct::Rejects::Length:
+                this->sendStatusTo(VStatus::Warning::Length,
+                                   QString("Rejecting due to Length.(6C)"));
+                return 0;
+                break;
 
             // Rejecting due to unrecognised.
             // Bill taken was treated as a barcode but no reliable data can.
-            case CCNetConstruct::Rejects::Unrecognised :
-            this->sendStatusTo(VStatus::Warning::Unrecognised,QString("Rejecting due to unrecognised.(92)")); return 0; break;
+            case CCNetConstruct::Rejects::Unrecognised:
+                this->sendStatusTo(VStatus::Warning::Unrecognised,
+                                   QString("Rejecting due to unrecognised.(92)"));
+                return 0;
+                break;
 
             // Rejecting due to UV.
             // Banknote UV properties do not meet the predefined criteria.
-            case CCNetConstruct::Rejects::UV :
-            this->sendStatusTo(VStatus::Warning::UV,QString("Rejecting due to UV.(6D)")); return 0; break;
+            case CCNetConstruct::Rejects::UV:
+                this->sendStatusTo(VStatus::Warning::UV, QString("Rejecting due to UV.(6D)"));
+                return 0;
+                break;
 
             // Rejecting due to incorrect number of characters in barcode.
             // Barcode data was read (at list partially) but is inconsistent.
-            case CCNetConstruct::Rejects::IncorrectBarcode :
-            this->sendStatusTo(VStatus::Warning::IncorrectBarcode,QString("Rejecting due to incorrect number of characters in barcode.(93)")); return 0; break;
+            case CCNetConstruct::Rejects::IncorrectBarcode:
+                this->sendStatusTo(
+                    VStatus::Warning::IncorrectBarcode,
+                    QString("Rejecting due to incorrect number of characters in barcode.(93)"));
+                return 0;
+                break;
 
             // Rejecting due to unknown barcode start sequence.
             // Barcode was not read as no synchronization was established.
-            case CCNetConstruct::Rejects::UnknownBarcode :
-            this->sendStatusTo(VStatus::Warning::UnknownBarcode,QString("Rejecting due to unknown barcode start sequence.(94)")); return 0; break;
+            case CCNetConstruct::Rejects::UnknownBarcode:
+                this->sendStatusTo(VStatus::Warning::UnknownBarcode,
+                                   QString("Rejecting due to unknown barcode start sequence.(94)"));
+                return 0;
+                break;
 
             // Rejecting due to unknown barcode stop sequence.
             // Barcode was read but trailing data is corrupt..
-            case CCNetConstruct::Rejects::CorruptedTrailingData :
-            this->sendStatusTo(VStatus::Warning::CorruptedTrailingData,QString("Rejecting due to unknown barcode stop sequence.(95)")); return 0; break;
-
+            case CCNetConstruct::Rejects::CorruptedTrailingData:
+                this->sendStatusTo(VStatus::Warning::CorruptedTrailingData,
+                                   QString("Rejecting due to unknown barcode stop sequence.(95)"));
+                return 0;
+                break;
         }
     }
 
-    //Замятие купюры
-    switch( byte[3] ){
+    // Замятие купюры
+    switch (byte[3]) {
 
         // Ошибка! Замятие купюры в купюроприемнике
-        case CCNetConstruct::Errors::ValidatorJammed :
-        this->sendStatusTo(VStatus::Errors::ValidatorJammed,QString("Ошибка! Замятие купюры в купюроприемнике.(43)")); this->setBoolingDlgState(false); return 0; break;
+        case CCNetConstruct::Errors::ValidatorJammed:
+            this->sendStatusTo(VStatus::Errors::ValidatorJammed,
+                               QString("Ошибка! Замятие купюры в купюроприемнике.(43)"));
+            this->setBoolingDlgState(false);
+            return 0;
+            break;
 
-        //Переполнение стекера
-        case CCNetConstruct::Errors::StackerFull :
-        this->sendStatusTo(VStatus::Errors::StackerFull,QString("Переполнение стекера (Сделайте инкасацию).(41)")); this->setBoolingDlgState(false); return 0; break;
+        // Переполнение стекера
+        case CCNetConstruct::Errors::StackerFull:
+            this->sendStatusTo(VStatus::Errors::StackerFull,
+                               QString("Переполнение стекера (Сделайте инкасацию).(41)"));
+            this->setBoolingDlgState(false);
+            return 0;
+            break;
 
-        //открыта касета
-        case CCNetConstruct::Errors::BadStackerPosition :
-        this->sendStatusTo(VStatus::Errors::BadStackerPosition,QString("Открыта касета купюроприемника.(42)")); this->setBoolingDlgState(false); return 0; break;
+        // открыта касета
+        case CCNetConstruct::Errors::BadStackerPosition:
+            this->sendStatusTo(VStatus::Errors::BadStackerPosition,
+                               QString("Открыта касета купюроприемника.(42)"));
+            this->setBoolingDlgState(false);
+            return 0;
+            break;
 
-        //Замятие купюры в боксе
-        case CCNetConstruct::Errors::StackerJammed :
-        this->sendStatusTo(VStatus::Errors::StackerJammed,QString("Замятие купюры в боксе.(44)")); this->setBoolingDlgState(false); return 0; break;
+        // Замятие купюры в боксе
+        case CCNetConstruct::Errors::StackerJammed:
+            this->sendStatusTo(VStatus::Errors::StackerJammed,
+                               QString("Замятие купюры в боксе.(44)"));
+            this->setBoolingDlgState(false);
+            return 0;
+            break;
 
         // Bill Validator sends this event if the intentions of the user to deceive
         // the Bill Validator are detected.
-        case CCNetConstruct::Errors::Cheated :
-        this->sendStatusTo(VStatus::Warning::Cheated,QString("Попытка мошенничество (45)")); this->setBoolingDlgState(false); return 0; break;
+        case CCNetConstruct::Errors::Cheated:
+            this->sendStatusTo(VStatus::Warning::Cheated, QString("Попытка мошенничество (45)"));
+            this->setBoolingDlgState(false);
+            return 0;
+            break;
 
-        // When the user tries to insert a second bill when the previous bill is in the Bill Validator
-        // but has not been stacked. Thus Bill Validator stops motion of the second bill until the second bill
-        // is removed.
-        case CCNetConstruct::Errors::Pause :
-        this->sendStatusTo(VStatus::Warning::Paused,QString("Купюроприемник перешел в режим паузы.(46)")); this->setBoolingDlgState(false); return 0; break;
+        // When the user tries to insert a second bill when the previous bill is in the Bill
+        // Validator but has not been stacked. Thus Bill Validator stops motion of the second bill
+        // until the second bill is removed.
+        case CCNetConstruct::Errors::Pause:
+            this->sendStatusTo(VStatus::Warning::Paused,
+                               QString("Купюроприемник перешел в режим паузы.(46)"));
+            this->setBoolingDlgState(false);
+            return 0;
+            break;
 
-        //Купюраприемник не активен для приема денег
+        // Купюраприемник не активен для приема денег
         case CCNetConstruct::States::Disabled:
-        this->sendStatusTo(VStatus::Success::Ok,QString("19")); this->setBoolingDlgState(false); return 0; break;
+            this->sendStatusTo(VStatus::Success::Ok, QString("19"));
+            this->setBoolingDlgState(false);
+            return 0;
+            break;
 
-        //Stacking
+        // Stacking
         case CCNetConstruct::States::Stacking:
-        this->sendStatusTo(VStatus::Success::Ok,QString("17"));  /*qDebug() << "----Stacking----";*/ return 0; break;
+            this->sendStatusTo(VStatus::Success::Ok,
+                               QString("17")); /*qDebug() << "----Stacking----";*/
+            return 0;
+            break;
 
-        //Accepting
+        // Accepting
         case CCNetConstruct::States::Accepting:
-        this->sendStatusTo(VStatus::Success::Ok,QString("15")); this->setBoolingDlgState(true); this->setReturnNominalState(false);/*qDebug() << "----Accepting----";*/ return 0; break;
+            this->sendStatusTo(VStatus::Success::Ok, QString("15"));
+            this->setBoolingDlgState(true);
+            this->setReturnNominalState(false); /*qDebug() << "----Accepting----";*/
+            return 0;
+            break;
 
-        //Returning
+        // Returning
         case CCNetConstruct::States::Returning:
-        this->sendStatusTo(VStatus::Success::Ok,QString("18")); this->setBoolingDlgState(false); /*qDebug() << "----Returning----";*/ return 0; break;
+            this->sendStatusTo(VStatus::Success::Ok, QString("18"));
+            this->setBoolingDlgState(false); /*qDebug() << "----Returning----";*/
+            return 0;
+            break;
 
-//        //Idling
-//        case CCNetConstruct::States::Idling:
-//        this->sendStatusTo(0,QString("18")); qDebug() << "----Idling----"; return 0; break;
+            //        //Idling
+            //        case CCNetConstruct::States::Idling:
+            //        this->sendStatusTo(0,QString("18")); qDebug() << "----Idling----"; return 0;
+            //        break;
 
-        //Идет питание на Купюроприемник.
+        // Идет питание на Купюроприемник.
         case CCNetConstruct::States::PowerUpInValidator:
-        this->sendStatusTo(VStatus::Success::Ok,QString("Идет питание на Купюроприемник.(11)")); this->setBoolingDlgState(false); return 0; break;
+            this->sendStatusTo(VStatus::Success::Ok,
+                               QString("Идет питание на Купюроприемник.(11)"));
+            this->setBoolingDlgState(false);
+            return 0;
+            break;
 
         case CCNetConstruct::States::Initialize:
-        this->sendStatusTo(VStatus::Success::Ok,QString("Идет инициализация купюрника.(13)")); this->setBoolingDlgState(false); return 0; break;
-
-        //Тут надо проверить неисправности
-        // Ошибка! Откройте купюроприемник и прочистите содержимое...
-        case CCNetConstruct::Errors::Failure :
-//            this->sendStatusTo(VStatus::Errors::Failure,QString("Ошибка! Инициализации купюроприемника.(47)"));
+            this->sendStatusTo(VStatus::Success::Ok, QString("Идет инициализация купюрника.(13)"));
             this->setBoolingDlgState(false);
-//            return 0;
-            switch( byte[4] ){
+            return 0;
+            break;
+
+        // Тут надо проверить неисправности
+        //  Ошибка! Откройте купюроприемник и прочистите содержимое...
+        case CCNetConstruct::Errors::Failure:
+            //            this->sendStatusTo(VStatus::Errors::Failure,QString("Ошибка! Инициализации
+            //            купюроприемника.(47)"));
+            this->setBoolingDlgState(false);
+            //            return 0;
+            switch (byte[4]) {
 
                 case CCNetConstruct::Failures::StackerMotor:
-                this->sendStatusTo(VStatus::Errors::StackerMotor,QString("Drop Cassette Motor failure.(50))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::StackerMotor,
+                                       QString("Drop Cassette Motor failure.(50))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::TransportMotorSpeed:
-                this->sendStatusTo(VStatus::Errors::TransportMotorSpeed,QString("Transport Motor Speed Failure.(51)))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::TransportMotorSpeed,
+                                       QString("Transport Motor Speed Failure.(51)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::TransportMotor:
-                this->sendStatusTo(VStatus::Errors::TransportMotor,QString("Transport Motor failure.(52)))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::TransportMotor,
+                                       QString("Transport Motor failure.(52)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::AligningMotor:
-                this->sendStatusTo(VStatus::Errors::AligningMotor,QString("Aligning Motor Failure.(53)))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::AligningMotor,
+                                       QString("Aligning Motor Failure.(53)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::InitialStackerStatus:
-                this->sendStatusTo(VStatus::Errors::InitialStackerStatus,QString("Initial Cassette Status Failure.(54)))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::InitialStackerStatus,
+                                       QString("Initial Cassette Status Failure.(54)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::Optical:
-                this->sendStatusTo(VStatus::Errors::Optical,QString("One of the optic sensors has failed to provide its response.(55)))")); return 0; break;
+                    this->sendStatusTo(
+                        VStatus::Errors::Optical,
+                        QString(
+                            "One of the optic sensors has failed to provide its response.(55)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::Inductive:
-                this->sendStatusTo(VStatus::Errors::Inductive,QString("Inductive sensor failed to respond.(56)))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::Inductive,
+                                       QString("Inductive sensor failed to respond.(56)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::Cassette1MotorF:
-                this->sendStatusTo(VStatus::Errors::Cassette1MotorF,QString("Cassette 1 Motor Failure.(57)))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::Cassette1MotorF,
+                                       QString("Cassette 1 Motor Failure.(57)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::Cassette2MotorF:
-                this->sendStatusTo(VStatus::Errors::Cassette2MotorF,QString("Cassette 2 Motor Failure.(58)))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::Cassette2MotorF,
+                                       QString("Cassette 2 Motor Failure.(58)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::Cassette3MotorF:
-                this->sendStatusTo(VStatus::Errors::Cassette3MotorF,QString("Cassette 3 Motor Failure.(59)))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::Cassette3MotorF,
+                                       QString("Cassette 3 Motor Failure.(59)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::BillToBillTransport:
-                this->sendStatusTo(VStatus::Errors::BillToBillTransport,QString("Bill-to-Bill unit Transport Failure.(5A)))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::BillToBillTransport,
+                                       QString("Bill-to-Bill unit Transport Failure.(5A)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::SwitchMotor1:
-                this->sendStatusTo(VStatus::Errors::SwitchMotor1,QString("Switch Motor 1 Failure.(5B)))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::SwitchMotor1,
+                                       QString("Switch Motor 1 Failure.(5B)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::SwitchMotor2:
-                this->sendStatusTo(VStatus::Errors::SwitchMotor2,QString("Switch Motor 2 Failure.(5C)))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::SwitchMotor2,
+                                       QString("Switch Motor 2 Failure.(5C)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::DispenserMotor1:
-                this->sendStatusTo(VStatus::Errors::DispenserMotor1,QString("Dispenser Motor 1 Failure.(5D)))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::DispenserMotor1,
+                                       QString("Dispenser Motor 1 Failure.(5D)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::DispenserMotor2:
-                this->sendStatusTo(VStatus::Errors::DispenserMotor1,QString("Dispenser Motor 2 Failure.(5E)))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::DispenserMotor1,
+                                       QString("Dispenser Motor 2 Failure.(5E)))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::Failures::Capacitance:
-                this->sendStatusTo(VStatus::Errors::Capacitance,QString("Capacitance sensor failed to respond.(5F)))")); return 0; break;
-
+                    this->sendStatusTo(VStatus::Errors::Capacitance,
+                                       QString("Capacitance sensor failed to respond.(5F)))"));
+                    return 0;
+                    break;
             }
-        break;
+            break;
 
-        case CCNetConstruct::Errors::BillJammed :
+        case CCNetConstruct::Errors::BillJammed:
             this->setBoolingDlgState(false);
 
-            switch( byte[4] ){
+            switch (byte[4]) {
                 case CCNetConstruct::BillJammed::JCassette1:
-                this->sendStatusTo(VStatus::Errors::JCassette1,QString("Bill Jammed in Cassette 1.(70))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::JCassette1,
+                                       QString("Bill Jammed in Cassette 1.(70))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::BillJammed::JCassette2:
-                this->sendStatusTo(VStatus::Errors::JCassette2,QString("Bill Jammed in Cassette 2.(71))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::JCassette2,
+                                       QString("Bill Jammed in Cassette 2.(71))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::BillJammed::JCassette3:
-                this->sendStatusTo(VStatus::Errors::JCassette3,QString("Bill Jammed in Cassette 3.(72))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::JCassette3,
+                                       QString("Bill Jammed in Cassette 3.(72))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::BillJammed::JTransportPath:
-                this->sendStatusTo(VStatus::Errors::JTransportPath,QString("Bill Jammed in Transport Path.(73))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::JTransportPath,
+                                       QString("Bill Jammed in Transport Path.(73))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::BillJammed::JSwitch:
-                this->sendStatusTo(VStatus::Errors::JSwitch,QString("Bill Jammed in Switch.(74))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::JSwitch,
+                                       QString("Bill Jammed in Switch.(74))"));
+                    return 0;
+                    break;
 
                 case CCNetConstruct::BillJammed::JDispenser:
-                this->sendStatusTo(VStatus::Errors::JDispenser,QString("Bill Jammed in Dispenser.(75))")); return 0; break;
+                    this->sendStatusTo(VStatus::Errors::JDispenser,
+                                       QString("Bill Jammed in Dispenser.(75))"));
+                    return 0;
+                    break;
             }
-        break;
+            break;
     }
 
     return 0;
 }
 
-QByteArray CCNetSm::fwCmdRequest(const QByteArray &data, quint8 command)
-{
+QByteArray CCNetSm::fwCmdRequest(const QByteArray &data, quint8 command) {
     QByteArray packet;
 
     if (command > 0) {
@@ -930,7 +1095,7 @@ QByteArray CCNetSm::fwCmdRequest(const QByteArray &data, quint8 command)
         packet[2] = command;
 
         for (int i = 0; i < data.size(); ++i) {
-                packet[4 + i] = data[i];
+            packet[4 + i] = data[i];
         }
 
         ushort CRC = calcCRC16(packet.left(4));
@@ -939,7 +1104,7 @@ QByteArray CCNetSm::fwCmdRequest(const QByteArray &data, quint8 command)
     } else {
         packet.resize(6);
         for (int i = 0; i < data.size(); ++i) {
-                packet[i] = data[i];
+            packet[i] = data[i];
         }
 
         ushort CRC = calcCRC16(packet.left(4));
@@ -950,8 +1115,7 @@ QByteArray CCNetSm::fwCmdRequest(const QByteArray &data, quint8 command)
     return packet;
 }
 
-QByteArray CCNetSm::fwPacketRequest(quint8 command, quint8 address, const QByteArray &data)
-{
+QByteArray CCNetSm::fwPacketRequest(quint8 command, quint8 address, const QByteArray &data) {
     int PacketSize = CCNetConstruct::FwPacketSize;
     QByteArray packet(PacketSize, 0);
 
@@ -971,8 +1135,7 @@ QByteArray CCNetSm::fwPacketRequest(quint8 command, quint8 address, const QByteA
     return packet;
 }
 
-QByteArray CCNetSm::fwPacketUpdRequest(quint16 adr, const QByteArray &data)
-{
+QByteArray CCNetSm::fwPacketUpdRequest(quint16 adr, const QByteArray &data) {
     const int packetSize = 72;
 
     QByteArray packet(packetSize, 0);
@@ -998,15 +1161,14 @@ QByteArray CCNetSm::fwPacketUpdRequest(quint16 adr, const QByteArray &data)
     return packet;
 }
 
-bool CCNetSm::fwCmdExec(const QByteArray aCommandData)
-{
+bool CCNetSm::fwCmdExec(const QByteArray aCommandData) {
     if (isOpened()) {
         serialPort->write(aCommandData);
         serialPort->waitForBytesWritten(150);
     }
 
-    //Задержка после команды
-//    msleep(150);
+    // Задержка после команды
+    //    msleep(150);
 
     QByteArray aAnswerData;
 
@@ -1016,19 +1178,17 @@ bool CCNetSm::fwCmdExec(const QByteArray aCommandData)
     do {
         serialPort->waitForReadyRead(150);
 
-        //Есть ответ
+        // Есть ответ
         QByteArray answerData = serialPort->readAll();
 
         aAnswerData.append(answerData);
 
-    }
-    while ((clockTimer.elapsed() < 2000) && QString::fromUtf8(aAnswerData) != "OK");
+    } while ((clockTimer.elapsed() < 2000) && QString::fromUtf8(aAnswerData) != "OK");
 
     return QString::fromUtf8(aAnswerData) == "OK";
 }
 
-bool CCNetSm::serviceModeSwitch()
-{
+bool CCNetSm::serviceModeSwitch() {
     QByteArray data;
     data.resize(6);
 
@@ -1045,8 +1205,7 @@ bool CCNetSm::serviceModeSwitch()
     return result;
 }
 
-bool CCNetSm::resetValidator()
-{
+bool CCNetSm::resetValidator() {
     QByteArray data;
     data.resize(6);
 
@@ -1064,19 +1223,19 @@ bool CCNetSm::resetValidator()
     return result;
 }
 
-bool CCNetSm::unlockValidator()
-{
+bool CCNetSm::unlockValidator() {
     QByteArray packet(64, 0);
 
     ushort adr;
     bool res;
 
-    auto bloader = QByteArray(reinterpret_cast<const char*>(CCNetFirmware::bloader), sizeof(CCNetFirmware::bloader));
+    auto bloader = QByteArray(reinterpret_cast<const char *>(CCNetFirmware::bloader),
+                              sizeof(CCNetFirmware::bloader));
 
     for (int i = 0; i < 16; i++) {
         packet = bloader.mid(i * 64, 64);
 
-        adr =(ushort) (0x3000 + i * 0x0200);
+        adr = (ushort)(0x3000 + i * 0x0200);
 
         res = fwCmdExec(fwPacketUpdRequest(adr, packet));
 
@@ -1090,8 +1249,8 @@ bool CCNetSm::unlockValidator()
         msleep(200);
     }
 
-
-    auto ldr1A00 = QByteArray(reinterpret_cast<const char*>(CCNetFirmware::ldr1A00), sizeof(CCNetFirmware::ldr1A00));
+    auto ldr1A00 = QByteArray(reinterpret_cast<const char *>(CCNetFirmware::ldr1A00),
+                              sizeof(CCNetFirmware::ldr1A00));
     adr = (ushort)(0x1A00);
     res = fwCmdExec(fwPacketUpdRequest(adr, ldr1A00));
 
@@ -1104,7 +1263,8 @@ bool CCNetSm::unlockValidator()
 
     msleep(200);
 
-    auto ldr1C00 = QByteArray(reinterpret_cast<const char*>(CCNetFirmware::ldr1C00), sizeof(CCNetFirmware::ldr1C00));
+    auto ldr1C00 = QByteArray(reinterpret_cast<const char *>(CCNetFirmware::ldr1C00),
+                              sizeof(CCNetFirmware::ldr1C00));
     adr = (ushort)(0x1C00);
     res = fwCmdExec(fwPacketUpdRequest(adr, ldr1C00));
 
@@ -1117,7 +1277,8 @@ bool CCNetSm::unlockValidator()
 
     msleep(200);
 
-    auto ldr1E00 = QByteArray(reinterpret_cast<const char*>(CCNetFirmware::ldr1E00), sizeof(CCNetFirmware::ldr1E00));
+    auto ldr1E00 = QByteArray(reinterpret_cast<const char *>(CCNetFirmware::ldr1E00),
+                              sizeof(CCNetFirmware::ldr1E00));
     adr = (ushort)(0x1E00);
     res = fwCmdExec(fwPacketUpdRequest(adr, ldr1E00));
 
@@ -1130,7 +1291,8 @@ bool CCNetSm::unlockValidator()
 
     msleep(200);
 
-    auto ldrFE00 = QByteArray(reinterpret_cast<const char*>(CCNetFirmware::ldrFE00), sizeof(CCNetFirmware::ldrFE00));
+    auto ldrFE00 = QByteArray(reinterpret_cast<const char *>(CCNetFirmware::ldrFE00),
+                              sizeof(CCNetFirmware::ldrFE00));
     adr = (ushort)(0xFFC0);
     res = fwCmdExec(fwPacketUpdRequest(adr, ldrFE00));
 
@@ -1146,8 +1308,7 @@ bool CCNetSm::unlockValidator()
     return true;
 }
 
-bool CCNetSm::checkBootloader()
-{
+bool CCNetSm::checkBootloader() {
     QByteArray data;
     data.resize(6);
 
@@ -1165,8 +1326,7 @@ bool CCNetSm::checkBootloader()
     return result;
 }
 
-QByteArray CCNetSm::firmwareGet(QString version)
-{
+QByteArray CCNetSm::firmwareGet(QString version) {
     if (version.isEmpty()) {
         return QByteArray();
     }
@@ -1200,9 +1360,7 @@ QByteArray CCNetSm::firmwareGet(QString version)
     return data;
 }
 
-
-bool CCNetSm::CmdFirmwareUpdate(QString version)
-{
+bool CCNetSm::CmdFirmwareUpdate(QString version) {
     if (firmwareUpdating) {
         emit emitLog(1, "FIRMWARE_CCNET", "Идет обновление прошивки");
         return false;
@@ -1268,8 +1426,7 @@ bool CCNetSm::CmdFirmwareUpdate(QString version)
     }
 }
 
-bool CCNetSm::firmwareUpdate(const QByteArray fw)
-{
+bool CCNetSm::firmwareUpdate(const QByteArray fw) {
     QByteArray packet(512, 0);
     double prg = 0;
 
@@ -1281,7 +1438,8 @@ bool CCNetSm::firmwareUpdate(const QByteArray fw)
         bool res = fwCmdExec(fwPacketRequest(0xAA, 0x10 + page, packet));
 
         if (res) {
-            prg = 0.91 * page; if (prg > 100) prg = 100;
+            prg = 0.91 * page;
+            if (prg > 100) prg = 100;
 
             emit emitLog(0, "FIRMWARE_CCNET", QString("Обновление прошивки %1%").arg(qRound(prg)));
         } else {
@@ -1320,8 +1478,7 @@ bool CCNetSm::firmwareUpdate(const QByteArray fw)
     return true;
 }
 
-bool CCNetSm::fwUpdateC100(QString version)
-{
+bool CCNetSm::fwUpdateC100(QString version) {
     if (version.isEmpty()) {
         return false;
     }
@@ -1329,7 +1486,8 @@ bool CCNetSm::fwUpdateC100(QString version)
     lib.setFileName("assets/firmware/c100/CashPayment");
 
     if (!lib.load()) {
-        emit emitLog(2, "FIRMWARE_CCNET", QString("Не удалось загрузить DLL: %1").arg(lib.errorString()));
+        emit emitLog(2, "FIRMWARE_CCNET",
+                     QString("Не удалось загрузить DLL: %1").arg(lib.errorString()));
         emit emitFirmwareUpdate("cancel");
         return false;
     }
@@ -1343,9 +1501,10 @@ bool CCNetSm::fwUpdateC100(QString version)
 
     int state;
     int nPort = port.remove("COM").toInt();
-    char* filePath = filePathBytes.data();
+    char *filePath = filePathBytes.data();
 
-    SendFirmWareDataByPathFunc sendFirmWareDataByPathFunc = (SendFirmWareDataByPathFunc) lib.resolve("SendFirmWareDataByPath");
+    SendFirmWareDataByPathFunc sendFirmWareDataByPathFunc =
+        (SendFirmWareDataByPathFunc)lib.resolve("SendFirmWareDataByPath");
     if (!sendFirmWareDataByPathFunc) {
         emit emitLog(2, "FIRMWARE_CCNET", QString("Не найдена функция: %1").arg(lib.errorString()));
         emit emitFirmwareUpdate("cancel");
@@ -1368,7 +1527,8 @@ bool CCNetSm::fwUpdateC100(QString version)
 
             GetDataStatusFunc getDataStatus = (GetDataStatusFunc)lib.resolve("GetDataStatus");
             if (!getDataStatus) {
-                emit emitLog(2, "FIRMWARE_CCNET", QString("Не найдена функция: %1").arg(lib.errorString()));
+                emit emitLog(2, "FIRMWARE_CCNET",
+                             QString("Не найдена функция: %1").arg(lib.errorString()));
                 fwCancelC100();
                 return false;
             }
@@ -1385,7 +1545,8 @@ bool CCNetSm::fwUpdateC100(QString version)
                 firmwareUpdating = false;
                 break;
             } else if (downFileSize > 0) {
-                emit emitLog(0, "FIRMWARE_CCNET", QString("Обновление прошивки %1%").arg(downFileSize * 100 / state));
+                emit emitLog(0, "FIRMWARE_CCNET",
+                             QString("Обновление прошивки %1%").arg(downFileSize * 100 / state));
             } else {
                 emit emitLog(2, "FIRMWARE_CCNET", "Ошибка обновления");
 
@@ -1420,8 +1581,7 @@ bool CCNetSm::fwUpdateC100(QString version)
     return false;
 }
 
-void CCNetSm::fwCancelC100()
-{
+void CCNetSm::fwCancelC100() {
     // Open serial port
     OpenPort();
 
@@ -1429,19 +1589,15 @@ void CCNetSm::fwCancelC100()
     firmwareUpdating = false;
 }
 
-void CCNetSm::setBoolingDlgState(bool sts)
-{
+void CCNetSm::setBoolingDlgState(bool sts) {
     Q_UNUSED(sts)
-//    if(sts_animate_dlg != sts){
-//        sts_animate_dlg = sts;
-//        emit this->emitAnimateStatus(sts_animate_dlg);
-//    }
+    //    if(sts_animate_dlg != sts){
+    //        sts_animate_dlg = sts;
+    //        emit this->emitAnimateStatus(sts_animate_dlg);
+    //    }
 }
 
-void CCNetSm::setReturnNominalState(bool sts)
-{
-    emit this->emitReturnNominalStatus(sts);
-}
+void CCNetSm::setReturnNominalState(bool sts) { emit this->emitReturnNominalStatus(sts); }
 
 void CCNetSm::toValidatorLog(int state, QByteArray data, QString text) {
     if (validatorLogEnable) {

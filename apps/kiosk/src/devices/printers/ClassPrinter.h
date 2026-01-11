@@ -1,18 +1,18 @@
 #ifndef CLASSPRINTER_H
 #define CLASSPRINTER_H
-#include <QTextBrowser>
 #include <QPrinter>
-//Подключаем классы для работы с принтерами
+#include <QTextBrowser>
+// Подключаем классы для работы с принтерами
 //*****************************************
 #include "dev/AV268.h"
+#include "dev/CitizenCBM1000.h"
 #include "dev/CitizenCTS2000.h"
 #include "dev/CitizenPPU700.h"
-#include "dev/CitizenCBM1000.h"
 #include "dev/CustomTG2480.h"
 #include "dev/CustomVKP80.h"
-//#include "dev/StarTUP900.h"
-#include "dev/Phoenix.h"
+// #include "dev/StarTUP900.h"
 #include "dev/KM1X.h"
+#include "dev/Phoenix.h"
 
 //*****************************************
 
@@ -23,8 +23,7 @@ class CitizenCTS2000_PRINTER;
 class CitizenCBM1000_PRINTER;
 class Phoenix_PRINTER;
 
-namespace PrinterModel
-{
+namespace PrinterModel {
 const QString Custom_VKP80 = "CustomVKP80";
 const QString Star_TUP900 = "StarTUP900";
 const QString AV_268 = "AV268";
@@ -35,23 +34,20 @@ const QString Windows_Printer = "WindowsPrinter";
 const QString Phoenix_model = "Phoenix PHX-POG";
 const QString CitizenCBM1000 = "CitizenCBM1000";
 const QString KM1X = "KM1X";
-}
+}  // namespace PrinterModel
 
-namespace PrinterCommand
-{
+namespace PrinterCommand {
 const QString cmdPrint = "print";
 const QString cmdGetStatus = "get_status";
 const QString cmdInit = "init";
 const QString cmdFinedPrinter = "fined_printer";
 const QString cmdIsItYou = "is_it_you";
-}
+}  // namespace PrinterCommand
 
-
-class ClassPrinter : public QThread
-{
+class ClassPrinter : public QThread {
     Q_OBJECT
 
-public:
+  public:
     ClassPrinter(QObject *parent = 0);
 
     void setPrinterModel(const QString printerModel);
@@ -65,7 +61,8 @@ public:
     void closeThis();
     void setLeftMargin(int left_margin);
     void setSmallBeetwenString(bool beet);
-    bool isItYou(QStringList &comList,QString &printer_name, QString &com_str, QString &printer_coment);
+    bool isItYou(QStringList &comList, QString &printer_name, QString &com_str,
+                 QString &printer_coment);
     void tarminateThis();
     void clearListPrinterData(QString name);
 
@@ -87,7 +84,7 @@ public:
 
     QString textToPrint;
 
-public slots:
+  public slots:
 
     void CMD_Print(QString text);
     void CMD_GetStatus();
@@ -97,11 +94,10 @@ public slots:
 
     void CGetStatus();
 
-signals:
+  signals:
     void emit_status(int status);
 
-private:
-
+  private:
     CustomVKP80_PRINTER *CustomVKP80;
     AV268_PRINTER *AV268;
     CitizenPPU700_PRINTER *CitizenPPU700;
@@ -128,4 +124,4 @@ private:
     void winPrint(QString text);
 };
 
-#endif // CLASSPRINTER_H
+#endif  // CLASSPRINTER_H

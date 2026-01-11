@@ -1,46 +1,145 @@
 ---
 Checks: >
-  -*,
-  clang-analyzer-*,
-  clang-diagnostic-*,
-  modernize-*,
-  performance-*,
-  readability-*,
-  bugprone-*,
-  cppcoreguidelines-*,
-  -modernize-use-trailing-return-type,
-  -readability-magic-numbers,
-  -cppcoreguidelines-avoid-magic-numbers,
-  -readability-braces-around-statements,
-  -readability-identifier-length,
-  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
-  -cppcoreguidelines-owning-memory,
-  -cppcoreguidelines-pro-type-vararg,
-  -bugprone-easily-swappable-parameters,
-  -modernize-avoid-c-arrays,
-  -readability-function-cognitive-complexity,
-  -performance-no-int-to-ptr
-WarningsAsErrors: ''
+  -*,clang-analyzer-*,bugprone-*,performance-*,readability-*,modernize-*,misc-*,portability-*,cppcoreguidelines-*,hicpp-*,llvm-*,qt-*,
+  -fuchsia-*,
+  -android-*,
+  -zircon-*,
+  -cert-*,
+  -altera-*,
+  -mpi-*,
+  -objc-*,
+  -openmp-*,
+  -llvmlibc-*,
+  -abseil-*,
+  -google-*,
+  -darwin-*,
+  -osx-*,
+  -misc-non-private-member-variables-in-classes
+WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
-AnalyzeTemporaryDtors: false
 FormatStyle: file
-User: user
+User: ekiosk
 CheckOptions:
+  - key: modernize-use-nullptr.NullMacros
+    value: 'NULL'
+  - key: modernize-use-nullptr.NullptrT
+    value: 'nullptr'
+  - key: modernize-use-override.IgnoreDestructors
+    value: '1'
+  - key: readability-identifier-naming.VariableCase
+    value: camelBack
   - key: readability-identifier-naming.ClassCase
     value: CamelCase
   - key: readability-identifier-naming.FunctionCase
     value: camelBack
-  - key: readability-identifier-naming.VariableCase
+  - key: readability-identifier-naming.PrivateMemberSuffix
+    value: _
+  - key: readability-identifier-naming.PrivateMemberPrefix
+    value: m_
+  - key: readability-identifier-naming.ConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.EnumConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.GlobalFunctionCase
+    value: camelBack
+  - key: readability-identifier-naming.GlobalVariableCase
+    value: camelBack
+  - key: readability-identifier-naming.MemberCase
     value: camelBack
   - key: readability-identifier-naming.ParameterCase
     value: camelBack
-  - key: readability-identifier-naming.MethodCase
-    value: camelBack
-  - key: readability-identifier-naming.NamespaceCase
+  - key: readability-identifier-naming.TypeAliasCase
     value: CamelCase
+  - key: readability-identifier-naming.TemplateParameterCase
+    value: CamelCase
+  - key: readability-identifier-naming.NamespaceCase
+    value: lower_case
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.MacroDefinitionPrefix
+    value: ''
+  - key: readability-identifier-naming.MacroDefinitionSuffix
+    value: ''
+  - key: readability-identifier-naming.EnumMemberCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.EnumMemberPrefix
+    value: ''
+  - key: readability-identifier-naming.EnumMemberSuffix
+    value: ''
   - key: readability-identifier-naming.ClassMemberCase
     value: camelBack
-  - key: readability-identifier-naming.PrivateMemberPrefix
-    value: 'm_'
-  - key: readability-identifier-naming.ProtectedMemberPrefix
-    value: 'm_'
+  - key: readability-identifier-naming.ClassMemberPrefix
+    value: m_
+  - key: readability-identifier-naming.ClassMemberSuffix
+    value: ''
+  - key: readability-identifier-naming.StaticMemberCase
+    value: camelBack
+  - key: readability-identifier-naming.StaticMemberPrefix
+    value: s_
+  - key: readability-identifier-naming.StaticMemberSuffix
+    value: ''
+  - key: readability-identifier-naming.LocalVariableCase
+    value: camelBack
+  - key: readability-identifier-naming.LocalConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.LocalFunctionCase
+    value: camelBack
+  - key: readability-identifier-naming.LocalTypeAliasCase
+    value: CamelCase
+  - key: readability-identifier-naming.LocalTemplateParameterCase
+    value: CamelCase
+  - key: readability-identifier-naming.LocalEnumCase
+    value: CamelCase
+  - key: readability-identifier-naming.LocalEnumConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.LocalEnumMemberCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.LocalEnumMemberPrefix
+    value: ''
+  - key: readability-identifier-naming.LocalEnumMemberSuffix
+    value: ''
+  - key: readability-identifier-naming.LocalStructCase
+    value: CamelCase
+  - key: readability-identifier-naming.LocalClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.LocalClassMemberCase
+    value: camelBack
+  - key: readability-identifier-naming.LocalClassMemberPrefix
+    value: m_
+  - key: readability-identifier-naming.LocalClassMemberSuffix
+    value: ''
+  - key: readability-identifier-naming.LocalStaticMemberCase
+    value: camelBack
+  - key: readability-identifier-naming.LocalStaticMemberPrefix
+    value: s_
+  - key: readability-identifier-naming.LocalStaticMemberSuffix
+    value: ''
+  - key: readability-identifier-naming.LocalParameterCase
+    value: camelBack
+  - key: readability-identifier-naming.LocalTypeAliasCase
+    value: CamelCase
+  - key: readability-identifier-naming.LocalTemplateParameterCase
+    value: CamelCase
+  - key: readability-identifier-naming.LocalNamespaceCase
+    value: lower_case
+  - key: readability-identifier-naming.LocalMacroDefinitionCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.LocalMacroDefinitionPrefix
+    value: ''
+  - key: readability-identifier-naming.LocalMacroDefinitionSuffix
+    value: ''
+  - key: readability-identifier-naming.LocalEnumMemberCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.LocalEnumMemberPrefix
+    value: ''
+  - key: readability-identifier-naming.LocalEnumMemberSuffix
+    value: ''
+ExtraArgs:
+  - -std=c++14
+  - -std=c11
