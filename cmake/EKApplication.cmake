@@ -15,11 +15,23 @@ function(ek_add_application TARGET_NAME)
             add_executable(${TARGET_NAME} ${ARG_SOURCES} ${ARG_RESOURCES})
         endif()
     endif()
-    set_target_properties(${TARGET_NAME} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-        OUTPUT_NAME ${TARGET_NAME}
-        DEBUG_POSTFIX "d"
-    )
+    if(DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY AND NOT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "")
+        set(_ek_runtime_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    else()
+        set(_ek_runtime_dir "")
+    endif()
+    if(NOT "${_ek_runtime_dir}" STREQUAL "")
+        set_target_properties(${TARGET_NAME} PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY ${_ek_runtime_dir}
+            OUTPUT_NAME ${TARGET_NAME}
+            DEBUG_POSTFIX "d"
+        )
+    else()
+        set_target_properties(${TARGET_NAME} PROPERTIES
+            OUTPUT_NAME ${TARGET_NAME}
+            DEBUG_POSTFIX "d"
+        )
+    endif()
     set(default_qt_modules Core)
     foreach(qt_module ${default_qt_modules})
         target_link_libraries(${TARGET_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::${qt_module})

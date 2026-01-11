@@ -1,13 +1,25 @@
 {
   "cSpell.words": [
     "Advapi",
+    "ARGN",
     "AUTOMOC",
     "AUTORCC",
     "AUTOUIC",
+    "cppcheck",
     "ekiosk",
+    "EKSA",
+    "endfunction",
+    "lrelease",
     "MSVC",
+    "multilanguage",
+    "myapp",
+    "mylib",
+    "myplugin",
+    "mytest",
+    "NSIS",
     "psapi",
-    "rasapi"
+    "rasapi",
+    "suppr"
   ],
   "cSpell.language": "en,ru",
   "C_Cpp.default.cppStandard": "c++14",

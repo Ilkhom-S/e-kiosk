@@ -2,12 +2,12 @@
 // EKiosk Example Test
 //---------------------------------------------------------------------------
 
-#include <QtTest/QtTest>
 #include <QString>
+#include <QtTest/QtTest>
 
 class TestExample : public QObject {
     Q_OBJECT
-private slots:
+  private slots:
     void testBasicCompare() {
         int expected = 42;
         int actual = 42;

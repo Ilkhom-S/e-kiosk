@@ -3,9 +3,9 @@
 # This CMakeLists.txt adds all application subdirectories for building.
 
 add_subdirectory(kiosk)
-add_subdirectory(Updater)
-add_subdirectory(UpdaterSplashScreen)
-add_subdirectory(WatchService)
-add_subdirectory(WatchServiceController)
+# add_subdirectory(Updater)
+# add_subdirectory(UpdaterSplashScreen)
+# add_subdirectory(WatchService)
+# add_subdirectory(WatchServiceController)
 
 # Add new applications above as needed.
