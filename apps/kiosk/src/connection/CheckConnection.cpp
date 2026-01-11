@@ -1,162 +1,193 @@
 #include "CheckConnection.h"
-
 #include <QJsonDocument>
 
-CheckConnection::CheckConnection(QObject *parent) : QThread(parent) {
-    m_pTcpSocket = new QTcpSocket(this);
-    connect(m_pTcpSocket, SIGNAL(connected()), SLOT(slotConnectedOk()));
-    connect(m_pTcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this,
-            SLOT(slotErrorConnected(QAbstractSocket::SocketError)));
+CheckConnection::CheckConnection(QObject* parent) : QThread(parent)
+{
+	m_pTcpSocket = new QTcpSocket(this);
+	connect(m_pTcpSocket, SIGNAL(connected()), SLOT(slotConnectedOk()));
+	connect(m_pTcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this,
+			SLOT(slotErrorConnected(QAbstractSocket::SocketError)));
 
-    manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
-    connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)), this,
-            SLOT(handleSslErrors(QNetworkReply *, QList<QSslError>)));
+	manager = new QNetworkAccessManager(this);
+	connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+	connect(manager, SIGNAL(sslErrors(QNetworkReply*, QList<QSslError>)), this,
+			SLOT(handleSslErrors(QNetworkReply*, QList<QSslError>)));
 
-    abortTimer = new QTimer(this);
-    abortTimer->setSingleShot(true);
-    connect(abortTimer, SIGNAL(timeout()), this, SLOT(timeOutDisconect()));
+	abortTimer = new QTimer(this);
+	abortTimer->setSingleShot(true);
+	connect(abortTimer, SIGNAL(timeout()), this, SLOT(timeOutDisconect()));
 
-    stsTimer = new QTimer(this);
-    stsTimer->setSingleShot(true);
-    connect(stsTimer, SIGNAL(timeout()), this, SLOT(timeOutDisconect()));
+	stsTimer = new QTimer(this);
+	stsTimer->setSingleShot(true);
+	connect(stsTimer, SIGNAL(timeout()), this, SLOT(timeOutDisconect()));
 }
 
-void CheckConnection::timeOutDisconect() { emit this->emit_Ping(false); }
-
-void CheckConnection::handleSslErrors(QNetworkReply *reply, QList<QSslError> list) {
-    Q_UNUSED(reply)
-
-    QString d = "";
-    for (auto &e : list) {
-        d += e.errorString() + "\n";
-    }
-
-    emit emit_toLoging(1, "PING", QString("Description: %1").arg(d));
+void CheckConnection::timeOutDisconect()
+{
+	emit this->emit_Ping(false);
 }
 
-void CheckConnection::slotConnectedOk() {
-    if (stsTimer->isActive()) stsTimer->stop();
+void CheckConnection::handleSslErrors(QNetworkReply* reply, QList<QSslError> list)
+{
+	Q_UNUSED(reply)
 
-    m_pTcpSocket->disconnectFromHost();
+	QString d = "";
+	for (auto& e : list)
+	{
+		d += e.errorString() + "\n";
+	}
 
-    emit this->emit_Ping(true);
+	emit emit_toLoging(1, "PING", QString("Description: %1").arg(d));
 }
 
-void CheckConnection::slotErrorConnected(QAbstractSocket::SocketError err) {
-    Q_UNUSED(err)
+void CheckConnection::slotConnectedOk()
+{
+	if (stsTimer->isActive())
+		stsTimer->stop();
 
-    if (stsTimer->isActive()) {
-        stsTimer->stop();
-    }
+	m_pTcpSocket->disconnectFromHost();
 
-    emit this->emit_Ping(false);
+	emit this->emit_Ping(true);
 }
 
-void CheckConnection::connectToHost(QString ipAddress) {
-    stsTimer->start(29000);
+void CheckConnection::slotErrorConnected(QAbstractSocket::SocketError err)
+{
+	Q_UNUSED(err)
 
-    if (m_pTcpSocket->state() == QAbstractSocket::ConnectedState) {
-        m_pTcpSocket->disconnectFromHost();
-    }
+	if (stsTimer->isActive())
+	{
+		stsTimer->stop();
+	}
 
-    m_pTcpSocket->connectToHost(ipAddress, 80);
+	emit this->emit_Ping(false);
 }
 
-bool CheckConnection::ping(int timeOut, QString ipAddress) {
-    QProcess pingProc;
-    QString pingCmd;
-    QByteArray contents;
-    pingCmd = QString("ping -n 3 -w %1 %2").arg(timeOut * 1000).arg(ipAddress);
-    pingProc.setProcessChannelMode(QProcess::MergedChannels);
+void CheckConnection::connectToHost(QString ipAddress)
+{
+	stsTimer->start(29000);
 
-    pingProc.start("c:/windows/system32/cmd.exe", QStringList() << "/c" << pingCmd,
-                   QIODevice::ReadOnly);
-    pingProc.waitForFinished(12000);
+	if (m_pTcpSocket->state() == QAbstractSocket::ConnectedState)
+	{
+		m_pTcpSocket->disconnectFromHost();
+	}
 
-    if (pingProc.state() != QProcess::NotRunning) {
-        pingProc.close();
-    }
-
-    contents = pingProc.readAll();
-
-    if (contents.contains("TTL")) {
-        emit this->emit_Ping(true);
-        return true;
-    } else {
-        emit this->emit_Ping(false);
-        return false;
-    }
+	m_pTcpSocket->connectToHost(ipAddress, 80);
 }
 
-void CheckConnection::checkConnection(int type) {
-    cmd = type;
+bool CheckConnection::ping(int timeOut, QString ipAddress)
+{
+	QProcess pingProc;
+	QString pingCmd;
+	QByteArray contents;
+	pingCmd = QString("ping -n 3 -w %1 %2").arg(timeOut * 1000).arg(ipAddress);
+	pingProc.setProcessChannelMode(QProcess::MergedChannels);
 
-    switch (cmd) {
-        case TypePing::Ping: {
-            this->start();
-        } break;
-        case TypePing::Socket: {
-            this->connectToHost(serverAddress);
-        } break;
-        case TypePing::Request: {
-            sendRequest(serverAddress);
-        } break;
-    }
+	pingProc.start("c:/windows/system32/cmd.exe", QStringList() << "/c" << pingCmd, QIODevice::ReadOnly);
+	pingProc.waitForFinished(12000);
+
+	if (pingProc.state() != QProcess::NotRunning)
+	{
+		pingProc.close();
+	}
+
+	contents = pingProc.readAll();
+
+	if (contents.contains("TTL"))
+	{
+		emit this->emit_Ping(true);
+		return true;
+	}
+	else
+	{
+		emit this->emit_Ping(false);
+		return false;
+	}
 }
 
-void CheckConnection::run() { this->ping(this->timePing, this->serverAddress); }
+void CheckConnection::checkConnection(int type)
+{
+	cmd = type;
 
-void CheckConnection::setEndpoint(int timeOut, QString serverAddress) {
-    this->timePing = timeOut;
-    this->serverAddress = serverAddress;
+	switch (cmd)
+	{
+	case TypePing::Ping:
+	{
+		this->start();
+	}
+	break;
+	case TypePing::Socket:
+	{
+		this->connectToHost(serverAddress);
+	}
+	break;
+	case TypePing::Request:
+	{
+		sendRequest(serverAddress);
+	}
+	break;
+	}
 }
 
-void CheckConnection::sendRequest(QString address) {
-    abortTimer->start(30000);
-
-    QSslConfiguration config = QSslConfiguration::defaultConfiguration();
-    config.setProtocol(QSsl::TlsV1_2);
-
-    QNetworkRequest request;
-    request.setUrl(QUrl(address));
-    qDebug() << address;
-    request.setSslConfiguration(config);
-
-    manager->get(request);
+void CheckConnection::run()
+{
+	this->ping(this->timePing, this->serverAddress);
 }
 
-void CheckConnection::replyFinished(QNetworkReply *reply) {
-    if (abortTimer->isActive()) {
-        abortTimer->stop();
-    }
+void CheckConnection::setEndpoint(int timeOut, QString serverAddress)
+{
+	this->timePing = timeOut;
+	this->serverAddress = serverAddress;
+}
 
-    int error_id = reply->error();
+void CheckConnection::sendRequest(QString address)
+{
+	abortTimer->start(30000);
 
-    reply->deleteLater();
+	QSslConfiguration config = QSslConfiguration::defaultConfiguration();
+	config.setProtocol(QSsl::TlsV1_2);
 
-    if (error_id == QNetworkReply::NoError) {
-        auto replyData = reply->readAll();
+	QNetworkRequest request;
+	request.setUrl(QUrl(address));
+	qDebug() << address;
+	request.setSslConfiguration(config);
 
-        auto json = QJsonDocument::fromJson(replyData);
-        emit emit_toLoging(0, "PING", QString("REPLY: %1").arg(QString::fromUtf8(replyData)));
+	manager->get(request);
+}
 
-        auto resp = json.toVariant().toMap();
+void CheckConnection::replyFinished(QNetworkReply* reply)
+{
+	if (abortTimer->isActive())
+	{
+		abortTimer->stop();
+	}
 
-        if (resp.value("message").toString().toLower() == "pong" ||
-            resp.value("status").toString().toLower() == "pong") {
-            emit this->emit_Ping(true);
-            return;
-        }
-    } else {
-        emit emit_toLoging(
-            0, "PING",
-            QString("SupportsSSL: %1 | SSLLibraryBuildVersion: %2 | SSLLibraryVersion: %3")
-                .arg(QSslSocket::supportsSsl())
-                .arg(QSslSocket::sslLibraryBuildVersionString(),
-                     QSslSocket::sslLibraryVersionString()));
-        emit emit_toLoging(1, "PING", QString("ERROR: %1").arg(reply->errorString()));
-    }
+	int error_id = reply->error();
 
-    emit this->emit_Ping(false);
+	reply->deleteLater();
+
+	if (error_id == QNetworkReply::NoError)
+	{
+		auto replyData = reply->readAll();
+
+		auto json = QJsonDocument::fromJson(replyData);
+		emit emit_toLoging(0, "PING", QString("REPLY: %1").arg(QString::fromUtf8(replyData)));
+
+		auto resp = json.toVariant().toMap();
+
+		if (resp.value("message").toString().toLower() == "pong" || resp.value("status").toString().toLower() == "pong")
+		{
+			emit this->emit_Ping(true);
+			return;
+		}
+	}
+	else
+	{
+		emit emit_toLoging(0, "PING",
+						   QString("SupportsSSL: %1 | SSLLibraryBuildVersion: %2 | SSLLibraryVersion: %3")
+							   .arg(QSslSocket::supportsSsl())
+							   .arg(QSslSocket::sslLibraryBuildVersionString(), QSslSocket::sslLibraryVersionString()));
+		emit emit_toLoging(1, "PING", QString("ERROR: %1").arg(reply->errorString()));
+	}
+
+	emit this->emit_Ping(false);
 }

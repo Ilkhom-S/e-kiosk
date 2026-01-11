@@ -1,53 +1,62 @@
 #ifndef DIALUPCONNECTION_H
 #define DIALUPCONNECTION_H
 
-#include <QProcess>
 #include <QThread>
+#include <QProcess>
 #include <QTimer>
 #include <QtNetwork>
 
 class QTcpSocket;
 class QAbstractSocket;
 
-namespace TypePing {
-enum i_typeping { Ping = 1, Socket = 2, Request = 3 };
-}
+namespace TypePing
+{
+	enum i_typeping
+	{
+		Ping = 1,
+		Socket = 2,
+		Request = 3
+	};
+} // namespace TypePing
 
-class CheckConnection : public QThread {
-    Q_OBJECT
 
-  public:
-    CheckConnection(QObject *parent = 0);
-    void setEndpoint(int timeOut, QString serverAddress);
-    void checkConnection(int type);
+class CheckConnection : public QThread
+{
+	Q_OBJECT
 
-  private:
-    QString serverAddress;
-    QTcpSocket *m_pTcpSocket;
-    QNetworkAccessManager *manager;
+public:
+	CheckConnection(QObject* parent = 0);
+	void setEndpoint(int timeOut, QString serverAddress);
+	void checkConnection(int type);
 
-    QTimer *stsTimer;
-    QTimer *abortTimer;
+private:
+	QString serverAddress;
+	QTcpSocket* m_pTcpSocket;
+	QNetworkAccessManager* manager;
 
-    int timePing;
-    int cmd;
+	QTimer* stsTimer;
+	QTimer* abortTimer;
 
-    virtual void run();
-    bool ping(int timeOut, QString ipAddress);
-    void connectToHost(QString ipAddress);
+	int timePing;
+	int cmd;
 
-    void sendRequest(QString address);
+	virtual void run();
+	bool ping(int timeOut, QString ipAddress);
+	void connectToHost(QString ipAddress);
 
-  private slots:
-    void slotConnectedOk();
-    void slotErrorConnected(QAbstractSocket::SocketError err);
-    void timeOutDisconect();
-    void replyFinished(QNetworkReply *reply);
-    void handleSslErrors(QNetworkReply *reply, QList<QSslError> list);
+	void sendRequest(QString address);
 
-  signals:
-    void emit_Ping(bool sts);
-    void emit_toLoging(int sts, QString title, QString text);
+private slots:
+	void slotConnectedOk();
+	void slotErrorConnected(QAbstractSocket::SocketError err);
+	void timeOutDisconect();
+	void replyFinished(QNetworkReply* reply);
+	void handleSslErrors(QNetworkReply* reply, QList<QSslError> list);
+
+signals:
+	void emit_Ping(bool sts);
+	void emit_toLoging(int sts, QString title, QString text);
 };
 
-#endif  // DIALUPCONNECTION_H
+
+#endif // DIALUPCONNECTION_H

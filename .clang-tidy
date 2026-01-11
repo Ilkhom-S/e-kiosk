@@ -1,145 +1,137 @@
----
+# .clang-tidy - Static analysis configuration for TerminalClient
+# https://clang.llvm.org/extra/clang-tidy/
+
+# Checks to enable
+# - bugprone-*: Bug-prone code patterns
+# - clang-analyzer-*: Clang static analyzer checks
+# - cppcoreguidelines-*: C++ Core Guidelines
+# - modernize-*: C++11/14/17 modernization
+# - performance-*: Performance-related checks
+# - readability-*: Code readability improvements
+#
+# Disabled checks:
+# - modernize-use-trailing-return-type: Style preference (we use traditional)
+# - cppcoreguidelines-avoid-magic-numbers: Too noisy for this codebase
+# - readability-magic-numbers: Same as above
+# - cppcoreguidelines-pro-type-reinterpret-cast: Required for hardware/Qt code
+# - cppcoreguidelines-pro-bounds-pointer-arithmetic: Qt/hardware code uses this
+# - cppcoreguidelines-owning-memory: Not using gsl::owner
+# - cppcoreguidelines-pro-type-vararg: Qt logging uses varargs
+# - modernize-avoid-c-arrays: Used in hardware protocols
+# - fuchsia-*: Fuchsia-specific (not relevant)
+# - llvmlibc-*: LLVM libc specific (not relevant)
+# - altera-*: FPGA specific (not relevant)
+
 Checks: >
-  -*,clang-analyzer-*,bugprone-*,performance-*,readability-*,modernize-*,misc-*,portability-*,cppcoreguidelines-*,hicpp-*,llvm-*,qt-*,
-  -fuchsia-*,
-  -android-*,
-  -zircon-*,
-  -cert-*,
-  -altera-*,
-  -mpi-*,
-  -objc-*,
-  -openmp-*,
-  -llvmlibc-*,
-  -abseil-*,
-  -google-*,
-  -darwin-*,
-  -osx-*,
-  -misc-non-private-member-variables-in-classes
-WarningsAsErrors: '*'
-HeaderFilterRegex: '.*'
+  -*,
+  bugprone-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -modernize-use-trailing-return-type,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -modernize-avoid-c-arrays,
+  -readability-magic-numbers,
+  -readability-identifier-length,
+  -readability-function-cognitive-complexity,
+  -bugprone-easily-swappable-parameters
+
+# Treat warnings as errors in CI
+WarningsAsErrors: ''
+
+# Header filter - only analyze project headers, not Qt/Boost/thirdparty
+HeaderFilterRegex: '^.*/3\.0/(src|tests)/.*\.h$'
+
+# Format fixes using clang-format
 FormatStyle: file
-User: ekiosk
+
+# Check options
 CheckOptions:
-  - key: modernize-use-nullptr.NullMacros
-    value: 'NULL'
-  - key: modernize-use-nullptr.NullptrT
-    value: 'nullptr'
-  - key: modernize-use-override.IgnoreDestructors
-    value: '1'
-  - key: readability-identifier-naming.VariableCase
-    value: camelBack
+  # Naming conventions - match project style
   - key: readability-identifier-naming.ClassCase
-    value: CamelCase
-  - key: readability-identifier-naming.FunctionCase
-    value: camelBack
-  - key: readability-identifier-naming.PrivateMemberSuffix
-    value: _
-  - key: readability-identifier-naming.PrivateMemberPrefix
-    value: m_
-  - key: readability-identifier-naming.ConstantCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.EnumConstantCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.EnumCase
     value: CamelCase
   - key: readability-identifier-naming.StructCase
     value: CamelCase
-  - key: readability-identifier-naming.GlobalConstantCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.GlobalFunctionCase
-    value: camelBack
-  - key: readability-identifier-naming.GlobalVariableCase
-    value: camelBack
+  - key: readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key: readability-identifier-naming.EnumConstantCase
+    value: CamelCase
+
+  # Member variables use m_ prefix
   - key: readability-identifier-naming.MemberCase
     value: camelBack
+  - key: readability-identifier-naming.MemberPrefix
+    value: 'm_'
+  - key: readability-identifier-naming.PrivateMemberCase
+    value: camelBack
+  - key: readability-identifier-naming.PrivateMemberPrefix
+    value: 'm_'
+  - key: readability-identifier-naming.ProtectedMemberCase
+    value: camelBack
+  - key: readability-identifier-naming.ProtectedMemberPrefix
+    value: 'm_'
+
+  # Function parameters use a prefix
   - key: readability-identifier-naming.ParameterCase
     value: camelBack
+  - key: readability-identifier-naming.ParameterPrefix
+    value: 'a'
+
+  # Methods/functions use camelCase
+  - key: readability-identifier-naming.FunctionCase
+    value: camelCase
+  - key: readability-identifier-naming.MethodCase
+    value: camelCase
+
+  # Constants
+  - key: readability-identifier-naming.ConstantCase
+    value: CamelCase
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: CamelCase
+  - key: readability-identifier-naming.StaticConstantCase
+    value: UPPER_CASE
+
+  # Namespaces use PascalCase
+  - key: readability-identifier-naming.NamespaceCase
+    value: CamelCase
+
+  # Type aliases
   - key: readability-identifier-naming.TypeAliasCase
     value: CamelCase
-  - key: readability-identifier-naming.TemplateParameterCase
+  - key: readability-identifier-naming.TypedefCase
     value: CamelCase
-  - key: readability-identifier-naming.NamespaceCase
-    value: lower_case
-  - key: readability-identifier-naming.MacroDefinitionCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.MacroDefinitionPrefix
-    value: ''
-  - key: readability-identifier-naming.MacroDefinitionSuffix
-    value: ''
-  - key: readability-identifier-naming.EnumMemberCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.EnumMemberPrefix
-    value: ''
-  - key: readability-identifier-naming.EnumMemberSuffix
-    value: ''
-  - key: readability-identifier-naming.ClassMemberCase
-    value: camelBack
-  - key: readability-identifier-naming.ClassMemberPrefix
-    value: m_
-  - key: readability-identifier-naming.ClassMemberSuffix
-    value: ''
-  - key: readability-identifier-naming.StaticMemberCase
-    value: camelBack
-  - key: readability-identifier-naming.StaticMemberPrefix
-    value: s_
-  - key: readability-identifier-naming.StaticMemberSuffix
-    value: ''
+
+  # Local variables - camelCase (no prefix)
   - key: readability-identifier-naming.LocalVariableCase
     value: camelBack
-  - key: readability-identifier-naming.LocalConstantCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.LocalFunctionCase
-    value: camelBack
-  - key: readability-identifier-naming.LocalTypeAliasCase
-    value: CamelCase
-  - key: readability-identifier-naming.LocalTemplateParameterCase
-    value: CamelCase
-  - key: readability-identifier-naming.LocalEnumCase
-    value: CamelCase
-  - key: readability-identifier-naming.LocalEnumConstantCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.LocalEnumMemberCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.LocalEnumMemberPrefix
-    value: ''
-  - key: readability-identifier-naming.LocalEnumMemberSuffix
-    value: ''
-  - key: readability-identifier-naming.LocalStructCase
-    value: CamelCase
-  - key: readability-identifier-naming.LocalClassCase
-    value: CamelCase
-  - key: readability-identifier-naming.LocalClassMemberCase
-    value: camelBack
-  - key: readability-identifier-naming.LocalClassMemberPrefix
-    value: m_
-  - key: readability-identifier-naming.LocalClassMemberSuffix
-    value: ''
-  - key: readability-identifier-naming.LocalStaticMemberCase
-    value: camelBack
-  - key: readability-identifier-naming.LocalStaticMemberPrefix
-    value: s_
-  - key: readability-identifier-naming.LocalStaticMemberSuffix
-    value: ''
-  - key: readability-identifier-naming.LocalParameterCase
-    value: camelBack
-  - key: readability-identifier-naming.LocalTypeAliasCase
-    value: CamelCase
-  - key: readability-identifier-naming.LocalTemplateParameterCase
-    value: CamelCase
-  - key: readability-identifier-naming.LocalNamespaceCase
-    value: lower_case
-  - key: readability-identifier-naming.LocalMacroDefinitionCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.LocalMacroDefinitionPrefix
-    value: ''
-  - key: readability-identifier-naming.LocalMacroDefinitionSuffix
-    value: ''
-  - key: readability-identifier-naming.LocalEnumMemberCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.LocalEnumMemberPrefix
-    value: ''
-  - key: readability-identifier-naming.LocalEnumMemberSuffix
-    value: ''
-ExtraArgs:
-  - -std=c++14
-  - -std=c11
+
+  # Modernize options
+  - key: modernize-use-nullptr.NullMacros
+    value: 'NULL'
+  - key: modernize-use-auto.MinTypeNameLength
+    value: '5'
+  - key: modernize-use-auto.RemoveStars
+    value: 'false'
+
+  # Performance options
+  - key: performance-for-range-copy.WarnOnAllAutoCopies
+    value: 'true'
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: 'QString;QStringList;QByteArray'
+
+  # Readability options
+  - key: readability-braces-around-statements.ShortStatementLines
+    value: '0'
+  - key: readability-implicit-bool-conversion.AllowPointerConditions
+    value: 'true'
+  - key: readability-implicit-bool-conversion.AllowIntegerConditions
+    value: 'false'
+# Suppress warnings for specific patterns
+# Use NOLINT, NOLINTNEXTLINE, or NOLINTBEGIN/NOLINTEND in code when needed

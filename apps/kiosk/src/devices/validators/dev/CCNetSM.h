@@ -292,34 +292,34 @@ const char NAK = '\xFF';
 enum MessHeader { Sync = '\x02' };
 
 enum PeripheralAddresses {
-  PAForbidden = '\x00',
-  PABillToBillUnit = '\x01',
-  PACoinChanger = '\x02',
-  PABillValidator = '\x03',
-  PACardReader = '\x04'
-  /* next reserved for future */
+    PAForbidden = '\x00',
+    PABillToBillUnit = '\x01',
+    PACoinChanger = '\x02',
+    PABillValidator = '\x03',
+    PACardReader = '\x04'
+    /* next reserved for future */
 };
 const char nom_1 = '\x00';
 const char nom_3 = '\x01';
 const char nom_5 = '\x02';
 const char nom_10 = '\x03';
 enum ControllerCommands {
-  CCAck = '\x00',
-  CCReset = '\x30',
-  CCGetStatus = '\x31',
-  CCSetSecurity = '\x32',
-  CCPoll = '\x33',
-  CCEnableBillTypes = '\x34',
-  CCStack = '\x35',
-  CCReturn = '\x36',
-  CCIdentification = '\x37',
-  CCHold = '\x38',
-  CCSetBarcodeParam = '\x39',
-  CCExtractBarcodeData = '\x3A',
-  CCGetBillTable = '\x41',
-  CCDownload = '\x50', /* команда с подкомандами */
-  CCGetCRC32Code = '\x51',
-  CCRequestStatistics = '\x60' /* команда с длинным ответом */
+    CCAck = '\x00',
+    CCReset = '\x30',
+    CCGetStatus = '\x31',
+    CCSetSecurity = '\x32',
+    CCPoll = '\x33',
+    CCEnableBillTypes = '\x34',
+    CCStack = '\x35',
+    CCReturn = '\x36',
+    CCIdentification = '\x37',
+    CCHold = '\x38',
+    CCSetBarcodeParam = '\x39',
+    CCExtractBarcodeData = '\x3A',
+    CCGetBillTable = '\x41',
+    CCDownload = '\x50', /* команда с подкомандами */
+    CCGetCRC32Code = '\x51',
+    CCRequestStatistics = '\x60' /* команда с длинным ответом */
 };
 
 /// Коды cостояний
@@ -590,84 +590,84 @@ const char nom_200 = '\x07';
 const char nom_500 = '\x08';
 }  // namespace Nominal_TJ
 }  // namespace CCNetConstruct
-    bool CmdRestart();
-    void CmdStartPoll();
-    void CmdStopPoll();
-    bool CmdFirmwareUpdate(QString version);
+bool CmdRestart();
+void CmdStartPoll();
+void CmdStopPoll();
+bool CmdFirmwareUpdate(QString version);
 
-    bool stopPoll;
-    bool hasDBError;
+bool stopPoll;
+bool hasDBError;
 
-    QString PartNumber;
-    QString SerialNumber;
-    QString AssetNumber;
+QString PartNumber;
+QString SerialNumber;
+QString AssetNumber;
 
-    bool maxSumReject;
-    int maxSum;
+bool maxSumReject;
+int maxSum;
 
-  private:
-    bool sts_animate_dlg;
-    int status;
-    QDateTime preDateTime;
-    bool execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdResponse);
-    bool openPort();
-    QByteArray makeCustomRequest(int adr, int cmd, const QByteArray &data);
-    void ParsIdentification(QByteArray respData);
-    int readPollInfo(QByteArray byte);
-    void setBoolingDlgState(bool sts);
-    void setReturnNominalState(bool sts);
-    bool validatorLogEnable;
+private:
+bool sts_animate_dlg;
+int status;
+QDateTime preDateTime;
+bool execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdResponse);
+bool openPort();
+QByteArray makeCustomRequest(int adr, int cmd, const QByteArray &data);
+void ParsIdentification(QByteArray respData);
+int readPollInfo(QByteArray byte);
+void setBoolingDlgState(bool sts);
+void setReturnNominalState(bool sts);
+bool validatorLogEnable;
 
-    int getNominal(const uchar nom);
+int getNominal(const uchar nom);
 
-    int nominalSum;
-    bool escrowed;
+int nominalSum;
+bool escrowed;
 
-    TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData);
-    TResult getAnswer(QByteArray &aAnswerData);
+TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData);
+TResult getAnswer(QByteArray &aAnswerData);
 
-    QLibrary lib;
+QLibrary lib;
 
-    QByteArray fwCmdRequest(const QByteArray &data, quint8 command = 0);
-    QByteArray fwPacketRequest(quint8 command, quint8 address, const QByteArray &data);
-    QByteArray fwPacketUpdRequest(quint16 adr, const QByteArray &data);
+QByteArray fwCmdRequest(const QByteArray &data, quint8 command = 0);
+QByteArray fwPacketRequest(quint8 command, quint8 address, const QByteArray &data);
+QByteArray fwPacketUpdRequest(quint16 adr, const QByteArray &data);
 
-    QByteArray firmwareGet(QString version);
+QByteArray firmwareGet(QString version);
 
-    bool fwCmdExec(const QByteArray aCommandData);
-    bool serviceModeSwitch();
-    bool resetValidator();
-    bool unlockValidator();
-    bool checkBootloader();
-    bool firmwareUpdate(const QByteArray fw);
+bool fwCmdExec(const QByteArray aCommandData);
+bool serviceModeSwitch();
+bool resetValidator();
+bool unlockValidator();
+bool checkBootloader();
+bool firmwareUpdate(const QByteArray fw);
 
-    bool firmwareUpdating;
+bool firmwareUpdating;
 
-    bool fwUpdateC100(QString version);
-    void fwCancelC100();
+bool fwUpdateC100(QString version);
+void fwCancelC100();
 
-  private slots:
-    void sendStatusTo(int sts, QString comment);
-    void toValidatorLog(int status, QByteArray data, QString text);
+private slots:
+void sendStatusTo(int sts, QString comment);
+void toValidatorLog(int status, QByteArray data, QString text);
 
-  protected:
-    bool readAnswers(QList<QByteArray> &aAnswers, int aTimeout);
+protected:
+bool readAnswers(QList<QByteArray> &aAnswers, int aTimeout);
 
-    bool sendACK();
+bool sendACK();
 
-    ushort calcCRC16(const QByteArray &aData);
+ushort calcCRC16(const QByteArray &aData);
 
-    QString check(const QByteArray &aAnswer);
+QString check(const QByteArray &aAnswer);
 
-  signals:
-    void emitNominal(int nominal);
-    void emitNominalDuplicate(int nominal);
-    void emitStatus(int sts, QString stsComment);
-    void emitAnimateStatus(bool status);
-    void emitReturnNominalStatus(bool status);
-    void emitLog(int status, QString title, QString text);
-    void emitValidatorLog(int status, QByteArray data, QString text);
-    void emitFirmwareUpdate(QString state);
-};
+signals:
+void emitNominal(int nominal);
+void emitNominalDuplicate(int nominal);
+void emitStatus(int sts, QString stsComment);
+void emitAnimateStatus(bool status);
+void emitReturnNominalStatus(bool status);
+void emitLog(int status, QString title, QString text);
+void emitValidatorLog(int status, QByteArray data, QString text);
+void emitFirmwareUpdate(QString state);
+};  // namespace CCNetConstruct
 
 #endif  // CCNETSM_H
