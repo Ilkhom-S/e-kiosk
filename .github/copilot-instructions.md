@@ -1,3 +1,80 @@
+# Coding Standards
+
+## C++ Guidelines
+
+- **Use Qt Types:** Prefer QString, QList, QMap over STL equivalents.
+- **Smart Pointers:** Use QScopedPointer, QSharedPointer, or std::unique_ptr as appropriate.
+- **Naming Conventions:**
+  - Classes: PascalCase (e.g., DeviceManager)
+  - Methods: camelCase (e.g., initializeDevice)
+  - Member variables: m_camelCase (e.g., m_deviceList)
+  - Constants: UPPER_SNAKE_CASE or kPascalCase
+  - Interfaces: Prefix with I (e.g., IDevice, ICryptEngine)
+- **Header Guards:** Use #pragma once
+- **Include Order:**
+  1. Corresponding header
+     #include "MyClass.h"
+  2. Project headers
+     #include "Common/QtHeadersBegin.h"
+     #include <QtCore/QString>
+     #include "Common/QtHeadersEnd.h"
+  3. Third-party headers
+     #include <boost/optional.hpp>
+  4. Standard library
+     #include <vector>
+
+## Qt-Specific Guidelines
+
+- **Qt5/Qt6 Compatibility:**
+  - Use version macros for compatibility:
+    #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    // Qt6 code
+    #else
+    // Qt5 code
+    #endif
+- **Signal/Slot Syntax:** Prefer new syntax:
+  connect(sender, &Sender::signal, receiver, &Receiver::slot);
+- **MOC Requirements:** Classes with signals/slots need Q_OBJECT macro.
+
+## CMake Guidelines
+
+- **Use EKiosk CMake Helpers:** Always use the helper functions from cmake/ for all new targets and when refactoring existing CMakeLists.txt files. These include:
+
+  - ek_add_library() from EKLibrary.cmake
+  - ek_add_application() from EKApplication.cmake
+  - ek_add_plugin() from EKPlugin.cmake
+  - ek_add_test() from EKTesting.cmake
+  - ek_install_targets(), ek_install_resources() from EKInstall.cmake
+  - ek_enable_packaging() from EKPackaging.cmake
+  - ek_add_translations() from EKTranslation.cmake
+  - ek_enable_static_analysis() from EKStaticAnalysis.cmake
+
+  See cmake/README.md for detailed usage, rationale, and examples for each helper.
+
+**Why:**
+
+- Ensures consistent build, test, install, and packaging logic across all apps and modules
+- Simplifies CMakeLists.txt files and reduces boilerplate
+- Enforces code quality and static analysis standards
+- Makes it easy for new contributors to follow project conventions
+
+**How to Refactor:**
+
+- When updating or creating CMakeLists.txt, replace manual target definitions with the appropriate ek\_\* helper function(s).
+- Always include the relevant cmake/\*.cmake modules at the top of your CMakeLists.txt.
+- Refer to cmake/README.md for copy-paste examples and advanced options.
+- If a use case is not covered, extend the helper or document the exception in the code and docs.
+- **Qt Version Agnostic:** Use Qt${QT_VERSION_MAJOR}::Module syntax.
+- **Platform Checks:** Use if(WIN32), if(UNIX AND NOT APPLE), if(APPLE) for platform-specific code.
+
+# Qt Version Compatibility
+
+All code, CMake, and tests must be written to support both Qt5 and Qt6 where possible.
+
+- Use version-agnostic CMake patterns (e.g., find_package(Qt${QT_VERSION_MAJOR} ...)).
+- Prefer Qt APIs and modules available in both versions.
+- When Qt version-specific code is required, use CMake or preprocessor checks to handle differences cleanly.
+
 ## Conventional Commits & Scopes
 
 All commits must follow the [Conventional Commits](https://www.conventionalcommits.org/) standard.
@@ -16,6 +93,10 @@ All commits must follow the [Conventional Commits](https://www.conventionalcommi
 - docs(getting-started): update setup instructions
 
 Use clear, descriptive scopes to indicate which part of the project is affected.
+
+# Auto-Commit Policy
+
+For all changes that do not require user review (e.g., documentation updates, test scaffolding, non-breaking code changes, or changes that are successfully tested and build without errors), Copilot should auto-commit with a clear, conventional commit message. Only request user confirmation for breaking changes, ambiguous refactors, or when tests/builds fail.
 
 # EKiosk Qt C++ Project - AI Coding Agent Instructions
 

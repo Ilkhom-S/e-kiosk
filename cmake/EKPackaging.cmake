@@ -1,0 +1,26 @@
+# EKPackaging.cmake - CPack configuration helpers
+
+include(CPack)
+
+function(ek_configure_packaging)
+    set(options INCLUDE_DEBUG)
+    set(oneValueArgs VENDOR CONTACT DESCRIPTION HOMEPAGE LICENSE_FILE ICON)
+    set(multiValueArgs COMPONENTS)
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    set(CPACK_PACKAGE_NAME "${PROJECT_NAME}" PARENT_SCOPE)
+    set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}" PARENT_SCOPE)
+    set(CPACK_PACKAGE_VENDOR "${ARG_VENDOR}" PARENT_SCOPE)
+    set(CPACK_PACKAGE_CONTACT "${ARG_CONTACT}" PARENT_SCOPE)
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${ARG_DESCRIPTION}" PARENT_SCOPE)
+    if(ARG_LICENSE_FILE)
+        set(CPACK_RESOURCE_FILE_LICENSE "${ARG_LICENSE_FILE}" PARENT_SCOPE)
+    endif()
+    if(ARG_ICON)
+        set(CPACK_PACKAGE_ICON "${ARG_ICON}" PARENT_SCOPE)
+    endif()
+    if(ARG_COMPONENTS)
+        set(CPACK_COMPONENTS_ALL ${ARG_COMPONENTS} PARENT_SCOPE)
+    endif()
+    include(CPack)
+endfunction()
