@@ -22,7 +22,9 @@ Use clear, descriptive scopes to indicate which part of the project is affected.
 ## Folder Structure (2026 Modular Redesign)
 
 - **apps/**: Contains all executable applications (e.g., kiosk, updater, guard). Each app has its own folder.
-- **src/**: Shared code and libraries, to be refactored from apps/kiosk.
+  - Each app (e.g., `kiosk`) has its own `src/` for code, and a `CMakeLists.txt` at the app root.
+  - Platform/build folders (e.g., `msvc/`) can also be placed at the app root.
+- **src/**: Shared code and libraries, to be refactored from apps/kiosk/src as modularization proceeds.
 - **include/**: Public headers for use across modules and apps.
 - **thirdparty/**: External/third-party libraries.
 - **tests/**: Unit and integration tests, mirrors src/ structure.
