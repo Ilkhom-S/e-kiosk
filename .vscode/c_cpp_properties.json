@@ -1,13 +1,14 @@
 {
   "configurations": [
     {
-      "name": "Win32",
-      "includePath": ["${workspaceFolder}/**"],
+      "name": "Win64",
+      "compileCommands": "${workspaceFolder}/build/my-win-qt5-x64/compile_commands.json",
+      "includePath": ["${workspaceFolder}/include", "${workspaceFolder}/**"],
       "defines": ["_DEBUG", "UNICODE", "_UNICODE"],
       "windowsSdkVersion": "10.0.26100.0",
       "compilerPath": "cl.exe",
       "cStandard": "c11",
-      "cppStandard": "c++14",
+      "cppStandard": "c++17",
       "intelliSenseMode": "windows-msvc-x64"
     }
   ],

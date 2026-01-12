@@ -45,5 +45,6 @@
   "cmake.buildDirectory": "${workspaceFolder}/build",
   "cmake.configureArgs": [],
   "cmake.buildArgs": [],
-  "cmake.ctestArgs": []
+  "cmake.ctestArgs": [],
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }

@@ -10,6 +10,9 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 include(${CMAKE_SOURCE_DIR}/cmake/EKTesting.cmake)
 ek_enable_testing()
 
+# Add project-wide include directory for `include/` (common headers)
+include_directories(${CMAKE_SOURCE_DIR}/include)
+
 
 
 # Only reference subdirectories for modular apps/libraries
