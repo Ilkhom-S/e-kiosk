@@ -3,9 +3,9 @@
 /* Close the Qt headers warning suppression started by QtHeadersBegin.h
 
    Example:
-	 #include <Common/QtHeadersBegin.h>
-	 #include <QtCore/QList>
-	 #include <Common/QtHeadersEnd.h>
+         #include <Common/QtHeadersBegin.h>
+         #include <QtCore/QList>
+         #include <Common/QtHeadersEnd.h>
 */
 
 #if defined(_MSC_VER)

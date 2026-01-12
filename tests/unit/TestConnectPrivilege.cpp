@@ -5,17 +5,15 @@
 
 #include <QtTest/QtTest>
 
-class TestConnectPrivilege : public QObject
-{
-	Q_OBJECT
+class TestConnectPrivilege : public QObject {
+  Q_OBJECT
 
 private slots:
-	void privilegeUtf16()
-	{
-		QString privilege = "SeShutdownPrivilege";
-		const wchar_t *p = reinterpret_cast<const wchar_t *>(privilege.utf16());
-		QCOMPARE(QString::fromWCharArray(p), privilege);
-	}
+  void privilegeUtf16() {
+    QString privilege = "SeShutdownPrivilege";
+    const wchar_t *p = reinterpret_cast<const wchar_t *>(privilege.utf16());
+    QCOMPARE(QString::fromWCharArray(p), privilege);
+  }
 };
 
 QTEST_MAIN(TestConnectPrivilege)

@@ -4,32 +4,31 @@
 #include "SendRequest.h"
 class SendRequest;
 
-class CommandConfirm : public SendRequest
-{
-    Q_OBJECT
+class CommandConfirm : public SendRequest {
+  Q_OBJECT
 
 public:
-    CommandConfirm(QObject *parent = 0);
+  CommandConfirm(QObject *parent = 0);
 
 private slots:
-    void resendRequest();
-    void setDataNote(const QDomNode& domElement);
-    void sendRequestRepeet();
+  void resendRequest();
+  void setDataNote(const QDomNode &domElement);
+  void sendRequestRepeet();
 
 public slots:
-    void sendCommandConfirm(QString trn, int cmd);
+  void sendCommandConfirm(QString trn, int cmd);
 
 private:
-    void parcerNote(const QDomNode& domElement);
+  void parcerNote(const QDomNode &domElement);
 
-    bool resultCode;
-    int countAllRep;
-    QString requestXml;
+  bool resultCode;
+  int countAllRep;
+  QString requestXml;
 
-    QString trnCmd;
+  QString trnCmd;
 
 signals:
-    void emit_cmdConfirmed(QString trn);
+  void emit_cmdConfirmed(QString trn);
 };
 
 #endif // COMMANDCONFIRM_H

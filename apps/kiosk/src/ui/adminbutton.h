@@ -1,33 +1,34 @@
 #ifndef ADMINBUTTON_H
 #define ADMINBUTTON_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QWidget>
+#include <Common/QtHeadersEnd.h>
 
-namespace Ui
-{
-	class AdminButton;
+namespace Ui {
+class AdminButton;
 }
 
-class AdminButton : public QWidget
-{
-	Q_OBJECT
+class AdminButton : public QWidget {
+  Q_OBJECT
 
 public:
-	explicit AdminButton(QWidget *parent = 0);
-	~AdminButton();
+  explicit AdminButton(QWidget *parent = 0);
+  ~AdminButton();
 
 private:
-	Ui::AdminButton *ui;
+  Ui::AdminButton *ui;
 
 private slots:
-	void on_btnClose_clicked();
-	void on_btnKeyboard_clicked();
-	void on_btnExplorer_clicked();
+  void on_btnClose_clicked();
+  void on_btnKeyboard_clicked();
+  void on_btnExplorer_clicked();
 
 signals:
-	void closeClicked();
-	void keyboardClicked();
-	void explorerCliked();
+  void closeClicked();
+  void keyboardClicked();
+  void explorerCliked();
 };
 
 #endif // ADMINBUTTON_H

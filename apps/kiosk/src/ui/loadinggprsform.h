@@ -1,29 +1,31 @@
 #ifndef LOADINGGPRSFORM_H
 #define LOADINGGPRSFORM_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QWidget>
+#include <Common/QtHeadersEnd.h>
 
 namespace Ui {
-    class LoadingGprsForm;
+class LoadingGprsForm;
 }
 
-class LoadingGprsForm : public QWidget
-{
-    Q_OBJECT
+class LoadingGprsForm : public QWidget {
+  Q_OBJECT
 
 public:
-    explicit LoadingGprsForm(QWidget *parent = 0);
-    ~LoadingGprsForm();
+  explicit LoadingGprsForm(QWidget *parent = 0);
+  ~LoadingGprsForm();
 
-    void setAboutCompany(QString text);
-    void setCopirightText(QString text, QString version);
-    void setGprsInfo(QString text);
-    void setGprsComment(QString text);
-    void setSimInfo(QString text);
-    void setLogo(QString path);
+  void setAboutCompany(QString text);
+  void setCopirightText(QString text, QString version);
+  void setGprsInfo(QString text);
+  void setGprsComment(QString text);
+  void setSimInfo(QString text);
+  void setLogo(QString path);
 
 private:
-    Ui::LoadingGprsForm *ui;
+  Ui::LoadingGprsForm *ui;
 };
 
 #endif // LOADINGGPRSFORM_H
