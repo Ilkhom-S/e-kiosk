@@ -2,6 +2,7 @@
 #define CLASSPRINTER_H
 #include <QtPrintSupport/QPrinter>
 #include <QtWidgets/QTextBrowser>
+
 // Подключаем классы для работы с принтерами
 //*****************************************
 #include "dev/AV268.h"

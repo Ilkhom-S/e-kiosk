@@ -10,6 +10,19 @@
 
 #include <QtSerialPort/QSerialPort>
 
+// Common Qt types used by validators
+#include <QtCore/QCoreApplication>
+#include <QtCore/QDateTime>
+#include <QtCore/QDebug>
+#include <QtCore/QFile>
+#include <QtCore/QIODevice>
+#include <QtCore/QLibrary>
+#include <QtCore/QList>
+#include <QtCore/QMap>
+
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlRecord>
+
 struct NominalPar
 {
 	int index;

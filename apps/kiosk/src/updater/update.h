@@ -5,13 +5,18 @@
 #include "textprogressbar.h"
 
 #include <QtCore/QDir>
+#include <QtCore/QElapsedTimer>
 #include <QtCore/QFile>
 #include <QtCore/QObject>
+#include <QtCore/QSettings>
 #include <QtCore/QThread>
 #include <QtCore/QTime>
+#include <QtCore/QTimer>
 #include <QtCore/QUrl>
 
 #include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlRecord>
 // #include <QQueue>
 #include "CopyFile.h"
 

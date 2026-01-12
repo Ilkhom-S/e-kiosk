@@ -2,6 +2,7 @@
 #include "qatutils.h"
 #include "qgsmcodec.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QTextCodec>
 #include <QtCore/QtMath>
 
@@ -91,7 +92,7 @@ bool ATProtocol::sendSMSParam(QString text)
 	//    //Номер телефона
 	//    this->numberPhoneSms    = numberPhone;
 
-	qfloat16 l = (text.length() - 2) / 2;
+	qreal l = (text.length() - 2) / 2.0;
 
 	this->GetLengthSMS = qRound(l);
 

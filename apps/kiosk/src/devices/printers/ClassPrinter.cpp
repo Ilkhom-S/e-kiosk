@@ -1,11 +1,12 @@
 #include "ClassPrinter.h"
 
-#include <windows.h>
+#include <QtCore/QDebug>
 
+#include <windows.h>
 
 QStringList Printer_List;
 
-ClassPrinter::ClassPrinter(QObject* parent) : QThread(parent)
+ClassPrinter::ClassPrinter(QObject *parent) : QThread(parent)
 {
 	Printer_List << PrinterModel::Custom_VKP80 << PrinterModel::CitizenCBM1000 << PrinterModel::Citizen_CTS2000
 				 << PrinterModel::Custom_TG2480 << PrinterModel::Citizen_PPU700 << PrinterModel::AV_268
@@ -20,7 +21,7 @@ ClassPrinter::ClassPrinter(QObject* parent) : QThread(parent)
 	WpBottomMargin = 1;
 }
 
-bool ClassPrinter::isItYou(QStringList& comList, QString& printer_name, QString& com_str, QString& printer_coment)
+bool ClassPrinter::isItYou(QStringList &comList, QString &printer_name, QString &com_str, QString &printer_coment)
 {
 	if ((printer_name != "") && (com_str != "") && (com_str.contains("COM")))
 	{
@@ -131,7 +132,6 @@ void ClassPrinter::setFirmPatern(const QString firm_name)
 	if (systemModel == PrinterModel::Citizen_CTS2000)
 		CitizenCTS2000->setFirmPatern(firmName);
 }
-
 
 void ClassPrinter::setSmallBeetwenString(bool beet)
 {
@@ -292,8 +292,7 @@ void ClassPrinter::CIsItYou()
 	}
 }
 
-
-bool ClassPrinter::CIsItYou(QString& comment)
+bool ClassPrinter::CIsItYou(QString &comment)
 {
 	if (systemModel == PrinterModel::Custom_VKP80)
 	{
@@ -447,7 +446,6 @@ void ClassPrinter::CPrint()
 	}
 }
 
-
 void ClassPrinter::winPrint(QString text)
 {
 	if (this->winPrinterName != "")
@@ -478,7 +476,6 @@ void ClassPrinter::winPrint(QString text)
 		printer.setPaperSize(QSizeF(width, height), QPrinter::Millimeter);
 		printer.setPageMargins(left, top, right, bottom, QPrinter::Millimeter);
 
-
 		QFont font("Tahoma", this->WpFont, QFont::Normal);
 
 		textBrowser->setFont(font);
@@ -490,7 +487,6 @@ void ClassPrinter::winPrint(QString text)
 #endif
 	}
 }
-
 
 void ClassPrinter::CGetStatus()
 {
@@ -936,7 +932,6 @@ void ClassPrinter::closeThis()
 	}
 }
 
-
 void ClassPrinter::clearListPrinterData(QString name)
 {
 	QString prtNameIn = name;
@@ -963,7 +958,7 @@ void ClassPrinter::clearListPrinterData(QString name)
 	// Getting some info from printer - particularly how many jobs
 	GetPrinter(hPrinter, 2, NULL, 0, &dwBufsize);
 
-	PRINTER_INFO_2* pinfo = (PRINTER_INFO_2*)malloc(dwBufsize);
+	PRINTER_INFO_2 *pinfo = (PRINTER_INFO_2 *)malloc(dwBufsize);
 	GetPrinter(hPrinter, 2, (LPBYTE)pinfo, dwBufsize, &dwBufsize);
 	DWORD numJobs = pinfo->cJobs;
 	free(pinfo); // free now
@@ -976,14 +971,13 @@ void ClassPrinter::clearListPrinterData(QString name)
 	{
 		// Some Jobs in queue
 
-		JOB_INFO_1* pJobInfo = 0;
+		JOB_INFO_1 *pJobInfo = 0;
 		DWORD bytesNeeded = 0, jobsReturned = 0;
 
 		// Get info about jobs in queue.
 		EnumJobs(hPrinter, 0, numJobs, 1, (LPBYTE)pJobInfo, 0, &bytesNeeded, &jobsReturned);
-		pJobInfo = (JOB_INFO_1*)malloc(bytesNeeded);
+		pJobInfo = (JOB_INFO_1 *)malloc(bytesNeeded);
 		EnumJobs(hPrinter, 0, numJobs, 1, (LPBYTE)pJobInfo, bytesNeeded, &bytesNeeded, &jobsReturned);
-
 
 		// Loop and delete each waiting job
 		for (int count = 0; count < int(jobsReturned); count++)
@@ -1009,14 +1003,14 @@ void ClassPrinter::clearListPrinterData(QString name)
 
 bool GetJobs(HANDLE hPrinter, /* Handle to the printer. */
 
-			 JOB_INFO_2** ppJobInfo, /* Pointer to be filled.  */
-			 int* pcJobs,			 /* Count of jobs filled.  */
-			 DWORD* pStatus)		 /* Print Queue status.    */
+			 JOB_INFO_2 **ppJobInfo, /* Pointer to be filled.  */
+			 int *pcJobs,			 /* Count of jobs filled.  */
+			 DWORD *pStatus)		 /* Print Queue status.    */
 
 {
 	DWORD cByteNeeded, nReturned, cByteUsed;
-	JOB_INFO_2* pJobStorage = NULL;
-	PRINTER_INFO_2* pPrinterInfo = NULL;
+	JOB_INFO_2 *pJobStorage = NULL;
+	PRINTER_INFO_2 *pPrinterInfo = NULL;
 
 	/* Get the buffer size needed. */
 	if (!GetPrinter(hPrinter, 2, NULL, 0, &cByteNeeded))
@@ -1025,7 +1019,7 @@ bool GetJobs(HANDLE hPrinter, /* Handle to the printer. */
 			return false;
 	}
 
-	pPrinterInfo = (PRINTER_INFO_2*)malloc(cByteNeeded);
+	pPrinterInfo = (PRINTER_INFO_2 *)malloc(cByteNeeded);
 	if (!(pPrinterInfo))
 		/* Failure to allocate memory. */
 		return false;
@@ -1050,7 +1044,7 @@ bool GetJobs(HANDLE hPrinter, /* Handle to the printer. */
 		}
 	}
 
-	pJobStorage = (JOB_INFO_2*)malloc(cByteNeeded);
+	pJobStorage = (JOB_INFO_2 *)malloc(cByteNeeded);
 	if (!pJobStorage)
 	{
 		/* Failure to allocate Job storage space. */
@@ -1083,10 +1077,9 @@ bool GetJobs(HANDLE hPrinter, /* Handle to the printer. */
 	return true;
 }
 
-
 bool IsPrinterError(HANDLE hPrinter)
 {
-	JOB_INFO_2* pJobs;
+	JOB_INFO_2 *pJobs;
 	int cJobs, i;
 	DWORD dwPrinterStatus;
 

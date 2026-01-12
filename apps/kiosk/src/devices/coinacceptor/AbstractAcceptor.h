@@ -10,6 +10,16 @@
 
 #include <QtSerialPort/QSerialPort>
 
+// Common Qt types used by acceptors
+#include <QtCore/QDateTime>
+#include <QtCore/QDebug>
+#include <QtCore/QFile>
+#include <QtCore/QList>
+#include <QtCore/QMap>
+
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlRecord>
+
 // namespace CommandResult {
 //     enum Result {
 //         Port      = 0x00,

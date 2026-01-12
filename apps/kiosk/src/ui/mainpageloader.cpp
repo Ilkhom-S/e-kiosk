@@ -8,13 +8,20 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QTextStream>
+#include <QtCore/QTimer>
 
 #include <QtGui/QTextDocument>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
+#if __has_include(<QtWebEngineCore/QWebEngineProfile>)
 #include <QtWebEngineCore/QWebEngineProfile>
+#endif
+#if __has_include(<QtWebEngineWidgets/QWebEngineSettings>)
 #include <QtWebEngineWidgets/QWebEngineSettings>
+#endif
+#if __has_include(<QtWebEngineWidgets/QWebEngineView>)
 #include <QtWebEngineWidgets/QWebEngineView>
+#endif
 #include <QtWidgets/QMessageBox>
 
 MainPageLoader::MainPageLoader(QWidget *parent) : QWidget(parent), ui(new Ui::MainPageLoader)
@@ -1399,10 +1406,14 @@ void MainPageLoader::playSoundRepeet(int page)
 void MainPageLoader::interfaceCacheClear()
 {
 	// очищаем кеш
+#if __has_include(<QtWebEngineCore/QWebEngineProfile>)
 	if (webView && webView->page() && webView->page()->profile())
 	{
 		webView->page()->profile()->clearHttpCache();
 	}
+#else
+	Q_UNUSED(webView)
+#endif
 }
 
 bool MainPageLoader::connectionCheck()
