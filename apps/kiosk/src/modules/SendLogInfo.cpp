@@ -1,8 +1,11 @@
-// Project
-#include "SendLogInfo.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "SendLogInfo.h"
 
 SendLogInfo::SendLogInfo(QObject *parent) : SendRequest(parent) {
   senderName = "COMMAND_CONFIRM";

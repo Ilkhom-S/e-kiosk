@@ -1,7 +1,10 @@
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QDebug>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "watchdogs.h"
-
-#include <QtCore/QDebug>
 
 QStringList WD_List;
 

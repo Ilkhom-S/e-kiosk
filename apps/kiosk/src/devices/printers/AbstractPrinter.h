@@ -1,15 +1,17 @@
 #ifndef ABSTRACTPRINTER_H
 #define ABSTRACTPRINTER_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QTextCodec>
 #include <QtCore/QTextStream>
 #include <QtCore/QThread>
-
 #include <QtGui/QImage>
 #include <QtSerialPort/QSerialPort>
+#include <Common/QtHeadersEnd.h>
 
 namespace CScodec {
 const QByteArray c_IBM866 = "IBM 866";

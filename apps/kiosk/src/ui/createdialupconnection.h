@@ -1,9 +1,11 @@
 #ifndef CREATEDIALUPCONNECTION_H
 #define CREATEDIALUPCONNECTION_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QVariantMap>
-
 #include <QtWidgets/QDialog>
+#include <Common/QtHeadersEnd.h>
 
 namespace Ui {
 class CreateDialupConnection;

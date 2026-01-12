@@ -1,5 +1,9 @@
 // #pragma once
+
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
+#include <Common/QtHeadersEnd.h>
 
 const auto semaphoreName =
     "HUMO-SEMAPHORE-B5F692A2-9793-4A78-AFA3-A195619A0DD4";

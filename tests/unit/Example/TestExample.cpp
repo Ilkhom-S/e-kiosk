@@ -2,9 +2,11 @@
 // EKiosk Example Test
 //---------------------------------------------------------------------------
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
-
 #include <QtTest/QtTest>
+#include <Common/QtHeadersEnd.h>
 
 class TestExample : public QObject {
   Q_OBJECT

@@ -1,15 +1,17 @@
-// Project
-#include "admindialog.h"
-#include "ui_admindialog.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDebug>
 #include <QtCore/QEvent>
 #include <QtCore/QFile>
 #include <QtCore/QTextCodec>
-
 #include <QtGui/QCloseEvent>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QScrollBar>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "admindialog.h"
+#include "ui_admindialog.h"
 
 AdminDialog::AdminDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::AdminDialog) {

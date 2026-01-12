@@ -1,11 +1,13 @@
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QTextCodec>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "qatresultparser.h"
 #include "qatutils.h"
 #include "qgsmcodec.h"
 
-#include <QtCore/QTextCodec>
-
-/*!
         \class QAtUtils
         \inpublicgroup QtBaseModule
 

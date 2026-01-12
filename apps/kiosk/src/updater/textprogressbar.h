@@ -1,7 +1,10 @@
 #ifndef TEXTPROGRESSBAR_H
 #define TEXTPROGRESSBAR_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
+#include <Common/QtHeadersEnd.h>
 
 class TextProgressBar {
 public:

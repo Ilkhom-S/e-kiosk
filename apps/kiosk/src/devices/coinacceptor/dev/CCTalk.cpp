@@ -1,8 +1,11 @@
-// Project
-#include "CCTalk.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "CCTalk.h"
 
 CCTalk::CCTalk() : BaseAcceptorDevices() {
   debugger = false;

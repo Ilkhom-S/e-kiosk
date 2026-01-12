@@ -1,7 +1,10 @@
 #ifndef SEARCHDEVICESFORM_H
 #define SEARCHDEVICESFORM_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QWidget>
+#include <Common/QtHeadersEnd.h>
 
 namespace Ui {
 class SearchDevicesForm;

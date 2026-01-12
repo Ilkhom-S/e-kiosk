@@ -1,15 +1,18 @@
 #ifndef REGISTRATIONDIALOG_H
 #define REGISTRATIONDIALOG_H
 
-#include "createdialupconnection.h"
-#include "keypud.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QPointer>
-
 #include <QtGui/QKeyEvent>
 #include <QtGui/QMovie>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QMessageBox>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "createdialupconnection.h"
+#include "keypud.h"
 
 namespace Ui {
 class RegistrationDialog;

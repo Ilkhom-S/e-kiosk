@@ -1,14 +1,16 @@
 #ifndef JSONREQUEST_H
 #define JSONREQUEST_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QEventLoop>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QMessageAuthenticationCode>
 #include <QtCore/QTimer>
-
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
+#include <Common/QtHeadersEnd.h>
 
 enum Method {
   GET = 0,

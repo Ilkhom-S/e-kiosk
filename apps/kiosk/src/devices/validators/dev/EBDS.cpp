@@ -1,11 +1,13 @@
-// Project
-#include "EBDS.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QBitArray>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
-
 #include <QtMath>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "EBDS.h"
 
 EBDS::EBDS(QObject *parent) : BaseValidatorDevices(parent) {
   preDateTime = QDateTime::currentDateTime().addSecs(-1);

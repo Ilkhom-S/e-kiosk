@@ -1,13 +1,16 @@
 #ifndef AVTORIZATIONTOADMININ_H
 #define AVTORIZATIONTOADMININ_H
 
-#include "keypud.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QPointer>
-
 #include <QtGui/QKeyEvent>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QMessageBox>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "keypud.h"
 
 namespace Ui {
 class AvtorizationToAdminIn;

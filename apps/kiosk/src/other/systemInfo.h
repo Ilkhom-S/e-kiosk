@@ -1,6 +1,8 @@
 #ifndef SYSTEMINFO_H
 #define SYSTEMINFO_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QObject>
@@ -8,6 +10,7 @@
 #include <QtCore/QTextCodec>
 #include <QtCore/QThread>
 #include <QtCore/QVariantMap>
+#include <Common/QtHeadersEnd.h>
 
 class SystemInfo : public QThread {
   Q_OBJECT

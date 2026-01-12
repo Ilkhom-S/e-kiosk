@@ -1,9 +1,13 @@
+// Platform
+#include <windows.h>
+
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QDebug>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "ClassPrinter.h"
-
-#include <QtCore/QDebug>
-
-#include <windows.h>
 
 QStringList Printer_List;
 

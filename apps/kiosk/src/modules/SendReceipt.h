@@ -1,7 +1,9 @@
 #ifndef SEND_RECEIPT_H
 #define SEND_RECEIPT_H
 
+// Project
 #include "SendRequest.h"
+
 class SendRequest;
 
 class SendReceipt : public SendRequest {

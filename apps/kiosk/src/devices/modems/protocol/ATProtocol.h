@@ -1,12 +1,14 @@
 #ifndef ATPROTOCOL_H
 #define ATPROTOCOL_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QThread>
-
 #include <QtSerialPort/QSerialPort>
+#include <Common/QtHeadersEnd.h>
 
 namespace CModemConstants {
 const auto regExpBalance =

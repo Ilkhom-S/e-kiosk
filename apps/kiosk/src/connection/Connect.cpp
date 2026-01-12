@@ -1,8 +1,6 @@
 // Project
 #include "Connect.h"
 
-// #include "Reason.h"
-
 ConnectionPart::ConnectionPart(QObject *parent) : QObject(parent) {
   rasConn = new RasConnection(this);
   connect(rasConn, SIGNAL(emit_ConnectionError()), this,

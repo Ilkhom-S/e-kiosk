@@ -1,6 +1,8 @@
 #ifndef LOGGERVALIDATOR_H
 #define LOGGERVALIDATOR_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
@@ -9,6 +11,7 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QThread>
 #include <QtCore/QTimer>
+#include <Common/QtHeadersEnd.h>
 
 enum LogType { Query = 0, Response = 1 };
 

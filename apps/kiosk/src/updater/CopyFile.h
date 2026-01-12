@@ -1,12 +1,15 @@
 #ifndef COPYFILE_H
 #define COPYFILE_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QMap>
 #include <QtCore/QThread>
+#include <Common/QtHeadersEnd.h>
 
 class CopyFileQs : public QThread {
   Q_OBJECT

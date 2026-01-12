@@ -1,10 +1,13 @@
-// Project
-#include "CustomVKP80.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QBuffer>
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QIODevice>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "CustomVKP80.h"
 
 CustomVKP80_PRINTER::CustomVKP80_PRINTER(QObject *parent)
     : BasePrinterDevices(parent) {

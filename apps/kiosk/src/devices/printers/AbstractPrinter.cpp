@@ -1,7 +1,10 @@
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QDebug>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "AbstractPrinter.h"
-
-#include <QtCore/QDebug>
 
 BasePrinterDevices::BasePrinterDevices(QObject *parent) : QThread(parent) {
   Debugger = false;

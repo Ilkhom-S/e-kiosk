@@ -1,7 +1,10 @@
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QJsonDocument>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "CheckOnline.h"
-
-#include <QtCore/QJsonDocument>
 
 CheckOnline::CheckOnline(QObject *parent) : SendRequest(parent) {
   senderName = "CHECK_ONLINE";

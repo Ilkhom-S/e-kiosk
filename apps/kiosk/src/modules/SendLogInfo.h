@@ -1,7 +1,9 @@
 #ifndef SENDLOGINFO_H
 #define SENDLOGINFO_H
 
+// Project
 #include "SendRequest.h"
+
 class SendRequest;
 
 class SendLogInfo : public SendRequest {

@@ -1,9 +1,10 @@
 #ifndef SENDREQUEST_H
 #define SENDREQUEST_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
-
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
@@ -12,6 +13,7 @@
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
 #include <QtXml/QDomNode>
+#include <Common/QtHeadersEnd.h>
 
 namespace Request {
 

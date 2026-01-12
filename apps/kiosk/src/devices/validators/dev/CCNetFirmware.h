@@ -1,7 +1,10 @@
 #ifndef CCNETFIRMWARE_H
 #define CCNETFIRMWARE_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QtGlobal>
+#include <Common/QtHeadersEnd.h>
 
 namespace CCNetFirmware {
 uint8_t ldr1A00[64] = {

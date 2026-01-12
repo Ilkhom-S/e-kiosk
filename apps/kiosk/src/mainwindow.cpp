@@ -1,11 +1,13 @@
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QDebug>
+#include <QtCore/QSettings>
+#include <QtGui/QCloseEvent>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
-#include <QtCore/QDebug>
-#include <QtCore/QSettings>
-
-#include <QtGui/QCloseEvent>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {

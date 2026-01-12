@@ -1,10 +1,13 @@
 #ifndef LOGCLEAN_H
 #define LOGCLEAN_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDate>
 #include <QtCore/QDir>
 #include <QtCore/QDirIterator>
 #include <QtCore/QThread>
+#include <Common/QtHeadersEnd.h>
 
 class LogClean : public QThread {
 

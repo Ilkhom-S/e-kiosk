@@ -1,8 +1,11 @@
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtWidgets/QMessageBox>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "createdialupconnection.h"
 #include "ui_createdialupconnection.h"
-
-#include <QtWidgets/QMessageBox>
 
 CreateDialupConnection::CreateDialupConnection(QWidget *parent)
     : QDialog(parent), ui(new Ui::CreateDialupConnection) {

@@ -1,10 +1,13 @@
-// Project
-#include "CitizenPPU700.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QBuffer>
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QIODevice>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "CitizenPPU700.h"
 
 CitizenPPU700_PRINTER::CitizenPPU700_PRINTER(QObject *parent)
     : BasePrinterDevices(parent) {

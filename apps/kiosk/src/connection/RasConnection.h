@@ -1,6 +1,11 @@
 #ifndef RASCONNECTION_H
 #define RASCONNECTION_H
 
+// STL
+#include <iostream>
+
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDebug>
 #include <QtCore/QObject>
 #include <QtCore/QProcess>
@@ -8,8 +13,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QThread>
 #include <QtCore/QTimer>
-
-#include <iostream>
+#include <Common/QtHeadersEnd.h>
 
 using namespace std;
 

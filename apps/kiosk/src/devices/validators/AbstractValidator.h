@@ -1,16 +1,9 @@
 #ifndef ABSTRACTVALIDATOR_H
 #define ABSTRACTVALIDATOR_H
 
-#include "../ConstantData.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
-#include <QtCore/QObject>
-#include <QtCore/QString>
-#include <QtCore/QThread>
-
-#include <QtSerialPort/QSerialPort>
-
-// Common Qt types used by validators
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
@@ -19,9 +12,16 @@
 #include <QtCore/QLibrary>
 #include <QtCore/QList>
 #include <QtCore/QMap>
-
+#include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtCore/QThread>
+#include <QtSerialPort/QSerialPort>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
+#include <Common/QtHeadersEnd.h>
+
+// System
+#include "../ConstantData.h"
 
 struct NominalPar {
   int index;

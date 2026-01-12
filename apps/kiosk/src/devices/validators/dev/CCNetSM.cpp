@@ -1,12 +1,15 @@
-// Project
-#include "CCNetFirmware.h"
-#include "CCNetSM.h"
-#include "CashPayment.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/qendian.h>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "CCNetFirmware.h"
+#include "CCNetSM.h"
+#include "CashPayment.h"
 
 typedef int (*SendFirmWareDataByPathFunc)(int, char *);
 typedef long (*GetDataStatusFunc)();

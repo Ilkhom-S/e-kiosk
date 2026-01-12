@@ -1,9 +1,12 @@
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QBuffer>
+#include <QtCore/QTextCodec>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "keypud.h"
 #include "ui_keypud.h"
-
-#include <QtCore/QBuffer>
-#include <QtCore/QTextCodec>
 
 keyPud::keyPud(QWidget *parent) : QWidget(parent), ui(new Ui::keyPud) {
   ui->setupUi(this);

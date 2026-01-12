@@ -1,11 +1,13 @@
 #ifndef KEYPUD_H
 #define KEYPUD_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDebug>
 #include <QtCore/QMap>
-
 #include <QtCore/QSignalMapper>
 #include <QtWidgets/QWidget>
+#include <Common/QtHeadersEnd.h>
 
 namespace Ui {
 class keyPud;

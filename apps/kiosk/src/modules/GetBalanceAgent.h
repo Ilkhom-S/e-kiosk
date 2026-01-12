@@ -1,7 +1,9 @@
 #ifndef GETBALANCEAGENT_H
 #define GETBALANCEAGENT_H
 
+// Project
 #include "SendRequest.h"
+
 class SendRequest;
 
 class GetBalanceAgent : public SendRequest {

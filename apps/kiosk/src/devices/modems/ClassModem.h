@@ -1,9 +1,14 @@
 #ifndef CLASSMODEM_H
 #define CLASSMODEM_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QStringList>
+#include <Common/QtHeadersEnd.h>
+
+// System
 #include "protocol/ATProtocol.h"
 
-#include <QtCore/QStringList>
 class ATProtocol;
 
 class ClassModem : public QThread {

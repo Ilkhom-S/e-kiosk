@@ -1,13 +1,15 @@
 #ifndef SQLCONNECTION_H
 #define SQLCONNECTION_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QFile>
 #include <QtCore/QStringList>
-
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
+#include <Common/QtHeadersEnd.h>
 
 inline bool createMainDB(QSqlDatabase &dbName) {
   QStringList queryList;

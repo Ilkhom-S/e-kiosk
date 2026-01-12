@@ -1,14 +1,16 @@
 #ifndef WATCHDOGS_H
 #define WATCHDOGS_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
 #include <QtCore/QTextStream>
 #include <QtCore/QThread>
-
 #include <QtSerialPort/QSerialPort>
+#include <Common/QtHeadersEnd.h>
 
 namespace COSMP1 {
 /// Имя девайса

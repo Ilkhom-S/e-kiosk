@@ -1,7 +1,9 @@
 #ifndef AUTHREQUEST_H
 #define AUTHREQUEST_H
 
+// Project
 #include "SendRequest.h"
+
 class SendRequest;
 
 class AuthRequest : public SendRequest {

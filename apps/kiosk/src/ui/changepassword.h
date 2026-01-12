@@ -1,9 +1,13 @@
 #ifndef CHANGEPASSWORD_H
 #define CHANGEPASSWORD_H
 
-#include "keypud.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QDialog>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "keypud.h"
 
 namespace Ui {
 class ChangePassword;

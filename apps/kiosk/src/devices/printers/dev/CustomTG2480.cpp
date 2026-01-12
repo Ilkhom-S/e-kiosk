@@ -1,4 +1,5 @@
 
+// Project
 #include "CustomTG2480.h"
 
 TG2480_PRINTER::TG2480_PRINTER(QObject *parent) : BasePrinterDevices(parent) {

@@ -1,8 +1,8 @@
 #ifndef EBDS_H
 #define EBDS_H
 
+// System
 #include "../AbstractValidator.h"
-// #include "include/modules/SameFunction.h"
 
 namespace EBDSConstruct {
 const char Prefix = '\x02';

@@ -1,9 +1,11 @@
-// Project
-#include "textprogressbar.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
+#include <Common/QtHeadersEnd.h>
 
+// Project
 #include <stdio.h>
+#include "textprogressbar.h"
 
 TextProgressBar::TextProgressBar() : value(0), maximum(-1), iteration(0) {}
 

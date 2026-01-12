@@ -1,6 +1,7 @@
 #ifndef CITIZENCTS2000_H
 #define CITIZENCTS2000_H
 
+// System
 #include "../AbstractPrinter.h"
 
 class BasePrinterDevices;

@@ -1,9 +1,17 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtSerialPort/QSerialPortInfo>
+#include <QtWebSockets/QWebSocket>
+#include <QtWidgets/QMainWindow>
+#include <Common/QtHeadersEnd.h>
+
+// System
 #include "connection/Connect.h"
+#include <db/sqlconnection.h>
 #include "devices/ClassDevice.h"
-#include "main.h"
 #include "modules/AuthRequest.h"
 #include "modules/CheckOnline.h"
 #include "modules/CollectDaemons.h"
@@ -34,13 +42,9 @@
 #include "ui/searchdevicesform.h"
 #include "updater/update.h"
 
-#include <QtSerialPort/QSerialPortInfo>
-#include <QtWebSockets/QWebSocket>
-#include <QtWidgets/QMainWindow>
+// Project
+#include "main.h"
 
-#include <db/sqlconnection.h>
-
-// Параметры терминала
 struct TerminalParams {
   QString login;
   QString token;

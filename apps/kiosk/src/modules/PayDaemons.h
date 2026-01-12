@@ -1,9 +1,11 @@
 #ifndef PAYDAEMONS_H
 #define PAYDAEMONS_H
 
-#include "SendRequest.h"
-
+// System
 #include "../other/receipt.h"
+
+// Project
+#include "SendRequest.h"
 
 class SendRequest;
 

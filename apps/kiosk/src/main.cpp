@@ -1,12 +1,13 @@
-// Project
-#include "mainwindow.h"
-
+// Qt
 #include <Common/QtHeadersBegin.h>
-#include <Common/QtHeadersEnd.h>
 #include <QtCore/QProcess>
 #include <QtCore/QSharedMemory>
 #include <QtCore/QSystemSemaphore>
 #include <QtWidgets/QApplication>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "mainwindow.h"
 
 int main(int argc, char *argv[]) {
   QApplication a(argc, argv);

@@ -1,11 +1,11 @@
+// STL
+#include <string>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
-
 #include <QtTest/QtTest>
-
-#include <string>
+#include <Common/QtHeadersEnd.h>
 
 class TestStringConversions : public QObject {
   Q_OBJECT

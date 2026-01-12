@@ -1,11 +1,8 @@
 #ifndef CITIZENCBM1000_H
 #define CITIZENCBM1000_H
 
+// System
 #include "../AbstractPrinter.h"
-
-// DS1 1-ON
-// DS2 1-ON 2-ON 3-ON
-// DS3 4-ON 6-ON
 
 namespace CMDCitizenCBM1000 {
 const int charTimeOut = 15;        /// Time out

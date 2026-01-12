@@ -1,21 +1,21 @@
 #ifndef CLASSPRINTER_H
 #define CLASSPRINTER_H
+
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtPrintSupport/QPrinter>
 #include <QtWidgets/QTextBrowser>
+#include <Common/QtHeadersEnd.h>
 
-// Подключаем классы для работы с принтерами
-//*****************************************
+// System
 #include "dev/AV268.h"
 #include "dev/CitizenCBM1000.h"
 #include "dev/CitizenCTS2000.h"
 #include "dev/CitizenPPU700.h"
 #include "dev/CustomTG2480.h"
 #include "dev/CustomVKP80.h"
-// #include "dev/StarTUP900.h"
 #include "dev/KM1X.h"
 #include "dev/Phoenix.h"
-
-//*****************************************
 
 class CustomVKP80_PRINTER;
 class AV268_PRINTER;

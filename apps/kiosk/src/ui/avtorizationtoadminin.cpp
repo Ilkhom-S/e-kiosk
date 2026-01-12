@@ -1,10 +1,12 @@
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QTextStream>
+#include <QtCore/QTimer>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "avtorizationtoadminin.h"
 #include "ui_avtorizationtoadminin.h"
-
-#include <QtCore/QTimer>
-
-#include <QtCore/QTextStream>
 
 AvtorizationToAdminIn::AvtorizationToAdminIn(QWidget *parent)
     : QDialog(parent), ui(new Ui::AvtorizationToAdminIn) {

@@ -1,12 +1,14 @@
-// Project
-#include "changepassword.h"
-#include "ui_changepassword.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QPointer>
-
 #include <QtGui/QKeyEvent>
 #include <QtGui/QRegExpValidator>
 #include <QtWidgets/QMessageBox>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "changepassword.h"
+#include "ui_changepassword.h"
 
 ChangePassword::ChangePassword(QWidget *parent)
     : QDialog(parent), ui(new Ui::ChangePassword) {

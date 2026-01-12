@@ -1,13 +1,15 @@
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QTextCodec>
+#include <QtCore/QtMath>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "ATProtocol.h"
 #include "qatutils.h"
 #include "qgsmcodec.h"
 
-#include <QtCore/QCoreApplication>
-#include <QtCore/QTextCodec>
-#include <QtCore/QtMath>
-
-//--------------------------------------------------------------------------------
 ATProtocol::ATProtocol(QObject *parent)
     : QThread(parent)
 

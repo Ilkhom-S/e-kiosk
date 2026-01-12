@@ -1,8 +1,11 @@
 #ifndef JSINTERFACE_H
 #define JSINTERFACE_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDebug>
 #include <QtCore/QObject>
+#include <Common/QtHeadersEnd.h>
 
 class JsInterface : public QObject {
   Q_OBJECT

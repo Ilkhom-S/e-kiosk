@@ -1,7 +1,5 @@
-// Project
-#include "mainpageloader.h"
-#include "ui_mainpageloader.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
@@ -10,10 +8,15 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QTextStream>
 #include <QtCore/QTimer>
-
 #include <QtGui/QTextDocument>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "mainpageloader.h"
+#include "ui_mainpageloader.h"
+
 #if __has_include(<QtWebEngineCore/QWebEngineProfile>)
 #include <QtWebEngineCore/QWebEngineProfile>
 #endif

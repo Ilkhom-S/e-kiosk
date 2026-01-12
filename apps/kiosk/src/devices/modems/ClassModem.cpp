@@ -1,8 +1,11 @@
-// Project
-#include "ClassModem.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "ClassModem.h"
 
 QStringList Modem_List;
 

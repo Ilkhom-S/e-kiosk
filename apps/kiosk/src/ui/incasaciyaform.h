@@ -1,7 +1,10 @@
 #ifndef INCASACIYAFORM_H
 #define INCASACIYAFORM_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QDialog>
+#include <Common/QtHeadersEnd.h>
 
 namespace IncashCmd {
 enum In {

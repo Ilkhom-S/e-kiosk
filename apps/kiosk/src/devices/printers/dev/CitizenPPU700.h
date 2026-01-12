@@ -1,6 +1,7 @@
 #ifndef CITIZENPPU700_H
 #define CITIZENPPU700_H
 
+// System
 #include "../AbstractPrinter.h"
 
 class BasePrinterDevices;

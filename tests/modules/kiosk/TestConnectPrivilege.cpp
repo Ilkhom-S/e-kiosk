@@ -1,8 +1,8 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <Common/QtHeadersEnd.h>
 #include <QtCore/QString>
 #include <QtTest/QtTest>
+#include <Common/QtHeadersEnd.h>
 
 class TestConnectPrivilege : public QObject {
   Q_OBJECT

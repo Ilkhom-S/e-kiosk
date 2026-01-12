@@ -1,15 +1,18 @@
 #ifndef ADMINDIALOG_H
 #define ADMINDIALOG_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QTimer>
+#include <QtGui/QMovie>
+#include <QtWidgets/QDialog>
+#include <Common/QtHeadersEnd.h>
+
+// Project
 #include "adminbutton.h"
 #include "createdialupconnection.h"
 #include "keypud.h"
 #include "selectcategorylogview.h"
-
-#include <QtCore/QTimer>
-
-#include <QtGui/QMovie>
-#include <QtWidgets/QDialog>
 
 namespace AdminLisTitle {
 enum ListTitle {

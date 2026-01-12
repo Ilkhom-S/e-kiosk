@@ -1,9 +1,11 @@
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QTextStream>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "registrationdialog.h"
 #include "ui_registrationdialog.h"
-
-#include <QtCore/QTextStream>
-// #include <QTextCodec>
 
 RegistrationDialog::RegistrationDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::RegistrationDialog) {

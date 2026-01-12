@@ -1,12 +1,14 @@
+// Platform
+#include <windows.h>
+
 // STL
 #include <string>
-#include <windows.h>
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <Common/QtHeadersEnd.h>
 #include <QtCore/QString>
 #include <QtTest/QtTest>
+#include <Common/QtHeadersEnd.h>
 
 class TestPrinterConversion : public QObject {
   Q_OBJECT

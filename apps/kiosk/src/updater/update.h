@@ -2,8 +2,9 @@
 #define UPDATE_H
 
 /// Подключаемые файлы
-#include "textprogressbar.h"
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDir>
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QFile>
@@ -13,18 +14,19 @@
 #include <QtCore/QTime>
 #include <QtCore/QTimer>
 #include <QtCore/QUrl>
-
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlQuery>
-#include <QtSql/QSqlRecord>
-// #include <QQueue>
-#include "CopyFile.h"
-
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlRecord>
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomNode>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "CopyFile.h"
+#include "textprogressbar.h"
 
 class DownloadManager : public QThread {
   Q_OBJECT

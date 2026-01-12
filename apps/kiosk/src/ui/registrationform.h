@@ -1,18 +1,21 @@
 #ifndef REGISTRATIONFORM_H
 #define REGISTRATIONFORM_H
 
-#include "createdialupconnection.h"
-#include "keypud.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QPointer>
 #include <QtCore/QTimer>
-
 #include <QtGui/QKeyEvent>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QMessageBox>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "createdialupconnection.h"
+#include "keypud.h"
 
 namespace Ui {
 class RegistrationForm;

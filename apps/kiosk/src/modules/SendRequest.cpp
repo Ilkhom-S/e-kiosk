@@ -1,8 +1,11 @@
-// Project
-#include "SendRequest.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QMessageAuthenticationCode>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "SendRequest.h"
 
 SendRequest::SendRequest(QObject *parent) : QThread(parent) {
   debugger = true;

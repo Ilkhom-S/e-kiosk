@@ -1,8 +1,11 @@
-// Project
-#include "CollectDaemons.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDebug>
 #include <QtCore/QUuid>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "CollectDaemons.h"
 
 CollectDaemons::CollectDaemons(QObject *parent) : SendRequest(parent) {
 

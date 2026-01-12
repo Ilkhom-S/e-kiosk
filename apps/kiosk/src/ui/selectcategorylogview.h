@@ -1,7 +1,10 @@
 #ifndef SELECTCATEGORYLOGVIEW_H
 #define SELECTCATEGORYLOGVIEW_H
 
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QDialog>
+#include <Common/QtHeadersEnd.h>
 
 namespace Ui {
 class SelectCategoryLogView;

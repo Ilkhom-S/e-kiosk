@@ -1,8 +1,11 @@
-// Project
-#include "PayDaemons.h"
-
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QUuid>
+#include <Common/QtHeadersEnd.h>
+
+// Project
+#include "PayDaemons.h"
 
 PayDaemons::PayDaemons(QObject *parent) : SendRequest(parent) {
 

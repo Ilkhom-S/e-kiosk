@@ -1,9 +1,12 @@
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtGui/QMovie>
+#include <QtWidgets/QStyleFactory>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "searchdevicesform.h"
 #include "ui_searchdevicesform.h"
-
-#include <QtGui/QMovie>
-#include <QtWidgets/QStyleFactory>
 
 SearchDevicesForm::SearchDevicesForm(QWidget *parent)
     : QWidget(parent), ui(new Ui::SearchDevicesForm) {

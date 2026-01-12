@@ -1,12 +1,16 @@
 #pragma once
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtSql/QSqlDatabase>
+#include <Common/QtHeadersEnd.h>
+
+// System
 #include "coinacceptor/ClassAcceptor.h"
 #include "modems/ClassModem.h"
 #include "printers/ClassPrinter.h"
 #include "validators/ClassValidator.h"
 #include "watchdogs/watchdogs.h"
-
-#include <QtSql/QSqlDatabase>
 
 namespace SearchDev {
 enum ssTools {
