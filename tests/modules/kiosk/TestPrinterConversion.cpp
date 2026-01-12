@@ -1,12 +1,12 @@
+// STL
+#include <string>
+#include <windows.h>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
-
 #include <QtTest/QtTest>
-
-#include <string>
-#include <windows.h>
+#include <Common/QtHeadersEnd.h>
 
 class TestPrinterConversion : public QObject
 {
