@@ -1,7 +1,7 @@
 
 
 cmake_minimum_required(VERSION 3.16)
-project(KioskApp LANGUAGES CXX C)
+project(EKiosk LANGUAGES CXX C)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Sql PrintSupport Network Multimedia Xml SerialPort WebSockets)
 
 # Use EKiosk CMake helpers
@@ -14,7 +14,7 @@ file(GLOB_RECURSE UI_FILES src/*.ui)
 set(RESOURCE_FILES ${CMAKE_SOURCE_DIR}/ekiosk.qrc)
 
 # Application target with Qt modules and resources
-ek_add_application(KioskApp
+ek_add_application(EKiosk
     SOURCES ${SOURCES} ${HEADERS} ${UI_FILES} ${RESOURCE_FILES}
     QT_MODULES Core Widgets Sql PrintSupport Network Multimedia Xml SerialPort WebSockets
     INCLUDE_DIRS src
@@ -23,10 +23,10 @@ ek_add_application(KioskApp
 )
 
 # Option to enable test mode (disables kiosk restrictions, e.g. killing explorer.exe)
-option(EKIOSK_TEST_MODE "Enable test mode (no kiosk restrictions)" OFF)
+option(EKIOSK_TEST_MODE "Enable test mode (no kiosk restrictions)" ON)
 if(EKIOSK_TEST_MODE)
-    target_compile_definitions(KioskApp PRIVATE EKIOSK_TEST_MODE)
+    target_compile_definitions(EKiosk PRIVATE EKIOSK_TEST_MODE)
 endif()
 
 # Static analysis (optional, but recommended)
-ek_enable_static_analysis(KioskApp CPPCHECK CLANG_TIDY)
+# ek_enable_static_analysis(EKiosk CPPCHECK CLANG_TIDY)

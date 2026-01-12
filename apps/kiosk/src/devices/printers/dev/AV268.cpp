@@ -1,21 +1,27 @@
 #include "AV268.h"
 
-AV268_PRINTER::AV268_PRINTER(QObject* parent) : BasePrinterDevices(parent) {
+AV268_PRINTER::AV268_PRINTER(QObject *parent) : BasePrinterDevices(parent)
+{
     //    printer_name = "Custom-VKP80";
 }
 
-bool AV268_PRINTER::OpenPrinterPort() { return openPort(); }
+bool AV268_PRINTER::OpenPrinterPort()
+{
+    return openPort();
+}
 
-bool AV268_PRINTER::openPort() {
-    if (devicesCreated) {
-        // Если девайс для работы с портом обявлен
+
+bool AV268_PRINTER::openPort()
+{
+    if(devicesCreated){
+        //Если девайс для работы с портом обявлен
         is_open = false;
 
-        // Даем девайсу название порта
+        //Даем девайсу название порта
         serialPort->setPortName(comName);
 
-        if (serialPort->open(QIODevice::ReadWrite)) {
-            // Устанавливаем параметры открытия порта
+        if (serialPort->open(QIODevice::ReadWrite)){
+            //Устанавливаем параметры открытия порта
             is_open = false;
 
             if (!serialPort->setDataBits(QSerialPort::Data8)) return false;
@@ -23,30 +29,35 @@ bool AV268_PRINTER::openPort() {
 
             is_open = true;
 
-        } else {
+        }else{
             is_open = false;
         }
-    } else {
+    }else{
         is_open = false;
     }
 
     return is_open;
 }
 
-bool AV268_PRINTER::isItYou() {
+
+bool AV268_PRINTER::isItYou()
+{
     int status = 0;
     bool result = isEnabled(status);
     this->closePort();
     return result;
 }
 
-bool AV268_PRINTER::isEnabled(int status) {
+bool AV268_PRINTER::isEnabled(int status)
+{
     //        int status = 0;
-    if (!getStatus(status)) return false;
+    if (!getStatus(status))
+        return false;
     return (status != PrinterState::PrinterNotAvailable);
 }
 
-bool AV268_PRINTER::getStatus(int& aStatus) {
+bool AV268_PRINTER::getStatus(int& aStatus)
+{
     aStatus = PrinterState::PrinterNotAvailable;
     // засылаем в порт команду самоидентификации
     QByteArray cmd;
@@ -56,14 +67,14 @@ bool AV268_PRINTER::getStatus(int& aStatus) {
     cmd.push_back(CMDAV268::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDAV268::PrinterStatusCommandSecondByte);
 
-    if (!this->sendCommand(cmd, true, 200, resp_data, answer, 0)) {
-        // if(Debuger) qDebug() << "AV268::getStatus(): error in sendPacketInPort()";
+    if (!this->sendCommand(cmd,true,200,resp_data,answer,0)){
+        //if(Debuger) qDebug() << "AV268::getStatus(): error in sendPacketInPort()";
         return false;
     }
 
-    if (answer.size() < 1) {
-        // if(Debuger) qDebug() << QString("AV268::getStatus(): wrong size of buffer. Buffer is:
-        // %1").arg(answer.data());
+    if (answer.size() < 1)
+    {
+        //if(Debuger) qDebug() << QString("AV268::getStatus(): wrong size of buffer. Buffer is: %1").arg(answer.data());
         return false;
     }
 
@@ -75,51 +86,58 @@ bool AV268_PRINTER::getStatus(int& aStatus) {
     else
         status = answer[0];
     // Проверим, что это наш статус
-    if ((status & 0x10) || (status & 0x80)) {
+    if ((status & 0x10) || (status & 0x80))
+    {
         // Не наш принтер
-        // if(Debuger) qDebug() << QString("AV268::getStatus(): wrong byte returned:
-        // %1").arg(status);
+        //if(Debuger) qDebug() << QString("AV268::getStatus(): wrong byte returned: %1").arg(status);
         return false;
     }
     // Наш принтер
     aStatus = PrinterState::PrinterOK;
-    if (status != CMDAV268::PrinterNormalState) {
+    if (status != CMDAV268::PrinterNormalState)
+    {
         // Error
         int code = status & CMDAV268::PrinterTemperatureError;
-        if (code > 0) {
+        if (code > 0)
+        {
             // Temperature error
             aStatus |= PrinterState::TemperatureError;
-            // if(Debuger) qDebug() << "AV268::getStatus(): Temperature error";
+            //if(Debuger) qDebug() << "AV268::getStatus(): Temperature error";
         }
         code = status & CMDAV268::PrinterNoPaperError;
-        if (code > 0) {
+        if (code > 0)
+        {
             // No paper
             aStatus |= PrinterState::PaperEnd;
-            // if(Debuger) qDebug() << "AV268::getStatus(): No paper";
+            //if(Debuger) qDebug() << "AV268::getStatus(): No paper";
         }
         code = status & CMDAV268::PrinterHeadOpenError;
-        if (code > 0) {
+        if (code > 0)
+        {
             // Printing head open
             aStatus |= PrinterState::PrintingHeadError;
-            // if(Debuger) qDebug() << "AV268::getStatus(): Printing head open";
+            //if(Debuger) qDebug() << "AV268::getStatus(): Printing head open";
         }
         code = status & CMDAV268::PrinterSystemError;
-        if (code > 0) {
+        if (code > 0)
+        {
             // System error
             aStatus |= PrinterState::PrinterError;
-            // if(Debuger) qDebug() << "AV268::getStatus(): System error";
+            //if(Debuger) qDebug() << "AV268::getStatus(): System error";
         }
         code = status & CMDAV268::PrinterDataReceiveError;
-        if (code > 0) {
+        if (code > 0)
+        {
             // Data receive error
             aStatus |= PrinterState::PortError;
-            // if(Debuger) qDebug() << "AV268::getStatus(): Data receive error";
+            //if(Debuger) qDebug() << "AV268::getStatus(): Data receive error";
         }
     }
     return true;
 }
 
-bool AV268_PRINTER::initialize() {
+bool AV268_PRINTER::initialize()
+{
     // засылаем в порт команду самоидентификации
     QByteArray cmd;
     cmd.push_back(CMDAV268::PrinterStatusCommandFirstByte);
@@ -127,12 +145,13 @@ bool AV268_PRINTER::initialize() {
     bool resp_data = false;
     QByteArray response;
 
-    bool res = this->sendCommand(cmd, true, 200, resp_data, response, 290);
+    bool res = this->sendCommand(cmd,true,200,resp_data,response,290);
 
     return res;
 }
 
-bool AV268_PRINTER::cut() {
+bool AV268_PRINTER::cut()
+{
     QByteArray cmd;
 
     cmd.push_back(CMDAV268::PrinterStatusCommandFirstByte);
@@ -140,122 +159,84 @@ bool AV268_PRINTER::cut() {
 
     bool resp_data = false;
     QByteArray response;
-    bool res = this->sendCommand(cmd, true, 200, resp_data, response, 50);
+    bool res = this->sendCommand(cmd,true,200,resp_data,response,50);
 
     return res;
 }
 
-void AV268_PRINTER::getSpecialCharecters(QByteArray& printText) {
-    // Устанавливаем если есть жирный фонт
-    printText.replace(QString("%1%2%3")
-                          .arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::FontTypeBold,
-                               CScharsetParam::CloseTagDelimiter)
-                          .toUtf8(),
-                      asciiNull());
+void AV268_PRINTER::getSpecialCharecters(QByteArray& printText)
+{
+    //Устанавливаем если есть жирный фонт
+    printText.replace(QString("%1%2%3").arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::FontTypeBold, CScharsetParam::CloseTagDelimiter).toUtf8()
+                      , asciiNull());
 
-    printText.replace(QString("%1%2%3%4")
-                          .arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::CloseTagSymbol,
-                               CScharsetParam::FontTypeBold, CScharsetParam::CloseTagDelimiter)
-                          .toUtf8(),
-                      asciiNull());
+    printText.replace(QString("%1%2%3%4").arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::CloseTagSymbol, CScharsetParam::FontTypeBold, CScharsetParam::CloseTagDelimiter).toUtf8()
+                      , asciiNull());
 
-    // Устанавливаем если есть двойной высоты фонт
-    printText.replace(
-        QString("%1%2%3")
-            .arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::FontTypeDoubleHeight,
-                 CScharsetParam::CloseTagDelimiter)
-            .toUtf8(),
-        asciiNull());
-    printText.replace(
-        QString("%1%2%3%4")
-            .arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::CloseTagSymbol,
-                 CScharsetParam::FontTypeDoubleHeight, CScharsetParam::CloseTagDelimiter)
-            .toUtf8(),
-        asciiNull());
+    //Устанавливаем если есть двойной высоты фонт
+    printText.replace(QString("%1%2%3").arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::FontTypeDoubleHeight, CScharsetParam::CloseTagDelimiter).toUtf8()
+                      , asciiNull());
+    printText.replace(QString("%1%2%3%4").arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::CloseTagSymbol, CScharsetParam::FontTypeDoubleHeight, CScharsetParam::CloseTagDelimiter).toUtf8()
+                      , asciiNull());
 
-    // Устанавливаем если есть двойной ширины фонт
-    printText.replace(
-        QString("%1%2%3")
-            .arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::FontTypeDoubleWidth,
-                 CScharsetParam::CloseTagDelimiter)
-            .toUtf8(),
-        asciiNull());
-    printText.replace(
-        QString("%1%2%3%4")
-            .arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::CloseTagSymbol,
-                 CScharsetParam::FontTypeDoubleWidth, CScharsetParam::CloseTagDelimiter)
-            .toUtf8(),
-        asciiNull());
+    //Устанавливаем если есть двойной ширины фонт
+    printText.replace(QString("%1%2%3").arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::FontTypeDoubleWidth, CScharsetParam::CloseTagDelimiter).toUtf8()
+                      , asciiNull());
+    printText.replace(QString("%1%2%3%4").arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::CloseTagSymbol, CScharsetParam::FontTypeDoubleWidth, CScharsetParam::CloseTagDelimiter).toUtf8()
+                      , asciiNull());
 
-    // Устанавливаем если есть курсивный фонт
-    printText.replace(QString("%1%2%3")
-                          .arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::FontTypeItalic,
-                               CScharsetParam::CloseTagDelimiter)
-                          .toUtf8(),
-                      asciiNull());
-    printText.replace(QString("%1%2%3%4")
-                          .arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::CloseTagSymbol,
-                               CScharsetParam::FontTypeItalic, CScharsetParam::CloseTagDelimiter)
-                          .toUtf8(),
-                      asciiNull());
+    //Устанавливаем если есть курсивный фонт
+    printText.replace(QString("%1%2%3").arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::FontTypeItalic, CScharsetParam::CloseTagDelimiter).toUtf8()
+                      , asciiNull());
+    printText.replace(QString("%1%2%3%4").arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::CloseTagSymbol, CScharsetParam::FontTypeItalic, CScharsetParam::CloseTagDelimiter).toUtf8()
+                      , asciiNull());
 
-    // Устанавливаем если есть подчеркнутый фонт
-    printText.replace(QString("%1%2%3")
-                          .arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::FontTypeUnderLine,
-                               CScharsetParam::CloseTagDelimiter)
-                          .toUtf8(),
-                      asciiNull());
-    printText.replace(QString("%1%2%3%4")
-                          .arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::CloseTagSymbol,
-                               CScharsetParam::FontTypeUnderLine, CScharsetParam::CloseTagDelimiter)
-                          .toUtf8(),
-                      asciiNull());
+    //Устанавливаем если есть подчеркнутый фонт
+    printText.replace(QString("%1%2%3").arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::FontTypeUnderLine, CScharsetParam::CloseTagDelimiter).toUtf8()
+                      , asciiNull());
+    printText.replace(QString("%1%2%3%4").arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::CloseTagSymbol, CScharsetParam::FontTypeUnderLine, CScharsetParam::CloseTagDelimiter).toUtf8()
+                      , asciiNull());
 
-    // Если надо добавить проабел
+    //Если надо добавить проабел
     QByteArray probel;
-    for (int i = 1; i <= leftMargin; i++) {
+    for(int i = 1; i <= leftMargin; i++){
         probel.append(ASCII::Space);
     }
-    printText.replace(QString("%1%2%3")
-                          .arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::ProbelCount,
-                               CScharsetParam::CloseTagDelimiter)
-                          .toUtf8(),
-                      probel);
+    printText.replace(QString("%1%2%3").arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::ProbelCount, CScharsetParam::CloseTagDelimiter).toUtf8(), probel);
 
-    // Добавляем звезды
+    //Добавляем звезды
     int col_z = (chekWidth - 11 - leftMargin) / 2;
     QByteArray star;
 
-    for (int j = 1; j <= col_z; j++) {
+    for(int j = 1; j <= col_z; j++){
         star.append("*");
     }
 
-    printText.replace(QString("%1%2%3%4")
-                          .arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::StarCount,
-                               CScharsetParam::CloseTagDelimiter)
-                          .toUtf8(),
-                      star);
+    printText.replace(QString("%1%2%3%4").arg(CScharsetParam::OpenTagDelimiter, CScharsetParam::StarCount, CScharsetParam::CloseTagDelimiter).toUtf8(),star);
 }
 
-bool AV268_PRINTER::printCheck(const QString& aCheck) {
-    // Меняем кодировку
-    QByteArray printText;
-    printText = this->encodingString(aCheck, CScodec::c_IBM866);
 
-    // Вставляем если есть Подчеркнутый, Жирный, Курсивный... Шрифт
+bool AV268_PRINTER::printCheck(const QString& aCheck)
+{
+    //Меняем кодировку
+    QByteArray printText;
+    printText = this->encodingString(aCheck,CScodec::c_IBM866);
+
+    //Вставляем если есть Подчеркнутый, Жирный, Курсивный... Шрифт
     this->getSpecialCharecters(printText);
 
     //    QByteArray cmd;
     QByteArray answer;
     bool respData = false;
 
-    return this->sendCommand(printText, false, 0, respData, answer, 0);
+    return this->sendCommand(printText,false,0,respData,answer,0);
 }
 
-void AV268_PRINTER::print(const QString& aCheck) {
-    // Печатаем текст
+void AV268_PRINTER::print(const QString& aCheck)
+{
+    //Печатаем текст
     this->printCheck(aCheck);
 
-    // Обрезка
+    //Обрезка
     this->cut();
 }

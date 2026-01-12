@@ -1,14 +1,15 @@
 #ifndef RASCONNECTION_H
 #define RASCONNECTION_H
 
-#include <QDebug>
 #include <QObject>
-#include <QProcess>
-#include <QString>
-#include <QStringList>
 #include <QThread>
 #include <QTimer>
+
 #include <iostream>
+#include <QDebug>
+#include <QString>
+#include <QStringList>
+#include <QProcess>
 
 using namespace std;
 
@@ -19,89 +20,92 @@ using namespace std;
 #undef WINVER
 #endif
 #define WINVER 0x501
+#include <windows.h>
 #include <ras.h>
 #include <raserror.h>
-#include <windows.h>
 #include <wininet.h>
 #undef WINVER
 #define WINVER OLD_WINVER
 #undef OLD_WINVER
 
-namespace DialupParam {
 
-enum Cmd {
+namespace DialupParam{
 
-    StartDial = 1,
+    enum Cmd{
 
-    StopDial = 2,
+        StartDial         = 1,
 
-    Restart = 3,
+        StopDial          = 2,
 
-    GetConnectionList = 4,
+        Restart           = 3,
 
-    Ping = 5
-};
+        GetConnectionList = 4,
+
+        Ping              = 5
+    };
 }
 
-namespace ErrorDialup {
-enum err {
-    rNoError = 0,
+namespace ErrorDialup
+{
+    enum err
+    {
+        rNoError                = 0,
 
-    rErrorCreateDialupCon = 1,
+        rErrorCreateDialupCon   = 1,
 
-    rErrorSetDialupParam = 2
-};
+        rErrorSetDialupParam    = 2
+    };
 }
 
-namespace Connection {
+namespace Connection{
 
-namespace Type {
-enum i_type {
+    namespace Type{
+        enum i_type{
 
-    Dialup = 1,
+            Dialup   = 1,
 
-    Ethernet = 2,
+            Ethernet = 2,
 
-    WiFi = 3
-};
+            WiFi     = 3
+        };
 
+    }
+
+    enum conSate{
+        conStateUp      = 0,
+        conStateDoun    = 1,
+        conStateUpping  = 2,
+        conStateError   = 3,
+        SendingSMS      = 4,
+        GetSimData      = 5
+    };
+    namespace TypePing{
+
+        enum i_typeping{
+
+            Ping    = 1,
+
+            Socket  = 2,
+
+            Request = 3
+        };
+    }
 }
 
-enum conSate {
-    conStateUp = 0,
-    conStateDoun = 1,
-    conStateUpping = 2,
-    conStateError = 3,
-    SendingSMS = 4,
-    GetSimData = 5
-};
-namespace TypePing {
-
-enum i_typeping {
-
-    Ping = 1,
-
-    Socket = 2,
-
-    Request = 3
-};
-}
-}  // namespace Connection
-
-class RasConnection : public QThread {
+class RasConnection : public QThread
+{
     Q_OBJECT
 
-  public:
+public:
+
     static QString G_State;
     static QString G_Comment;
     static QString G_Error_Num;
     static QString G_Error_Comment;
 
-    static void WINAPI RasCallback(HRASCONN hrasconn, UINT unMsg, RASCONNSTATE rascs, DWORD dwError,
-                                   DWORD dwExtendedError);
+    static void WINAPI RasCallback(HRASCONN hrasconn, UINT unMsg, RASCONNSTATE rascs, DWORD dwError, DWORD dwExtendedError);
 
-    int createNewDialupConnection(QString conName, QString devName, QString phone, QString login,
-                                  QString pass);
+    int createNewDialupConnection(QString conName, QString devName, QString phone, QString login, QString pass);
     bool HasInstalledModems(QStringList &lstModemList);
 
     RasConnection(QObject *parent = 0);
@@ -110,10 +114,10 @@ class RasConnection : public QThread {
     void execCommand(int cmd);
     bool getConName(QStringList &lstCon);
     void HangUp();
-    void getConnection(QStringList &connections);
+    void getConnection(QStringList& connections);
     void stopReconnect();
 
-  private:
+private:
     QString conName;
     int Debuger;
     int nowCmd;
@@ -124,7 +128,7 @@ class RasConnection : public QThread {
 
     virtual void run();
 
-    static void msleep(int ms) { QThread::msleep(ms); }
+    static void msleep(int ms){ QThread::msleep(ms);}
 
     QString nowStateDial;
 
@@ -132,26 +136,27 @@ class RasConnection : public QThread {
     RASCONNSTATE getConnectionState(HRASCONN hRasConn);
     bool hangUpThis(HRASCONN hRasConn);
 
+
     bool isConnected();
     void checkConnection();
 
-  private slots:
+private slots:
     void setStateDial();
 
     bool Dial();
 
     void reCall();
 
-  signals:
-    void emit_connState(QString state, QString comment);
+signals:
+    void emit_connState(QString state,QString comment);
     void emit_errorState(QString errNum, QString errComment);
     void emit_ConnectionUp();
     void emit_ConnectionError();
     void emit_TimerStateDialStart();
     void emit_ReCallTimer(int time);
     void emit_Ping(bool sts);
-    void emit_toLoging(int sts, QString title, QString text);
+    void emit_toLoging(int sts,QString title,QString text);
     void emit_dialupState(int state);
 };
 
-#endif  // RASCONNECTION_H
+#endif // RASCONNECTION_H

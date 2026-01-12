@@ -1,37 +1,40 @@
 #include "avtorizationtoadminin.h"
-
+#include "ui_avtorizationtoadminin.h"
 #include <QTextStream>
 #include <QTimer>
 
-#include "ui_avtorizationtoadminin.h"
-
-AvtorizationToAdminIn::AvtorizationToAdminIn(QWidget *parent)
-    : QDialog(parent), ui(new Ui::AvtorizationToAdminIn) {
+AvtorizationToAdminIn::AvtorizationToAdminIn(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::AvtorizationToAdminIn)
+{
     ui->setupUi(this);
 
     KeyPud = new keyPud(this);
     ui->layoutWgtKeyPud->addWidget(KeyPud);
 
-    this->connect(KeyPud, SIGNAL(characterGenerated(QChar)), this, SLOT(sendCharacter(QChar)));
+    this->connect(KeyPud,SIGNAL(characterGenerated(QChar)),this,SLOT(sendCharacter(QChar)));
 
     countCheckIn = 0;
 
-    connect(ui->btnEnterAdmin, SIGNAL(clicked()), SLOT(checkInputData()));
+    connect(ui->btnEnterAdmin,SIGNAL(clicked()),SLOT(checkInputData()));
 
-    //    connect(ui->btnCancelReg1,SIGNAL(clicked()),SLOT(close()));
+//    connect(ui->btnCancelReg1,SIGNAL(clicked()),SLOT(close()));
+
 }
 
-void AvtorizationToAdminIn::checkInputData() {
-    if (countCheckIn > 5) {
+void AvtorizationToAdminIn::checkInputData()
+{
+    if(countCheckIn > 5){
         countCheckIn = 0;
         this->close();
     }
 
     QString vrmLogin = ui->editLoginReg->text().trimmed();
-    QString vrmPass = ui->editPasswordReg->text().trimmed();
+    QString vrmPass  = ui->editPasswordReg->text().trimmed();
 
-    if (vrmLogin == "" || vrmPass == "") {
-        countCheckIn++;
+    if(vrmLogin == "" || vrmPass == ""){
+
+        countCheckIn ++;
 
         QMessageBox messageBox1(this);
         messageBox1.setWindowTitle("Диалог авторизации");
@@ -39,20 +42,21 @@ void AvtorizationToAdminIn::checkInputData() {
         messageBox1.setStandardButtons(QMessageBox::Ok);
         messageBox1.setDefaultButton(QMessageBox::Ok);
         messageBox1.setIcon(QMessageBox::Warning);
-        messageBox1.setButtonText(QMessageBox::Ok, QString("OK"));
+        messageBox1.setButtonText(QMessageBox::Ok,QString("OK"));
 
         messageBox1.exec();
 
         return;
     }
 
-    if (vrmLogin == this->loginIn && vrmPass == this->passIn) {
-        countCheckIn = 0;
-        emit this->emit_openAdminDialog();
-        this->close();
-        return;
-    } else {
-        countCheckIn++;
+    if(vrmLogin == this->loginIn && vrmPass == this->passIn)
+    {
+       countCheckIn = 0;
+       emit this->emit_openAdminDialog();
+       this->close();
+       return;
+    }else{
+        countCheckIn ++;
 
         QMessageBox messageBox1(this);
         messageBox1.setWindowTitle("Диалог авторизации");
@@ -60,7 +64,7 @@ void AvtorizationToAdminIn::checkInputData() {
         messageBox1.setStandardButtons(QMessageBox::Ok);
         messageBox1.setDefaultButton(QMessageBox::Ok);
         messageBox1.setIcon(QMessageBox::Critical);
-        messageBox1.setButtonText(QMessageBox::Ok, QString("OK"));
+        messageBox1.setButtonText(QMessageBox::Ok,QString("OK"));
 
         messageBox1.exec();
 
@@ -68,9 +72,13 @@ void AvtorizationToAdminIn::checkInputData() {
     }
 }
 
-AvtorizationToAdminIn::~AvtorizationToAdminIn() { delete ui; }
+AvtorizationToAdminIn::~AvtorizationToAdminIn()
+{
+    delete ui;
+}
 
-void AvtorizationToAdminIn::setAuthParam(QString login, QString pass) {
+void AvtorizationToAdminIn::setAuthParam(QString login, QString pass)
+{
     loginIn = login;
     passIn = pass;
 
@@ -79,30 +87,32 @@ void AvtorizationToAdminIn::setAuthParam(QString login, QString pass) {
 
     ui->editLoginReg->setFocus();
 
-    QTimer::singleShot(180000, this, SLOT(close()));
+    QTimer::singleShot(180000,this,SLOT(close()));
 }
 
-void AvtorizationToAdminIn::sendCharacter(QChar character) {
+void AvtorizationToAdminIn::sendCharacter(QChar character)
+{
     QPointer<QWidget> w = focusWidget();
 
-    if (!w) return;
+    if (!w)
+    return;
 
     int un = character.unicode();
 
     QString a = QString(character);
-    if (un == 15405) {
+    if(un==15405){
         un = Qt::Key_Backspace;
         a = "";
     }
-    if (un == 15934) {
+    if(un==15934){
         un = Qt::Key_Tab;
         a = "";
     }
-    if (un == 15917) {
+    if(un==15917){
         un = Qt::Key_Enter;
         a = "";
     }
-    if (un == 15420) {
+    if(un==15420){
         return;
     }
 

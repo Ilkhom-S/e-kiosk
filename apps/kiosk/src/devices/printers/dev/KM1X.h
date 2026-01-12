@@ -5,16 +5,18 @@
 
 class BasePrinterDevices;
 
-namespace CMDKM1X {
-const int charTimeOut = 50;  /// Time out
-const QString DeviceName = "KM1X";
+namespace CMDKM1X
+{
+    const int charTimeOut                           = 50;   ///Time out
+    const QString DeviceName                        = "KM1X";
 
-const uchar PrinterCommandFirstByte = 0x1B;  /// Первая часть команды.
-}  // namespace CMDKM1X
+    const uchar PrinterCommandFirstByte              = 0x1B; /// Первая часть команды.
+}
 
-class KM1X_PRINTER : public BasePrinterDevices {
-  public:
-    KM1X_PRINTER(QObject* parent = 0);
+class KM1X_PRINTER : public BasePrinterDevices
+{
+public:
+    KM1X_PRINTER(QObject *parent = 0);
 
     QString printer_name;
     QString port_speed;
@@ -24,7 +26,7 @@ class KM1X_PRINTER : public BasePrinterDevices {
     bool isItYou();
     void print(const QString& aCheck);
 
-  protected:
+protected:
     bool openPort();
     bool printCheck(const QString& aCheck);
 
@@ -35,4 +37,4 @@ class KM1X_PRINTER : public BasePrinterDevices {
     void getSpecialCharecters(QByteArray& printText);
 };
 
-#endif  // KM1X_H
+#endif // KM1X_H

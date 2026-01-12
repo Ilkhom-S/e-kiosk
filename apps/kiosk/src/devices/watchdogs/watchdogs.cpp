@@ -2,13 +2,15 @@
 
 QStringList WD_List;
 
-WatchDogs::WatchDogs(QObject *parent) : QThread(parent) {
+WatchDogs::WatchDogs(QObject *parent) : QThread(parent)
+{
     WD_List << COSMP1::DeviceName;
 
     createDevicePort();
 }
 
-bool WatchDogs::createDevicePort() {
+bool WatchDogs::createDevicePort()
+{
 
     serialPort = new QSerialPort(this);
 
@@ -21,7 +23,9 @@ bool WatchDogs::createDevicePort() {
     return true;
 }
 
-bool WatchDogs::closePort() {
+
+bool WatchDogs::closePort()
+{
     if (!isOpened()) {
         return true;
     }
@@ -31,10 +35,14 @@ bool WatchDogs::closePort() {
     return true;
 }
 
-void WatchDogs::setPort(const QString com_Name) { comName = com_Name; }
+void WatchDogs::setPort(const QString com_Name)
+{
+    comName = com_Name;
+}
 
-bool WatchDogs::isOpened() {
-    if (serialPort->isOpen())
+bool WatchDogs::isOpened()
+{
+    if(serialPort->isOpen())
         is_open = true;
     else
         is_open = false;
@@ -42,7 +50,8 @@ bool WatchDogs::isOpened() {
     return is_open;
 }
 
-void WatchDogs::printDataToHex(const QByteArray &data) {
+void WatchDogs::printDataToHex(const QByteArray &data)
+{
 
     QByteArray baTmp;
     baTmp.clear();
@@ -50,102 +59,103 @@ void WatchDogs::printDataToHex(const QByteArray &data) {
 #if QT_VERSION >= 0x040300
     baTmp = (data.toHex()).toUpper();
 #else
-    quint8 n = 0;
-    for (int i = 0; i < data.size(); i++) {
-        n = data.at(i);
+    quint8 n=0;
+    for (int i=0;i<data.size();i++) {
+        n=data.at(i);
         if ((n >= 0) && (n <= 15)) baTmp.append(QByteArray::number(0, 16).toUpper());
         baTmp.append(QByteArray::number(n, 16).toUpper());
     }
 #endif
 
-    for (int i = 0; i < baTmp.size(); i += 2) {
+    for (int i=0;i<baTmp.size();i+=2) {
         qDebug() << "[" << baTmp.at(i) << baTmp.at(i + 1) << "]";
     }
+
 }
 
-bool WatchDogs::sendCommand(QByteArray dataRequest, bool getResponse, int timeResponse,
-                            bool &respOk, QByteArray &dataResponse, int timeSleep) {
-    if (this->isOpened()) {
-        // Если девайс открыт
+bool WatchDogs::sendCommand(QByteArray dataRequest, bool getResponse, int timeResponse, bool& respOk, QByteArray& dataResponse, int timeSleep)
+{
+    if(this->isOpened()){
+    //Если девайс открыт
         respOk = false;
 
         serialPort->write(dataRequest);
         qDebug() << QString("\n --> Request : to port - %1\n").arg(comName);
         this->printDataToHex(dataRequest);
 
-        if (getResponse) {
-            // Если нам нужен респонс
+        if(getResponse){
+        //Если нам нужен респонс
             this->msleep(timeResponse);
             bool ret = serialPort->waitForReadyRead(timeResponse);
-            if (ret) {
-                // Есть ответ
+            if (ret){
+            //Есть ответ
                 qint64 inByte = serialPort->bytesAvailable();
                 dataResponse = serialPort->read(inByte);
-                //                 dataResponse = devicePort->readAll();
-                qDebug() << QString("\n <-- Response <----\n");
-                this->printDataToHex(dataResponse);
-                respOk = true;
-            } else {
+//                 dataResponse = devicePort->readAll();
+                 qDebug() << QString("\n <-- Response <----\n");
+                 this->printDataToHex(dataResponse);
+                 respOk = true;
+             }else{
                 respOk = false;
-            }
+             }
         }
 
-        // Задержка после команды
+        //Задержка после команды
         this->msleep(timeSleep);
         return true;
     }
     return false;
 }
 
-bool WatchDogs::openPort() {
-    if (devicesCreated) {
-        // Если девайс для работы с портом обявлен
+bool WatchDogs::openPort()
+{
+    if(devicesCreated){
+        //Если девайс для работы с портом обявлен
         is_open = false;
 
-        // Даем девайсу название порта
+        //Даем девайсу название порта
         serialPort->setPortName(comName);
 
-        if (serialPort->open(QIODevice::ReadWrite)) {
-            // Если Девайсу удалось открыть порт
+        if (serialPort->open(QIODevice::ReadWrite)){
+        //Если Девайсу удалось открыть порт
 
-            // Устанавливаем параметры открытия порта
-            is_open = false;
+            //Устанавливаем параметры открытия порта
+                is_open = false;
 
-            if (!serialPort->setDataBits(QSerialPort::Data8)) return false;
-            if (!serialPort->setParity(QSerialPort::NoParity)) return false;
-            if (!serialPort->setStopBits(QSerialPort::OneStop)) return false;
-            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl)) return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud9600)) return false;
+                if (!serialPort->setDataBits(QSerialPort::Data8)) return false;
+                if (!serialPort->setParity(QSerialPort::NoParity)) return false;
+                if (!serialPort->setStopBits(QSerialPort::OneStop)) return false;
+                if (!serialPort->setFlowControl(QSerialPort::NoFlowControl)) return false;
+                if (!serialPort->setBaudRate(QSerialPort::Baud9600)) return false;
 
-            qDebug() << "\nWatchDogs " << COSMP1::DeviceName << " to Port "
-                     << serialPort->portName() << " open in " << serialPort->openMode();
+                qDebug() << "\nWatchDogs " << COSMP1::DeviceName << " to Port " << serialPort->portName() << " open in " << serialPort->openMode();
 
-            is_open = true;
+                is_open = true;
 
-        } else {
+        }else{
             is_open = false;
             qDebug() << "Error opened serial device " << serialPort->portName();
         }
-    } else {
+    }else{
         is_open = false;
     }
 
     return is_open;
 }
 
-bool WatchDogs::isItYou(QStringList &comList, QString &wd_name, QString &com_str,
-                        QString &wd_coment) {
+bool WatchDogs::isItYou(QStringList &comList,QString &wd_name, QString &com_str, QString &wd_coment)
+{
     wd_name = WD_List.at(0);
 
-    if ((wd_name != "") && (com_str != "") && (com_str.contains("COM"))) {
+    if((wd_name != "") && (com_str != "")  && (com_str.contains("COM"))){
         this->setPort(com_str);
-        if (this->isItYou(wd_coment)) {
+        if(this->isItYou(wd_coment)){
             return true;
         }
     }
 
     int com_lst_c = comList.count();
-    for (int com_count = 0; com_count < com_lst_c; com_count++) {
+    for(int com_count = 0; com_count < com_lst_c; com_count++){
 
         QString vrmPort = comList.at(com_count);
         qDebug() << "--- com_count  - " << com_count;
@@ -153,7 +163,7 @@ bool WatchDogs::isItYou(QStringList &comList, QString &wd_name, QString &com_str
 
         this->setPort(vrmPort);
 
-        if (this->isItYou(wd_coment)) {
+        if(this->isItYou(wd_coment)){
             com_str = vrmPort;
             return true;
         }
@@ -162,27 +172,30 @@ bool WatchDogs::isItYou(QStringList &comList, QString &wd_name, QString &com_str
     return false;
 }
 
-bool WatchDogs::isItYou(QString &wd_coment) {
+
+bool WatchDogs::isItYou(QString &wd_coment)
+{
     bool result_p = false;
-    // открываем модем для записи
-    if (this->openPort()) {
+    //открываем модем для записи
+    if(this->openPort()){
 
         QByteArray cmdData, answerData;
 
         WDProtocolCommands::Enum protocolCommand = WDProtocolCommands::GetID;
 
-        this->processCommand(protocolCommand, cmdData, answerData);
 
-        //        qDebug() << "this->processCommand(protocolCommand,cmdData,answerData); - " <<
-        //        answerData;
+        this->processCommand(protocolCommand,cmdData,answerData);
 
-        if (QString(answerData).indexOf(COSMP1::DeviceID) == -1) {
-            //            qDebug() << " WatchDogs::isItYou return false;";
+//        qDebug() << "this->processCommand(protocolCommand,cmdData,answerData); - " << answerData;
 
-        } else {
-            //            qDebug() << " WatchDogs::isItYou return true;";
+        if(QString(answerData).indexOf(COSMP1::DeviceID) == -1){
+//            qDebug() << " WatchDogs::isItYou return false;";
+
+        }else{
+//            qDebug() << " WatchDogs::isItYou return true;";
 
             wd_coment = "WDT " + COSMP1::DeviceID;
+
 
             result_p = true;
         }
@@ -193,75 +206,95 @@ bool WatchDogs::isItYou(QString &wd_coment) {
     return result_p;
 }
 
-bool WatchDogs::processCommand(WDProtocolCommands::Enum aCommand, const QByteArray &aCommandData,
-                               QByteArray &aAnswerData) {
+bool WatchDogs::processCommand(WDProtocolCommands::Enum aCommand, const QByteArray& aCommandData, QByteArray& aAnswerData)
+{
     Q_UNUSED(aCommandData)
 
     QByteArray commandData;
 
-    for (int i = 0; i < COSMP1::PacketConstSize; ++i) {
+    for (int i = 0; i < COSMP1::PacketConstSize; ++i){
         commandData.push_back(COSMP1::PacketConst[i]);
     }
 
-    switch (aCommand) {
-        case WDProtocolCommands::GetID: {
+    switch(aCommand){
+        case WDProtocolCommands::GetID :
+        {
             commandData.push_back(QChar(COSMP1::Commands::GetID).cell());
-        } break;
+        }
+        break;
 
-        case WDProtocolCommands::PCEnable: {
+        case WDProtocolCommands::PCEnable :
+        {
             commandData.push_back(QChar(COSMP1::Commands::PCEnable).cell());
-        } break;
+        }
+        break;
 
-        case WDProtocolCommands::RebootPC: {
+        case WDProtocolCommands::RebootPC :
+        {
             commandData.push_back(QChar(COSMP1::Commands::RebootPC).cell());
-        } break;
+        }
+        break;
 
-        case WDProtocolCommands::ResetModem: {
+        case WDProtocolCommands::ResetModem :
+        {
             commandData.push_back(QChar(COSMP1::Commands::ResetModem).cell());
-        } break;
+        }
+        break;
 
-        case WDProtocolCommands::StartTimer: {
+        case WDProtocolCommands::StartTimer :
+        {
             commandData.push_back(QChar(COSMP1::Commands::StartTimer).cell());
-        } break;
+        }
+        break;
 
-        case WDProtocolCommands::StopTimer: {
+        case WDProtocolCommands::StopTimer :
+        {
             commandData.push_back(QChar(COSMP1::Commands::StopTimer).cell());
-        } break;
+        }
+        break;
+
     }
+
 
     bool respData = false;
 
-    this->sendCommand(commandData, true, 300, respData, aAnswerData, 0);
+    this->sendCommand(commandData,true,300,respData,aAnswerData,0);
 
     return respData;
+
 }
 
-bool WatchDogs::toCommandExec(bool thread, WDProtocolCommands::Enum aCommand) {
+bool WatchDogs::toCommandExec(bool thread, WDProtocolCommands::Enum aCommand)
+{
     bool res = false;
 
-    if (thread) {
+    if(thread){
 
         nowCommand = aCommand;
         this->start();
 
-    } else
+    }else
         res = this->sendCommandToExec(aCommand);
 
     return res;
 }
 
-void WatchDogs::run() { this->sendCommandToExec(nowCommand); }
+void WatchDogs::run()
+{
+    this->sendCommandToExec(nowCommand);
+}
 
-bool WatchDogs::sendCommandToExec(WDProtocolCommands::Enum aCommand) {
+bool WatchDogs::sendCommandToExec(WDProtocolCommands::Enum aCommand)
+{
     bool respData = false;
-    if (!this->isOpened()) {
+    if(!this->isOpened()){
 
-        if (this->openPort()) {
+        if(this->openPort()){
 
             QByteArray cmdData, answerData;
 
-            // Отправляем команду
-            respData = this->processCommand(aCommand, cmdData, answerData);
+            //Отправляем команду
+            respData = this->processCommand(aCommand,cmdData,answerData);
 
             emit commandDone(respData, aCommand);
         }

@@ -1,113 +1,169 @@
 #include "qgsmcodec.h"
 
-const unsigned short GUC = 0x10;  // GSM Undefined character
+const unsigned short GUC = 0x10;     // GSM Undefined character
 
 // Table from GSM 07.05, Annex A, combined with the extension table
 // from GSM 03.38, Section 6.2.1.1.
-static const unsigned short latin1GSMTable[256] = {
-    //     0      1     2     3     4     5     6     7
-    GUC,    GUC,  GUC,  GUC,    GUC,    GUC,    GUC,    GUC,  // 0x07
-    GUC,    GUC,  0x0a, GUC,    GUC,    0x0d,   GUC,    GUC,  // 0x0f
-    GUC,    GUC,  GUC,  GUC,    GUC,    GUC,    GUC,    GUC,  GUC,  GUC,  GUC,    GUC,    GUC,
-    GUC,    GUC,  GUC,  0x20,   0x21,   0x22,   0x23,   0x02, 0x25, 0x26, 0x27,   0x28,   0x29,
-    0x2a,   0x2b, 0x2c, 0x2d,   0x2e,   0x2f,   0x30,   0x31, 0x32, 0x33, 0x34,   0x35,   0x36,
-    0x37,   0x38, 0x39, 0x3a,   0x3b,   0x3c,   0x3d,   0x3e, 0x3f, 0x00, 0x41,   0x42,   0x43,
-    0x44,   0x45, 0x46, 0x47,   0x48,   0x49,   0x4a,   0x4b, 0x4c, 0x4d, 0x4e,   0x4f,   0x50,
-    0x51,   0x52, 0x53, 0x54,   0x55,   0x56,   0x57,   0x58, 0x59, 0x5a, 0x1b3c, 0x1b2f, 0x1b3e,
-    0x1b14, 0x11, GUC,  0x61,   0x62,   0x63,   0x64,   0x65, 0x66, 0x67, 0x68,   0x69,   0x6a,
-    0x6b,   0x6c, 0x6d, 0x6e,   0x6f,   0x70,   0x71,   0x72, 0x73, 0x74, 0x75,   0x76,   0x77,
-    0x78,   0x79, 0x7a, 0x1b28, 0x1b40, 0x1b29, 0x1b3d, GUC,  // 0x7f
+static const unsigned short latin1GSMTable[256]=
+{
+//     0      1     2     3     4     5     6     7
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,    // 0x07
+      GUC,  GUC, 0x0a,  GUC,  GUC, 0x0d,  GUC,  GUC,    // 0x0f
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,
+     0x20, 0x21, 0x22, 0x23, 0x02, 0x25, 0x26, 0x27,
+     0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
+     0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+     0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f,
+     0x00, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
+     0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f,
+     0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57,
+     0x58, 0x59, 0x5a, 0x1b3c, 0x1b2f, 0x1b3e, 0x1b14, 0x11,
+      GUC, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,
+     0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f,
+     0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,
+     0x78, 0x79, 0x7a, 0x1b28, 0x1b40, 0x1b29, 0x1b3d,  GUC,  // 0x7f
 
-    GUC,    GUC,  GUC,  GUC,    GUC,    GUC,    GUC,    GUC,  GUC,  GUC,  GUC,    GUC,    GUC,
-    GUC,    GUC,  GUC,  // 0x8f
-    GUC,    GUC,  GUC,  GUC,    GUC,    GUC,    GUC,    GUC,  GUC,  GUC,  GUC,    GUC,    GUC,
-    GUC,    GUC,  GUC,  // 0x9f
-    GUC,    0x40, GUC,  0x01,   0x24,   0x03,   GUC,    0x5f, GUC,  GUC,  GUC,    GUC,    GUC,
-    GUC,    GUC,  GUC,  GUC,    GUC,    GUC,    GUC,    GUC,  GUC,  GUC,  GUC,    GUC,    GUC,
-    GUC,    GUC,  GUC,  GUC,    GUC,    0x60,   0x41,   0x41, 0x41, 0x41, 0x5b,   0x0e,   0x1c,
-    0x09,   0x45, 0x1f, 0x45,   0x45,   0x49,   0x49,   0x49, 0x49,  // 0xcf
-    GUC,    0x5d, 0x4f, 0x4f,   0x4f,   0x4f,   0x5c,   GUC,  0x0b, 0x55, 0x55,   0x55,   0x5e,
-    0x59,   GUC,  0x1e, 0x7f,   0x61,   0x61,   0x61,   0x7b, 0x0f, 0x1d, 0x09,   0x04,   0x05,
-    0x65,   0x65, 0x07, 0x69,   0x69,   0x69,   GUC,    0x7d, 0x08, 0x6f, 0x6f,   0x6f,   0x7c,
-    GUC,    0x0c, 0x06, 0x75,   0x75,   0x7e,   0x79,   GUC,  0x79};
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  // 0x8f
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  // 0x9f
+      GUC, 0x40,  GUC, 0x01, 0x24, 0x03,  GUC, 0x5f,
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC, 0x60,
+     0x41, 0x41, 0x41, 0x41, 0x5b, 0x0e, 0x1c, 0x09,
+     0x45, 0x1f, 0x45, 0x45, 0x49, 0x49, 0x49, 0x49, // 0xcf
+      GUC, 0x5d, 0x4f, 0x4f, 0x4f, 0x4f, 0x5c,  GUC,
+     0x0b, 0x55, 0x55, 0x55, 0x5e, 0x59,  GUC, 0x1e,
+     0x7f, 0x61, 0x61, 0x61, 0x7b, 0x0f, 0x1d, 0x09,
+     0x04, 0x05, 0x65, 0x65, 0x07, 0x69, 0x69, 0x69,
+      GUC, 0x7d, 0x08, 0x6f, 0x6f, 0x6f, 0x7c,  GUC,
+     0x0c, 0x06, 0x75, 0x75, 0x7e, 0x79,  GUC, 0x79
+};
 
 // Same as above, but with no loss of information due to two
 // Latin1 characters mapping to the same thing.
-static const unsigned short latin1GSMNoLossTable[256] = {
-    //     0      1     2     3     4     5     6     7
-    GUC,    GUC,  GUC,  GUC,    GUC,    GUC,    GUC,    GUC,  // 0x07
-    GUC,    GUC,  0x0a, GUC,    GUC,    0x0d,   GUC,    GUC,  // 0x0f
-    GUC,    GUC,  GUC,  GUC,    GUC,    GUC,    GUC,    GUC,  GUC,  GUC,  GUC,    GUC,    GUC,
-    GUC,    GUC,  GUC,  0x20,   0x21,   0x22,   0x23,   0x02, 0x25, 0x26, 0x27,   0x28,   0x29,
-    0x2a,   0x2b, 0x2c, 0x2d,   0x2e,   0x2f,   0x30,   0x31, 0x32, 0x33, 0x34,   0x35,   0x36,
-    0x37,   0x38, 0x39, 0x3a,   0x3b,   0x3c,   0x3d,   0x3e, 0x3f, 0x00, 0x41,   0x42,   0x43,
-    0x44,   0x45, 0x46, 0x47,   0x48,   0x49,   0x4a,   0x4b, 0x4c, 0x4d, 0x4e,   0x4f,   0x50,
-    0x51,   0x52, 0x53, 0x54,   0x55,   0x56,   0x57,   0x58, 0x59, 0x5a, 0x1b3c, 0x1b2f, 0x1b3e,
-    0x1b14, 0x11, GUC,  0x61,   0x62,   0x63,   0x64,   0x65, 0x66, 0x67, 0x68,   0x69,   0x6a,
-    0x6b,   0x6c, 0x6d, 0x6e,   0x6f,   0x70,   0x71,   0x72, 0x73, 0x74, 0x75,   0x76,   0x77,
-    0x78,   0x79, 0x7a, 0x1b28, 0x1b40, 0x1b29, 0x1b3d, GUC,  // 0x7f
+static const unsigned short latin1GSMNoLossTable[256]=
+{
+//     0      1     2     3     4     5     6     7
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,    // 0x07
+      GUC,  GUC, 0x0a,  GUC,  GUC, 0x0d,  GUC,  GUC,    // 0x0f
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,
+     0x20, 0x21, 0x22, 0x23, 0x02, 0x25, 0x26, 0x27,
+     0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
+     0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+     0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f,
+     0x00, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
+     0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f,
+     0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57,
+     0x58, 0x59, 0x5a, 0x1b3c, 0x1b2f, 0x1b3e, 0x1b14, 0x11,
+      GUC, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,
+     0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f,
+     0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,
+     0x78, 0x79, 0x7a, 0x1b28, 0x1b40, 0x1b29, 0x1b3d,  GUC,  // 0x7f
 
-    GUC,    GUC,  GUC,  GUC,    GUC,    GUC,    GUC,    GUC,  GUC,  GUC,  GUC,    GUC,    GUC,
-    GUC,    GUC,  GUC,  // 0x8f
-    GUC,    GUC,  GUC,  GUC,    GUC,    GUC,    GUC,    GUC,  GUC,  GUC,  GUC,    GUC,    GUC,
-    GUC,    GUC,  GUC,  // 0x9f
-    GUC,    0x40, GUC,  0x01,   0x24,   0x03,   GUC,    0x5f, GUC,  GUC,  GUC,    GUC,    GUC,
-    GUC,    GUC,  GUC,  GUC,    GUC,    GUC,    GUC,    GUC,  GUC,  GUC,  GUC,    GUC,    GUC,
-    GUC,    GUC,  GUC,  GUC,    GUC,    0x60,   GUC,    GUC,  GUC,  GUC,  0x5b,   0x0e,   0x1c,
-    0x09,   GUC,  0x1f, GUC,    GUC,    GUC,    GUC,    GUC,  GUC,  // 0xcf
-    GUC,    0x5d, GUC,  GUC,    GUC,    GUC,    0x5c,   GUC,  0x0b, GUC,  GUC,    GUC,    0x5e,
-    GUC,    GUC,  0x1e, 0x7f,   GUC,    GUC,    GUC,    0x7b, 0x0f, 0x1d, GUC,    0x04,   0x05,
-    GUC,    GUC,  0x07, GUC,    GUC,    GUC,    GUC,    0x7d, 0x08, GUC,  GUC,    GUC,    0x7c,
-    GUC,    0x0c, 0x06, GUC,    GUC,    0x7e,   GUC,    GUC,  GUC};
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  // 0x8f
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  // 0x9f
+      GUC, 0x40,  GUC, 0x01, 0x24, 0x03,  GUC, 0x5f,
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC,
+      GUC,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC, 0x60,
+      GUC,  GUC,  GUC,  GUC, 0x5b, 0x0e, 0x1c, 0x09,
+      GUC, 0x1f,  GUC,  GUC,  GUC,  GUC,  GUC,  GUC, // 0xcf
+      GUC, 0x5d,  GUC,  GUC,  GUC,  GUC, 0x5c,  GUC,
+     0x0b,  GUC,  GUC,  GUC, 0x5e,  GUC,  GUC, 0x1e,
+     0x7f,  GUC,  GUC,  GUC, 0x7b, 0x0f, 0x1d,  GUC,
+     0x04, 0x05,  GUC,  GUC, 0x07,  GUC,  GUC,  GUC,
+      GUC, 0x7d, 0x08,  GUC,  GUC,  GUC, 0x7c,  GUC,
+     0x0c, 0x06,  GUC,  GUC, 0x7e,  GUC,  GUC,  GUC
+};
 
 // Conversion table for Greek Unicode code points 0x0390 - 0x03AF.
-static const unsigned short greekGSMTable[32] = {
-    GUC,  GUC, GUC, 0x13, 0x10, GUC, GUC,  GUC, 0x19, GUC,  GUC, 0x14, GUC, GUC, 0x1a, GUC,
-    0x16, GUC, GUC, 0x18, GUC,  GUC, 0x12, GUC, 0x17, 0x15, GUC, GUC,  GUC, GUC, GUC,  GUC};
+static const unsigned short greekGSMTable[32]=
+{
+    GUC, GUC, GUC, 0x13, 0x10, GUC, GUC, GUC,
+    0x19, GUC, GUC, 0x14, GUC, GUC, 0x1a, GUC,
+    0x16, GUC, GUC, 0x18, GUC, GUC, 0x12, GUC,
+    0x17, 0x15, GUC, GUC, GUC, GUC, GUC, GUC
+};
 
-const unsigned short UUC = 0xFFFE;  // Unicode Undefined character
+const unsigned short UUC = 0xFFFE;     // Unicode Undefined character
 
 // Reversed version of latin1GSMTable.
-static const unsigned short gsmLatin1Table[256] = {
-    0x40,   0xa3,   0x24,   0xa5, 0xe8,   0xe9, 0xf9,   0xec,   0xf2,   0xc7,   0x0a,   0xd8,
-    0xf8,   0x0d,   0xc5,   0xe5, 0x0394, 0x5f, 0x03a6, 0x0393, 0x039B, 0x03A9, 0x03A0, 0x03A8,
-    0x03A3, 0x0398, 0x039E, 0x20, 0xc6,   0xe6, 0xdf,   0xc9,   0x20,   0x21,   0x22,   0x23,
-    0xa4,   0x25,   0x26,   0x27, 0x28,   0x29, 0x2a,   0x2b,   0x2c,   0x2d,   0x2e,   0x2f,
-    0x30,   0x31,   0x32,   0x33, 0x34,   0x35, 0x36,   0x37,   0x38,   0x39,   0x3a,   0x3b,
-    0x3c,   0x3d,   0x3e,   0x3f, 0xa1,   0x41, 0x42,   0x43,   0x44,   0x45,   0x46,   0x47,
-    0x48,   0x49,   0x4a,   0x4b, 0x4c,   0x4d, 0x4e,   0x4f,   0x50,   0x51,   0x52,   0x53,
-    0x54,   0x55,   0x56,   0x57, 0x58,   0x59, 0x5a,   0xc4,   0xd6,   0xd1,   0xdc,   0xa7,
-    0xbf,   0x61,   0x62,   0x63, 0x64,   0x65, 0x66,   0x67,   0x68,   0x69,   0x6a,   0x6b,
-    0x6c,   0x6d,   0x6e,   0x6f, 0x70,   0x71, 0x72,   0x73,   0x74,   0x75,   0x76,   0x77,
-    0x78,   0x79,   0x7a,   0xe4, 0xf6,   0xf1, 0xfc,   0xe0,   UUC,    UUC,    UUC,    UUC,
-    UUC,    UUC,    UUC,    UUC,  UUC,    UUC,  UUC,    UUC,    UUC,    UUC,    UUC,    UUC,
-    UUC,    UUC,    UUC,    UUC,  UUC,    UUC,  UUC,    UUC,    UUC,    UUC,    UUC,    UUC,
-    UUC,    UUC,    UUC,    UUC,  UUC,    UUC,  UUC,    UUC,    UUC,    UUC,    UUC,    UUC,
-    UUC,    UUC,    UUC,    UUC,  UUC,    UUC,  UUC,    UUC,    UUC,    UUC,    UUC,    UUC,
-    UUC,    UUC,    UUC,    UUC,  UUC,    UUC,  UUC,    UUC,    UUC,    UUC,    UUC,    UUC,
-    UUC,    UUC,    UUC,    UUC,  UUC,    UUC,  UUC,    UUC,    UUC,    UUC,    UUC,    UUC,
-    UUC,    UUC,    UUC,    UUC,  UUC,    UUC,  UUC,    UUC,    UUC,    UUC,    UUC,    UUC,
-    UUC,    UUC,    UUC,    UUC,  UUC,    UUC,  UUC,    UUC,    UUC,    UUC,    UUC,    UUC,
-    UUC,    UUC,    UUC,    UUC,  UUC,    UUC,  UUC,    UUC,    UUC,    UUC,    UUC,    UUC,
-    UUC,    UUC,    UUC,    UUC,  UUC,    UUC,  UUC,    UUC,    UUC,    UUC,    UUC,    UUC,
-    UUC,    UUC,    UUC,    UUC};
-static const unsigned short extensionLatin1Table[256] = {
-    UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC,
-    UUC,  UUC, UUC, UUC, 0x5e, UUC,    UUC, UUC, UUC,  UUC,  UUC, 0x20, UUC,  UUC,  UUC,  UUC,
-    UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, 0x7b, 0x7d, UUC, UUC,  UUC,  UUC,  UUC,  0x5c,
-    UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  0x5b, 0x7e, 0x5d, UUC,
-    0x7c, UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC,
-    UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC,
-    UUC,  UUC, UUC, UUC, UUC,  0x20ac, UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC,
-    UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC,
-    UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC,
-    UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC,
-    UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC,
-    UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC,
-    UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC,
-    UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC,
-    UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC,
-    UUC,  UUC, UUC, UUC, UUC,  UUC,    UUC, UUC, UUC,  UUC,  UUC, UUC,  UUC,  UUC,  UUC,  UUC};
+static const unsigned short gsmLatin1Table[256] =
+{
+    0x40, 0xa3, 0x24, 0xa5, 0xe8, 0xe9, 0xf9, 0xec,
+    0xf2, 0xc7, 0x0a, 0xd8, 0xf8, 0x0d, 0xc5, 0xe5,
+    0x0394, 0x5f, 0x03a6, 0x0393, 0x039B, 0x03A9, 0x03A0, 0x03A8,
+    0x03A3, 0x0398, 0x039E, 0x20, 0xc6, 0xe6, 0xdf, 0xc9,
+    0x20, 0x21, 0x22, 0x23, 0xa4, 0x25, 0x26, 0x27,
+    0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
+    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+    0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f,
+    0xa1, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
+    0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f,
+    0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57,
+    0x58, 0x59, 0x5a, 0xc4, 0xd6, 0xd1, 0xdc, 0xa7,
+    0xbf, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,
+    0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f,
+    0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,
+    0x78, 0x79, 0x7a, 0xe4, 0xf6, 0xf1, 0xfc, 0xe0,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC
+};
+static const unsigned short extensionLatin1Table[256] =
+{
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC, 0x5e,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC, 0x20,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+    0x7b, 0x7d,  UUC,  UUC,  UUC,  UUC,  UUC, 0x5c,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC, 0x5b, 0x7e, 0x5d,  UUC,
+    0x7c,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC, 0x20ac,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,
+     UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC,  UUC
+};
 
 /*!
     \class QGsmCodec
@@ -159,29 +215,36 @@ static const unsigned short extensionLatin1Table[256] = {
 
     \sa QAtUtils::codec()
 */
-QGsmCodec::QGsmCodec(bool noLoss) { this->noLoss = noLoss; }
+QGsmCodec::QGsmCodec( bool noLoss )
+{
+    this->noLoss = noLoss;
+}
 
 /*!
     Destruct a GSM text codec.  This should not be used directly by
     application programs.
 */
-QGsmCodec::~QGsmCodec() {}
+QGsmCodec::~QGsmCodec()
+{
+}
 
 /*!
     Returns the name of this codec.
 */
-QByteArray QGsmCodec::name() const {
-    if (noLoss)
-        return QByteArray("gsm-noloss");
+QByteArray QGsmCodec::name() const
+{
+    if ( noLoss )
+        return QByteArray( "gsm-noloss" );
     else
-        return QByteArray("gsm");
+        return QByteArray( "gsm" );
 }
 
 /*!
     Returns the MIB value associated with this codec.
 */
-int QGsmCodec::mibEnum() const {
-    if (noLoss)
+int QGsmCodec::mibEnum() const
+{
+    if ( noLoss )
         return 61237;
     else
         return 61238;
@@ -197,11 +260,12 @@ int QGsmCodec::mibEnum() const {
 
     \sa singleToUnicode(), twoByteFromUnicode()
 */
-char QGsmCodec::singleFromUnicode(QChar c) {
+char QGsmCodec::singleFromUnicode(QChar c)
+{
     unsigned int ch = c.unicode();
-    if (ch < 256)
+    if ( ch < 256 )
         return (char)(latin1GSMTable[ch]);
-    else if (ch >= 0x0390 && ch <= 0x03AF)
+    else if ( ch >= 0x0390 && ch <= 0x03AF )
         return (char)(greekGSMTable[ch - 0x0390]);
     else
         return (char)GUC;
@@ -216,7 +280,8 @@ char QGsmCodec::singleFromUnicode(QChar c) {
 
     \sa singleFromUnicode(), twoByteToUnicode()
 */
-QChar QGsmCodec::singleToUnicode(char ch) {
+QChar QGsmCodec::singleToUnicode(char ch)
+{
     return QChar((unsigned int)(gsmLatin1Table[((int)ch) & 0xFF]));
 }
 
@@ -227,13 +292,14 @@ QChar QGsmCodec::singleToUnicode(char ch) {
 
     \sa twoByteToUnicode()
 */
-unsigned short QGsmCodec::twoByteFromUnicode(QChar ch) {
+unsigned short QGsmCodec::twoByteFromUnicode(QChar ch)
+{
     unsigned short c = ch.unicode();
-    if (c == 0x20AC)  // Euro
+    if ( c == 0x20AC )  // Euro
         return 0x1b65;
-    else if (c < 256)
+    else if ( c < 256 )
         return latin1GSMTable[c];
-    else if (c >= 0x0390 && c <= 0x03AF)
+    else if ( c >= 0x0390 && c <= 0x03AF )
         return (char)(greekGSMTable[c - 0x0390]);
     else
         return GUC;
@@ -245,17 +311,18 @@ unsigned short QGsmCodec::twoByteFromUnicode(QChar ch) {
 
     \sa twoByteFromUnicode()
 */
-QChar QGsmCodec::twoByteToUnicode(unsigned short ch) {
-    if (ch < 256)
-        return QChar(gsmLatin1Table[ch]);
-    else if ((ch & 0xFF00) != 0x1B00)
-        return QChar(0);
+QChar QGsmCodec::twoByteToUnicode(unsigned short ch)
+{
+    if ( ch < 256 )
+        return QChar( gsmLatin1Table[ch] );
+    else if ( ( ch & 0xFF00 ) != 0x1B00 )
+        return QChar( 0 );
     else {
         unsigned short mapping = extensionLatin1Table[ch & 0xFF];
-        if (mapping != UUC)
-            return QChar(mapping);
+        if ( mapping != UUC )
+            return QChar( mapping );
         else
-            return QChar(gsmLatin1Table[ch & 0xFF]);
+            return QChar( gsmLatin1Table[ch & 0xFF] );
     }
 }
 
@@ -266,30 +333,33 @@ QChar QGsmCodec::twoByteToUnicode(unsigned short ch) {
 
     \sa convertFromUnicode()
 */
-QString QGsmCodec::convertToUnicode(const char *in, int length, ConverterState *state) const {
+QString QGsmCodec::convertToUnicode(const char *in, int length, ConverterState *state) const
+{
     QString str;
     unsigned short ch;
-    while (length > 0) {
-        if (*in == 0x1B) {
+    while ( length > 0 ) {
+        if ( *in == 0x1B ) {
             // Two-byte GSM sequence.
             ++in;
             --length;
-            if (length <= 0) {
-                if (state) (state->invalidChars)++;
+            if ( length <= 0 ) {
+                if ( state )
+                    (state->invalidChars)++;
                 break;
             }
             ch = extensionLatin1Table[((int)(*in)) & 0xFF];
-            if (ch != UUC) {
+            if ( ch != UUC ) {
                 str += QChar((unsigned int)ch);
             } else {
                 str += QChar(gsmLatin1Table[((int)(*in)) & 0xFF]);
-                if (state) (state->invalidChars)++;
+                if ( state )
+                    (state->invalidChars)++;
             }
         } else {
             ch = gsmLatin1Table[((int)(*in)) & 0xFF];
-            if (ch != UUC)
+            if ( ch != UUC )
                 str += QChar((unsigned int)ch);
-            else if (state)
+            else if ( state )
                 (state->invalidChars)++;
         }
         ++in;
@@ -305,56 +375,62 @@ QString QGsmCodec::convertToUnicode(const char *in, int length, ConverterState *
 
     \sa convertToUnicode()
 */
-QByteArray QGsmCodec::convertFromUnicode(const QChar *in, int length, ConverterState *state) const {
+QByteArray QGsmCodec::convertFromUnicode(const QChar *in, int length, ConverterState *state) const
+{
     QByteArray result;
     unsigned int unicode;
-    if (noLoss) {
-        while (length > 0) {
+    if ( noLoss ) {
+        while ( length > 0 ) {
             unicode = (*in).unicode();
-            if (unicode == 0x20AC) {  // Euro
+            if ( unicode == 0x20AC ) {    // Euro
                 result += (char)0x1B;
                 result += (char)0x65;
-            } else if (unicode < 256) {
+            } else if ( unicode < 256 ) {
                 unsigned short code = latin1GSMNoLossTable[unicode];
-                if (code < 256) {
-                    if (((char)code == GUC) && state) (state->invalidChars)++;
+                if ( code < 256 ) {
+                    if(((char)code == GUC) && state)
+                        (state->invalidChars)++;
                     result += (char)code;
                 } else {
                     result += (char)(code >> 8);
                     result += (char)code;
                 }
-            } else if (unicode >= 0x0390 && unicode <= 0x03AF) {
+            } else if ( unicode >= 0x0390 && unicode <= 0x03AF ) {
                 char c = (char)(greekGSMTable[unicode - 0x0390]);
                 result += c;
-                if (c == (char)GUC && unicode != 0x0394 && state) (state->invalidChars)++;
+                if ( c == (char)GUC && unicode != 0x0394 && state )
+                    (state->invalidChars)++;
             } else {
                 result += (char)GUC;
-                if (state) (state->invalidChars)++;
+                if ( state )
+                    (state->invalidChars)++;
             }
             ++in;
             --length;
         }
     } else {
-        while (length > 0) {
+        while ( length > 0 ) {
             unicode = (*in).unicode();
-            if (unicode == 0x20AC) {  // Euro
+            if ( unicode == 0x20AC ) {    // Euro
                 result += (char)0x1B;
                 result += (char)0x65;
-            } else if (unicode < 256) {
+            } else if ( unicode < 256 ) {
                 unsigned short code = latin1GSMTable[unicode];
-                if (code < 256) {
+                if ( code < 256 ) {
                     result += (char)code;
                 } else {
                     result += (char)(code >> 8);
                     result += (char)code;
                 }
-            } else if (unicode >= 0x0390 && unicode <= 0x03AF) {
+            } else if ( unicode >= 0x0390 && unicode <= 0x03AF ) {
                 char c = (char)(greekGSMTable[unicode - 0x0390]);
                 result += c;
-                if (c == (char)GUC && unicode != 0x0394 && state) (state->invalidChars)++;
+                if ( c == (char)GUC && unicode != 0x0394 && state )
+                    (state->invalidChars)++;
             } else {
                 result += (char)GUC;
-                if (state) (state->invalidChars)++;
+                if ( state )
+                    (state->invalidChars)++;
             }
             ++in;
             --length;
@@ -362,3 +438,4 @@ QByteArray QGsmCodec::convertFromUnicode(const QChar *in, int length, ConverterS
     }
     return result;
 }
+

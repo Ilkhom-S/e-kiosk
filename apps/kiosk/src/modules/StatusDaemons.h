@@ -5,104 +5,130 @@
 
 class SendRequest;
 
-namespace Sender {
-struct Validator {
-    int billCount;
-    double billSum;
-    QString billInfo;
+namespace Sender
+{
+    struct Validator
+    {
+        int billCount;
+        double billSum;
+        QString billInfo;
 
-    int moneyOutCount;
-    double moneyOutSum;
+        int moneyOutCount;
+        double moneyOutSum;
 
-    QString port;
-    QString serial;
-    QString name;
-    QString state;
+        QString port;
+        QString serial;
+        QString name;
+        QString state;
 
-    Validator()
-        : billCount(0),
-          billSum(0),
-          moneyOutCount(0),
-          moneyOutSum(0),
-          port(""),
-          serial(""),
-          name(""),
-          state("") {}
-};
+        Validator():
+            billCount(0),
+            billSum(0),
+            moneyOutCount(0),
+            moneyOutSum(0),
+            port(""),
+            serial(""),
+            name(""),
+            state("")
+        {}
 
-struct CoinAcceptor {
-    int coinCount;
-    double coinSum;
-    QString coinInfo;
+    };
 
-    QString port;
-    QString serial;
-    QString name;
-    QString state;
+    struct CoinAcceptor
+    {
+        int coinCount;
+        double coinSum;
+        QString coinInfo;
 
-    CoinAcceptor()
-        : coinCount(0), coinSum(0), coinInfo(""), port(""), serial(""), name(""), state("") {}
-};
+        QString port;
+        QString serial;
+        QString name;
+        QString state;
 
-struct Printer {
-    QString name;
-    QString port;
-    int state;
-    QString allState;
+        CoinAcceptor():
+            coinCount(0),
+            coinSum(0),
+            coinInfo(""),
+            port(""),
+            serial(""),
+            name(""),
+            state("")
+        {}
 
-    Printer() : name(""), port(""), state(0), allState("") {}
-};
+    };
 
-struct Modem {
-    QString name;
-    QString port;
-    QString state;
-    QString signal;
-    QString balance;
-    QString provider;
-    QString number;
-    QString comment;
+    struct Printer
+    {
+        QString name;
+        QString port;
+        int state;
+        QString allState;
 
-    Modem()
-        : name(""),
-          port(""),
-          state(""),
-          signal(""),
-          balance(""),
-          provider(""),
-          number(""),
-          comment("") {}
-};
+        Printer():
+            name(""),
+            port(""),
+            state(0),
+            allState("")
+        {}
 
-struct Data {
-    bool firstSend;
-    QString version;
-    QString fullVersion;
-    int lockStatus;
-    QStringList action;
-    bool actionState;
-    QString connection;
-    QVariantMap systemInfo;
+    };
 
-    Validator validator;
-    CoinAcceptor coinAcceptor;
-    Printer printer;
-    Modem modem;
+    struct Modem
+    {
+        QString name;
+        QString port;
+        QString state;
+        QString signal;
+        QString balance;
+        QString provider;
+        QString number;
+        QString comment;
 
-    Data()
-        : firstSend(false),
-          version(""),
-          lockStatus(0),
+        Modem():
+            name(""),
+            port(""),
+            state(""),
+            signal(""),
+            balance(""),
+            provider(""),
+            number(""),
+            comment("")
+        {}
+    };
 
-          actionState(false),
-          connection("0") {}
-};
-}  // namespace Sender
+    struct Data {
+        bool firstSend;
+        QString version;
+        QString fullVersion;
+        int lockStatus;
+        QStringList action;
+        bool actionState;
+        QString connection;
+        QVariantMap systemInfo;
 
-class StatusDaemons : public SendRequest {
+        Validator validator;
+        CoinAcceptor coinAcceptor;
+        Printer printer;
+        Modem modem;
+
+
+        Data():
+            firstSend(false),
+            version(""),
+            lockStatus(0),
+
+            actionState(false),
+            connection("0")
+        {}
+    };
+}
+
+
+class StatusDaemons : public SendRequest
+{
     Q_OBJECT
 
-  public:
+public:
     StatusDaemons(QObject *parent = 0);
     void startTimer(const int sec);
 
@@ -110,8 +136,8 @@ class StatusDaemons : public SendRequest {
 
     bool firstSend;
 
-  private:
-    void parcerNote(const QDomNode &domElement);
+private:
+    void parcerNote(const QDomNode& domElement);
 
     double gbl_overdraft;
     double gbl_balance;
@@ -123,12 +149,12 @@ class StatusDaemons : public SendRequest {
 
     QVariantList cmdList;
 
-  private slots:
+private slots:
     void resendRequest();
     void r_RequestRepeet();
-    void setDataNote(const QDomNode &domElement);
+    void setDataNote(const QDomNode& domElement);
 
-  signals:
+signals:
     void getRequestParam();
     void emit_responseBalance(const double balance, const double overdraft, const double threshold);
     void lockUnlockAvtorization(bool lock, int sts);
@@ -138,4 +164,4 @@ class StatusDaemons : public SendRequest {
     void emit_hashUpdateToCheck(QString hashUpdate, QString path);
 };
 
-#endif  // STATUSDAEMONS_H
+#endif // STATUSDAEMONS_H

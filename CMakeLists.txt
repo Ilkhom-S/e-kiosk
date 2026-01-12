@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-project(EKiosk VERSION 1.0.0 LANGUAGES CXX C)
+project(EKioskRoot VERSION 1.0.0 LANGUAGES CXX C)
 
 # Global Qt detection for all modules/apps/tests
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)

@@ -23,8 +23,7 @@
     \class QAtResult
     \inpublicgroup QtBaseModule
 
-    \brief The QAtResult class provides access to the results of AT modem commands and unsolicited
-   notifications
+    \brief The QAtResult class provides access to the results of AT modem commands and unsolicited notifications
     \ingroup telephony::serial
 
     AT commands that are sent to a modem with QAtChat::chat() result in a QAtResult
@@ -38,23 +37,27 @@
     \sa QAtChat, QAtResultParser
 */
 
-class QAtResultPrivate {
-  public:
-    QAtResultPrivate() {
+class QAtResultPrivate
+{
+public:
+    QAtResultPrivate()
+    {
         result = "OK";
         resultCode = QAtResult::OK;
         verbose = true;
         userData = 0;
     }
-    ~QAtResultPrivate() {
-        if (userData) delete userData;
+    ~QAtResultPrivate()
+    {
+        if ( userData )
+            delete userData;
     }
 
     QString result;
     QString content;
     QAtResult::ResultCode resultCode;
     bool verbose;
-    QAtResult::UserData* userData;
+    QAtResult::UserData *userData;
 };
 
 /*!
@@ -161,8 +164,7 @@ class QAtResultPrivate {
     \inpublicgroup QtBaseModule
     \ingroup telephony::serial
 
-    \brief The UserData class provides a mechanism to add user data to a result object via
-   QAtChat::chat().
+    \brief The UserData class provides a mechanism to add user data to a result object via QAtChat::chat().
 
     Usually this class will be inherited, with extra fields added to hold the user data.
 
@@ -179,12 +181,16 @@ class QAtResultPrivate {
     Construct a new QAtResult object.  The result() will be \c{OK},
     and the content() empty.
 */
-QAtResult::QAtResult() { d = new QAtResultPrivate(); }
+QAtResult::QAtResult()
+{
+    d = new QAtResultPrivate();
+}
 
 /*!
     Construct a copy of \a other.
 */
-QAtResult::QAtResult(const QAtResult& other) {
+QAtResult::QAtResult( const QAtResult& other )
+{
     d = new QAtResultPrivate();
     *this = other;
 }
@@ -192,13 +198,17 @@ QAtResult::QAtResult(const QAtResult& other) {
 /*!
     Destruct this QAtResult object.
 */
-QAtResult::~QAtResult() { delete d; }
+QAtResult::~QAtResult()
+{
+    delete d;
+}
 
 /*!
     Assign the contents of \a other to this object.
 */
-QAtResult& QAtResult::operator=(const QAtResult& other) {
-    if (this != &other) {
+QAtResult& QAtResult::operator=( const QAtResult& other )
+{
+    if ( this != &other ) {
         d->result = other.d->result;
         d->content = other.d->content;
         d->resultCode = other.d->resultCode;
@@ -218,7 +228,10 @@ QAtResult& QAtResult::operator=(const QAtResult& other) {
 
     \sa resultCode(), ok()
 */
-QString QAtResult::result() const { return d->result; }
+QString QAtResult::result() const
+{
+    return d->result;
+}
 
 /*!
     Sets the result line that terminated the command's response to \a value.
@@ -226,9 +239,10 @@ QString QAtResult::result() const { return d->result; }
 
     \sa result(), resultCode()
 */
-void QAtResult::setResult(const QString& value) {
+void QAtResult::setResult( const QString& value )
+{
     d->result = value;
-    resultToCode(value);
+    resultToCode( value );
 }
 
 /*!
@@ -236,22 +250,29 @@ void QAtResult::setResult(const QString& value) {
 
     \sa setContent(), append()
 */
-QString QAtResult::content() const { return d->content; }
+QString QAtResult::content() const
+{
+    return d->content;
+}
 
 /*!
     Sets the content that was returned with an AT command's result to \a value.
 
     \sa content(), append()
 */
-void QAtResult::setContent(const QString& value) { d->content = value; }
+void QAtResult::setContent( const QString& value )
+{
+    d->content = value;
+}
 
 /*!
     Append \a value to the current content, after a line terminator.
 
     \sa content(), setContent()
 */
-void QAtResult::append(const QString& value) {
-    if (d->content.isEmpty())
+void QAtResult::append( const QString& value )
+{
+    if ( d->content.isEmpty() )
         d->content = value;
     else
         d->content = d->content + "\n" + value;
@@ -266,7 +287,10 @@ void QAtResult::append(const QString& value) {
 
     \sa setResultCode(), result(), ok()
 */
-QAtResult::ResultCode QAtResult::resultCode() const { return d->resultCode; }
+QAtResult::ResultCode QAtResult::resultCode() const
+{
+    return d->resultCode;
+}
 
 /*!
     Sets the numeric result code to \a value, and update result()
@@ -274,9 +298,10 @@ QAtResult::ResultCode QAtResult::resultCode() const { return d->resultCode; }
 
     \sa resultCode(), result()
 */
-void QAtResult::setResultCode(QAtResult::ResultCode value) {
+void QAtResult::setResultCode( QAtResult::ResultCode value )
+{
     d->resultCode = value;
-    d->result = codeToResult(QString());
+    d->result = codeToResult( QString() );
     d->verbose = true;
 }
 
@@ -288,8 +313,10 @@ void QAtResult::setResultCode(QAtResult::ResultCode value) {
 
     \sa resultCode()
 */
-bool QAtResult::ok() const {
-    return (d->resultCode == QAtResult::OK || d->resultCode == QAtResult::Connect);
+bool QAtResult::ok() const
+{
+    return ( d->resultCode == QAtResult::OK ||
+             d->resultCode == QAtResult::Connect );
 }
 
 /*!
@@ -301,11 +328,12 @@ bool QAtResult::ok() const {
 
     \sa result()
 */
-QString QAtResult::verboseResult() const {
-    if (d->verbose)
+QString QAtResult::verboseResult() const
+{
+    if ( d->verbose )
         return d->result;
     else
-        return codeToResult(d->result);
+        return codeToResult( d->result );
 }
 
 /*!
@@ -313,188 +341,205 @@ QString QAtResult::verboseResult() const {
 
     \sa setUserData()
 */
-QAtResult::UserData* QAtResult::userData() const { return d->userData; }
+QAtResult::UserData *QAtResult::userData() const
+{
+    return d->userData;
+}
 
 /*!
     Sets the user data associated with this result object to \a value.
 
     \sa userData()
 */
-void QAtResult::setUserData(QAtResult::UserData* value) {
-    if (d->userData && d->userData != value) delete d->userData;
+void QAtResult::setUserData( QAtResult::UserData *value )
+{
+    if ( d->userData && d->userData != value )
+        delete d->userData;
     d->userData = value;
 }
 
 // Table of result codes.  Note: these strings are not translatable,
 // as they are used to parse values on the wire.
-struct QAtCodeInfo {
-    QAtResult::ResultCode code;
-    const char* name;
+struct QAtCodeInfo
+{
+    QAtResult::ResultCode   code;
+    const char             *name;
 };
 static QAtCodeInfo const basic_codes[] = {
-    {QAtResult::OK, "OK"},                   // no tr
-    {QAtResult::OK, "0"},                    // no tr
-    {QAtResult::Connect, "CONNECT"},         // no tr
-    {QAtResult::Connect, "1"},               // no tr
-    {QAtResult::NoCarrier, "NO CARRIER"},    // no tr
-    {QAtResult::NoCarrier, "3"},             // no tr
-    {QAtResult::Error, "ERROR"},             // no tr
-    {QAtResult::Error, "4"},                 // no tr
-    {QAtResult::NoDialtone, "NO DIALTONE"},  // no tr
-    {QAtResult::NoDialtone, "6"},            // no tr
-    {QAtResult::Busy, "BUSY"},               // no tr
-    {QAtResult::Busy, "7"},                  // no tr
-    {QAtResult::NoAnswer, "NO ANSWER"},      // no tr
-    {QAtResult::NoAnswer, "8"},              // no tr
-    {QAtResult::OK, "VCON"}                  // no tr
+    {QAtResult::OK,                         "OK"},      // no tr
+    {QAtResult::OK,                         "0"},       // no tr
+    {QAtResult::Connect,                    "CONNECT"},     // no tr
+    {QAtResult::Connect,                    "1"},       // no tr
+    {QAtResult::NoCarrier,                  "NO CARRIER"},      // no tr
+    {QAtResult::NoCarrier,                  "3"},       // no tr
+    {QAtResult::Error,                      "ERROR"},       // no tr
+    {QAtResult::Error,                      "4"},       // no tr
+    {QAtResult::NoDialtone,                 "NO DIALTONE"},     // no tr
+    {QAtResult::NoDialtone,                 "6"},       // no tr
+    {QAtResult::Busy,                       "BUSY"},        // no tr
+    {QAtResult::Busy,                       "7"},       // no tr
+    {QAtResult::NoAnswer,                   "NO ANSWER"},       // no tr
+    {QAtResult::NoAnswer,                   "8"},        // no tr
+    {QAtResult::OK,                         "VCON"}        // no tr
 };
 static QAtCodeInfo const ext_codes[] = {
-    {QAtResult::PhoneFailure, "phone failure"},                                             // no tr
-    {QAtResult::NoConnectionToPhone, "no connection to phone"},                             // no tr
-    {QAtResult::PhoneAdapterLinkReserved, "phone-adaptor link reserved"},                   // no tr
-    {QAtResult::OperationNotAllowed, "operation not allowed"},                              // no tr
-    {QAtResult::OperationNotSupported, "operation not supported"},                          // no tr
-    {QAtResult::PhSimPinRequired, "PH-SIM PIN required"},                                   // no tr
-    {QAtResult::PhFSimPinRequired, "PH-FSIM PIN required"},                                 // no tr
-    {QAtResult::PhFSimPukRequired, "PH-FSIM PUK required"},                                 // no tr
-    {QAtResult::SimNotInserted, "SIM not inserted"},                                        // no tr
-    {QAtResult::SimPinRequired, "SIM PIN required"},                                        // no tr
-    {QAtResult::SimPukRequired, "SIM PUK required"},                                        // no tr
-    {QAtResult::SimFailure, "SIM failure"},                                                 // no tr
-    {QAtResult::SimBusy, "SIM busy"},                                                       // no tr
-    {QAtResult::SimWrong, "SIM wrong"},                                                     // no tr
-    {QAtResult::IncorrectPassword, "incorrect password"},                                   // no tr
-    {QAtResult::SimPin2Required, "SIM PIN2 required"},                                      // no tr
-    {QAtResult::SimPuk2Required, "SIM PUK2 required"},                                      // no tr
-    {QAtResult::MemoryFull, "memory full"},                                                 // no tr
-    {QAtResult::InvalidIndex, "invalid index"},                                             // no tr
-    {QAtResult::NotFound, "not found"},                                                     // no tr
-    {QAtResult::MemoryFailure, "memory failure"},                                           // no tr
-    {QAtResult::TextStringTooLong, "text string too long"},                                 // no tr
-    {QAtResult::InvalidCharsInTextString, "invalid characters in text string"},             // no tr
-    {QAtResult::DialStringTooLong, "dial string too long"},                                 // no tr
-    {QAtResult::InvalidCharsInDialString, "invalid characters in dial string"},             // no tr
-    {QAtResult::NoNetworkService, "no network service"},                                    // no tr
-    {QAtResult::NetworkTimeout, "network timeout"},                                         // no tr
-    {QAtResult::NetworkNotAllowed, "network not allowed - emergency calls only"},           // no tr
-    {QAtResult::NetPersPinRequired, "network personalization PIN required"},                // no tr
-    {QAtResult::NetPersPukRequired, "network personalization PUK required"},                // no tr
-    {QAtResult::NetSubsetPersPinRequired, "network subset personalization PIN required"},   // no tr
-    {QAtResult::NetSubsetPersPukRequired, "network subset personalization PUK required"},   // no tr
-    {QAtResult::ServProvPersPinRequired, "service provider personalization PIN required"},  // no tr
-    {QAtResult::ServProvPersPukRequired, "service provider personalization PUK required"},  // no tr
-    {QAtResult::CorpPersPinRequired, "corporate personalization PIN required"},             // no tr
-    {QAtResult::CorpPersPukRequired, "corporate personalization PUK required"},             // no tr
-    {QAtResult::HiddenKeyRequired, "hidden key required"},                                  // no tr
-    {QAtResult::Unknown, "unknown"},                                                        // no tr
+    {QAtResult::PhoneFailure,               "phone failure"},       // no tr
+    {QAtResult::NoConnectionToPhone,        "no connection to phone"},      // no tr
+    {QAtResult::PhoneAdapterLinkReserved,   "phone-adaptor link reserved"},     // no tr
+    {QAtResult::OperationNotAllowed,        "operation not allowed"},       // no tr
+    {QAtResult::OperationNotSupported,      "operation not supported"},     // no tr
+    {QAtResult::PhSimPinRequired,           "PH-SIM PIN required"},     // no tr
+    {QAtResult::PhFSimPinRequired,          "PH-FSIM PIN required"},        // no tr
+    {QAtResult::PhFSimPukRequired,          "PH-FSIM PUK required"},        // no tr
+    {QAtResult::SimNotInserted,             "SIM not inserted"},        // no tr
+    {QAtResult::SimPinRequired,             "SIM PIN required"},        // no tr
+    {QAtResult::SimPukRequired,             "SIM PUK required"},        // no tr
+    {QAtResult::SimFailure,                 "SIM failure"},     // no tr
+    {QAtResult::SimBusy,                    "SIM busy"},        // no tr
+    {QAtResult::SimWrong,                   "SIM wrong"},       // no tr
+    {QAtResult::IncorrectPassword,          "incorrect password"},      // no tr
+    {QAtResult::SimPin2Required,            "SIM PIN2 required"},       // no tr
+    {QAtResult::SimPuk2Required,            "SIM PUK2 required"},       // no tr
+    {QAtResult::MemoryFull,                 "memory full"},     // no tr
+    {QAtResult::InvalidIndex,               "invalid index"},       // no tr
+    {QAtResult::NotFound,                   "not found"},   // no tr
+    {QAtResult::MemoryFailure,              "memory failure"},  // no tr
+    {QAtResult::TextStringTooLong,          "text string too long"},    // no tr
+    {QAtResult::InvalidCharsInTextString,   "invalid characters in text string"},   // no tr
+    {QAtResult::DialStringTooLong,          "dial string too long"},    // no tr
+    {QAtResult::InvalidCharsInDialString,   "invalid characters in dial string"},   // no tr
+    {QAtResult::NoNetworkService,           "no network service"},  // no tr
+    {QAtResult::NetworkTimeout,             "network timeout"}, // no tr
+    {QAtResult::NetworkNotAllowed,          "network not allowed - emergency calls only"},  // no tr
+    {QAtResult::NetPersPinRequired,         "network personalization PIN required"},    // no tr
+    {QAtResult::NetPersPukRequired,         "network personalization PUK required"},    // no tr
+    {QAtResult::NetSubsetPersPinRequired,   "network subset personalization PIN required"}, // no tr
+    {QAtResult::NetSubsetPersPukRequired,   "network subset personalization PUK required"}, // no tr
+    {QAtResult::ServProvPersPinRequired,    "service provider personalization PIN required"},   // no tr
+    {QAtResult::ServProvPersPukRequired,    "service provider personalization PUK required"},   // no tr
+    {QAtResult::CorpPersPinRequired,        "corporate personalization PIN required"},  // no tr
+    {QAtResult::CorpPersPukRequired,        "corporate personalization PUK required"},  // no tr
+    {QAtResult::HiddenKeyRequired,          "hidden key required"}, // no tr
+    {QAtResult::Unknown,                    "unknown"}, // no tr
 
-    {QAtResult::IllegalMS, "Illegal MS"},                                                // no tr
-    {QAtResult::IllegalME, "Illegal ME"},                                                // no tr
-    {QAtResult::GPRSServicesNotAllowed, "GPRS services not allowed"},                    // no tr
-    {QAtResult::PLMNNotAllowed, "PLMN not allowed"},                                     // no tr
-    {QAtResult::LocationAreaNotAllowed, "Location area not allowed"},                    // no tr
-    {QAtResult::RoamingNotAllowed, "Roaming not allowed in this location area"},         // no tr
-    {QAtResult::ServiceOptionNotSupported, "service option not supported"},              // no tr
-    {QAtResult::ServiceOptionNotSubscribed, "requested service option not subscribed"},  // no tr
-    {QAtResult::ServiceOptionOutOfOrder, "service option temporarily out of order"},     // no tr
-    {QAtResult::UnspecifiedGPRSError, "unspecified GPRS error"},                         // no tr
-    {QAtResult::PDPAuthenticationFailure, "PDP authentication failure"},                 // no tr
-    {QAtResult::InvalidMobileClass, "invalid mobile class"},                             // no tr
+    {QAtResult::IllegalMS,                  "Illegal MS"},  // no tr
+    {QAtResult::IllegalME,                  "Illegal ME"},  // no tr
+    {QAtResult::GPRSServicesNotAllowed  ,   "GPRS services not allowed"},   // no tr
+    {QAtResult::PLMNNotAllowed,             "PLMN not allowed"},    // no tr
+    {QAtResult::LocationAreaNotAllowed,     "Location area not allowed"},   // no tr
+    {QAtResult::RoamingNotAllowed,          "Roaming not allowed in this location area"},   // no tr
+    {QAtResult::ServiceOptionNotSupported,  "service option not supported"},    // no tr
+    {QAtResult::ServiceOptionNotSubscribed, "requested service option not subscribed"}, // no tr
+    {QAtResult::ServiceOptionOutOfOrder,    "service option temporarily out of order"}, // no tr
+    {QAtResult::UnspecifiedGPRSError,       "unspecified GPRS error"},  // no tr
+    {QAtResult::PDPAuthenticationFailure,   "PDP authentication failure"},  // no tr
+    {QAtResult::InvalidMobileClass,         "invalid mobile class"},    // no tr
     // no tr
-    {QAtResult::VBSVGCSNotSupported, "VBS/VGCS not supported by the network"},        // no tr
-    {QAtResult::NoServiceSubscriptionOnSim, "No service subscription on SIM"},        // no tr
-    {QAtResult::NoSubscriptionForGroupId, "No subscription for group ID"},            // no tr
-    {QAtResult::GroupIdNotActivatedOnSim, "Group Id not activated on SIM"},           // no tr
-    {QAtResult::NoMatchingNotification, "No matching notification"},                  // no tr
-    {QAtResult::VBSVGCSCallAlreadyPresent, "VBS/VGCS call already present"},          // no tr
-    {QAtResult::Congestion, "Congestion"},                                            // no tr
-    {QAtResult::NetworkFailure, "Network failure"},                                   // no tr
-    {QAtResult::UplinkBusy, "Uplink busy"},                                           // no tr
-    {QAtResult::NoAccessRightsForSimFile, "No access rights for SIM file"},           // no tr
-    {QAtResult::NoSubscriptionForPriority, "No subscription for priority"},           // no tr
-    {QAtResult::OperationNotApplicable, "operation not applicable or not possible"},  // no tr
+    {QAtResult::VBSVGCSNotSupported,        "VBS/VGCS not supported by the network"},   // no tr
+    {QAtResult::NoServiceSubscriptionOnSim, "No service subscription on SIM"},  // no tr
+    {QAtResult::NoSubscriptionForGroupId,   "No subscription for group ID"},    // no tr
+    {QAtResult::GroupIdNotActivatedOnSim,   "Group Id not activated on SIM"},   // no tr
+    {QAtResult::NoMatchingNotification,     "No matching notification"},    // no tr
+    {QAtResult::VBSVGCSCallAlreadyPresent,  "VBS/VGCS call already present"},   // no tr
+    {QAtResult::Congestion,                 "Congestion"},  // no tr
+    {QAtResult::NetworkFailure,             "Network failure"}, // no tr
+    {QAtResult::UplinkBusy,                 "Uplink busy"}, // no tr
+    {QAtResult::NoAccessRightsForSimFile,   "No access rights for SIM file"},   // no tr
+    {QAtResult::NoSubscriptionForPriority,  "No subscription for priority"},    // no tr
+    {QAtResult::OperationNotApplicable,     "operation not applicable or not possible"},    // no tr
 
-    {QAtResult::MEFailure, "ME failure"},                                  // no tr
-    {QAtResult::SMSServiceOfMEReserved, "SMS service of ME reserved"},     // no tr
-    {QAtResult::SMSOperationNotAllowed, "operation not allowed"},          // no tr
-    {QAtResult::SMSOperationNotSupported, "operation not supported"},      // no tr
-    {QAtResult::InvalidPDUModeParameter, "invalid PDU mode parameter"},    // no tr
-    {QAtResult::InvalidTextModeParameter, "invalid text mode parameter"},  // no tr
-    {QAtResult::USimNotInserted, "(U)SIM not inserted"},                   // no tr
-    {QAtResult::USimPinRequired, "(U)SIM PIN required"},                   // no tr
-    {QAtResult::PHUSimPinRequired, "PH-(U)SIM PIN required"},              // no tr
-    {QAtResult::USimFailure, "(U)SIM failure"},                            // no tr
-    {QAtResult::USimBusy, "(U)SIM busy"},                                  // no tr
-    {QAtResult::USimWrong, "(U)SIM wrong"},                                // no tr
-    {QAtResult::USimPukRequired, "(U)SIM PUK required"},                   // no tr
-    {QAtResult::USimPin2Required, "(U)SIM PIN2 required"},                 // no tr
-    {QAtResult::USimPuk2Required, "(U)SIM PUK2 required"},                 // no tr
-    {QAtResult::SMSMemoryFailure, "memory failure"},                       // no tr
-    {QAtResult::InvalidMemoryIndex, "invalid memory index"},               // no tr
-    {QAtResult::MemoryFull, "memory full"},                                // no tr
-    {QAtResult::SMSCAddressUnknown, "SMSC address unknown"},               // no tr
-    {QAtResult::SMSNoNetworkService, "no network service"},                // no tr
-    {QAtResult::SMSNetworkTimeout, "network timeout"},                     // no tr
-    {QAtResult::NoCNMAAckExpected, "no +CNMA acknowledgement expected"},   // no tr
-    {QAtResult::UnknownError, "unknown error"}                             // no tr
+    {QAtResult::MEFailure,                  "ME failure"},  // no tr
+    {QAtResult::SMSServiceOfMEReserved,     "SMS service of ME reserved"},  // no tr
+    {QAtResult::SMSOperationNotAllowed,     "operation not allowed"},   // no tr
+    {QAtResult::SMSOperationNotSupported,   "operation not supported"}, // no tr
+    {QAtResult::InvalidPDUModeParameter,    "invalid PDU mode parameter"},  // no tr
+    {QAtResult::InvalidTextModeParameter,   "invalid text mode parameter"}, // no tr
+    {QAtResult::USimNotInserted,            "(U)SIM not inserted"}, // no tr
+    {QAtResult::USimPinRequired,            "(U)SIM PIN required"}, // no tr
+    {QAtResult::PHUSimPinRequired,          "PH-(U)SIM PIN required"},  // no tr
+    {QAtResult::USimFailure,                "(U)SIM failure"},  // no tr
+    {QAtResult::USimBusy,                   "(U)SIM busy"}, // no tr
+    {QAtResult::USimWrong,                  "(U)SIM wrong"},    // no tr
+    {QAtResult::USimPukRequired,            "(U)SIM PUK required"}, // no tr
+    {QAtResult::USimPin2Required,           "(U)SIM PIN2 required"},    // no tr
+    {QAtResult::USimPuk2Required,           "(U)SIM PUK2 required"},    // no tr
+    {QAtResult::SMSMemoryFailure,           "memory failure"},  // no tr
+    {QAtResult::InvalidMemoryIndex,         "invalid memory index"},    // no tr
+    {QAtResult::MemoryFull,                 "memory full"}, // no tr
+    {QAtResult::SMSCAddressUnknown,         "SMSC address unknown"},    // no tr
+    {QAtResult::SMSNoNetworkService,        "no network service"},  // no tr
+    {QAtResult::SMSNetworkTimeout,          "network timeout"}, // no tr
+    {QAtResult::NoCNMAAckExpected,          "no +CNMA acknowledgement expected"},   // no tr
+    {QAtResult::UnknownError,               "unknown error"}    // no tr
 };
-#define num_basic_codes ((int)(sizeof(basic_codes) / sizeof(QAtCodeInfo)))
-#define num_ext_codes ((int)(sizeof(ext_codes) / sizeof(QAtCodeInfo)))
+#define num_basic_codes   ((int)( sizeof(basic_codes) / sizeof(QAtCodeInfo) ))
+#define num_ext_codes     ((int)( sizeof(ext_codes) / sizeof(QAtCodeInfo) ))
 
 // Extract a numeric error code from the front of "value", or -1 if not.
-static int numeric(const QString& value) {
+static int numeric( const QString& value )
+{
     int posn = 0;
-    if (posn >= value.length() || value[posn] < '0' || value[posn] > '9') return -1;
+    if ( posn >= value.length() || value[posn] < '0' || value[posn] > '9' )
+        return -1;
     int number = 0;
-    while (posn < value.length() && value[posn] >= '0' && value[posn] <= '9')
+    while ( posn < value.length() && value[posn] >= '0' && value[posn] <= '9' )
         number = number * 10 + (int)(value[posn++].unicode() - '0');
     return number;
 }
 
 // Determine if we have a prefix match, ignoring case.
-static bool match(const QString& value, const char* prefix) {
+static bool match( const QString& value, const char *prefix )
+{
     int posn = 0;
-    while (posn < value.length() && *prefix != '\0') {
+    while ( posn < value.length() && *prefix != '\0' ) {
         int ch1 = value[posn++].unicode();
         int ch2 = *prefix++;
-        if (ch1 >= 'A' && ch1 <= 'Z') ch1 = ch1 - 'A' + 'a';
-        if (ch2 >= 'A' && ch2 <= 'Z') ch2 = ch2 - 'A' + 'a';
-        if (ch1 != ch2) return false;
+        if ( ch1 >= 'A' && ch1 <= 'Z' )
+            ch1 = ch1 - 'A' + 'a';
+        if ( ch2 >= 'A' && ch2 <= 'Z' )
+            ch2 = ch2 - 'A' + 'a';
+        if ( ch1 != ch2 )
+            return false;
     }
-    if (*prefix != '\0') return false;
-    return (posn >= value.length() || value[posn] == ' ');
+    if ( *prefix != '\0' )
+        return false;
+    return ( posn >= value.length() || value[posn] == ' ' );
 }
 
-void QAtResult::resultToCode(const QString& value) {
+void QAtResult::resultToCode( const QString& value )
+{
     QString val;
     int index;
 
     // Determine what kind of error report we have.
-    if (value.startsWith("+CME ERROR:", Qt::CaseInsensitive) ||
-        value.startsWith("+EXT ERROR:", Qt::CaseInsensitive)) {
+    if ( value.startsWith( "+CME ERROR:", Qt::CaseInsensitive ) ||
+         value.startsWith( "+EXT ERROR:", Qt::CaseInsensitive ) ) {
+
         // Extended or GPRS error report.
-        val = value.mid(11).trimmed();
-        index = numeric(val);
-        if (index >= 0) {
+        val = value.mid( 11 ).trimmed();
+        index = numeric( val );
+        if ( index >= 0 ) {
             d->resultCode = (QAtResult::ResultCode)index;
             d->verbose = false;
             return;
         }
 
-    } else if (value.startsWith("+CMS ERROR:", Qt::CaseInsensitive)) {
+    } else if ( value.startsWith( "+CMS ERROR:", Qt::CaseInsensitive ) ) {
+
         // Check the SMS codes before the main codes, as there is
         // some overlap in the message names.
-        val = value.mid(11).trimmed();
-        index = numeric(val);
-        if (index >= 0) {
+        val = value.mid( 11 ).trimmed();
+        index = numeric( val );
+        if ( index >= 0 ) {
             d->resultCode = (QAtResult::ResultCode)index;
             d->verbose = false;
             return;
         }
         index = 0;
-        while (ext_codes[index].code != QAtResult::MEFailure) ++index;
-        while (index < num_ext_codes) {
-            if (match(val, ext_codes[index].name)) {
+        while ( ext_codes[index].code != QAtResult::MEFailure )
+            ++index;
+        while ( index < num_ext_codes ) {
+            if ( match( val, ext_codes[index].name ) ) {
                 d->resultCode = ext_codes[index].code;
                 d->verbose = true;
                 return;
@@ -503,9 +548,10 @@ void QAtResult::resultToCode(const QString& value) {
         }
 
     } else {
+
         // Probably something like OK, ERROR, etc.  Scan the basic codes only.
-        for (index = 0; index < num_basic_codes; ++index) {
-            if (match(value, basic_codes[index].name)) {
+        for ( index = 0; index < num_basic_codes; ++index ) {
+            if ( match( value, basic_codes[index].name ) ) {
                 d->resultCode = basic_codes[index].code;
                 d->verbose = true;
                 return;
@@ -513,11 +559,12 @@ void QAtResult::resultToCode(const QString& value) {
         }
         d->resultCode = QAtResult::UnknownError;
         d->verbose = true;
+
     }
 
     // Scan the extended code list for a match.
-    for (index = 0; index < num_ext_codes; ++index) {
-        if (match(val, ext_codes[index].name)) {
+    for ( index = 0; index < num_ext_codes; ++index ) {
+        if ( match( val, ext_codes[index].name ) ) {
             d->resultCode = ext_codes[index].code;
             d->verbose = true;
             return;
@@ -527,26 +574,28 @@ void QAtResult::resultToCode(const QString& value) {
     d->verbose = true;
 }
 
-QString QAtResult::codeToResult(const QString& defaultValue) const {
+QString QAtResult::codeToResult( const QString& defaultValue ) const
+{
     int index;
-    for (index = 0; index < num_basic_codes; ++index) {
-        if (basic_codes[index].code == d->resultCode) {
+    for ( index = 0; index < num_basic_codes; ++index ) {
+        if ( basic_codes[index].code == d->resultCode ) {
             return basic_codes[index].name;
         }
     }
-    for (index = 0; index < num_ext_codes; ++index) {
-        if (ext_codes[index].code == d->resultCode) {
-            if (d->resultCode >= 300 && d->resultCode <= 500)
-                return QString("+CMS ERROR: ") + ext_codes[index].name;
+    for ( index = 0; index < num_ext_codes; ++index ) {
+        if ( ext_codes[index].code == d->resultCode ) {
+            if ( d->resultCode >= 300 && d->resultCode <= 500 )
+                return QString( "+CMS ERROR: " ) + ext_codes[index].name;
             else
-                return QString("+CME ERROR: ") + ext_codes[index].name;
+                return QString( "+CME ERROR: " ) + ext_codes[index].name;
         }
     }
-    if (defaultValue.isEmpty()) {
-        if (((int)d->resultCode) >= 300 && ((int)d->resultCode) <= 500) {
-            return "+CMS ERROR: " + QString::number(d->resultCode);
+    if ( defaultValue.isEmpty() ) {
+        if ( ((int)d->resultCode) >= 300 &&
+             ((int)d->resultCode) <= 500 ) {
+            return "+CMS ERROR: " + QString::number( d->resultCode );
         } else {
-            return "+CME ERROR: " + QString::number(d->resultCode);
+            return "+CME ERROR: " + QString::number( d->resultCode );
         }
     } else {
         return defaultValue;

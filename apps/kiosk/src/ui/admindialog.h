@@ -2,136 +2,137 @@
 #define ADMINDIALOG_H
 
 #include <QDialog>
-#include <QMovie>
 #include <QTimer>
-
-#include "adminbutton.h"
+#include <QMovie>
+#include "selectcategorylogview.h"
 #include "createdialupconnection.h"
 #include "keypud.h"
-#include "selectcategorylogview.h"
+#include "adminbutton.h"
 
 namespace AdminLisTitle {
-enum ListTitle {
-    lSettingsMain = 0,
-    lSettingsDevice = 1,
-    lSettingsConnection = 2,
-    lSettingsPrinter = 3,
-    lSettingsOther = 4,
-    lSettingsLogInfo = 5
-};
+    enum ListTitle {
+        lSettingsMain       = 0,
+        lSettingsDevice     = 1,
+        lSettingsConnection = 2,
+        lSettingsPrinter    = 3,
+        lSettingsOther      = 4,
+        lSettingsLogInfo    = 5
+    };
 }
 
 namespace AdminCommand {
-enum AdminCmd {
-    // Проверить баланс
-    aCmdGetBalance = 0,
-    // Количество новых платежей
-    aCmdGetNewOperation = 1,
-    // Список имеющихся инкасаций
-    aCmdListAllIncash = 2,
-    // Показать содержимое инкасации
-    aCmdHtmlIncash = 3,
-    // Сделать инкасацию
-    aCmdExecIncashmant = 4,
-    // Сделать инкасацию по дате
-    aCmdExecDateIncash = 5,
-    // Показать состояние асо
-    aCmdShowAsoStatus = 6,
-    // Показать клавиатуру
-    aCmdShowKeyPud = 7,
-    // Показать експлорер
-    aCmdShowExplorer = 8,
-    // Скрыть експлорер
-    aCmdHideExplorer = 9,
-    // Информация о купюроприемнике
-    aCmdValidatorInform = 10,
-    // Информация о принтере
-    aCmdPrinterInform = 11,
-    // Информация о модеме
-    aCmdModemInform = 12,
-    // Перезагрузить купюроприемник
-    aCmdRestartValidator = 13,
-    // Распечатать пробный чек
-    aCmdPrintTestCheck = 14,
-    // Перезагрузить модем
-    aCmdRestartModem = 15,
-    // Параметры поиска
-    aCmdSearchParamRef = 16,
-    // Информация действия с устройствами
-    aCmdInfrmationPanel = 17,
-    // Перезагрузить программу
-    aCmdRestartApp = 18,
-    // Перезагрузить АСО
-    aCmdRestartASO = 19,
-    // Выключить АСО
-    aCmdShutDounASO = 20,
-    // Сохранить параметры устройств
-    aCmdSaveDeviceParam = 21,
-    // Сохранить параметры устройств c перезагрузкой
-    aCmdSaveDeviceParamR = 22,
-    // Информация о сим карте
-    aCmdSimInfoData = 23,
-    // Список соединений
-    aCmdRasConnlist = 24,
-    // Перезагрузка ПО интервал
-    aCmdErrorRasReb = 25,
-    // Проверка соединения
-    aCmdCheckConnect = 26,
-    // Информация на странице соединения
-    aCmdConnectInfo = 27,
-    // Проверка данных SIM крты
-    aCmdGetSimInfo = 28,
-    // Создание соединения
-    aCmdRasConnCreate = 29,
-    // Проверяем активное рас соединение
-    aCmdGetActiveDialup = 30,
-    // Перезагружаем соединение
-    aCmdRestartDialupCon = 31,
-    // Параметры модема
-    aCmdModemInfData = 32,
-    // Параметры печати
-    aCmdPrinterInfData = 33,
-    // Параметры sms оповещений
-    aCmdSmsSending = 34,
-    // Сохранить параметры соединения
-    aCmdSaveConnParam = 35,
-    // Праметры win принтера
-    aCmdWinPrinterParam = 36,
-    // Праметры счетчика чека
-    aCmdCounterCheckInf = 37,
-    // Праметры счетчика чека сколько накрутило
-    aCmdCounterCheckVal = 38,
-    // Сохранение параметров печати
-    aCmdSavePrinterParam = 40,
-    // Параметры авторизации терминала
-    aCmdAvtorizationTrmP = 41,
-    // Остальные настройки
-    aCmdOtherSettings = 42,
-    // Получаем конфигурацию
-    aCmdGetServices = 43,
-    // Информация на странице регистрации
-    aCmdInfoGetServices = 44,
-    // Информация на странице регистрации
-    aCmdSaveOtherSetting = 45,
-    // Сохраняем параметры авторизации терминала
-    aCmdSaveTrmNumSett = 46,
-    // Сохраняем параметры авторизации пользователя
-    aCmdSaveUserAvtoriza = 47,
-    // Параметры сторожевика
-    aCmdWDInform = 48,
-    aCmdShowDesktop = 49,
-    aCmdCoinAcceptorInf = 50
-};
+    enum AdminCmd {
+        //Проверить баланс
+        aCmdGetBalance      = 0,
+        //Количество новых платежей
+        aCmdGetNewOperation = 1,
+        //Список имеющихся инкасаций
+        aCmdListAllIncash   = 2,
+        //Показать содержимое инкасации
+        aCmdHtmlIncash      = 3,
+        //Сделать инкасацию
+        aCmdExecIncashmant  = 4,
+        //Сделать инкасацию по дате
+        aCmdExecDateIncash  = 5,
+        //Показать состояние асо
+        aCmdShowAsoStatus   = 6,
+        //Показать клавиатуру
+        aCmdShowKeyPud      = 7,
+        //Показать експлорер
+        aCmdShowExplorer    = 8,
+        //Скрыть експлорер
+        aCmdHideExplorer    = 9,
+        //Информация о купюроприемнике
+        aCmdValidatorInform = 10,
+        //Информация о принтере
+        aCmdPrinterInform   = 11,
+        //Информация о модеме
+        aCmdModemInform     = 12,
+        //Перезагрузить купюроприемник
+        aCmdRestartValidator= 13,
+        //Распечатать пробный чек
+        aCmdPrintTestCheck  = 14,
+        //Перезагрузить модем
+        aCmdRestartModem    = 15,
+        //Параметры поиска
+        aCmdSearchParamRef  = 16,
+        //Информация действия с устройствами
+        aCmdInfrmationPanel = 17,
+        //Перезагрузить программу
+        aCmdRestartApp  = 18,
+        //Перезагрузить АСО
+        aCmdRestartASO      = 19,
+        //Выключить АСО
+        aCmdShutDounASO     = 20,
+        //Сохранить параметры устройств
+        aCmdSaveDeviceParam = 21,
+        //Сохранить параметры устройств c перезагрузкой
+        aCmdSaveDeviceParamR= 22,
+        //Информация о сим карте
+        aCmdSimInfoData     = 23,
+        //Список соединений
+        aCmdRasConnlist     = 24,
+        //Перезагрузка ПО интервал
+        aCmdErrorRasReb     = 25,
+        //Проверка соединения
+        aCmdCheckConnect    = 26,
+        //Информация на странице соединения
+        aCmdConnectInfo     = 27,
+        //Проверка данных SIM крты
+        aCmdGetSimInfo      = 28,
+        //Создание соединения
+        aCmdRasConnCreate   = 29,
+        //Проверяем активное рас соединение
+        aCmdGetActiveDialup = 30,
+        //Перезагружаем соединение
+        aCmdRestartDialupCon= 31,
+        //Параметры модема
+        aCmdModemInfData    = 32,
+        //Параметры печати
+        aCmdPrinterInfData  = 33,
+        //Параметры sms оповещений
+        aCmdSmsSending      = 34,
+        //Сохранить параметры соединения
+        aCmdSaveConnParam   = 35,
+        //Праметры win принтера
+        aCmdWinPrinterParam = 36,
+        //Праметры счетчика чека
+        aCmdCounterCheckInf = 37,
+        //Праметры счетчика чека сколько накрутило
+        aCmdCounterCheckVal = 38,
+        //Сохранение параметров печати
+        aCmdSavePrinterParam= 40,
+        //Параметры авторизации терминала
+        aCmdAvtorizationTrmP= 41,
+        //Остальные настройки
+        aCmdOtherSettings   = 42,
+        //Получаем конфигурацию
+        aCmdGetServices     = 43,
+        //Информация на странице регистрации
+        aCmdInfoGetServices = 44,
+        //Информация на странице регистрации
+        aCmdSaveOtherSetting= 45,
+        //Сохраняем параметры авторизации терминала
+        aCmdSaveTrmNumSett  = 46,
+        //Сохраняем параметры авторизации пользователя
+        aCmdSaveUserAvtoriza= 47,
+        //Параметры сторожевика
+        aCmdWDInform        = 48,
+        aCmdShowDesktop     = 49,
+        aCmdCoinAcceptorInf = 50
+    };
 }
 
 namespace Ui {
-class AdminDialog;
+    class AdminDialog;
 }
 
-class AdminDialog : public QDialog {
+
+class AdminDialog : public QDialog
+{
     Q_OBJECT
 
-  public:
+public:
     explicit AdminDialog(QWidget *parent = 0);
     ~AdminDialog();
 
@@ -158,15 +159,15 @@ class AdminDialog : public QDialog {
 
     void authButtonSet(bool enable);
 
-  public slots:
+public slots:
     void closeThis();
     void setDataToAdmin(int cmd, QVariantMap data);
 
-  protected:
+protected:
     void closeEvent(QCloseEvent *event);
     keyPud *KeyPud;
 
-  private:
+private:
     Ui::AdminDialog *ui;
     SelectCategoryLogView *selectCategoryLogView;
     CreateDialupConnection *createDialupConnection;
@@ -175,7 +176,7 @@ class AdminDialog : public QDialog {
 
     int Debuger;
     QStringList lstAdminListTitle;
-    //    QStringList logLst;
+//    QStringList logLst;
     QTimer *closeTimer;
     QMovie *mveAnimateGB;
     QVariantMap deviceParam;
@@ -183,19 +184,20 @@ class AdminDialog : public QDialog {
 
     void hideObjects();
 
-  private slots:
+
+private slots:
     void printerNameChanged(int index);
     void getLogDataFromFile(QStringList &logLst, QString &all);
     void steckerClicked(int stk);
-    // Проверка баланса
+    //Проверка баланса
     void checkBalance();
 
     void getCollectDate(QString date);
 
-    // Сделать инкасацию
+    //Сделать инкасацию
     void doCollectExec();
 
-    // Сделать инкасацию по дате
+    //Сделать инкасацию по дате
     void doCollectDateExec();
 
     void hideExplorer();
@@ -223,10 +225,15 @@ class AdminDialog : public QDialog {
     void openLogInfoDate();
     void go_to_end_text_edit();
     void searchWithKeyParam();
-    void SelectOptionsForSearch(bool SelectValidatorJam, bool SelectMoneyOut, bool SelectERROR,
-                                bool SelectPayDaemon, bool SelectStatusAso,
-                                bool SelectStatusPrinter, bool SelectStatusValidator,
-                                bool SelectConnectionState, bool SelectUpdater);
+    void SelectOptionsForSearch(bool SelectValidatorJam,
+                                bool SelectMoneyOut,
+                                bool SelectERROR,
+                                bool SelectPayDaemon,
+                                bool SelectStatusAso,
+                                bool SelectStatusPrinter,
+                                bool SelectStatusValidator,
+                                bool SelectConnectionState,
+                                bool SelectUpdater);
     void createNewConnection();
     void getDialupParam(QVariantMap val);
     void getActiveRasCon();
@@ -238,9 +245,11 @@ class AdminDialog : public QDialog {
     void saveUserAutorizationData();
     void sendCharacter(QChar character);
 
-  signals:
+signals:
     void emit_execToMain(AdminCommand::AdminCmd cmd);
     void emit_unlockOpenAdminSts();
 };
 
-#endif  // ADMINDIALOG_H
+#endif // ADMINDIALOG_H
+
+

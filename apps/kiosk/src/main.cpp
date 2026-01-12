@@ -1,11 +1,12 @@
-#include <QApplication>
-#include <QProcess>
-#include <QSharedMemory>
-#include <QSystemSemaphore>
-
 #include "mainwindow.h"
 
-int main(int argc, char *argv[]) {
+#include <QApplication>
+#include <QSharedMemory>
+#include <QSystemSemaphore>
+#include <QProcess>
+
+int main(int argc, char *argv[])
+{
     QApplication a(argc, argv);
 
     QSystemSemaphore semaphore(semaphoreName, 1);
@@ -41,6 +42,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
+
     MainWindow w;
 
     // Если sheller не запущен, то запускаем
@@ -49,11 +51,7 @@ int main(int argc, char *argv[]) {
         proc.startDetached(sheller, QStringList());
     }
 
-#ifdef EKIOSK_TEST_MODE
-    w.testMode = true;
-#else
     w.testMode = arguments.contains("test");
-#endif
 
     if (!w.testMode) {
         a.setOverrideCursor(Qt::BlankCursor);

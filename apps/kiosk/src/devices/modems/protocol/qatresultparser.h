@@ -20,68 +20,67 @@
 #ifndef QATRESULTPARSER_H
 #define QATRESULTPARSER_H
 
-#include <qlist.h>
 #include <qobject.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qlist.h>
 
 class QAtResultParserPrivate;
 class QAtResult;
 
-class QAtResultParser {
-  public:
-    QAtResultParser(const QAtResult& result);
-    QAtResultParser(const QString& notification);
+class QAtResultParser
+{
+public:
+    QAtResultParser( const QAtResult& result );
+    QAtResultParser( const QString& notification );
     ~QAtResultParser();
 
-    class Node {
+    class Node
+    {
         friend class QAtResultParser;
-
-      private:
+    private:
         enum Kind { Number, Range, String, List };
 
-        Node(uint number);
-        Node(uint first, uint last);
-        Node(const QString& str);
-        Node(QList<Node>* list);
-
-      public:
-        Node(const Node& other);
+        Node( uint number );
+        Node( uint first, uint last );
+        Node( const QString& str );
+        Node( QList<Node> *list );
+    public:
+        Node( const Node& other );
         ~Node();
 
-        bool isNumber() const { return (_kind == Number); }
-        bool isRange() const { return (_kind == Range); }
-        bool isString() const { return (_kind == String); }
-        bool isList() const { return (_kind == List); }
+        bool isNumber() const { return ( _kind == Number ); }
+        bool isRange() const { return ( _kind == Range ); }
+        bool isString() const { return ( _kind == String ); }
+        bool isList() const { return ( _kind == List ); }
 
-        uint asNumber() const { return (_kind == Number ? _number : 0); }
-        uint asFirst() const { return (_kind == Range ? _number : 0); }
-        uint asLast() const { return (_kind == Range ? _last : 0); }
+        uint asNumber() const { return ( _kind == Number ? _number : 0 ); }
+        uint asFirst() const { return ( _kind == Range ? _number : 0 ); }
+        uint asLast() const { return ( _kind == Range ? _last : 0 ); }
         QString asString() const { return _str; }
-        QList<QAtResultParser::Node> asList() const {
-            return (_list ? *_list : QList<QAtResultParser::Node>());
-        }
+        QList<QAtResultParser::Node> asList() const
+            { return ( _list ? *_list : QList<QAtResultParser::Node>() ); }
 
-      private:
+    private:
         Kind _kind;
         uint _number;
         uint _last;
         QString _str;
-        QList<QAtResultParser::Node>* _list;
+        QList<QAtResultParser::Node> *_list;
     };
 
     void reset();
-    bool next(const QString& prefix);
+    bool next( const QString& prefix );
     QString line();
     uint readNumeric();
     QString readString();
     void skip();
     QString readNextLine();
-    QStringList lines(const QString& prefix);
+    QStringList lines( const QString& prefix );
     QList<QAtResultParser::Node> readList();
 
-  private:
-    QAtResultParserPrivate* d;
+private:
+    QAtResultParserPrivate *d;
 };
 
 #endif

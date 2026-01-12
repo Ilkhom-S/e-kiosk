@@ -4,13 +4,14 @@
 #include "SendRequest.h"
 class SendRequest;
 
-class AuthRequest : public SendRequest {
+class AuthRequest : public SendRequest
+{
     Q_OBJECT
 
-  public:
-    AuthRequest(QObject* parent = 0);
+public:
+    AuthRequest(QObject *parent = 0);
 
-  private:
+private:
     QString resultCode;
     QString login;
     QString token;
@@ -18,15 +19,15 @@ class AuthRequest : public SendRequest {
 
     void parcerNote(const QDomNode& domElement);
 
-  private slots:
+private slots:
     void errorResponse();
     void setDataNote(const QDomNode& domElement);
 
-  public slots:
+public slots:
     void sendAuthRequest(QString login, QString otp, QString hash, QString cid);
 
-  signals:
+signals:
     void emitResult(QString resultCode, QString login, QString token, QString message);
 };
 
-#endif  // AUTHREQUEST_H
+#endif // AUTHREQUEST_H

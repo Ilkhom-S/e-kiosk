@@ -1,12 +1,14 @@
 #include "AbstractAcceptor.h"
 
-BaseAcceptorDevices::BaseAcceptorDevices(QObject* parent) : QThread(parent) {
+BaseAcceptorDevices::BaseAcceptorDevices(QObject *parent) : QThread(parent)
+{
     Debuger = 0;
     devicesCreated = false;
     this->createDevicePort();
 }
 
-bool BaseAcceptorDevices::createDevicePort() {
+bool BaseAcceptorDevices::createDevicePort()
+{
     serialPort = new QSerialPort(this);
 
     if (serialPort) {
@@ -18,8 +20,9 @@ bool BaseAcceptorDevices::createDevicePort() {
     return devicesCreated;
 }
 
-bool BaseAcceptorDevices::isOpened() {
-    if (serialPort->isOpen())
+bool BaseAcceptorDevices::isOpened()
+{
+    if(serialPort->isOpen())
         is_open = true;
     else
         is_open = false;
@@ -27,28 +30,35 @@ bool BaseAcceptorDevices::isOpened() {
     return is_open;
 }
 
-void BaseAcceptorDevices::setPortName(const QString com_Name) { comName = com_Name; }
+void BaseAcceptorDevices::setPortName(const QString com_Name)
+{
+    comName = com_Name;
+}
 
-void BaseAcceptorDevices::setPartNumber(const QString partNumber) { part_number = partNumber; }
+void BaseAcceptorDevices::setPartNumber(const QString partNumber){
 
-bool BaseAcceptorDevices::closePort() {
+    part_number = partNumber;
+}
+
+bool BaseAcceptorDevices::closePort()
+{
     if (!isOpened()) {
         return true;
     }
 
-    //    serialPort->reset();
+//    serialPort->reset();
     serialPort->flush();
     serialPort->close();
     is_open = false;
     return true;
 }
 
-bool BaseAcceptorDevices::sendCommand(QByteArray dataRequest, bool getResponse, int timeResponse,
-                                      QByteArray& dataResponse, int timeSleep) {
+bool BaseAcceptorDevices::sendCommand(QByteArray dataRequest, bool getResponse, int timeResponse,  QByteArray& dataResponse, int timeSleep)
+{
     bool respOk = false;
 
     if (isOpened()) {
-        // Если девайс открыт
+        //Если девайс открыт
         respOk = false;
 
         serialPort->write(dataRequest);

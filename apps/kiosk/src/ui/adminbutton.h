@@ -4,28 +4,29 @@
 #include <QWidget>
 
 namespace Ui {
-class AdminButton;
+    class AdminButton;
 }
 
-class AdminButton : public QWidget {
+class AdminButton : public QWidget
+{
     Q_OBJECT
 
-  public:
+public:
     explicit AdminButton(QWidget *parent = 0);
     ~AdminButton();
 
-  private:
+private:
     Ui::AdminButton *ui;
 
-  private slots:
+private slots:
     void on_btnClose_clicked();
     void on_btnKeyboard_clicked();
     void on_btnExplorer_clicked();
 
-  signals:
+signals:
     void closeClicked();
     void keyboardClicked();
     void explorerCliked();
 };
 
-#endif  // ADMINBUTTON_H
+#endif // ADMINBUTTON_H

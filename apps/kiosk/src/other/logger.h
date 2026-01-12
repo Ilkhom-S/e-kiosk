@@ -1,21 +1,26 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <QDateTime>
-#include <QDebug>
-#include <QDir>
-#include <QFile>
 #include <QObject>
-#include <QTextStream>
 #include <QThread>
+#include <QDateTime>
+#include <QFile>
+#include <QTextStream>
 #include <QTimer>
+#include <QDir>
+#include <QDebug>
 
-enum LogLevel { Info = 0, Warning = 1, Error = 2 };
+enum LogLevel {
+    Info        = 0,
+    Warning     = 1,
+    Error       = 2
+};
 
-class Logger : public QThread {
+class Logger : public QThread
+{
     Q_OBJECT
 
-  public:
+public:
     QTimer *timer;
     QStringList lstLoging;
     QString fileName;
@@ -23,13 +28,13 @@ class Logger : public QThread {
     Logger() {
         timer = new QTimer();
         timer->setInterval(1000);
-        connect(timer, SIGNAL(timeout()), this, SLOT(start()));
+        connect(timer,SIGNAL(timeout()),this,SLOT(start()));
 
         QFile info;
         QString fileInit = "log";
 
         if (!info.exists(fileInit)) {
-            // Тут надо создать папку
+            //Тут надо создать папку
             QDir dir;
             dir.mkpath(fileInit);
         }
@@ -37,11 +42,12 @@ class Logger : public QThread {
         timer->start();
     }
 
-    void setLogingText(int state, QString title, QString text) {
+    void setLogingText(int state, QString title, QString text)
+    {
         QString stateInfo = "";
 
         switch (state) {
-            case LogLevel::Info:
+            case LogLevel::Info :
                 stateInfo = "INFO:    ";
                 break;
 
@@ -65,21 +71,22 @@ class Logger : public QThread {
         return;
     }
 
-  private slots:
-    void writeData() {
+private slots:
+    void writeData(){
         if (lstLoging.count() > 0) {
             bool Debuger = false;
 
             QString str_date = QDate::currentDate().toString("dd.MM.yyyy");
 
+
             QString fileNameLocal = "log/" + str_date + ".txt";
 
-            // Создаем указатель на файл dd.MM.yyyy
+            //Создаем указатель на файл dd.MM.yyyy
             QFile fileLogLocal(fileNameLocal);
 
-            // Локальные данные
+            //Локальные данные
             if (fileLogLocal.exists()) {
-                if (!fileLogLocal.open(QIODevice::Append | QIODevice::Text)) {
+                if (!fileLogLocal.open(QIODevice::Append | QIODevice::Text)){
                     if (Debuger) qDebug() << "error open file log QIODevice::Append";
                     return;
                 }
@@ -90,7 +97,7 @@ class Logger : public QThread {
                 }
             }
 
-            // Переводим в строку список
+            //Переводим в строку список
             QString logLiens = lstLoging.join("\n");
 
             QTextStream outExp(&fileLogLocal);
@@ -103,4 +110,4 @@ class Logger : public QThread {
     }
 };
 
-#endif  // LOGGER_H
+#endif // LOGGER_H

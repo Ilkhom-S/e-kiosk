@@ -2,22 +2,25 @@
 #define REGISTRATIONDIALOG_H
 
 #include <QDialog>
-#include <QKeyEvent>
 #include <QMessageBox>
+
 #include <QPointer>
 
-#include "createdialupconnection.h"
 #include "keypud.h"
+#include <QKeyEvent>
 #include "qmovie.h"
 
+#include "createdialupconnection.h"
+
 namespace Ui {
-class RegistrationDialog;
+    class RegistrationDialog;
 }
 
-class RegistrationDialog : public QDialog {
+class RegistrationDialog : public QDialog
+{
     Q_OBJECT
 
-  public:
+public:
     explicit RegistrationDialog(QWidget *parent = 0);
     void showMsgDialog(QString title, QString text);
     void setDataListConnection(QStringList list);
@@ -26,12 +29,11 @@ class RegistrationDialog : public QDialog {
     void setPrinterText(QString status);
     void setWatchdogText(QString status);
     void setModemText(QString status);
-    void logForTest(int sts, QString log);
+    void logForTest(int sts,QString log);
     void LoadingAnim(bool start);
 
     QStringList dialupDevice;
-
-  private:
+private:
     Ui::RegistrationDialog *ui;
 
     keyPud *KeyPud;
@@ -41,15 +43,16 @@ class RegistrationDialog : public QDialog {
     QString gblLogin;
     QString gblPass;
 
-    // QString gblSecretNum;
+   // QString gblSecretNum;
     QString gblSecretLogin;
     QString gblSecretPass;
+
 
     QStringList connListInfData;
 
     QMovie *movie;
 
-  private slots:
+private slots:
     void on_btnNumTrmRegClear_clicked();
     void tabToRegistration1();
     void tabToRegistration2();
@@ -68,13 +71,11 @@ class RegistrationDialog : public QDialog {
     void starttest();
     void tabChanged(int page);
 
-  signals:
+signals:
     void emitRegistrationData(QVariantMap data);
-    void emitStartTest(QString numTrm, QString pLogin, QString pPass, QString secretLogin,
-                       QString secretPass, QString conName, QString balanceReq, QString positionReq,
-                       QString numberReq);
+    void emitStartTest(QString numTrm, QString pLogin, QString pPass, QString secretLogin,QString secretPass, QString conName, QString balanceReq, QString positionReq, QString numberReq);
     void emitCloseForm();
     void emitCreateNewConnection(QVariantMap data);
 };
 
-#endif  // REGISTRATIONDIALOG_H
+#endif // REGISTRATIONDIALOG_H
