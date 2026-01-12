@@ -5,27 +5,31 @@ UseTab: Never
 ColumnLimit: 0
 
 # Sort and regroup includes into ordered categories. Adjust the regexes
-# below if your include paths differ. We enable SortIncludes but
-# prioritize the Common/QtHeadersBegin/End wrappers so Qt includes
-# remain grouped between them.
+# below if your include paths differ.
+# Order: Standard library (STL), Qt (wrapped between Common/QtHeadersBegin/End),
+# Modules (Common/...), SDK, Third-party (boost), Project (quoted), then other includes.
 SortIncludes: true
 IncludeBlocks: Regroup
-IncludeIsMainRegex: '([-_A-Za-z0-9]+)\\.(cpp|cc|cxx)$'
+IncludeIsMainRegex: '([-_A-Za-z0-9]+)\\.(cpp|cc|cxx|c\\+\\+|c|h|hpp)$'
 IncludeCategories:
-  - Regex: '^".*"$'
+  - Regex: '^<(?:algorithm|array|atomic|bitset|cassert|cctype|cerrno|cfenv|cfloat|chrono|cinttypes|climits|cmath|complex|condition_variable|csetjmp|csignal|cstdarg|cstdbool|cstddef|cstdint|cstdio|cstdlib|cstring|ctgmath|ctime|cwchar|cwctype|iomanip|iosfwd|iostream|istream|iterator|limits|list|locale|map|memory|mutex|new|numeric|ostream|queue|random|ratio|regex|scoped_allocator|set|sstream|stack|stdexcept|string|strstream|system_error|tuple|typeindex|typeinfo|type_traits|unordered_map|unordered_set|utility|valarray|vector)>$'
     Priority: 1
   - Regex: '^<Common/QtHeadersBegin\\.h>$'
     Priority: 2
-  - Regex: '^<Qt([A-Za-z0-9/]*)?>.*$'
+  - Regex: '^<(?:Qt[A-Za-z0-9_/]*|Q[A-Za-z0-9_]*)[^>]*>$'
     Priority: 3
   - Regex: '^<Common/QtHeadersEnd\\.h>$'
     Priority: 4
   - Regex: '^<Common/.*>$'
     Priority: 5
-  - Regex: '^<boost/.*>$'
+  - Regex: '^<SDK/.*>$'
     Priority: 6
-  - Regex: '^<.*>$'
+  - Regex: '^<boost/.*>$'
     Priority: 7
+  - Regex: '^".*"$'
+    Priority: 8
+  - Regex: '^<.*>$'
+    Priority: 9
 ...
 # TerminalClient C++ Code Style
 # Based on existing codebase conventions
@@ -53,28 +57,6 @@ BreakBeforeBraces: Allman
 # Alignment
 AlignAfterOpenBracket: Align
 ColumnLimit: 120
-
-# Group and sort includes. Adjust regexes if your include paths differ.
-SortIncludes: true
-IncludeBlocks: Regroup
-IncludeIsMainRegex: '([-_A-Za-z0-9]+)\\.(cpp|cc|cxx|c\\+\\+)$'
-IncludeCategories:
-  - Regex: '^".*"$'
-    Priority: 1
-  - Regex: '^<Common/QtHeadersBegin\\.h>$'
-    Priority: 2
-  - Regex: '^<Qt([A-Za-z0-9/]*)?>.*$'
-    Priority: 3
-  - Regex: '^<Common/QtHeadersEnd\\.h>$'
-    Priority: 4
-  - Regex: '^<Common/.*>$'
-    Priority: 5
-  - Regex: '^<boost/.*>$'
-    Priority: 6
-  - Regex: '^<.*>$'
-    Priority: 7
-
-# C++ language/standard
 
 # Qt-related macros to keep intact
 StatementMacros:
