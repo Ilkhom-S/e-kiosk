@@ -1,123 +1,130 @@
 #ifndef WATCHDOGS_H
 #define WATCHDOGS_H
 
+#include <QtCore/QByteArray>
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
+#include <QtCore/QTextCodec>
+#include <QtCore/QTextStream>
+#include <QtCore/QThread>
 
-#include "QObject"
-#include <QtCore>
-#include <QThread>
-#include <QTextStream>
-#include <QTextCodec>
-#include <QSerialPort>
+#include <QtSerialPort/QSerialPort>
 
-namespace COSMP1 {
-    /// Имя девайса
-    const QString DeviceName = "OSMP1";
+namespace COSMP1
+{
+	/// Имя девайса
+	const QString DeviceName = "OSMP1";
 
-    /// При определении железки
-    const QString DeviceID = "v1";
+	/// При определении железки
+	const QString DeviceID = "v1";
 
-    /// ACK
-    const uchar ACK = 0x50;
+	/// ACK
+	const uchar ACK = 0x50;
 
-    /// NAK
-    const uchar NAK = 0x80;
+	/// NAK
+	const uchar NAK = 0x80;
 
-    /// Пустой байт
-    const uchar EmptyByte = 0x00;
+	/// Пустой байт
+	const uchar EmptyByte = 0x00;
 
-    /// Минимальный размер ответного пакета
-    const int MinAnswerSize = 4;
+	/// Минимальный размер ответного пакета
+	const int MinAnswerSize = 4;
 
-    /// Максимальный таймаут (секунд)
-    const int MaxAnswerTimeout = 2;
+	/// Максимальный таймаут (секунд)
+	const int MaxAnswerTimeout = 2;
 
-    /// Размер постоянной основы для пакета
-    const int PacketConstSize = 3;
+	/// Размер постоянной основы для пакета
+	const int PacketConstSize = 3;
 
-    /// Постоянная основа для пакета
-    const uchar PacketConst[3] = { 0x4F, 0x53, 0x50};
+	/// Постоянная основа для пакета
+	const uchar PacketConst[3] = {0x4F, 0x53, 0x50};
 
-    namespace Commands {
-        /// Ребут компа
-        const uchar RebootPC = 0xAE;
+	namespace Commands
+	{
+		/// Ребут компа
+		const uchar RebootPC = 0xAE;
 
-        /// Сброс модема
-        const uchar ResetModem = 0x02;
+		/// Сброс модема
+		const uchar ResetModem = 0x02;
 
-        /// Запрос активности компа (сигнал об отсутствии зависания)
-        const uchar PCEnable = 0x05;
+		/// Запрос активности компа (сигнал об отсутствии зависания)
+		const uchar PCEnable = 0x05;
 
-        /// ИД девайса
-        const uchar GetID = 0x01;
+		/// ИД девайса
+		const uchar GetID = 0x01;
 
-        /// Старт таймера
-        const uchar StartTimer = 0x03;
+		/// Старт таймера
+		const uchar StartTimer = 0x03;
 
-        /// Стоп таймера
-        const uchar StopTimer = 0x04;
-    };
-};
+		/// Стоп таймера
+		const uchar StopTimer = 0x04;
+	}; // namespace Commands
+}; // namespace COSMP1
 
-namespace WDProtocolCommands {
-    enum Enum {
-        /// Ребут компа
-        RebootPC,
+namespace WDProtocolCommands
+{
+	enum Enum
+	{
+		/// Ребут компа
+		RebootPC,
 
-        /// Сброс модема
-        ResetModem,
+		/// Сброс модема
+		ResetModem,
 
-        /// Запрос активности компа (сигнал об отсутствии зависания)
-        PCEnable,
+		/// Запрос активности компа (сигнал об отсутствии зависания)
+		PCEnable,
 
-        /// ИД девайса
-        GetID,
+		/// ИД девайса
+		GetID,
 
-        /// Старт таймера
-        StartTimer,
+		/// Старт таймера
+		StartTimer,
 
-        /// Стоп таймера
-        StopTimer
-    };
-};
+		/// Стоп таймера
+		StopTimer
+	};
+}; // namespace WDProtocolCommands
 
 class WatchDogs : public QThread
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    WatchDogs(QObject *parent = 0);
-    bool isItYou(QStringList &comList,QString &wd_name, QString &com_str, QString &wd_coment);
-    bool sendCommandToExec(WDProtocolCommands::Enum aCommand);
-    bool toCommandExec(bool thread, WDProtocolCommands::Enum aCommand);
-    void setPort(const QString com_Name);
+	WatchDogs(QObject *parent = 0);
+	bool isItYou(QStringList &comList, QString &wd_name, QString &com_str, QString &wd_coment);
+	bool sendCommandToExec(WDProtocolCommands::Enum aCommand);
+	bool toCommandExec(bool thread, WDProtocolCommands::Enum aCommand);
+	void setPort(const QString com_Name);
 
+private:
+	QSerialPort *serialPort;
+	bool devicesCreated;
+	bool is_open;
+	QString comName;
 
-private :
-    QSerialPort *serialPort;
-    bool devicesCreated;
-    bool is_open;
-    QString comName;
+	WDProtocolCommands::Enum nowCommand;
+	bool createDevicePort();
+	bool closePort();
 
-    WDProtocolCommands::Enum nowCommand;
-    bool createDevicePort();
-    bool closePort();
+	bool isOpened();
+	// Печатаем в 16-ом коде
+	void printDataToHex(const QByteArray &data);
+	// задержка между некоторыми командами
+	static void msleep(int ms)
+	{
+		QThread::msleep(ms);
+	}
+	bool sendCommand(QByteArray dataRequest, bool getResponse, int timeResponse, bool &respOk, QByteArray &dataResponse,
+					 int timeSleep);
 
-    bool isOpened();
-    //Печатаем в 16-ом коде
-    void printDataToHex(const QByteArray &data);
-    //задержка между некоторыми командами
-    static void msleep(int ms){ QThread::msleep(ms);}
-    bool sendCommand(QByteArray dataRequest, bool getResponse, int timeResponse, bool& respOk, QByteArray& dataResponse, int timeSleep);
+	bool openPort();
+	bool isItYou(QString &wd_coment);
+	bool processCommand(WDProtocolCommands::Enum aCommand, const QByteArray &aCommandData, QByteArray &aAnswerData);
 
-    bool openPort();
-    bool isItYou(QString &wd_coment);
-    bool processCommand(WDProtocolCommands::Enum aCommand, const QByteArray& aCommandData, QByteArray& aAnswerData);
-
-    void run();
+	void run();
 
 signals:
-    void commandDone(bool state, int aCommand);
-
+	void commandDone(bool state, int aCommand);
 };
 
 #endif // WATCHDOGS_H

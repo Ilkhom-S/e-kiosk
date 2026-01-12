@@ -1,36 +1,35 @@
 #ifndef SEARCHDEVICESFORM_H
 #define SEARCHDEVICESFORM_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
-
-namespace Ui {
-    class SearchDevicesForm;
+namespace Ui
+{
+	class SearchDevicesForm;
 }
 
 class SearchDevicesForm : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit SearchDevicesForm(QWidget *parent = 0);
-    ~SearchDevicesForm();
+	explicit SearchDevicesForm(QWidget *parent = 0);
+	~SearchDevicesForm();
 
-    void setAboutCompany(QString text);
-    void setValidatorSearchText(int state, QString text);
-    void setCoinAcceptorSearchText(int state, QString text);
-    void setWDSearchText(int state, QString text);
-    void setPrinterSearchText(int state, QString text);
-    void setModemSearchText(int state, QString text);
-    void setCopirightText(QString text, QString version);
-    void setLogo(QString path);
+	void setAboutCompany(QString text);
+	void setValidatorSearchText(int state, QString text);
+	void setCoinAcceptorSearchText(int state, QString text);
+	void setWDSearchText(int state, QString text);
+	void setPrinterSearchText(int state, QString text);
+	void setModemSearchText(int state, QString text);
+	void setCopirightText(QString text, QString version);
+	void setLogo(QString path);
 
 private:
-    Ui::SearchDevicesForm *ui;
+	Ui::SearchDevicesForm *ui;
 
-    QMovie *movie;
-    QMovie *srchMovie;
-
+	QMovie *movie;
+	QMovie *srchMovie;
 };
 
 #endif // SEARCHDEVICESFORM_H

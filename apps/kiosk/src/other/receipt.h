@@ -1,7 +1,7 @@
 #ifndef RECEIPT_H
 #define RECEIPT_H
 
-#include <QString>
+#include <QtCore/QString>
 
 QString receiptGet(QString tpl);
 

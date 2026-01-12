@@ -1,5 +1,7 @@
-#include <QtTest>
-#include <QString>
+#include <QtCore/QString>
+
+#include <QtTest/QtTest>
+
 #include <string>
 #include <windows.h>
 

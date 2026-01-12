@@ -1,22 +1,23 @@
 #include "mainpageloader.h"
 #include "ui_mainpageloader.h"
-#include <QTextStream>
-#include <QDebug>
-#include <QSqlQuery>
-#include <QSqlRecord>
-#include <QMessageBox>
-#include <QTextDocument>
-#include <QWebEngineView>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QDir>
-#include <QFileInfo>
-#include <QWebEngineSettings>
-#include <QWebEngineProfile>
 
+#include <QtCore/QDebug>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
+#include <QtCore/QJsonArray>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
+#include <QtCore/QTextStream>
 
-MainPageLoader::MainPageLoader(QWidget* parent) : QWidget(parent), ui(new Ui::MainPageLoader)
+#include <QtGui/QTextDocument>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlRecord>
+#include <QtWebEngineCore/QWebEngineProfile>
+#include <QtWebEngineWidgets/QWebEngineSettings>
+#include <QtWebEngineWidgets/QWebEngineView>
+#include <QtWidgets/QMessageBox>
+
+MainPageLoader::MainPageLoader(QWidget *parent) : QWidget(parent), ui(new Ui::MainPageLoader)
 {
 	ui->setupUi(this);
 
@@ -46,7 +47,7 @@ void MainPageLoader::populateJavaScriptWindowObject()
 	// For now, we register the object via the page's JavaScript channel
 }
 
-void MainPageLoader::setDbName(QSqlDatabase& dbName)
+void MainPageLoader::setDbName(QSqlDatabase &dbName)
 {
 	db = dbName;
 }
@@ -200,7 +201,7 @@ void MainPageLoader::precheck(QString idPrv, QString account, double amount)
 
 	if (tpl != "tjk")
 	{
-		for (auto& key : fieldsData.keys())
+		for (auto &key : fieldsData.keys())
 		{
 			paramPrecheck[key] = fieldsData[key];
 		}
@@ -350,7 +351,7 @@ void MainPageLoader::jsonResponseSuccess(QVariantMap response, QString requestNa
 	{
 		QVariantList conditions;
 
-		for (auto& condition : response.value("data").toList())
+		for (auto &condition : response.value("data").toList())
 		{
 			if (condition.toMap().value("interval_units").toString() == "M")
 			{
@@ -370,7 +371,7 @@ void MainPageLoader::jsonResponseSuccess(QVariantMap response, QString requestNa
 			min = conditions.at(0).toMap().value("min_summa").toInt();
 			max = conditions.at(0).toMap().value("max_summa").toInt();
 
-			for (auto& condition : conditions)
+			for (auto &condition : conditions)
 			{
 				auto c = condition.toMap();
 				auto minSumma = c.value("min_summa").toInt();
@@ -551,7 +552,7 @@ void MainPageLoader::gotoPageCategories()
 
 void MainPageLoader::gotoPageServices(int categoryId)
 {
-	for (auto& c : categories)
+	for (auto &c : categories)
 	{
 		auto category = c.toMap();
 		if (category.value("id").toInt() == categoryId)
@@ -573,7 +574,7 @@ void MainPageLoader::gotoPageInsertNominal(QString account, QString accountDesig
 	// Очищаем поля
 	clearNominalData();
 
-	for (auto& key : fieldsData.keys())
+	for (auto &key : fieldsData.keys())
 	{
 		if (fieldsData[key].type() == QVariant::String)
 		{
@@ -596,7 +597,7 @@ QVariantMap MainPageLoader::extraInfoGet()
 {
 	QVariantMap extra;
 
-	for (auto& input : _serviceCurrent.value("inputs").toList())
+	for (auto &input : _serviceCurrent.value("inputs").toList())
 	{
 		auto i = input.toMap();
 		auto field = i.value("field").toString();
@@ -608,7 +609,7 @@ QVariantMap MainPageLoader::extraInfoGet()
 	}
 
 	// Invisible fields
-	for (auto& input : _serviceCurrent.value("fields").toList())
+	for (auto &input : _serviceCurrent.value("fields").toList())
 	{
 		auto i = input.toMap();
 		auto field = i.value("field").toString();
@@ -952,7 +953,7 @@ void MainPageLoader::favoriteServicesInit()
 {
 	QVariantList favorites;
 
-	for (auto& s : services)
+	for (auto &s : services)
 	{
 		auto service = s.toMap();
 		if (service.value("favorite").toInt() > 0)
@@ -961,7 +962,7 @@ void MainPageLoader::favoriteServicesInit()
 		}
 	}
 
-	std::stable_sort(favorites.begin(), favorites.end(), [=](const QVariant& d1, const QVariant& d2) -> bool
+	std::stable_sort(favorites.begin(), favorites.end(), [=](const QVariant &d1, const QVariant &d2) -> bool
 					 { return d1.toMap().value("favorite").toInt() < d2.toMap().value("favorite").toInt(); });
 
 	favoriteList = favorites;
@@ -973,7 +974,7 @@ QVariantList MainPageLoader::serviceList(const int categoryId)
 	{
 		QVariantList list;
 
-		for (auto& s : services)
+		for (auto &s : services)
 		{
 			auto service = s.toMap();
 			if (service.value("category_id").toInt() == categoryId)
@@ -995,7 +996,7 @@ QVariantList MainPageLoader::categoryList()
 
 QVariantMap MainPageLoader::serviceInfo(int id)
 {
-	for (auto& s : services)
+	for (auto &s : services)
 	{
 		auto service = s.toMap();
 		if (service.value("id").toInt() == id)

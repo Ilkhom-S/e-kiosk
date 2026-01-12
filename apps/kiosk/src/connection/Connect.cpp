@@ -1,7 +1,7 @@
 #include "Connect.h"
 // #include "Reason.h"
 
-ConnectionPart::ConnectionPart(QObject* parent) : QObject(parent)
+ConnectionPart::ConnectionPart(QObject *parent) : QObject(parent)
 {
 	rasConn = new RasConnection(this);
 	connect(rasConn, SIGNAL(emit_ConnectionError()), this, SIGNAL(emit_ConnectionError()));
@@ -60,7 +60,7 @@ void ConnectionPart::setDateTimeIn(QString dt)
 		return;
 	}
 
-	SYSTEMTIME* systime = new SYSTEMTIME();
+	SYSTEMTIME *systime = new SYSTEMTIME();
 
 	GetLocalTime(systime);
 
@@ -113,7 +113,7 @@ QStringList ConnectionPart::getRasConnectionList()
 	return list;
 }
 
-bool ConnectionPart::getNowConnectionState(QStringList& lstCon)
+bool ConnectionPart::getNowConnectionState(QStringList &lstCon)
 {
 	return rasConn->getConName(lstCon);
 }
@@ -145,7 +145,7 @@ int ConnectionPart::createNewDialupConnection(QString conName, QString devName, 
 	return status;
 }
 
-bool ConnectionPart::hasInstalledModems(QStringList& lstModemList)
+bool ConnectionPart::hasInstalledModems(QStringList &lstModemList)
 {
 	bool result = rasConn->HasInstalledModems(lstModemList);
 	return result;

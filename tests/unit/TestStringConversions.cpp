@@ -1,5 +1,7 @@
-#include <QtTest>
-#include <QString>
+#include <QtCore/QString>
+
+#include <QtTest/QtTest>
+
 #include <string>
 
 class TestStringConversions : public QObject
@@ -20,7 +22,7 @@ private slots:
 	void utf16PointerMatches()
 	{
 		QString s = "SeShutdownPrivilege";
-		const wchar_t* p = reinterpret_cast<const wchar_t*>(s.utf16());
+		const wchar_t *p = reinterpret_cast<const wchar_t *>(s.utf16());
 		QCOMPARE(QString::fromWCharArray(p), s);
 	}
 };

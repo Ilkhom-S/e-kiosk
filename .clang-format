@@ -50,9 +50,6 @@ BreakBeforeBraces: Allman
 
 # Alignment
 AlignAfterOpenBracket: Align
-BasedOnStyle: LLVM
-IndentWidth: 4
-UseTab: Never
 ColumnLimit: 120
 
 # Group and sort includes. Adjust regexes if your include paths differ.
@@ -76,7 +73,6 @@ IncludeCategories:
     Priority: 7
 
 # C++ language/standard
-Standard: Cpp14
 
 # Qt-related macros to keep intact
 StatementMacros:

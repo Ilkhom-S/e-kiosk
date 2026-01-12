@@ -1,17 +1,18 @@
 #ifndef MAINPAGELOADER_H
 #define MAINPAGELOADER_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 class QWebEngineView;
-#include <QSound>
-#include <QMap>
-#include <QVariant>
-#include <QVariantList>
-#include <QString>
-#include <QTimer>
-#include "QSqlDatabase"
-#include <QFile>
-#include <QFileInfo>
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
+#include <QtCore/QMap>
+#include <QtCore/QString>
+#include <QtCore/QTimer>
+#include <QtCore/QVariant>
+#include <QtCore/QVariantList>
+
+#include <QtMultimedia/QSound>
+#include <QtSql/QSqlDatabase>
 
 namespace Lang
 {
@@ -102,7 +103,7 @@ class MainPageLoader : public QWidget
 	Q_OBJECT
 
 public:
-	explicit MainPageLoader(QWidget* parent = 0);
+	explicit MainPageLoader(QWidget *parent = 0);
 	~MainPageLoader();
 
 	QMap<int, QMap<QString, QString>> xmlServices;
@@ -121,7 +122,7 @@ public:
 	void loadMainPage();
 	void payToWhenBoxOpen();
 	void setTerminalInfo(QString data);
-	void setDbName(QSqlDatabase& dbName);
+	void setDbName(QSqlDatabase &dbName);
 	void setTemplate(QString tpl);
 	void interfaceCacheClear();
 	void favoriteServicesInit();
@@ -142,15 +143,15 @@ public:
 
 private:
 	// Web
-	QWebEngineView* webView;
+	QWebEngineView *webView;
 
 private:
-	Ui::MainPageLoader* ui;
+	Ui::MainPageLoader *ui;
 
 	QSqlDatabase db;
 
-	QTimer* payTimer;
-	QTimer* goInputSum;
+	QTimer *payTimer;
+	QTimer *goInputSum;
 
 	QMap<int, QMap<QString, QString>> commissionMap;
 

@@ -1,40 +1,43 @@
 #ifndef AVTORIZATIONTOADMININ_H
 #define AVTORIZATIONTOADMININ_H
 
-#include <QDialog>
-#include <QMessageBox>
-#include <QPointer>
 #include "keypud.h"
-#include <QKeyEvent>
 
-namespace Ui {
-    class AvtorizationToAdminIn;
+#include <QtCore/QPointer>
+
+#include <QtGui/QKeyEvent>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QMessageBox>
+
+namespace Ui
+{
+	class AvtorizationToAdminIn;
 }
 
 class AvtorizationToAdminIn : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit AvtorizationToAdminIn(QWidget *parent = 0);
-    ~AvtorizationToAdminIn();
+	explicit AvtorizationToAdminIn(QWidget *parent = 0);
+	~AvtorizationToAdminIn();
 
-    void setAuthParam(QString login, QString pass);
+	void setAuthParam(QString login, QString pass);
 signals:
-    void emit_openAdminDialog();
+	void emit_openAdminDialog();
 
 private:
-    Ui::AvtorizationToAdminIn *ui;
+	Ui::AvtorizationToAdminIn *ui;
 
-    keyPud *KeyPud;
+	keyPud *KeyPud;
 
-    QString loginIn;
-    QString passIn;
-    int countCheckIn;
+	QString loginIn;
+	QString passIn;
+	int countCheckIn;
 
 private slots:
-    void sendCharacter(QChar character);
-    void checkInputData();
+	void sendCharacter(QChar character);
+	void checkInputData();
 };
 
 #endif // AVTORIZATIONTOADMININ_H

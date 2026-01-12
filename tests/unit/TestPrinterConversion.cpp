@@ -1,7 +1,9 @@
-#include <QtTest>
-#include <QString>
-#include <windows.h>
+#include <QtCore/QString>
+
+#include <QtTest/QtTest>
+
 #include <string>
+#include <windows.h>
 
 class TestPrinterConversion : public QObject
 {

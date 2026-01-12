@@ -1,7 +1,7 @@
 #ifndef LOADINGGPRSFORM_H
 #define LOADINGGPRSFORM_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
 namespace Ui {
     class LoadingGprsForm;

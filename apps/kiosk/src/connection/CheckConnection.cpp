@@ -1,10 +1,11 @@
 #include "CheckConnection.h"
 
 #include <Common/QtHeadersBegin.h>
-#include <QJsonDocument>
 #include <Common/QtHeadersEnd.h>
 
-CheckConnection::CheckConnection(QObject* parent) : QThread(parent)
+#include <QtCore/QJsonDocument>
+
+CheckConnection::CheckConnection(QObject *parent) : QThread(parent)
 {
 	m_pTcpSocket = new QTcpSocket(this);
 	connect(m_pTcpSocket, SIGNAL(connected()), SLOT(slotConnectedOk()));
@@ -12,9 +13,9 @@ CheckConnection::CheckConnection(QObject* parent) : QThread(parent)
 			SLOT(slotErrorConnected(QAbstractSocket::SocketError)));
 
 	manager = new QNetworkAccessManager(this);
-	connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
-	connect(manager, SIGNAL(sslErrors(QNetworkReply*, QList<QSslError>)), this,
-			SLOT(handleSslErrors(QNetworkReply*, QList<QSslError>)));
+	connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
+	connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)), this,
+			SLOT(handleSslErrors(QNetworkReply *, QList<QSslError>)));
 
 	abortTimer = new QTimer(this);
 	abortTimer->setSingleShot(true);
@@ -30,12 +31,12 @@ void CheckConnection::timeOutDisconect()
 	emit this->emit_Ping(false);
 }
 
-void CheckConnection::handleSslErrors(QNetworkReply* reply, QList<QSslError> list)
+void CheckConnection::handleSslErrors(QNetworkReply *reply, QList<QSslError> list)
 {
 	Q_UNUSED(reply)
 
 	QString d = "";
-	for (auto& e : list)
+	for (auto &e : list)
 	{
 		d += e.errorString() + "\n";
 	}
@@ -157,7 +158,7 @@ void CheckConnection::sendRequest(QString address)
 	manager->get(request);
 }
 
-void CheckConnection::replyFinished(QNetworkReply* reply)
+void CheckConnection::replyFinished(QNetworkReply *reply)
 {
 	if (abortTimer->isActive())
 	{

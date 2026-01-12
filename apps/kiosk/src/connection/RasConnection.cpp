@@ -1,15 +1,15 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "RasConnection.h"
-#include <QCoreApplication>
 
+#include <QtCore/QCoreApplication>
 
 QString RasConnection::G_Comment = "";
 QString RasConnection::G_Error_Comment = "";
 QString RasConnection::G_Error_Num = "";
 QString RasConnection::G_State = "";
 
-RasConnection::RasConnection(QObject* parent) : QThread(parent)
+RasConnection::RasConnection(QObject *parent) : QThread(parent)
 {
 	Debuger = 1;
 	stateDialTimer = new QTimer();
@@ -24,7 +24,6 @@ RasConnection::RasConnection(QObject* parent) : QThread(parent)
 
 	connect(this, SIGNAL(emit_ReCallTimer(int)), reCallTimer, SLOT(start(int)));
 }
-
 
 void RasConnection::setConnectionName(QString name)
 {
@@ -91,7 +90,6 @@ void RasConnection::execCommand(int cmd)
 	this->start();
 }
 
-
 void WINAPI RasConnection::RasCallback(HRASCONN hrasconn, UINT unMsg, RASCONNSTATE rascs, DWORD dwError,
 									   DWORD dwExtendedError)
 {
@@ -112,11 +110,10 @@ void WINAPI RasConnection::RasCallback(HRASCONN hrasconn, UINT unMsg, RASCONNSTA
 		G_State = QString("%1").arg(S);
 
 		G_Error_Num = QString("%1").arg(dwError);
-		G_Error_Comment = QString::fromUtf16((ushort*)((buff)));
+		G_Error_Comment = QString::fromUtf16((ushort *)((buff)));
 
 		return;
 	}
-
 
 	switch (rascs)
 	{
@@ -249,7 +246,6 @@ void WINAPI RasConnection::RasCallback(HRASCONN hrasconn, UINT unMsg, RASCONNSTA
 		break;
 	}
 
-
 	G_State = QString("%1").arg(S);
 	G_Comment = QString("%1").arg(D);
 
@@ -317,7 +313,7 @@ bool RasConnection::Dial()
 
 		emit this->emit_TimerStateDialStart();
 
-		dialError = RasDialW(0, 0, &rasDialParams, 1, (void*)RasConnection::RasCallback, &hrc);
+		dialError = RasDialW(0, 0, &rasDialParams, 1, (void *)RasConnection::RasCallback, &hrc);
 
 		if (dialError != 0)
 		{
@@ -335,7 +331,7 @@ bool RasConnection::Dial()
 			G_State = QString("ERROR");
 
 			G_Error_Num = QString("%1").arg(dialError);
-			G_Error_Comment = QString::fromUtf16((ushort*)((buff)));
+			G_Error_Comment = QString::fromUtf16((ushort *)((buff)));
 
 			emit this->emit_errorState(G_Error_Num, G_Error_Comment);
 
@@ -377,8 +373,9 @@ int RasConnection::createNewDialupConnection(QString conName, QString devName, Q
 	tRasEntry.dwSize = sizeof(tRasEntry);
 
 	wcscpy_s(tRasEntry.szLocalPhoneNumber, sizeof(tRasEntry.szLocalPhoneNumber) / sizeof(wchar_t),
-			 (const wchar_t*)phone.utf16());
-	wcscpy_s(tRasEntry.szDeviceName, sizeof(tRasEntry.szDeviceName) / sizeof(wchar_t), (const wchar_t*)devName.utf16());
+			 (const wchar_t *)phone.utf16());
+	wcscpy_s(tRasEntry.szDeviceName, sizeof(tRasEntry.szDeviceName) / sizeof(wchar_t),
+			 (const wchar_t *)devName.utf16());
 	wcscpy_s(tRasEntry.szDeviceType, sizeof(tRasEntry.szDeviceType) / sizeof(wchar_t), L"modem");
 	tRasEntry.dwfOptions =
 		RASEO_ModemLights | RASEO_SecureLocalFiles | RASEO_RemoteDefaultGateway | RASEO_DisableLcpExtensions;
@@ -403,13 +400,13 @@ int RasConnection::createNewDialupConnection(QString conName, QString devName, Q
 	LPRASDIALPARAMSW lpRasDialParams = &rasDialParams;
 
 	wcscpy_s(rasDialParams.szEntryName, sizeof(rasDialParams.szEntryName) / sizeof(wchar_t),
-			 (const wchar_t*)conName.utf16());
+			 (const wchar_t *)conName.utf16());
 	wcscpy_s(rasDialParams.szPhoneNumber, sizeof(rasDialParams.szPhoneNumber) / sizeof(wchar_t),
-			 (const wchar_t*)phone.utf16());
+			 (const wchar_t *)phone.utf16());
 	wcscpy_s(rasDialParams.szUserName, sizeof(rasDialParams.szUserName) / sizeof(wchar_t),
-			 (const wchar_t*)login.utf16());
+			 (const wchar_t *)login.utf16());
 	wcscpy_s(rasDialParams.szPassword, sizeof(rasDialParams.szPassword) / sizeof(wchar_t),
-			 (const wchar_t*)pass.utf16());
+			 (const wchar_t *)pass.utf16());
 
 	dwError = RasSetEntryDialParamsW(0, lpRasDialParams, FALSE);
 
@@ -422,13 +419,13 @@ int RasConnection::createNewDialupConnection(QString conName, QString devName, Q
 	return ErrorDialup::rNoError;
 }
 
-bool RasConnection::HasInstalledModems(QStringList& lstModemList)
+bool RasConnection::HasInstalledModems(QStringList &lstModemList)
 {
 	DWORD dwCb = sizeof(RASDEVINFO);
 	DWORD dwErr = ERROR_SUCCESS;
 	DWORD dwRetries = 5;
 	DWORD dwDevices = 0;
-	RASDEVINFO* lpRasDevInfo = NULL;
+	RASDEVINFO *lpRasDevInfo = NULL;
 	bool bResult = false;
 
 	while (dwRetries--)
@@ -439,7 +436,7 @@ bool RasConnection::HasInstalledModems(QStringList& lstModemList)
 			lpRasDevInfo = NULL;
 		}
 
-		lpRasDevInfo = (RASDEVINFO*)HeapAlloc(GetProcessHeap(), 0, dwCb);
+		lpRasDevInfo = (RASDEVINFO *)HeapAlloc(GetProcessHeap(), 0, dwCb);
 
 		if (NULL == lpRasDevInfo)
 		{
@@ -460,9 +457,9 @@ bool RasConnection::HasInstalledModems(QStringList& lstModemList)
 	{
 		for (DWORD i = 0; i < dwDevices; i++)
 		{
-			if (QString::fromUtf16((ushort*)(&(lpRasDevInfo[i].szDeviceType))) == "modem")
+			if (QString::fromUtf16((ushort *)(&(lpRasDevInfo[i].szDeviceType))) == "modem")
 			{
-				lstModemList << QString::fromUtf16((ushort*)(&(lpRasDevInfo[i].szDeviceName)));
+				lstModemList << QString::fromUtf16((ushort *)(&(lpRasDevInfo[i].szDeviceName)));
 				bResult = true;
 			}
 		}
@@ -477,7 +474,7 @@ bool RasConnection::HasInstalledModems(QStringList& lstModemList)
 	return bResult;
 }
 
-bool RasConnection::getConName(QStringList& lstCon)
+bool RasConnection::getConName(QStringList &lstCon)
 {
 	bool exit_b = false;
 	RASCONN ras[20];
@@ -489,7 +486,7 @@ bool RasConnection::getConName(QStringList& lstCon)
 	{
 		for (DWORD x = 0; x < dNumber; x++)
 		{
-			lstCon << QString::fromUtf16((ushort*)(&(ras[x].szEntryName)));
+			lstCon << QString::fromUtf16((ushort *)(&(ras[x].szEntryName)));
 			exit_b = true;
 			emit this->emit_toLoging(0, "CONNECTION",
 									 QString("В данный момент соединение %1 уже поднято").arg(lstCon.at(0)));
@@ -553,7 +550,7 @@ HRASCONN RasConnection::getConnection()
 	{
 		for (DWORD i = 0; i < dwActualConnectionsCount; i++)
 		{
-			if (conName == QString::fromUtf16((ushort*)(&(rasConnections[i].szEntryName))))
+			if (conName == QString::fromUtf16((ushort *)(&(rasConnections[i].szEntryName))))
 			{
 				result = rasConnections[i].hrasconn;
 				break;
@@ -571,7 +568,7 @@ HRASCONN RasConnection::getConnection()
 	return result;
 }
 
-void RasConnection::getConnection(QStringList& connectionEntries)
+void RasConnection::getConnection(QStringList &connectionEntries)
 {
 	RASENTRYNAME rasentry[20];
 	DWORD dSize, dNumber;
@@ -582,7 +579,7 @@ void RasConnection::getConnection(QStringList& connectionEntries)
 	{
 		for (DWORD i = 0; i < dNumber; i++)
 		{
-			connectionEntries.append(QString::fromUtf16((ushort*)(&(rasentry[i].szEntryName))));
+			connectionEntries.append(QString::fromUtf16((ushort *)(&(rasentry[i].szEntryName))));
 		}
 	}
 }
