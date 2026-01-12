@@ -8,14 +8,6 @@
 #include "qatutils.h"
 #include "qgsmcodec.h"
 
-        \class QAtUtils
-        \inpublicgroup QtBaseModule
-
-        \brief The QAtUtils class provides several utility functions that assist
-   with interfacing to AT-based modems.
-        \ingroup telephony::serial
-*/
-
 static const char hexchars[] = "0123456789ABCDEF";
 static bool octalEscapesFlag = false;
 
