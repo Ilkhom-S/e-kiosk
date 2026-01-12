@@ -6,7 +6,7 @@ ColumnLimit: 0
 
 # Sort and regroup includes into ordered categories. Adjust the regexes
 # below if your include paths differ.
-SortIncludes: true
+SortIncludes: false
 IncludeBlocks: Regroup
 IncludeIsMainRegex: '([-_A-Za-z0-9]+)\\.(cpp|cc|cxx)$'
 IncludeCategories:
@@ -53,7 +53,7 @@ AlignAfterOpenBracket: Align
 ColumnLimit: 120
 
 # Group and sort includes. Adjust regexes if your include paths differ.
-SortIncludes: true
+SortIncludes: false
 IncludeBlocks: Regroup
 IncludeIsMainRegex: '([-_A-Za-z0-9]+)\\.(cpp|cc|cxx|c\\+\\+)$'
 IncludeCategories:
