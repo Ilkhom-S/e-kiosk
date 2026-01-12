@@ -18,6 +18,9 @@
     "mytest",
     "NSIS",
     "psapi",
+    "QCOMPARE",
+    "QTEST",
+    "QVERIFY",
     "rasapi",
     "suppr"
   ],

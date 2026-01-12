@@ -9,9 +9,11 @@ include(${CMAKE_SOURCE_DIR}/cmake/EKTesting.cmake)
 
 message(STATUS "Configuring tests for EKiosk")
 
+# Enable testing before adding test subdirectories so tests register correctly
+ek_enable_testing()
+
 # Test categories
 add_subdirectory(unit)
-# add_subdirectory(integration)  # Uncomment when ready
+add_subdirectory(modules)
 
-# Enable testing
-ek_enable_testing()
+# add_subdirectory(integration)  # Uncomment when ready

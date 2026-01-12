@@ -14,6 +14,13 @@ function(ek_add_application TARGET_NAME)
         else()
             add_executable(${TARGET_NAME} ${ARG_SOURCES} ${ARG_RESOURCES})
         endif()
+
+        # Enable Qt automatic processing for moc/uic/rcc when Qt targets are linked
+        set_target_properties(${TARGET_NAME} PROPERTIES
+            AUTOMOC ON
+            AUTOUIC ON
+            AUTORCC ON
+        )
     endif()
     if(DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY AND NOT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "")
         set(_ek_runtime_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

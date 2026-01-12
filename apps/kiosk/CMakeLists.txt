@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 project(EKiosk LANGUAGES CXX C)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Sql PrintSupport Network Multimedia Xml SerialPort WebSockets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Sql PrintSupport Network Multimedia Xml SerialPort WebSockets WebEngineWidgets)
 
 # Use EKiosk CMake helpers
 include(${CMAKE_SOURCE_DIR}/cmake/EKApplication.cmake)
@@ -16,7 +16,7 @@ set(RESOURCE_FILES ${CMAKE_SOURCE_DIR}/ekiosk.qrc)
 # Application target with Qt modules and resources
 ek_add_application(EKiosk
     SOURCES ${SOURCES} ${HEADERS} ${UI_FILES} ${RESOURCE_FILES}
-    QT_MODULES Core Widgets Sql PrintSupport Network Multimedia Xml SerialPort WebSockets
+    QT_MODULES Core Widgets Sql PrintSupport Network Multimedia Xml SerialPort WebSockets WebEngineWidgets
     INCLUDE_DIRS src
     LIBRARIES
     $<$<PLATFORM_ID:Windows>:rasapi32;winspool;psapi;user32;Advapi32>

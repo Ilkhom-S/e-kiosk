@@ -6,6 +6,10 @@ project(EKioskRoot VERSION 1.0.0 LANGUAGES CXX C)
 # Global Qt detection for all modules/apps/tests
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 
+# Enable CTest at top-level so tests added in subdirectories are registered
+include(${CMAKE_SOURCE_DIR}/cmake/EKTesting.cmake)
+ek_enable_testing()
+
 
 
 # Only reference subdirectories for modular apps/libraries
