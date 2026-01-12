@@ -16,20 +16,16 @@ IncludeCategories:
     Priority: 1
   - Regex: '^<Common/QtHeadersBegin\\.h>$'
     Priority: 2
-  - Regex: '^<Qt.*>$'
+  - Regex: '^<Qt([A-Za-z0-9/]*)?>.*$'
     Priority: 3
   - Regex: '^<Common/QtHeadersEnd\\.h>$'
     Priority: 4
   - Regex: '^<Common/.*>$'
     Priority: 5
-  - Regex: '^<QtCore/.*>$'
-    Priority: 6
-  - Regex: '^<Q.*>$'
-    Priority: 7
   - Regex: '^<boost/.*>$'
-    Priority: 8
+    Priority: 6
   - Regex: '^<.*>$'
-    Priority: 9
+    Priority: 7
 ...
 # TerminalClient C++ Code Style
 # Based on existing codebase conventions
@@ -67,20 +63,16 @@ IncludeCategories:
     Priority: 1
   - Regex: '^<Common/QtHeadersBegin\\.h>$'
     Priority: 2
-  - Regex: '^<Qt.*>$'
+  - Regex: '^<Qt([A-Za-z0-9/]*)?>.*$'
     Priority: 3
   - Regex: '^<Common/QtHeadersEnd\\.h>$'
     Priority: 4
   - Regex: '^<Common/.*>$'
     Priority: 5
-  - Regex: '^<QtCore/.*>$'
-    Priority: 6
-  - Regex: '^<Q.*>$'
-    Priority: 7
   - Regex: '^<boost/.*>$'
-    Priority: 8
+    Priority: 6
   - Regex: '^<.*>$'
-    Priority: 9
+    Priority: 7
 
 # C++ language/standard
 
