@@ -8,7 +8,7 @@ ColumnLimit: 0
 # below if your include paths differ.
 # Order: Standard library (STL), Qt (wrapped between Common/QtHeadersBegin/End),
 # Modules (Common/...), SDK, Third-party (boost), Project (quoted), then other includes.
-SortIncludes: true
+SortIncludes: false
 IncludeBlocks: Regroup
 IncludeIsMainRegex: '([-_A-Za-z0-9]+)\\.(cpp|cc|cxx|c\\+\\+|c|h|hpp)$'
 IncludeCategories:
