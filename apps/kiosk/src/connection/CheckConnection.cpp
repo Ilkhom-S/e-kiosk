@@ -1,10 +1,16 @@
 #include "CheckConnection.h"
 
-#include <Common/QtHeadersBegin.h>
+#if defined(__clang__)
 // clang-format off
+#endif
+
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QJsonDocument>
-// clang-format on
 #include <Common/QtHeadersEnd.h>
+
+#if defined(__clang__)
+// clang-format on
+#endif
 
 CheckConnection::CheckConnection(QObject *parent) : QThread(parent)
 {
