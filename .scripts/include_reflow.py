@@ -31,18 +31,47 @@ INCLUDE_RE = re.compile(r'^\s*#\s*include\s*(?:<([^>]+)>|"([^"]+)")')
 
 
 def categorize_include(path: str) -> str:
-    """Return category key for an include path."""
+    """Return category key for an include path.
+
+    Categories: 'stl' (standard headers + windows.h), 'wrapper', 'qt', 'common',
+    'sdk', 'thirdparty', 'system', 'project'
+    """
+    # Common list of C++ standard headers (not exhaustive but covers common cases)
+    STD_HEADERS = {
+        'algorithm', 'array', 'atomic', 'bitset', 'cassert', 'cctype', 'cerrno', 'cfenv', 'cfloat',
+        'chrono', 'cinttypes', 'climits', 'cmath', 'complex', 'condition_variable', 'csetjmp',
+        'csignal', 'cstdarg', 'cstdbool', 'cstddef', 'cstdint', 'cstdio', 'cstdlib', 'cstring',
+        'ctime', 'cwchar', 'cwctype', 'iomanip', 'iosfwd', 'iostream', 'istream', 'iterator',
+        'limits', 'list', 'locale', 'map', 'memory', 'mutex', 'new', 'numeric', 'ostream',
+        'queue', 'random', 'ratio', 'regex', 'set', 'sstream', 'stack', 'stdexcept', 'string',
+        'strstream', 'system_error', 'tuple', 'typeindex', 'typeinfo', 'type_traits',
+        'unordered_map', 'unordered_set', 'utility', 'valarray', 'vector', 'optional', 'variant', 'any'
+    }
+
+    lower = path.lower()
+    base = os.path.basename(path)
+    name, ext = os.path.splitext(base)
+
     if path.startswith('Common/QtHeadersBegin') or path.startswith('Common/QtHeadersEnd'):
         return 'wrapper'
-    if path.startswith('Qt') or path.startswith('QtCore') or path.startswith('QtGui') or path.startswith('QtNetwork') or path.startswith('Q'):
+    # treat windows and common Win headers as part of the 'stl' group for ordering
+    if lower in ('windows.h', 'winsock2.h', 'windowsx.h'):
+        return 'stl'
+    # simple std header detection: name in STD_HEADERS (without extension)
+    if name in STD_HEADERS:
+        return 'stl'
+    if path.startswith('Qt') or path.startswith('Q'):
         return 'qt'
     if path.startswith('Common/'):
         return 'common'
-    if path.startswith('boost/'):
+    if path.startswith('SDK/'):
+        return 'sdk'
+    if path.startswith('boost/') or path.startswith('thirdparty/'):
         return 'thirdparty'
+    # system headers with a slash or typical system names
     if '/' in path or path.startswith('sys/') or path.startswith('unistd'):
         return 'system'
-    # fallback: if it's quoted include it's project
+    # fallback: quoted includes and others treated as project
     return 'project'
 
 
@@ -50,21 +79,36 @@ def reflow_file(contents: str) -> Tuple[str, bool]:
     """Return new contents and whether it changed."""
     lines = contents.splitlines()
 
-    pre = []
-    includes = []  # tuples (orig_line, path, delim)
-    post = []
-    in_includes = True
+    # Find the top block that contains comments, blank lines, and includes
+    n = len(lines)
+    i = 0
+    # skip initial blanks
+    while i < n and lines[i].strip() == '':
+        i += 1
 
-    for ln in lines:
+    # If next lines are comments or includes, treat the continuous block as include region
+    start = i
+    saw_include_or_comment = False
+    while i < n and (lines[i].strip() == '' or lines[i].lstrip().startswith('//') or lines[i].lstrip().startswith('/*') or INCLUDE_RE.match(lines[i])):
+        if INCLUDE_RE.match(lines[i]) or lines[i].lstrip().startswith('//'):
+            saw_include_or_comment = True
+        i += 1
+
+    if not saw_include_or_comment:
+        return (contents, False)
+
+    pre = lines[:start]
+    region = lines[start:i]
+    post = lines[i:]
+
+    includes = []  # tuples (orig_line, path, delim)
+    # collect includes from the region (ignore comment lines)
+    for ln in region:
         m = INCLUDE_RE.match(ln)
-        if in_includes and m:
+        if m:
             path = m.group(1) or m.group(2)
             delim = '<' if m.group(1) else '"'
             includes.append((ln, path, delim))
-        else:
-            # Once we hit a non-include line, everything after is post
-            in_includes = False
-            post.append(ln)
 
     # If no includes, return original
     if not includes:
@@ -95,9 +139,11 @@ def reflow_file(contents: str) -> Tuple[str, bool]:
             out_lines.append('#include <Common/QtHeadersEnd.h>')
         out_lines.append('')
 
-    # Order: Qt (with wrapper), Common (modules), ThirdParty, System, Project
+    # Order: STL, Qt (with wrapper), Common (modules), SDK, ThirdParty, System, Project
+    emit_group('STL', groups.get('stl', []))
     emit_group('Qt', groups.get('qt', []), wrapper=True)
     emit_group('Modules', groups.get('common', []))
+    emit_group('SDK', groups.get('sdk', []))
     emit_group('ThirdParty', groups.get('thirdparty', []))
     emit_group('System', groups.get('system', []))
     emit_group('Project', groups.get('project', []))

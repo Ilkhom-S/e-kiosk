@@ -1,7 +1,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QString>
 #include <Common/QtHeadersEnd.h>
+#include <QtCore/QString>
 
 #include <QtTest/QtTest>
 

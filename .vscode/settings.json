@@ -10,9 +10,7 @@
   "editor.formatOnSave": true,
   "[cpp]": {
     "editor.defaultFormatter": "xaver.clang-format"
-  }
-}
-{
+  },
   "cSpell.words": [
     "Advapi",
     "ARGN",
@@ -45,14 +43,12 @@
   "C_Cpp.default.cppStandard": "c++14",
   "C_Cpp.default.cStandard": "c11",
   "C_Cpp.default.intelliSenseMode": "windows-msvc-x64",
-  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
   "clang-format.executable": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\Llvm\\bin\\clang-format.exe",
   "clang-tidy.executable": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\Llvm\\bin\\clang-tidy.exe",
   "C_Cpp.clang_format_path": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\Llvm\\bin\\clang-format.exe",
   "C_Cpp.codeAnalysis.clangTidy.enabled": true,
   "C_Cpp.codeAnalysis.clangTidy.path": "clang-tidy",
   "C_Cpp.formatting": "clangFormat",
-  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.clang-tidy": "explicit"
   },
