@@ -3,11 +3,11 @@
 // Common includes and small helpers for EKiosk.
 // Place common header includes and lightweight project-wide helpers here.
 
-#include "QtHeadersBegin.h"
+#include "Common/QtHeadersBegin.h"
 #include <QtGlobal>
 #include <QString>
 #include <QDebug>
-#include "QtHeadersEnd.h"
+#include "Common/QtHeadersEnd.h"
 
 // Example: centralize frequently used macros or inline helpers
 #ifndef EKISK_DEBUG
