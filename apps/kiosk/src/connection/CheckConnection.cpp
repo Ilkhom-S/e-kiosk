@@ -1,7 +1,9 @@
 #include "CheckConnection.h"
 
 #include <Common/QtHeadersBegin.h>
+// clang-format off
 #include <QtCore/QJsonDocument>
+// clang-format on
 #include <Common/QtHeadersEnd.h>
 
 CheckConnection::CheckConnection(QObject *parent) : QThread(parent)
