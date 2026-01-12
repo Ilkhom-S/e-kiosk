@@ -1,9 +1,8 @@
 #include "CheckConnection.h"
 
 #include <Common/QtHeadersBegin.h>
-#include <Common/QtHeadersEnd.h>
-
 #include <QtCore/QJsonDocument>
+#include <Common/QtHeadersEnd.h>
 
 CheckConnection::CheckConnection(QObject *parent) : QThread(parent)
 {
