@@ -13,8 +13,8 @@ ek_enable_testing()
 # Create an INTERFACE target `ek_common` that exports the common include dir
 add_library(ek_common INTERFACE)
 target_include_directories(ek_common INTERFACE
-	$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-	$<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 
 

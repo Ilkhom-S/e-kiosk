@@ -12,16 +12,67 @@
   - Interfaces: Prefix with I (e.g., IDevice, ICryptEngine)
 - **Header Guards:** Use #pragma once
 - **Include Order:**
-  1. Corresponding header
-     #include "MyClass.h"
-  2. Project headers
-     #include "Common/QtHeadersBegin.h"
-     #include <QtCore/QString>
-     #include "Common/QtHeadersEnd.h"
-  3. Third-party headers
-     #include <boost/optional.hpp>
-  4. Standard library
-     #include <vector>
+
+  - **Include Order:**
+
+  1.  Corresponding header (the header for this implementation file)
+      #include "MyClass.h"
+  2.  Project headers and Qt headers
+
+  - Wrap Qt headers between `Common/QtHeadersBegin.h` and `Common/QtHeadersEnd.h` to suppress Qt warnings on MSVC.
+    #include "Common/QtHeadersBegin.h"
+    #include <QtCore/QString>
+    #include "Common/QtHeadersEnd.h"
+  - Other project headers from `include/` come alongside these.
+
+  3.  Third-party headers
+      #include <boost/optional.hpp>
+  4.  Standard library headers
+      #include <vector>
+
+  Example combined layout:
+
+  // 1. Corresponding header
+  #include "MyClass.h"
+
+  // 2. Project headers (Qt headers wrapped)
+  #include "Common/QtHeadersBegin.h"
+  #include <QtCore/QString>
+  #include "Common/QtHeadersEnd.h"
+
+  // 3. Third-party headers
+  #include <boost/optional.hpp>
+
+  // 4. Standard library
+  #include <vector>
+
+## Qt Include Style
+
+Prefer module-qualified Qt headers (e.g., `<QtCore/QString>`, `<QtWidgets/QWidget>`) rather than the unqualified `<QString>` form when possible.
+
+Reasons:
+
+- **Clarity:** makes the dependency explicit (which Qt module provides the symbol).
+- **Forward-compatibility:** module-qualified paths align with Qt6 naming and reduce ambiguity when multiple modules provide similar symbols.
+- **IDE/tooling:** helps language servers and indexers resolve headers more reliably.
+
+Compatibility note:
+
+- In Qt5 both forms are usually available; prefer `<QtCore/...>` style for consistency across Qt5/Qt6.
+
+Guidance:
+
+- Use `<QtCore/QString>` and similar in new code and when porting. If you encounter legacy code with `<QString>`, you may leave it unchanged unless you're refactoring includes broadly.
+- Keep Qt headers wrapped with `Common/QtHeadersBegin.h` and `Common/QtHeadersEnd.h` on MSVC as described above.
+
+### QtCore types
+
+For types that belong to the QtCore module (examples: `QString`, `QByteArray`, `QVariant`, `QDateTime`, `QList`, `QMap`, `QSet`), include them explicitly from the QtCore module:
+
+#include <QtCore/QString>
+#include <QtCore/QByteArray>
+
+This makes module ownership explicit and eases future Qt6 porting.
 
 ## Qt-Specific Guidelines
 
@@ -148,3 +199,17 @@ For all changes that do not require user review (e.g., documentation updates, te
 ---
 
 _For any major change, update the docs and migration-todo list!_
+
+## Project-specific Rename Rules (Porting)
+
+When porting code into this repository from other projects, apply the following textual and macro renaming rules so identifiers and macros match EKiosk/HUMO naming:
+
+- **`CYBER` → `HUMO`**: Any project-specific macro, guard, or identifier using the `CYBER` prefix should be renamed to use `HUMO`. Example: `CYBER_SUPPRESS_QT_WARNINGS` → `HUMO_SUPPRESS_QT_WARNINGS`.
+- **`TC` → `EC`**: References to `TC` (TerminalClient) used as a short prefix should be renamed to `EC` (EKiosk/EC).
+- **From `TCPKiosk` (C#) imports:** The `TCP` prefix found in that project should be renamed to `EC` when porting into this C++ repository.
+
+Notes:
+
+- Apply these renames consistently in code, header guards, CMake variables, and documentation strings when merging or porting code. Prefer mechanical refactoring (search-and-replace) followed by compile and tests.
+- If a ported file defines public APIs relied upon by external code, consider adding deprecated aliases or wrapper macros for a transition period rather than an immediate breaking rename.
+- Update relevant docs (README, migration notes) when performing these renames so other contributors are aware.

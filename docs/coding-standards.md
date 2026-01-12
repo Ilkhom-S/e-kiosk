@@ -42,3 +42,19 @@ clang-format -i <file1> <file2> ...
 
 - Update or create relevant docs for any new features, refactors, or breaking changes.
 - Link related docs for easy navigation.
+
+## Qt Include Style (Qt5/Qt6 compatibility)
+
+To keep the codebase compatible with both Qt5 and Qt6 and to make dependencies explicit, follow these rules when including Qt headers:
+
+- Prefer module-qualified includes: use `<QtCore/QString>` instead of `<QString>` and `<QtWidgets/QWidget>` instead of `<QWidget>` where possible.
+- Wrap Qt headers with the project's warning-suppression wrappers on MSVC:
+
+  #include <Common/QtHeadersBegin.h>
+  #include <QtCore/QString>
+  #include <Common/QtHeadersEnd.h>
+
+- Include QtCore types explicitly from `QtCore` (examples: `QString`, `QByteArray`, `QVariant`, `QDateTime`, `QList`, `QMap`, `QSet`). This aids future porting to Qt6 and improves IDE indexing.
+- When porting legacy code, prefer mechanical refactors (search-and-replace) and run the build and tests after changes.
+
+The project's `.clang-format` and coding guidelines already prefer grouped and sorted includes; run the formatter after changing includes to keep consistency.
