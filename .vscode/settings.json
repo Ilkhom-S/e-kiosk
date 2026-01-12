@@ -1,4 +1,18 @@
 {
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "\\.(cpp|cc|cxx|h|hpp)$",
+        "cmd": "python ./.scripts/include_reflow.py --apply \"${file}\""
+      }
+    ]
+  },
+  "editor.formatOnSave": true,
+  "[cpp]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  }
+}
+{
   "cSpell.words": [
     "Advapi",
     "ARGN",

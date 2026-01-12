@@ -1,4 +1,29 @@
 {
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Include Reflow (current file)",
+      "type": "shell",
+      "command": "python ./.scripts/include_reflow.py --apply \"${file}\"",
+      "problemMatcher": [],
+      "group": "none",
+      "presentation": {
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "Include Reflow (all tracked)",
+      "type": "shell",
+      "command": "python ./.scripts/include_reflow.py --apply $(git ls-files '*.cpp' '*.cc' '*.cxx' '*.h' '*.hpp')",
+      "problemMatcher": [],
+      "group": "none",
+      "presentation": {
+        "reveal": "always"
+      }
+    }
+  ]
+}
+{
   "tasks": [
     {
       "args": ["--build", "${workspaceFolder}/build/msvc"],
