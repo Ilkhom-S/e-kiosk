@@ -5,7 +5,7 @@ include_reflow.py
 Reflow and group C/C++ includes in a source or header file.
 
 Features:
-- Group includes into sections: Qt, Modules (Common), ThirdParty, System, Project
+- Group includes into sections: Platform (OS), STL, Qt, Modules (Common), ThirdParty, System, Project
 - Ensure all Qt includes are wrapped between <Common/QtHeadersBegin.h> and <Common/QtHeadersEnd.h>
 - Insert simple comment headers before each group (e.g. // Qt)
 - Dry-run mode (default) prints a unified diff; --apply writes changes in-place
@@ -54,8 +54,11 @@ def categorize_include(path: str) -> str:
 
     if path.startswith('Common/QtHeadersBegin') or path.startswith('Common/QtHeadersEnd'):
         return 'wrapper'
+    # Platform / OS-specific headers should come first (Windows, Winsock, etc.)
+    if lower in ('windows.h', 'winsock2.h', 'windowsx.h', 'ws2tcpip.h', 'winsock.h'):
+        return 'platform'
     # treat windows and common Win headers as part of the 'stl' group for ordering
-    if lower in ('windows.h', 'winsock2.h', 'windowsx.h'):
+    if lower in ('msvcprt.h',):
         return 'stl'
     # simple std header detection: name in STD_HEADERS (without extension)
     if name in STD_HEADERS:
@@ -95,7 +98,25 @@ def reflow_file(contents: str) -> Tuple[str, bool]:
         i += 1
 
     if not saw_include_or_comment:
-        return (contents, False)
+        # Try to find an include block after a typical header guard or pragma once
+        # Patterns supported: '#pragma once' or '#ifndef ...' '\n' '#define ...'
+        j = 0
+        if n >= 1 and lines[0].strip().startswith('#pragma once'):
+            j = 1
+        elif n >= 2 and lines[0].strip().startswith('#ifndef') and lines[1].strip().startswith('#define'):
+            j = 2
+        else:
+            return (contents, False)
+        # scan forward from j for a region of includes/comments
+        i = j
+        saw_include_or_comment = False
+        while i < n and (lines[i].strip() == '' or lines[i].lstrip().startswith('//') or lines[i].lstrip().startswith('/*') or INCLUDE_RE.match(lines[i])):
+            if INCLUDE_RE.match(lines[i]) or lines[i].lstrip().startswith('//'):
+                saw_include_or_comment = True
+            i += 1
+        if not saw_include_or_comment:
+            return (contents, False)
+        start = j
 
     pre = lines[:start]
     region = lines[start:i]
@@ -114,32 +135,77 @@ def reflow_file(contents: str) -> Tuple[str, bool]:
     if not includes:
         return (contents, False)
 
+    # Preserve leading comments (block or line comments) at the start of the region
+    leading_comments: List[str] = []
+    GROUP_NAMES = ['Platform', 'STL', 'Qt', 'Modules', 'SDK', 'ThirdParty', 'System', 'Project']
+    GROUP_COMMENT_RE = re.compile(r'^\s*//\s*(?:' + '|'.join(GROUP_NAMES) + r')\s*$')
+    for ln in region:
+        if INCLUDE_RE.match(ln):
+            break
+        # preserve blank lines and comment lines only, but skip existing group comment headers
+        if ln.strip() == '' or ln.lstrip().startswith('/*'):
+            leading_comments.append(ln)
+        elif ln.lstrip().startswith('//'):
+            if not GROUP_COMMENT_RE.match(ln):
+                leading_comments.append(ln)
+            else:
+                # skip existing group comment like '// Qt' to avoid duplicates
+                continue
+        else:
+            # non-comment content encountered before includes; do not preserve further
+            break
+
     # Categorize
-    groups = {'qt': [], 'common': [], 'thirdparty': [], 'system': [], 'project': [], 'wrapper': []}
+    groups = {'platform': [], 'stl': [], 'qt': [], 'common': [], 'thirdparty': [], 'system': [], 'project': [], 'wrapper': []}
     for orig, path, delim in includes:
         cat = categorize_include(path)
         groups.setdefault(cat, []).append((orig, path, delim))
 
     out_lines: List[str] = []
+
+    # Preserve any 'pre' content (e.g., header guard) that appeared before the include region
+    if pre:
+        out_lines.extend(pre)
+        if out_lines and out_lines[-1].strip():
+            out_lines.append('')
+
     # keep a short comment explaining this section
     def emit_group(comment: str, items: List[Tuple[str,str,str]], wrapper: bool=False):
         if not items:
             return
         out_lines.append(f'// {comment}')
-        if wrapper:
+        if wrapper and items:
             out_lines.append('#include <Common/QtHeadersBegin.h>')
-        # sort items by path
-        items_sorted = sorted(items, key=lambda t: t[1])
+        # custom sort: project includes from current folder (no '/') should go last
+        if comment == 'Project':
+            items_sorted = sorted(items, key=lambda t: (0 if '/' in t[1] else 1, t[1]))
+        else:
+            items_sorted = sorted(items, key=lambda t: t[1])
         for _, path, delim in items_sorted:
             if delim == '<':
                 out_lines.append(f'#include <{path}>')
             else:
                 out_lines.append(f'#include "{path}"')
-        if wrapper:
+        if wrapper and items:
             out_lines.append('#include <Common/QtHeadersEnd.h>')
         out_lines.append('')
 
-    # Order: STL, Qt (with wrapper), Common (modules), SDK, ThirdParty, System, Project
+    # If the region started with comments (e.g., top-of-file block comment), preserve them
+    if 'leading_comments' in locals() and leading_comments:
+        # Avoid adding duplicate blank lines if pre already ends with a blank
+        if leading_comments[0].strip() == '' and out_lines and out_lines[-1].strip() == '':
+            out_lines.extend(leading_comments[1:])
+        else:
+            out_lines.extend(leading_comments)
+        # ensure a separating blank line between preserved comments and the grouped includes
+        if not out_lines[-1].strip():
+            # already ends with blank line
+            pass
+        else:
+            out_lines.append('')
+
+    # Order: Platform (OS-specific), STL, Qt (with wrapper), Modules, SDK, ThirdParty, System, Project
+    emit_group('Platform', groups.get('platform', []))
     emit_group('STL', groups.get('stl', []))
     emit_group('Qt', groups.get('qt', []), wrapper=True)
     emit_group('Modules', groups.get('common', []))
@@ -147,6 +213,10 @@ def reflow_file(contents: str) -> Tuple[str, bool]:
     emit_group('ThirdParty', groups.get('thirdparty', []))
     emit_group('System', groups.get('system', []))
     emit_group('Project', groups.get('project', []))
+
+    # If there's no post content, avoid leaving a trailing blank line after the last group
+    if not post and out_lines and out_lines[-1] == '':
+        out_lines.pop()
 
     # Append the rest of the file (skip leading blank if present)
     # Remove leading blank lines from post

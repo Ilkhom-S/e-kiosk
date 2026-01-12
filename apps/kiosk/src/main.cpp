@@ -1,71 +1,64 @@
 // Project
 #include "mainwindow.h"
 
+#include <Common/QtHeadersBegin.h>
+#include <Common/QtHeadersEnd.h>
 #include <QtCore/QProcess>
 #include <QtCore/QSharedMemory>
 #include <QtCore/QSystemSemaphore>
-
 #include <QtWidgets/QApplication>
 
-int main(int argc, char *argv[])
-{
-	QApplication a(argc, argv);
+int main(int argc, char *argv[]) {
+  QApplication a(argc, argv);
 
-	QSystemSemaphore semaphore(semaphoreName, 1);
+  QSystemSemaphore semaphore(semaphoreName, 1);
 
-	bool isRunning;
-	semaphore.acquire();
+  bool isRunning;
+  semaphore.acquire();
 
-	{
-		QSharedMemory tmp(sharedMemName);
-		tmp.attach();
-	}
+  {
+    QSharedMemory tmp(sharedMemName);
+    tmp.attach();
+  }
 
-	QSharedMemory sharedMem(sharedMemName);
-	if (sharedMem.attach())
-	{
-		isRunning = true;
-	}
-	else
-	{
-		sharedMem.create(1);
-		isRunning = false;
-	}
+  QSharedMemory sharedMem(sharedMemName);
+  if (sharedMem.attach()) {
+    isRunning = true;
+  } else {
+    sharedMem.create(1);
+    isRunning = false;
+  }
 
-	semaphore.release();
+  semaphore.release();
 
-	if (isRunning)
-	{
-		return 1;
-	}
+  if (isRunning) {
+    return 1;
+  }
 
-	auto arguments = a.arguments();
-	auto fileName = arguments.at(0);
+  auto arguments = a.arguments();
+  auto fileName = arguments.at(0);
 
-	QFileInfo fi(fileName);
+  QFileInfo fi(fileName);
 
-	if (fi.fileName().toLower() != "ekiosk.exe")
-	{
-		return 0;
-	}
+  if (fi.fileName().toLower() != "ekiosk.exe") {
+    return 0;
+  }
 
-	MainWindow w;
+  MainWindow w;
 
-	// Если sheller не запущен, то запускаем
-	if (!w.hasProcess(sheller))
-	{
-		QProcess proc;
-		proc.startDetached(sheller, QStringList());
-	}
+  // Если sheller не запущен, то запускаем
+  if (!w.hasProcess(sheller)) {
+    QProcess proc;
+    proc.startDetached(sheller, QStringList());
+  }
 
-	w.testMode = arguments.contains("test");
+  w.testMode = arguments.contains("test");
 
-	if (!w.testMode)
-	{
-		a.setOverrideCursor(Qt::BlankCursor);
-	}
+  if (!w.testMode) {
+    a.setOverrideCursor(Qt::BlankCursor);
+  }
 
-	w.init();
+  w.init();
 
-	return a.exec();
+  return a.exec();
 }
