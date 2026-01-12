@@ -1,4 +1,7 @@
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
+#include <Common/QtHeadersEnd.h>
 
 #include <QtTest/QtTest>
 

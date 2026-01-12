@@ -1,5 +1,5 @@
+// Project
 #include "GetBalanceAgent.h"
-
 
 GetBalanceAgent::GetBalanceAgent(QObject *parent) : SendRequest(parent)
 {

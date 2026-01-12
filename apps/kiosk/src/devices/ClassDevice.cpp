@@ -1,5 +1,5 @@
+// Project
 #include "ClassDevice.h"
-
 
 SearchDevices::SearchDevices(QObject *parent) : QThread(parent)
 {

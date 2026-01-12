@@ -1,3 +1,4 @@
+// Project
 #include "receipt.h"
 
 QString receiptGet(QString tpl) {

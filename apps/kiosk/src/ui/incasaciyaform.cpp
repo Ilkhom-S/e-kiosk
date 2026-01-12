@@ -1,6 +1,6 @@
+// Project
 #include "incasaciyaform.h"
 #include "ui_incasaciyaform.h"
-
 
 IncasaciyaForm::IncasaciyaForm(QWidget *parent) :
     QDialog(parent, Qt::WindowTitleHint),

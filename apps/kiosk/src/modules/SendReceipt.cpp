@@ -1,3 +1,4 @@
+// Project
 #include "SendReceipt.h"
 
 SendReceipt::SendReceipt(QObject *parent) : SendRequest(parent)

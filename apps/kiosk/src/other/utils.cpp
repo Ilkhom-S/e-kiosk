@@ -1,5 +1,5 @@
+// Project
 #include "utils.h"
-
 
 QString encodeStr(const QString& str, quint32 key)
 {

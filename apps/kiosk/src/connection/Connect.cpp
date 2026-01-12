@@ -1,4 +1,6 @@
+// Project
 #include "Connect.h"
+
 // #include "Reason.h"
 
 ConnectionPart::ConnectionPart(QObject *parent) : QObject(parent)
