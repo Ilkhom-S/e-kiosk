@@ -10,13 +10,12 @@ if (-not (Get-Command $exe -ErrorAction SilentlyContinue)) {
     exit 2
 }
 
-$patterns = @('**/*.h','**/*.hpp','**/*.c','**/*.cpp','**/*.cc','**/*.cxx')
-
-foreach ($p in $patterns) {
-    Get-ChildItem -Path $Root -Include $p -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
+# Use a robust extension list instead of relying on -Include with root path
+$exts = @('.h', '.hpp', '.c', '.cpp', '.cc', '.cxx')
+Get-ChildItem -Path (Join-Path -Path $Root -ChildPath '*') -Recurse -File -ErrorAction SilentlyContinue |
+    Where-Object { $exts -contains $_.Extension.ToLower() } | ForEach-Object {
         Write-Host "Formatting $($_.FullName)"
         & $exe -i $_.FullName
     }
-}
 
 Write-Host "clang-format run complete."
