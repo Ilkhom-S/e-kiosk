@@ -112,6 +112,22 @@ Temporary Items
 *.seed
 *.pid.lock
 
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual envs
+venv/
+.venv/
+env/
+
+# Tool caches
+.mypy_cache/
+.pytest_cache/
+
 # Build directories
 build/
 bin/
