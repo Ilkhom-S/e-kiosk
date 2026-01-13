@@ -149,6 +149,21 @@ Use clear, descriptive scopes to indicate which part of the project is affected.
 
 For all changes that do not require user review (e.g., documentation updates, test scaffolding, non-breaking code changes, or changes that are successfully tested and build without errors), Copilot should auto-commit with a clear, conventional commit message. Only request user confirmation for breaking changes, ambiguous refactors, or when tests/builds fail.
 
+# Module Documentation Guidelines
+
+When creating or updating modules, ensure comprehensive documentation in `docs/modules/`. Each module documentation must include:
+
+- **Purpose**: Clear explanation of the module's role and problems it solves
+- **Structure**: Detailed folder layout and file organization
+- **Dependencies**: All required libraries, frameworks, and system dependencies
+- **Platform Compatibility**: Explicitly state supported platforms (Windows, Linux, macOS) and any platform-specific limitations
+- **Usage**: Code examples with proper include statements and integration patterns
+- **CMake Integration**: How to link the module in application CMakeLists.txt
+- **Testing**: Information about unit tests and how to run them
+- **Migration Notes**: Guidance for adopting the module or migrating from legacy code
+
+Always include a **Platform Compatibility** section for every module, specifying which platforms are supported and any known limitations.
+
 # EKiosk Qt C++ Project - AI Coding Agent Instructions
 
 ## Folder Structure (2026 Modular Redesign)

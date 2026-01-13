@@ -29,6 +29,24 @@ Windows system utilities abstraction layer for low-level operations.
 - **Dependencies**: Qt Core, Windows APIs, DelayImpHlp
 - **Platform**: Windows-only
 
+### [DebugUtils Module](debugutils.md)
+
+Debugging utilities for call stack analysis and exception handling.
+
+- **Purpose**: Runtime debugging and crash analysis tools
+- **Key Features**: Call stack dumping, unhandled exception handling, trace logging
+- **Dependencies**: Qt Core, Windows APIs, StackWalker library
+- **Platform**: Windows-only
+
+### [Connection Module](connection.md)
+
+Network connectivity management and monitoring.
+
+- **Purpose**: Unified interface for various connection types
+- **Key Features**: Dial-up, local network, remote connections, automatic monitoring
+- **Dependencies**: Qt Core, Windows RAS APIs, NetworkTaskManager
+- **Platform**: Windows-only
+
 ## Module Organization
 
 Each module documentation includes:
