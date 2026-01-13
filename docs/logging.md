@@ -1,45 +1,99 @@
-# Logging
+# Logging Module
 
-This project includes a lightweight QFile-based logger adapted from the
-TerminalClient project's logging module. The implementation is intended to be
-memory-efficient and simple compared to log4cpp and similar heavy-weight
-loggers.
+The EKiosk project uses a modular logging system based on the `ILog` interface, implemented by `SimpleLog` for file-based logging.
+
+## Purpose
+
+The logging module provides a lightweight, thread-safe logging solution for EKiosk applications. It replaces the previous `log4cpp` dependency with a simpler, custom implementation focused on file logging with daily rotation.
 
 Key features:
 
-- File-based logs with rotation by size
-- Simple severity levels: Debug, Info, Warning, Error
-- Thread-safe (mutex-protected writes)
+- File-based logs with daily rotation (no size-based rotation)
+- Severity levels: Debug, Info, Warning, Error
+- Thread-safe operations
+- Configurable log levels and destinations
+- Memory-efficient compared to heavy-weight loggers
 
-Usage:
+## Structure
 
-- Initialise early in your application startup (for example in `main`):
-
-```cpp
-#include <Common/Log.h>
-
-int main(int argc, char** argv) {
-  QApplication app(argc, argv);
-  ek::Log::init(QDir::tempPath() + "/ekiosk.log", ek::LogLevel::Info, 10*1024*1024, 5);
-  ek::Log::info("Application started");
-  ...
-}
+```
+src/modules/common/log/
+├── CMakeLists.txt          # Build configuration
+├── src/
+│   ├── SimpleLog.cpp       # Implementation of ILog interface
+│   └── SimpleLog.h         # Private headers
+└── include/
+    └── Common/
+        └── ILog.h          # Public interface
 ```
 
-Migration plan:
+## Dependencies
 
-- The logger is added to the repository and built as a library (`Log`), but
-  it is _not_ yet replacing the existing `log4cpp` usage. This allows a
-  gradual migration: update modules to use the new logger during refactors
-  and remove the `log4cpp` dependency later.
+- **Qt Core**: For QString, QFile, QDateTime, QMutex
+- **SysUtils**: For rmBOM utility (removes BOM from log files)
 
-Tests:
+## Usage
 
-- A unit test `TestQFileLogger` verifies log file creation and rotation.
+### Basic Usage
 
-License:
+```cpp
+#include <Common/ILog.h>
 
-- The logger code in this repository is an independent implementation inspired
-  by TerminalClient's logfile-based approach. If you want exact code copied
-  from TerminalClient, provide the files or confirm permission and I will copy
-  them verbatim including license headers.
+// Get or create a logger instance
+ILog* logger = ILog::getInstance("MyLogger", LogType::File);
+logger->setDestination("my_log");
+logger->setLevel(LogLevel::Debug);
+
+// Log messages
+logger->write(LogLevel::Info, "Application started");
+logger->write(LogLevel::Error, "An error occurred");
+```
+
+### Log Levels
+
+- `LogLevel::Debug`: Detailed debug information
+- `LogLevel::Normal`: General information (mapped to Info)
+- `LogLevel::Warning`: Warning messages
+- `LogLevel::Error`: Error messages
+
+### Log File Location
+
+Logs are written to `applicationDir/logs/YYYY.MM.DD <destination>.log`
+
+Example: `C:/path/to/app/logs/2026.01.13 my_log.log`
+
+## CMake Integration
+
+To use the Log module in your application:
+
+```cmake
+# In your CMakeLists.txt
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
+ek_add_application(MyApp
+    SOURCES main.cpp
+    QT_MODULES Core
+    LIBRARIES Log SysUtils ek_common
+)
+```
+
+## Testing
+
+The module includes unit tests in `tests/unit/TestQFileLogger.cpp` that verify:
+
+- Logger instance creation
+- Message writing at different levels
+- Log file creation and content
+
+Run tests with:
+
+```bash
+ctest -R TestQFileLogger
+```
+
+## Migration Notes
+
+This module replaces the previous `log4cpp` usage. During migration:
+
+- Replace `ek::Log` calls with `ILog::getInstance()`
+- Update log level constants
+- Ensure SysUtils dependency is included for BOM removal

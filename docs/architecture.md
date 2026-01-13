@@ -9,6 +9,9 @@ EKiosk is a modular Qt C++ project for self-service kiosks. The architecture is 
 - [Coding Standards](coding-standards.md)
 - [Platform Compatibility](platform-compatibility.md)
 - [Multilanguage Support](multilanguage.md)
+- [Logging Module](logging.md)
+- [BaseApplication Module](base_application.md)
+- [SysUtils Module](sysutils-module.md)
 - [Migration Plan & TODO](migration-todo.md)
 
 ## Key Concepts
@@ -39,9 +42,7 @@ EKiosk is a modular Qt C++ project for self-service kiosks. The architecture is 
 
 ### Example (2026 Modular Structure)
 
-ekiosk/
-
-```
+```text
 ekiosk/
 ├── apps/
 │   ├── kiosk/
