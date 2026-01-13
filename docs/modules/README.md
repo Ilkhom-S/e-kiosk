@@ -53,7 +53,7 @@ When adding a new module:
 ## Dependencies Between Modules
 
 - **Log** depends on **SysUtils** (for BOM removal)
-- **BaseApplication** can integrate with **Log** (optional)
+- **BaseApplication** depends on **Log** (for file-based logging)
 - **SysUtils** is standalone but used by other modules
 
 See individual module documentation for detailed dependency information.
