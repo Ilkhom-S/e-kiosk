@@ -14,10 +14,18 @@ Welcome to the EKiosk project! This guide will help you set up your development 
 
 1. **Clone the repository:**
 
-   ```
+```bash
    git clone <repo-url>
    cd ekiosk
-   ```
+```
+
+If the project uses third-party libraries as submodules, initialise them:
+
+```
+git submodule update --init --recursive
+```
+
+For example, this project vendors `SingleApplication` under `thirdparty/SingleApplication`.
 
 2. **Configure Qt Kits:**
    - Use the VS Code Qt Extension or Qt Creator to register your Qt installation.

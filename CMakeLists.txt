@@ -8,6 +8,14 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 
 # SingleApplication setup for freestanding mode
 set(QAPPLICATION_CLASS FreeStandingSingleApplication CACHE STRING "Inheritance class for SingleApplication")
+
+# If a vendored SingleApplication is present under thirdparty, add it first so
+# `find_package(SingleApplication)` resolves to the vendored copy. Otherwise
+# fall back to the system/vcpkg-provided package.
+if(EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/SingleApplication/CMakeLists.txt")
+    add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/SingleApplication ${CMAKE_BINARY_DIR}/thirdparty/SingleApplication)
+endif()
+
 find_package(SingleApplication REQUIRED)
 
 # Enable CTest at top-level so tests added in subdirectories are registered
