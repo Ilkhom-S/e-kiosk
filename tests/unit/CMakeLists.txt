@@ -18,3 +18,10 @@ add_executable(InstanceHelper InstanceHelper.cpp)
 set_target_properties(InstanceHelper PROPERTIES AUTOMOC ON AUTOUIC ON)
 target_link_libraries(InstanceHelper PRIVATE BasicApplication ek_common Qt${QT_VERSION_MAJOR}::Core)
 
+# QFile Logger tests
+ek_add_test(TestQFileLogger
+    SOURCES TestQFileLogger.cpp
+    QT_MODULES Test Core
+    DEPENDS ek_common Log
+)
+

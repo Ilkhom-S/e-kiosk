@@ -23,7 +23,21 @@ private slots:
       ek::Log::debug(QStringLiteral("Test message %1").arg(i));
     }
     QString tmp = QDir::tempPath() + QDir::separator() + "ekiosk_test_log.txt";
-    QVERIFY(QFile::exists(tmp));
+
+    // The new logger creates files under <app>/logs/<date> <destination>.log
+    // when destination is a base name. Accept either the explicit tmp path or
+    // the new path as success.
+    bool ok = QFile::exists(tmp);
+    if (!ok) {
+      // Check for logs in the application logs folder
+      QString base = QFileInfo(tmp).completeBaseName();
+      QString alt = QCoreApplication::applicationDirPath() + "/logs/" +
+                    QDate::currentDate().toString("yyyy.MM.dd ") + base +
+                    ".log";
+      ok = QFile::exists(alt);
+    }
+
+    QVERIFY(ok);
 
     // Ensure at least one rotated file exists
     bool rotated = false;
