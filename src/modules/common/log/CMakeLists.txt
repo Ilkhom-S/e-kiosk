@@ -13,7 +13,7 @@ file(GLOB LOG_SOURCES
 
 ek_add_library(Log
     SOURCES ${LOG_SOURCES}
-    DEPENDS ek_common
+    DEPENDS ek_common SysUtils
 )
 
 target_link_libraries(Log PRIVATE Qt${QT_VERSION_MAJOR}::Core)

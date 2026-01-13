@@ -18,13 +18,13 @@ typedef QList<ulong> TJobsStatus;
 //---------------------------------------------------------------------------
 bool getPrinterStatusData(const QString &aPrinterName, TJobsStatus &aJobsStatus,
                           ulong &aStatus, ulong &aAttributes) {
-  DEVMODE devMode = {0};
-  PRINTER_DEFAULTS defaults = {0, &devMode, PRINTER_ACCESS_USE};
+  DEVMODEW devMode = {0};
+  PRINTER_DEFAULTSW defaults = {0, &devMode, PRINTER_ACCESS_USE};
 
   HANDLE printer;
 
-  if (!OpenPrinter((LPWSTR)aPrinterName.toStdWString().data(), &printer,
-                   &defaults)) {
+  if (!OpenPrinterW((LPWSTR)aPrinterName.toStdWString().c_str(), &printer,
+                    &defaults)) {
     return false;
   }
 
@@ -86,8 +86,8 @@ QVariantMap ISysUtils::getPrinterData(const QString &aPrinterName) {
   HANDLE printer;
   QVariantMap result;
 
-  if (!OpenPrinter((LPWSTR)aPrinterName.toStdWString().data(), &printer,
-                   &defaults)) {
+  if (!OpenPrinterW((LPWSTR)aPrinterName.toStdWString().c_str(), &printer,
+                    &defaults)) {
     return result;
   }
 
@@ -111,20 +111,27 @@ QVariantMap ISysUtils::getPrinterData(const QString &aPrinterName) {
     return result;
   }
 
-  result.insert(CDeviceData::Name,
-                QString::fromWCharArray(printerInfo->pPrinterName));
-  result.insert(CDeviceData::Port,
-                QString::fromWCharArray(printerInfo->pPortName));
-  result.insert(CDeviceData::Driver,
-                QString::fromWCharArray(printerInfo->pDriverName));
-  result.insert(CDeviceData::Printers::Location,
-                QString::fromWCharArray(printerInfo->pLocation));
-  result.insert(CDeviceData::Printers::Comment,
-                QString::fromWCharArray(printerInfo->pComment));
-  result.insert(CDeviceData::Printers::Server,
-                QString::fromWCharArray(printerInfo->pServerName));
-  result.insert(CDeviceData::Printers::Share,
-                QString::fromWCharArray(printerInfo->pShareName));
+  result.insert(
+      CDeviceData::Name,
+      QString::fromWCharArray((const wchar_t *)printerInfo->pPrinterName));
+  result.insert(
+      CDeviceData::Port,
+      QString::fromWCharArray((const wchar_t *)printerInfo->pPortName));
+  result.insert(
+      CDeviceData::Driver,
+      QString::fromWCharArray((const wchar_t *)printerInfo->pDriverName));
+  result.insert(
+      CDeviceData::Printers::Location,
+      QString::fromWCharArray((const wchar_t *)printerInfo->pLocation));
+  result.insert(
+      CDeviceData::Printers::Comment,
+      QString::fromWCharArray((const wchar_t *)printerInfo->pComment));
+  result.insert(
+      CDeviceData::Printers::Server,
+      QString::fromWCharArray((const wchar_t *)printerInfo->pServerName));
+  result.insert(
+      CDeviceData::Printers::Share,
+      QString::fromWCharArray((const wchar_t *)printerInfo->pShareName));
 
   ClosePrinter(printer);
 
@@ -181,17 +188,17 @@ bool ISysUtils::setPrintingQueuedMode(const QString &aPrinterName,
                                       QString &aErrorMessage) {
   bool result = false;
 
-  DEVMODE devMode = {0};
-  PRINTER_DEFAULTS defaults = {0, &devMode, PRINTER_ACCESS_USE};
-  PRINTER_DEFAULTS defaultsAdmin = {0, &devMode, PRINTER_ACCESS_ADMINISTER};
+  DEVMODEW devMode = {0};
+  PRINTER_DEFAULTSW defaults = {0, &devMode, PRINTER_ACCESS_USE};
+  PRINTER_DEFAULTSW defaultsAdmin = {0, &devMode, PRINTER_ACCESS_ADMINISTER};
 
   bool directPrinting = false;
   PRINTER_INFO_2 *printerInfo = nullptr;
   QByteArray printerInfoBuffer;
   HANDLE printer;
 
-  if (OpenPrinter((LPWSTR)aPrinterName.toStdWString().data(), &printer,
-                  &defaults)) {
+  if (OpenPrinterW((LPWSTR)aPrinterName.toStdWString().c_str(), &printer,
+                   &defaults)) {
     DWORD byteNeeded = 0, byteUsed = 0;
 
     // Get the buffer size needed.
@@ -228,8 +235,8 @@ bool ISysUtils::setPrintingQueuedMode(const QString &aPrinterName,
   }
 
   // Открываем с правами админа
-  if (OpenPrinter((LPWSTR)aPrinterName.toStdWString().data(), &printer,
-                  &defaultsAdmin)) {
+  if (OpenPrinterW((LPWSTR)aPrinterName.toStdWString().c_str(), &printer,
+                   &defaultsAdmin)) {
     // очищаем очередь заданий
     result = SetPrinter(printer, 0, NULL, PRINTER_CONTROL_PURGE);
 

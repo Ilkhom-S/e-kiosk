@@ -7,7 +7,7 @@
 #include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-/// Уровень логгирования.
+/// Уровень логирования.
 namespace LogLevel {
 enum Enum { Off = 0, Fatal, Error, Warning, Normal, Debug, Trace, Max = Trace };
 } // namespace LogLevel

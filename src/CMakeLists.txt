@@ -4,3 +4,4 @@
 # Moved base application to `modules/common/application` as a single BasicApplication module
 add_subdirectory(modules/common/application)
 add_subdirectory(modules/common/log)
+add_subdirectory(modules/SysUtils)

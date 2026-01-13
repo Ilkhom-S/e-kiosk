@@ -30,7 +30,7 @@ public:
    * @param aPrivilegeName The name of the privilege to elevate (e.g.,
    * SE_DEBUG_NAME).
    */
-  PrivilegeElevator(LPCWSTR aPrivilegeName) : result(ERROR_NOT_ALL_ASSIGNED) {
+  PrivilegeElevator(LPCTSTR aPrivilegeName) : result(ERROR_NOT_ALL_ASSIGNED) {
     // Get a token for this process.
     if (::OpenProcessToken(::GetCurrentProcess(),
                            TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {

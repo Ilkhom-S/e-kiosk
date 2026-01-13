@@ -140,8 +140,8 @@ bool SimpleLog::init() {
       TCHAR szPath[MAX_PATH] = {0};
 
       if (GetModuleFileName(0, szPath, MAX_PATH)) {
-        QFileInfo info(
-            QDir::toNativeSeparators(QString::fromWCharArray(szPath)));
+        QFileInfo info(QDir::toNativeSeparators(QString::fromWCharArray(
+            reinterpret_cast<const wchar_t *>(szPath))));
         QString settingsFilePath = QDir::toNativeSeparators(
             info.absolutePath() + "/" + info.completeBaseName() + ".ini");
         QSettings mSettings(ISysUtils::rmBOM(settingsFilePath),
@@ -223,8 +223,8 @@ void SimpleLog::writeHeader() {
   write(LogLevel::Normal, QString("%1 LOG [%2] STARTED. %3 %4.")
                               .arg(QString("*").repeated(32))
                               .arg(getName())
-                              .arg(Cyberplat::Application)
-                              .arg(Cyberplat::getVersion()));
+                              .arg(Humo::Application)
+                              .arg(Humo::getVersion()));
 }
 
 //---------------------------------------------------------------------------

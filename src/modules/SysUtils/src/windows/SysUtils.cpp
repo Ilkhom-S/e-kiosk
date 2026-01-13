@@ -344,7 +344,7 @@ ISysUtils::TProcessInfo ISysUtils::getAllProcessInfo() {
   do {
     SProcessInfo pInfo;
     pInfo.id = pe32.th32ProcessID;
-    pInfo.path = QString::fromWCharArray(pe32.szExeFile);
+    pInfo.path = QString::fromWCharArray((const wchar_t *)pe32.szExeFile);
 
     HANDLE hProcess =
         OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pe32.th32ProcessID);

@@ -41,7 +41,8 @@
     "QVERIFY",
     "rasapi",
     "suppr",
-    "SYSUTILS"
+    "SYSUTILS",
+    "thirdparty"
   ],
   "cSpell.language": "en,ru",
   "C_Cpp.default.cppStandard": "c++14",
