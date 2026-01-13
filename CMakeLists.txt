@@ -9,14 +9,18 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 # SingleApplication setup for freestanding mode
 set(QAPPLICATION_CLASS FreeStandingSingleApplication CACHE STRING "Inheritance class for SingleApplication")
 
-# If a vendored SingleApplication is present under thirdparty, add it first so
-# `find_package(SingleApplication)` resolves to the vendored copy. Otherwise
-# fall back to the system/vcpkg-provided package.
-if(EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/SingleApplication/CMakeLists.txt")
-    add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/SingleApplication ${CMAKE_BINARY_DIR}/thirdparty/SingleApplication)
+# If vendored thirdparty CMake helper exists, add it so vendored libraries
+# (like SingleApplication) are available as targets.
+if(EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/CMakeLists.txt")
+    add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty ${CMAKE_BINARY_DIR}/thirdparty)
 endif()
 
-find_package(SingleApplication REQUIRED)
+# Prefer the vendored target if present; otherwise fall back to find_package
+if(TARGET SingleApplication::SingleApplication)
+    message(STATUS "Using vendored SingleApplication target")
+else()
+    find_package(SingleApplication REQUIRED)
+endif()
 
 # Enable CTest at top-level so tests added in subdirectories are registered
 include(${CMAKE_SOURCE_DIR}/cmake/EKTesting.cmake)
@@ -29,12 +33,6 @@ target_include_directories(ek_common INTERFACE
     $<INSTALL_INTERFACE:include>
 )
 
-# Include vendored third-party libraries (if any). This adds each folder
-# under `thirdparty/` that contains a `CMakeLists.txt` so targets it defines
-# are available to the rest of the build (e.g. SingleApplication).
-if(EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/CMakeLists.txt")
-    add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty ${CMAKE_BINARY_DIR}/thirdparty)
-endif()
 
 # Only reference subdirectories for modular apps/libraries
 add_subdirectory(src)

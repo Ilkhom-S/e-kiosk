@@ -72,4 +72,7 @@ private:
 
   // Runtime state
   bool m_testMode = false;
+
+  // Singleton instance pointer
+  static BasicApplication *s_instance;
 };
