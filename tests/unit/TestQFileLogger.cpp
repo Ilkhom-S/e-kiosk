@@ -37,4 +37,6 @@ private slots:
   }
 };
 
+QTEST_MAIN(TestQFileLogger)
+
 #include "TestQFileLogger.moc"
