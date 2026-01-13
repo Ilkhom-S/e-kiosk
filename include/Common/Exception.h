@@ -9,7 +9,7 @@
 
 //--------------------------------------------------------------------------------
 namespace ECategory {
-enum Enum { System, Hardware, Protocol, Application };
+enum Enum { System, Hardware, Protocol, Application, Network };
 } // namespace ECategory
 
 //--------------------------------------------------------------------------------

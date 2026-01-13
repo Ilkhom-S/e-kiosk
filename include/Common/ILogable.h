@@ -8,28 +8,28 @@ class QString;
 //---------------------------------------------------------------------------
 /// Класс, упрощающий вывод в лог.
 class ILogable {
-public:
-  ILogable(ILog *aLog = nullptr) : mLog(aLog) {}
-  ILogable(const QString &aLogName) : mLog(ILog::getInstance(aLogName)) {}
+  public:
+    ILogable(ILog *aLog = nullptr) : mLog(aLog) {}
+    ILogable(const QString &aLogName) : mLog(ILog::getInstance(aLogName)) {}
 
-  virtual ~ILogable() {}
+    virtual ~ILogable() {}
 
-  inline void setLog(ILog *aLog) { mLog = aLog; }
+    inline void setLog(ILog *aLog) { mLog = aLog; }
 
-protected:
-  inline void toLog(LogLevel::Enum aLevel, const QString &aMessage) const {
-    if (mLog) {
-      mLog->write(aLevel, aMessage);
-    } else {
-      qCritical("Log pointer is empty. Message:%s.",
-                aMessage.toLocal8Bit().data());
+  protected:
+    inline void toLog(LogLevel::Enum aLevel, const QString &aMessage) const {
+        if (mLog) {
+            mLog->write(aLevel, aMessage);
+        } else {
+            qCritical("Log pointer is empty. Message:%s.",
+                      aMessage.toLocal8Bit().data());
+        }
     }
-  }
 
-  inline ILog *getLog() const { return mLog; }
+    inline ILog *getLog() const { return mLog; }
 
-private:
-  ILog *mLog;
+  private:
+    ILog *mLog;
 };
 
 //---------------------------------------------------------------------------

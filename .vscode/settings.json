@@ -33,6 +33,7 @@
     "mylib",
     "myplugin",
     "mytest",
+    "NETWORKTASKMANAGER",
     "NSIS",
     "psapi",
     "PSPC",
@@ -46,10 +47,12 @@
     "SYSUTILS",
     "thirdparty",
     "бэкэнда",
+    "докачки",
     "купюроприёмника",
     "логгер",
     "пинга",
-    "пингов"
+    "пингов",
+    "потокозащищены"
   ],
   "cSpell.language": "en,ru",
   "C_Cpp.default.cppStandard": "c++14",

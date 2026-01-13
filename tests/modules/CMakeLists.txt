@@ -5,5 +5,7 @@
 # add_subdirectory(auth)
 # add_subdirectory(db)
 
-message(STATUS "Configuring module tests (none added yet)")
+message(STATUS "Configuring module tests")
 add_subdirectory(kiosk)
+add_subdirectory(Connection)
+add_subdirectory(NetworkTaskManager)
