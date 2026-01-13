@@ -1,7 +1,6 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QCoreApplication>
-#include <QtCore/QCryptographicHash>
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
@@ -9,8 +8,6 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QProcess>
 #include <QtCore/QStandardPaths>
-#include <QtNetwork/QLocalServer>
-#include <QtNetwork/QLocalSocket>
 #include <Common/QtHeadersEnd.h>
 
 // Modules
