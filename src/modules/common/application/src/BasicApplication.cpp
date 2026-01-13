@@ -36,9 +36,15 @@ BasicApplication::BasicApplication(const QString &aName,
   // install simple logger
   qInstallMessageHandler(messageHandler);
 
+  // Register singleton instance pointer
+  setInstance();
+
   // Create SingleApplication for single-instance (freestanding mode)
+  // Allow secondary instances so helper/test processes can run and report
+  // state. The main application still exits early if not primary (see
+  // apps/kiosk/main.cpp).
   m_singleApp.reset(new SingleApplication(
-      aArgumentCount, aArguments, false)); // false = no secondary instances
+      aArgumentCount, aArguments, true)); // true = allow secondary instances
 }
 
 BasicApplication::~BasicApplication() = default;

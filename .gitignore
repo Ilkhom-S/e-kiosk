@@ -149,3 +149,17 @@ temp/
 
 # CMake user presets
 CMakeUserPresets.json
+
+# vcpkg
+# Ignore vcpkg installed tree and common vcpkg artifacts
+vcpkg_installed/
+installed/
+buildtrees/
+downloads/
+packages/
+.vcpkg
+
+# Ignore local vcpkg repo and binaries
+vcpkg/
+**/vcpkg.exe
+**/vcpkg
