@@ -109,7 +109,7 @@ ek_add_application(MyApp
 )
 ```
 
-Note: SysUtils requires UNICODE builds on Windows. The module automatically defines UNICODE and _UNICODE.
+Note: SysUtils requires UNICODE builds on Windows. The module automatically defines UNICODE and \_UNICODE.
 
 ## Testing
 
@@ -129,7 +129,7 @@ ctest -R SysUtils
 ## Platform Notes
 
 - **Windows-only**: This module is currently Windows-specific due to its reliance on WinAPI calls.
-- **Unicode builds**: Requires UNICODE and _UNICODE definitions for proper wide character support.
+- **Unicode builds**: Requires UNICODE and \_UNICODE definitions for proper wide character support.
 - **Dependencies**: Links against Windows system libraries (Advapi32, Winspool, etc.) and the vendored DelayImpHlp library.
 
 ## Migration Notes
@@ -140,4 +140,4 @@ When migrating from direct WinAPI calls:
 - Handle QString conversions properly (SysUtils expects UTF-16 on Windows)
 - Ensure UNICODE builds are enabled
 - Include DelayImpHlp in your link dependencies
-<parameter name="filePath">c:\Projects\Humo\Kiosk\ekiosk\docs\sysutils-module.md
+  <parameter name="filePath">c:\Projects\Humo\Kiosk\ekiosk\docs\sysutils-module.md
