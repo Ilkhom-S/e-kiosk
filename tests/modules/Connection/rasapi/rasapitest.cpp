@@ -2,8 +2,8 @@
 #include <iostream>
 #include <list>
 
-// Project
-#include "RasWrapper.h"
+// System
+#include "Win32/src/RasWrapper.h"
 
 std::list<std::wstring> gConnections;
 std::list<std::wstring> gDevices;

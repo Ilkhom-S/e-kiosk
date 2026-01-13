@@ -11,4 +11,5 @@ ek_add_test(TestRasApi
     SOURCES ${RASAPI_SOURCES}
     QT_MODULES Test Core
     DEPENDS Connection
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/src/modules/Connection
 )

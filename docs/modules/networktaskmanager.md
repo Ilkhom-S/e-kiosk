@@ -6,8 +6,7 @@ The NetworkTaskManager module provides HTTP/HTTPS network operations for EKiosk 
 
 ## Structure
 
-```
-text
+```text
 src/modules/NetworkTaskManager/
 ├── CMakeLists.txt          # Build configuration
 ├── README.md               # Detailed module documentation
@@ -46,8 +45,7 @@ See the module's [README.md](src/modules/NetworkTaskManager/README.md) for detai
 
 ## CMake Integration
 
-```
-cmake
+```cmake
 target_link_libraries(MyApp PRIVATE NetworkTaskManager)
 ```
 

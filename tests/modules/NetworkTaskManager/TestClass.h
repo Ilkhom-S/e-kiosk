@@ -6,45 +6,44 @@
 #include <QtCore/QObject>
 #include <Common/QtHeadersEnd.h>
 
-#include <Common/Application.h>
+#include <Common/BasicApplication.h>
 
 #include <NetworkTaskManager/NetworkTaskManager.h>
 
 class NetworkTask;
 
 //------------------------------------------------------------------------
-const QUrl TestUrl = "https://mon.cyberplat.com/img/title_wide.gif";
-const QString TestFile = "title_wide.gif";
+const QUrl TestUrl = "http://httpbin.org/range/1024";
+const QString TestFile = "test.bin";
 
 //------------------------------------------------------------------------
 /// Класс для тестирования менеджера сетевых запросов.
-class NetworkTaskManagerTestClass : public QObject
-{
-	Q_OBJECT
+class NetworkTaskManagerTestClass : public QObject {
+    Q_OBJECT
 
-public:
-	NetworkTaskManagerTestClass();
-	virtual ~NetworkTaskManagerTestClass();
+  public:
+    NetworkTaskManagerTestClass();
+    virtual ~NetworkTaskManagerTestClass();
 
-private slots:
-	/// Тест выполнения запроса GET.
-	void httpGetTest();
+  private slots:
+    /// Тест выполнения запроса GET.
+    void httpGetTest();
 
-	/// Тест таймаута выполнения запроса.
-	void httpGetTimeoutTest();
+    /// Тест таймаута выполнения запроса.
+    void httpGetTimeoutTest();
 
-	/// Тест докачки данных.
-	void httpGetRegetTest();
+    /// Тест докачки данных.
+    void httpGetRegetTest();
 
-	/// Тест докачки с заведомо неправильным размером файла.
-	void httpGetRegetFailTest();
+    /// Тест докачки с заведомо неправильным размером файла.
+    void httpGetRegetFailTest();
 
-	/// Тест скачивания файла и работоспособности сигналов класса NetworkTask.
-	void httpDownloadFileAndSignalsTest();
+    /// Тест скачивания файла и работоспособности сигналов класса NetworkTask.
+    void httpDownloadFileAndSignalsTest();
 
-private:
-	BasicApplication m_application;
-	NetworkTaskManager m_manager;
+  private:
+    BasicApplication m_application;
+    NetworkTaskManager m_manager;
 };
 
 //------------------------------------------------------------------------

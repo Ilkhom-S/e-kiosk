@@ -1,58 +1,60 @@
 /* @file Поток для проверки сетевых запросов. */
 
-#include "NetworkTaskManager/NetworkTaskManager.h"
-#include "NetworkTaskManager/FileDownloadTask.h"
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QFile>
+#include <Common/QtHeadersEnd.h>
 
+// System
+#include "NetworkTaskManager/FileDownloadTask.h"
+#include "NetworkTaskManager/NetworkTaskManager.h"
+
+// Project
 #include "TestClass.h"
 #include "TestThread.h"
 
-//------------------------------------------------------------------------
-TestThread::TestThread(NetworkTaskManager* aManager)
-{
-	moveToThread(this);
+TestThread::TestThread(NetworkTaskManager *aManager) {
+    moveToThread(this);
 
-	m_manager = aManager;
-	m_taskComplete = false;
+    m_manager = aManager;
+    m_taskComplete = false;
 }
 
 //------------------------------------------------------------------------
-TestThread::~TestThread()
-{
-	quit();
-	wait();
+TestThread::~TestThread() {
+    quit();
+    wait();
 }
 
 //------------------------------------------------------------------------
-void TestThread::run()
-{
-	QString filePath = BasicApplication::getInstance()->getWorkingDirectory() + "/" + TestFile;
+void TestThread::run() {
+    QString filePath =
+        BasicApplication::getInstance()->getWorkingDirectory() + "/" + TestFile;
 
-	FileDownloadTask task(TestUrl, filePath);
+    // Remove existing file to ensure clean download
+    QFile::remove(filePath);
 
-	if (!connect(&task, SIGNAL(onComplete()), SLOT(onTaskComplete())))
-	{
-		return;
-	}
+    FileDownloadTask task(TestUrl, filePath);
 
-	m_manager->addTask(&task);
+    if (!connect(&task, SIGNAL(onComplete()), SLOT(onTaskComplete()))) {
+        return;
+    }
 
-	QThread::exec();
+    m_manager->addTask(&task);
+
+    QThread::exec();
 }
 
 //------------------------------------------------------------------------
-void TestThread::onTaskComplete()
-{
-	NetworkTask* task = dynamic_cast<NetworkTask*>(sender());
+void TestThread::onTaskComplete() {
+    NetworkTask *task = dynamic_cast<NetworkTask *>(sender());
 
-	m_taskComplete = (task->getError() == NetworkTask::NoError);
+    m_taskComplete = (task->getError() == NetworkTask::NoError);
 
-	quit();
+    quit();
 }
 
 //------------------------------------------------------------------------
-bool TestThread::taskComplete() const
-{
-	return m_taskComplete;
-}
+bool TestThread::taskComplete() const { return m_taskComplete; }
 
 //------------------------------------------------------------------------

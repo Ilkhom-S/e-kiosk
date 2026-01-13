@@ -1,5 +1,8 @@
 # NetworkTaskManager module
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
 file(GLOB NETWORKTASKMANAGER_SOURCES
     src/*.cpp
     src/*.h

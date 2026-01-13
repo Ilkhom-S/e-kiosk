@@ -10,5 +10,5 @@ file(GLOB NETWORKTASKMANAGER_SOURCES *.cpp *.h)
 ek_add_test(TestNetworkTaskManager
     SOURCES ${NETWORKTASKMANAGER_SOURCES}
     QT_MODULES Test Core Network
-    DEPENDS NetworkTaskManager
+    DEPENDS NetworkTaskManager BasicApplication
 )
