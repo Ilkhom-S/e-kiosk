@@ -6,6 +6,7 @@ This document tracks the migration from a monolithic to a modular architecture.
 
 - [x] Move all code from src/ to apps/kiosk/
 - [ ] Refactor shared code into src/ and include/
+- [x] Add `BaseApplication` module under `src/modules/common` and port `apps/kiosk` to use it
 - [ ] Update CMake to build each app and link shared code
 - [ ] Mirror src/ structure in tests/
 - [ ] Update documentation for each migration step

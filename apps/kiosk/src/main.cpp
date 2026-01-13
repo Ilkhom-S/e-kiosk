@@ -1,42 +1,25 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QProcess>
-#include <QtCore/QSharedMemory>
-#include <QtCore/QSystemSemaphore>
 #include <QtWidgets/QApplication>
 #include <Common/QtHeadersEnd.h>
+
+// Modules
+#include <Common/BasicApplication.h>
 
 // Project
 #include "mainwindow.h"
 
 int main(int argc, char *argv[]) {
-  QApplication a(argc, argv);
+  QApplication qtApp(argc, argv);
 
-  QSystemSemaphore semaphore(semaphoreName, 1);
+  BasicApplication app(QString(), QString(), argc, argv);
 
-  bool isRunning;
-  semaphore.acquire();
-
-  {
-    QSharedMemory tmp(sharedMemName);
-    tmp.attach();
-  }
-
-  QSharedMemory sharedMem(sharedMemName);
-  if (sharedMem.attach()) {
-    isRunning = true;
-  } else {
-    sharedMem.create(1);
-    isRunning = false;
-  }
-
-  semaphore.release();
-
-  if (isRunning) {
+  if (!app.isPrimaryInstance()) {
     return 1;
   }
 
-  auto arguments = a.arguments();
+  auto arguments = qtApp.arguments();
   auto fileName = arguments.at(0);
 
   QFileInfo fi(fileName);
@@ -49,17 +32,16 @@ int main(int argc, char *argv[]) {
 
   // Если sheller не запущен, то запускаем
   if (!w.hasProcess(sheller)) {
-    QProcess proc;
-    proc.startDetached(sheller, QStringList());
+    QProcess::startDetached(sheller, QStringList());
   }
 
-  w.testMode = arguments.contains("test");
+  w.testMode = app.isTestMode();
 
   if (!w.testMode) {
-    a.setOverrideCursor(Qt::BlankCursor);
+    qtApp.setOverrideCursor(Qt::BlankCursor);
   }
 
   w.init();
 
-  return a.exec();
+  return qtApp.exec();
 }

@@ -200,6 +200,8 @@ For all changes that do not require user review (e.g., documentation updates, te
 
 _For any major change, update the docs and migration-todo list!_
 
+NOTE FOR AI AGENTS: When porting or creating shared application modules (e.g., Base/BasicApplication), add clear code comments (Russian or English as appropriate) for public APIs so maintainers from the original TerminalClient project can understand the ported behavior. Prefer concise doc-comments above public methods with examples if helpful.
+
 ## Project-specific Rename Rules (Porting)
 
 When porting code into this repository from other projects, apply the following textual and macro renaming rules so identifiers and macros match EKiosk/HUMO naming:

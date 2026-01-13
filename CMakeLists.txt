@@ -20,5 +20,6 @@ target_include_directories(ek_common INTERFACE
 
 
 # Only reference subdirectories for modular apps/libraries
+add_subdirectory(src)
 add_subdirectory(apps)
 add_subdirectory(tests)

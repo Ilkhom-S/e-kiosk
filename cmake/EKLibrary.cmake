@@ -7,11 +7,13 @@ function(ek_add_library TARGET_NAME)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     add_library(${TARGET_NAME} STATIC ${ARG_SOURCES})
-    set_target_properties(${TARGET_NAME} PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
-        OUTPUT_NAME ${TARGET_NAME}
-        DEBUG_POSTFIX "d"
-    )
+    # Guard setting archive output directory if it's defined
+    set(_props)
+    if(DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+        list(APPEND _props ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+    endif()
+    list(APPEND _props OUTPUT_NAME ${TARGET_NAME} DEBUG_POSTFIX "d")
+    set_target_properties(${TARGET_NAME} PROPERTIES ${_props})
 
     if(ARG_QT_MODULES)
         foreach(qt_module ${ARG_QT_MODULES})
