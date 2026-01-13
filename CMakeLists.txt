@@ -6,6 +6,10 @@ project(EKioskRoot VERSION 1.0.0 LANGUAGES CXX C)
 # Global Qt detection for all modules/apps/tests
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 
+# SingleApplication setup for freestanding mode
+set(QAPPLICATION_CLASS FreeStandingSingleApplication CACHE STRING "Inheritance class for SingleApplication")
+find_package(SingleApplication REQUIRED)
+
 # Enable CTest at top-level so tests added in subdirectories are registered
 include(${CMAKE_SOURCE_DIR}/cmake/EKTesting.cmake)
 ek_enable_testing()

@@ -16,6 +16,9 @@
 // Modules
 #include <Common/BasicApplication.h>
 
+// Project
+#include <SingleApplication>
+
 static void messageHandler(QtMsgType type, const QMessageLogContext &context,
                            const QString &msg);
 
@@ -36,8 +39,9 @@ BasicApplication::BasicApplication(const QString &aName,
   // install simple logger
   qInstallMessageHandler(messageHandler);
 
-  // Create the single-instance server
-  m_isPrimaryInstance = tryCreateInstance();
+  // Create SingleApplication for single-instance (freestanding mode)
+  m_singleApp.reset(new SingleApplication(
+      aArgumentCount, aArguments, false)); // false = no secondary instances
 }
 
 BasicApplication::~BasicApplication() = default;
@@ -118,7 +122,9 @@ void messageHandler(QtMsgType type, const QMessageLogContext &context,
 
 bool BasicApplication::isTestMode() const { return m_testMode; }
 
-bool BasicApplication::isPrimaryInstance() const { return m_isPrimaryInstance; }
+bool BasicApplication::isPrimaryInstance() const {
+  return m_singleApp->isPrimary();
+}
 
 bool BasicApplication::startDetachedProcess(const QString &program,
                                             const QStringList &args) {
@@ -133,33 +139,4 @@ void BasicApplication::detectTestMode() {
 
   // install simple logger
   qInstallMessageHandler(messageHandler);
-}
-
-bool BasicApplication::tryCreateInstance() {
-  // Use a deterministic instance key based on application name
-  m_instanceKey =
-      QStringLiteral("ekiosk-instance-") +
-      QString::fromUtf8(
-          QCryptographicHash::hash(QCoreApplication::applicationName().toUtf8(),
-                                   QCryptographicHash::Sha1)
-              .toHex());
-
-  // Try to connect to an existing server
-  QLocalSocket socket;
-  socket.connectToServer(m_instanceKey);
-  if (socket.waitForConnected(50)) {
-    // existing instance
-    return false;
-  }
-
-  // remove stale server
-  QLocalServer::removeServer(m_instanceKey);
-
-  m_server.reset(new QLocalServer());
-  if (!m_server->listen(m_instanceKey)) {
-    // could not listen
-    return false;
-  }
-
-  return true;
 }

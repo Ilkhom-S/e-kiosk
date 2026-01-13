@@ -7,14 +7,10 @@
 #include <QtCore/QSettings>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <QtNetwork/QLocalServer>
 #include <Common/QtHeadersEnd.h>
 
 class ILog; // forward declaration for logging interface (project-specific)
-
-/// Класс абстрактного приложения. Реализует полезные функции (загрузка
-/// конфигурации).
-class BasicApplication {
+class SingleApplication; // forward declaration
 public:
   /// Конструктор инициализирует имя и версию приложения и принимает
   /// аргументы командной строки (для распознавания `test` режимов и пр.)
@@ -61,18 +57,15 @@ protected:
 private:
   // Internal helpers
   void detectTestMode();
-  bool tryCreateInstance();
 
   QString m_name;
   QString m_version;
   mutable QScopedPointer<QSettings> m_settings; // lazy-initialised
   mutable ILog *m_log = nullptr;                // optional project logger
 
-  // Runtime state
-  bool m_isPrimaryInstance = false;
-  bool m_testMode = false;
-  QScopedPointer<QLocalServer> m_server;
-  QString m_instanceKey;
+  // SingleApplication for single-instance
+  QScopedPointer<SingleApplication> m_singleApp;
 
-  static BasicApplication *s_instance;
+  // Runtime state
+  bool m_testMode = false;
 };
