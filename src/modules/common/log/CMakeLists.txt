@@ -6,9 +6,14 @@ include(${CMAKE_SOURCE_DIR}/cmake/EKLibrary.cmake)
 # Ensure Qt components are found for this module
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
+file(GLOB LOG_SOURCES
+    "src/*.cpp"
+    "src/*.h"
+)
+
 ek_add_library(Log
-    SOURCES src/SimpleLog.cpp src/LogManager.cpp src/Log.cpp src/LogWrapper.cpp src/ISysUtils.cpp
-    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
+    SOURCES ${LOG_SOURCES}
+    DEPENDS ek_common
 )
 
 target_link_libraries(Log PRIVATE Qt${QT_VERSION_MAJOR}::Core)

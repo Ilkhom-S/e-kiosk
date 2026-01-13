@@ -33,11 +33,15 @@
     "mytest",
     "NSIS",
     "psapi",
+    "PSPC",
+    "PUBLISHERINFO",
     "QCOMPARE",
+    "qlonglong",
     "QTEST",
     "QVERIFY",
     "rasapi",
-    "suppr"
+    "suppr",
+    "SYSUTILS"
   ],
   "cSpell.language": "en,ru",
   "C_Cpp.default.cppStandard": "c++14",

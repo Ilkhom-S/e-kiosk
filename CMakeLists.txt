@@ -33,6 +33,18 @@ target_include_directories(ek_common INTERFACE
     $<INSTALL_INTERFACE:include>
 )
 
+# DelayImpHlp
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/DelayImpHlp)
+    if(NOT TARGET DelayImpHlp)
+        add_library(DelayImpHlp INTERFACE)
+        target_include_directories(DelayImpHlp INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/DelayImpHlp)
+    endif()
+else()
+    if(NOT TARGET DelayImpHlp)
+        add_library(DelayImpHlp INTERFACE)
+    endif()
+endif()
+
 
 # Only reference subdirectories for modular apps/libraries
 add_subdirectory(src)
