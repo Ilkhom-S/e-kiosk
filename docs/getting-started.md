@@ -21,32 +21,37 @@ Welcome to the EKiosk project! This guide will help you set up your development 
 
 If the project uses third-party libraries as submodules, initialise them:
 
-```
+```bash
 git submodule update --init --recursive
 ```
 
 For example, this project vendors `SingleApplication` under `thirdparty/SingleApplication`.
 
-2. **Configure Qt Kits:**
+The project also includes `thirdparty/CMakeLists.txt`, which will automatically
+add any vendored library that contains a `CMakeLists.txt` so its targets become
+available to the main build.
+
+1. **Configure Qt Kits:**
    - Use the VS Code Qt Extension or Qt Creator to register your Qt installation.
    - Ensure the correct kit is selected for your platform (MSVC, MinGW, GCC, etc).
-3. **Configure the project:**
+2. **Configure the project:**
 
-   ```
-   cmake --preset <your-preset>
-   ```
+```bash
+cmake --preset <your-preset>
+```
 
-   - See `CMakePresets.json` for available presets.
+- See `CMakePresets.json` for available presets.
 
-4. **Build:**
+1. **Build:**
 
-   ```
-   cmake --build build/<your-preset>
-   ```
+```bash
+cmake --build build/<your-preset>
+```
 
-5. **Run:**
-   - Launch the desired app from `apps/` (e.g., `apps/kiosk/`).
-   - Use your IDE's debugger or run the executable directly.
+1. **Run:**
+
+- Launch the desired app from `apps/` (e.g., `apps/kiosk/`).
+- Use your IDE's debugger or run the executable directly.
 
 ## Documentation
 

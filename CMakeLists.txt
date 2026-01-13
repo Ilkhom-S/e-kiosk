@@ -29,7 +29,12 @@ target_include_directories(ek_common INTERFACE
     $<INSTALL_INTERFACE:include>
 )
 
-
+# Include vendored third-party libraries (if any). This adds each folder
+# under `thirdparty/` that contains a `CMakeLists.txt` so targets it defines
+# are available to the rest of the build (e.g. SingleApplication).
+if(EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/CMakeLists.txt")
+    add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty ${CMAKE_BINARY_DIR}/thirdparty)
+endif()
 
 # Only reference subdirectories for modular apps/libraries
 add_subdirectory(src)
