@@ -12,6 +12,7 @@
 
 // Modules
 #include <Common/BasicApplication.h>
+#include <Common/ILog.h>
 
 // Project
 #include <SingleApplication>
@@ -33,7 +34,14 @@ BasicApplication::BasicApplication(const QString &aName,
                qEnvironmentVariableIsSet("EKIOSK_TEST_MODE") ||
                qEnvironmentVariableIsSet("TEST_MODE");
 
-  // install simple logger
+  // Initialize logger
+  m_log = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::File);
+  if (m_log) {
+    m_log->setDestination(aName.isEmpty() ? "basic_app" : aName.toLower());
+    m_log->setLevel(LogLevel::Normal); // Default to Normal level
+  }
+
+  // install Qt message handler that uses our logger
   qInstallMessageHandler(messageHandler);
 
   // Register singleton instance pointer
@@ -107,20 +115,39 @@ ILog *BasicApplication::getLog() const { return m_log; }
 void messageHandler(QtMsgType type, const QMessageLogContext &context,
                     const QString &msg) {
   Q_UNUSED(context);
-  const QString timestamp = QDateTime::currentDateTime().toString(Qt::ISODate);
-  QString txt = QString("%1: %2\n").arg(timestamp, msg);
 
-  QString dir =
-      QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-  QDir().mkpath(dir);
-  QFile f(dir + QDir::separator() + "ekiosk.log");
-  if (f.open(QIODevice::Append | QIODevice::Text)) {
-    f.write(txt.toUtf8());
-    f.close();
+  // Map Qt message types to our log levels
+  LogLevel::Enum level;
+  switch (type) {
+    case QtDebugMsg:
+      level = LogLevel::Debug;
+      break;
+    case QtInfoMsg:
+    case QtWarningMsg:
+      level = LogLevel::Warning;
+      break;
+    case QtCriticalMsg:
+    case QtFatalMsg:
+      level = LogLevel::Error;
+      break;
+    default:
+      level = LogLevel::Normal;
+      break;
   }
 
-  // Also output to console
-  fprintf(stderr, "%s", qPrintable(txt));
+  // Get the application logger if available
+  BasicApplication *app = BasicApplication::getInstance();
+  if (app && app->getLog()) {
+    app->getLog()->write(level, msg);
+  } else {
+    // Fallback to console output if no logger is available
+    fprintf(stderr, "%s\n", qPrintable(msg));
+  }
+
+  // For fatal messages, abort
+  if (type == QtFatalMsg) {
+    abort();
+  }
 }
 
 bool BasicApplication::isTestMode() const { return m_testMode; }
@@ -140,6 +167,5 @@ void BasicApplication::detectTestMode() {
   m_testMode = qEnvironmentVariableIsSet("EKIOSK_TEST_MODE") ||
                qEnvironmentVariableIsSet("TEST_MODE");
 
-  // install simple logger
-  qInstallMessageHandler(messageHandler);
+  // Note: Message handler is already installed in constructor
 }

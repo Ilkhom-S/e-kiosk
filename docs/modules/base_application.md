@@ -29,8 +29,9 @@ src/modules/common/application/
 
 ## Dependencies
 
-- **Qt Core**: For QApplication base class
+- **Qt Core**: For QApplication base class and QSettings
 - **SingleApplication**: For single-instance enforcement (vendored in thirdparty/)
+- **Log**: For file-based logging with ILog interface
 - **Log**: For logging integration (optional, can be nullptr)
 
 ## Usage
@@ -67,17 +68,15 @@ In test mode, single-instance enforcement is disabled, allowing multiple instanc
 
 ### Logging Integration
 
-BaseApplication can integrate with the Log module:
+BaseApplication automatically initializes an ILog instance for file-based logging:
 
 ```cpp
-// In main, after creating BaseApplication
-ILog* logger = ILog::getInstance("MyApp", LogType::File);
-logger->setDestination("myapp");
-logger->setLevel(LogLevel::Info);
-
-// Note: BaseApplication does not directly manage logging;
-// logging should be configured at the application level
+// Logger is automatically created in constructor
+ILog* logger = app.getLog(); // Returns the initialized logger
+logger->setLevel(LogLevel::Debug); // Can adjust level as needed
 ```
+
+The logger uses daily rotation and writes to `logs/YYYY.MM.DD/<app_name>.log`. Qt messages (qDebug, qWarning, etc.) are automatically routed through the logger.
 
 ## CMake Integration
 
@@ -113,5 +112,6 @@ When migrating from plain QApplication:
 
 - Replace `QApplication` with `BaseApplication`
 - Add single-instance check in main()
-- Configure logging separately as needed
-- Ensure SingleApplication library is linked
+- Logging is automatically configured - use `getLog()` to access the logger
+- Qt messages are automatically logged to files
+- Ensure Log and SingleApplication libraries are linked

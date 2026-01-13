@@ -41,9 +41,8 @@ public:
   /// Возвращает настройки приложения
   virtual QSettings &getSettings() const;
 
-  /// Возвращает лог приложения. NOTE: actual `ILog` implementation is not
-  /// present in this repository. Keep this pointer nullable and implement
-  /// concrete logging in a separate module when ported.
+  /// Возвращает лог приложения. Uses the ILog interface from the Log module
+  /// for file-based logging with daily rotation.
   virtual ILog *getLog() const;
 
   /// Возвращает экземпляр приложения.
