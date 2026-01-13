@@ -19,6 +19,7 @@
     "AUTOUIC",
     "CONFIRMOTP",
     "cppcheck",
+    "DEBUGUTILS",
     "ekiosk",
     "EKSA",
     "endfunction",
@@ -42,7 +43,12 @@
     "rasapi",
     "suppr",
     "SYSUTILS",
-    "thirdparty"
+    "thirdparty",
+    "бэкэнда",
+    "купюроприёмника",
+    "логгер",
+    "пинга",
+    "пингов"
   ],
   "cSpell.language": "en,ru",
   "C_Cpp.default.cppStandard": "c++14",

@@ -45,7 +45,7 @@
         "${workspaceFolder}",
         "-B",
         "${workspaceFolder}/build/msvc",
-        "-DCMAKE_PREFIX_PATH=d:/Qt/Qt5.15.2/5.15.2/msvc2019_64"
+        "-DCMAKE_PREFIX_PATH=C:/Qt/5.15.2/msvc2019_64"
       ],
       "command": "cmake",
       "group": "build",

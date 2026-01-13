@@ -2,6 +2,8 @@
 
 # Module layout: modules/common holds shared utilities for apps
 # Moved base application to `modules/common/application` as a single BasicApplication module
-add_subdirectory(modules/common/application)
-add_subdirectory(modules/common/log)
+add_subdirectory(modules/Common/Application)
+add_subdirectory(modules/Common/log)
+add_subdirectory(modules/DebugUtils)
+add_subdirectory(modules/Connection)
 add_subdirectory(modules/SysUtils)

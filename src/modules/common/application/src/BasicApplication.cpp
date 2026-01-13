@@ -35,7 +35,8 @@ BasicApplication::BasicApplication(const QString &aName,
                qEnvironmentVariableIsSet("TEST_MODE");
 
   // Initialize logger
-  m_log = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::File);
+  m_log = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName,
+                            LogType::File);
   if (m_log) {
     m_log->setDestination(aName.isEmpty() ? "basic_app" : aName.toLower());
     m_log->setLevel(LogLevel::Normal); // Default to Normal level
@@ -119,20 +120,20 @@ void messageHandler(QtMsgType type, const QMessageLogContext &context,
   // Map Qt message types to our log levels
   LogLevel::Enum level;
   switch (type) {
-    case QtDebugMsg:
-      level = LogLevel::Debug;
-      break;
-    case QtInfoMsg:
-    case QtWarningMsg:
-      level = LogLevel::Warning;
-      break;
-    case QtCriticalMsg:
-    case QtFatalMsg:
-      level = LogLevel::Error;
-      break;
-    default:
-      level = LogLevel::Normal;
-      break;
+  case QtDebugMsg:
+    level = LogLevel::Debug;
+    break;
+  case QtInfoMsg:
+  case QtWarningMsg:
+    level = LogLevel::Warning;
+    break;
+  case QtCriticalMsg:
+  case QtFatalMsg:
+    level = LogLevel::Error;
+    break;
+  default:
+    level = LogLevel::Normal;
+    break;
   }
 
   // Get the application logger if available
