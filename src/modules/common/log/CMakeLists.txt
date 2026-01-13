@@ -7,7 +7,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/EKLibrary.cmake)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
 ek_add_library(Log
-    SOURCES src/SimpleLog.cpp src/LogManager.cpp src/Log.cpp src/LogWrapper.cpp
+    SOURCES src/SimpleLog.cpp src/LogManager.cpp src/Log.cpp src/LogWrapper.cpp src/ISysUtils.cpp
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
 )
 
