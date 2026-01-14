@@ -13,7 +13,7 @@ if (-not (Get-Command $exe -ErrorAction SilentlyContinue)) {
 # Use a robust extension list instead of relying on -Include with root path
 $exts = @('.h', '.hpp', '.c', '.cpp', '.cc', '.cxx')
 # Directories to exclude from formatting (build outputs, generated files, vendored code)
-$excludeDirs = @('build', 'bin', 'out', 'thirdparty', 'node_modules', '.git')
+$excludeDirs = @('build', 'bin', 'out', 'thirdparty', 'node_modules', '.git', 'vcpkg_installed')
 # Build a regex that matches any of the exclude directory names in a path
 $excludePattern = ($excludeDirs | ForEach-Object { [regex]::Escape($_) }) -join '|'
 
