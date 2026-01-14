@@ -11,42 +11,39 @@
 
 //---------------------------------------------------------------------------
 class TraceLogger {
-public:
-  TraceLogger(const char *aFileName, const char *aFuncName, int aLineNumber) {
-    mFileName = aFileName;
-    mFuncName = aFuncName;
+  public:
+    TraceLogger(const char *aFileName, const char *aFuncName, int aLineNumber) {
+        mFileName = aFileName;
+        mFuncName = aFuncName;
 
-    ILog::getInstance(mLogName)->write(LogLevel::Normal,
-                                       QString("%1Entering %2() (%3:%4)")
-                                           .arg(QString(" ").repeated(mIndent))
-                                           .arg(mFuncName)
-                                           .arg(mFileName)
-                                           .arg(aLineNumber));
+        ILog::getInstance(mLogName)->write(LogLevel::Normal, QString("%1Entering %2() (%3:%4)")
+                                                                 .arg(QString(" ").repeated(mIndent))
+                                                                 .arg(mFuncName)
+                                                                 .arg(mFileName)
+                                                                 .arg(aLineNumber));
 
-    mIndent++;
-  }
+        mIndent++;
+    }
 
-  ~TraceLogger() {
-    mIndent--;
+    ~TraceLogger() {
+        mIndent--;
 
-    ILog::getInstance(mLogName)->write(LogLevel::Normal,
-                                       QString("%1Leaving  %2() (%3)")
-                                           .arg(QString(" ").repeated(mIndent))
-                                           .arg(mFuncName)
-                                           .arg(mFileName));
-  }
+        ILog::getInstance(mLogName)->write(
+            LogLevel::Normal,
+            QString("%1Leaving  %2() (%3)").arg(QString(" ").repeated(mIndent)).arg(mFuncName).arg(mFileName));
+    }
 
-private:
-  const char *mFileName;
-  const char *mFuncName;
+  private:
+    const char *mFileName;
+    const char *mFuncName;
 
-private:
-  static int mIndent;
-  static const char *mLogName;
+  private:
+    static int mIndent;
+    static const char *mLogName;
 };
 
 #define LOG_TRACE() TraceLogger traceLogger(__FILE__, __FUNCTION__, __LINE__)
 
-#define ENABLE_TRACE_LOGGER(aLogName)                                          \
-  int TraceLogger::mIndent = 0;                                                \
-  const char *TraceLogger::mLogName = aLogName;
+#define ENABLE_TRACE_LOGGER(aLogName)                                                                                  \
+    int TraceLogger::mIndent = 0;                                                                                      \
+    const char *TraceLogger::mLogName = aLogName;

@@ -11,6 +11,19 @@
   - Constants: UPPER_SNAKE_CASE or kPascalCase
   - Interfaces: Prefix with I (e.g., IDevice, ICryptEngine)
 - **Header Guards:** Use #pragma once
+- **Comments for Adopted/Platform-Specific Code:** When adopting code from other projects or implementing platform-specific behavior (e.g., #ifdef Q_OS_WIN), add clear comments explaining the rationale, origin, and why it's necessary. Use prefixes like "Note:", "Adopted from [repo]:", or "Platform-specific:" to aid future maintainers. This ensures non-obvious decisions are documented for cross-platform compatibility and code evolution.
+- **Russian Comments for Code Sections:** When a method or block contains multiple independent actions (e.g., initialization steps, logging sequences), add Russian comments above the block to describe the overall purpose, e.g., "// Выводим стандартный заголовок в лог" for logging headers. This follows the original TerminalClient style for clarity in multi-step operations.
+- **Function Comments:** Place Russian comments above each function declaration in the style `//---------------------------------------------------------------------------` followed by `// [Description in Russian]`, matching the TerminalClient convention for consistency. For example:
+
+  ```cpp
+  //---------------------------------------------------------------------------
+  // Возвращает настройки приложения
+  QSettings &BasicApplication::getSettings() const
+  {
+      return *m_settings;
+  }
+  ```
+
 - **Include Order:**
 
   - **Include Order:**

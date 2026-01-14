@@ -1,16 +1,15 @@
 #pragma once
 
-#include "Common/QtHeadersBegin.h"
+// Qt
+#include <Common/QtHeadersBegin.h>
 #include <QtCore/QThread>
-#include "Common/QtHeadersEnd.h"
+#include <Common/QtHeadersEnd.h>
 
-//---------------------------------------------------------------------------
-class SleepHelper : public QThread
-{
-public:
-	using QThread::sleep;
-	using QThread::usleep;
-	using QThread::msleep;
+class SleepHelper : public QThread {
+  public:
+    using QThread::msleep;
+    using QThread::sleep;
+    using QThread::usleep;
 };
 
 //---------------------------------------------------------------------------

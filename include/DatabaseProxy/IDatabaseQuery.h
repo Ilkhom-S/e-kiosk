@@ -9,27 +9,27 @@
 
 //---------------------------------------------------------------------------
 namespace CIDatabaseQuery {
-const QString DefaultLog = "DatabaseProxy";
+    const QString DefaultLog = "DatabaseProxy";
 } // namespace CIDatabaseQuery
 
 //---------------------------------------------------------------------------
 class IDatabaseQuery {
-public:
-  virtual ~IDatabaseQuery() {};
+  public:
+    virtual ~IDatabaseQuery() {};
 
-  virtual bool prepare(const QString &aQuery) = 0;
-  virtual void bindValue(const QString &aName, const QVariant &aValue) = 0;
-  virtual void bindValue(int aPos, const QVariant &aValue) = 0;
-  virtual bool exec() = 0;
-  virtual void clear() = 0;
+    virtual bool prepare(const QString &aQuery) = 0;
+    virtual void bindValue(const QString &aName, const QVariant &aValue) = 0;
+    virtual void bindValue(int aPos, const QVariant &aValue) = 0;
+    virtual bool exec() = 0;
+    virtual void clear() = 0;
 
-  virtual bool first() = 0;
-  virtual bool next() = 0;
-  virtual bool last() = 0;
+    virtual bool first() = 0;
+    virtual bool next() = 0;
+    virtual bool last() = 0;
 
-  virtual bool isValid() = 0;
-  virtual int numRowsAffected() const = 0;
+    virtual bool isValid() = 0;
+    virtual int numRowsAffected() const = 0;
 
-  virtual QVariant value(int i) const = 0;
+    virtual QVariant value(int i) const = 0;
 };
 //---------------------------------------------------------------------------

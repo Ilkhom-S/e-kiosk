@@ -3,16 +3,17 @@
 #pragma once
 
 #include <singleapplication.h>
+#include <QtWidgets/QApplication>
 
 //------------------------------------------------------------------------
 /// Класс GUI приложения, обрабатывающий исключения в обработчике событий.
 class SafeQApplication : public SingleApplication {
-  Q_OBJECT
+    Q_OBJECT
 
-public:
-  SafeQApplication(int &aArgc, char **aArgv)
-      : SingleApplication(aArgc, aArgv) {}
+  public:
+    SafeQApplication(int &aArgc, char **aArgv)
+        : SingleApplication(aArgc, aArgv) {}
 
-public:
-  virtual bool notify(QObject *aReceiver, QEvent *aEvent);
+  public:
+    virtual bool notify(QObject *aReceiver, QEvent *aEvent);
 };

@@ -7,7 +7,7 @@ project(EKioskRoot VERSION 1.0.0 LANGUAGES CXX C)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 
 # SingleApplication setup for freestanding mode
-set(QAPPLICATION_CLASS FreeStandingSingleApplication CACHE STRING "Inheritance class for SingleApplication")
+set(QAPPLICATION_CLASS QApplication CACHE STRING "Inheritance class for SingleApplication")
 
 # If vendored thirdparty CMake helper exists, add it so vendored libraries
 # (like SingleApplication) are available as targets.
