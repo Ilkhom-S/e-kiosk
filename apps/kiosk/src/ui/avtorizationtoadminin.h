@@ -1,5 +1,4 @@
-#ifndef AVTORIZATIONTOADMININ_H
-#define AVTORIZATIONTOADMININ_H
+#pragma once
 
 // Qt
 #include <Common/QtHeadersBegin.h>
@@ -13,32 +12,31 @@
 #include "keypud.h"
 
 namespace Ui {
-class AvtorizationToAdminIn;
+    class AvtorizationToAdminIn;
 }
 
 class AvtorizationToAdminIn : public QDialog {
-  Q_OBJECT
+    Q_OBJECT
 
-public:
-  explicit AvtorizationToAdminIn(QWidget *parent = 0);
-  ~AvtorizationToAdminIn();
+  public:
+    explicit AvtorizationToAdminIn(QWidget *parent = 0);
+    ~AvtorizationToAdminIn();
 
-  void setAuthParam(QString login, QString pass);
-signals:
-  void emit_openAdminDialog();
+    void setAuthParam(QString login, QString pass);
+  signals:
+    void emit_openAdminDialog();
 
-private:
-  Ui::AvtorizationToAdminIn *ui;
+  private:
+    Ui::AvtorizationToAdminIn *ui;
 
-  keyPud *KeyPud;
+    keyPud *KeyPud;
 
-  QString loginIn;
-  QString passIn;
-  int countCheckIn;
+    QString loginIn;
+    QString passIn;
+    int countCheckIn;
 
-private slots:
-  void sendCharacter(QChar character);
-  void checkInputData();
+  private slots:
+    void sendCharacter(QChar character);
+    void checkInputData();
 };
 
-#endif // AVTORIZATIONTOADMININ_H

@@ -1,5 +1,4 @@
-#ifndef TEXTPROGRESSBAR_H
-#define TEXTPROGRESSBAR_H
+#pragma once
 
 // Qt
 #include <Common/QtHeadersBegin.h>
@@ -7,19 +6,18 @@
 #include <Common/QtHeadersEnd.h>
 
 class TextProgressBar {
-public:
-  TextProgressBar();
+  public:
+    TextProgressBar();
 
-  void clear();
-  void update();
-  void setMessage(const QString &message);
-  void setStatus(qint64 value, qint64 maximum);
+    void clear();
+    void update();
+    void setMessage(const QString &message);
+    void setStatus(qint64 value, qint64 maximum);
 
-private:
-  QString message;
-  qint64 value;
-  qint64 maximum;
-  int iteration;
+  private:
+    QString message;
+    qint64 value;
+    qint64 maximum;
+    int iteration;
 };
 
-#endif

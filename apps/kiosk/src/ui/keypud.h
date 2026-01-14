@@ -1,5 +1,4 @@
-#ifndef KEYPUD_H
-#define KEYPUD_H
+#pragma once
 
 // Qt
 #include <Common/QtHeadersBegin.h>
@@ -10,45 +9,44 @@
 #include <Common/QtHeadersEnd.h>
 
 namespace Ui {
-class keyPud;
+    class keyPud;
 }
 
 class keyPud : public QWidget {
-  Q_OBJECT
+    Q_OBJECT
 
-public:
-  explicit keyPud(QWidget *parent = 0);
-  ~keyPud();
+  public:
+    explicit keyPud(QWidget *parent = 0);
+    ~keyPud();
 
-  void clickBackspace();
+    void clickBackspace();
 
-private:
-  Ui::keyPud *ui;
+  private:
+    Ui::keyPud *ui;
 
-  //    QWidget *lastFocusedWidget;
-  QSignalMapper signalMapper;
+    //    QWidget *lastFocusedWidget;
+    QSignalMapper signalMapper;
 
-  QMap<QString, QChar> ScharMap;
-  QMap<QString, QChar> BcharMap;
-  QMap<QString, QString> DoublecharMap;
+    QMap<QString, QChar> ScharMap;
+    QMap<QString, QChar> BcharMap;
+    QMap<QString, QString> DoublecharMap;
 
-  bool shiftKEY;
-  bool double_on;
+    bool shiftKEY;
+    bool double_on;
 
-  QString gblLang;
+    QString gblLang;
 
-private slots:
+  private slots:
 
-  void buttonClicked(QWidget *w);
+    void buttonClicked(QWidget *w);
 
-public slots:
-  void shiftClicked();
-  void fordouble(QString lang);
-  void changeToRU();
-  void changeToEN();
+  public slots:
+    void shiftClicked();
+    void fordouble(QString lang);
+    void changeToRU();
+    void changeToEN();
 
-signals:
-  void characterGenerated(QChar character);
+  signals:
+    void characterGenerated(QChar character);
 };
 
-#endif // KEYPUD_H
