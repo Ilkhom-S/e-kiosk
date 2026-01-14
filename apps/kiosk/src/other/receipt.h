@@ -1,5 +1,4 @@
-#ifndef RECEIPT_H
-#define RECEIPT_H
+#pragma once
 
 // Qt
 #include <Common/QtHeadersBegin.h>
@@ -8,4 +7,3 @@
 
 QString receiptGet(QString tpl);
 
-#endif // RECEIPT_H
