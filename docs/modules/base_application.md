@@ -31,6 +31,16 @@ int main(int argc, char *argv[]) {
 
 ---
 
+## Platform support
+
+| Platform | Status  | Notes                                  |
+| -------- | ------- | -------------------------------------- |
+| Windows  | ✅ Full | Supported via SingleApplication and Qt |
+| Linux    | ✅ Full | Supported via SingleApplication and Qt |
+| macOS    | ✅ Full | Supported via SingleApplication and Qt |
+
+---
+
 ## Configuration
 
 Enable test mode with `app.exe test` or `EKIOSK_TEST_MODE=1` environment variable for development scenarios.

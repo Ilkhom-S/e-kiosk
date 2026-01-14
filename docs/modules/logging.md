@@ -28,6 +28,16 @@ logger->write(LogLevel::Info, "Application started");
 
 ---
 
+## Platform support
+
+| Platform | Status  | Notes                        |
+| -------- | ------- | ---------------------------- |
+| Windows  | ✅ Full | File-based logging supported |
+| Linux    | ✅ Full | File-based logging supported |
+| macOS    | ✅ Full | File-based logging supported |
+
+---
+
 ## Configuration
 
 No global config file; configure loggers at runtime with `ILog` API. Log files are written to:

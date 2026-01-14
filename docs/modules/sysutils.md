@@ -28,6 +28,16 @@ QVariantMap info = sysUtils->getPrinterInfo("PrinterName");
 
 ---
 
+## Platform support
+
+| Platform | Status           | Notes                                           |
+| -------- | ---------------- | ----------------------------------------------- |
+| Windows  | ✅ Full          | Relies on WinAPI (Advapi32, Wintrust, Winspool) |
+| Linux    | ❌ Not supported | Windows-specific APIs used                      |
+| macOS    | ❌ Not supported | Windows-specific APIs used                      |
+
+---
+
 ## Configuration
 
 No global configuration; APIs are used directly. Note: SysUtils expects UNICODE builds on Windows.

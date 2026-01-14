@@ -29,6 +29,16 @@ connect(conn, &IConnection::connectionAlive, this, &MyClass::onConnectionAlive);
 
 ---
 
+## Platform support
+
+| Platform | Status  | Notes                                |
+| -------- | ------- | ------------------------------------ |
+| Windows  | ✅ Full | RAS and named pipe support available |
+| Linux    | 🔬 TODO | Unix domain sockets planned / TODO   |
+| macOS    | 🔬 TODO | Unix domain sockets planned / TODO   |
+
+---
+
 ## Configuration
 
 No global settings; connection-specific options are provided by constructors and factory methods. Dial-up configuration is handled by `createDialupConnection` parameters.

@@ -41,6 +41,14 @@ connect(task, &NetworkTask::finished, this, &MyClass::onResponse);
 
 ---
 
+## Platform support
+
+| Platform | Status  | Notes                                                            |
+| -------- | ------- | ---------------------------------------------------------------- |
+| Windows  | ✅ Full | Qt Network support; SSL/Cert handling available                  |
+| Linux    | ✅ Full | Qt Network support; may require openssl installed                |
+| macOS    | ✅ Full | Qt Network support; certificates handled via platform mechanisms |
+
 ---
 
 ## Configuration

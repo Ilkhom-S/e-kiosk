@@ -26,6 +26,16 @@ DumpCallstack(stack, nullptr);
 
 ---
 
+## Platform support
+
+| Platform | Status           | Notes                            |
+| -------- | ---------------- | -------------------------------- |
+| Windows  | ✅ Full          | Uses dbghelp and Windows APIs    |
+| Linux    | ❌ Not supported | Windows-specific stack APIs used |
+| macOS    | ❌ Not supported | Windows-specific stack APIs used |
+
+---
+
 ## Configuration
 
 No runtime configuration; use the provided APIs to enable or configure trace logging and exception handlers.
