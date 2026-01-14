@@ -33,8 +33,7 @@ class ConnectionBase : public IConnection {
 
   public:
     /// Конструктор.
-    ConnectionBase(const QString &aName, NetworkTaskManager *aNetwork,
-                   ILog *aLog);
+    ConnectionBase(const QString &aName, NetworkTaskManager *aNetwork, ILog *aLog);
 
     /// Возвращает имя соединения.
     virtual QString getName() const;

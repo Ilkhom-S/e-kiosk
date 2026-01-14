@@ -160,4 +160,3 @@ class RegistrationForm : public QDialog {
     void emitRegistrationData(QVariantMap data);
     void emitToLog(int sts, QString name, QString text);
 };
-

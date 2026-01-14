@@ -22,270 +22,267 @@
 #include "SimpleLog.h"
 
 //---------------------------------------------------------------------------
-SimpleLog::SimpleLog(const QString &aName, LogType::Enum aType,
-                     LogLevel::Enum aMaxLogLevel)
-    : mInitOk(false), mMaxLogLevel(aMaxLogLevel), mName(aName),
-      mDestination(aName), mType(aType), mPadding(0), mDuplicateCounter(0) {}
+SimpleLog::SimpleLog(const QString &aName, LogType::Enum aType, LogLevel::Enum aMaxLogLevel)
+    : mInitOk(false), mMaxLogLevel(aMaxLogLevel), mName(aName), mDestination(aName), mType(aType), mPadding(0),
+      mDuplicateCounter(0) {
+}
 
 //---------------------------------------------------------------------------
 SimpleLog::~SimpleLog() {
-  if (mInitOk) {
-    // write log footer
-    adjustPadding(-99);
+    if (mInitOk) {
+        // write log footer
+        adjustPadding(-99);
 
-    // Пишем в лог footer только если уже была инициализация
-    safeWrite(LogLevel::Normal, QString("%1 LOG [%2] STOP.")
-                                    .arg(QString("*").repeated(32))
-                                    .arg(getName()));
-  }
+        // Пишем в лог footer только если уже была инициализация
+        safeWrite(LogLevel::Normal, QString("%1 LOG [%2] STOP.").arg(QString("*").repeated(32)).arg(getName()));
+    }
 }
 
 //---------------------------------------------------------------------------
-const QString &SimpleLog::getName() const { return mName; }
+const QString &SimpleLog::getName() const {
+    return mName;
+}
 
 //---------------------------------------------------------------------------
-const QString &SimpleLog::getDestination() const { return mDestination; }
+const QString &SimpleLog::getDestination() const {
+    return mDestination;
+}
 
 //---------------------------------------------------------------------------
 void SimpleLog::setDestination(const QString &aDestination) {
-  switch (mType) {
-  case LogType::File: {
-    if (mDestination != aDestination) {
-      mDestination = aDestination;
-      mInitOk = false;
+    switch (mType) {
+        case LogType::File: {
+            if (mDestination != aDestination) {
+                mDestination = aDestination;
+                mInitOk = false;
+            }
+
+            break;
+        }
+
+        case LogType::Console:
+        case LogType::Debug:
+            break;
+
+        default:
+            break;
     }
-
-    break;
-  }
-
-  case LogType::Console:
-  case LogType::Debug:
-    break;
-
-  default:
-    break;
-  }
 }
 
 //---------------------------------------------------------------------------
-LogType::Enum SimpleLog::getType() const { return mType; }
+LogType::Enum SimpleLog::getType() const {
+    return mType;
+}
 
 //---------------------------------------------------------------------------
-void SimpleLog::setLevel(LogLevel::Enum aLevel) { mMaxLogLevel = aLevel; }
+void SimpleLog::setLevel(LogLevel::Enum aLevel) {
+    mMaxLogLevel = aLevel;
+}
 
 //---------------------------------------------------------------------------
 void SimpleLog::adjustPadding(int aStep) {
-  mPadding = qMax(0, mPadding + aStep);
+    mPadding = qMax(0, mPadding + aStep);
 }
 
 //---------------------------------------------------------------------------
 void SimpleLog::logRotate() {
-  if (!isInitiated()) {
-    init();
-  }
+    if (!isInitiated()) {
+        init();
+    }
 }
 
 //---------------------------------------------------------------------------
 void SimpleLog::write(LogLevel::Enum aLevel, const QString &aMessage) {
-  if (!isInitiated() && !init()) {
-    return;
-  }
+    if (!isInitiated() && !init()) {
+        return;
+    }
 
-  if (aLevel > mMaxLogLevel) {
-    return;
-  }
+    if (aLevel > mMaxLogLevel) {
+        return;
+    }
 
-  safeWrite(aLevel, aMessage);
+    safeWrite(aLevel, aMessage);
 }
 
 //---------------------------------------------------------------------------
-void SimpleLog::write(LogLevel::Enum aLevel, const QString &aMessage,
-                      const QByteArray &aData) {
-  write(aLevel, aMessage + aData.toHex().data());
+void SimpleLog::write(LogLevel::Enum aLevel, const QString &aMessage, const QByteArray &aData) {
+    write(aLevel, aMessage + aData.toHex().data());
 }
 
 //---------------------------------------------------------------------------
 bool SimpleLog::init() {
-  static QMutex fileListMutex(QMutex::Recursive);
-  static QMap<QString, DestinationFilePtr> fileList;
+    static QMutex fileListMutex(QMutex::Recursive);
+    static QMap<QString, DestinationFilePtr> fileList;
 
-  bool needWriteHeader = false;
+    bool needWriteHeader = false;
 
-  switch (mType) {
-  case LogType::File: {
-    QMutexLocker locker(&fileListMutex);
+    switch (mType) {
+        case LogType::File: {
+            QMutexLocker locker(&fileListMutex);
 
-    if (fileList.contains(mDestination)) {
-      mCurrentFile = fileList[mDestination];
+            if (fileList.contains(mDestination)) {
+                mCurrentFile = fileList[mDestination];
 
-      if (!mCurrentFile || !mCurrentFile->isOpen()) {
-        fileList.remove(mDestination);
+                if (!mCurrentFile || !mCurrentFile->isOpen()) {
+                    fileList.remove(mDestination);
 
-        return init();
-      }
+                    return init();
+                }
 
-      // Тут происходит смена даты файла при смене суток.
-      if (mCurrentFile->fileName().contains(
-              QDate::currentDate().toString("yyyy.MM.dd"))) {
-        break;
-      } else {
-        fileList.remove(mDestination);
-        return init();
-      }
-    } else {
-      QString logPath;
-      QString workingDirectory;
+                // Тут происходит смена даты файла при смене суток.
+                if (mCurrentFile->fileName().contains(QDate::currentDate().toString("yyyy.MM.dd"))) {
+                    break;
+                } else {
+                    fileList.remove(mDestination);
+                    return init();
+                }
+            } else {
+                QString logPath;
+                QString workingDirectory;
 
 #ifdef Q_OS_WIN
-      TCHAR szPath[MAX_PATH] = {0};
+                TCHAR szPath[MAX_PATH] = {0};
 
-      if (GetModuleFileName(0, szPath, MAX_PATH)) {
-        QFileInfo info(QDir::toNativeSeparators(QString::fromWCharArray(
-            reinterpret_cast<const wchar_t *>(szPath))));
-        QString settingsFilePath = QDir::toNativeSeparators(
-            info.absolutePath() + "/" + info.completeBaseName() + ".ini");
-        QSettings mSettings(ISysUtils::rmBOM(settingsFilePath),
-                            QSettings::IniFormat);
-        mSettings.setIniCodec("UTF-8");
+                if (GetModuleFileName(0, szPath, MAX_PATH)) {
+                    QFileInfo info(
+                        QDir::toNativeSeparators(QString::fromWCharArray(reinterpret_cast<const wchar_t *>(szPath))));
+                    QString settingsFilePath =
+                        QDir::toNativeSeparators(info.absolutePath() + "/" + info.completeBaseName() + ".ini");
+                    QSettings mSettings(ISysUtils::rmBOM(settingsFilePath), QSettings::IniFormat);
+                    mSettings.setIniCodec("UTF-8");
 
-        if (mSettings.contains("common/working_directory")) {
-          QString directory =
-              mSettings.value("common/working_directory").toString();
-          workingDirectory = QDir::toNativeSeparators(QDir::cleanPath(
-              (QDir::isAbsolutePath(directory) ? ""
-                                               : (info.absolutePath() + "/")) +
-              directory));
-        } else {
-          workingDirectory = info.absolutePath();
-        }
-      }
+                    if (mSettings.contains("common/working_directory")) {
+                        QString directory = mSettings.value("common/working_directory").toString();
+                        workingDirectory = QDir::toNativeSeparators(QDir::cleanPath(
+                            (QDir::isAbsolutePath(directory) ? "" : (info.absolutePath() + "/")) + directory));
+                    } else {
+                        workingDirectory = info.absolutePath();
+                    }
+                }
 #else
 #pragma error
 #endif
-      logPath = workingDirectory + "/logs/" +
-                QDate::currentDate().toString("yyyy.MM.dd ") + mDestination +
-                ".log";
+                logPath =
+                    workingDirectory + "/logs/" + QDate::currentDate().toString("yyyy.MM.dd ") + mDestination + ".log";
 
-      QFileInfo logPathInfo(logPath);
+                QFileInfo logPathInfo(logPath);
 
-      if (!logPathInfo.exists()) {
-        QDir logDir(logPathInfo.absolutePath());
+                if (!logPathInfo.exists()) {
+                    QDir logDir(logPathInfo.absolutePath());
 
-        if (!logDir.mkpath(logPathInfo.absolutePath())) {
-          return false;
+                    if (!logDir.mkpath(logPathInfo.absolutePath())) {
+                        return false;
+                    }
+                }
+
+                mCurrentFile = DestinationFilePtr(new DestinationFile());
+
+                if (!mCurrentFile->open(logPath)) {
+                    return false;
+                }
+
+                needWriteHeader = true;
+
+                fileList[mDestination] = mCurrentFile;
+                break;
+            }
         }
-      }
 
-      mCurrentFile = DestinationFilePtr(new DestinationFile());
+        case LogType::Console:
+        case LogType::Debug:
+            break;
 
-      if (!mCurrentFile->open(logPath)) {
-        return false;
-      }
-
-      needWriteHeader = true;
-
-      fileList[mDestination] = mCurrentFile;
-      break;
+        default:
+            return false;
     }
-  }
 
-  case LogType::Console:
-  case LogType::Debug:
-    break;
+    mInitOk = true;
 
-  default:
-    return false;
-  }
+    if (needWriteHeader) {
+        writeHeader();
+    }
 
-  mInitOk = true;
-
-  if (needWriteHeader) {
-    writeHeader();
-  }
-
-  return true;
+    return true;
 }
 
 //---------------------------------------------------------------------------
 bool SimpleLog::isInitiated() {
-  // Тут проверяем сменился ли день
-  if (mType == LogType::File && mCurrentFile &&
-      !mCurrentFile->fileName().contains(
-          QDate::currentDate().toString("yyyy.MM.dd"))) {
-    return false;
-  }
+    // Тут проверяем сменился ли день
+    if (mType == LogType::File && mCurrentFile &&
+        !mCurrentFile->fileName().contains(QDate::currentDate().toString("yyyy.MM.dd"))) {
+        return false;
+    }
 
-  return mInitOk;
+    return mInitOk;
 }
 
 //---------------------------------------------------------------------------
 void SimpleLog::writeHeader() {
-  write(LogLevel::Normal, QString("%1 LOG [%2] STARTED. %3 %4.")
-                              .arg(QString("*").repeated(32))
-                              .arg(getName())
-                              .arg(Humo::Application)
-                              .arg(Humo::getVersion()));
+    write(LogLevel::Normal, QString("%1 LOG [%2] STARTED. %3 %4.")
+                                .arg(QString("*").repeated(32))
+                                .arg(getName())
+                                .arg(Humo::Application)
+                                .arg(Humo::getVersion()));
 }
 
 //---------------------------------------------------------------------------
 void SimpleLog::safeWrite(LogLevel::Enum aLevel, const QString &aMessage) {
-  if (!mInitOk) {
-    return;
-  }
+    if (!mInitOk) {
+        return;
+    }
 
-  QString formattedMessage = QTime::currentTime().toString("hh:mm:ss.zzz ");
+    QString formattedMessage = QTime::currentTime().toString("hh:mm:ss.zzz ");
 
-  formattedMessage += QString("T:%1 ").arg((quint32)QThread::currentThreadId(),
-                                           8, 16, QLatin1Char('0'));
+    formattedMessage += QString("T:%1 ").arg((quint32)QThread::currentThreadId(), 8, 16, QLatin1Char('0'));
 
-  switch (aLevel) {
-  case LogLevel::Normal:
-    formattedMessage += "[I]";
-    break;
+    switch (aLevel) {
+        case LogLevel::Normal:
+            formattedMessage += "[I]";
+            break;
 
-  case LogLevel::Warning:
-    formattedMessage += "[W]";
-    break;
+        case LogLevel::Warning:
+            formattedMessage += "[W]";
+            break;
 
-  case LogLevel::Error:
-    formattedMessage += "[E]";
-    break;
+        case LogLevel::Error:
+            formattedMessage += "[E]";
+            break;
 
-  case LogLevel::Fatal:
-    formattedMessage += "[F]";
-    break;
+        case LogLevel::Fatal:
+            formattedMessage += "[F]";
+            break;
 
-  case LogLevel::Debug:
-    formattedMessage += "[D]";
-    break;
+        case LogLevel::Debug:
+            formattedMessage += "[D]";
+            break;
 
-  case LogLevel::Trace:
-    formattedMessage += "[T]";
-    break;
+        case LogLevel::Trace:
+            formattedMessage += "[T]";
+            break;
 
-  default:
-    formattedMessage += "[U]";
-    break;
-  }
+        default:
+            formattedMessage += "[U]";
+            break;
+    }
 
-  formattedMessage += QString(" %1%2\n").arg("", mPadding * 3).arg(aMessage);
+    formattedMessage += QString(" %1%2\n").arg("", mPadding * 3).arg(aMessage);
 
-  switch (mType) {
-  case LogType::File:
-    mCurrentFile->write(formattedMessage);
-    break;
+    switch (mType) {
+        case LogType::File:
+            mCurrentFile->write(formattedMessage);
+            break;
 
-  case LogType::Debug:
-    qDebug() << formattedMessage;
-    break;
+        case LogType::Debug:
+            qDebug() << formattedMessage;
+            break;
 
-  case LogType::Console:
-    printf("%s", formattedMessage.toLocal8Bit().data());
-    break;
+        case LogType::Console:
+            printf("%s", formattedMessage.toLocal8Bit().data());
+            break;
 
-  default:
-    break;
-  }
+        default:
+            break;
+    }
 }
 
 //---------------------------------------------------------------------------

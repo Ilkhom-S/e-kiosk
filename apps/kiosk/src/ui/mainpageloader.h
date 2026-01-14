@@ -286,4 +286,3 @@ class MainPageLoader : public QWidget {
     void emit_updaterLock(bool updaterLock);
     void emit_checkStatus54();
 };
-

@@ -52,8 +52,7 @@ namespace SDK {
             int checkInterval;
 
             bool operator==(const SConnection &aCopy) const {
-                return type == aCopy.type && name == aCopy.name &&
-                       proxy == aCopy.proxy &&
+                return type == aCopy.type && name == aCopy.name && proxy == aCopy.proxy &&
                        checkInterval == aCopy.checkInterval;
             }
         };

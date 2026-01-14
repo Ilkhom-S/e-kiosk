@@ -39,4 +39,3 @@ class AvtorizationToAdminIn : public QDialog {
     void sendCharacter(QChar character);
     void checkInputData();
 };
-

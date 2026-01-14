@@ -10,107 +10,104 @@
 #include "changepassword.h"
 #include "ui_changepassword.h"
 
-ChangePassword::ChangePassword(QWidget *parent)
-    : QDialog(parent), ui(new Ui::ChangePassword) {
-  ui->setupUi(this);
+ChangePassword::ChangePassword(QWidget *parent) : QDialog(parent), ui(new Ui::ChangePassword) {
+    ui->setupUi(this);
 
-  QRegExpValidator *secLoginRegValidator =
-      new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->newLogin);
-  ui->newLogin->setValidator(secLoginRegValidator);
+    QRegExpValidator *secLoginRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->newLogin);
+    ui->newLogin->setValidator(secLoginRegValidator);
 
-  QRegExpValidator *secPassRegValidator =
-      new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->newPassword);
-  ui->newPassword->setValidator(secPassRegValidator);
+    QRegExpValidator *secPassRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->newPassword);
+    ui->newPassword->setValidator(secPassRegValidator);
 
-  QRegExpValidator *secRepeatPassRegValidator =
-      new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->RepeatPass);
-  ui->RepeatPass->setValidator(secRepeatPassRegValidator);
+    QRegExpValidator *secRepeatPassRegValidator =
+        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->RepeatPass);
+    ui->RepeatPass->setValidator(secRepeatPassRegValidator);
 
-  KeyPud = new keyPud(this);
-  ui->layoutWgtKeyPud->addWidget(KeyPud);
-  this->connect(KeyPud, SIGNAL(characterGenerated(QChar)), this,
-                SLOT(sendCharacter(QChar)));
+    KeyPud = new keyPud(this);
+    ui->layoutWgtKeyPud->addWidget(KeyPud);
+    this->connect(KeyPud, SIGNAL(characterGenerated(QChar)), this, SLOT(sendCharacter(QChar)));
 
-  connect(ui->btn_ok, SIGNAL(clicked()), SLOT(btnok_clc()));
-  connect(ui->btn_cancel, SIGNAL(clicked()), SLOT(btncancel_clc()));
+    connect(ui->btn_ok, SIGNAL(clicked()), SLOT(btnok_clc()));
+    connect(ui->btn_cancel, SIGNAL(clicked()), SLOT(btncancel_clc()));
 }
 
-ChangePassword::~ChangePassword() { delete ui; }
+ChangePassword::~ChangePassword() {
+    delete ui;
+}
 void ChangePassword::btnok_clc() {
 
-  QString login = ui->newLogin->text().trimmed();
-  QString password = ui->newPassword->text().trimmed();
-  QString password2 = ui->RepeatPass->text().trimmed();
+    QString login = ui->newLogin->text().trimmed();
+    QString password = ui->newPassword->text().trimmed();
+    QString password2 = ui->RepeatPass->text().trimmed();
 
-  if (ui->newLogin->text().isEmpty() || ui->newPassword->text().isEmpty() ||
-      ui->RepeatPass->text().isEmpty()) {
-    QMessageBox msgBox(this);
-    msgBox.setWindowTitle("Ошибка!!!");
-    msgBox.setText("Заполните все поля!");
-    msgBox.setIcon(QMessageBox::Critical);
-    msgBox.setWindowFlags(Qt::WindowStaysOnTopHint);
-    msgBox.exec();
-    return;
-  }
+    if (ui->newLogin->text().isEmpty() || ui->newPassword->text().isEmpty() || ui->RepeatPass->text().isEmpty()) {
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle("Ошибка!!!");
+        msgBox.setText("Заполните все поля!");
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.setWindowFlags(Qt::WindowStaysOnTopHint);
+        msgBox.exec();
+        return;
+    }
 
-  if (password != password2) {
-    QMessageBox msgBox2(this);
-    msgBox2.setWindowTitle("Ошибка!!!");
-    msgBox2.setText("Пароль несовпадает!");
-    msgBox2.setIcon(QMessageBox::Critical);
-    msgBox2.setWindowFlags(Qt::WindowStaysOnTopHint);
-    msgBox2.exec();
-  } else {
-    QMessageBox msgBox3(this);
+    if (password != password2) {
+        QMessageBox msgBox2(this);
+        msgBox2.setWindowTitle("Ошибка!!!");
+        msgBox2.setText("Пароль несовпадает!");
+        msgBox2.setIcon(QMessageBox::Critical);
+        msgBox2.setWindowFlags(Qt::WindowStaysOnTopHint);
+        msgBox2.exec();
+    } else {
+        QMessageBox msgBox3(this);
 
-    msgBox3.setWindowTitle("Успешно!!!");
-    msgBox3.setText("Логин и пароль установлены!");
-    msgBox3.setIcon(QMessageBox::Information);
-    msgBox3.setWindowFlags(Qt::WindowStaysOnTopHint);
-    msgBox3.exec();
+        msgBox3.setWindowTitle("Успешно!!!");
+        msgBox3.setText("Логин и пароль установлены!");
+        msgBox3.setIcon(QMessageBox::Information);
+        msgBox3.setWindowFlags(Qt::WindowStaysOnTopHint);
+        msgBox3.exec();
 
-    ui->newLogin->clear();
-    ui->newPassword->clear();
-    ui->RepeatPass->clear();
+        ui->newLogin->clear();
+        ui->newPassword->clear();
+        ui->RepeatPass->clear();
 
-    emit emit_changepass(login, password);
+        emit emit_changepass(login, password);
 
-    this->close();
-  }
+        this->close();
+    }
 }
 
 void ChangePassword::btncancel_clc() {
-  this->close();
-  ui->newLogin->clear();
-  ui->newPassword->clear();
-  ui->RepeatPass->clear();
+    this->close();
+    ui->newLogin->clear();
+    ui->newPassword->clear();
+    ui->RepeatPass->clear();
 }
 
 void ChangePassword::sendCharacter(QChar character) {
-  QPointer<QWidget> w = focusWidget();
+    QPointer<QWidget> w = focusWidget();
 
-  if (!w)
-    return;
+    if (!w)
+        return;
 
-  int un = character.unicode();
+    int un = character.unicode();
 
-  QString a = QString(character);
-  if (un == 15405) {
-    un = Qt::Key_Backspace;
-    a = "";
-  }
-  if (un == 15934) {
-    un = Qt::Key_Tab;
-    a = "";
-  }
-  if (un == 15917) {
-    un = Qt::Key_Enter;
-    a = "";
-  }
-  if (un == 15420) {
-    return;
-  }
+    QString a = QString(character);
+    if (un == 15405) {
+        un = Qt::Key_Backspace;
+        a = "";
+    }
+    if (un == 15934) {
+        un = Qt::Key_Tab;
+        a = "";
+    }
+    if (un == 15917) {
+        un = Qt::Key_Enter;
+        a = "";
+    }
+    if (un == 15420) {
+        return;
+    }
 
-  QKeyEvent keyPress(QEvent::KeyPress, un, Qt::NoModifier, a);
-  QApplication::sendEvent(w, &keyPress);
+    QKeyEvent keyPress(QEvent::KeyPress, un, Qt::NoModifier, a);
+    QApplication::sendEvent(w, &keyPress);
 }

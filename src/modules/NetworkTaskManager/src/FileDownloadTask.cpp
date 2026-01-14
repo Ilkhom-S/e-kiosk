@@ -9,18 +9,21 @@
 #include "FileDataStream.h"
 #include "FileDownloadTask.h"
 
-FileDownloadTask::FileDownloadTask(const QUrl &aUrl, const QString &aPath)
-    : mUrl(aUrl), mPath(aPath) {
+FileDownloadTask::FileDownloadTask(const QUrl &aUrl, const QString &aPath) : mUrl(aUrl), mPath(aPath) {
     setUrl(mUrl);
     setDataStream(new FileDataStream(mPath));
     setFlags(NetworkTask::Continue);
 }
 
 //------------------------------------------------------------------------
-QString FileDownloadTask::getPath() const { return mPath; }
+QString FileDownloadTask::getPath() const {
+    return mPath;
+}
 
 //------------------------------------------------------------------------
-void FileDownloadTask::closeFile() { getDataStream()->close(); }
+void FileDownloadTask::closeFile() {
+    getDataStream()->close();
+}
 
 //------------------------------------------------------------------------
 void FileDownloadTask::resetFile() {

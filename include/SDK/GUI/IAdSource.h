@@ -9,24 +9,24 @@
 #include <Common/QtHeadersEnd.h>
 
 namespace SDK {
-namespace GUI {
+    namespace GUI {
 
-//---------------------------------------------------------------------------
-/// Интерфейс поставщика рекламы.
-class IAdSource {
-public:
-  /// Получить содержимое рекламного контента
-  virtual QString getContent(const QString &aName) const = 0;
+        //---------------------------------------------------------------------------
+        /// Интерфейс поставщика рекламы.
+        class IAdSource {
+          public:
+            /// Получить содержимое рекламного контента
+            virtual QString getContent(const QString &aName) const = 0;
 
-  /// Зарегистрировать событие в статистике
-  virtual void addEvent(const QString &aName,
-                        const QVariantMap &aParameters) = 0;
+            /// Зарегистрировать событие в статистике
+            virtual void addEvent(const QString &aName, const QVariantMap &aParameters) = 0;
 
-protected:
-  virtual ~IAdSource() {}
-};
+          protected:
+            virtual ~IAdSource() {
+            }
+        };
 
-} // namespace GUI
+    } // namespace GUI
 } // namespace SDK
 
 //---------------------------------------------------------------------------

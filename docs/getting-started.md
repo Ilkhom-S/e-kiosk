@@ -48,7 +48,13 @@ cmake --preset <your-preset>
 cmake --build build/<your-preset>
 ```
 
-1. **Run:**
+1. **VS Code IntelliSense Setup (Optional):**
+   - The project includes `.vscode/c_cpp_properties.json` with pre-configured include paths for Qt and project headers.
+   - If IntelliSense still shows include errors, ensure your Qt installation path matches the one in `c_cpp_properties.json` (default: `C:/Qt/5.15.2/msvc2019_64`).
+   - For Ninja builds, `compile_commands.json` is automatically generated for better IntelliSense.
+   - Reload VS Code window (Ctrl+Shift+P > "Developer: Reload Window") after configuration changes.
+
+---
 
 - Launch the desired app from `apps/` (e.g., `apps/kiosk/`).
 - Use your IDE's debugger or run the executable directly.

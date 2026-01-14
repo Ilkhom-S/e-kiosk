@@ -58,13 +58,11 @@ class ISysUtils {
     static QVariantMap getPrinterData(const QString &aPrinterName);
 
     /// Проверка принтера на ошибочное состояние
-    static void getPrinterStatus(const QString &aPrinterName,
-                                 TStatusCodes &aStatusCodes,
+    static void getPrinterStatus(const QString &aPrinterName, TStatusCodes &aStatusCodes,
                                  TStatusGroupNames &aGroupNames);
 
     /// Установить режим печати через очередь
-    static bool setPrintingQueuedMode(const QString &aPrinterName,
-                                      QString &aErrorMessage);
+    static bool setPrintingQueuedMode(const QString &aPrinterName, QString &aErrorMessage);
 
     /// Получить количество всех системных дескрипторов
     static bool getAllProcessHandleCount(quint64 &aCountOfHandles);
@@ -74,12 +72,12 @@ class ISysUtils {
         qint64 totalUsed;
         qint64 processUsed;
 
-        MemoryInfo() : total(0), totalUsed(0), processUsed(0) {}
+        MemoryInfo() : total(0), totalUsed(0), processUsed(0) {
+        }
     };
 
     /// Получить количество памяти, используемое процессом
-    static bool getProcessMemoryUsage(MemoryInfo &aMemoryInfo,
-                                      const QProcess *aProcess = nullptr);
+    static bool getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *aProcess = nullptr);
 
     struct SSignerInfo {
         QString name;
@@ -110,7 +108,8 @@ class ISysUtils {
         quint64 memoryUsage;
         quint64 handlers;
 
-        SProcessInfo() : id(0), memoryUsage(0), handlers(0) {}
+        SProcessInfo() : id(0), memoryUsage(0), handlers(0) {
+        }
     };
 
     /// Получить список работающих процессов

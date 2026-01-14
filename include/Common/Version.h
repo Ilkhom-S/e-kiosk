@@ -6,47 +6,45 @@
 #include <Common/QtHeadersEnd.h>
 
 namespace Humo {
-const QString ShortVersion = "3.0.0";
-const QString _Build = "202601131240";
-const QString Application = "EKiosk";
+    const QString ShortVersion = "3.0.0";
+    const QString _Build = "202601131240";
+    const QString Application = "EKiosk";
 
-inline const QString getBuild() {
+    inline const QString getBuild() {
 #if defined(_MSC_VER)
 #if (_MSC_VER == 1600)
-  return _Build + " MSVC-2010";
+        return _Build + " MSVC-2010";
 #elif (_MSC_VER == 1700)
-  return _Build + " MSVC-2012";
+        return _Build + " MSVC-2012";
 #elif (_MSC_VER == 1800)
-  return _Build + " MSVC-2013";
+        return _Build + " MSVC-2013";
 #elif (_MSC_VER == 1900)
-  return _Build + " MSVC-2015";
+        return _Build + " MSVC-2015";
 #elif (_MSC_VER == 1910)
-  return _Build + " MSVC-2017";
+        return _Build + " MSVC-2017";
 #elif (_MSC_VER == 1920)
-  return _Build + " MSVC-2019";
+        return _Build + " MSVC-2019";
 #elif (_MSC_VER == 1930)
-  return _Build + " MSVC-2022";
+        return _Build + " MSVC-2022";
 #else
-  return _Build + " MSVC-unknown";
+        return _Build + " MSVC-unknown";
 #endif
 #elif defined(__clang__)
-  return _Build + " Clang-" + QString::number(__clang_major__) + "." +
-         QString::number(__clang_minor__) + "." +
-         QString::number(__clang_patchlevel__);
+        return _Build + " Clang-" + QString::number(__clang_major__) + "." + QString::number(__clang_minor__) + "." +
+               QString::number(__clang_patchlevel__);
 #elif defined(__GNUC__)
-  return _Build + " GCC-" + QString::number(__GNUC__) + "." +
-         QString::number(__GNUC_MINOR__) + "." +
-         QString::number(__GNUC_PATCHLEVEL__);
+        return _Build + " GCC-" + QString::number(__GNUC__) + "." + QString::number(__GNUC_MINOR__) + "." +
+               QString::number(__GNUC_PATCHLEVEL__);
 #elif defined(__APPLE__)
-  return _Build + " AppleClang";
+        return _Build + " AppleClang";
 #else
-  return _Build + " UnknownCompiler";
+        return _Build + " UnknownCompiler";
 #endif
-}
+    }
 
-inline const QString getVersion() {
-  return ShortVersion + " build " + getBuild();
-}
+    inline const QString getVersion() {
+        return ShortVersion + " build " + getBuild();
+    }
 } // namespace Humo
 
 //---------------------------------------------------------------------------

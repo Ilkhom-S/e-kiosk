@@ -17,13 +17,11 @@ void testEnumPhonebookEntries() {
         RasApi::PhonebookEntryName name;
 
         while (e.getEntry(name)) {
-            std::wcout << (name.isSystem() ? "SYSTEM " : "USER ")
-                       << name.phonebookPath().c_str() << ": "
+            std::wcout << (name.isSystem() ? "SYSTEM " : "USER ") << name.phonebookPath().c_str() << ": "
                        << name.name().c_str() << std::endl;
         }
     } else {
-        std::wcout << "Failed to initialize PhonebookEntryEnumerator: "
-                   << e.getLastError() << std::endl;
+        std::wcout << "Failed to initialize PhonebookEntryEnumerator: " << e.getLastError() << std::endl;
     }
 }
 
@@ -37,18 +35,15 @@ void testEnumDevices(RasApi::EDeviceType::Enum aType) {
 
         while (d.getDevice(device)) {
             if (RasApi::EDeviceType::ToEnum(device.type()) == aType) {
-                std::wcout << device.type().c_str() << ": "
-                           << device.name().c_str() << std::endl;
+                std::wcout << device.type().c_str() << ": " << device.name().c_str() << std::endl;
             }
 
-            if (RasApi::EDeviceType::ToEnum(device.type()) ==
-                RasApi::EDeviceType::Modem) {
+            if (RasApi::EDeviceType::ToEnum(device.type()) == RasApi::EDeviceType::Modem) {
                 gDevices.push_back(device.name());
             }
         }
     } else {
-        std::wcout << "Failed to initialize DeviceEnumerator: "
-                   << d.getLastError() << std::endl;
+        std::wcout << "Failed to initialize DeviceEnumerator: " << d.getLastError() << std::endl;
     }
 }
 
@@ -63,15 +58,12 @@ void testEnumConnections() {
         while (c.getConnection(cn)) {
             gConnections.push_back(cn.entryName());
 
-            std::wcout << cn.entryName().c_str() << " on "
-                       << RasApi::EDeviceType::ToString(cn.deviceType()).c_str()
-                       << "(" << cn.deviceName().c_str()
-                       << "), GlobalCredsUsed=" << cn.isGlobalCredsUsed()
+            std::wcout << cn.entryName().c_str() << " on " << RasApi::EDeviceType::ToString(cn.deviceType()).c_str()
+                       << "(" << cn.deviceName().c_str() << "), GlobalCredsUsed=" << cn.isGlobalCredsUsed()
                        << " System=" << cn.isSystem() << std::endl;
         }
     } else {
-        std::wcout << "Failed to initialize ConnectionEnumerator: "
-                   << c.getLastError() << std::endl;
+        std::wcout << "Failed to initialize ConnectionEnumerator: " << c.getLastError() << std::endl;
     }
 }
 
@@ -80,15 +72,11 @@ void testConnectionStatus() {
 
     gConnections.push_back(L"test_fake_connection");
 
-    for (std::list<std::wstring>::iterator i = gConnections.begin();
-         i != gConnections.end(); ++i) {
+    for (std::list<std::wstring>::iterator i = gConnections.begin(); i != gConnections.end(); ++i) {
         RasApi::EConnectionStatus::Enum status;
         RasApi::GetConnectionStatus(*i, status);
 
-        std::wcout << *i
-                   << (status == RasApi::EConnectionStatus::Connected
-                           ? ": connected "
-                           : ": disconnected ")
+        std::wcout << *i << (status == RasApi::EConnectionStatus::Connected ? ": connected " : ": disconnected ")
                    << std::endl;
     }
 }
@@ -97,8 +85,7 @@ void testCreatePhonebookEntry() {
     std::wcout << std::endl << "Testing connection creation..." << std::endl;
 
     if (gDevices.empty()) {
-        std::wcout << std::endl
-                   << "Cannot create, no modems available" << std::endl;
+        std::wcout << std::endl << "Cannot create, no modems available" << std::endl;
         return;
     }
 
@@ -110,8 +97,8 @@ void testCreatePhonebookEntry() {
     DWORD raserror = RasApi::ValidatePhonebookEntryName(entryName);
 
     if (raserror != ERROR_SUCCESS) {
-        std::wcout << L"RasApi: ValidatePhonebookEntryName failed: " << raserror
-                   << " " << RasApi::EErrorCode::ToString(raserror);
+        std::wcout << L"RasApi: ValidatePhonebookEntryName failed: " << raserror << " "
+                   << RasApi::EErrorCode::ToString(raserror);
         return;
     }
     // Заполняем параметры
@@ -119,8 +106,8 @@ void testCreatePhonebookEntry() {
     raserror = entry.getLastError();
 
     if (raserror != ERROR_SUCCESS) {
-        std::wcout << L"RasApi: PhonebookEntry failed to query structure size: "
-                   << raserror << " " << RasApi::EErrorCode::ToString(raserror);
+        std::wcout << L"RasApi: PhonebookEntry failed to query structure size: " << raserror << " "
+                   << RasApi::EErrorCode::ToString(raserror);
         return;
     }
 
@@ -134,23 +121,19 @@ void testCreatePhonebookEntry() {
     entry.setPhonebookEntryType(RasApi::EPhonebookEntry::Phone);
     entry.setEncriptionType(RasApi::EEncryptionType::Optional);
 
-    entry.setOptions(RasApi::EConnectionOption::RemoteDefaultGateway |
-                     RasApi::EConnectionOption::DisableLcpExtensions |
-                     RasApi::EConnectionOption::ModemLights |
-                     RasApi::EConnectionOption::SecureLocalFiles);
+    entry.setOptions(RasApi::EConnectionOption::RemoteDefaultGateway | RasApi::EConnectionOption::DisableLcpExtensions |
+                     RasApi::EConnectionOption::ModemLights | RasApi::EConnectionOption::SecureLocalFiles);
 
-    entry.setOptions2(RasApi::EConnectionOption2::Internet |
-                      RasApi::EConnectionOption2::SecureFileAndPrint |
-                      RasApi::EConnectionOption2::SecureClientForMSNet |
-                      RasApi::EConnectionOption2::DisableNbtOverIP |
+    entry.setOptions2(RasApi::EConnectionOption2::Internet | RasApi::EConnectionOption2::SecureFileAndPrint |
+                      RasApi::EConnectionOption2::SecureClientForMSNet | RasApi::EConnectionOption2::DisableNbtOverIP |
                       RasApi::EConnectionOption2::DontNegotiateMultilink);
 
     // Создаём
     raserror = RasApi::CreateNewPhonebookEntry(entryName, entry);
 
     if (raserror != ERROR_SUCCESS) {
-        std::wcout << L"RasApi: CreateNewPhonebookEntry failed: " << raserror
-                   << " " << RasApi::EErrorCode::ToString(raserror);
+        std::wcout << L"RasApi: CreateNewPhonebookEntry failed: " << raserror << " "
+                   << RasApi::EErrorCode::ToString(raserror);
         return;
     }
 
@@ -179,8 +162,7 @@ void testDial() {
     DWORD raserror = RasApi::Dial(entry);
 
     if (raserror != ERROR_SUCCESS) {
-        std::wcout << L"RasApi: Dial failed: " << raserror << " "
-                   << RasApi::EErrorCode::ToString(raserror);
+        std::wcout << L"RasApi: Dial failed: " << raserror << " " << RasApi::EErrorCode::ToString(raserror);
         return;
     }
 }
@@ -191,8 +173,7 @@ void testHangUp() {
     DWORD raserror = RasApi::HangUp(L"rasapitest_connection");
 
     if (raserror != ERROR_SUCCESS) {
-        std::wcout << L"RasApi: Dial failed: " << raserror << " "
-                   << RasApi::EErrorCode::ToString(raserror);
+        std::wcout << L"RasApi: Dial failed: " << raserror << " " << RasApi::EErrorCode::ToString(raserror);
         return;
     }
 }

@@ -21,11 +21,12 @@
 #include "TestClass.h"
 #include "TestThread.h"
 
-NetworkTaskManagerTestClass::NetworkTaskManagerTestClass()
-    : m_application("TestUnit", "1.0", 0, nullptr) {}
+NetworkTaskManagerTestClass::NetworkTaskManagerTestClass() : m_application("TestUnit", "1.0", 0, nullptr) {
+}
 
 //------------------------------------------------------------------------
-NetworkTaskManagerTestClass::~NetworkTaskManagerTestClass() {}
+NetworkTaskManagerTestClass::~NetworkTaskManagerTestClass() {
+}
 
 //------------------------------------------------------------------------
 void NetworkTaskManagerTestClass::httpGetTest() {
@@ -73,8 +74,7 @@ void NetworkTaskManagerTestClass::httpGetRegetTest() {
     QByteArray data = task->getDataStream()->readAll();
 
     // Получаем md5-хеш прочитанных данных
-    QString originalMD5 =
-        QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex();
+    QString originalMD5 = QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex();
 
     // Отрезаем половину прочитанных данных
     data.resize(data.size() / 2);

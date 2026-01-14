@@ -127,7 +127,9 @@ QString ISysUtils::getOSVersionInfo() {
 }
 
 //--------------------------------------------------------------------------------
-void ISysUtils::disableScreenSaver() { ::SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, nullptr, 0); }
+void ISysUtils::disableScreenSaver() {
+    ::SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, nullptr, 0);
+}
 
 //--------------------------------------------------------------------------------
 void ISysUtils::displayOn(bool aOn) {
@@ -154,7 +156,9 @@ void ISysUtils::displayOn(bool aOn) {
 }
 
 //--------------------------------------------------------------------------------
-QString ISysUtils::getLastErrorMessage() { return getErrorMessage(GetLastError()); }
+QString ISysUtils::getLastErrorMessage() {
+    return getErrorMessage(GetLastError());
+}
 
 //--------------------------------------------------------------------------------
 QString ISysUtils::getErrorMessage(ulong aError, bool aNativeLanguage) {
@@ -312,7 +316,9 @@ bool ISysUtils::getAllProcessHandleCount(quint64 &aCountOfHandles) {
 }
 
 //--------------------------------------------------------------------------------
-void ISysUtils::runScreenSaver() { SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_SCREENSAVE, 0); }
+void ISysUtils::runScreenSaver() {
+    SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_SCREENSAVE, 0);
+}
 
 //--------------------------------------------------------------------------------
 ISysUtils::TProcessInfo ISysUtils::getAllProcessInfo() {

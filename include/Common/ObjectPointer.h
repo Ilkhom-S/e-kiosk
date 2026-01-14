@@ -10,29 +10,35 @@
 
 //--------------------------------------------------------------------------------
 template <typename I> class ObjectPointer {
-  QPointer<QObject> mPtr;
+    QPointer<QObject> mPtr;
 
-public:
-  ObjectPointer() {}
-  ObjectPointer(I *aPtr) : mPtr(dynamic_cast<QObject *>(aPtr)) {}
+  public:
+    ObjectPointer() {
+    }
+    ObjectPointer(I *aPtr) : mPtr(dynamic_cast<QObject *>(aPtr)) {
+    }
 
-  ObjectPointer<I> &operator=(I *aPtr) {
-    mPtr = dynamic_cast<QObject *>(aPtr);
+    ObjectPointer<I> &operator=(I *aPtr) {
+        mPtr = dynamic_cast<QObject *>(aPtr);
 
-    return *this;
-  }
+        return *this;
+    }
 
-  operator bool() const {
-    return mPtr && dynamic_cast<I *>(mPtr.data()) != nullptr;
-  }
+    operator bool() const {
+        return mPtr && dynamic_cast<I *>(mPtr.data()) != nullptr;
+    }
 
-  operator I *() const { return data(); }
+    operator I *() const {
+        return data();
+    }
 
-  I *operator->() const {
-    return mPtr ? dynamic_cast<I *>(mPtr.data()) : nullptr;
-  }
+    I *operator->() const {
+        return mPtr ? dynamic_cast<I *>(mPtr.data()) : nullptr;
+    }
 
-  I *data() const { return mPtr ? dynamic_cast<I *>(mPtr.data()) : nullptr; }
+    I *data() const {
+        return mPtr ? dynamic_cast<I *>(mPtr.data()) : nullptr;
+    }
 };
 
 //--------------------------------------------------------------------------------

@@ -15,23 +15,24 @@
 class ILog;
 
 namespace SDK {
-namespace GUI {
+    namespace GUI {
 
-//---------------------------------------------------------------------------
-/// Интерфейс графического движка.
-class IGraphicsEngine {
-public:
-  /// Возвращает указатель на владельца движка.
-  virtual IGraphicsHost *getGraphicsHost() = 0;
+        //---------------------------------------------------------------------------
+        /// Интерфейс графического движка.
+        class IGraphicsEngine {
+          public:
+            /// Возвращает указатель на владельца движка.
+            virtual IGraphicsHost *getGraphicsHost() = 0;
 
-  /// Возвращает лог.
-  virtual ILog *getLog() const = 0;
+            /// Возвращает лог.
+            virtual ILog *getLog() const = 0;
 
-protected:
-  virtual ~IGraphicsEngine() {}
-};
+          protected:
+            virtual ~IGraphicsEngine() {
+            }
+        };
 
-} // namespace GUI
+    } // namespace GUI
 } // namespace SDK
 
 //---------------------------------------------------------------------------

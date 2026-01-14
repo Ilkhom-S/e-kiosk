@@ -42,12 +42,10 @@ namespace SDK {
 
             /// Сохраняет параметры данного плагина во внешнее хранилище.
             /// Используется плагинами.
-            virtual bool saveConfiguration(const QString &aInstancePath,
-                                           const QVariantMap &aParameters) = 0;
+            virtual bool saveConfiguration(const QString &aInstancePath, const QVariantMap &aParameters) = 0;
 
             /// Возвращает ядро расширяемого приложения.
-            virtual IExternalInterface *
-            getInterface(const QString &aInterface) = 0;
+            virtual IExternalInterface *getInterface(const QString &aInterface) = 0;
 
             /// Возвращает связанный загрузчик.
             virtual IPluginLoader *getPluginLoader() const = 0;

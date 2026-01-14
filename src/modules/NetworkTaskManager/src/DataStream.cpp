@@ -10,7 +10,8 @@ DataStream::DataStream(QIODevice *aDevice) : m_stream(aDevice) {
 }
 
 //------------------------------------------------------------------------
-DataStream::~DataStream() {}
+DataStream::~DataStream() {
+}
 
 //------------------------------------------------------------------------
 bool DataStream::clear() {
@@ -20,7 +21,9 @@ bool DataStream::clear() {
 }
 
 //------------------------------------------------------------------------
-bool DataStream::seek(qint64 aOffset) { return m_stream->seek(aOffset); }
+bool DataStream::seek(qint64 aOffset) {
+    return m_stream->seek(aOffset);
+}
 
 //------------------------------------------------------------------------
 bool DataStream::write(const QByteArray &aData) {
@@ -46,9 +49,13 @@ QByteArray DataStream::readAll() {
 }
 
 //------------------------------------------------------------------------
-qint64 DataStream::size() const { return m_stream->size(); }
+qint64 DataStream::size() const {
+    return m_stream->size();
+}
 
 //------------------------------------------------------------------------
-void DataStream::close() { m_stream->close(); }
+void DataStream::close() {
+    m_stream->close();
+}
 
 //------------------------------------------------------------------------

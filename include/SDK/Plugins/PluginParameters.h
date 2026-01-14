@@ -35,17 +35,14 @@ namespace SDK {
             };
 
             /// Конструктор.
-            SPluginParameter()
-                : type(Unknown), required(false), readOnly(false) {}
+            SPluginParameter() : type(Unknown), required(false), readOnly(false) {
+            }
 
-            SPluginParameter(const QString &aName, Type aType, bool aRequired,
-                             const QString &aTitle, const QString &aDescription,
-                             const QVariant &aDefaultValue,
-                             const QVariantMap &aPossibleValues = QVariantMap(),
-                             bool aReadOnly = false)
-                : type(aType), required(aRequired), readOnly(aReadOnly),
-                  name(aName), title(aTitle), description(aDescription),
-                  defaultValue(aDefaultValue), possibleValues(aPossibleValues) {
+            SPluginParameter(const QString &aName, Type aType, bool aRequired, const QString &aTitle,
+                             const QString &aDescription, const QVariant &aDefaultValue,
+                             const QVariantMap &aPossibleValues = QVariantMap(), bool aReadOnly = false)
+                : type(aType), required(aRequired), readOnly(aReadOnly), name(aName), title(aTitle),
+                  description(aDescription), defaultValue(aDefaultValue), possibleValues(aPossibleValues) {
                 if (aType == Type::Bool) {
                     possibleValues.clear();
                     possibleValues.insert("true", true);
@@ -57,28 +54,26 @@ namespace SDK {
             /// !! Если в сервисном меню необходимо останавливаться на позиции с
             /// незаполненным по умолчанию значением - надо ставить QVariant(),
             /// а не "" !!
-            SPluginParameter(const QString &aName, bool aRequired,
-                             const QString &aTitle, const QString &aDescription,
-                             const QVariant &aDefaultValue,
-                             const QStringList &aPossibleValues,
-                             bool aReadOnly = false)
-                : type(Set), name(aName), required(aRequired), title(aTitle),
-                  description(aDescription), defaultValue(aDefaultValue),
-                  readOnly(aReadOnly) {
+            SPluginParameter(const QString &aName, bool aRequired, const QString &aTitle, const QString &aDescription,
+                             const QVariant &aDefaultValue, const QStringList &aPossibleValues, bool aReadOnly = false)
+                : type(Set), name(aName), required(aRequired), title(aTitle), description(aDescription),
+                  defaultValue(aDefaultValue), readOnly(aReadOnly) {
                 foreach (const QString &value, aPossibleValues) {
                     possibleValues.insert(value, value);
                 }
             }
 
-            bool isValid() { return type && !name.isEmpty(); }
+            bool isValid() {
+                return type && !name.isEmpty();
+            }
 
-            Type type;     /// Тип.
-            bool required; /// Определяет обязателен ли параметр.
-            bool readOnly; /// Параметр только для чтения.
-            QString name;  /// Имя параметра (уникальный идентификатор в рамках
-                           /// приложения).
-            QString title; /// Имя параметра для GUI (содержит локализуемое
-                           /// значение).
+            Type type;             /// Тип.
+            bool required;         /// Определяет обязателен ли параметр.
+            bool readOnly;         /// Параметр только для чтения.
+            QString name;          /// Имя параметра (уникальный идентификатор в рамках
+                                   /// приложения).
+            QString title;         /// Имя параметра для GUI (содержит локализуемое
+                                   /// значение).
             QString description;   /// Описание параметра для GUI (содержит
                                    /// локализуемое значение).
             QVariant defaultValue; /// Значение по умолчанию.
@@ -90,8 +85,7 @@ namespace SDK {
         typedef QVector<SPluginParameter> TParameterList;
 
         /// Функция для поиска нужного параметра.
-        inline SPluginParameter
-        findParameter(const QString &aName, const TParameterList &aParameters) {
+        inline SPluginParameter findParameter(const QString &aName, const TParameterList &aParameters) {
             foreach (const SPluginParameter &parameter, aParameters) {
                 if (parameter.name == aName) {
                     return parameter;

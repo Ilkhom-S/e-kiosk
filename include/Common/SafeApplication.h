@@ -11,8 +11,8 @@ class SafeQApplication : public SingleApplication {
     Q_OBJECT
 
   public:
-    SafeQApplication(int &aArgc, char **aArgv)
-        : SingleApplication(aArgc, aArgv) {}
+    SafeQApplication(int &aArgc, char **aArgv) : SingleApplication(aArgc, aArgv) {
+    }
 
   public:
     virtual bool notify(QObject *aReceiver, QEvent *aEvent);

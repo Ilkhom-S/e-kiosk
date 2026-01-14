@@ -18,15 +18,15 @@ namespace EConnectionTypes {
 
     inline QString getConnectionTypeName(Enum aType) {
         switch (aType) {
-        case Unmanaged:
-            return "Unmanaged"; /// Неуправляемое/локальная сеть.
-        case Dialup:
-            return "Dialup"; /// Модемное соединение.
-        case Vpn:
-            return "Vpn"; /// VPN.
-        case Unknown:
-        default:
-            return "Unknown";
+            case Unmanaged:
+                return "Unmanaged"; /// Неуправляемое/локальная сеть.
+            case Dialup:
+                return "Dialup"; /// Модемное соединение.
+            case Vpn:
+                return "Vpn"; /// VPN.
+            case Unknown:
+            default:
+                return "Unknown";
         }
     }
 } // namespace EConnectionTypes

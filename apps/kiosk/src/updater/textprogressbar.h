@@ -20,4 +20,3 @@ class TextProgressBar {
     qint64 maximum;
     int iteration;
 };
-

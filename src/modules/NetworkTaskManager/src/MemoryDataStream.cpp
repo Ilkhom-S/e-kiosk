@@ -8,7 +8,8 @@
 // Project
 #include "MemoryDataStream.h"
 
-MemoryDataStream::MemoryDataStream() : DataStream(new QBuffer()) {}
+MemoryDataStream::MemoryDataStream() : DataStream(new QBuffer()) {
+}
 
 //------------------------------------------------------------------------
 bool MemoryDataStream::clear() {

@@ -9,24 +9,22 @@
 typedef std::function<void()> TVoidMethod;
 
 //---------------------------------------------------------------------------
-class ExitAction
-{
-public:
-	ExitAction(const TVoidMethod& aAction) : mAction(aAction) {}
-	~ExitAction()
-	{
-		if (mAction)
-			mAction();
-	}
+class ExitAction {
+  public:
+    ExitAction(const TVoidMethod &aAction) : mAction(aAction) {
+    }
+    ~ExitAction() {
+        if (mAction)
+            mAction();
+    }
 
-	bool reset(const TVoidMethod& aAction = TVoidMethod())
-	{
-		mAction = aAction;
-		return true;
-	}
+    bool reset(const TVoidMethod &aAction = TVoidMethod()) {
+        mAction = aAction;
+        return true;
+    }
 
-private:
-	TVoidMethod mAction;
+  private:
+    TVoidMethod mAction;
 };
 
 //---------------------------------------------------------------------------

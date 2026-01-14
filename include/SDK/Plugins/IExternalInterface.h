@@ -8,7 +8,8 @@ namespace SDK {
         //---------------------------------------------------------------------------
         class IExternalInterface {
           protected:
-            virtual ~IExternalInterface() {}
+            virtual ~IExternalInterface() {
+            }
         };
 
         //---------------------------------------------------------------------------

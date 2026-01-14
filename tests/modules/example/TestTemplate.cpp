@@ -10,9 +10,13 @@ class TestTemplate : public QObject {
     Q_OBJECT
 
   private slots:
-    void initTestCase() { /* setup */ }
-    void cleanupTestCase() { /* teardown */ }
-    void testBasic() { QVERIFY(true); }
+    void initTestCase() { /* setup */
+    }
+    void cleanupTestCase() { /* teardown */
+    }
+    void testBasic() {
+        QVERIFY(true);
+    }
 };
 
 QTEST_MAIN(TestTemplate)

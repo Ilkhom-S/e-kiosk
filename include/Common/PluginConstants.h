@@ -4,8 +4,8 @@
 
 //---------------------------------------------------------------------------
 namespace CPluginParameters {
-/// Общие константы.
-const char EKVersion[] = "e_kiosk_version";
+    /// Общие константы.
+    const char EKVersion[] = "e_kiosk_version";
 } // namespace CPluginParameters
 
 //---------------------------------------------------------------------------

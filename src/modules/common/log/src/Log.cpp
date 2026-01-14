@@ -9,24 +9,28 @@
 extern LogManager gLogManager;
 
 //---------------------------------------------------------------------------
-ILog *ILog::getInstance() { return getInstance("Default"); }
+ILog *ILog::getInstance() {
+    return getInstance("Default");
+}
 
 //---------------------------------------------------------------------------
 ILog *ILog::getInstance(const QString &aName) {
-  return getInstance(aName, LogType::File);
+    return getInstance(aName, LogType::File);
 }
 
 //---------------------------------------------------------------------------
 ILog *ILog::getInstance(const QString &aName, LogType::Enum aType) {
-  return gLogManager.getLog(aName, aType);
+    return gLogManager.getLog(aName, aType);
 }
 
 //---------------------------------------------------------------------------
-void ILog::logRotateAll() { gLogManager.logRotateAll(); }
+void ILog::logRotateAll() {
+    gLogManager.logRotateAll();
+}
 
 //---------------------------------------------------------------------------
 void ILog::setGlobalLevel(LogLevel::Enum aMaxLogLevel) {
-  gLogManager.setGlobalLevel(aMaxLogLevel);
+    gLogManager.setGlobalLevel(aMaxLogLevel);
 }
 
 //---------------------------------------------------------------------------

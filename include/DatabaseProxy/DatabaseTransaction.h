@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "IDatabaseProxy.h"
+
 //---------------------------------------------------------------------------
 class DatabaseTransaction {
     IDatabaseProxy *mProxy;

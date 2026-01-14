@@ -244,4 +244,3 @@ class AdminDialog : public QDialog {
     void emit_execToMain(AdminCommand::AdminCmd cmd);
     void emit_unlockOpenAdminSts();
 };
-

@@ -1,70 +1,67 @@
-#ifndef CLASSACCEPTOR_H
-#define CLASSACCEPTOR_H
+#pragma once
 
 // System
 #include "dev/CCTalk.h"
 
 namespace AcceptorModel {
-const QString CCTalk = "CCTalk";
+    const QString CCTalk = "CCTalk";
 }
 
 class CCTalk;
 
 class ClassAcceptor : public QThread {
-  Q_OBJECT
+    Q_OBJECT
 
-public:
-  ClassAcceptor(QObject *parent = 0);
+  public:
+    ClassAcceptor(QObject *parent = 0);
 
-  void setValidator(QString name);
-  void setPortName(QString portName);
-  void setPortListInfo(QStringList port_list);
-  void setPartNumber(QString partNumber);
-  bool openPort();
-  bool isItYou(QStringList &comList, QString &validator_name, QString &com_str,
-               QString &validator_coment);
+    void setValidator(QString name);
+    void setPortName(QString portName);
+    void setPortListInfo(QStringList port_list);
+    void setPartNumber(QString partNumber);
+    bool openPort();
+    bool isItYou(QStringList &comList, QString &validator_name, QString &com_str, QString &validator_coment);
 
-  void closeThis();
-  bool pollState();
+    void closeThis();
+    bool pollState();
 
-  QString nowValidatorName;
-  QString nowPortName;
-  QString nowComent;
+    QString nowValidatorName;
+    QString nowPortName;
+    QString nowComent;
 
-  QString v_PartNumber;
-  QString v_SerialNumber;
+    QString v_PartNumber;
+    QString v_SerialNumber;
 
-  QString phone_number;
+    QString phone_number;
 
-  int status;
+    int status;
 
-public slots:
-  void execCommand(int cmd);
-  void getStatusFromAcceptor(int sts, QString comment);
+  public slots:
+    void execCommand(int cmd);
+    void getStatusFromAcceptor(int sts, QString comment);
 
-private:
-  CCTalk *CCTalkAcceptor;
+  private:
+    CCTalk *CCTalkAcceptor;
 
-  QString comPort;
-  QStringList portList;
-  QString validatorName;
+    QString comPort;
+    QStringList portList;
+    QString validatorName;
 
-  bool CIsItYou(QString &validat_name);
+    bool CIsItYou(QString &validat_name);
 
-  int cmdExec;
+    int cmdExec;
 
-  virtual void run();
+    virtual void run();
 
-private slots:
-  void termanatedThread();
+  private slots:
+    void termanatedThread();
 
-signals:
-  void eNominal(int nominal);
-  void eNominalDuplicate(int nominal);
-  void showHideDialogAnimate(bool status);
-  void emitStatusCoinAcceptor(int sts, QString comment);
-  void emitLoging(int status, QString title, QString text);
-  void emitBillTable(QString bill_table);
+  signals:
+    void eNominal(int nominal);
+    void eNominalDuplicate(int nominal);
+    void showHideDialogAnimate(bool status);
+    void emitStatusCoinAcceptor(int sts, QString comment);
+    void emitLoging(int status, QString title, QString text);
+    void emitBillTable(QString bill_table);
 };
 
-#endif // CLASSACCEPTOR_H

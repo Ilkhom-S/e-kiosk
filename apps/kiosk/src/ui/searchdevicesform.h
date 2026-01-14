@@ -31,4 +31,3 @@ class SearchDevicesForm : public QWidget {
     QMovie *movie;
     QMovie *srchMovie;
 };
-

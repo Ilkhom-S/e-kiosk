@@ -29,8 +29,7 @@ class IWatchServiceClient {
     virtual bool isConnected() const = 0;
 
     /// Выполнение команды aCommand на модуле aModule c параметрами aParams.
-    virtual void execute(QString aCommand, QString aModule = QString(),
-                         QString aParams = QString()) = 0;
+    virtual void execute(QString aCommand, QString aModule = QString(), QString aParams = QString()) = 0;
 
     /// Завершение работы всех модулей и сторожевого сервиса.
     virtual void stopService() = 0;
@@ -90,7 +89,6 @@ class IWatchServiceClient {
 //---------------------------------------------------------------------------
 IWatchServiceClient *
 createWatchServiceClient(const QString &aClientName,
-                         IWatchServiceClient::PingThread aThread =
-                             IWatchServiceClient::DedicateThread);
+                         IWatchServiceClient::PingThread aThread = IWatchServiceClient::DedicateThread);
 
 //---------------------------------------------------------------------------

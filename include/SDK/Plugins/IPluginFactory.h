@@ -24,8 +24,7 @@ namespace SDK {
         class IPluginFactory {
           public:
             /// Инициализирует библиотеку.
-            virtual bool initialize(IKernel *aKernel,
-                                    const QString &aDirectory) = 0;
+            virtual bool initialize(IKernel *aKernel, const QString &aDirectory) = 0;
 
             /// Завершает работу библиотеки.
             virtual void shutdown() = 0;
@@ -46,38 +45,30 @@ namespace SDK {
             virtual QStringList getPluginList() const = 0;
 
             /// Возвращает описание параметров плагина.
-            virtual TParameterList
-            getPluginParametersDescription(const QString &aPath) const = 0;
+            virtual TParameterList getPluginParametersDescription(const QString &aPath) const = 0;
 
             /// Возвращает список работающих в данный момнет объектов.
-            virtual QStringList
-            getRuntimeConfigurations(const QString &aPathFilter) const = 0;
+            virtual QStringList getRuntimeConfigurations(const QString &aPathFilter) const = 0;
 
             /// Возвращает список сохранённых конфигураций.
-            virtual QStringList
-            getPersistentConfigurations(const QString &aPathFilter) const = 0;
+            virtual QStringList getPersistentConfigurations(const QString &aPathFilter) const = 0;
 
             /// Возвращает параметры для данного плагина, загруженные из
             /// конфигурационного файла или внешнего хранилища.
-            virtual QVariantMap
-            getPluginInstanceConfiguration(const QString &aPath,
-                                           const QString &aInstance) = 0;
+            virtual QVariantMap getPluginInstanceConfiguration(const QString &aPath, const QString &aInstance) = 0;
 
             /// Создаёт плагин.
-            virtual IPlugin *createPlugin(const QString &aInstancePath,
-                                          const QString &aConfigPath) = 0;
+            virtual IPlugin *createPlugin(const QString &aInstancePath, const QString &aConfigPath) = 0;
 
             /// Создаёт плагин.
-            virtual std::weak_ptr<IPlugin>
-            createPluginPtr(const QString &aInstancePath,
-                            const QString &aConfigPath) = 0;
+            virtual std::weak_ptr<IPlugin> createPluginPtr(const QString &aInstancePath,
+                                                           const QString &aConfigPath) = 0;
 
             /// Удаляет плагин.
             virtual bool destroyPlugin(IPlugin *aPlugin) = 0;
 
             /// Удаляет плагин.
-            virtual bool
-            destroyPlugin(const std::weak_ptr<IPlugin> &aPlugin) = 0;
+            virtual bool destroyPlugin(const std::weak_ptr<IPlugin> &aPlugin) = 0;
 
             /// Локализует названия и описания параметров.
             virtual void translateParameters() = 0;
@@ -88,7 +79,6 @@ namespace SDK {
 } // namespace SDK
 
 // Объявление интерфейса, доступного из библиотеки.
-Q_DECLARE_INTERFACE(SDK::Plugin::IPluginFactory,
-                    "Cyberplat.*.System.PluginFactory")
+Q_DECLARE_INTERFACE(SDK::Plugin::IPluginFactory, "Cyberplat.*.System.PluginFactory")
 
 //------------------------------------------------------------------------------

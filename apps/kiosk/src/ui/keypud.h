@@ -49,4 +49,3 @@ class keyPud : public QWidget {
   signals:
     void characterGenerated(QChar character);
 };
-

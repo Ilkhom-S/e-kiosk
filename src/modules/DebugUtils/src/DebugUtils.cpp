@@ -15,9 +15,9 @@
 //---------------------------------------------------------------------------
 void DumpCallstack(QStringList &aStack, void *aContext) {
 #ifdef Q_OS_WIN
-  QStackWalker walker;
+    QStackWalker walker;
 
-  aStack = walker.getCallstack(aContext);
+    aStack = walker.getCallstack(aContext);
 #else
 #error The method DumpCallStack is not implemented for the current platform.
 #endif // Q_OS_WIN
@@ -25,11 +25,11 @@ void DumpCallstack(QStringList &aStack, void *aContext) {
 
 //---------------------------------------------------------------------------
 void SetUnhandledExceptionsHandler(TExceptionHandler aHandler) {
-  _set_abort_behavior(0, _WRITE_ABORT_MSG);
-  _set_abort_behavior(0, _CALL_REPORTFAULT);
+    _set_abort_behavior(0, _WRITE_ABORT_MSG);
+    _set_abort_behavior(0, _CALL_REPORTFAULT);
 
 #ifdef Q_OS_WIN
-  SetUnhandledExceptionFilter(aHandler);
+    SetUnhandledExceptionFilter(aHandler);
 #else
 #error The method SetUnhandledExceptionsHandler is not implemented for the current platform.
 #endif // Q_OS_WIN

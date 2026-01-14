@@ -78,4 +78,3 @@ class RegistrationDialog : public QDialog {
     void emitCloseForm();
     void emitCreateNewConnection(QVariantMap data);
 };
-

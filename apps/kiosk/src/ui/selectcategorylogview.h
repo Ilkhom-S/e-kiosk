@@ -29,4 +29,3 @@ class SelectCategoryLogView : public QDialog {
     void deSelectAll();
     void showLikeThis();
 };
-

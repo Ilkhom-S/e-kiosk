@@ -26,4 +26,3 @@ class LoadingGprsForm : public QWidget {
   private:
     Ui::LoadingGprsForm *ui;
 };
-

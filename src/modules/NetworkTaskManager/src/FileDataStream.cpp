@@ -10,8 +10,7 @@
 
 FileDataStream::FileDataStream(const QString &aPath) : DataStream(nullptr) {
     m_stream = QSharedPointer<QIODevice>(new QFile(aPath));
-    m_stream->open(QIODevice::ReadWrite | QIODevice::Append |
-                   QIODevice::Unbuffered);
+    m_stream->open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Unbuffered);
 }
 
 //------------------------------------------------------------------------

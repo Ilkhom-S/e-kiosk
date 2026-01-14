@@ -28,8 +28,7 @@ TestThread::~TestThread() {
 
 //------------------------------------------------------------------------
 void TestThread::run() {
-    QString filePath =
-        BasicApplication::getInstance()->getWorkingDirectory() + "/" + TestFile;
+    QString filePath = BasicApplication::getInstance()->getWorkingDirectory() + "/" + TestFile;
 
     // Remove existing file to ensure clean download
     QFile::remove(filePath);
@@ -55,6 +54,8 @@ void TestThread::onTaskComplete() {
 }
 
 //------------------------------------------------------------------------
-bool TestThread::taskComplete() const { return m_taskComplete; }
+bool TestThread::taskComplete() const {
+    return m_taskComplete;
+}
 
 //------------------------------------------------------------------------

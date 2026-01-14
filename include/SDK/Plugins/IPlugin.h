@@ -43,8 +43,7 @@ namespace SDK {
             virtual QVariantMap getConfiguration() const = 0;
 
             /// Настраивает плагин.
-            virtual void
-            setConfiguration(const QVariantMap &aConfiguration) = 0;
+            virtual void setConfiguration(const QVariantMap &aConfiguration) = 0;
 
             /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл
             /// или хранилище прикладной программы).
@@ -55,14 +54,17 @@ namespace SDK {
 
           protected:
             friend class PluginDeleter;
-            virtual ~IPlugin() {}
+            virtual ~IPlugin() {
+            }
         };
 
         //---------------------------------------------------------------------------
         /// Удалятор для смарт-поинтера
         class PluginDeleter {
           public:
-            void operator()(IPlugin *aPlugin) { delete aPlugin; }
+            void operator()(IPlugin *aPlugin) {
+                delete aPlugin;
+            }
         };
 
         //------------------------------------------------------------------------------

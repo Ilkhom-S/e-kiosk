@@ -40,8 +40,7 @@
 #pragma warning(disable : 4005) // macro redefinition
 
 // Occurs in files auto-generated from .ui
-#pragma warning(                                                               \
-    disable : 4125) // decimal digit terminates octal escape sequence
+#pragma warning(disable : 4125) // decimal digit terminates octal escape sequence
 
 #elif defined(__clang__)
 #pragma clang diagnostic push
