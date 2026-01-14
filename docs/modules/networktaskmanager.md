@@ -187,6 +187,20 @@ target_link_libraries(MyApp PRIVATE NetworkTaskManager)
 
 ---
 
+## API reference (summary)
+
+| Class | Key methods / fields | Description |
+| --- | --- | --- |
+| `NetworkTaskManager` | `NetworkTaskManager(ILog*)`, `setProxy(QNetworkProxy)`, `setDownloadSpeedLimit(int)`, `addTask(NetworkTask*)`, `removeTask(NetworkTask*)`, `clearTasks()`, `setUserAgent()`, `getUserAgent()` | Manager for network tasks; handles queue, proxy, speed limiting, SSL and emits `networkTaskStatus(bool failure)` |
+| `NetworkTask` | `setType()`, `setUrl()`, `setTimeout()`, `setFlags()`, `setVerifier()`, `setDataStream()`, `waitForFinished()`, `getError()`, `errorString()`, `getSize()` | Represents a network request/task; supports blocking and async modes, progress via `onProgress` and completion via `onComplete` |
+| `FileDownloadTask` | `FileDownloadTask(QUrl, QString)`, `getPath()`, `resetFile()` | Resumable file download task using `FileDataStream` |
+| `DataStream / FileDataStream / MemoryDataStream` | `write()`, `readAll()`, `takeAll()`, `size()` | Abstraction for data sink/source (file / memory) |
+| `IVerifier / Md5Verifier / Sha256Verifier` | `verify(NetworkTask*, QByteArray)` | Content verification interface and common implementations |
+
+> Note: For full API details, check the headers in `include/NetworkTaskManager/` and the source in `src/modules/NetworkTaskManager/src/`.
+
+---
+
 ## Testing
 
 - Unit tests: `tests/modules/NetworkTaskManager/` — e.g., `TestThread.cpp` demonstrates a FileDownloadTask download and completion check.

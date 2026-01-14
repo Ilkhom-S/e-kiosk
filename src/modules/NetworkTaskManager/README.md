@@ -37,3 +37,11 @@ This module supports per-task flags that change execution behavior. Document use
 - **IgnoreErrors**: Attempt to continue downloads on transient errors until timeout is reached.
 
 When adding new flags or modes, update both the docs page and this short reference so contributors can quickly see implementation implications.
+
+## API summary (short)
+
+- **Primary classes:** `NetworkTaskManager`, `NetworkTask`, `FileDownloadTask`, `DataStream` (File/Mem), `IVerifier` and verifiers (`Md5Verifier`, `Sha256Verifier`).
+- **Common signals:** `NetworkTask::onProgress(qint64 current, qint64 total)`, `NetworkTask::onComplete()`, `NetworkTaskManager::networkTaskStatus(bool failure)`.
+- **Where to look for full signatures:** `include/NetworkTaskManager/` and `src/modules/NetworkTaskManager/src/`.
+
+Keep this summary updated when APIs change so reviewers can quickly spot relevant changes.
