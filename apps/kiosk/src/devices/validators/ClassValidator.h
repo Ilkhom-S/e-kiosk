@@ -1,75 +1,72 @@
-#ifndef CLASSVALIDATOR_H
-#define CLASSVALIDATOR_H
+#pragma once
 
 // System
 #include "dev/CCNetSM.h"
 #include "dev/EBDS.h"
 
 namespace ValidatorModel {
-const QString CashCodeCCNET = "CashCode_CCNET";
-const QString MeiEBDS = "Mei";
+    const QString CashCodeCCNET = "CashCode_CCNET";
+    const QString MeiEBDS = "Mei";
 } // namespace ValidatorModel
 
 class CCNetSm;
 
 class ClassValidator : public QThread {
-  Q_OBJECT
+    Q_OBJECT
 
-public:
-  ClassValidator(QObject *parent = 0);
+  public:
+    ClassValidator(QObject *parent = 0);
 
-  void setValidator(QString name);
-  void setPortName(QString portName);
-  void setPortListInfo(QStringList port_list);
-  void setPartNumber(QString partNumber);
-  void setDBError(bool error);
+    void setValidator(QString name);
+    void setPortName(QString portName);
+    void setPortListInfo(QStringList port_list);
+    void setPartNumber(QString partNumber);
+    void setDBError(bool error);
 
-  bool openPort();
-  bool isItYou(QStringList &comList, QString &validator_name, QString &com_str,
-               QString &validator_coment);
+    bool openPort();
+    bool isItYou(QStringList &comList, QString &validator_name, QString &com_str, QString &validator_coment);
 
-  void closeThis();
-  bool pollState();
+    void closeThis();
+    bool pollState();
 
-  QString nowValidatorName;
-  QString nowPortName;
-  QString nowComent;
+    QString nowValidatorName;
+    QString nowPortName;
+    QString nowComent;
 
-  QString vPartNumber;
-  QString vSerialNumber;
+    QString vPartNumber;
+    QString vSerialNumber;
 
-  QVariantMap maxSum;
-  int status;
+    QVariantMap maxSum;
+    int status;
 
-  QString firmwareVersion;
+    QString firmwareVersion;
 
-public slots:
-  void execCommand(int cmd);
-  void getStatusFromValidator(int sts, QString comment);
+  public slots:
+    void execCommand(int cmd);
+    void getStatusFromValidator(int sts, QString comment);
 
-private:
-  CCNetSm *CCNetValidator;
-  EBDS *EBDSValidator;
+  private:
+    CCNetSm *CCNetValidator;
+    EBDS *EBDSValidator;
 
-  QString comPort;
-  QStringList portList;
-  QString validatorName;
+    QString comPort;
+    QStringList portList;
+    QString validatorName;
 
-  bool CIsItYou(QString &validat_name);
+    bool CIsItYou(QString &validat_name);
 
-  int cmdExec;
+    int cmdExec;
 
-  virtual void run();
+    virtual void run();
 
-signals:
-  void eNominal(int nominal);
-  void eNominalDuplicate(int nominal);
-  void showHideDialogAnimate(bool status);
-  void showHideDialogReturnNominal(bool status);
-  void emitStatusValidator(int sts, QString comment);
-  void emitLog(int status, QString title, QString text);
-  void emitValidatorLog(int status, QByteArray data, QString text);
-  void emitFirmwareUpdate(QString state);
+  signals:
+    void eNominal(int nominal);
+    void eNominalDuplicate(int nominal);
+    void showHideDialogAnimate(bool status);
+    void showHideDialogReturnNominal(bool status);
+    void emitStatusValidator(int sts, QString comment);
+    void emitLog(int status, QString title, QString text);
+    void emitValidatorLog(int status, QByteArray data, QString text);
+    void emitFirmwareUpdate(QString state);
 };
 
-#endif // CLASSVALIDATOR_H
