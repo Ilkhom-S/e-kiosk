@@ -72,6 +72,6 @@ namespace SDK {
 } // namespace SDK
 
 // Объявление интерфейса, доступного из библиотеки.
-// Q_DECLARE_INTERFACE(SDK::Plugin::IPlugin, "Cyberplat.*.System.Plugin")
+// Q_DECLARE_INTERFACE(SDK::Plugin::IPlugin, "Humo.*.System.Plugin")
 
 //------------------------------------------------------------------------------

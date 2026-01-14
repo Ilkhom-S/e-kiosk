@@ -14,9 +14,9 @@
 // SDK
 #include <SDK/PaymentProcessor/Core/Event.h>
 #include <SDK/PaymentProcessor/Core/IEventService.h>
-#include <SDK/PaymentProcessor/CyberPlat/Request.h>
-#include <SDK/PaymentProcessor/CyberPlat/Response.h>
-#include <SDK/PaymentProcessor/CyberPlat/RequestSender.h>
+#include <SDK/PaymentProcessor/Humo/Request.h>
+#include <SDK/PaymentProcessor/Humo/Response.h>
+#include <SDK/PaymentProcessor/Humo/RequestSender.h>
 
 class NetworkTaskManager;
 class NetworkTask;
@@ -30,15 +30,15 @@ namespace SDK {
         namespace Scripting {
 
             //---------------------------------------------------------------------------
-            class Request : public SDK::PaymentProcessor::CyberPlat::Request {
+            class Request : public SDK::PaymentProcessor::Humo::Request {
               public:
                 Request(const QVariantMap &aRequestParameters);
             };
 
             //---------------------------------------------------------------------------
-            class Response : public SDK::PaymentProcessor::CyberPlat::Response {
+            class Response : public SDK::PaymentProcessor::Humo::Response {
               public:
-                Response(const SDK::PaymentProcessor::CyberPlat::Request &aRequest, const QString &aResponseString);
+                Response(const SDK::PaymentProcessor::Humo::Request &aRequest, const QString &aResponseString);
             };
 
             //------------------------------------------------------------------------------
@@ -88,11 +88,11 @@ namespace SDK {
 
               private:
                 /// Создаёт ответ по классу запроса и данным.
-                SDK::PaymentProcessor::CyberPlat::Response *
-                createResponse(const SDK::PaymentProcessor::CyberPlat::Request &aRequest, const QString &aData);
+                SDK::PaymentProcessor::Humo::Response *
+                createResponse(const SDK::PaymentProcessor::Humo::Request &aRequest, const QString &aData);
 
-                SDK::PaymentProcessor::CyberPlat::Response *postRequest(const QString &aUrl,
-                                                                        QVariantMap &aRequestParameters);
+                SDK::PaymentProcessor::Humo::Response *postRequest(const QString &aUrl,
+                                                                   QVariantMap &aRequestParameters);
 
                 Response *sendRequestInternal(Request *aRequest, const QString &aUrl);
 
@@ -106,8 +106,8 @@ namespace SDK {
                 QString mSD;
                 QString mAP;
                 QString mOP;
-                QSharedPointer<SDK::PaymentProcessor::CyberPlat::RequestSender> mRequestSender;
-                QFutureWatcher<SDK::PaymentProcessor::CyberPlat::Response *> mResponseWatcher;
+                QSharedPointer<SDK::PaymentProcessor::Humo::RequestSender> mRequestSender;
+                QFutureWatcher<SDK::PaymentProcessor::Humo::Response *> mResponseWatcher;
                 QFutureWatcher<Response *> mResponseSendReceiptWatcher;
             };
 

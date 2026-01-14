@@ -1,5 +1,6 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QDebug>
 #include <QSignalSpy>
 #include <QtTest/QtTest>
 #include <Common/QtHeadersEnd.h>
@@ -9,6 +10,11 @@
 
 // Project
 #include "WatchServiceClient.h"
+
+static int __test_watch_service_client_startup = []() {
+    qDebug() << "TestWatchServiceClient: startup";
+    return 0;
+}();
 
 class TestableWatchServiceClient : public WatchServiceClient {
   public:

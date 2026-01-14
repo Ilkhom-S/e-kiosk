@@ -29,7 +29,7 @@ namespace CConnection {
     const int PingTimeout = 30 * 1000; // 30 секунд
 
     /// Хост по умолчанию для проверки соединения.
-    const QString DefaultCheckHost = "http://mon.cyberplat.com:80/ping";
+    const QString DefaultCheckHost = "http://mon.Humo.com:80/ping";
 
     /// Строка ответа по умолчанию для проверки соединения.
     const QString DefaultCheckResponse = "";
