@@ -175,7 +175,7 @@ ek_enable_static_analysis(kiosk CPPCHECK CLANG_TIDY)
 
 ## See Also
 
-- [docs/build-guide.md](../docs/build-guide.md)
-- [docs/coding-standards.md](../docs/coding-standards.md)
-- [docs/migration-todo.md](../docs/migration-todo.md)
-- [docs/architecture.md](../docs/architecture.md)
+- [Build Guide](../docs/build-guide.md)
+- [Coding Standards](../docs/coding-standards.md)
+- [Migration TODO](../docs/migration-todo.md)
+- [Architecture](../docs/architecture.md)
