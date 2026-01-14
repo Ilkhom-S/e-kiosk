@@ -7,6 +7,13 @@ function(ek_add_library TARGET_NAME)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     add_library(${TARGET_NAME} STATIC ${ARG_SOURCES})
+    # Ensure Qt auto-processing (moc/uic/rcc) runs for library targets that use Qt
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        AUTOMOC ON
+        AUTOUIC ON
+        AUTORCC ON
+    )
+
     # Guard setting archive output directory if it's defined
     set(_props)
     if(DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)

@@ -1,5 +1,5 @@
 {
   "name": "ekiosk",
   "version": "1.0.0",
-  "dependencies": ["boost-function"]
+  "dependencies": ["boost-function", "boost-property-tree", "boost-foreach"]
 }

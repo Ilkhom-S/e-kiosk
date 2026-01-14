@@ -5,8 +5,15 @@ file(GLOB SETTINGSMANAGER_SOURCES
     src/*.h
 )
 
+# Ensure Qt components are found for this module
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
+
+# Find Boost components used by this module
+find_package(Boost REQUIRED COMPONENTS property_tree foreach)
+
 ek_add_library(SettingsManager
     SOURCES ${SETTINGSMANAGER_SOURCES}
     QT_MODULES Core
-    DEPENDS boost
+    DEPENDS Boost::property_tree Boost::foreach
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
 )

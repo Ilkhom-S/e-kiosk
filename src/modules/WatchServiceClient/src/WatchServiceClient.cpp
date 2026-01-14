@@ -10,7 +10,8 @@
 #include <Common/QtHeadersEnd.h>
 
 // Modules
-#include <Common/Application.h>
+#include <Common/BasicApplication.h>
+#include <Common/ILog.h>
 
 // ThirdParty
 #include <boost/bind.hpp>

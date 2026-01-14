@@ -25,3 +25,5 @@ ek_add_test(TestQFileLogger
     DEPENDS ek_common Log
 )
 
+# SettingsManager tests moved to tests/modules/SettingsManager
+
