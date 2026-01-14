@@ -22,10 +22,25 @@ connect(task, &NetworkTask::finished, this, &MyClass::onResponse);
 
 ## Features
 
-- Request queue and automatic retries
-- Connection pooling and timeouts
-- SSL/TLS configuration and certificate validation
-- Request/response logging integration
+- Request types: **GET**, **POST**, **PUT**, **HEAD**
+- Request queue with synchronous (blocking) and asynchronous modes
+- Flags to control behavior: **BlockingMode**, **Continue** (resume), **IgnoreErrors**
+- Resumable file downloads via `FileDownloadTask` + `FileDataStream` (supports continue/partial downloads)
+- Data stream types: `FileDataStream`, `MemoryDataStream`, and custom `DataStream` implementations
+- Content verification via `IVerifier` (provided `Md5Verifier`, `Sha256Verifier` implementations)
+- Per-task timeouts and timeout handling
+- Download speed limiting (`setDownloadSpeedLimit`) to throttle bandwidth
+- Proxy support (`setProxy`) and User-Agent configuration (`setUserAgent` / `getUserAgent`)
+- Access to request and response headers
+- Progress and completion signals: `onProgress`, upload/download progress, `onComplete`
+- SSL certificate handling and SSL error callbacks
+- Connection pooling and reuse via an internal `QNetworkAccessManager`
+- Ability to add/remove/clear tasks and wait for a task to finish (`waitForFinished`)
+- Rich error reporting including verification states (`VerifyFailed`, `TaskFailedButVerified`)
+- Integration with the `Log` subsystem for request/response logging
+
+---
+
 
 ---
 
@@ -47,8 +62,43 @@ ProxyPort=
 ## Usage / API highlights
 
 - `NetworkTaskManager::instance()` — obtain the manager
-- `ntm->get(url)` / `ntm->post(url, data)` — create tasks
-- `NetworkTask` signals and methods for response handling
+- `ntm->addTask(task)` / `ntm->removeTask(task)` — manage tasks
+- `ntm->setProxy(...)`, `ntm->setDownloadSpeedLimit(...)`, `ntm->setUserAgent(...)` — global configuration
+- `NetworkTask` API: set type (Get/Post/Put), setUrl, setTimeout, setFlags (BlockingMode/Continue/IgnoreErrors), setVerifier, setDataStream
+- Signals: `onProgress(qint64,current, qint64 total)`, `onComplete()`; manager emits `networkTaskStatus(bool failure)` for network failures
+
+---
+
+### Example: resumable file download with verification
+
+```cpp
+#include "NetworkTaskManager/FileDownloadTask.h"
+#include "NetworkTaskManager/NetworkTaskManager.h"
+#include "NetworkTaskManager/hashVerifier.h" // Md5Verifier/Sha256Verifier
+
+FileDownloadTask task(QUrl("https://example.com/file.bin"), "C:/tmp/file.bin");
+
+task.setTimeout(60 * 1000); // 60s
+// Resume if partial file exists
+task.setFlags(NetworkTask::Continue);
+// Verify downloaded content
+task.setVerifier(new Md5Verifier("expected-md5-hex"));
+
+auto ntm = NetworkTaskManager::instance();
+ntm->addTask(&task);
+
+// blocking wait (if task is in BlockingMode or to wait for completion)
+task.waitForFinished();
+
+if (task.getError() == NetworkTask::NoError) {
+    // success
+} else {
+    qWarning() << "Download failed:" << task.errorString();
+}
+```
+
+---
+
 
 ---
 
@@ -60,29 +110,20 @@ target_link_libraries(MyApp PRIVATE NetworkTaskManager)
 
 ---
 
-## Testing
-
-Unit tests are located in `tests/modules/NetworkTaskManager/`.
-Run them using the project's test target:
-
-```bash
-cmake --build build --target test -R NetworkTaskManager
-```
-
-Or run tests directly with `ctest`:
-
-```bash
-ctest -R NetworkTaskManager
-```
-
----
-
 ## Migration notes (Qt6)
 
 - `QNetworkReply::error()` (Qt5) => `QNetworkReply::errorOccurred` (Qt6)
 
 ---
 
+## Testing
+
+- Unit tests: `tests/modules/NetworkTaskManager/` — e.g., `TestThread.cpp` demonstrates a FileDownloadTask download and completion check.
+- Run tests using the project test target or `ctest -R NetworkTaskManager`.
+
+---
+
 ## Further reading
 
 - Implementation & layout: `src/modules/NetworkTaskManager/README.md` (internal notes and contributor guidance)
+- See `tests/modules/NetworkTaskManager/TestThread.cpp` for a simple download test example.
