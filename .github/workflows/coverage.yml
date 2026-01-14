@@ -1,0 +1,48 @@
+name: Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build lcov genhtml qtbase5-dev qtbase5-dev-tools libqt5network5 libqt5core5a
+
+      - name: Configure (coverage)
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON
+
+      - name: Build
+        run: cmake --build build -j 2
+
+      - name: Run tests
+        run: cmake --build build --target test -- -j 2
+
+      - name: Capture coverage (lcov)
+        run: |
+          lcov --directory build --capture --output-file build/coverage.info || true
+          lcov --remove build/coverage.info '/usr/*' --output-file build/coverage.info || true
+          genhtml build/coverage.info --output-directory build/coverage-report || true
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: build/coverage-report
+
+      - name: Upload to Codecov (optional)
+        if: env.CODECOV_TOKEN != ''
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          bash <(curl -s https://codecov.io/bash) -f build/coverage.info || true

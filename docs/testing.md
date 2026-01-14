@@ -77,6 +77,44 @@ ek_add_test(TestNetworkTaskManager
 - CI runs the test suite on each PR; all tests must pass before merging.
 - If a change adds or modifies tests, include a brief note in the PR description about the new or changed tests.
 
+## Coverage (local & CI)
+
+We provide a coverage build option and a CI job that produces an HTML coverage report as an artifact.
+
+### Local coverage
+
+1. Configure with coverage enabled:
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON
+cmake --build build -j
+```
+
+1. Run the tests (ctest or via the `test` target):
+
+```bash
+cmake --build build --target test
+# or
+cd build && ctest -V
+```
+
+1. Generate coverage:
+
+```bash
+lcov --directory build --capture --output-file build/coverage.info
+lcov --remove build/coverage.info '/usr/*' --output-file build/coverage.info
+genhtml build/coverage.info --output-directory build/coverage-report
+# open build/coverage-report/index.html in a browser
+
+```
+
+> Requirements: `lcov` and `genhtml` must be installed (e.g., `sudo apt install lcov genhtml`).
+
+### CI coverage
+
+- The CI job `coverage` runs on Ubuntu and produces an HTML coverage report uploaded as an artifact (`coverage-report`).
+- Optionally, if `CODECOV_TOKEN` is configured in the repository secrets, CI will upload `coverage.info` to Codecov.
+
 ## Troubleshooting
 
 - Use `ctest -V -R <pattern>` to see verbose logs for failing tests.
@@ -84,4 +122,4 @@ ek_add_test(TestNetworkTaskManager
 
 ---
 
-If you'd like, I can add a small test template and example CMake snippet to `tests/` to help contributors get started.
+I added a small test template under `tests/modules/example/TestTemplate.cpp` and an accompanying `CMakeLists.txt` (`tests/modules/example/CMakeLists.txt`). Add more targeted templates into the appropriate `tests/modules/<Module>/` directories as needed.
