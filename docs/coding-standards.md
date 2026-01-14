@@ -6,6 +6,7 @@
 - Follow Qt coding conventions for signals/slots, naming, and file structure.
 - Each class should have a .cpp/.h pair.
 - UI files should use .ui and be edited with Qt Designer.
+- **Header Guards:** Use `#pragma once` for all header files to prevent multiple inclusions.
 
 ## Formatting
 
