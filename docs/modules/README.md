@@ -61,11 +61,12 @@ Provides HTTP/HTTPS network operations and task management.
 Each module documentation includes:
 
 - **Purpose**: Why the module exists and what problems it solves
-- **Structure**: Folder layout and file organization
+- **Structure**: Folder layout and file organization (kept in `src/modules/<module>/README.md`)
 - **Dependencies**: Required libraries and frameworks
+- **Platform support**: Supported platforms and notes (Windows, Linux, macOS)
 - **Usage**: Code examples and integration patterns
 - **CMake Integration**: How to link and build with the module
-- **Testing**: Unit test information
+- **Testing**: Unit and module test locations and commands (see the [Testing Guide](../testing.md) for details)
 - **Migration Notes**: Guidance for adopting the module
 
 ## Adding New Modules
@@ -76,6 +77,12 @@ When adding a new module:
 2. Place the .md file in this directory
 3. Update this README.md with the new module entry
 4. Update the main [architecture documentation](../architecture.md) index
+
+**Testing checklist for new modules:**
+
+- Add tests under `tests/modules/<Module>/` or `tests/unit/` as appropriate.
+- Add the test to CMake using `ek_add_test()` so tests run in CI and via `ctest`.
+- Add a **Testing** section to `docs/modules/<module>.md` that lists the test files and commands to run them locally.
 
 ## Dependencies Between Modules
 

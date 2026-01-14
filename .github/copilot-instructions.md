@@ -182,6 +182,11 @@ Checklist for authors and AI agents (Copilot):
 - If the original module docs included a file-structure block, move it to `src/modules/<module>/README.md` and replace in `docs/modules/<module>.md` with a short "Implementation & layout" pointer.
 - Add an entry for the module in `docs/modules/README.md` (index) and update `docs/getting-started.md` policy notes when applicable.
 - Run a markdown linter and link-checker locally or in CI, fix lint issues (headings spacing, fenced code languages, no inline HTML) and broken links before opening a PR.
+- **Testing documentation requirement:** The `Testing` section in `docs/modules/<module>.md` must include:
+  - Where the tests live (relative path), e.g., `tests/modules/<module>/`
+  - The exact commands to run the tests locally (ctest patterns or `cmake --build --target test -R <pattern>`)
+  - Any environment variables, external services, or prerequisites (e.g., openssl, hardware) required by the tests
+  - Notes about test categorization (unit/integration/slow) and whether tests are flaky or require CI-only execution.
 - Use conventional commit messages: `docs(modules): ...` for these changes.
 
 Always include a **Platform Compatibility** section for every module, specifying which platforms are supported and any known limitations.
