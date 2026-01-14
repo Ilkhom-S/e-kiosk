@@ -1,62 +1,90 @@
-# NetworkTaskManager Module
+# NetworkTaskManager Module ✅
 
 ## Purpose
 
-The NetworkTaskManager module provides HTTP/HTTPS network operations for EKiosk applications. It handles request queuing, retry logic, SSL configuration, and response processing in a thread-safe manner.
+The NetworkTaskManager module provides a centralized, thread-safe layer for HTTP/HTTPS network operations used by EKiosk applications: request queuing, retries, SSL configuration, timeouts, and response processing.
 
-## Structure
+---
 
-```text
-src/modules/NetworkTaskManager/
-├── CMakeLists.txt          # Build configuration
-├── README.md               # Detailed module documentation
-├── res/
-│   └── *.qrc               # Qt resources
-└── src/
-    ├── NetworkTaskManager.h # Main manager interface
-    ├── NetworkTaskManager.cpp # Implementation
-    ├── NetworkTask.h        # Individual task interface
-    ├── NetworkTask.cpp      # Task implementation
-    ├── SslConfiguration.h   # SSL settings
-    └── SslConfiguration.cpp # SSL implementation
+## Quick start 🔧
 
-include/NetworkTaskManager/
-├── NetworkTaskManager.h    # Public headers
-├── NetworkTask.h
-├── SslConfiguration.h
-└── MemoryDataStream.h      # Data stream utilities
+```cpp
+#include "NetworkTaskManager/NetworkTaskManager.h"
+
+auto ntm = NetworkTaskManager::instance();
+
+// Simple GET request
+NetworkTask* task = ntm->get(QUrl("https://api.example.com/data"));
+connect(task, &NetworkTask::finished, this, &MyClass::onResponse);
+
+// POST with data
+QByteArray postData = createRequest();
+NetworkTask* post = ntm->post(url, postData);
+post->setHeader("Content-Type", "application/json");
 ```
 
-## Dependencies
+> Tip: Prefer high-level `NetworkTask` APIs over direct `QNetworkAccessManager` calls for consistent retry, logging and SSL handling. 💡
 
-- **Qt Core & Network**: For HTTP operations and threading
-- **Log module**: For request/response logging
-- **SettingsManager module**: For configuration storage
+---
 
-## Platform Compatibility
+## Features
 
-- **Windows**: Fully supported
-- **Linux**: Fully supported
-- **macOS**: Fully supported
+- Request queue and automatic retries
+- Connection pooling and timeouts
+- SSL/TLS configuration and certificate validation
+- Request/response logging integration
+- Thread-safe operations suitable for background work
 
-## Usage
+---
 
-See the module's [README.md](src/modules/NetworkTaskManager/README.md) for detailed usage examples and API documentation.
+## Configuration
 
-## CMake Integration
+The module reads settings from the `SettingsManager` under a `[Network]` section. Typical settings:
+
+```ini
+[Network]
+Timeout=30000
+RetryCount=3
+VerifySsl=true
+ProxyHost=
+ProxyPort=
+```
+
+---
+
+## Key files
+
+| File                   | Purpose                               |
+| ---------------------- | ------------------------------------- |
+| `NetworkTaskManager.h` | Main singleton manager                |
+| `NetworkTask.h`        | Represents an individual network task |
+| `SslConfiguration.h`   | SSL and certificate settings          |
+
+---
+
+## Integration
+
+Link against the module in your CMake target:
 
 ```cmake
 target_link_libraries(MyApp PRIVATE NetworkTaskManager)
 ```
 
-## Testing
+Unit tests live under `tests/modules/NetworkTaskManager/`.
 
-Unit tests are located in `tests/modules/NetworkTaskManager/`. Run with:
+---
 
-```bash
-cmake --build build --target test
-```
+## Migration notes (Qt6)
 
-## Migration Notes
+- `QNetworkReply::error()` (Qt5) => `QNetworkReply::errorOccurred` (Qt6)
 
-Replace direct QNetworkAccessManager usage with this module for consistent network handling across the application.
+---
+
+## Source & Further reading
+
+- Canonical docs: `docs/modules/networktaskmanager.md` (this file)
+- Module source: [`src/modules/NetworkTaskManager/README.md`](../../src/modules/NetworkTaskManager/README.md)
+
+---
+
+_If you'd like, I can add examples, sequence diagrams, or an API table to this page._

@@ -47,6 +47,15 @@ Network connectivity management and monitoring.
 - **Dependencies**: Qt Core, Windows RAS APIs, NetworkTaskManager
 - **Platform**: Windows-only
 
+### [NetworkTaskManager Module](networktaskmanager.md)
+
+Provides HTTP/HTTPS network operations and task management.
+
+- **Purpose**: Centralized network requests, retries, and SSL handling
+- **Key Features**: Request queue and retries, connection pooling, SSL/TLS configuration, timeout handling, request/response logging
+- **Dependencies**: Qt Core, Qt Network, Log, SettingsManager
+- **Platform**: Cross-platform (Windows, Linux, macOS)
+
 ## Module Organization
 
 Each module documentation includes:
