@@ -1,8 +1,8 @@
-# BaseApplication Module
+# BasicApplication Module
 
 ## Purpose
 
-BaseApplication is a Qt application wrapper that provides single-instance enforcement, test mode detection and basic logging initialization for EKiosk executables.
+BasicApplication is a Qt application wrapper that provides configuration loading from INI files, single-instance enforcement, test mode detection, logging initialization, and cross-platform OS utilities for EKiosk executables. It serves as the base class for all EKiosk applications, ensuring consistent behavior and settings management.
 
 ---
 
@@ -12,7 +12,23 @@ BaseApplication is a Qt application wrapper that provides single-instance enforc
 #include <Common/BasicApplication.h>
 
 int main(int argc, char *argv[]) {
-    BaseApplication app(argc, argv);
+    BasicApplication app("MyApp", "1.0.0", argc, argv);
+    if (!app.isPrimaryInstance()) return 1;
+
+    // App is ready with settings loaded, logging initialized
+    MainWindow w;
+    w.show();
+    return app.exec(); // If using Qt, wrap in BasicQtApplication
+}
+```
+
+For Qt GUI apps with translation support:
+
+```cpp
+#include <Common/BasicApplication.h>
+
+int main(int argc, char *argv[]) {
+    BasicQtApplication<QApplication> app("MyApp", "1.0.0", argc, argv);
     if (!app.isPrimaryInstance()) return 1;
 
     MainWindow w;
@@ -25,52 +41,114 @@ int main(int argc, char *argv[]) {
 
 ## Features
 
-- Single-instance enforcement (via SingleApplication)
-- Test mode detection (CLI or env var)
-- Automatic logging initialization (ILog)
+- **Configuration Loading**: Automatically loads settings from `appname.ini` and user-specific `user.ini`
+- **Working Directory Management**: Configurable via INI for flexible deployment
+- **Logging**: Integrated ILog with configurable levels from user settings
+- **Single-instance Enforcement**: Prevents multiple instances via SingleApplication
+- **Test Mode Detection**: CLI argument or environment variable for development
+- **OS Utilities**: Cross-platform OS version detection
+- **Qt Integration**: BasicQtApplication template for Qt apps with translation loading
 
 ---
 
 ## Platform support
 
-| Platform | Status  | Notes                                  |
-| -------- | ------- | -------------------------------------- |
-| Windows  | ✅ Full | Supported via SingleApplication and Qt |
-| Linux    | ✅ Full | Supported via SingleApplication and Qt |
-| macOS    | ✅ Full | Supported via SingleApplication and Qt |
+| Platform | Status  | Notes                                        |
+| -------- | ------- | -------------------------------------------- |
+| Windows  | ✅ Full | Full support with COM initialization for WMI |
+| Linux    | ✅ Full | Supported via Qt and SingleApplication       |
+| macOS    | ✅ Full | Supported via Qt and SingleApplication       |
 
 ---
 
 ## Configuration
 
-Enable test mode with `app.exe test` or `EKIOSK_TEST_MODE=1` environment variable for development scenarios.
+BasicApplication loads configuration from two INI files:
+
+1. **Main Configuration** (`appname.ini`): Located in the same directory as the executable. Contains application-wide settings.
+2. **User Configuration** (`user.ini`): Located in the user data directory (specified by `common/user_data_path` in main config). Contains user-specific overrides.
+
+### Main Configuration Keys (`appname.ini`)
+
+- `common/working_directory`: Overrides the default working directory (executable's directory). Can be absolute or relative path.
+- `common/user_data_path`: Directory for user-specific data and `user.ini` (relative to working directory).
+
+### User Configuration Keys (`user.ini`)
+
+- `log/level`: Global log level (integer). Valid range: 0 (Off) to 5 (Max). Maps to LogLevel enum.
+
+### Example `appname.ini`
+
+```ini
+[common]
+working_directory=../data
+user_data_path=userdata
+```
+
+### Example `user.ini`
+
+```ini
+[log]
+level=3
+```
+
+### Test Mode
+
+Enable test mode (disables kiosk restrictions) via:
+
+- Command line: `app.exe test`
+- Environment variables: `EKIOSK_TEST_MODE=1` or `TEST_MODE=1`
 
 ---
 
 ## Usage / API highlights
 
-- `BaseApplication app(argc, argv)` — initialize app with built-in behaviors
-- `app.isPrimaryInstance()` — check for primary instance
-- `app.getLog()` — access the configured logger
+- `BasicApplication(name, version, argc, argv)` — Initialize with app metadata and arguments
+- `app.getSettings()` — Access loaded QSettings (read-only for app config)
+- `app.getWorkingDirectory()` — Get configured working directory
+- `app.getLog()` — Access the initialized logger
+- `app.isTestMode()` — Check if running in test mode
+- `app.isPrimaryInstance()` — Check if this is the primary app instance
+- `BasicQtApplication<T>(name, version, argc, argv)` — For Qt apps (T = QApplication, QCoreApplication, etc.)
+- `qtApp.getQtApplication()` — Access the underlying Qt app instance
 
 ---
 
 ## Integration
 
-Link against `BaseApplication`, `SingleApplication` and `Log` in your CMake target:
+Link against required modules in your CMake target:
 
 ```cmake
-target_link_libraries(MyApp PRIVATE BaseApplication SingleApplication Log)
+target_link_libraries(MyApp PRIVATE BasicApplication SingleApplication Log DebugUtils SysUtils)
+```
+
+Use the EKiosk CMake helpers:
+
+```cmake
+ek_add_application(MyApp ...)
+target_link_libraries(MyApp PRIVATE BasicApplication ...)
 ```
 
 ---
 
 ## Testing
 
-Tests include single-instance and test mode checks. Run with `ctest -R BaseApplication`.
+Unit tests cover configuration loading, test mode detection, and single-instance behavior. Run with:
+
+```bash
+ctest -R BasicApplication
+```
+
+---
+
+## Migration notes
+
+- Adopted from TerminalClient repo with Qt5/Qt6 compatibility
+- BasicQtApplication template added for Qt app management
+- Configuration keys standardized (some legacy keys may differ)
 
 ---
 
 ## Further reading
 
-- Implementation & layout: `src/modules/common/application/README.md` (implementation notes and contributor guidance)"}]}
+- Implementation & layout: `src/modules/common/application/README.md` (internal structure, build notes)"}]}

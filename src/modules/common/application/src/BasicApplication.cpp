@@ -8,52 +8,122 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QProcess>
 #include <QtCore/QStandardPaths>
+#include <QtWidgets/QApplication>
 #include <Common/QtHeadersEnd.h>
 
 // Modules
 #include <Common/BasicApplication.h>
 #include <Common/ILog.h>
+#include <Common/SafeApplication.h>
+
+// System
+#include <DebugUtils/DebugUtils.h>
+#include <SysUtils/ISysUtils.h>
 
 // Project
-#include <SingleApplication>
+#include <singleapplication.h>
 
-static void messageHandler(QtMsgType type, const QMessageLogContext &context,
-                           const QString &msg);
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <comutil.h>
+#include <comdef.h>
+#endif
 
-BasicApplication::BasicApplication(const QString &aName,
-                                   const QString &aVersion, int aArgumentCount,
-                                   char **aArguments)
-    : m_name(aName), m_version(aVersion) {
-  // Parse provided argv for quick checks (e.g., 'test')
-  QStringList args;
-  for (int i = 0; i < aArgumentCount; ++i) {
-    args << QString::fromUtf8(aArguments[i]);
-  }
-  // detect test mode from args first, then environment
-  m_testMode = args.contains(QStringLiteral("test")) ||
-               qEnvironmentVariableIsSet("EKIOSK_TEST_MODE") ||
-               qEnvironmentVariableIsSet("TEST_MODE");
+static void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
-  // Initialize logger
-  m_log = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName,
-                            LogType::File);
-  if (m_log) {
-    m_log->setDestination(aName.isEmpty() ? "basic_app" : aName.toLower());
-    m_log->setLevel(LogLevel::Normal); // Default to Normal level
-  }
+#ifdef Q_OS_WIN
+// Note: ExceptionFilter is Windows-specific, using SEH to dump callstack on
+// unhandled exceptions. Adopted from TerminalClient repo for debugging crashes.
+LONG WINAPI ExceptionFilter(EXCEPTION_POINTERS *aException) {
+    QStringList stack;
+    DumpCallstack(stack, aException->ContextRecord);
 
-  // install Qt message handler that uses our logger
-  qInstallMessageHandler(messageHandler);
+    qCritical() << "Exited due to unknown exception. Callstack:\n" + stack.join("\n");
 
-  // Register singleton instance pointer
-  setInstance();
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+#endif
 
-  // Create SingleApplication for single-instance (freestanding mode)
-  // Allow secondary instances so helper/test processes can run and report
-  // state. The main application still exits early if not primary (see
-  // apps/kiosk/main.cpp).
-  m_singleApp.reset(new SingleApplication(
-      aArgumentCount, aArguments, true)); // true = allow secondary instances
+BasicApplication::BasicApplication(const QString &aName, const QString &aVersion, int aArgumentCount, char **aArguments)
+    : m_name(aName), m_version(aVersion), m_argumentCount(aArgumentCount), m_arguments(aArguments) {
+    // Parse provided argv for quick checks (e.g., 'test')
+    QStringList args;
+    for (int i = 0; i < aArgumentCount; ++i) {
+        args << QString::fromUtf8(aArguments[i]);
+    }
+    // detect test mode from args first, then environment
+    m_testMode = args.contains(QStringLiteral("test")) || qEnvironmentVariableIsSet("EKIOSK_TEST_MODE") ||
+                 qEnvironmentVariableIsSet("TEST_MODE");
+
+    // Инициализируем настройки из .ini файла на основе пути к исполняемому
+    // файлу
+    QFileInfo info(QString::fromLocal8Bit(m_arguments[0]));
+    QString settingsFilePath =
+        QDir::toNativeSeparators(info.absolutePath() + QDir::separator() + info.completeBaseName() + ".ini");
+    m_settings.reset(new QSettings(ISysUtils::rmBOM(settingsFilePath), QSettings::IniFormat));
+    m_settings->setIniCodec("UTF-8");
+
+    // Устанавливаем рабочий каталог
+    m_workingDirectory = info.absolutePath();
+    if (m_settings->contains("common/working_directory")) {
+        QString directory = m_settings->value("common/working_directory").toString();
+        m_workingDirectory = QDir::toNativeSeparators(QDir::cleanPath(
+            (QDir::isAbsolutePath(directory) ? "" : (info.absolutePath() + QDir::separator())) + directory));
+    }
+
+    // Register singleton instance pointer
+    setInstance();
+
+    // Выставим уровень логирования из user.ini
+    QString userFilePath = m_workingDirectory + QDir::separator() +
+                           m_settings->value("common/user_data_path").toString() + QDir::separator() + "user.ini";
+    QSettings userSettings(ISysUtils::rmBOM(userFilePath), QSettings::IniFormat);
+    if (userSettings.contains("log/level")) {
+        int level = userSettings.value("log/level").toInt();
+        if (level < LogLevel::Off)
+            level = LogLevel::Off;
+        else if (level > LogLevel::Max)
+            level = LogLevel::Max;
+        ILog::setGlobalLevel(static_cast<LogLevel::Enum>(level));
+    }
+
+    // Initialize logger
+    m_log = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::File);
+    if (m_log) {
+        m_log->setDestination(aName.isEmpty() ? "basic_app" : aName.toLower());
+        m_log->setLevel(LogLevel::Normal); // Default to Normal level
+    }
+
+    // install Qt message handler that uses our logger
+    qInstallMessageHandler(messageHandler);
+
+    // Create SingleApplication for single-instance (freestanding mode)
+    // Allow secondary instances so helper/test processes can run and report
+    // state. The main application still exits early if not primary (see
+    // apps/kiosk/main.cpp).
+    m_singleApp.reset(new SingleApplication(aArgumentCount, aArguments, true)); // true = allow secondary instances
+
+    // Выводим стандартный заголовок в лог
+    if (m_log) {
+        m_log->write(LogLevel::Normal, "**********************************************************");
+        m_log->write(LogLevel::Normal, QString("Application: %1").arg(getName()));
+        m_log->write(LogLevel::Normal, QString("File: %1").arg(getFileName()));
+        m_log->write(LogLevel::Normal, QString("Version: %1").arg(getVersion()));
+        m_log->write(LogLevel::Normal, QString("Operating system: %1").arg(getOSVersion()));
+        m_log->write(LogLevel::Normal, "**********************************************************");
+    }
+
+#ifdef Q_OS_WIN
+    // Инициализация COM Security для работы с WMI
+    CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+    HRESULT hr = CoInitializeSecurity(nullptr, -1, nullptr, nullptr, RPC_C_AUTHN_LEVEL_DEFAULT,
+                                      RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_NONE, nullptr);
+    if (FAILED(hr)) {
+        LOG(m_log, LogLevel::Error,
+            QString("CoInitializeSecurity failed: %1.")
+                .arg(QString::fromWCharArray((const wchar_t *)_com_error(hr).ErrorMessage())));
+    }
+#endif
 }
 
 BasicApplication::~BasicApplication() = default;
@@ -62,111 +132,149 @@ BasicApplication::~BasicApplication() = default;
 
 BasicApplication *BasicApplication::s_instance = nullptr;
 
-void BasicApplication::setInstance() { s_instance = this; }
+//---------------------------------------------------------------------------
+// Устанавливает экземпляр приложения.
+void BasicApplication::setInstance() {
+    s_instance = this;
+}
 
-BasicApplication *BasicApplication::getInstance() { return s_instance; }
+//---------------------------------------------------------------------------
+// Возвращает экземпляр приложения.
+BasicApplication *BasicApplication::getInstance() {
+    return s_instance;
+}
 
+//---------------------------------------------------------------------------
+// Возвращает имя приложения.
 QString BasicApplication::getName() const {
-  if (!m_name.isEmpty())
-    return m_name;
-  return QCoreApplication::applicationName();
+    if (!m_name.isEmpty())
+        return m_name;
+    return QCoreApplication::applicationName();
 }
 
+//---------------------------------------------------------------------------
+// Возвращает версию приложения.
 QString BasicApplication::getVersion() const {
-  if (!m_version.isEmpty())
-    return m_version;
-  return QCoreApplication::applicationVersion();
+    if (!m_version.isEmpty())
+        return m_version;
+    return QCoreApplication::applicationVersion();
 }
 
+//---------------------------------------------------------------------------
+// Возвращает имя исполняемого файла.
 QString BasicApplication::getFileName() const {
-  return QFileInfo(QCoreApplication::applicationFilePath()).fileName();
+    return QFileInfo(QCoreApplication::applicationFilePath()).fileName();
 }
 
+//---------------------------------------------------------------------------
+// Возвращает тип/версию операционной системы.
 QString BasicApplication::getOSVersion() const {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-  return QSysInfo::prettyProductName();
+    return ISysUtils::getOSVersionInfo();
 #else
-  return QStringLiteral("Unknown OS");
+    return QStringLiteral("Unknown OS");
 #endif
 }
 
+//---------------------------------------------------------------------------
+// Возвращает рабочий каталог приложения (может быть задан в .ini файле).
 QString BasicApplication::getWorkingDirectory() const {
-  // Check settings for override
-  if (m_settings) {
-    QString wd = m_settings->value("General/WorkingDirectory").toString();
-    if (!wd.isEmpty())
-      return wd;
-  }
-  return QCoreApplication::applicationDirPath();
+    return m_workingDirectory;
 }
 
+//---------------------------------------------------------------------------
+// Возвращает настройки приложения
 QSettings &BasicApplication::getSettings() const {
-  if (!m_settings) {
-    QString dir =
-        QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    QDir().mkpath(dir);
-    QString file = dir + QDir::separator() + getName() + ".ini";
-    m_settings.reset(new QSettings(file, QSettings::IniFormat));
-  }
-  return *m_settings;
+    return *m_settings;
 }
 
-ILog *BasicApplication::getLog() const { return m_log; }
-
-void messageHandler(QtMsgType type, const QMessageLogContext &context,
-                    const QString &msg) {
-  Q_UNUSED(context);
-
-  // Map Qt message types to our log levels
-  LogLevel::Enum level;
-  switch (type) {
-  case QtDebugMsg:
-    level = LogLevel::Debug;
-    break;
-  case QtInfoMsg:
-  case QtWarningMsg:
-    level = LogLevel::Warning;
-    break;
-  case QtCriticalMsg:
-  case QtFatalMsg:
-    level = LogLevel::Error;
-    break;
-  default:
-    level = LogLevel::Normal;
-    break;
-  }
-
-  // Get the application logger if available
-  BasicApplication *app = BasicApplication::getInstance();
-  if (app && app->getLog()) {
-    app->getLog()->write(level, msg);
-  } else {
-    // Fallback to console output if no logger is available
-    fprintf(stderr, "%s\n", qPrintable(msg));
-  }
-
-  // For fatal messages, abort
-  if (type == QtFatalMsg) {
-    abort();
-  }
+//---------------------------------------------------------------------------
+// Возвращает лог приложения.
+ILog *BasicApplication::getLog() const {
+    return m_log;
 }
 
-bool BasicApplication::isTestMode() const { return m_testMode; }
+//---------------------------------------------------------------------------
+// Обработчик сообщений Qt для перенаправления в лог.
+void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
+    Q_UNUSED(context);
 
+    // Map Qt message types to our log levels
+    LogLevel::Enum level;
+    switch (type) {
+        case QtDebugMsg:
+            level = LogLevel::Debug;
+            break;
+        case QtInfoMsg:
+        case QtWarningMsg:
+            level = LogLevel::Warning;
+            break;
+        case QtCriticalMsg:
+        case QtFatalMsg:
+            level = LogLevel::Error;
+            break;
+        default:
+            level = LogLevel::Normal;
+            break;
+    }
+
+    // Get the application logger if available
+    BasicApplication *app = BasicApplication::getInstance();
+    if (app && app->getLog()) {
+        app->getLog()->write(level, msg);
+    } else {
+        // Fallback to console output if no logger is available
+        fprintf(stderr, "%s\n", qPrintable(msg));
+    }
+
+    // For fatal messages, abort
+    if (type == QtFatalMsg) {
+        abort();
+    }
+}
+
+//---------------------------------------------------------------------------
+// Возвращает true, если приложение запущено в тестовом режиме.
+bool BasicApplication::isTestMode() const {
+    return m_testMode;
+}
+
+//---------------------------------------------------------------------------
+// Возвращает true, если это первичный экземпляр приложения.
 bool BasicApplication::isPrimaryInstance() const {
-  return m_singleApp->isPrimary();
+    return m_singleApp->isPrimary();
 }
 
-bool BasicApplication::startDetachedProcess(const QString &program,
-                                            const QStringList &args) {
-  return QProcess::startDetached(program, args);
+//---------------------------------------------------------------------------
+// Запускает detached процесс.
+bool BasicApplication::startDetachedProcess(const QString &program, const QStringList &args) {
+    return QProcess::startDetached(program, args);
 }
 
+//---------------------------------------------------------------------------
+// Определяет тестовый режим.
 void BasicApplication::detectTestMode() {
-  // We can detect test mode either from provided arguments, which are not
-  // available in this lightweight BasicApplication, or from environment vars
-  m_testMode = qEnvironmentVariableIsSet("EKIOSK_TEST_MODE") ||
-               qEnvironmentVariableIsSet("TEST_MODE");
+    // We can detect test mode either from provided arguments, which are not
+    // available in this lightweight BasicApplication, or from environment vars
+    m_testMode = qEnvironmentVariableIsSet("EKIOSK_TEST_MODE") || qEnvironmentVariableIsSet("TEST_MODE");
 
-  // Note: Message handler is already installed in constructor
+    // Note: Message handler is already installed in constructor
 }
+
+#ifdef Q_OS_WIN
+// Note: Exception handling in notify() is Windows-specific due to Structured
+// Exception Handling (SEH) with __try/__except. This catches low-level
+// exceptions (e.g., access violations) during Qt event processing. On other
+// platforms (Linux/macOS), SEH is not available, and Qt uses different
+// exception/signal handling, so this is omitted for cross-platform
+// compatibility. Adopted from TerminalClient repo, where the codebase was
+// Windows-only. TODO: Implement signal-based crash handling on Unix platforms
+// for full agnosticism.
+bool SafeQApplication::notify(QObject *aReceiver, QEvent *aEvent) {
+    __try {
+        return reinterpret_cast<QApplication *>(this)->notify(aReceiver, aEvent);
+    } __except (ExceptionFilter(GetExceptionInformation())) {
+        abort();
+    }
+}
+#endif
