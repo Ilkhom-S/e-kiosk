@@ -122,4 +122,3 @@ class ClassPrinter : public QThread {
     bool CIsItYou(QString &comment);
     void winPrint(QString text);
 };
-

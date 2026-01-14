@@ -34,4 +34,3 @@ class SendReceipt : public SendRequest {
   signals:
     void emitSendReceiptResult(QString resultCode, QString trn, QString status);
 };
-

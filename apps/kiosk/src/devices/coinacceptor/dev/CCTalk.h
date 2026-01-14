@@ -182,4 +182,3 @@ class CCTalk : public BaseAcceptorDevices {
     void emitBillTable(QString bill_table);
     void emitCoinAcceptorLog(int status, QByteArray data, QString text);
 };
-

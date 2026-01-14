@@ -33,4 +33,3 @@ class UserDaemons : public SendRequest {
   signals:
     void emit_UserData(QString data);
 };
-

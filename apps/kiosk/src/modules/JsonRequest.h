@@ -40,4 +40,3 @@ class JsonRequest : public QObject {
     void emitResponseSuccess(QVariantMap response, QString requestName);
     void emitResponseError(QString error, QString requestName);
 };
-

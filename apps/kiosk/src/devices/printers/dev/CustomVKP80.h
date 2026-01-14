@@ -265,4 +265,3 @@ class CustomVKP80_PRINTER : public BasePrinterDevices {
   private:
     bool getState(char aStatusType, CMDCustomVKP80::SStatus &aStatus);
 };
-

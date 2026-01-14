@@ -57,4 +57,3 @@ class GetServices : public SendRequest {
     void emit_timeServer(QString dateTime);
     void emit_banners(QVariantList banners);
 };
-

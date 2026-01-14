@@ -77,4 +77,3 @@ class PayDaemons : public SendRequest {
     void emit_RestartTerminal();
     void emit_errorDB();
 };
-

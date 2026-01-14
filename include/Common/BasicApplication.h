@@ -1,5 +1,8 @@
+/* @file Базовый класс приложения. */
+
 #pragma once
 
+//--------------------------------------------------------------------------------
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QProcess>
@@ -14,6 +17,7 @@
 class ILog;              // forward declaration for logging interface (project-specific)
 class SingleApplication; // forward declaration
 
+//--------------------------------------------------------------------------------
 /// Класс абстрактного приложения. Реализует полезные функции (загрузка
 /// конфигурации).
 class BasicApplication {

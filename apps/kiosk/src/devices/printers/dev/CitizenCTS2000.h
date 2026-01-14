@@ -109,4 +109,3 @@ class CitizenCTS2000_PRINTER : public BasePrinterDevices {
   private:
     QByteArray getState();
 };
-

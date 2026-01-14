@@ -64,4 +64,3 @@ class ClassAcceptor : public QThread {
     void emitLoging(int status, QString title, QString text);
     void emitBillTable(QString bill_table);
 };
-

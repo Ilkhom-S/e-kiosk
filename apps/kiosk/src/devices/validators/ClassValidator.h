@@ -69,4 +69,3 @@ class ClassValidator : public QThread {
     void emitValidatorLog(int status, QByteArray data, QString text);
     void emitFirmwareUpdate(QString state);
 };
-

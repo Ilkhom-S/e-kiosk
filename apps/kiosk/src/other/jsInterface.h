@@ -160,4 +160,3 @@ class JsInterface : public QObject {
     void emitPrinterStatusGet();
     void emitPrinterStatus(bool enable);
 };
-

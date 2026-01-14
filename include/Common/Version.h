@@ -1,15 +1,23 @@
+/* @file Информация о версии приложения. */
+
 #pragma once
 
+//--------------------------------------------------------------------------------
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
 #include <Common/QtHeadersEnd.h>
 
+//--------------------------------------------------------------------------------
 namespace Humo {
+    /// Короткая версия приложения.
     const QString ShortVersion = "3.0.0";
+    /// Сборка.
     const QString _Build = "202601131240";
+    /// Название приложения.
     const QString Application = "EKiosk";
 
+    /// Получить информацию о сборке.
     inline const QString getBuild() {
 #if defined(_MSC_VER)
 #if (_MSC_VER == 1600)

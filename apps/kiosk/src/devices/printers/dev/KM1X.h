@@ -34,4 +34,3 @@ class KM1X_PRINTER : public BasePrinterDevices {
     void dispense();
     void getSpecialCharecters(QByteArray &printText);
 };
-

@@ -25,4 +25,3 @@ class ConfirmOtp : public SendRequest {
   signals:
     void emit_ConfirmOtpResult(QString resultCode);
 };
-

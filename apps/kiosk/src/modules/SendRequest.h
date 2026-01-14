@@ -123,4 +123,3 @@ class SendRequest : public QThread {
     void send_req_data();
     void check_to_abortTimer();
 };
-

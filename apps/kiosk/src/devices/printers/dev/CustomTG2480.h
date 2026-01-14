@@ -57,4 +57,3 @@ class TG2480_PRINTER : public BasePrinterDevices {
     void getSpecialCharecters(QByteArray &printText);
     bool feed(int aCount);
 };
-

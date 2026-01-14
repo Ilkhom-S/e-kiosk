@@ -145,4 +145,3 @@ class CollectDaemons : public SendRequest {
   signals:
     void lockUnlockAvtorization(bool lock, int sts);
 };
-

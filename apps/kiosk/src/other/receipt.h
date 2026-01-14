@@ -6,4 +6,3 @@
 #include <Common/QtHeadersEnd.h>
 
 QString receiptGet(QString tpl);
-

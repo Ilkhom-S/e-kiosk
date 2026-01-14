@@ -29,4 +29,3 @@ class AuthRequest : public SendRequest {
   signals:
     void emitResult(QString resultCode, QString login, QString token, QString message);
 };
-

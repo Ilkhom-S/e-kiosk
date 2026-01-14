@@ -123,4 +123,3 @@ class StatusDaemons : public SendRequest {
     void emit_hashToCheck(QString hash);
     void emit_hashUpdateToCheck(QString hashUpdate, QString path);
 };
-

@@ -1,3 +1,5 @@
+/* @file Предварительно скомпилированные заголовки. */
+
 //
 // All external include files for EKiosk
 //

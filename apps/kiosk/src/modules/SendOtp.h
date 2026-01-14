@@ -27,4 +27,3 @@ class SendOtp : public SendRequest {
   signals:
     void emit_SendOtpResult(QString resultCode, QString otpId);
 };
-

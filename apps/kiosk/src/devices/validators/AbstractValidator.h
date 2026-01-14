@@ -266,4 +266,3 @@ class BaseValidatorDevices : public QThread {
 
     QString cmdName(ValidatorCommands::Enum cmd);
 };
-

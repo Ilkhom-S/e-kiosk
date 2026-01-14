@@ -259,4 +259,3 @@ class BaseAcceptorDevices : public QThread {
     bool sendCommand(QByteArray dataRequest, bool getResponse, int timeResponse, QByteArray &dataResponse,
                      int timeSleep);
 };
-

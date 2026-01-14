@@ -476,4 +476,3 @@ class ATProtocol : public QThread {
 
     QString octet(QString hexString);
 };
-

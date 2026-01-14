@@ -57,4 +57,3 @@ class CitizenCBM1000_PRINTER : public BasePrinterDevices {
     void getSpecialCharecters(QByteArray &printText);
     bool feed(int aCount);
 };
-

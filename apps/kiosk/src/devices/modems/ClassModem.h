@@ -57,4 +57,3 @@ class ClassModem : public QThread {
     virtual void run();
     bool e_Data_Execute();
 };
-

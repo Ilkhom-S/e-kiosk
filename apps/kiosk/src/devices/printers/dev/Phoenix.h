@@ -56,4 +56,3 @@ class Phoenix_PRINTER : public BasePrinterDevices {
     bool printCheck(const QString &aCheck);
     void getSpecialCharecters(QByteArray &printText);
 };
-

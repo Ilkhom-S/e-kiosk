@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
     MainWindow w;
 
     // Если sheller не запущен, то запускаем
+    // DEPRECATED: we migrate to guard instead of this
     if (!w.hasProcess(sheller)) {
         QProcess::startDetached(sheller, QStringList());
     }

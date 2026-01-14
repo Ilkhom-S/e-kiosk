@@ -184,4 +184,3 @@ class CopyFileQs : public QThread {
     void copyComplite();
     void emit_Loging(int sts, QString name, QString content);
 };
-

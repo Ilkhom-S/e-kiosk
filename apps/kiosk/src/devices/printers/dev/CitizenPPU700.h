@@ -268,4 +268,3 @@ class CitizenPPU700_PRINTER : public BasePrinterDevices {
   private:
     bool getState(char aStatusType, CMDCitizenPPU700::SStatus &aStatus);
 };
-

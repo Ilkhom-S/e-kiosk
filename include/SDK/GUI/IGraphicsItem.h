@@ -37,7 +37,7 @@ namespace SDK {
             /// Возвращает объект сцены.
             virtual QQuickItem *getWidget() const = 0;
 
-            // Возвращает нативный виджет.
+            /// Возвращает нативный виджет.
             virtual QWidget *getNativeWidget() const = 0;
 
             /// Возвращает контекст виджета.

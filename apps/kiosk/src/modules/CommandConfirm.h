@@ -31,4 +31,3 @@ class CommandConfirm : public SendRequest {
   signals:
     void emit_cmdConfirmed(QString trn);
 };
-

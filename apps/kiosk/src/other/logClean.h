@@ -112,4 +112,3 @@ class LogClean : public QThread {
         msleep(1000);
     }
 };
-

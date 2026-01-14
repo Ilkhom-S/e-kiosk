@@ -30,4 +30,3 @@ class GetBalanceAgent : public SendRequest {
   signals:
     void emit_BalanceAgent(QString dataBalance, QString dataOverdraft);
 };
-

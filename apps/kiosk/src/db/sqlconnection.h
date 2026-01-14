@@ -243,4 +243,3 @@ inline bool createConnectionFile(QSqlDatabase &db, QString db_path) {
 
     return true;
 }
-

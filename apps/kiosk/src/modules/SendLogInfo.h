@@ -37,4 +37,3 @@ class SendLogInfo : public SendRequest {
   signals:
     void emit_cmdResponseCode(int sts);
 };
-

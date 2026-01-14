@@ -1,5 +1,8 @@
+/* @file Фильтр исключений. */
+
 #pragma once
 
+//--------------------------------------------------------------------------------
 // STL
 #include <iostream>
 
@@ -11,6 +14,7 @@
 // Project
 #include "ILog.h"
 
+//--------------------------------------------------------------------------------
 namespace {
     void ExceptionFilter(const QString &file, const QString &function, int line, ILog *log, bool aThrow) {
         try {

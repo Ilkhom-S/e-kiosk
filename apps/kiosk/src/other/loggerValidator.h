@@ -123,4 +123,3 @@ class LoggerValidator : public QThread {
         }
     }
 };
-

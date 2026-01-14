@@ -226,4 +226,3 @@ bool positiveMasking(char aValue, char aMask);
 /// - каждый 0-й бит маски сравнивается с соответствующим битом аргумента
 /// Возвращается true, если все 0-биты совпали
 bool negativeMasking(char aValue, char aMask);
-

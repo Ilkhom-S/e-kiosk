@@ -224,4 +224,3 @@ class SystemInfo : public QThread {
   signals:
     void emitSystemInfo(QVariantMap data);
 };
-

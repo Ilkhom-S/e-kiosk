@@ -32,4 +32,3 @@ class CheckOnline : public SendRequest {
   signals:
     void emit_CheckOnlineResult(QString resultCode, QString status, QString message, QVariantList items);
 };
-

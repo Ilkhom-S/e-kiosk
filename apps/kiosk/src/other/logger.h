@@ -106,4 +106,3 @@ class Logger : public QThread {
         }
     }
 };
-

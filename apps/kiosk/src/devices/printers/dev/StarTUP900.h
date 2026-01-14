@@ -92,4 +92,3 @@ class StarTUP900_PRINTER : public BasePrinterDevices {
   private:
     QByteArray getState();
 };
-

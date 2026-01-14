@@ -121,4 +121,3 @@ class WatchDogs : public QThread {
   signals:
     void commandDone(bool state, int aCommand);
 };
-

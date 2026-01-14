@@ -12,6 +12,7 @@
 //---------------------------------------------------------------------------
 class TraceLogger {
   public:
+    /// Конструктор. Логирует вход в функцию.
     TraceLogger(const char *aFileName, const char *aFuncName, int aLineNumber) {
         mFileName = aFileName;
         mFuncName = aFuncName;
@@ -25,6 +26,7 @@ class TraceLogger {
         mIndent++;
     }
 
+    /// Деструктор. Логирует выход из функции.
     ~TraceLogger() {
         mIndent--;
 

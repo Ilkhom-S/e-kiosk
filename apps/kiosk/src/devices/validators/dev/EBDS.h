@@ -279,4 +279,3 @@ class EBDS : public BaseValidatorDevices {
     void emitLog(int status, QString title, QString text);
     void emitValidatorLog(int status, QByteArray data, QString text);
 };
-

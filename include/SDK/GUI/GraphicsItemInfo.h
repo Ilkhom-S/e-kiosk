@@ -22,12 +22,14 @@ namespace SDK {
             QMap<QString, QString> parameters; /// Специфические параметры для движка.
             QVariantMap context;               /// Специфические параметры для виджета.
 
+            /// Оператор ==.
             inline bool operator==(const GraphicsItemInfo &aGraphicsItemInfo) {
                 return name == aGraphicsItemInfo.name && type == aGraphicsItemInfo.type &&
                        directory == aGraphicsItemInfo.directory && parameters == aGraphicsItemInfo.parameters &&
                        context == aGraphicsItemInfo.context;
             }
 
+            /// Оператор !=.
             inline bool operator!=(const GraphicsItemInfo &aGraphicsItemInfo) {
                 return !(*this == aGraphicsItemInfo);
             }

@@ -1,4 +1,4 @@
-/* @file Base exception class for EKiosk. */
+/* @file Базовый класс исключений для EKiosk. */
 
 #pragma once
 
@@ -8,16 +8,19 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
+/// Категории исключений.
 namespace ECategory {
     enum Enum { System, Hardware, Protocol, Application, Network };
 } // namespace ECategory
 
 //--------------------------------------------------------------------------------
+/// Уровни серьезности исключений.
 namespace ESeverity {
     enum Enum { Info, Warning, Minor, Major, Critical };
 } // namespace ESeverity
 
 //--------------------------------------------------------------------------------
+/// Класс исключения.
 class Exception {
   public:
     Exception(ECategory::Enum aCategory, ESeverity::Enum aSeverity, int aCode, const QString &aMessage)

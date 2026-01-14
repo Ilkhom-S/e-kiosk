@@ -8,6 +8,7 @@
 #include "Common/QtHeadersEnd.h"
 
 //--------------------------------------------------------------------------------
+/// Типы сетевых соединений.
 namespace EConnectionTypes {
     enum Enum {
         Unknown,   /// Неизвестное.
@@ -16,6 +17,7 @@ namespace EConnectionTypes {
         Vpn        /// VPN.
     };
 
+    /// Возвращает имя типа соединения.
     inline QString getConnectionTypeName(Enum aType) {
         switch (aType) {
             case Unmanaged:

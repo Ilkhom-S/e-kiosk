@@ -1,5 +1,8 @@
+/* @file Конец блока заголовков Qt с подавлением предупреждений. */
+
 #pragma once
 
+//--------------------------------------------------------------------------------
 /* Close the Qt headers warning suppression started by QtHeadersBegin.h
 
    Example:
