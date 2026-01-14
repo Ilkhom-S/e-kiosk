@@ -15,17 +15,9 @@ BaseApplication serves as a foundation for EKiosk applications by handling:
 
 This module reduces boilerplate code in main functions and ensures consistent behavior across all EKiosk applications.
 
-## Structure
+## Implementation layout
 
-```text
-src/modules/common/application/
-├── CMakeLists.txt              # Build configuration
-├── src/
-│   └── BaseApplication.cpp     # Implementation
-└── include/
-    └── Common/
-        └── BasicApplication.h  # Public interface (note: header is BasicApplication.h)
-```
+For implementation details and file layout, see `src/modules/common/application/README.md` (implementation notes and contributor guidance).
 
 ## Dependencies
 

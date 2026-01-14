@@ -10,6 +10,35 @@ Provides IPC between applications:
 - TCP/IP sockets
 - Message passing
 
+## Structure (implementation)
+
+```text
+src/modules/Connection/
+├── CMakeLists.txt          # Build configuration
+├── Common/                 # Shared connection implementations
+│   ├── ConnectionBase.cpp  # Base connection implementation
+│   └── ConnectionBase.h    # Base connection interface
+├── Win32/                  # Windows-specific code
+│   └── src/
+│       ├── Common.cpp      # Common connection utilities
+│       ├── DialupConnection.cpp  # Dial-up connection implementation
+│       ├── DialupConnection.h    # Dial-up connection interface
+│       ├── LocalConnection.cpp   # Local network connection
+│       ├── LocalConnection.h     # Local connection interface
+│       ├── RasWrapper.cpp        # RAS API wrapper
+│       └── RasWrapper.h          # RAS wrapper interface
+└── tests/                   # Unit tests
+
+include/Connection/
+├── IConnection.h          # Main connection interface
+└── NetworkError.h         # Network-specific exceptions
+```
+
+**Contributor notes:**
+
+- Keep high-level documentation and usage examples in `docs/modules/connection.md`.
+- Use this README for implementation notes, file layout and platform-specific guidance.
+
 ## Usage
 
 ```cpp

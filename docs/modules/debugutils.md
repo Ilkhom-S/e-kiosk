@@ -4,22 +4,9 @@
 
 The DebugUtils module provides debugging utilities for EKiosk applications, including call stack dumping and unhandled exception handling. It helps with diagnosing crashes and runtime issues in production environments.
 
-## Structure
+## Implementation layout
 
-```
-src/modules/DebugUtils/
-├── CMakeLists.txt          # Build configuration
-└── src/
-    ├── DebugUtils.cpp      # Main implementation
-    ├── DebugUtils.h        # Public API declarations
-    ├── QStackWalker.cpp    # Stack walking implementation
-    ├── QStackWalker.h      # Stack walker wrapper
-    └── StackWalker.cpp     # Third-party stack walker (modified)
-
-include/DebugUtils/
-├── DebugUtils.h            # Public header
-└── TraceLogger.h           # Trace logging utility
-```
+For implementation details and file layout, see `src/modules/DebugUtils/README.md` (implementation notes and contributor guidance).
 
 ## Dependencies
 

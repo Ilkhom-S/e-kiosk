@@ -4,29 +4,9 @@
 
 The Connection module provides an abstraction layer for network connectivity management in EKiosk applications. It supports various connection types including dial-up, local network, and remote connections, with automatic monitoring and failover capabilities.
 
-## Structure
+## Implementation layout
 
-```
-src/modules/Connection/
-├── CMakeLists.txt          # Build configuration
-├── Common/
-│   ├── ConnectionBase.cpp  # Base connection implementation
-│   └── ConnectionBase.h    # Base connection interface
-├── Win32/
-│   └── src/
-│       ├── Common.cpp      # Common connection utilities
-│       ├── DialupConnection.cpp  # Dial-up connection implementation
-│       ├── DialupConnection.h    # Dial-up connection interface
-│       ├── LocalConnection.cpp   # Local network connection
-│       ├── LocalConnection.h     # Local connection interface
-│       ├── RasWrapper.cpp        # RAS API wrapper
-│       └── RasWrapper.h          # RAS wrapper interface
-└── tests/                 # Unit tests
-
-include/Connection/
-├── IConnection.h          # Main connection interface
-└── NetworkError.h         # Network-specific exceptions
-```
+For implementation details and file layout, see `src/modules/Connection/README.md` (this contains the file tree and contributor notes).
 
 ## Dependencies
 
@@ -88,4 +68,3 @@ cmake --build build --target test
 ## Migration Notes
 
 Replace direct RAS API calls with this module for better abstraction and error handling. The module provides a unified interface across different connection types.
-

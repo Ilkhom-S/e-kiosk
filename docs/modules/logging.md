@@ -14,18 +14,9 @@ Key features:
 - Configurable log levels and destinations
 - Memory-efficient compared to heavy-weight loggers
 
-## Structure
+## Implementation layout
 
-```
-src/modules/common/log/
-├── CMakeLists.txt          # Build configuration
-├── src/
-│   ├── SimpleLog.cpp       # Implementation of ILog interface
-│   └── SimpleLog.h         # Private headers
-└── include/
-    └── Common/
-        └── ILog.h          # Public interface
-```
+For implementation details and file layout, see `src/modules/common/log/README.md` (implementation notes and contributor guidance).
 
 ## Dependencies
 

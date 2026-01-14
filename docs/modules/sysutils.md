@@ -15,26 +15,9 @@ Key features:
 - BOM removal from files
 - Windows service and system control functions
 
-## Structure
+## Implementation layout
 
-```text
-src/modules/SysUtils/
-├── CMakeLists.txt                    # Build configuration
-├── src/
-│   └── windows/
-│       ├── CryptSysUtils.cpp         # Cryptographic utilities
-│       ├── PrinterSysUtils.cpp       # Printer management
-│       ├── PrivilegeElevator.cpp     # Privilege elevation
-│       └── SysUtils.cpp              # General system utilities
-└── include/
-    └── SysUtils/
-        ├── ISysUtils.h               # Public interface
-        └── windows/
-            ├── CryptSysUtils.h       # Crypto headers
-            ├── PrinterSysUtils.h     # Printer headers
-            ├── PrivilegeElevator.h   # Privilege headers
-            └── SysUtils.h            # System headers
-```
+For implementation details and file layout, see `src/modules/SysUtils/README.md` (implementation notes and contributor guidance).
 
 ## Dependencies
 
