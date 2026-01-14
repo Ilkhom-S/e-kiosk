@@ -58,7 +58,22 @@ ProxyPort=
 target_link_libraries(MyApp PRIVATE NetworkTaskManager)
 ```
 
-Unit tests live under `tests/modules/NetworkTaskManager/`.
+---
+
+## Testing
+
+Unit tests are located in `tests/modules/NetworkTaskManager/`.
+Run them using the project's test target:
+
+```bash
+cmake --build build --target test -R NetworkTaskManager
+```
+
+Or run tests directly with `ctest`:
+
+```bash
+ctest -R NetworkTaskManager
+```
 
 ---
 
