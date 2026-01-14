@@ -233,7 +233,7 @@ Always include a **Platform Compatibility** section for every module, specifying
 - Move all code from `src/` to `apps/kiosk/` as a first step.
 - Refactor shared code into `src/` and `include/` as modularization proceeds.
 - Update CMake to build each app and link shared code.
-- Track migration progress in [docs/migration-todo.md](../docs/migration-todo.md).
+- Track migration progress in [Migration TODO](../docs/migration-todo.md).
 
 ## Best Practices
 
