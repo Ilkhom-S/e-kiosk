@@ -41,7 +41,6 @@ connect(task, &NetworkTask::finished, this, &MyClass::onResponse);
 
 ---
 
-
 ---
 
 ## Configuration
@@ -78,20 +77,27 @@ ProxyPort=
 
 FileDownloadTask task(QUrl("https://example.com/file.bin"), "C:/tmp/file.bin");
 
-task.setTimeout(60 * 1000); // 60s
 // Resume if partial file exists
 task.setFlags(NetworkTask::Continue);
 // Verify downloaded content
 task.setVerifier(new Md5Verifier("expected-md5-hex"));
+// Per-task timeout
+task.setTimeout(60 * 1000); // 60s
 
+// Optional: run in blocking mode (manager will process and wait)
+// task.setFlags(NetworkTask::Flags(task.getFlags() | NetworkTask::BlockingMode));
+
+// Add task to manager
 auto ntm = NetworkTaskManager::instance();
 ntm->addTask(&task);
 
-// blocking wait (if task is in BlockingMode or to wait for completion)
+// Optional: wait synchronously for completion
 task.waitForFinished();
 
 if (task.getError() == NetworkTask::NoError) {
     // success
+} else if (task.getError() == NetworkTask::VerifyFailed) {
+    qWarning() << "Download succeeded but verification failed";
 } else {
     qWarning() << "Download failed:" << task.errorString();
 }
@@ -99,6 +105,71 @@ if (task.getError() == NetworkTask::NoError) {
 
 ---
 
+### Example: observe progress and speed limits
+
+```cpp
+#include "NetworkTaskManager/FileDownloadTask.h"
+#include "NetworkTaskManager/NetworkTaskManager.h"
+
+FileDownloadTask task(QUrl("https://example.com/large.bin"), "C:/tmp/large.bin");
+
+auto ntm = NetworkTaskManager::instance();
+// Limit download speed to 50% of max
+ntm->setDownloadSpeedLimit(50);
+
+connect(&task, &NetworkTask::onProgress, [](qint64 current, qint64 total){
+    qDebug() << "Progress:" << current << "/" << total << "bytes";
+});
+
+ntm->addTask(&task);
+```
+
+---
+
+### Example: custom verifier and data stream (memory-based)
+
+```cpp
+#include "NetworkTaskManager/NetworkTaskManager.h"
+#include "NetworkTaskManager/NetworkTask.h"
+#include "NetworkTaskManager/MemoryDataStream.h"
+
+NetworkTask task;
+
+// Use a custom in-memory stream and verifier
+task.setDataStream(new MemoryDataStream());
+task.setVerifier(new Sha256Verifier("expected-sha256-hex"));
+
+task.setUrl(QUrl("https://api.example.com/data.bin"));
+
+auto ntm = NetworkTaskManager::instance();
+ntm->addTask(&task);
+
+connect(&task, &NetworkTask::onComplete, [&task]{
+    if (task.getError()==NetworkTask::NoError) {
+        QByteArray data = task.getDataStream()->readAll();
+        // process data
+    }
+});
+```
+
+---
+
+### Example: set proxy, user-agent and custom headers
+
+```cpp
+#include <QtNetwork/QNetworkProxy>
+
+auto ntm = NetworkTaskManager::instance();
+QNetworkProxy proxy(QNetworkProxy::HttpProxy, "proxy.example.com", 8080);
+ntm->setProxy(proxy);
+ntm->setUserAgent("EKiosk/1.0");
+
+FileDownloadTask task(QUrl("https://example.com/file"), "C:/tmp/file");
+// Add a custom header
+task.getRequestHeader()["Authorization"] = "Bearer <token>";
+
+ntm->addTask(&task);
+```
 
 ---
 
