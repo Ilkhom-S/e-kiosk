@@ -42,6 +42,7 @@ clang-format -i <file1> <file2> ...
 
 - Update or create relevant docs for any new features, refactors, or breaking changes.
 - Link related docs for easy navigation.
+- **Module docs convention:** place detailed module documentation in `docs/modules/` (user-facing content). Keep `src/modules/*/README.md` as a concise pointer and include implementation-specific structure and contributor notes there.
 
 ## Qt Include Style (Qt5/Qt6 compatibility)
 

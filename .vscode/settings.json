@@ -19,6 +19,7 @@
     "AUTOUIC",
     "CONFIRMOTP",
     "cppcheck",
+    "ctest",
     "DEBUGUTILS",
     "Dialup",
     "ekiosk",

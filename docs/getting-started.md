@@ -59,6 +59,8 @@ cmake --build build/<your-preset>
 - See [build-guide.md](build-guide.md) for detailed build instructions.
 - See [coding-standards.md](coding-standards.md) for code style and conventions.
 - See [migration-plan.md](migration-plan.md) for ongoing modularization efforts.
+- Module docs: Keep detailed module documentation in `docs/modules/` and keep `src/modules/*/README.md` as a short pointer to the canonical docs (this helps searchability and site generation).
+- See [Testing Guide](testing.md) for how to run tests locally, add tests, and CI expectations.
 
 ## Contributing
 

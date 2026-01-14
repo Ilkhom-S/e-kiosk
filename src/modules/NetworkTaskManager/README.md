@@ -1,80 +1,47 @@
 # NetworkTaskManager
 
-HTTP/HTTPS network operations module.
+This folder contains the module implementation. The full, canonical documentation has been moved to the central docs site:
 
-## Purpose
+- See: `../../../docs/modules/networktaskmanager.md`
 
-Handles all network communication:
+## Structure (implementation)
 
-- HTTP/HTTPS requests
-- Request queuing and retry
-- SSL/TLS configuration
-- Response handling
-
-## Usage
-
-```cpp
-#include "NetworkTaskManager/NetworkTaskManager.h"
-
-NetworkTaskManager* ntm = NetworkTaskManager::instance();
-
-// Simple GET request
-NetworkTask* task = ntm->get(QUrl("https://api.example.com/data"));
-connect(task, &NetworkTask::finished, this, &MyClass::onResponse);
-
-// POST with data
-QByteArray postData = createRequest();
-NetworkTask* task = ntm->post(url, postData);
-task->setHeader("Content-Type", "application/json");
+```text
+src/modules/NetworkTaskManager/
+├── CMakeLists.txt                  # Module build configuration
+├── include/NetworkTaskManager/     # Public headers (installed targets)
+│   ├── NetworkTaskManager.h
+│   └── ...
+├── src/
+│   ├── NetworkTaskManager.h/.cpp   # Manager interface & implementation
+│   ├── NetworkTask.h/.cpp          # Network task implementation
+│   ├── SslConfiguration.h/.cpp     # SSL settings & helpers
+│   └── ...                         # internal helpers, tests, etc.
+├── res/
+│   └── *.qrc                       # Qt resources
+└── README.md                       # This file (short pointer to canonical docs)
 ```
 
-## Key Files
+**Contributor notes:**
 
-| File                   | Purpose               |
-| ---------------------- | --------------------- |
-| `NetworkTaskManager.h` | Main manager class    |
-| `NetworkTask.h`        | Individual task class |
-| `SslConfiguration.h`   | SSL settings          |
+- Keep high-level documentation, examples, and usage in `docs/modules/networktaskmanager.md`.
+- Use this README for implementation notes, file layout, build or testing hints and internal design details.
+- For API docs, examples, and user-facing information, see the canonical docs.
 
-## Features
+## Modes & flags (brief)
 
-- Automatic retry on failure
-- Request queue management
-- Connection pooling
-- Timeout handling
-- SSL certificate validation
+This module supports per-task flags that change execution behavior. Document user-facing usage in `docs/modules/networktaskmanager.md`, but keep a short summary here for contributors:
 
-## Configuration
+- **BlockingMode**: Run a task synchronously inside the manager thread; consumer can use `waitForFinished()` to block until completion.
+- **Continue**: Resume partial downloads (used by `FileDownloadTask`); the module will append data to existing file streams.
+- **IgnoreErrors**: Attempt to continue downloads on transient errors until timeout is reached.
 
-```ini
-[Network]
-Timeout=30000
-RetryCount=3
-VerifySsl=true
-ProxyHost=
-ProxyPort=
-```
+When adding new flags or modes, update both the docs page and this short reference so contributors can quickly see implementation implications.
 
-## Dependencies
+## API summary (short)
 
-- Qt Network module
-- `Log` module
-- `SettingsManager` module
+- **Primary classes:** `NetworkTaskManager`, `NetworkTask`, `FileDownloadTask`, `DataStream` (File/Mem), `IVerifier` and verifiers (`Md5Verifier`, `Sha256Verifier`).
+- **Common signals:** `NetworkTask::onProgress(qint64 current, qint64 total)`, `NetworkTask::onComplete()`, `NetworkTaskManager::networkTaskStatus(bool failure)`.
+- **Where to look for full signatures:** `include/NetworkTaskManager/` and `src/modules/NetworkTaskManager/src/`.
 
-## Platform Support
-
-| Platform | Status  |
-| -------- | ------- |
-| Windows  | ✅ Full |
-| Linux    | ✅ Full |
-| macOS    | ✅ Full |
-
-## Qt6 Migration Notes
-
-```cpp
-// Qt5
-connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), ...);
-
-// Qt6
-connect(reply, &QNetworkReply::errorOccurred, ...);
-```
+Keep this summary updated when APIs change so reviewers can quickly spot relevant changes.

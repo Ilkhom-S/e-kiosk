@@ -151,16 +151,43 @@ For all changes that do not require user review (e.g., documentation updates, te
 
 # Module Documentation Guidelines
 
-When creating or updating modules, ensure comprehensive documentation in `docs/modules/`. Each module documentation must include:
+When creating or updating modules, ensure comprehensive documentation in `docs/modules/`. Each module documentation should follow the canonical, user-facing template described below. Keep implementation-specific structure and contributor notes in `src/modules/<module>/README.md`.
 
-- **Purpose**: Clear explanation of the module's role and problems it solves
-- **Structure**: Detailed folder layout and file organization
-- **Dependencies**: All required libraries, frameworks, and system dependencies
-- **Platform Compatibility**: Explicitly state supported platforms (Windows, Linux, macOS) and any platform-specific limitations
-- **Usage**: Code examples with proper include statements and integration patterns
-- **CMake Integration**: How to link the module in application CMakeLists.txt
-- **Testing**: Information about unit tests and how to run them
-- **Migration Notes**: Guidance for adopting the module or migrating from legacy code
+docs/modules/<module>.md (user-facing template - required sections and order):
+
+1. **Title & short summary** (one line)
+2. **Purpose** — Why the module exists and what it solves
+3. **Quick start / Minimal example** — Copy-paste snippet for getting started
+4. **Features** — Short bulleted list
+5. **Platform support** — **Required**: include a table with columns `Platform | Status | Notes` covering at minimum Windows, Linux, and macOS (e.g., `Windows | ✅ Full | Supported`, `Linux | 🔬 TODO | Partial or planned`).
+6. **Configuration** — Example settings, environment variables or config keys
+7. **Usage / API highlights** — Key classes/methods and short examples
+8. **Integration** — CMake/linking instructions and integration notes
+9. **Testing** — Where tests live and how to run them
+10. **Migration notes** — Compatibility, Qt6 notes, or deprecations
+11. **Further reading** — Link to `src/modules/<module>/README.md` for implementation details
+
+src/modules/<module>/README.md (implementation, contributor-facing):
+
+- Keep a short pointer to the canonical docs (one line)
+- **Structure (implementation)**: file tree with short descriptions for key files
+- Implementation notes & design rationale (internal details)
+- Build / test hints (CMake quirks, required flags)
+- Internal API notes and extension points
+- TODOs or migration checklist (if applicable)
+
+Checklist for authors and AI agents (Copilot):
+
+- When moving or creating module docs, follow the docs template above.
+- If the original module docs included a file-structure block, move it to `src/modules/<module>/README.md` and replace in `docs/modules/<module>.md` with a short "Implementation & layout" pointer.
+- Add an entry for the module in `docs/modules/README.md` (index) and update `docs/getting-started.md` policy notes when applicable.
+- Run a markdown linter and link-checker locally or in CI, fix lint issues (headings spacing, fenced code languages, no inline HTML) and broken links before opening a PR.
+- **Testing documentation requirement:** The `Testing` section in `docs/modules/<module>.md` must include:
+  - Where the tests live (relative path), e.g., `tests/modules/<module>/`
+  - The exact commands to run the tests locally (ctest patterns or `cmake --build --target test -R <pattern>`)
+  - Any environment variables, external services, or prerequisites (e.g., openssl, hardware) required by the tests
+  - Notes about test categorization (unit/integration/slow) and whether tests are flaky or require CI-only execution.
+- Use conventional commit messages: `docs(modules): ...` for these changes.
 
 Always include a **Platform Compatibility** section for every module, specifying which platforms are supported and any known limitations.
 
