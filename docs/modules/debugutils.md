@@ -2,77 +2,60 @@
 
 ## Purpose
 
-The DebugUtils module provides debugging utilities for EKiosk applications, including call stack dumping and unhandled exception handling. It helps with diagnosing crashes and runtime issues in production environments.
+Provides debugging utilities for call stack dumping, unhandled exception handling and trace logging to help diagnose crashes and runtime issues.
 
-## Implementation layout
+---
 
-For implementation details and file layout, see `src/modules/DebugUtils/README.md` (implementation notes and contributor guidance).
-
-## Dependencies
-
-- **Qt Core**: For QString and other utilities
-- **Windows APIs**: dbghelp.dll, kernel32.dll for stack walking and exception handling
-- **Third-party**: Modified StackWalker library for cross-platform stack tracing
-
-## Platform Compatibility
-
-- **Windows**: Fully supported (MSVC, MinGW)
-- **Linux/macOS**: Not supported (Windows-specific APIs)
-
-## Usage
-
-### Basic Call Stack Dumping
+## Quick start 🔧
 
 ```cpp
 #include <DebugUtils/DebugUtils.h>
 
-void someFunction() {
-    QStringList stack;
-    DumpCallstack(stack, nullptr);  // Dump current call stack
-    // stack now contains function names and line numbers
-}
+QStringList stack;
+DumpCallstack(stack, nullptr);
+// use stack for diagnostics
 ```
 
-### Unhandled Exception Handling
+---
 
-```cpp
-#include <DebugUtils/DebugUtils.h>
+## Features
 
-int main(int argc, char *argv[]) {
-    SetUnhandledExceptionsHandler(myExceptionHandler);
-    // Application code...
-}
-```
+- Call stack dumping
+- Unhandled exception handler installation
+- Trace logging macros for function entry/exit
 
-### Trace Logging
+---
 
-```cpp
-#include <DebugUtils/TraceLogger.h>
+## Configuration
 
-ENABLE_TRACE_LOGGER("MyModule");
+No runtime configuration; use the provided APIs to enable or configure trace logging and exception handlers.
 
-void myFunction() {
-    LOG_TRACE();  // Logs function entry/exit with indentation
-}
-```
+---
 
-## CMake Integration
+## Usage / API highlights
 
-Add to your application's CMakeLists.txt:
+- `DumpCallstack(QStringList &out, QObject *context)` — capture current call stack
+- `SetUnhandledExceptionsHandler(handler)` — install global unhandled exception handler
+- `ENABLE_TRACE_LOGGER("Module")` / `LOG_TRACE()` — trace logging helpers
 
-```
-cmake
+---
+
+## Integration
+
+Link the module to your target:
+
+```cmake
 target_link_libraries(MyApp PRIVATE DebugUtils)
 ```
 
+---
+
 ## Testing
 
-Unit tests are located in `tests/modules/DebugUtils/`. Run with:
+Unit tests live in `tests/modules/DebugUtils/` and can be run through the project test target.
 
-```bash
-cmake --build build --target test
-```
+---
 
-## Migration Notes
+## Further reading
 
-Replace manual stack walking code with this module for consistent error reporting across the application.
+- Implementation & layout: `src/modules/DebugUtils/README.md` (internal details and contributor notes)"

@@ -1,109 +1,66 @@
 # BaseApplication Module
 
-## Overview
-
-`BaseApplication` is a Qt application wrapper that provides common functionality for EKiosk executables, including single-instance enforcement, test mode detection, and basic logging setup.
-
 ## Purpose
 
-BaseApplication serves as a foundation for EKiosk applications by handling:
+BaseApplication is a Qt application wrapper that provides single-instance enforcement, test mode detection and basic logging initialization for EKiosk executables.
 
-- Single-instance enforcement using SingleApplication library
-- Test mode detection (via command-line argument or environment variable)
-- Basic application lifecycle management
-- Integration point for logging and other common services
+---
 
-This module reduces boilerplate code in main functions and ensures consistent behavior across all EKiosk applications.
-
-## Implementation layout
-
-For implementation details and file layout, see `src/modules/common/application/README.md` (implementation notes and contributor guidance).
-
-## Dependencies
-
-- **Qt Core**: For QApplication base class and QSettings
-- **SingleApplication**: For single-instance enforcement (vendored in thirdparty/)
-- **Log**: For file-based logging with ILog interface
-- **Log**: For logging integration (optional, can be nullptr)
-
-## Usage
-
-### Basic Usage
+## Quick start 🔧
 
 ```cpp
 #include <Common/BasicApplication.h>
 
 int main(int argc, char *argv[]) {
-  BaseApplication app(argc, argv);
+    BaseApplication app(argc, argv);
+    if (!app.isPrimaryInstance()) return 1;
 
-  // Check for single instance
-  if (!app.isPrimaryInstance()) {
-    return 1;  // Another instance is running
-  }
-
-  // Application logic here
-  MainWindow window;
-  window.show();
-
-  return app.exec();
+    MainWindow w;
+    w.show();
+    return app.exec();
 }
 ```
 
-### Test Mode
+---
 
-BaseApplication automatically detects test mode:
+## Features
 
-- Command-line: `app.exe test`
-- Environment: `EKIOSK_TEST_MODE=1`
+- Single-instance enforcement (via SingleApplication)
+- Test mode detection (CLI or env var)
+- Automatic logging initialization (ILog)
 
-In test mode, single-instance enforcement is disabled, allowing multiple instances for development and testing.
+---
 
-### Logging Integration
+## Configuration
 
-BaseApplication automatically initializes an ILog instance for file-based logging:
+Enable test mode with `app.exe test` or `EKIOSK_TEST_MODE=1` environment variable for development scenarios.
 
-```cpp
-// Logger is automatically created in constructor
-ILog* logger = app.getLog(); // Returns the initialized logger
-logger->setLevel(LogLevel::Debug); // Can adjust level as needed
-```
+---
 
-The logger uses daily rotation and writes to `logs/YYYY.MM.DD/<app_name>.log`. Qt messages (qDebug, qWarning, etc.) are automatically routed through the logger.
+## Usage / API highlights
 
-## CMake Integration
+- `BaseApplication app(argc, argv)` — initialize app with built-in behaviors
+- `app.isPrimaryInstance()` — check for primary instance
+- `app.getLog()` — access the configured logger
 
-To use BaseApplication in your application:
+---
+
+## Integration
+
+Link against `BaseApplication`, `SingleApplication` and `Log` in your CMake target:
 
 ```cmake
-# In your CMakeLists.txt
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
-ek_add_application(MyApp
-    SOURCES main.cpp
-    QT_MODULES Core
-    LIBRARIES BaseApplication SingleApplication ek_common
-)
+target_link_libraries(MyApp PRIVATE BaseApplication SingleApplication Log)
 ```
+
+---
 
 ## Testing
 
-The module includes basic tests for:
+Tests include single-instance and test mode checks. Run with `ctest -R BaseApplication`.
 
-- Single-instance enforcement
-- Test mode detection
-- Application initialization
+---
 
-Run tests with:
+## Further reading
 
-```bash
-ctest -R BaseApplication
-```
-
-## Migration Notes
-
-When migrating from plain QApplication:
-
-- Replace `QApplication` with `BaseApplication`
-- Add single-instance check in main()
-- Logging is automatically configured - use `getLog()` to access the logger
-- Qt messages are automatically logged to files
-- Ensure Log and SingleApplication libraries are linked
+- Implementation & layout: `src/modules/common/application/README.md` (implementation notes and contributor guidance)"}]}

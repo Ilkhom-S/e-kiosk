@@ -1,90 +1,75 @@
 # Logging Module
 
-The EKiosk project uses a modular logging system based on the `ILog` interface, implemented by `SimpleLog` for file-based logging.
-
 ## Purpose
 
-The logging module provides a lightweight, thread-safe logging solution for EKiosk applications. It replaces the previous `log4cpp` dependency with a simpler, custom implementation focused on file logging with daily rotation.
+The Logging module provides a lightweight, thread-safe logging solution for EKiosk applications via the `ILog` interface. It supports file-based logs with daily rotation and configurable log levels.
 
-Key features:
+---
 
-- File-based logs with daily rotation (no size-based rotation)
-- Severity levels: Debug, Info, Warning, Error
-- Thread-safe operations
-- Configurable log levels and destinations
-- Memory-efficient compared to heavy-weight loggers
-
-## Implementation layout
-
-For implementation details and file layout, see `src/modules/common/log/README.md` (implementation notes and contributor guidance).
-
-## Dependencies
-
-- **Qt Core**: For QString, QFile, QDateTime, QMutex
-- **SysUtils**: For rmBOM utility (removes BOM from log files)
-
-## Usage
-
-### Basic Usage
+## Quick start 🔧
 
 ```cpp
 #include <Common/ILog.h>
 
-// Get or create a logger instance
-ILog* logger = ILog::getInstance("MyLogger", LogType::File);
+auto logger = ILog::getInstance("MyLogger", LogType::File);
 logger->setDestination("my_log");
 logger->setLevel(LogLevel::Debug);
-
-// Log messages
 logger->write(LogLevel::Info, "Application started");
-logger->write(LogLevel::Error, "An error occurred");
 ```
 
-### Log Levels
+---
 
-- `LogLevel::Debug`: Detailed debug information
-- `LogLevel::Normal`: General information (mapped to Info)
-- `LogLevel::Warning`: Warning messages
-- `LogLevel::Error`: Error messages
+## Features
 
-### Log File Location
+- File-based logs with daily rotation
+- Severity levels: Debug, Info (Normal), Warning, Error
+- Thread-safe operations
+- Configurable destinations and log levels
 
-Logs are written to `applicationDir/logs/YYYY.MM.DD <destination>.log`
+---
 
-Example: `C:/path/to/app/logs/2026.01.13 my_log.log`
+## Configuration
 
-## CMake Integration
+No global config file; configure loggers at runtime with `ILog` API. Log files are written to:
 
-To use the Log module in your application:
+```text
+<applicationDir>/logs/YYYY.MM.DD <destination>.log
+```
+
+---
+
+## Usage / API highlights
+
+- `ILog::getInstance(name, type)` — obtain or create a logger
+- `logger->setDestination()` — configure file destination
+- `logger->setLevel()` — set the runtime level
+
+---
+
+## Integration
+
+Add `Log` (and `SysUtils` if needed) to your CMake target:
 
 ```cmake
-# In your CMakeLists.txt
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
-ek_add_application(MyApp
-    SOURCES main.cpp
-    QT_MODULES Core
-    LIBRARIES Log SysUtils ek_common
-)
+target_link_libraries(MyApp PRIVATE Log SysUtils)
 ```
+
+---
 
 ## Testing
 
-The module includes unit tests in `tests/unit/TestQFileLogger.cpp` that verify:
+Unit tests live in `tests/unit/` (e.g., `TestQFileLogger.cpp`). Run tests with `ctest -R TestQFileLogger`.
 
-- Logger instance creation
-- Message writing at different levels
-- Log file creation and content
+---
 
-Run tests with:
+## Migration notes
 
-```bash
-ctest -R TestQFileLogger
-```
+This module replaces `log4cpp`. Migration steps:
 
-## Migration Notes
+- Replace previous logging calls with `ILog::getInstance()` and the corresponding APIs.
 
-This module replaces the previous `log4cpp` usage. During migration:
+---
 
-- Replace `ek::Log` calls with `ILog::getInstance()`
-- Update log level constants
-- Ensure SysUtils dependency is included for BOM removal
+## Further reading
+
+- Implementation & file layout: `src/modules/common/log/README.md` (internal APIs and contributor notes)

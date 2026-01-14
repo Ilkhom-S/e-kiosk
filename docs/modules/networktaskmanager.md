@@ -1,4 +1,4 @@
-# NetworkTaskManager Module ✅
+# NetworkTaskManager Module
 
 ## Purpose
 
@@ -16,14 +16,7 @@ auto ntm = NetworkTaskManager::instance();
 // Simple GET request
 NetworkTask* task = ntm->get(QUrl("https://api.example.com/data"));
 connect(task, &NetworkTask::finished, this, &MyClass::onResponse);
-
-// POST with data
-QByteArray postData = createRequest();
-NetworkTask* post = ntm->post(url, postData);
-post->setHeader("Content-Type", "application/json");
 ```
-
-> Tip: Prefer high-level `NetworkTask` APIs over direct `QNetworkAccessManager` calls for consistent retry, logging and SSL handling. 💡
 
 ---
 
@@ -33,7 +26,6 @@ post->setHeader("Content-Type", "application/json");
 - Connection pooling and timeouts
 - SSL/TLS configuration and certificate validation
 - Request/response logging integration
-- Thread-safe operations suitable for background work
 
 ---
 
@@ -52,19 +44,15 @@ ProxyPort=
 
 ---
 
-## Key files
+## Usage / API highlights
 
-| File                   | Purpose                               |
-| ---------------------- | ------------------------------------- |
-| `NetworkTaskManager.h` | Main singleton manager                |
-| `NetworkTask.h`        | Represents an individual network task |
-| `SslConfiguration.h`   | SSL and certificate settings          |
+- `NetworkTaskManager::instance()` — obtain the manager
+- `ntm->get(url)` / `ntm->post(url, data)` — create tasks
+- `NetworkTask` signals and methods for response handling
 
 ---
 
 ## Integration
-
-Link against the module in your CMake target:
 
 ```cmake
 target_link_libraries(MyApp PRIVATE NetworkTaskManager)
@@ -80,11 +68,6 @@ Unit tests live under `tests/modules/NetworkTaskManager/`.
 
 ---
 
-## Source & Further reading
+## Further reading
 
-- Canonical docs: `docs/modules/networktaskmanager.md` (this file)
-- Module source: [`src/modules/NetworkTaskManager/README.md`](../../src/modules/NetworkTaskManager/README.md)
-
----
-
-_If you'd like, I can add examples, sequence diagrams, or an API table to this page._
+- Implementation & layout: `src/modules/NetworkTaskManager/README.md` (internal notes and contributor guidance)
