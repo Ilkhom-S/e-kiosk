@@ -4,9 +4,20 @@ This guide explains how to build EKiosk on supported platforms.
 
 ## Prerequisites
 
-- Qt 5.15.x (or later) with required modules
+- **Windows 7**: Qt 5.15 LTS (VC toolset 142) with required modules
+- **Windows 10+**: Qt 6.8 LTS with required modules
+- **Linux**: Qt 6.8 LTS with required modules
 - CMake 3.16+
 - Ninja or MSVC (Windows) or GCC/Clang (Linux)
+
+## Platform-Specific Qt Versions
+
+EKiosk automatically selects the appropriate Qt version based on your platform:
+
+- **Windows 7**: Uses Qt 5.15 LTS with VC toolset 142
+- **Windows 10+ and Linux**: Uses Qt 6.8 LTS
+
+The CMake configuration will detect your platform and select the correct Qt version automatically.
 
 ## Building
 

@@ -139,6 +139,28 @@ All code, CMake, and tests must be written to support both Qt5 and Qt6 where pos
 - Prefer Qt APIs and modules available in both versions.
 - When Qt version-specific code is required, use CMake or preprocessor checks to handle differences cleanly.
 
+### Platform-Specific Qt Versions
+
+- **Windows 7**: Qt 5.15 LTS (VC toolset 142) - transitional support only
+- **Windows 10+ and Linux**: Qt 6.8 LTS
+
+Use platform detection in CMake to select appropriate Qt versions:
+
+```cmake
+if(WIN32)
+    if(CMAKE_SYSTEM_VERSION VERSION_GREATER_EQUAL "10.0")
+        # Windows 10+ - Qt 6
+        find_package(Qt6 REQUIRED)
+    else()
+        # Windows 7 - Qt 5
+        find_package(Qt5 REQUIRED)
+    endif()
+else()
+    # Linux - Qt 6
+    find_package(Qt6 REQUIRED)
+endif()
+```
+
 ## Conventional Commits & Scopes
 
 All commits must follow the [Conventional Commits](https://www.conventionalcommits.org/) standard.

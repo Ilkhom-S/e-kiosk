@@ -48,6 +48,12 @@ if(ENABLE_COVERAGE)
     endif()
 endif()
 
+# FR (Fiscal Register) support - deprecated, disabled by default
+option(EKIOSK_ENABLE_FR "Enable FR (Fiscal Register) support" OFF)
+if(NOT EKIOSK_ENABLE_FR)
+    message(STATUS "FR (Fiscal Register) support is disabled (deprecated)")
+endif()
+
 # Coverage target: generate lcov info and HTML report
 if(ENABLE_COVERAGE AND (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang"))
     find_program(LCOV_EXEC lcov)

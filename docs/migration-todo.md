@@ -12,12 +12,15 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [x] Implement NetworkTaskManager module and move tests to tests/modules/
 - [x] Standardize all adopted modules to use ek_add_library with proper parameters
 - [x] Implement LibUSB integration for USB device support in plugins
+- [x] Implement FR (Fiscal Register) deprecation Phase 1 - exclude from build system
 - [ ] Update CMake to build each app and link shared code
       Notes:
 - `SingleApplication` is now vendored as a git submodule under `thirdparty/SingleApplication` to avoid pulling Qt6 via vcpkg. Use `git submodule update --init --recursive` after cloning.- [x] Mirror src/ structure in tests/ (Connection and NetworkTaskManager done)
 - [ ] Update documentation for each migration step
 - [ ] Review and clean up thirdparty/ dependencies
 - [ ] Add CI for modular builds and tests
+- [x] Implement platform-specific Qt version strategy (Qt 5.15 LTS for Windows 7, Qt 6.8 LTS for Windows 10+/Linux)
+- [x] Update all documentation for Qt version strategy (platform-compatibility.md, coding-standards.md, copilot-instructions.md, build-guide.md)
 
 ## Notes
 

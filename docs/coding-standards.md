@@ -60,3 +60,33 @@ To keep the codebase compatible with both Qt5 and Qt6 and to make dependencies e
 - When porting legacy code, prefer mechanical refactors (search-and-replace) and run the build and tests after changes.
 
 The project's `.clang-format` and coding guidelines already prefer grouped and sorted includes; run the formatter after changing includes to keep consistency.
+
+## Qt Version Compatibility
+
+All code, CMake, and tests must be written to support both Qt5 and Qt6 where possible.
+
+- Use version-agnostic CMake patterns (e.g., find_package(Qt${QT_VERSION_MAJOR} ...)).
+- Prefer Qt APIs and modules available in both versions.
+- When Qt version-specific code is required, use CMake or preprocessor checks to handle differences cleanly.
+
+### Platform-Specific Qt Versions
+
+- **Windows 7**: Qt 5.15 LTS (VC toolset 142) - transitional support only
+- **Windows 10+ and Linux**: Qt 6.8 LTS
+
+Use platform detection in CMake to select appropriate Qt versions:
+
+```cmake
+if(WIN32)
+    if(CMAKE_SYSTEM_VERSION VERSION_GREATER_EQUAL "10.0")
+        # Windows 10+ - Qt 6
+        find_package(Qt6 REQUIRED)
+    else()
+        # Windows 7 - Qt 5
+        find_package(Qt5 REQUIRED)
+    endif()
+else()
+    # Linux - Qt 6
+    find_package(Qt6 REQUIRED)
+endif()
+```
