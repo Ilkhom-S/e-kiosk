@@ -7,18 +7,15 @@ file(GLOB BILLACCEPTOR_SOURCES
     src/*.h
 )
 
-set(BILLACCEPTOR_HEADERS
-    ${CMAKE_SOURCE_DIR}/include/Hardware/CashAcceptors/CashAcceptorStatusesDescriptions.h
-)
-
 ek_add_plugin(bill_acceptors
-    SOURCES ${BILLACCEPTOR_SOURCES} ${BILLACCEPTOR_HEADERS}
+    SOURCES ${BILLACCEPTOR_SOURCES}
     QT_MODULES Core
     DEPENDS
     HardwareCommon
     CashAcceptors
     DriversSDK
     PluginsSDK
+    ek_common
 )
 
 # Translations - merge common and plugin-specific translations

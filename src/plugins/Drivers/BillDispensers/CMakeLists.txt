@@ -16,4 +16,5 @@ ek_add_plugin(bill_dispensers
     CashDevices
     DriversSDK
     PluginsSDK
+    ek_common
 )
