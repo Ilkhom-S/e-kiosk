@@ -19,6 +19,10 @@
 #include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>
 #include <SDK/Plugins/IExternalInterface.h>
 
+// ThirdParty
+#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
+
 // Project
 #include "Payment.h"
 #include "PaymentCheckRequest.h"
@@ -44,7 +48,8 @@ namespace CPayment {
 Payment::Payment(PaymentFactory *aFactory)
     : PaymentBase(aFactory, aFactory->getCore()),
       mRequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine()) {
-    mRequestSender.setResponseCreator(boost::bind(&Payment::createResponse, this, _1, _2));
+    mRequestSender.setResponseCreator(
+        boost::bind(&Payment::createResponse, this, boost::placeholders::_1, boost::placeholders::_2));
 }
 
 //------------------------------------------------------------------------------

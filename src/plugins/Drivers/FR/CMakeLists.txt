@@ -15,7 +15,7 @@ ek_add_plugin(fiscal_registers
     HardwareFR
     DriversSDK
     HardwareIOPorts
-    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
+    ek_common
 )
 
 # Ensure EK::LibUSB target is available for this library

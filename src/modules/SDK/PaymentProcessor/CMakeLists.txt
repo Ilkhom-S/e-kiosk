@@ -5,24 +5,10 @@ file(GLOB_RECURSE PPSDK_SOURCES
     src/*.h
 )
 
-# Include SDK headers
-file(GLOB PPSDK_PP_HEADERS
-    ${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/*.h
-    ${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/*/*.h
-)
-
-file(GLOB PPSDK_GUI_HEADERS
-    ${CMAKE_SOURCE_DIR}/include/SDK/GUI/*.h
-)
-
 ek_add_library(PPSDK
-    SOURCES ${PPSDK_SOURCES} ${PPSDK_PP_HEADERS} ${PPSDK_GUI_HEADERS}
+    SOURCES ${PPSDK_SOURCES}
     QT_MODULES Core Widgets
     INCLUDE_DIRS
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor
-    ${CMAKE_SOURCE_DIR}/include/SDK/GUI
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    DEPENDS boost
+    DEPENDS ek_boost ek_common
     COMPILE_DEFINITIONS _UNICODE UNICODE
 )

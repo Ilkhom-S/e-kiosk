@@ -15,6 +15,9 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 # Load the actual Qt package with required components
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui Network WebSockets SerialPort Sql Quick Concurrent Xml)
 
+# Find Boost (installed via vcpkg)
+find_package(Boost REQUIRED)
+
 # SingleApplication setup for freestanding mode
 set(QAPPLICATION_CLASS QApplication CACHE STRING "Inheritance class for SingleApplication")
 
@@ -39,6 +42,10 @@ target_include_directories(ek_common INTERFACE
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
+
+# Create an INTERFACE target for Boost includes
+add_library(ek_boost INTERFACE)
+target_include_directories(ek_boost INTERFACE ${Boost_INCLUDE_DIRS})
 
 # Thirdparty libraries are configured in thirdparty/CMakeLists.txt
 # Only reference subdirectories for modular apps/libraries

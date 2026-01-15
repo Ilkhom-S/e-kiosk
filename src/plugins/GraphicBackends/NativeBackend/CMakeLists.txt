@@ -10,7 +10,7 @@ file(GLOB NATIVEBACKEND_SOURCES
 ek_add_plugin(native_backend
     SOURCES ${NATIVEBACKEND_SOURCES}
     QT_MODULES Core Widgets
-    DEPENDS PluginsSDK
+    DEPENDS PluginsSDK ek_common
 )
 
 # Note: Depends on boost from thirdparty

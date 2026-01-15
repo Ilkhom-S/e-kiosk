@@ -15,4 +15,5 @@ ek_add_plugin(modems
     HardwareModems
     DriversSDK
     HardwareIOPorts
+    ek_common
 )

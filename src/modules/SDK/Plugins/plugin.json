@@ -1,0 +1,6 @@
+{
+  "IID": "com.humo.PluginFactory",
+  "version": "1.0",
+  "name": "PluginFactory",
+  "description": "Plugin factory base class"
+}

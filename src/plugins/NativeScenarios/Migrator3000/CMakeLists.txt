@@ -14,4 +14,5 @@ ek_add_plugin(migrator3000_scenario
     Log
     NetworkTaskManager
     ScenarioEngine
+    ek_boost
 )

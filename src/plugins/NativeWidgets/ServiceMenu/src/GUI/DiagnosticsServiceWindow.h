@@ -18,36 +18,35 @@
 class DeviceStatusWindow;
 
 //------------------------------------------------------------------------
-class DiagnosticsServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::DiagnosticsServiceWindow
-{
-	Q_OBJECT
+class DiagnosticsServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::DiagnosticsServiceWindow {
+    Q_OBJECT
 
-public:
-	DiagnosticsServiceWindow(ServiceMenuBackend* aBackend, QWidget* aParent = 0);
+  public:
+    DiagnosticsServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
-	virtual bool initialize();
-	virtual bool shutdown();
-	virtual bool activate();
-	virtual bool deactivate();
+    virtual bool initialize();
+    virtual bool shutdown();
+    virtual bool activate();
+    virtual bool deactivate();
 
-private:
-	void updateInfoPanel();
-	void resetParameter(const QString& aParameterName);
+  private:
+    void updateInfoPanel();
+    void resetParameter(const QString &aParameterName);
 
-private slots:
-	void onClickedEncashmentInfo();
-	void onDeviceStatusChanged(const QString& aConfigurationName, const QString& aNewStatus,
-							   const QString& aStatusColor, SDK::Driver::EWarningLevel::Enum aLevel);
-	void onClickedTestServer();
-	void onTestServerFinished();
-	void onClickedResetReject();
-	void onClickedResetReceipts();
+  private slots:
+    void onClickedEncashmentInfo();
+    void onDeviceStatusChanged(const QString &aConfigurationName, const QString &aNewStatus,
+                               const QString &aStatusColor, SDK::Driver::EWarningLevel::Enum aLevel);
+    void onClickedTestServer();
+    void onTestServerFinished();
+    void onClickedResetReject();
+    void onClickedResetReceipts();
 
-private:
-	QSpacerItem* mSpacerItem;
-	typedef QMap<QString, DeviceStatusWindow*> TDeviceStatusWidget;
-	TDeviceStatusWidget mDeviceStatusWidget;
-	QFutureWatcher<bool> mTaskWatcher;
+  private:
+    QSpacerItem *mSpacerItem;
+    typedef QMap<QString, DeviceStatusWindow *> TDeviceStatusWidget;
+    TDeviceStatusWidget mDeviceStatusWidget;
+    QFutureWatcher<bool> mTaskWatcher;
 };
 
 //------------------------------------------------------------------------

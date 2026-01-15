@@ -15,4 +15,5 @@ ek_add_plugin(coin_acceptors
     CoinAcceptors
     DriversSDK
     PluginsSDK
+    ek_common
 )

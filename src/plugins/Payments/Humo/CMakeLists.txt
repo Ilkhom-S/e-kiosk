@@ -15,5 +15,6 @@ ek_add_plugin(humo_payments
     PPSDK
     NetworkTaskManager
     PaymentBase
+    ek_boost
     INSTALL_DIR plugins
 )

@@ -13,37 +13,35 @@
 class DialupConnectionWindow;
 
 //------------------------------------------------------------------------
-namespace CDialupWizardPage
-{
-	/// Минимальное врея, когда будет показан экран ожидания при тесте соединения
-	const int MinimumPingTime = 1000;
+namespace CDialupWizardPage {
+    /// Минимальное время, когда будет показан экран ожидания при тесте соединения
+    const int MinimumPingTime = 1000;
 } // namespace CDialupWizardPage
 
 //------------------------------------------------------------------------
-class DialupWizardPage : public WizardPageBase
-{
-	Q_OBJECT
+class DialupWizardPage : public WizardPageBase {
+    Q_OBJECT
 
-public:
-	DialupWizardPage(ServiceMenuBackend* aBackend, QWidget* aParent = 0);
+  public:
+    DialupWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
-	virtual bool initialize();
-	virtual bool shutdown();
+    virtual bool initialize();
+    virtual bool shutdown();
 
-	virtual bool activate();
-	virtual bool deactivate();
+    virtual bool activate();
+    virtual bool deactivate();
 
-private slots:
-	void onSelectionChanged(const QString& aSelectedConnection);
-	void onCreateConnection(const QString& aConnection, const QString& aNetworkDevice);
-	void onTestConnection(const QString& aConnection);
-	void onRemoveConnection(const QString& aConnection);
-	void onTestFinished();
+  private slots:
+    void onSelectionChanged(const QString &aSelectedConnection);
+    void onCreateConnection(const QString &aConnection, const QString &aNetworkDevice);
+    void onTestConnection(const QString &aConnection);
+    void onRemoveConnection(const QString &aConnection);
+    void onTestFinished();
 
-private:
-	QFutureWatcher<bool> mTaskWatcher;
-	QString mConnectionError;
-	DialupConnectionWindow* mConnectionWindow;
+  private:
+    QFutureWatcher<bool> mTaskWatcher;
+    QString mConnectionError;
+    DialupConnectionWindow *mConnectionWindow;
 };
 
 //------------------------------------------------------------------------

@@ -15,4 +15,5 @@ ek_add_plugin(hid_devices
     HardwareScanners
     DriversSDK
     SysUtils
+    ek_common
 )

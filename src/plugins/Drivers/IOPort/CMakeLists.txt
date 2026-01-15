@@ -15,6 +15,7 @@ ek_add_plugin(io_ports
     HardwareIOPorts
     DriversSDK
     PluginsSDK
+    ek_common
 )
 
 

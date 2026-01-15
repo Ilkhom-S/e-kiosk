@@ -114,7 +114,7 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
                     auto convertedValue = convertFieldValue(field, value);
                     request->getPayment()->setParameter(Payment::SParameter(field.name, convertedValue, true));
 
-                    // Единственное поле из стандартного протокола, которое может быть перекодированно.
+                    // Единственное поле из стандартного протокола, которое может быть перекодировано.
                     if (field.name == CResponse::Parameters::ErrorMessage) {
                         addParameter(field.name, convertedValue.toString());
                     }
@@ -126,13 +126,13 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
 
         protocolParameters << QPair<QString, QString>("TRANSID", PPSDK::CPayment::Parameters::TransactionId)
                            << QPair<QString, QString>("AUTHCODE", PPSDK::CPayment::Parameters::AuthCode)
-                           << QPair<QString, QString>("GATEWAY_IN", PPSDK::CPayment::Parameters::MNPGetewayIn)
-                           << QPair<QString, QString>("GATEWAY_OUT", PPSDK::CPayment::Parameters::MNPGetewayOut);
+                           << QPair<QString, QString>("GATEWAY_IN", PPSDK::CPayment::Parameters::MNPGatewayIn)
+                           << QPair<QString, QString>("GATEWAY_OUT", PPSDK::CPayment::Parameters::MNPGatewayOut);
 
-        foreach (auto parametr, protocolParameters) {
-            QVariant value = getParameter(parametr.first);
+        foreach (auto parameter, protocolParameters) {
+            QVariant value = getParameter(parameter.first);
             if (value.isValid()) {
-                request->getPayment()->setParameter(Payment::SParameter(parametr.second, value, true));
+                request->getPayment()->setParameter(Payment::SParameter(parameter.second, value, true));
             }
         }
     }

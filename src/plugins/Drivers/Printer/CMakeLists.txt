@@ -27,7 +27,7 @@ ek_add_plugin(printers
     HardwarePrinters
     SysUtils
     HardwareIOPorts
-    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
+    ek_common
 )
 
 if(WIN32)

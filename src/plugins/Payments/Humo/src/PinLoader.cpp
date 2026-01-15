@@ -15,6 +15,7 @@
 
 // ThirdParty
 #include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/foreach.hpp>
 
 // Project
@@ -36,7 +37,7 @@ namespace CPinLoader {
 } // namespace CPinLoader
 
 namespace CProcessorType {
-    const QString CybeplatPin = "humo_pin";
+    const QString HumoPin = "humo_pin";
 } // namespace CProcessorType
 
 //------------------------------------------------------------------------------
@@ -109,7 +110,7 @@ void PinLoader::findPinProviders() {
             return;
         }
 
-        foreach (qint64 providerId, dealerSettings->getProviders(CProcessorType::CybeplatPin)) {
+        foreach (qint64 providerId, dealerSettings->getProviders(CProcessorType::HumoPin)) {
             PPSDK::SProvider provider = dealerSettings->getProvider(providerId);
 
             if (provider.processor.requests.contains(CPinLoader::GetCardsRequestName)) {
@@ -150,7 +151,8 @@ void PinLoader::onLoadPinList() {
 
     SDK::PaymentProcessor::Humo::RequestSender http(mPaymentFactoryBase->getNetworkTaskManager(),
                                                     mPaymentFactoryBase->getCryptEngine());
-    http.setResponseCreator(boost::bind(&PinLoader::createResponse, this, _1, _2));
+    http.setResponseCreator(
+        boost::bind(&PinLoader::createResponse, this, boost::placeholders::_1, boost::placeholders::_2));
 
     int failedCount = 0;
 

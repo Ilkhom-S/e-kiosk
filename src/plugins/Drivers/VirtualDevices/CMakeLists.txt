@@ -13,4 +13,5 @@ ek_add_plugin(virtual_devices
     DEPENDS
     HardwareCommon
     DriversSDK
+    ek_common
 )

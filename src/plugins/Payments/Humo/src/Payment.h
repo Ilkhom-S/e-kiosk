@@ -9,65 +9,64 @@
 #include "PaymentFactory.h"
 
 //------------------------------------------------------------------------------
-class Payment : public PaymentBase
-{
-	friend class PaymentFactory;
+class Payment : public PaymentBase {
+    friend class PaymentFactory;
 
-public:
-	Payment(PaymentFactory* aFactory);
+  public:
+    Payment(PaymentFactory *aFactory);
 
-	/// Возвращает связанную фабрику платежей.
-	PaymentFactory* getPaymentFactory() const;
+    /// Возвращает связанную фабрику платежей.
+    PaymentFactory *getPaymentFactory() const;
 
 #pragma region SDK::PaymentProcessor::IPayment interface
 
-	/// Выполнение шага с идентификатором aStep.
-	virtual bool performStep(int aStep);
+    /// Выполнение шага с идентификатором aStep.
+    virtual bool performStep(int aStep);
 
-	/// Обновление статуса платежа.
-	virtual void process();
+    /// Обновление статуса платежа.
+    virtual void process();
 
-	/// Отметка платежа как удаленного. В случае успеха возвращает true.
-	virtual bool remove();
+    /// Отметка платежа как удаленного. В случае успеха возвращает true.
+    virtual bool remove();
 
 #pragma endregion
 
-protected:
-	/// Создаёт класс запроса по идентификатору шага.
-	virtual Request* createRequest(const QString& aStep);
+  protected:
+    /// Создаёт класс запроса по идентификатору шага.
+    virtual Request *createRequest(const QString &aStep);
 
-	/// Создаёт класс ответа по классу запроса.
-	virtual Response* createResponse(const Request& aRequest, const QString& aResponseString);
+    /// Создаёт класс ответа по классу запроса.
+    virtual Response *createResponse(const Request &aRequest, const QString &aResponseString);
 
-	/// Отправка запроса.
-	virtual Response* sendRequest(const QUrl& aUrl, Request& aRequest);
+    /// Отправка запроса.
+    virtual Response *sendRequest(const QUrl &aUrl, Request &aRequest);
 
-	/// Запрос на проведение платежа.
-	virtual bool check(bool aFakeCheck);
+    /// Запрос на проведение платежа.
+    virtual bool check(bool aFakeCheck);
 
-	/// Транзакция.
-	virtual bool pay();
+    /// Транзакция.
+    virtual bool pay();
 
-	/// Запрос статуса платежа.
-	virtual bool status();
+    /// Запрос статуса платежа.
+    virtual bool status();
 
-	/// Попытка проведения платежа.
-	virtual void performTransaction();
+    /// Попытка проведения платежа.
+    virtual void performTransaction();
 
-	/// Проведение PAY части платежа
-	void performTransactionPay();
+    /// Проведение PAY части платежа
+    void performTransactionPay();
 
-	/// Пересчитываем кол-во попыток и время следующей
-	void updateNumberOfTries();
+    /// Пересчитываем кол-во попыток и время следующей
+    void updateNumberOfTries();
 
-	/// Критичекая ошибка, проведение платежа прекращается.
-	virtual bool isCriticalError(int aError) const;
+    /// Критическая ошибка, проведение платежа прекращается.
+    virtual bool isCriticalError(int aError) const;
 
-	/// При ошибке проведения устанавливает таймауты для следующей попытки.
-	virtual void setProcessError();
+    /// При ошибке проведения устанавливает таймауты для следующей попытки.
+    virtual void setProcessError();
 
-protected:
-	RequestSender mRequestSender;
+  protected:
+    RequestSender mRequestSender;
 };
 
 //------------------------------------------------------------------------------

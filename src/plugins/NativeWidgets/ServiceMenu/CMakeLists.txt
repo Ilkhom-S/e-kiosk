@@ -29,6 +29,7 @@ ek_add_plugin(service_menu
     KeysUtils
     Log
     SysUtils
+    ek_boost
     INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src
     INSTALL_DIR plugins
 )

@@ -15,4 +15,5 @@ ek_add_plugin(watchdogs
     HardwareWatchdogs
     DriversSDK
     HardwareIOPorts
+    ek_common
 )
