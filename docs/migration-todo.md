@@ -11,7 +11,7 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [x] Implement Connection module and move tests to tests/modules/
 - [x] Implement NetworkTaskManager module and move tests to tests/modules/
 - [x] Standardize all adopted modules to use ek_add_library with proper parameters
-- [x] Reorganize thirdparty/CMakeLists.txt to provide clean EK:: prefixed targets
+- [x] Implement LibUSB integration for USB device support in plugins
 - [ ] Update CMake to build each app and link shared code
       Notes:
 - `SingleApplication` is now vendored as a git submodule under `thirdparty/SingleApplication` to avoid pulling Qt6 via vcpkg. Use `git submodule update --init --recursive` after cloning.- [x] Mirror src/ structure in tests/ (Connection and NetworkTaskManager done)
