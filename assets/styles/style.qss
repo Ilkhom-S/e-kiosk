@@ -267,8 +267,8 @@
     width: 30px;
     border-left-width: 2px;
     border-left-color: #f07e1b;
-    border-left-style: solid; /* только одна линия */
-    border-top-right-radius: 8px; /* тот же радиус закругления что и у QComboBox */
+    border-left-style: solid; /* СЃС‚РёР»СЊ Р»РµРІРѕР№ РіСЂР°РЅРёС†С‹ */
+    border-top-right-radius: 8px; /* РґР»СЏ РїСЂР°РІРёР»СЊРЅРѕРіРѕ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РІ QComboBox */
     border-bottom-right-radius: 8px;
 }
 
@@ -356,8 +356,8 @@
     width: 25px;
     border-left-width: 2px;
     border-left-color: #f07e1b;
-    border-left-style: solid; /* только одна линия */
-    border-top-right-radius: 8px; /* тот же радиус закругления что и у QComboBox */
+    border-left-style: solid; /* СЃС‚РёР»СЊ Р»РµРІРѕР№ РіСЂР°РЅРёС†С‹ */
+    border-top-right-radius: 8px; /* РґР»СЏ РїСЂР°РІРёР»СЊРЅРѕРіРѕ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РІ QComboBox */
     border-bottom-right-radius: 8px;
 }
 
@@ -366,7 +366,7 @@ QComboBox::down-arrow {
      image: url(:/assets/icons/down_arrow.png);
  }
 
-QComboBox::down-arrow:on { /* сдвиг стрелки когда выпадающий список раскрывается */
+QComboBox::down-arrow:on { /* СЃС‚РёР»СЊ СЃС‚СЂРµР»РєРё РІРЅРёР· РїСЂРё РЅР°Р¶Р°С‚РёРё РЅР° QComboBox */
      image: url(:/assets/icons/up_arrow.png);
      top: 1px;
      left: 1px;

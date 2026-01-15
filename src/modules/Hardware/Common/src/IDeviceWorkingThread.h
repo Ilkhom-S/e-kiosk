@@ -1,4 +1,4 @@
-/* @file Интерфейс рабочиего потока устройства. */
+/* @file РРЅС‚РµСЂС„РµР№СЃ СЂР°Р±РѕС‡РµРіРѕ РїРѕС‚РѕРєР° СѓСЃС‚СЂРѕР№СЃС‚РІР°. */
 
 #pragma once
 
@@ -12,23 +12,22 @@
 #include <SDK/Drivers/WarningLevel.h>
 
 //--------------------------------------------------------------------------------
-class IDeviceWorkingThread : public QThread
-{
-	Q_OBJECT
+class IDeviceWorkingThread : public QThread {
+    Q_OBJECT
 
-signals:
-	/// Изменение состояния.
-	void status(SDK::Driver::EWarningLevel::Enum, const QString&, int);
+  signals:
+    /// РЎРёРіРЅР°Р» СЃС‚Р°С‚СѓСЃР°.
+    void status(SDK::Driver::EWarningLevel::Enum, const QString &, int);
 
-	/// Окончание инициализации.
-	void initialized();
+    /// РЎРёРіРЅР°Р» РёРЅРёС†РёР°Р»РёР·Р°С†РёРё.
+    void initialized();
 
-public slots:
-	/// Инициализация.
-	virtual void initialize() = 0;
+  public slots:
+    /// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ.
+    virtual void initialize() = 0;
 
-	/// Идентификация.
-	virtual bool checkExistence() = 0;
+    /// РџСЂРѕРІРµСЂРєР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ.
+    virtual bool checkExistence() = 0;
 };
 
 //--------------------------------------------------------------------------------

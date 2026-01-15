@@ -1,13 +1,14 @@
 /* @file Конфигурация фабрики плагинов. */
 
 // Plugin SDK
+
+// SDK
 #include <SDK/Plugins/PluginFactory.h>
 
-class UcsPluginFactory : public SDK::Plugin::PluginFactory
-{
-	Q_OBJECT
-	Q_INTERFACES(SDK::Plugin::IPluginFactory)
-	Q_PLUGIN_METADATA(IID "com.cyberplat.ucs")
+class UcsPluginFactory : public SDK::Plugin::PluginFactory {
+    Q_OBJECT
+    Q_INTERFACES(SDK::Plugin::IPluginFactory)
+    Q_PLUGIN_METADATA(IID "com.humo.ucs")
 };
 
 //------------------------------------------------------------------------------

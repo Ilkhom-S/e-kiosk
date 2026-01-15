@@ -1,35 +1,32 @@
-/* @file Сценарий сервисного меню терминала. */
+п»ї/* @file РЎС†РµРЅР°СЂРёР№ РјРµРЅСЋ РѕР±СЃР»СѓР¶РёРІР°РЅРёСЏ. */
 
 //------------------------------------------------------------------------------
-// Инициализация сценария.
-function initialize(scenarioName)
-{
-    // Состояния
-	ScenarioEngine.addState("main", {initial:true});
-	ScenarioEngine.addState("done", {final:true});
-	
-    // Переходы между состояниями
-	ScenarioEngine.addTransition("main", "done", "close");
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃС†РµРЅР°СЂРёСЏ.
+function initialize(scenarioName) {
+  // РЎРѕСЃС‚РѕСЏРЅРёСЏ
+  ScenarioEngine.addState("main", { initial: true });
+  ScenarioEngine.addState("done", { final: true });
+
+  // РџРµСЂРµС…РѕРґС‹ РјРµР¶РґСѓ СЃРѕСЃС‚РѕСЏРЅРёСЏРјРё
+  ScenarioEngine.addTransition("main", "done", "close");
 }
 
 //------------------------------------------------------------------------------
-// Старт сценария.
-function onStart() {
-}
+// РЎРѕР±С‹С‚РёРµ Р·Р°РїСѓСЃРєР°.
+function onStart() {}
 
-// Завершение сценария.
-function onStop(aParams) {
-}
+// РЎРѕР±С‹С‚РёРµ РѕСЃС‚Р°РЅРѕРІРєРё.
+function onStop(aParams) {}
 
-// Проверка на остановку.
+// РњРѕР¶РЅРѕ Р»Рё РѕСЃС‚Р°РЅРѕРІРёС‚СЊ.
 function canStop() {
-	Core.graphics.notify(EventType.TryStopScenario, {});
+  Core.graphics.notify(EventType.TryStopScenario, {});
 
-	return false;
+  return false;
 }
 
 //------------------------------------------------------------------------------
-// Обработчики состояний.
+// РћР±СЂР°Р±РѕС‚С‡РёРє РІС…РѕРґР° РІ СЃРѕСЃС‚РѕСЏРЅРёРµ main.
 function mainEnterHandler() {
-    Core.graphics.show("ServiceMenu", { reset: true });
+  Core.graphics.show("ServiceMenu", { reset: true });
 }

@@ -1,45 +1,35 @@
-/* @file Сценарий автоинкасации терминала. */
+/* @file РЎС†РµРЅР°СЂРёР№ Р°РІС‚РѕРёРЅРєР°СЃСЃР°С†РёРё. */
 
 //------------------------------------------------------------------------------
-// Инициализация сценария.
-function initialize(scenarioName)
-{
-    // Состояния
-	ScenarioEngine.addState("main", {initial:true});
-	ScenarioEngine.addState("done", {final:true});
-	
-    // Переходы между состояниями
-	ScenarioEngine.addTransition("main", "done", "close");
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃС†РµРЅР°СЂРёСЏ.
+function initialize(scenarioName) {
+  // РЎРѕСЃС‚РѕСЏРЅРёСЏ
+  ScenarioEngine.addState("main", { initial: true });
+  ScenarioEngine.addState("done", { final: true });
+
+  // РџРµСЂРµС…РѕРґС‹ РјРµР¶РґСѓ СЃРѕСЃС‚РѕСЏРЅРёСЏРјРё
+  ScenarioEngine.addTransition("main", "done", "close");
 }
 
 //-----------------------------------------------------------------------------
-// Старт сценария.
-function onStart()
-{
-}
+// РЎРѕР±С‹С‚РёРµ Р·Р°РїСѓСЃРєР°.
+function onStart() {}
 
-// Завершение сценария.
-function onStop()
-{
-}
+// РЎРѕР±С‹С‚РёРµ РѕСЃС‚Р°РЅРѕРІРєРё.
+function onStop() {}
 
-// Проверка на остановку.
-function canStop()
-{
-	return false;
+// РњРѕР¶РЅРѕ Р»Рё РѕСЃС‚Р°РЅРѕРІРёС‚СЊ.
+function canStop() {
+  return false;
 }
 
 //-----------------------------------------------------------------------------
-// Обработчики состояний.
-function mainEnterHandler(aParam)
-{
-	if (aParam.signal == "resume")
-	{
-		// Мы попали сюда из сервисного меню, поэтому выходим.
-		Core.postEvent(EventType.UpdateScenario, "close");
-	}
-	else
-	{
-		Core.graphics.show("AutoEncashment", {reset:true});
-	}
+// РћР±СЂР°Р±РѕС‚С‡РёРє РІС…РѕРґР° РІ СЃРѕСЃС‚РѕСЏРЅРёРµ main.
+function mainEnterHandler(aParam) {
+  if (aParam.signal == "resume") {
+    // Р•СЃР»Рё СЃС†РµРЅР°СЂРёР№ СѓР¶Рµ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ, РїСЂРѕСЃС‚Рѕ Р·Р°РєСЂРѕРµРј РµРіРѕ.
+    Core.postEvent(EventType.UpdateScenario, "close");
+  } else {
+    Core.graphics.show("AutoEncashment", { reset: true });
+  }
 }
