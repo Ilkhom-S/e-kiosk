@@ -30,7 +30,7 @@ class ProtoCashAcceptor : public ProtoDevice, public MetaDevice<SDK::Driver::ICa
     virtual void employParList() {
     }
 
-    /// Восстановление статусов для отправки наверх после отключения поллинга.
+    /// Восстановление статусов для отправки наверх после отключения polling.
     virtual void restoreStatuses() {
     }
 

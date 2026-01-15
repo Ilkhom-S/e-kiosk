@@ -423,8 +423,8 @@ namespace SDK {
 
             settings.setBlockOn(SCommonSettings::ValidatorError,
                                 mProperties.get("config.hardware.validator_settings.block_terminal_on_error", true));
-            settings.autoEncachement =
-                mProperties.get("config.hardware.validator_settings.auto_encashment", settings.autoEncachement);
+            settings.autoEncashment =
+                mProperties.get("config.hardware.validator_settings.auto_encashment", settings.autoEncashment);
             settings.printFailedReceipts =
                 mProperties.get("config.hardware.printer_settings.print_failed_receipts", settings.printFailedReceipts);
             settings.randomReceiptsID =

@@ -22,6 +22,7 @@ namespace SDK {
 
         namespace Scripting {
 
+            /// Константы для HID.
             namespace HID {
                 const char STRING[] = "hid_string";
                 const char EXTERNAL_DATA[] = "hid_external_data";
@@ -40,21 +41,25 @@ namespace SDK {
             } // namespace HID
 
             //------------------------------------------------------------------------------
+            /// Прокси-класс для работы со сканером в скриптах.
             class HIDService : public QObject, public ILogable {
                 Q_OBJECT
 
               public:
+                /// Конструктор.
                 HIDService(ICore *aCore);
 
               public slots:
-                // Обновить параметры сервиса
+                /// Обновить параметры сервиса.
                 void updateParameters(const QVariantMap &aParameters);
 
+                /// Выполнить внешний обработчик.
                 void executeExternalHandler(const QVariantMap &aExpression);
 
-                // Если имя не указываем, то вкл/выкл делаем для всех устройств
+                /// Включить устройство.
                 void enable(const QString &aName = QString());
 
+                /// Отключить устройство.
                 void disable(const QString &aName = QString());
 
               signals:
@@ -77,12 +82,15 @@ namespace SDK {
                 void onEjected();
 
               private:
-                /// Возвращает скрипт on_external_data для активного платежа, если он есть
+                /// Возвращает скрипт on_external_data для активного платежа, если он есть.
                 QString getExternalData();
 
               private:
+                /// Указатель на ядро.
                 ICore *mCore;
+                /// Указатель на сервис HID.
                 IHIDService *mService;
+                /// Параметры.
                 QVariantMap mParameters;
             };
 

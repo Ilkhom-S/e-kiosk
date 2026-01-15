@@ -6,8 +6,10 @@ namespace SDK {
     namespace Plugin {
 
         //---------------------------------------------------------------------------
+        /// Импортируемый в плагин интерфейс.
         class IExternalInterface {
           protected:
+            /// Деструктор.
             virtual ~IExternalInterface() {
             }
         };

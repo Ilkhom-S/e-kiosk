@@ -28,6 +28,7 @@ namespace SDK {
             class PaymentService;
 
             //------------------------------------------------------------------------------
+            /// Элемент перечисления.
             class EnumItem : public QObject {
                 Q_OBJECT
 
@@ -36,25 +37,31 @@ namespace SDK {
                 Q_PROPERTY(QString id READ getID CONSTANT)
 
               public:
+                /// Конструктор.
                 EnumItem(const SProviderField::SEnumItem &aItem, QObject *aParent) : QObject(aParent), mItem(aItem) {
                 }
 
               private:
+                /// Получить имя.
                 QString getName() {
                     return mItem.title;
                 }
+                /// Получить значение.
                 QString getValue() {
                     return mItem.value;
                 }
+                /// Получить ID.
                 QString getID() {
                     return mItem.id;
                 }
 
               private:
+                /// Элемент перечисления.
                 SProviderField::SEnumItem mItem;
             };
 
             //------------------------------------------------------------------------------
+            /// Поле провайдера.
             class ProviderField : public QObject {
                 Q_OBJECT
 
@@ -89,10 +96,12 @@ namespace SDK {
                 Q_PROPERTY(QString dependency READ getDependency CONSTANT)
 
               public:
+                /// Конструктор.
                 ProviderField(const SProviderField &aField, QObject *aParent = 0) : QObject(aParent), mField(aField) {
                 }
 
               private:
+                /// Получить тип.
                 QString getType() {
                     return mField.type;
                 }

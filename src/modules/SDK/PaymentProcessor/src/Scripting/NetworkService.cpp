@@ -17,7 +17,7 @@
 #include <SDK/PaymentProcessor/Core/IPaymentService.h>
 #include <SDK/PaymentProcessor/Core/IPrinterService.h>
 #include <SDK/PaymentProcessor/Core/ISettingsService.h>
-#include <SDK/PaymentProcessor/CyberPlat/RequestSender.h>
+#include <SDK/PaymentProcessor/Humo/RequestSender.h>
 #include <SDK/PaymentProcessor/Scripting/NetworkService.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
@@ -50,9 +50,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            Response::Response(const SDK::PaymentProcessor::CyberPlat::Request &aRequest,
-                               const QString &aResponseString)
-                : SDK::PaymentProcessor::CyberPlat::Response(aRequest, aResponseString) {
+            Response::Response(const SDK::PaymentProcessor::Humo::Request &aRequest, const QString &aResponseString)
+                : SDK::PaymentProcessor::Humo::Response(aRequest, aResponseString) {
             }
 
             //------------------------------------------------------------------------------
@@ -60,8 +59,8 @@ namespace SDK {
                 : mCore(aCore), mCurrentTask(0), mNetworkService(aCore->getNetworkService()) {
                 if (mNetworkService) {
                     mTaskManager = mNetworkService->getNetworkTaskManager();
-                    mRequestSender = QSharedPointer<PPSDK::CyberPlat::RequestSender>(
-                        new PPSDK::CyberPlat::RequestSender(mTaskManager, mCore->getCryptService()->getCryptEngine()));
+                    mRequestSender = QSharedPointer<PPSDK::Humo::RequestSender>(
+                        new PPSDK::Humo::RequestSender(mTaskManager, mCore->getCryptService()->getCryptEngine()));
                     mRequestSender->setResponseCreator(
                         std::bind(&NetworkService::createResponse, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -164,9 +163,8 @@ namespace SDK {
             }
 
             //---------------------------------------------------------------------------
-            SDK::PaymentProcessor::CyberPlat::Response *
-            NetworkService::createResponse(const SDK::PaymentProcessor::CyberPlat::Request &aRequest,
-                                           const QString &aData) {
+            SDK::PaymentProcessor::Humo::Response *
+            NetworkService::createResponse(const SDK::PaymentProcessor::Humo::Request &aRequest, const QString &aData) {
                 return new Response(aRequest, aData);
             }
 
@@ -183,10 +181,10 @@ namespace SDK {
 
             //------------------------------------------------------------------------------
             Response *NetworkService::sendRequestInternal(Request *aRequest, const QString &aUrl) {
-                PPSDK::CyberPlat::RequestSender::ESendError error;
+                PPSDK::Humo::RequestSender::ESendError error;
 
-                QScopedPointer<SDK::PaymentProcessor::CyberPlat::Response> response(
-                    mRequestSender->post(aUrl, *aRequest, PPSDK::CyberPlat::RequestSender::Solid, error));
+                QScopedPointer<SDK::PaymentProcessor::Humo::Response> response(
+                    mRequestSender->post(aUrl, *aRequest, PPSDK::Humo::RequestSender::Solid, error));
 
                 delete aRequest;
                 aRequest = nullptr;
@@ -288,22 +286,21 @@ namespace SDK {
 
                 Request request(aRequestParameters);
 
-                PPSDK::CyberPlat::RequestSender::ESendError e;
+                PPSDK::Humo::RequestSender::ESendError e;
 
-                return mRequestSender->post(QUrl(aUrl), request, PPSDK::CyberPlat::RequestSender::Solid, e);
+                return mRequestSender->post(QUrl(aUrl), request, PPSDK::Humo::RequestSender::Solid, e);
             }
 
             //------------------------------------------------------------------------------
             void NetworkService::onResponseFinished() {
-                QScopedPointer<SDK::PaymentProcessor::CyberPlat::Response> response(mResponseWatcher.result());
+                QScopedPointer<SDK::PaymentProcessor::Humo::Response> response(mResponseWatcher.result());
                 emit requestCompleted(response.isNull() ? QVariantMap()
                                                         : dynamic_cast<Response *>(response.take())->getParameters());
             }
 
             //------------------------------------------------------------------------------
             void NetworkService::onResponseSendReceiptFinished() {
-                QScopedPointer<SDK::PaymentProcessor::CyberPlat::Response> response(
-                    mResponseSendReceiptWatcher.result());
+                QScopedPointer<SDK::PaymentProcessor::Humo::Response> response(mResponseSendReceiptWatcher.result());
                 emit sendReceiptComplete(!response.isNull() && response->isOk());
             }
 

@@ -176,7 +176,7 @@ namespace SDK {
             /// Настройки процессинга.
             SProcessingTraits processor;
 
-            /// Тип оператора по приёму/переводу денежных средств ("bank", "cyberplat").
+            /// Тип оператора по приёму/переводу денежных средств ("bank", "humo").
             QString type;
 
             QString name;

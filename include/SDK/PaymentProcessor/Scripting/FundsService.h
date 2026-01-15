@@ -21,10 +21,12 @@ namespace SDK {
         namespace Scripting {
 
             //------------------------------------------------------------------------------
+            /// Прокси класс для работы с купюроприёмниками и другими средствами приёма денег.
             class FundsService : public QObject {
                 Q_OBJECT
 
               public:
+                /// Конструктор.
                 FundsService(ICore *aCore);
 
               public slots:
@@ -54,16 +56,19 @@ namespace SDK {
                 void onEvent(const SDK::PaymentProcessor::Event &aEvent);
 
               signals:
+                /// Сигнал об ошибке.
                 void error(qint64 aPayment, QString aError);
+                /// Сигнал о предупреждении.
                 void warning(qint64 aPayment, QString aWarning);
 
+                /// Сигнал об активности.
                 void activity();
 
                 /// Купюроприемник выключен.
                 void disabled(qint64 aPayment);
 
                 // Диспенсер
-                /// Выдана указанная сумма
+                /// Выдана указанная сумма.
                 void dispensed(double aAmount);
 
                 /// Сигнал об активности. Пример: купюра втянута в ящик сброса.
@@ -73,10 +78,12 @@ namespace SDK {
                 void error2(QString aError);
 
               private:
+                /// Указатель на ядро.
                 ICore *mCore;
+                /// Указатель на сервис средств.
                 IFundsService *mFundsService;
 
-                /// Сумма, которую может выдать диспенсер
+                /// Сумма, которую может выдать диспенсер.
                 TPaymentAmount mAvailableAmount;
             };
 

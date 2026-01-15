@@ -52,6 +52,7 @@ namespace SDK {
             /// Сохраняет конфигурацию для данной пары плагин-объект.
             virtual bool savePluginConfiguration(const QString &aInstancePath, const QVariantMap &aParameters) = 0;
 
+            /// Возвращает интерфейс.
             virtual IExternalInterface *getInterface(const QString &aInterface) = 0;
 
             /// Возвращает загрузчик плагинов.

@@ -159,7 +159,7 @@ namespace SDK {
                     }
                 } else if (aSignatureType == Detached) {
                     task->getRequestHeader().insert("X-signature", detachedSignature);
-                    task->getRequestHeader().insert("X-cyberplat-accepted-keys", keyPairSerial.toLatin1());
+                    task->getRequestHeader().insert("X-humo-accepted-keys", keyPairSerial.toLatin1());
                 } else {
                     aError = UnknownSignatureType;
 

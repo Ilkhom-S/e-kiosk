@@ -22,7 +22,7 @@ class ICryptEngine;
 
 namespace SDK {
     namespace PaymentProcessor {
-        namespace CyberPlat {
+        namespace Humo {
 
             class Request;
             class Response;
@@ -172,6 +172,6 @@ namespace SDK {
             };
 
             //------------------------------------------------------------------------------
-        } // namespace CyberPlat
+        } // namespace Humo
     } // namespace PaymentProcessor
 } // namespace SDK

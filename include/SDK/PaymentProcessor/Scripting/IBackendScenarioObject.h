@@ -14,16 +14,20 @@ namespace SDK {
         namespace Scripting {
 
             //------------------------------------------------------------------------------
+            /// Интерфейс для объектов сценария бэкенда.
             class IBackendScenarioObject : public QObject {
                 Q_OBJECT
 
               public:
+                /// Конструктор.
                 IBackendScenarioObject(QObject *aParent = nullptr) : QObject(aParent) {
                 }
+                /// Деструктор.
                 virtual ~IBackendScenarioObject() {
                 }
 
               public:
+                /// Получить имя.
                 virtual QString getName() const = 0;
             };
 

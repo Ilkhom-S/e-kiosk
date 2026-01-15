@@ -97,7 +97,7 @@ namespace SDK {
             QSet<BlockReason> _blockOn;
             QList<SBlockByNote> blockNotes; /// Блокировка по номиналам
             bool blockCheatedPayment;       /// Блокировка при подозрении на манипуляции с устройством
-            bool autoEncachement;
+            bool autoEncashment;
             Currency::Nominal minPar;
             QSet<Currency::Nominal> enabledParNotesList; /// Список разрешенных купюр.
             QSet<Currency::Nominal> enabledParCoinsList; /// Список разрешенных монет.
@@ -114,7 +114,7 @@ namespace SDK {
             bool enableBlankFiscalData; /// Разрешать печатать фискальные чеки без фискальных данных
 
             SCommonSettings()
-                : blockCheatedPayment(false), autoEncachement(false), minPar(10), skipCheckWhileNetworkError(false),
+                : blockCheatedPayment(false), autoEncashment(false), minPar(10), skipCheckWhileNetworkError(false),
                   isValid(true), disableAmountOverflow(false), penetrationEventLevel(EEventType::OK),
                   printFailedReceipts(true), randomReceiptsID(false), enableBlankFiscalData(false) {
                 _blockOn << ValidatorError << PrinterError << CardReaderError;
@@ -231,7 +231,7 @@ namespace SDK {
             /// URL для генерации письма с электронной копией чека
             QString getReceiptMailURL() const;
 
-            /// URL для отправки фидбека в Киберплат
+            /// URL для отправки feedback в Хумо
             QString getFeedbackURL() const;
 
             /// Возвращает мапу из типов процессинга и разрешенных ChargeProvider для каждого соответственно.
@@ -253,7 +253,7 @@ namespace SDK {
             /// Максимальный размер log файлов
             int getLogsMaxSize() const;
 
-            /// Урлы апдейтера
+            /// Updater urls
             QStringList getUpdaterUrls() const;
 
             /// Реклама.

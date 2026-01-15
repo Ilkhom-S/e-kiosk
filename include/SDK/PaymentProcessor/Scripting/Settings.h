@@ -23,6 +23,7 @@ namespace SDK {
 
         namespace Scripting {
 
+            /// Преобразует последовательность в строку.
             template <typename T> QString seq2Str2(T aSequence) {
                 QStringList result;
 
@@ -36,6 +37,7 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
+            /// Настройки терминала для скриптов.
             class TerminalSettings : public QObject {
                 Q_OBJECT
 

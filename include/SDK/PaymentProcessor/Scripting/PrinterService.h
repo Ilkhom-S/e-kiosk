@@ -22,10 +22,12 @@ namespace SDK {
         namespace Scripting {
 
             //------------------------------------------------------------------------------
+            /// Прокси класс для работы с принтерами.
             class PrinterService : public QObject {
                 Q_OBJECT
 
               public:
+                /// Конструктор.
                 PrinterService(ICore *aCore);
 
               public slots:
@@ -70,14 +72,21 @@ namespace SDK {
                                      DSDK::EPrintingModes::Enum aPrintingMode = DSDK::EPrintingModes::None);
 
               protected:
+                /// Приватная проверка принтера.
                 void privateCheckPrinter();
 
               private:
+                /// Указатель на ядро.
                 ICore *mCore;
+                /// Указатель на сервис принтера.
                 IPrinterService *mPrinterService;
+                /// Указатель на сервис платежей.
                 IPaymentService *mPaymentService;
+                /// Тип информации о задании.
                 typedef QPair<qint64, QString> TJobInfo;
+                /// Карта напечатанных заданий.
                 QMap<int, TJobInfo> mPrintedJobs;
+                /// Синхронизатор проверок.
                 QFutureSynchronizer<void> mCheckSynchronizer;
             };
 

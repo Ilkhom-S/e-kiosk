@@ -312,7 +312,7 @@ namespace SDK {
                         aProvider.ttList.insert(cid.trimmed().toLongLong());
                     }
 
-                    aProvider.type = value.second.get<QString>("<xmlattr>.type", "cyberplat");
+                    aProvider.type = value.second.get<QString>("<xmlattr>.type", "humo");
                     aProvider.name = value.second.get<QString>("name");
                     aProvider.comment = value.second.get<QString>("comment", QString());
 

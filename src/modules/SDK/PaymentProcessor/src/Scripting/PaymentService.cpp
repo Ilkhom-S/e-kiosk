@@ -29,7 +29,7 @@
 #include <SDK/PaymentProcessor/Core/IDatabaseService.h>
 #include <SDK/PaymentProcessor/Core/ITerminalService.h>
 #include <SDK/PaymentProcessor/Core/Event.h>
-#include <SDK/PaymentProcessor/CyberPlat/ErrorCodes.h>
+#include <SDK/PaymentProcessor/Humo/ErrorCodes.h>
 #include <SDK/PaymentProcessor/Settings/DealerSettings.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 #include <SDK/PaymentProcessor/Settings/Directory.h>
@@ -490,8 +490,8 @@ namespace SDK {
             QObject *PaymentService::getMNPProvider() {
                 return new Provider(updateSkipCheckFlag(mDealerSettings->getMNPProvider(
                                         getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong(),
-                                        getParameter(PPSDK::CPayment::Parameters::MNPGetewayIn).toLongLong(),
-                                        getParameter(PPSDK::CPayment::Parameters::MNPGetewayOut).toLongLong())),
+                                        getParameter(PPSDK::CPayment::Parameters::MNPGatewayIn).toLongLong(),
+                                        getParameter(PPSDK::CPayment::Parameters::MNPGatewayOut).toLongLong())),
                                     this);
             }
 
@@ -623,7 +623,7 @@ namespace SDK {
 
                 if (!aOnline && mCommonSettings.blockCheatedPayment &&
                     getParameter(PPSDK::CPayment::Parameters::Cheated).toInt()) {
-                    stop(PPSDK::CyberPlat::EServerError::Cheated, "Cheated");
+                    stop(PPSDK::Humo::EServerError::Cheated, "Cheated");
 
                     resetChange();
 
@@ -791,7 +791,7 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            bool isEmptyReqiredResponseFields(const SProvider &aProvider) {
+            bool isEmptyRequiredResponseFields(const SProvider &aProvider) {
                 int count = 0;
 
                 foreach (auto f, aProvider.processor.requests["CHECK"].responseFields) {
@@ -808,9 +808,9 @@ namespace SDK {
             //------------------------------------------------------------------------------
             PPSDK::SProvider PaymentService::updateSkipCheckFlag(SProvider aProvider) {
                 if (!aProvider.processor.payOnline && mForcePayOffline) {
-                    // Изменяем параметр проверки платежа для возможности проведения его в офлайне
+                    // Изменяем параметр проверки платежа для возможности проведения его в оффлайне
                     if (!mCore->getNetworkService()->isConnected(true) && !aProvider.processor.skipCheck) {
-                        aProvider.processor.skipCheck = isEmptyReqiredResponseFields(aProvider);
+                        aProvider.processor.skipCheck = isEmptyRequiredResponseFields(aProvider);
                     }
                 }
 
@@ -823,7 +823,7 @@ namespace SDK {
                     auto provider = updateSkipCheckFlag(
                         mPaymentService->getProvider(getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong()));
 
-                    if (mForcePayOffline && isEmptyReqiredResponseFields(provider) && !provider.processor.payOnline) {
+                    if (mForcePayOffline && isEmptyRequiredResponseFields(provider) && !provider.processor.payOnline) {
                         // проверка на сетевую ошибку, константа далеко закопана в проекте
                         if (getParameter(PPSDK::CPayment::Parameters::ServerError).toInt() == -1) {
                             emit stepCompleted(aPayment, aStep, false);

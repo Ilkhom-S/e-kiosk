@@ -14,6 +14,7 @@ namespace SDK {
         namespace Scripting {
 
             //------------------------------------------------------------------------------
+            /// Прокси класс для списков, контролирующих время жизни своих элементов.
             class ScriptArray : public QObject {
                 Q_OBJECT
 
@@ -24,9 +25,11 @@ namespace SDK {
                 Q_PROPERTY(int length READ getLength)
 
               public:
+                /// Конструктор.
                 ScriptArray(QObject *aParent) : QObject(aParent) {
                 }
 
+                /// Добавить объект.
                 ScriptArray &append(QObject *aObject) {
                     mContainer.append(aObject);
                     return *this;
@@ -39,14 +42,17 @@ namespace SDK {
                 }
 
               private:
+                /// Получить значения.
                 QObjectList getValues() const {
                     return mContainer;
                 }
+                /// Получить длину.
                 int getLength() const {
                     return mContainer.size();
                 }
 
               private:
+                /// Контейнер объектов.
                 QObjectList mContainer;
             };
 

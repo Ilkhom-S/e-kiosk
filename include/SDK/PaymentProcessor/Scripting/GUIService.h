@@ -17,6 +17,7 @@ namespace SDK {
         namespace Scripting {
 
             //------------------------------------------------------------------------------
+            /// Прокси класс для работы с графическим движком в скриптах.
             class GUIService : public QObject {
                 Q_OBJECT
 
@@ -28,6 +29,7 @@ namespace SDK {
                 Q_PROPERTY(QString topScene READ getTopScene CONSTANT)
 
               public:
+                /// Конструктор.
                 GUIService(ICore *aCore);
 
               public slots:
@@ -43,34 +45,49 @@ namespace SDK {
                 /// Оповещает виджет.
                 void notify(const QString &aEvent, const QVariantMap &aParameters);
 
+                /// Сбросить.
                 void reset();
 
+                /// Перезагрузить.
                 void reload(const QVariantMap &aParams);
 
+                /// Получить верхнюю сцену.
                 QString getTopScene() const;
 
                 // Когда надо из qml что-то передать в скрипты
+                /// Оповестить сценарий.
                 void notifyScenario(const QVariantMap &aParams) {
                     emit notifyScriptEngine(aParams);
                 }
 
               signals:
+                /// Сигнал об изменении верхней сцены.
                 void topSceneChange();
+                /// Сигнал о перезагрузке скина.
                 void skinReload(const QVariantMap &aParams);
+                /// Сигнал об оповещении скриптового движка.
                 void notifyScriptEngine(const QVariantMap &aParams);
 
               private:
+                /// Получить параметры UI.
                 QVariantMap getParametersUI() const;
+                /// Получить параметры рекламы.
                 QVariantMap getParametersAd() const;
 
               private:
+                /// Проверить, отключен ли.
                 bool isDisabled() const;
+                /// Получить ширину.
                 int getWidth() const;
+                /// Получить высоту.
                 int getHeight() const;
 
               private:
+                /// Указатель на ядро.
                 ICore *mCore;
+                /// Указатель на сервис GUI.
                 IGUIService *mGUIService;
+                /// Имя верхнего виджета.
                 QString mTopWidgetName;
             };
 

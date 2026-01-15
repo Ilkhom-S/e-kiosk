@@ -13,7 +13,7 @@
 namespace Ad {
     namespace Parameters {
         const char RequestType[] = "REQUEST_TYPE";
-        const char Responseype[] = "RESPONSE_TYPE";
+        const char ResponseType[] = "RESPONSE_TYPE";
         const char Channel[] = "CHANNEL";
         const char Channels[] = "CHANNELS";
 
@@ -30,7 +30,7 @@ namespace Ad {
         const char DefaultMD5[] = "DEFAULT_MD5";
         const char DefaultText[] = "DEFAULT_TEXT";
 
-        /// Формат даты/времени в ответах сервера Киберплат и в ini файле конфигурации
+        /// Формат даты/времени в ответах сервера Хумо и в ini файле конфигурации
         const char DateTimeFormat[] = "dd.MM.yyyy hh:mm:ss";
         const char DateFormat[] = "dd.MM.yyyy";
 
@@ -50,7 +50,7 @@ namespace Ad {
 //---------------------------------------------------------------------------
 class AdRequest : public SDK::PaymentProcessor::Humo::Request {
   public:
-    AdRequest(SDK::PaymentProcessor::ICore *aCore);
+    explicit AdRequest(SDK::PaymentProcessor::ICore *aCore);
 };
 
 //---------------------------------------------------------------------------
