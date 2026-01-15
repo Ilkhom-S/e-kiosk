@@ -10,3 +10,6 @@
 [submodule "thirdparty/SmsMessage"]
 	path = thirdparty/SmsMessage
 	url = https://github.com/Ilkhom-S/SmsMessage.git
+[submodule "thirdparty/qntp"]
+	path = thirdparty/qntp
+	url = https://github.com/elrinor/qntp.git
