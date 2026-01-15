@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.16)
 # When supported, prefer the modern behavior for Boost package lookup and
 # avoid the developer warning about the removed FindBoost module.
 if(POLICY CMP0167)
-    cmake_policy(SET CMP0167 NEW)
+    cmake_policy(SET CMP0167 OLD)
 endif()
 
 project(EKioskRoot VERSION 1.0.0 LANGUAGES CXX C)

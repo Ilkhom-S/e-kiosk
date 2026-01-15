@@ -8,6 +8,7 @@ file(GLOB GRAPHICSENGINE_SOURCES
 ek_add_library(GraphicsEngine
     SOURCES ${GRAPHICSENGINE_SOURCES}
     QT_MODULES Core Gui Widgets Concurrent Quick Qml QuickWidgets
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 # Qt5 migration: GraphicsEngine now uses QtQuick instead of QGraphicsView

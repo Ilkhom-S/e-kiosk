@@ -8,6 +8,7 @@ file(GLOB PACKER_SOURCES
 ek_add_library(Packer
     SOURCES ${PACKER_SOURCES}
     QT_MODULES Core
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 # Link to zlib if available, otherwise use Qt's bundled zlib

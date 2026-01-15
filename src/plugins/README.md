@@ -1,0 +1,109 @@
+# Plugins
+
+Shared library plugins for TerminalClient.
+
+## Quick Reference
+
+| Category                              | Plugins            | Purpose              |
+| ------------------------------------- | ------------------ | -------------------- |
+| [Drivers](Drivers/)                   | Hardware drivers   | Device communication |
+| [GraphicBackends](GraphicBackends/)   | UI renderers       | Screen display       |
+| [ScenarioBackends](ScenarioBackends/) | Payment flows      | Business logic       |
+| [Payments](Payments/)                 | Payment providers  | Payment processing   |
+| [NativeScenarios](NativeScenarios/)   | Built-in scenarios | Utilities            |
+| [NativeWidgets](NativeWidgets/)       | Built-in widgets   | UI components        |
+
+## Building
+
+```bash
+# Build all plugins
+cmake --build . --target all
+
+# Build specific plugin category
+cmake --build . --target bill_acceptors
+cmake --build . --target native_backend
+```
+
+## Plugin Loading
+
+Plugins are loaded at runtime by PluginsSDK:
+
+```cpp
+// Plugins are discovered from:
+// - plugins/drivers/
+// - plugins/graphics/
+// - plugins/scenarios/
+// - plugins/payments/
+
+PluginsManager::instance()->scanPlugins();
+```
+
+## Creating a New Plugin
+
+### 1. Create Directory
+
+```text
+plugins/<Category>/<PluginName>/
+├── CMakeLists.txt
+└── src/
+    ├── Plugin.h
+    ├── Plugin.cpp
+    └── Factory.cpp
+```
+
+### 2. CMakeLists.txt
+
+```cmake
+file(GLOB SOURCES src/*.cpp src/*.h)
+
+# For drivers
+tc_add_driver(my_driver
+    SOURCES ${SOURCES}
+    QT_MODULES Core SerialPort
+    DEPENDS HardwareCommon DriversSDK
+)
+
+# For graphics
+tc_add_graphic_backend(my_backend
+    SOURCES ${SOURCES}
+    QT_MODULES Core Widgets
+    DEPENDS GUISDK
+)
+
+# For scenarios
+tc_add_scenario_backend(my_scenario
+    SOURCES ${SOURCES}
+    QT_MODULES Core
+    DEPENDS PPSDK ScenarioEngine
+)
+```
+
+### 3. Export Factory
+
+```cpp
+#include <PluginsSDK/IPluginFactory.h>
+
+class MyPluginFactory : public IPluginFactory {
+    QString getPluginId() const override { return "my_plugin"; }
+    QObject* createPlugin() override { return new MyPlugin(); }
+};
+
+extern "C" Q_DECL_EXPORT IPluginFactory* createPluginFactory() {
+    return new MyPluginFactory();
+}
+```
+
+## Platform Support
+
+| Category         | Windows | Linux | macOS |
+| ---------------- | ------- | ----- | ----- |
+| Drivers          | ✅      | 🔬    | 🔬    |
+| GraphicBackends  | ✅      | ✅    | ✅    |
+| ScenarioBackends | ⚠️      | ⚠️    | ⚠️    |
+| Payments         | ✅      | 🔬    | 🔬    |
+
+⚠️ = Requires QtScript→QJSEngine migration for Qt6
+
+## Documentation
+
+See [docs/plugins/](../../../docs/plugins/) for detailed documentation.
