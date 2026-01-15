@@ -1,25 +1,24 @@
 # BillAcceptor driver plugin
 
+include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
+
 file(GLOB BILLACCEPTOR_SOURCES
     src/*.cpp
     src/*.h
 )
 
 set(BILLACCEPTOR_HEADERS
-    ${TC_INCLUDES_DIR}/Hardware/CashAcceptors/CashAcceptorStatusesDescriptions.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/CashAcceptors/CashAcceptorStatusesDescriptions.h
 )
 
-set(VERSION_RC ${TC_INCLUDES_DIR}/Common/CoreVersion.rc)
-
-tc_add_driver(bill_acceptors
-    SOURCES ${BILLACCEPTOR_SOURCES} ${BILLACCEPTOR_HEADERS} ${VERSION_RC}
+ek_add_plugin(bill_acceptors
+    SOURCES ${BILLACCEPTOR_SOURCES} ${BILLACCEPTOR_HEADERS}
     QT_MODULES Core
     DEPENDS
-        HardwareProtocols
-        HardwareCommon
-        CashAcceptors
-        DriversSDK
-        PluginsSDK
+    HardwareCommon
+    CashAcceptors
+    DriversSDK
+    PluginsSDK
 )
 
 # Translations - merge common and plugin-specific translations

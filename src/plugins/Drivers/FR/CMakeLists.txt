@@ -1,23 +1,23 @@
 # FR (Fiscal Register) driver plugin
 
+include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
+
 file(GLOB FR_SOURCES
     src/*.cpp
     src/*.h
 )
 
-set(VERSION_RC ${TC_INCLUDES_DIR}/Common/CoreVersion.rc)
-
-tc_add_driver(fiscal_registers
-    SOURCES ${FR_SOURCES} ${VERSION_RC}
+ek_add_plugin(fiscal_registers
+    SOURCES ${FR_SOURCES}
     QT_MODULES Core
     DEPENDS
-    HardwareProtocols
     HardwareCommon
     HardwareFR
     DriversSDK
     HardwareIOPorts
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
 )
 
-# Ensure TC::LibUSB target is available for this library
+# Ensure EK::LibUSB target is available for this library
 include(${CMAKE_SOURCE_DIR}/thirdparty/cmake/TCFindLibUSB.cmake)
-target_link_libraries(fiscal_registers PRIVATE TC::LibUSB)
+target_link_libraries(fiscal_registers PRIVATE EK::LibUSB)

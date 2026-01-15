@@ -1,4 +1,4 @@
-# Ensure TC::LibUSB target is available
+# Ensure EK::LibUSB target is available
 include(${CMAKE_SOURCE_DIR}/thirdparty/cmake/TCFindLibUSB.cmake)
 # HardwareCommon module
 
@@ -53,7 +53,7 @@ ek_add_library(HardwareCommon
     ${CMAKE_SOURCE_DIR}/include/Hardware
     ${CMAKE_SOURCE_DIR}/include/SDK/Drivers
     ${CMAKE_CURRENT_SOURCE_DIR}
-    DEPENDS LibUSB
+    DEPENDS EK::LibUSB
     COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 

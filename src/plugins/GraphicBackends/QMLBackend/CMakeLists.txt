@@ -1,11 +1,11 @@
 # QMLBackend graphic plugin
 
+include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
+
 file(GLOB QMLBACKEND_SOURCES
     src/*.cpp
     src/*.h
 )
-
-set(VERSION_RC ${TC_INCLUDES_DIR}/Common/CoreVersion.rc)
 
 # Handle Qt5/Qt6 differences for declarative/quick modules
 if(QT_VERSION_MAJOR EQUAL 5)
@@ -18,8 +18,8 @@ else()
     set(QML_QT_MODULES Widgets Quick Qml)
 endif()
 
-tc_add_graphic_backend(qml_backend
-    SOURCES ${QMLBACKEND_SOURCES} ${VERSION_RC}
+ek_add_plugin(qml_backend
+    SOURCES ${QMLBACKEND_SOURCES}
     QT_MODULES ${QML_QT_MODULES}
     DEPENDS PluginsSDK
 )

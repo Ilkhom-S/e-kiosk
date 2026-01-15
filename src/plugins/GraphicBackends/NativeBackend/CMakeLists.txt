@@ -1,14 +1,14 @@
 # NativeBackend graphic plugin
 
+include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
+
 file(GLOB NATIVEBACKEND_SOURCES
     src/*.cpp
     src/*.h
 )
 
-set(VERSION_RC ${TC_INCLUDES_DIR}/Common/CoreVersion.rc)
-
-tc_add_graphic_backend(native_backend
-    SOURCES ${NATIVEBACKEND_SOURCES} ${VERSION_RC}
+ek_add_plugin(native_backend
+    SOURCES ${NATIVEBACKEND_SOURCES}
     QT_MODULES Core Widgets
     DEPENDS PluginsSDK
 )

@@ -14,3 +14,6 @@ add_subdirectory(modules/WatchServiceClient)
 add_subdirectory(modules/MessageQueue)
 add_subdirectory(modules/AdBackend)
 add_subdirectory(modules/KeysUtils)
+
+# Plugins
+add_subdirectory(plugins)

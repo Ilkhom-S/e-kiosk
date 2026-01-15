@@ -1,11 +1,11 @@
 # WebKitBackend graphic plugin
 
+include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
+
 file(GLOB WEBKITBACKEND_SOURCES
     src/*.cpp
     src/*.h
 )
-
-set(VERSION_RC ${TC_INCLUDES_DIR}/Common/CoreVersion.rc)
 
 # WebKit is deprecated in Qt5.5+ and removed in Qt6
 # Use WebEngine as alternative for Qt5.6+/Qt6
@@ -36,8 +36,8 @@ else()
     endif()
 endif()
 
-tc_add_graphic_backend(webkit_backend
-    SOURCES ${WEBKITBACKEND_SOURCES} ${VERSION_RC}
+ek_add_plugin(webkit_backend
+    SOURCES ${WEBKITBACKEND_SOURCES}
     QT_MODULES ${WEBKIT_QT_MODULES}
     DEPENDS PluginsSDK
 )

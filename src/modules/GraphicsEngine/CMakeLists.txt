@@ -11,5 +11,4 @@ ek_add_library(GraphicsEngine
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-# Qt5 migration: GraphicsEngine now uses QtQuick instead of QGraphicsView
-# This replaces the old QInputContext-based virtual keyboard with Qt5 input methods
+

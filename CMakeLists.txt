@@ -12,6 +12,9 @@ project(EKioskRoot VERSION 1.0.0 LANGUAGES CXX C)
 # Global Qt detection for all modules/apps/tests
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 
+# Load the actual Qt package with required components
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui Network WebSockets SerialPort Sql Quick Concurrent Xml)
+
 # SingleApplication setup for freestanding mode
 set(QAPPLICATION_CLASS QApplication CACHE STRING "Inheritance class for SingleApplication")
 

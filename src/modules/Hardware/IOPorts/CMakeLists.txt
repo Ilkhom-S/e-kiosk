@@ -39,7 +39,7 @@ ek_add_library(HardwareIOPorts
     SOURCES ${IOPORTS_SOURCES}
     QT_MODULES Core Network
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
-    DEPENDS SysUtils
+    DEPENDS SysUtils EK::LibUSB
     COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 
@@ -49,7 +49,3 @@ ek_add_library(HardwareIOPorts
 if(WIN32)
     target_link_libraries(HardwareIOPorts PUBLIC Setupapi Advapi32)
 endif()
-
-# Ensure TC::LibUSB target is available for this library
-include(${CMAKE_SOURCE_DIR}/thirdparty/cmake/TCFindLibUSB.cmake)
-target_link_libraries(HardwareIOPorts PRIVATE TC::LibUSB)

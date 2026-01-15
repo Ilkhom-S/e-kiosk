@@ -1,6 +1,6 @@
 # Plugins
 
-Shared library plugins for TerminalClient.
+Shared library plugins for EKiosk.
 
 ## Quick Reference
 
@@ -54,27 +54,15 @@ plugins/<Category>/<PluginName>/
 ### 2. CMakeLists.txt
 
 ```cmake
+include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
+
 file(GLOB SOURCES src/*.cpp src/*.h)
 
-# For drivers
-tc_add_driver(my_driver
+# For all plugin types
+ek_add_plugin(my_plugin
     SOURCES ${SOURCES}
     QT_MODULES Core SerialPort
     DEPENDS HardwareCommon DriversSDK
-)
-
-# For graphics
-tc_add_graphic_backend(my_backend
-    SOURCES ${SOURCES}
-    QT_MODULES Core Widgets
-    DEPENDS GUISDK
-)
-
-# For scenarios
-tc_add_scenario_backend(my_scenario
-    SOURCES ${SOURCES}
-    QT_MODULES Core
-    DEPENDS PPSDK ScenarioEngine
 )
 ```
 

@@ -9,7 +9,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/EKLibrary.cmake)
 ek_add_library(BasicApplication
     SOURCES src/BasicApplication.cpp
     QT_MODULES Core Network Widgets
-    DEPENDS ek_common Log DebugUtils SysUtils SingleApplication::SingleApplication
+    DEPENDS ek_common Log DebugUtils SysUtils EK::SingleApplication
 )
 
 # Enable automoc for QObject-derived types

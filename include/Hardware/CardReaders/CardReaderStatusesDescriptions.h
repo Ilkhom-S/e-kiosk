@@ -40,7 +40,7 @@ namespace CardReaderStatusCode {
 
             /// Ошибки при работе со смарт-картой.
             ADD_CR_SС_OPERATION_ERROR(Unknown, QCoreApplication::translate("CardReaderStatuses", "#unknown"));
-            ADD_CR_SС_OPERATION_ERROR(Sertificate, QCoreApplication::translate("CardReaderStatuses", "#sertificate"));
+            ADD_CR_SС_OPERATION_ERROR(Certificate, QCoreApplication::translate("CardReaderStatuses", "#certificate"));
             ADD_CR_SС_OPERATION_ERROR(Security, QCoreApplication::translate("CardReaderStatuses", "#security"));
             ADD_CR_SС_OPERATION_ERROR(Memory, QCoreApplication::translate("CardReaderStatuses", "#memory"));
 

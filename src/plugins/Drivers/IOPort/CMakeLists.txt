@@ -1,14 +1,14 @@
 # IOPort driver plugin
 
+include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
+
 file(GLOB IOPORT_SOURCES
     src/*.cpp
     src/*.h
 )
 
-set(VERSION_RC ${TC_INCLUDES_DIR}/Common/CoreVersion.rc)
-
-tc_add_driver(io_ports
-    SOURCES ${IOPORT_SOURCES} ${VERSION_RC}
+ek_add_plugin(io_ports
+    SOURCES ${IOPORT_SOURCES}
     QT_MODULES Core
     DEPENDS
     HardwareCommon
@@ -18,6 +18,6 @@ tc_add_driver(io_ports
 )
 
 
-# Ensure TC::LibUSB target is available for this library
+# Ensure EK::LibUSB target is available for this library
 include(${CMAKE_SOURCE_DIR}/thirdparty/cmake/TCFindLibUSB.cmake)
-target_link_libraries(io_ports PRIVATE TC::LibUSB)
+target_link_libraries(io_ports PRIVATE EK::LibUSB)

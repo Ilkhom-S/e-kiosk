@@ -1,5 +1,8 @@
 # ServiceMenu native widget plugin
 
+include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/EKTranslation.cmake)
+
 file(GLOB_RECURSE SERVICEMENU_SOURCES
     src/*.cpp
     src/*.h
@@ -13,21 +16,19 @@ file(GLOB_RECURSE SERVICEMENU_RESOURCES
     src/*.qrc
 )
 
-set(VERSION_RC ${TC_INCLUDES_DIR}/Common/CoreVersion.rc)
-
-tc_add_plugin(service_menu
-    SOURCES ${SERVICEMENU_SOURCES} ${SERVICEMENU_UI_FILES} ${SERVICEMENU_RESOURCES} ${VERSION_RC}
+ek_add_plugin(service_menu
+    SOURCES ${SERVICEMENU_SOURCES} ${SERVICEMENU_UI_FILES} ${SERVICEMENU_RESOURCES}
     QT_MODULES Core Gui Widgets Network
     DEPENDS
-        App
-        Connection
-        PluginsSDK
-        DriversSDK
-        PPSDK
-        NetworkTaskManager
-        KeysUtils
-        Log
-        SysUtils
+    App
+    Connection
+    PluginsSDK
+    DriversSDK
+    PPSDK
+    NetworkTaskManager
+    KeysUtils
+    Log
+    SysUtils
     INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src
     INSTALL_DIR plugins
 )
@@ -39,7 +40,8 @@ endif()
 # Translations
 file(GLOB TS_FILES src/locale/*.ts)
 if(TS_FILES)
-    tc_add_translations(ServiceMenuTranslations
+    ek_add_translations(ServiceMenuTranslations
         SOURCES ${TS_FILES}
+        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
     )
 endif()
