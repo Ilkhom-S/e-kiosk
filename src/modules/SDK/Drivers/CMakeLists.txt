@@ -7,12 +7,13 @@ file(GLOB DRIVERSSDK_SOURCES
 
 # Include SDK headers from includes directory
 file(GLOB DRIVERSSDK_HEADERS
-    ${TC_INCLUDES_DIR}/SDK/Drivers/*.h
-    ${TC_INCLUDES_DIR}/SDK/Drivers/*/*.h
+    ${CMAKE_SOURCE_DIR}/include/SDK/Drivers/*.h
+    ${CMAKE_SOURCE_DIR}/include/SDK/Drivers/*/*.h
 )
 
-tc_add_library(DriversSDK
+ek_add_library(DriversSDK
     SOURCES ${DRIVERSSDK_SOURCES} ${DRIVERSSDK_HEADERS}
     QT_MODULES Core Widgets
-    INCLUDE_DIRS ${TC_INCLUDES_DIR}/SDK/Drivers
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include/SDK/Drivers ${CMAKE_CURRENT_SOURCE_DIR}
+    COMPILE_DEFINITIONS _UNICODE UNICODE
 )

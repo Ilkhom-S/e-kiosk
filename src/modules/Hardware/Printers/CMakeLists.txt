@@ -6,17 +6,16 @@ file(GLOB_RECURSE PRINTERS_SOURCES
 )
 
 set(PRINTERS_HEADERS
-    ${TC_INCLUDES_DIR}/Hardware/Printers/POSPrinterData.h
-    ${TC_INCLUDES_DIR}/Hardware/Printers/PrinterConstants.h
-    ${TC_INCLUDES_DIR}/Hardware/Printers/PrinterDevices.h
-    ${TC_INCLUDES_DIR}/Hardware/Printers/PrinterStatusCodes.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Printers/POSPrinterData.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Printers/PrinterConstants.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Printers/PrinterDevices.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Printers/PrinterStatusCodes.h
 )
 
-tc_add_library(HardwarePrinters
+ek_add_library(HardwarePrinters
     SOURCES ${PRINTERS_SOURCES} ${PRINTERS_HEADERS}
     QT_MODULES Core
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
+    DEPENDS LibUSB
+    COMPILE_DEFINITIONS _UNICODE UNICODE
 )
-
-# Ensure TC::LibUSB target is available for this library
-include(${CMAKE_SOURCE_DIR}/thirdparty/cmake/TCFindLibUSB.cmake)
-target_link_libraries(HardwarePrinters PRIVATE TC::LibUSB)

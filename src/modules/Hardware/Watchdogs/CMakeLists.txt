@@ -6,11 +6,13 @@ file(GLOB_RECURSE WATCHDOGS_SOURCES
 )
 
 set(WATCHDOGS_HEADERS
-    ${TC_INCLUDES_DIR}/Hardware/Watchdogs/WatchdogDevices.h
-    ${TC_INCLUDES_DIR}/Hardware/Watchdogs/WatchdogStatusCodes.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Watchdogs/WatchdogDevices.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Watchdogs/WatchdogStatusCodes.h
 )
 
-tc_add_library(HardwareWatchdogs
+ek_add_library(HardwareWatchdogs
     SOURCES ${WATCHDOGS_SOURCES} ${WATCHDOGS_HEADERS}
     QT_MODULES Core
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
+    COMPILE_DEFINITIONS _UNICODE UNICODE
 )

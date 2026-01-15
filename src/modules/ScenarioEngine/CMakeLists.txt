@@ -15,5 +15,6 @@ ek_add_library(ScenarioEngine
     SOURCES ${SCENARIOENGINE_SOURCES}
     QT_MODULES Core Concurrent
     DEPENDS Boost::property_tree Boost::foreach
-    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
+    COMPILE_DEFINITIONS _UNICODE UNICODE
 )

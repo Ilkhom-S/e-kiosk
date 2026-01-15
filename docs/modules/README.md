@@ -38,6 +38,15 @@ Debugging utilities for call stack analysis and exception handling.
 - **Dependencies**: Qt Core, Windows APIs, StackWalker library
 - **Platform**: Windows-only
 
+### [Hardware Module](hardware.md)
+
+Device abstraction and communication layers for kiosk hardware peripherals.
+
+- **Purpose**: Unified APIs for fiscal registers, card readers, cash devices, printers, and modems
+- **Key Features**: Device lifecycle management, protocol abstraction, cross-platform hardware support
+- **Dependencies**: Qt Core, Qt SerialPort, libusb, SmsMessage, IDTech_SDK
+- **Platform**: Cross-platform with Windows focus
+
 ### [Connection Module](connection.md)
 
 Network connectivity management and monitoring.

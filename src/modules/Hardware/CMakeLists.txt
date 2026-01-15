@@ -1,6 +1,7 @@
 # Hardware modules
 
-
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 # Core hardware submodules
 add_subdirectory(Common)
@@ -18,12 +19,14 @@ file(GLOB_RECURSE CARDREADERS_SOURCES
     Cardreaders/Protocols/Creator/src/*.h
 )
 set(CARDREADERS_HEADERS
-    ${TC_INCLUDES_DIR}/Hardware/CardReaders/CardReaderStatusCodes.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/CardReaders/CardReaderStatusCodes.h
 )
-tc_add_library(Cardreaders
+ek_add_library(Cardreaders
     SOURCES ${CARDREADERS_SOURCES} ${CARDREADERS_HEADERS}
     QT_MODULES Core
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
     DEPENDS IDTech_SDK
+    COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 
 # CashAcceptors
@@ -38,14 +41,16 @@ file(GLOB_RECURSE CASHACCEPTORS_SOURCES
     CashDevices/src/*.h
 )
 set(CASHACCEPTORS_HEADERS
-    ${TC_INCLUDES_DIR}/Hardware/CashAcceptors/BillTable.h
-    ${TC_INCLUDES_DIR}/Hardware/CashAcceptors/CashAcceptorBaseConstants.h
-    ${TC_INCLUDES_DIR}/Hardware/CashAcceptors/CashAcceptorStatusCodes.h
-    ${TC_INCLUDES_DIR}/Hardware/CashAcceptors/CurrencyDescriptions.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/CashAcceptors/BillTable.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/CashAcceptors/CashAcceptorBaseConstants.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/CashAcceptors/CashAcceptorStatusCodes.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/CashAcceptors/CurrencyDescriptions.h
 )
-tc_add_library(CashAcceptors
+ek_add_library(CashAcceptors
     SOURCES ${CASHACCEPTORS_SOURCES} ${CASHACCEPTORS_HEADERS}
     QT_MODULES Core
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
+    COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 
 # CashDispensers
@@ -54,12 +59,14 @@ file(GLOB_RECURSE CASHDISPENSERS_SOURCES
     CashDispensers/src/*.h
 )
 set(CASHDISPENSERS_HEADERS
-    ${TC_INCLUDES_DIR}/Hardware/Dispensers/DispenserData.h
-    ${TC_INCLUDES_DIR}/Hardware/Dispensers/DispenserStatusCodes.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Dispensers/DispenserData.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Dispensers/DispenserStatusCodes.h
 )
-tc_add_library(CashDispensers
+ek_add_library(CashDispensers
     SOURCES ${CASHDISPENSERS_SOURCES} ${CASHDISPENSERS_HEADERS}
     QT_MODULES Core
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
+    COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 
 # CoinAcceptors
@@ -67,9 +74,11 @@ file(GLOB_RECURSE COINACCEPTORS_SOURCES
     CoinAcceptors/src/*.cpp
     CoinAcceptors/src/*.h
 )
-tc_add_library(CoinAcceptors
+ek_add_library(CoinAcceptors
     SOURCES ${COINACCEPTORS_SOURCES}
     QT_MODULES Core
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
+    COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 
 # HardwareFR (Fiscal Registers)
@@ -90,12 +99,15 @@ file(GLOB HARDWAREFR_SOURCES
     FR/src/MStar/Online/*.*
 )
 set(HARDWAREFR_HEADERS
-    ${TC_INCLUDES_DIR}/Hardware/FR/FRErrorDescription.h
-    ${TC_INCLUDES_DIR}/Hardware/FR/FRStatusCodes.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/FR/FRErrorDescription.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/FR/FRStatusCodes.h
 )
-tc_add_library(HardwareFR
+ek_add_library(HardwareFR
     SOURCES ${HARDWAREFR_SOURCES} ${HARDWAREFR_HEADERS}
     QT_MODULES Core
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
+    DEPENDS LibUSB
+    COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 if(WIN32)
     target_link_libraries(HardwareFR PUBLIC Setupapi Advapi32)
@@ -107,12 +119,14 @@ file(GLOB HARDWAREMODEMS_SOURCES
     Modems/src/ATModem/*.h
 )
 set(HARDWAREMODEMS_HEADERS
-    ${TC_INCLUDES_DIR}/Hardware/Modems/ModemStatusCodes.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Modems/ModemStatusCodes.h
 )
-tc_add_library(HardwareModems
+ek_add_library(HardwareModems
     SOURCES ${HARDWAREMODEMS_SOURCES} ${HARDWAREMODEMS_HEADERS}
     QT_MODULES Core
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
     DEPENDS SmsMessage
+    COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 
 
@@ -132,12 +146,14 @@ file(GLOB_RECURSE HARDWAREPROTOCOLS_SOURCES
     Protocols/Watchdog/*/src/*.h
 )
 set(HARDWAREPROTOCOLS_HEADERS
-    ${TC_INCLUDES_DIR}/Hardware/Protocols/Common/ProtocolNames.h
-    ${TC_INCLUDES_DIR}/Hardware/Protocols/FR/FiscalChequeStates.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Protocols/Common/ProtocolNames.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Protocols/FR/FiscalChequeStates.h
 )
-tc_add_library(HardwareProtocols
+ek_add_library(HardwareProtocols
     SOURCES ${HARDWAREPROTOCOLS_SOURCES} ${HARDWAREPROTOCOLS_HEADERS}
     QT_MODULES Core
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
+    COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 
 
@@ -148,13 +164,11 @@ file(GLOB_RECURSE HARDWARESCANNERS_SOURCES
     Scanners/src/Serial/*.h
 )
 set(HARDWARESCANNERS_HEADERS
-    ${TC_INCLUDES_DIR}/Hardware/HID/HIDBase.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/HID/HIDBase.h
 )
-tc_add_library(HardwareScanners
+ek_add_library(HardwareScanners
     SOURCES ${HARDWARESCANNERS_SOURCES} ${HARDWARESCANNERS_HEADERS}
     QT_MODULES Core
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
+    COMPILE_DEFINITIONS _UNICODE UNICODE
 )
-
-# Ensure TC::LibUSB target is available for this library
-include(${CMAKE_SOURCE_DIR}/thirdparty/cmake/TCFindLibUSB.cmake)
-target_link_libraries(HardwareFR PRIVATE TC::LibUSB)

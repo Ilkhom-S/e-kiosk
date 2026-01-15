@@ -1,53 +1,37 @@
 # CryptEngine
 
-Cryptographic operations module using libipriv library.
+This folder contains the module implementation. The full, canonical documentation has been moved to the central docs site:
 
-## Purpose
+- See: `../../../docs/modules/cryptengine.md`
 
-Provides all cryptographic functionality for the payment terminal:
+## Structure (implementation)
 
-- Digital signatures (RSA, GOST)
-- Encryption/decryption (IDEA, AES)
-- Hashing (MD5, SHA-1, SHA-256)
-- Hardware token integration
-
-## Architecture
-
-```mermaid
-flowchart TB
-    CryptEngine --> ICryptEngine["ICryptEngine (interface)"]
-    CryptEngine --> CryptProvider["CryptProvider (implementation)"]
-    CryptEngine --> libipriv["libipriv (crypto library)"]
-    libipriv --> RSA["RSA (RSAREF)"]
-    libipriv --> GOST
-    libipriv --> IDEA
-    libipriv --> Hash["MD5/SHA"]
+```text
+src/modules/CryptEngine/
+├── CMakeLists.txt                  # Module build configuration
+├── include/CryptEngine/            # Public headers (installed targets)
+│   ├── ICryptEngine.h
+│   └── ...
+├── src/
+│   ├── CryptEngine.cpp             # Main implementation
+│   ├── CryptProvider.cpp           # Crypto provider implementation
+│   └── ...                         # internal helpers, tests, etc.
+└── README.md                       # This file (short pointer to canonical docs)
 ```
 
-## Usage
+**Contributor notes:**
 
-```cpp
-#include "CryptEngine/ICryptEngine.h"
+- Keep high-level documentation, examples, and usage in `docs/modules/cryptengine.md`.
+- Use this README for implementation notes, file layout, build or testing hints and internal design details.
+- For API docs, examples, and user-facing information, see the canonical docs.
 
-// Get instance
-ICryptEngine* crypto = CryptEngineFactory::create();
+## API summary (short)
 
-// Load keys
-crypto->loadPrivateKey("keys/private.key", "password");
+- **Primary classes:** `ICryptEngine`, `CryptProvider`, `CryptEngineFactory`.
+- **Supported algorithms:** RSA, GOST, IDEA, AES, MD5, SHA-1, SHA-256.
+- **Key operations:** Load/save keys, sign/verify, encrypt/decrypt, hash.
 
-// Sign data
-QByteArray signature = crypto->sign(paymentData);
-
-// Verify
-bool valid = crypto->verify(data, signature);
-```
-
-## Key Files
-
-| File               | Purpose                |
-| ------------------ | ---------------------- |
-| `ICryptEngine.h`   | Public interface       |
-| `CryptEngine.cpp`  | Main implementation    |
+Keep this summary updated when APIs change so reviewers can quickly spot relevant changes.
 | `TokenManager.cpp` | Hardware token support |
 
 ## Dependencies

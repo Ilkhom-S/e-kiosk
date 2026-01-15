@@ -14,27 +14,27 @@ file(GLOB PROTOCOLUTILS_SOURCES
 )
 
 file(GLOB HARDWARECOMMON_SDK_HEADERS
-    ${TC_INCLUDES_DIR}/SDK/Drivers/HardwareConstants.h
-    ${TC_INCLUDES_DIR}/SDK/Drivers/DetectingPriority.h
+    ${CMAKE_SOURCE_DIR}/include/SDK/Drivers/HardwareConstants.h
+    ${CMAKE_SOURCE_DIR}/include/SDK/Drivers/DetectingPriority.h
 )
 
 file(GLOB HARDWARECOMMON_PLUGIN_HEADERS
-    ${TC_INCLUDES_DIR}/Hardware/Plugins/CommonParameters.h
-    ${TC_INCLUDES_DIR}/Hardware/Plugins/DevicePluginBase.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Plugins/CommonParameters.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Plugins/DevicePluginBase.h
 )
 
 file(GLOB HARDWARECOMMON_PROTO_HEADERS
-    ${TC_INCLUDES_DIR}/Hardware/CardReaders/ProtoMifareReader.h
-    ${TC_INCLUDES_DIR}/Hardware/FR/ProtoFR.h
-    ${TC_INCLUDES_DIR}/Hardware/HID/ProtoHID.h
-    ${TC_INCLUDES_DIR}/Hardware/HID/ProtoOPOSScanner.h
-    ${TC_INCLUDES_DIR}/Hardware/CashAcceptors/ProtoCashAcceptor.h
-    ${TC_INCLUDES_DIR}/Hardware/Dispensers/ProtoDispenser.h
-    ${TC_INCLUDES_DIR}/Hardware/Watchdogs/ProtoWatchdog.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/CardReaders/ProtoMifareReader.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/FR/ProtoFR.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/HID/ProtoHID.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/HID/ProtoOPOSScanner.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/CashAcceptors/ProtoCashAcceptor.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Dispensers/ProtoDispenser.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Watchdogs/ProtoWatchdog.h
 )
 
 file(GLOB HARDWARECOMMON_COMMON_HEADERS
-    ${TC_INCLUDES_DIR}/Hardware/Common/*.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Common/*.h
 )
 
 set(ALL_SOURCES
@@ -46,18 +46,16 @@ set(ALL_SOURCES
     ${HARDWARECOMMON_COMMON_HEADERS}
 )
 
-tc_add_library(HardwareCommon
+ek_add_library(HardwareCommon
     SOURCES ${ALL_SOURCES}
     QT_MODULES Core
     INCLUDE_DIRS
-    ${TC_INCLUDES_DIR}/Hardware
-    ${TC_INCLUDES_DIR}/SDK/Drivers
+    ${CMAKE_SOURCE_DIR}/include/Hardware
+    ${CMAKE_SOURCE_DIR}/include/SDK/Drivers
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    DEPENDS LibUSB
+    COMPILE_DEFINITIONS _UNICODE UNICODE
 )
-
-
-
-# Use TC::LibUSB target from thirdparty helper
-target_link_libraries(HardwareCommon PRIVATE TC::LibUSB)
 
 # Add translations target if Qt LinguistTools is available
 if(QT_VERSION_MAJOR EQUAL 5)
