@@ -8,7 +8,6 @@
     "boost-function",
     "boost-lexical-cast",
     "boost-multi-index",
-    "boost-noncopyable",
     "boost-optional",
     "boost-preprocessor",
     "boost-property-tree"
