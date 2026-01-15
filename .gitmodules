@@ -1,3 +1,6 @@
 [submodule "thirdparty/SingleApplication"]
 	path = thirdparty/SingleApplication
 	url = https://github.com/itay-grudev/SingleApplication.git
+[submodule "thirdparty/zint"]
+	path = thirdparty/zint
+	url = https://github.com/zint/zint.git
