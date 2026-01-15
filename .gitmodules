@@ -4,3 +4,6 @@
 [submodule "thirdparty/zint"]
 	path = thirdparty/zint
 	url = https://github.com/zint/zint.git
+[submodule "thirdparty/libipriv"]
+	path = thirdparty/libipriv
+	url = https://github.com/Ilkhom-S/libipriv.git
