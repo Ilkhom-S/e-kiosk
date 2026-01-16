@@ -18,68 +18,67 @@ Variant) - образы купюр, уникальные для каждого �
 */
 
 //--------------------------------------------------------------------------------
-class EBDSCashAcceptor : public TSerialCashAcceptor
-{
-	SET_SERIES("EBDS")
+class EBDSCashAcceptor : public TSerialCashAcceptor {
+    SET_SERIES("EBDS")
 
-public:
-	EBDSCashAcceptor();
+  public:
+    EBDSCashAcceptor();
 
-	/// Возвращает список поддерживаемых устройств.
-	static QStringList getModelList();
+    /// Возвращает список поддерживаемых устройств.
+    static QStringList getModelList();
 
-	/// Принять купюру.
-	virtual bool stack();
+    /// Принять купюру.
+    virtual bool stack();
 
-	/// Вернуть купюру.
-	virtual bool reject();
+    /// Вернуть купюру.
+    virtual bool reject();
 
-protected:
-	/// Попытка самоидентификации.
-	virtual bool isConnected();
+  protected:
+    /// Попытка самоидентификации.
+    virtual bool isConnected();
 
-	/// Запросить и сохранить параметры устройства.
-	virtual void processDeviceData();
+    /// Запросить и сохранить параметры устройства.
+    virtual void processDeviceData();
 
-	/// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней логики.
-	virtual void cleanSpecificStatusCodes(TStatusCodes& aStatusCodes);
+    /// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней логики.
+    virtual void cleanSpecificStatusCodes(TStatusCodes &aStatusCodes);
 
-	/// Применить таблицу номиналов.
-	virtual bool applyParTable();
+    /// Применить таблицу номиналов.
+    virtual bool applyParTable();
 
-	/// Изменение режима приема денег.
-	virtual bool enableMoneyAcceptingMode(bool aEnabled);
+    /// Изменение режима приема денег.
+    virtual bool enableMoneyAcceptingMode(bool aEnabled);
 
-	/// Загрузка таблицы номиналов из устройства.
-	virtual bool loadParTable();
+    /// Загрузка таблицы номиналов из устройства.
+    virtual bool loadParTable();
 
-	/// Установить эскроу-данные.
-	virtual bool setLastPar(const QByteArray& aAnswer);
+    /// Установить эскроу-данные.
+    virtual bool setLastPar(const QByteArray &aAnswer);
 
-	/// Получить статус.
-	virtual bool checkStatus(QByteArray& aAnswer);
+    /// Получить статус.
+    virtual bool checkStatus(QByteArray &aAnswer);
 
-	/// Локальный сброс.
-	virtual bool processReset();
+    /// Локальный сброс.
+    virtual bool processReset();
 
-	/// Выполнить команду.
-	virtual TResult execCommand(const QByteArray& aCommand, const QByteArray& aCommandData,
-								QByteArray* aAnswer = nullptr);
+    /// Выполнить команду.
+    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+                                QByteArray *aAnswer = nullptr);
 
-	/// Получить статус.
-	TResult poll(char aAction, QByteArray* aAnswer = nullptr);
+    /// Получить статус.
+    TResult poll(char aAction, QByteArray *aAnswer = nullptr);
 
-	/// Получить информацию о номинале из буфера.
-	SDK::Driver::SPar getPar(const QByteArray& aData);
+    /// Получить информацию о номинале из буфера.
+    SDK::Driver::SPar getPar(const QByteArray &aData);
 
-	/// Протокол.
-	EBDSProtocol mProtocol;
+    /// Протокол.
+    EBDSProtocol mProtocol;
 
-	/// Признак почти-заполненности стекера.
-	bool mStackerNearFull;
+    /// Признак почти-заполненности стекера.
+    bool mStackerNearFull;
 
-	/// Признак включенности на прием купюр.
-	bool mEnabled;
+    /// Признак включенности на прием купюр.
+    bool mEnabled;
 };
 
 //--------------------------------------------------------------------------------

@@ -6,13 +6,12 @@
 #include "PaymentResponse.h"
 
 //---------------------------------------------------------------------------
-class PaymentStatusResponse : public PaymentResponse
-{
-public:
-	PaymentStatusResponse(const Request& aRequest, const QString& aResponseString);
+class PaymentStatusResponse : public PaymentResponse {
+  public:
+    PaymentStatusResponse(const Request &aRequest, const QString &aResponseString);
 
-	/// Response: Предикат истинен, если ответ сервера не содержит ошибок.
-	virtual bool isOk();
+    /// Response: Предикат истинен, если ответ сервера не содержит ошибок.
+    virtual bool isOk();
 };
 
 //---------------------------------------------------------------------------

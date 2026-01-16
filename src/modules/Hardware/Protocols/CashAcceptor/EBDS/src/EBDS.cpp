@@ -4,140 +4,120 @@
 #include "EBDSConstants.h"
 
 //--------------------------------------------------------------------------------
-EBDSProtocol::EBDSProtocol() : mACK(false) {}
-
-//--------------------------------------------------------------------------------
-const uchar EBDSProtocol::calcCRC(const QByteArray& aData)
-{
-	uchar sum = aData[1];
-
-	for (int i = 2; i < aData.size() - 1; ++i)
-	{
-		sum ^= static_cast<uchar>(aData[i]);
-	}
-
-	return sum;
+EBDSProtocol::EBDSProtocol() : mACK(false) {
 }
 
 //--------------------------------------------------------------------------------
-bool EBDSProtocol::check(const QByteArray& aCommandPacket, const QByteArray& aAnswerPacket)
-{
-	// проверяем первый байт
-	if (aAnswerPacket[0] != CEBDS::Prefix)
-	{
-		toLog(LogLevel::Error, "EBDS: Invalid first byte (prefix).");
-		return false;
-	}
+const uchar EBDSProtocol::calcCRC(const QByteArray &aData) {
+    uchar sum = aData[1];
 
-	// проверяем последний байт
-	if (aAnswerPacket.right(2)[0] != CEBDS::Postfix)
-	{
-		toLog(LogLevel::Error, "EBDS: Invalid last byte (postfix).");
-		return false;
-	}
+    for (int i = 2; i < aData.size() - 1; ++i) {
+        sum ^= static_cast<uchar>(aData[i]);
+    }
 
-	// вытаскиваем и проверяем длину сообщения
-	int length = aAnswerPacket[1];
-
-	if (length != aAnswerPacket.size())
-	{
-		toLog(LogLevel::Error, "EBDS: Invalid length of the message.");
-		return false;
-	}
-
-	// проверяем контрольную сумму
-	if (calcCRC(aAnswerPacket.left(aAnswerPacket.size() - 1)) != aAnswerPacket[length - 1])
-	{
-		toLog(LogLevel::Error, "EBDS: Invalid CRC of the message");
-		return false;
-	}
-
-	char commandACK = aCommandPacket[2] & CEBDS::ACKMask;
-	char answerACK = aAnswerPacket[2] & CEBDS::ACKMask;
-
-	// проверяем тип сообщения и ACK
-	if (commandACK != answerACK)
-	{
-		toLog(LogLevel::Error, "EBDS: Invalid ACK of the message.");
-		return false;
-	}
-
-	return true;
+    return sum;
 }
 
 //--------------------------------------------------------------------------------
-TResult EBDSProtocol::processCommand(const QByteArray& aCommandData, QByteArray& aAnswerData, bool aNeedAnswer)
-{
-	QByteArray request;
+bool EBDSProtocol::check(const QByteArray &aCommandPacket, const QByteArray &aAnswerPacket) {
+    // проверяем первый байт
+    if (aAnswerPacket[0] != CEBDS::Prefix) {
+        toLog(LogLevel::Error, "EBDS: Invalid first byte (prefix).");
+        return false;
+    }
 
-	request.append(CEBDS::Prefix);
-	request.append(char(4 + aCommandData.size()));
-	request.append(aCommandData[0] | char(mACK));
-	request.append(aCommandData.mid(1));
-	request.append(CEBDS::Postfix);
-	request.append(calcCRC(request));
+    // проверяем последний байт
+    if (aAnswerPacket.right(2)[0] != CEBDS::Postfix) {
+        toLog(LogLevel::Error, "EBDS: Invalid last byte (postfix).");
+        return false;
+    }
 
-	toLog(LogLevel::Normal, QString("EBDS: >> {%1}").arg(request.toHex().data()));
-	mACK = !mACK;
+    // вытаскиваем и проверяем длину сообщения
+    int length = aAnswerPacket[1];
 
-	if (!mPort->write(request))
-	{
-		return CommandResult::Port;
-	}
+    if (length != aAnswerPacket.size()) {
+        toLog(LogLevel::Error, "EBDS: Invalid length of the message.");
+        return false;
+    }
 
-	if (!aNeedAnswer)
-	{
-		return CommandResult::OK;
-	}
-	else if (!getAnswer(aAnswerData))
-	{
-		return CommandResult::Port;
-	}
-	else if (aAnswerData.isEmpty())
-	{
-		return CommandResult::NoAnswer;
-	}
-	else if (!check(request, aAnswerData))
-	{
-		return CommandResult::Protocol;
-	}
+    // проверяем контрольную сумму
+    if (calcCRC(aAnswerPacket.left(aAnswerPacket.size() - 1)) != aAnswerPacket[length - 1]) {
+        toLog(LogLevel::Error, "EBDS: Invalid CRC of the message");
+        return false;
+    }
 
-	aAnswerData = aAnswerData.mid(2, aAnswerData.size() - 4);
-	aAnswerData[0] = aAnswerData[0] & ~CEBDS::ACKMask;
+    char commandACK = aCommandPacket[2] & CEBDS::ACKMask;
+    char answerACK = aAnswerPacket[2] & CEBDS::ACKMask;
 
-	return CommandResult::OK;
+    // проверяем тип сообщения и ACK
+    if (commandACK != answerACK) {
+        toLog(LogLevel::Error, "EBDS: Invalid ACK of the message.");
+        return false;
+    }
+
+    return true;
 }
 
 //--------------------------------------------------------------------------------
-const bool EBDSProtocol::getAnswer(QByteArray& aAnswer)
-{
-	aAnswer.clear();
-	QByteArray data;
-	uchar length = 0;
+TResult EBDSProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData, bool aNeedAnswer) {
+    QByteArray request;
 
-	QTime clockTimer;
-	clockTimer.restart();
+    request.append(CEBDS::Prefix);
+    request.append(char(4 + aCommandData.size()));
+    request.append(aCommandData[0] | char(mACK));
+    request.append(aCommandData.mid(1));
+    request.append(CEBDS::Postfix);
+    request.append(calcCRC(request));
 
-	do
-	{
-		data.clear();
+    toLog(LogLevel::Normal, QString("EBDS: >> {%1}").arg(request.toHex().data()));
+    mACK = !mACK;
 
-		if (!mPort->read(data, 20))
-		{
-			return false;
-		}
+    if (!mPort->write(request)) {
+        return CommandResult::Port;
+    }
 
-		aAnswer.append(data);
+    if (!aNeedAnswer) {
+        return CommandResult::OK;
+    } else if (!getAnswer(aAnswerData)) {
+        return CommandResult::Port;
+    } else if (aAnswerData.isEmpty()) {
+        return CommandResult::NoAnswer;
+    } else if (!check(request, aAnswerData)) {
+        return CommandResult::Protocol;
+    }
 
-		if (aAnswer.size() > 1)
-		{
-			length = aAnswer[1];
-		}
-	} while ((clockTimer.elapsed() < CEBDS::AnswerTimeout) && ((aAnswer.size() < length) || !length));
+    aAnswerData = aAnswerData.mid(2, aAnswerData.size() - 4);
+    aAnswerData[0] = aAnswerData[0] & ~CEBDS::ACKMask;
 
-	toLog(LogLevel::Normal, QString("EBDS: << {%1}").arg(aAnswer.toHex().data()));
+    return CommandResult::OK;
+}
 
-	return true;
+//--------------------------------------------------------------------------------
+const bool EBDSProtocol::getAnswer(QByteArray &aAnswer) {
+    aAnswer.clear();
+    QByteArray data;
+    uchar length = 0;
+
+    QTime clockTimer;
+    clockTimer.restart();
+
+    do {
+        data.clear();
+
+        if (!mPort->read(data, 20)) {
+            return false;
+        }
+
+        aAnswer.append(data);
+
+        if (aAnswer.size() > 1) {
+            length = aAnswer[1];
+        }
+    } while ((clockTimer.elapsed() < CEBDS::AnswerTimeout) && ((aAnswer.size() < length) || !length));
+
+    toLog(LogLevel::Normal, QString("EBDS: << {%1}").arg(aAnswer.toHex().data()));
+
+    return true;
 }
 
 //--------------------------------------------------------------------------------

@@ -5,34 +5,33 @@
 #include "Hardware/Printers/PortPOSPrinters.h"
 
 //--------------------------------------------------------------------------------
-class EpsonEUT400 : public TSerialPOSPrinter
-{
-	SET_SUBSERIES("EpsonEUT400")
+class EpsonEUT400 : public TSerialPOSPrinter {
+    SET_SUBSERIES("EpsonEUT400")
 
-public:
-	EpsonEUT400();
+  public:
+    EpsonEUT400();
 
-	/// Инициализация устройства.
-	virtual bool updateParametersOut();
+    /// Инициализация устройства.
+    virtual bool updateParametersOut();
 
-	/// Устанавливает конфигурацию устройству.
-	virtual void setDeviceConfiguration(const QVariantMap& aConfiguration);
+    /// Устанавливает конфигурацию устройству.
+    virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
-protected:
-	/// Инициализация устройства.
-	virtual bool updateParameters();
+  protected:
+    /// Инициализация устройства.
+    virtual bool updateParameters();
 
-	/// Запросить и сохранить параметры устройства.
-	virtual void processDeviceData();
+    /// Запросить и сохранить параметры устройства.
+    virtual void processDeviceData();
 
-	/// Установить memory switch.
-	bool setMemorySwitch(char aNumber, char aValue);
+    /// Установить memory switch.
+    bool setMemorySwitch(char aNumber, char aValue);
 
-	/// Получить memory-switch.
-	bool getMemorySwitch(char aNumber, char& aValue);
+    /// Получить memory-switch.
+    bool getMemorySwitch(char aNumber, char &aValue);
 
-	/// Выполнить сброс.
-	bool reset();
+    /// Выполнить сброс.
+    bool reset();
 };
 
 //--------------------------------------------------------------------------------

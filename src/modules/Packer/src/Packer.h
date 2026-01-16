@@ -12,84 +12,79 @@
 #include <Common/ILogable.h>
 
 //------------------------------------------------------------------------------
-class Packer : public ILogable
-{
-	int mExitCode;
+class Packer : public ILogable {
+    int mExitCode;
 
-	QString mMessages;
+    QString mMessages;
 
-public:
-	typedef enum
-	{
-		Zip,
-		SevenZip
-	} Format;
+  public:
+    typedef enum { Zip, SevenZip } Format;
 
-public:
-	Packer(const QString& aToolPath, ILog* aLog);
+  public:
+    Packer(const QString &aToolPath, ILog *aLog);
 
-	/// Задать расположение архиватора 7zip
-	void setToolPath(const QString& aToolPath);
+    /// Задать расположение архиватора 7zip
+    void setToolPath(const QString &aToolPath);
 
-	/// Включить режим обновления архива
-	void setUpdateMode(bool aUpdateMode);
+    /// Включить режим обновления архива
+    void setUpdateMode(bool aUpdateMode);
 
-	/// Установка уровня сжатия
-	void setLevel(int aLevel);
+    /// Установка уровня сжатия
+    void setLevel(int aLevel);
 
-	/// Установить формат архива
-	void setFormat(Format aFormat);
+    /// Установить формат архива
+    void setFormat(Format aFormat);
 
-	/// Установить максимальный таймаут ожидания выполнения архивации
-	void setTimeout(int aTimeout);
+    /// Установить максимальный таймаут ожидания выполнения архивации
+    void setTimeout(int aTimeout);
 
-	/// Установить рекурсивный режим архивации
-	void setRecursive(bool aRecursive);
+    /// Установить рекурсивный режим архивации
+    void setRecursive(bool aRecursive);
 
-public:
-	/// Архивирует буфер в пямяти в GZ формат
-	static bool gzipCompress(const QByteArray& aInBuffer, const QString& aFileName, QByteArray& aOutBuffer,
-							 int aLevel = 9);
+  public:
+    /// Архивирует буфер в пямяти в GZ формат
+    static bool gzipCompress(const QByteArray &aInBuffer, const QString &aFileName, QByteArray &aOutBuffer,
+                             int aLevel = 9);
 
-	/// Распаковывает GZ архив в память
-	static bool gzipUncompress(const QByteArray& aInBuffer, QString& aFileName, QByteArray& aOutBuffer);
+    /// Распаковывает GZ архив в память
+    static bool gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QByteArray &aOutBuffer);
 
-	/// Архивирует файлы в один том. В случае успеха возвращает имя сформированного архива.
-	QString pack(const QString& aTargetName, const QString& aSourceDir, const QStringList& aSearchMasks,
-				 const QStringList& aExcludeWildcard);
+    /// Архивирует файлы в один том. В случае успеха возвращает имя сформированного архива.
+    QString pack(const QString &aTargetName, const QString &aSourceDir, const QStringList &aSearchMasks,
+                 const QStringList &aExcludeWildcard);
 
-	/// Архивириут файлы в несколько томов, размер которых ограничивается aMaxPartSize в байтах.
-	QStringList pack(const QString& aTargetName, const QString& aSourceDir, const QStringList& aSearchMasks,
-					 const QStringList& aExcludeWildcard, int aMaxPartSize);
+    /// Архивириут файлы в несколько томов, размер которых ограничивается aMaxPartSize в байтах.
+    QStringList pack(const QString &aTargetName, const QString &aSourceDir, const QStringList &aSearchMasks,
+                     const QStringList &aExcludeWildcard, int aMaxPartSize);
 
-	/// Протестировать архив
-	bool test(const QString& aTargetName);
+    /// Протестировать архив
+    bool test(const QString &aTargetName);
 
-	/// Распаковать определенные файлы из архива в определенную папку
-	bool unpack(const QString& aSourceName, const QString& aDestinationDir, bool aSkipExisting,
-				const QStringList& aExtractFiles = QStringList());
+    /// Распаковать определенные файлы из архива в определенную папку
+    bool unpack(const QString &aSourceName, const QString &aDestinationDir, bool aSkipExisting,
+                const QStringList &aExtractFiles = QStringList());
 
-	/// Экстренно прервать процесс архиватора, может быть вызван только из соседнего потока
-	void terminate();
+    /// Экстренно прервать процесс архиватора, может быть вызван только из соседнего потока
+    void terminate();
 
-public:
-	/// Возвращает exit код последней операции
-	int exitCode() const;
+  public:
+    /// Возвращает exit код последней операции
+    int exitCode() const;
 
-	/// Возвращает текст описание кода возврата
-	QString exitCodeDescription() const;
+    /// Возвращает текст описание кода возврата
+    QString exitCodeDescription() const;
 
-	/// Возвращает текст полученный от архиватора
-	const QString& messages() const;
+    /// Возвращает текст полученный от архиватора
+    const QString &messages() const;
 
-private:
-	QString mToolPath;
-	bool mUpdateMode;
-	Format mFormat;
-	int mLevel;
-	bool mRecursive;
-	int mTimeout;
-	QProcess mZipProcess;
+  private:
+    QString mToolPath;
+    bool mUpdateMode;
+    Format mFormat;
+    int mLevel;
+    bool mRecursive;
+    int mTimeout;
+    QProcess mZipProcess;
 };
 
 //------------------------------------------------------------------------------

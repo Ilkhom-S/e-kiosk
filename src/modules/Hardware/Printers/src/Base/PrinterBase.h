@@ -18,138 +18,151 @@
 #include "Hardware/Printers/PrinterStatusCodes.h"
 #include "Hardware/Printers/Tags.h"
 
-namespace CPrinter
-{
-	/// Спец-теги.
-	const Tags::TTypes SpecialTags = Tags::TTypes() << Tags::Type::Image << Tags::Type::BarCode;
+namespace CPrinter {
+    /// Спец-теги.
+    const Tags::TTypes SpecialTags = Tags::TTypes() << Tags::Type::Image << Tags::Type::BarCode;
 } // namespace CPrinter
 
 //--------------------------------------------------------------------------------
-template <class T>
-class PrinterBase : public T
-{
-public:
-	PrinterBase();
+template <class T> class PrinterBase : public T {
+  public:
+    PrinterBase();
 
-	/// Напечатать массив строк.
-	virtual bool print(const QStringList& aReceipt);
+    /// Напечатать массив строк.
+    virtual bool print(const QStringList &aReceipt);
 
-	/// Готов ли к печати.
-	virtual bool isDeviceReady(bool aOnline);
+    /// Готов ли к печати.
+    virtual bool isDeviceReady(bool aOnline);
 
-	/// Устанавливает конфигурацию устройству.
-	virtual void setDeviceConfiguration(const QVariantMap& aConfiguration);
+    /// Устанавливает конфигурацию устройству.
+    virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
-protected:
-	/// Идентифицирует устройство.
-	virtual bool isConnected();
+  protected:
+    /// Идентифицирует устройство.
+    virtual bool isConnected();
 
-	/// Завершение инициализации.
-	virtual void finaliseInitialization();
+    /// Завершение инициализации.
+    virtual void finaliseInitialization();
 
-	/// Выполнить нереентерабельную команду.
-	virtual bool processNonReentrant(TBoolMethod aCommand);
+    /// Выполнить нереентерабельную команду.
+    virtual bool processNonReentrant(TBoolMethod aCommand);
 
-	/// Обработка чека после печати.
-	virtual bool receiptProcessing();
+    /// Обработка чека после печати.
+    virtual bool receiptProcessing();
 
-	/// Фоновая логика при появлении определенных состояний устройства.
-	virtual void postPollingAction(const TStatusCollection& aNewStatusCollection,
-								   const TStatusCollection& aOldStatusCollection);
+    /// Фоновая логика при появлении определенных состояний устройства.
+    virtual void postPollingAction(const TStatusCollection &aNewStatusCollection,
+                                   const TStatusCollection &aOldStatusCollection);
 
-	/// Возможна ли печать.
-	virtual bool isPossible(bool aOnline, QVariant aCommand = QVariant());
+    /// Возможна ли печать.
+    virtual bool isPossible(bool aOnline, QVariant aCommand = QVariant());
 
-	/// Напечатать чек.
-	virtual bool printReceipt(const Tags::TLexemeReceipt& aLexemeReceipt);
+    /// Напечатать чек.
+    virtual bool printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt);
 
-	/// Напечатать [и выдать] чек.
-	virtual bool processReceipt(const QStringList& aReceipt, bool aProcessing = true);
+    /// Напечатать [и выдать] чек.
+    virtual bool processReceipt(const QStringList &aReceipt, bool aProcessing = true);
 
-	/// Проверить необходимость печати.
-	virtual bool isPrintingNeed(const QStringList& aReceipt);
+    /// Проверить необходимость печати.
+    virtual bool isPrintingNeed(const QStringList &aReceipt);
 
-	/// Удалить строки, содержащие только ' ', \n, \r и \t.
-	QStringList simplifyReceipt(const QStringList& aReceipt);
+    /// Удалить строки, содержащие только ' ', \n, \r и \t.
+    QStringList simplifyReceipt(const QStringList &aReceipt);
 
-	/// Возможно ли принудительное включение буфера статусов после выполнения печатной операции.
-	virtual bool canForceStatusBufferEnable() { return false; }
+    /// Возможно ли принудительное включение буфера статусов после выполнения печатной операции.
+    virtual bool canForceStatusBufferEnable() {
+        return false;
+    }
 
-	/// Разбивает List строк на составные строки, используя разделители.
-	void separate(QStringList& aReceipt) const;
+    /// Разбивает List строк на составные строки, используя разделители.
+    void separate(QStringList &aReceipt) const;
 
-	/// Анализирует коды статусов устройства и фильтрует лишние.
-	virtual void cleanStatusCodes(TStatusCodes& aStatusCodes);
+    /// Анализирует коды статусов устройства и фильтрует лишние.
+    virtual void cleanStatusCodes(TStatusCodes &aStatusCodes);
 
-	/// Применить спец-тег.
-	virtual bool execSpecialTag(const Tags::SLexeme& aTagLexeme);
+    /// Применить спец-тег.
+    virtual bool execSpecialTag(const Tags::SLexeme &aTagLexeme);
 
-	/// Разделить список лексем с учетом длины строки.
-	void adjustToLineSize(Tags::TLexemesBuffer& aTagLexemes, Tags::TLexemesCollection& aLexemesCollection);
+    /// Разделить список лексем с учетом длины строки.
+    void adjustToLineSize(Tags::TLexemesBuffer &aTagLexemes, Tags::TLexemesCollection &aLexemesCollection);
 
-	/// Сформировать построчный список лексем с тегами из списка строк.
-	void makeLexemeReceipt(const QStringList& aReceipt, Tags::TLexemeReceipt& aLexemeReceipt);
+    /// Сформировать построчный список лексем с тегами из списка строк.
+    void makeLexemeReceipt(const QStringList &aReceipt, Tags::TLexemeReceipt &aLexemeReceipt);
 
-	/// Очистить диспенсер.
-	bool clearDispenser(const QString& aCondition);
+    /// Очистить диспенсер.
+    bool clearDispenser(const QString &aCondition);
 
-	/// Применить теги.
-	virtual void execTags(Tags::SLexeme& aTagLexeme, QVariant& aLine);
+    /// Применить теги.
+    virtual void execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine);
 
-	/// Промотка.
-	virtual bool feed();
+    /// Промотка.
+    virtual bool feed();
 
-	/// Напечатать строку.
-	virtual bool printLine(const QVariant& /*aLine*/) { return true; }
+    /// Напечатать строку.
+    virtual bool printLine(const QVariant & /*aLine*/) {
+        return true;
+    }
 
-	/// Напечатать картинку.
-	virtual bool printImage(const QImage& /*aImage*/, const Tags::TTypes& /*aTags*/) { return true; }
+    /// Напечатать картинку.
+    virtual bool printImage(const QImage & /*aImage*/, const Tags::TTypes & /*aTags*/) {
+        return true;
+    }
 
-	/// Обработка тега bc - печать штрих-кода.
-	virtual bool printBarcode(const QString& /*aBarcode*/) { return true; }
+    /// Обработка тега bc - печать штрих-кода.
+    virtual bool printBarcode(const QString & /*aBarcode*/) {
+        return true;
+    }
 
-	/// Отрезка.
-	virtual bool cut() { return true; }
+    /// Отрезка.
+    virtual bool cut() {
+        return true;
+    }
 
-	/// Презентация чека.
-	virtual bool present() { return true; }
+    /// Презентация чека.
+    virtual bool present() {
+        return true;
+    }
 
-	/// Вытолкнуть чек.
-	virtual bool push() { return true; }
+    /// Вытолкнуть чек.
+    virtual bool push() {
+        return true;
+    }
 
-	/// Забрать чек в ретрактор.
-	virtual bool retract() { return true; }
+    /// Забрать чек в ретрактор.
+    virtual bool retract() {
+        return true;
+    }
 
-	/// Можно ли проверять готовность устройства.
-	bool canCheckReady(bool aOnline);
+    /// Можно ли проверять готовность устройства.
+    bool canCheckReady(bool aOnline);
 
-	/// Время первого обнаружения бумаги в презентере.
-	QDateTime mPaperInPresenter;
+    /// Время первого обнаружения бумаги в презентере.
+    QDateTime mPaperInPresenter;
 
-	/// Экземляр движка тегов.
-	Tags::PEngine mTagEngine;
+    /// Экземляр движка тегов.
+    Tags::PEngine mTagEngine;
 
-	/// Ошибки, при которых возможно выполнение определенных команд.
-	typedef QMap<int, TStatusCodes> TUnnecessaryErrors;
-	TUnnecessaryErrors mUnnecessaryErrors;
+    /// Ошибки, при которых возможно выполнение определенных команд.
+    typedef QMap<int, TStatusCodes> TUnnecessaryErrors;
+    TUnnecessaryErrors mUnnecessaryErrors;
 
-	/// Максимальное количество символов в строке, если известно и учитывается.
-	int mLineSize;
+    /// Максимальное количество символов в строке, если известно и учитывается.
+    int mLineSize;
 
-	/// Необходимость перевода строки при построчной печати.
-	bool mLineFeed;
+    /// Необходимость перевода строки при построчной печати.
+    bool mLineFeed;
 
-	/// Теги для обработки отдельными командами.
-	Tags::TTypes mLineTags;
+    /// Теги для обработки отдельными командами.
+    Tags::TTypes mLineTags;
 
-	/// Количество фактически напечатанных строк.
-	int mActualStringCount;
+    /// Количество фактически напечатанных строк.
+    int mActualStringCount;
 
-	/// Режим печати документа.
-	SDK::Driver::EPrintingModes::Enum mPrintingMode;
+    /// Режим печати документа.
+    SDK::Driver::EPrintingModes::Enum mPrintingMode;
 
-	/// Отключение очистки диспенсера.
-	bool mClearingDispenserTurnOff;
+    /// Отключение очистки диспенсера.
+    bool mClearingDispenserTurnOff;
 };
 
 //--------------------------------------------------------------------------------

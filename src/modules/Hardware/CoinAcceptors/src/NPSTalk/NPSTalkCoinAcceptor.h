@@ -9,50 +9,49 @@
 #include "Hardware/CoinAcceptors/CoinAcceptorBase.h"
 
 //--------------------------------------------------------------------------------
-class NPSTalkCoinAcceptor : public CoinAcceptorBase
-{
-	SET_SERIES("NPS")
+class NPSTalkCoinAcceptor : public CoinAcceptorBase {
+    SET_SERIES("NPS")
 
-	typedef QMap<uchar, uchar> TCoinsByChannel;
+    typedef QMap<uchar, uchar> TCoinsByChannel;
 
-public:
-	NPSTalkCoinAcceptor();
+  public:
+    NPSTalkCoinAcceptor();
 
-	/// Возвращает список поддерживаемых устройств.
-	static QStringList getModelList();
+    /// Возвращает список поддерживаемых устройств.
+    static QStringList getModelList();
 
-	/// Получить статус.
-	virtual bool getStatus(TStatusCodes& aStatusCodes);
+    /// Получить статус.
+    virtual bool getStatus(TStatusCodes &aStatusCodes);
 
-protected:
-	/// Попытка самоидентификации.
-	virtual bool isConnected();
+  protected:
+    /// Попытка самоидентификации.
+    virtual bool isConnected();
 
-	/// Локальный сброс.
-	virtual bool processReset();
+    /// Локальный сброс.
+    virtual bool processReset();
 
-	/// Установка параметров по умолчанию.
-	virtual bool setDefaultParameters();
+    /// Установка параметров по умолчанию.
+    virtual bool setDefaultParameters();
 
-	/// Загрузка таблицы номиналов из устройства.
-	virtual bool loadParTable();
+    /// Загрузка таблицы номиналов из устройства.
+    virtual bool loadParTable();
 
-	/// Изменение режима приема денег.
-	virtual bool enableMoneyAcceptingMode(bool aEnabled);
+    /// Изменение режима приема денег.
+    virtual bool enableMoneyAcceptingMode(bool aEnabled);
 
-	/// Выполнить команду.
-	virtual TResult execCommand(const QByteArray& aCommand, const QByteArray& aCommandData,
-								QByteArray* aAnswer = nullptr);
+    /// Выполнить команду.
+    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+                                QByteArray *aAnswer = nullptr);
 
-	/// Протокол.
-	NPSTalkProtocol mProtocol;
+    /// Протокол.
+    NPSTalkProtocol mProtocol;
 
-	// TODO: в базу.
-	/// Последние статус-коды устройства.
-	TDeviceCodes mCodes;
+    // TODO: в базу.
+    /// Последние статус-коды устройства.
+    TDeviceCodes mCodes;
 
-	/// Количество монет на канал.
-	TCoinsByChannel mCoinsByChannel;
+    /// Количество монет на канал.
+    TCoinsByChannel mCoinsByChannel;
 };
 
 //--------------------------------------------------------------------------------

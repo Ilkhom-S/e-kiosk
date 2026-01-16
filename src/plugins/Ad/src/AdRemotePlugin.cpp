@@ -133,8 +133,8 @@ SDK::PaymentProcessor::IRemoteClient::Capabilities AdRemotePlugin::getCapabiliti
 }
 
 //------------------------------------------------------------------------------
-bool AdRemotePlugin::useCapability(ECapability aCapabilty) {
-    if (aCapabilty == IRemoteClient::UpdateContent) {
+bool AdRemotePlugin::useCapability(ECapability aCapability) {
+    if (aCapability == IRemoteClient::UpdateContent) {
         QMetaObject::invokeMethod(mClient.data(), "update", Qt::QueuedConnection);
 
         return true;

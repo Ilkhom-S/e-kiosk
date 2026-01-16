@@ -16,31 +16,28 @@
 #include "CashAcceptorStatusData.h"
 
 //--------------------------------------------------------------------------------
-namespace CCashAcceptor
-{
-	typedef StatusCache<SDK::Driver::ECashAcceptorStatus::Enum> TStatuses;
+namespace CCashAcceptor {
+    typedef StatusCache<SDK::Driver::ECashAcceptorStatus::Enum> TStatuses;
 
-	/// Качественный описатель последнего состояния.
-	struct SStatusSpecification
-	{
-		/// Уровень тревожности статуса.
-		SDK::Driver::EWarningLevel::Enum warningLevel;
+    /// Качественный описатель последнего состояния.
+    struct SStatusSpecification {
+        /// Уровень тревожности статуса.
+        SDK::Driver::EWarningLevel::Enum warningLevel;
 
-		/// Буфер статусов, сопряженных с статус-кодами.
-		TStatuses statuses;
+        /// Буфер статусов, сопряженных с статус-кодами.
+        TStatuses statuses;
 
-		SStatusSpecification() : warningLevel(SDK::Driver::EWarningLevel::OK) {}
+        SStatusSpecification() : warningLevel(SDK::Driver::EWarningLevel::OK) {
+        }
 
-		bool operator==(const SStatusSpecification& aStatusSpecification) const
-		{
-			return (statuses == aStatusSpecification.statuses);
-		}
+        bool operator==(const SStatusSpecification &aStatusSpecification) const {
+            return (statuses == aStatusSpecification.statuses);
+        }
 
-		bool operator!=(const SStatusSpecification& aStatusSpecification) const
-		{
-			return !operator==(aStatusSpecification);
-		}
-	};
+        bool operator!=(const SStatusSpecification &aStatusSpecification) const {
+            return !operator==(aStatusSpecification);
+        }
+    };
 } // namespace CCashAcceptor
 
 //--------------------------------------------------------------------------------
@@ -49,118 +46,119 @@ typedef QList<TStatusCodesHistory> TStatusCodesHistoryList;
 typedef QList<SDK::Driver::SPar> TPars;
 
 //--------------------------------------------------------------------------------
-template <class T>
-class CashAcceptorBase : public T
-{
-public:
-	CashAcceptorBase();
+template <class T> class CashAcceptorBase : public T {
+  public:
+    CashAcceptorBase();
 
-	/// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
-	virtual bool release();
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    virtual bool release();
 
-	/// Готов ли к работе (инициализировался успешно, ошибок нет).
-	virtual bool isDeviceReady();
+    /// Готов ли к работе (инициализировался успешно, ошибок нет).
+    virtual bool isDeviceReady();
 
-	/// Установить таблицу номиналов.
-	virtual void setParList(const SDK::Driver::TParList& aParList);
+    /// Установить таблицу номиналов.
+    virtual void setParList(const SDK::Driver::TParList &aParList);
 
-	/// Получить таблицу номиналов.
-	virtual SDK::Driver::TParList getParList();
+    /// Получить таблицу номиналов.
+    virtual SDK::Driver::TParList getParList();
 
-protected:
-	/// Устанавливает запрещения списка номиналов.
-	virtual void employParList();
+  protected:
+    /// Устанавливает запрещения списка номиналов.
+    virtual void employParList();
 
-	/// Получение и обработка списка номиналов.
-	ECurrencyError::Enum processParTable();
+    /// Получение и обработка списка номиналов.
+    ECurrencyError::Enum processParTable();
 
-	/// Загрузка таблицы номиналов из устройства.
-	virtual bool loadParTable() { return false; }
+    /// Загрузка таблицы номиналов из устройства.
+    virtual bool loadParTable() {
+        return false;
+    }
 
-	/// Анализирует коды статусов устройства и фильтрует несуществующие статусы для нижней логики.
-	virtual void cleanStatusCodes(TStatusCodes& aStatusCodes);
+    /// Анализирует коды статусов устройства и фильтрует несуществующие статусы для нижней логики.
+    virtual void cleanStatusCodes(TStatusCodes &aStatusCodes);
 
-	/// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней логики.
-	virtual void cleanSpecificStatusCodes(TStatusCodes& /*aStatusCodes*/) {}
+    /// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней логики.
+    virtual void cleanSpecificStatusCodes(TStatusCodes & /*aStatusCodes*/) {
+    }
 
-	/// Ищет с конца совпадение истории статусов с куском истории статусов.
-	bool isStatusCollectionConformed(const TStatusCodesHistory& aHistory);
+    /// Ищет с конца совпадение истории статусов с куском истории статусов.
+    bool isStatusCollectionConformed(const TStatusCodesHistory &aHistory);
 
-	/// Заменяет совпадающие с куском истории статусов статус-коды.
-	void replaceConformedStatusCodes(TStatusCodes& aStatusCodes, int aStatusCodeFrom, int aStatusCodeTo);
+    /// Заменяет совпадающие с куском истории статусов статус-коды.
+    void replaceConformedStatusCodes(TStatusCodes &aStatusCodes, int aStatusCodeFrom, int aStatusCodeTo);
 
-	/// Отправка статусов.
-	virtual void sendStatuses(const TStatusCollection& aNewStatusCollection,
-							  const TStatusCollection& aOldStatusCollection);
+    /// Отправка статусов.
+    virtual void sendStatuses(const TStatusCollection &aNewStatusCollection,
+                              const TStatusCollection &aOldStatusCollection);
 
-	/// Сохранение последних статусов.
-	void saveStatuses(const CCashAcceptor::TStatuses& aStatuses, SDK::Driver::ECashAcceptorStatus::Enum aTargetStatus,
-					  const CCashAcceptor::TStatusSet aSourceStatuses = CCashAcceptor::TStatusSet());
+    /// Сохранение последних статусов.
+    void saveStatuses(const CCashAcceptor::TStatuses &aStatuses, SDK::Driver::ECashAcceptorStatus::Enum aTargetStatus,
+                      const CCashAcceptor::TStatusSet aSourceStatuses = CCashAcceptor::TStatusSet());
 
-	/// Получение последних статусов.
-	CCashAcceptor::TStatuses getLastStatuses(int aLevel = 1) const;
+    /// Получение последних статусов.
+    CCashAcceptor::TStatuses getLastStatuses(int aLevel = 1) const;
 
-	/// Получение признака возможности отключения купюрника.
-	bool canDisable() const;
+    /// Получение признака возможности отключения купюрника.
+    bool canDisable() const;
 
-	/// Включен на прием купюр?
-	bool isEnabled(const CCashAcceptor::TStatuses& aStatuses = CCashAcceptor::TStatuses()) const;
+    /// Включен на прием купюр?
+    bool isEnabled(const CCashAcceptor::TStatuses &aStatuses = CCashAcceptor::TStatuses()) const;
 
-	/// Не включен на прием купюр?
-	bool isNotEnabled() const;
+    /// Не включен на прием купюр?
+    bool isNotEnabled() const;
 
-	/// Отключен на прием купюр?
-	bool isDisabled(const CCashAcceptor::TStatuses& aStatuses = CCashAcceptor::TStatuses()) const;
+    /// Отключен на прием купюр?
+    bool isDisabled(const CCashAcceptor::TStatuses &aStatuses = CCashAcceptor::TStatuses()) const;
 
-	/// Не отключен на прием купюр?
-	bool isNotDisabled() const;
+    /// Не отключен на прием купюр?
+    bool isNotDisabled() const;
 
-	/// Инициализируется?
-	bool isInitialize() const;
+    /// Инициализируется?
+    bool isInitialize() const;
 
-	/// Доступен?
-	bool isAvailable();
+    /// Доступен?
+    bool isAvailable();
 
-	/// Получение признака возможности возврата купюры.
-	bool canReturning(bool aOnline);
+    /// Получение признака возможности возврата купюры.
+    bool canReturning(bool aOnline);
 
-	/// Получить долгоиграющие статус-коды.
-	TStatusCodes getLongStatusCodes() const;
+    /// Получить долгоиграющие статус-коды.
+    TStatusCodes getLongStatusCodes() const;
 
-	/// Вывод в лог таблицы номиналов.
-	virtual void logEnabledPars();
+    /// Вывод в лог таблицы номиналов.
+    virtual void logEnabledPars();
 
-	/// Отправка статусов.
-	void emitStatuses(CCashAcceptor::SStatusSpecification& aSpecification, const CCashAcceptor::TStatusSet& aSet);
+    /// Отправка статусов.
+    void emitStatuses(CCashAcceptor::SStatusSpecification &aSpecification, const CCashAcceptor::TStatusSet &aSet);
 
-	/// Список номиналов.
-	SDK::Driver::TParList mParList;
+    /// Список номиналов.
+    SDK::Driver::TParList mParList;
 
-	/// История актуальных отправленных статусов.
-	typedef HistoryList<CCashAcceptor::SStatusSpecification> TStatusHistory;
-	TStatusHistory mStatusHistory;
+    /// История актуальных отправленных статусов.
+    typedef HistoryList<CCashAcceptor::SStatusSpecification> TStatusHistory;
+    TStatusHistory mStatusHistory;
 
-	/// Кэш последних статусов для бизнес-логики.
-	CCashAcceptor::TStatuses mStatuses;
+    /// Кэш последних статусов для бизнес-логики.
+    CCashAcceptor::TStatuses mStatuses;
 
-	/// Логические ошибки работы с валютой.
-	ECurrencyError::Enum mCurrencyError;
+    /// Логические ошибки работы с валютой.
+    ECurrencyError::Enum mCurrencyError;
 
-	/// Купюры/монеты в эскроу/стекеде.
-	typedef QList<SDK::Driver::SPar> TPars;
-	TPars mEscrowPars;
+    /// Купюры/монеты в эскроу/стекеде.
+    typedef QList<SDK::Driver::SPar> TPars;
+    TPars mEscrowPars;
 
-	/// Тип устройства приема денег.
-	QString mDeviceType;
+    /// Тип устройства приема денег.
+    QString mDeviceType;
 
-	/// Мьютекс для блокировки запросов к списку номиналов.
-	QMutex mParListMutex;
+    /// Мьютекс для блокировки запросов к списку номиналов.
+    QMutex mParListMutex;
 
-	/// Список включенных номиналов для реализаций без протоколов.
-	CBillTable mEscrowParTable;
+    /// Список включенных номиналов для реализаций без протоколов.
+    CBillTable mEscrowParTable;
 
-	/// Готов ли к работе (инициализировался успешно, ошибок нет).
-	bool mReady;
+    /// Готов ли к работе (инициализировался успешно, ошибок нет).
+    bool mReady;
 };
 
 //--------------------------------------------------------------------------------

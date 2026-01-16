@@ -21,66 +21,65 @@
 class IApplication;
 
 //---------------------------------------------------------------------------
-class HIDService : public SDK::PaymentProcessor::IHIDService, public SDK::PaymentProcessor::IService, private ILogable
-{
-	Q_OBJECT
+class HIDService : public SDK::PaymentProcessor::IHIDService, public SDK::PaymentProcessor::IService, private ILogable {
+    Q_OBJECT
 
-public:
-	/// Получение экземпляра FundsService.
-	static HIDService* instance(IApplication* aApplication);
+  public:
+    /// Получение экземпляра FundsService.
+    static HIDService *instance(IApplication *aApplication);
 
-	HIDService(IApplication* aApplication);
-	~HIDService();
+    HIDService(IApplication *aApplication);
+    ~HIDService();
 
-	/// Инициализация сервиса.
-	virtual bool initialize();
+    /// Инициализация сервиса.
+    virtual bool initialize();
 
-	/// IService: Закончена инициализация всех сервисов.
-	virtual void finishInitialize();
+    /// IService: Закончена инициализация всех сервисов.
+    virtual void finishInitialize();
 
-	/// Возвращает false, если сервис не может быть остановлен в текущий момент.
-	virtual bool canShutdown();
+    /// Возвращает false, если сервис не может быть остановлен в текущий момент.
+    virtual bool canShutdown();
 
-	/// Завершение работы сервиса. Возвращает false, если сервис не может быть остановлен в текущий момент.
-	virtual bool shutdown();
+    /// Завершение работы сервиса. Возвращает false, если сервис не может быть остановлен в текущий момент.
+    virtual bool shutdown();
 
-	/// Получить имя сервиса.
-	virtual QString getName() const;
+    /// Получить имя сервиса.
+    virtual QString getName() const;
 
-	/// Получить параметры сервиса.
-	virtual QVariantMap getParameters() const;
+    /// Получить параметры сервиса.
+    virtual QVariantMap getParameters() const;
 
-	/// Сброс служебной информации.
-	virtual void resetParameters(const QSet<QString>& aParameters);
+    /// Сброс служебной информации.
+    virtual void resetParameters(const QSet<QString> &aParameters);
 
-	/// Получение списка необходимых сервисов.
-	virtual const QSet<QString>& getRequiredServices() const;
+    /// Получение списка необходимых сервисов.
+    virtual const QSet<QString> &getRequiredServices() const;
 
-	/// Включить все устройства.
-	virtual bool setEnable(bool aEnable, const QString& aDevice = QString());
+    /// Включить все устройства.
+    virtual bool setEnable(bool aEnable, const QString &aDevice = QString());
 
-	/// Конвертирует данные сканера в строку
-	QString valueToString(const QVariant& aData);
+    /// Конвертирует данные сканера в строку
+    QString valueToString(const QVariant &aData);
 
-private slots:
-	/// Обновить список устройств.
-	void updateHardwareConfiguration();
+  private slots:
+    /// Обновить список устройств.
+    void updateHardwareConfiguration();
 
-private slots:
-	/// Получение сигнала - карта вставлена
-	void onCardInserted(SDK::Driver::ECardType::Enum aCardType, const QVariantMap& aData);
+  private slots:
+    /// Получение сигнала - карта вставлена
+    void onCardInserted(SDK::Driver::ECardType::Enum aCardType, const QVariantMap &aData);
 
-	/// Получение сигнала - карта извлечена
-	void onCardEjected();
+    /// Получение сигнала - карта извлечена
+    void onCardEjected();
 
-	/// Получение состояния картридера
-	void onStatusChanged(SDK::Driver::EWarningLevel::Enum aLevel, const QString& aTranslation, int aStatus);
+    /// Получение состояния картридера
+    void onStatusChanged(SDK::Driver::EWarningLevel::Enum aLevel, const QString &aTranslation, int aStatus);
 
-private:
-	IApplication* mApplication;
-	SDK::PaymentProcessor::IDeviceService* mDeviceService;
-	QList<SDK::Driver::IHID*> mHIDs;
-	QList<SDK::Driver::ICardReader*> mCardReaders;
+  private:
+    IApplication *mApplication;
+    SDK::PaymentProcessor::IDeviceService *mDeviceService;
+    QList<SDK::Driver::IHID *> mHIDs;
+    QList<SDK::Driver::ICardReader *> mCardReaders;
 };
 
 //---------------------------------------------------------------------------

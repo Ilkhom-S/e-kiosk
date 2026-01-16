@@ -17,18 +17,17 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------
-class DispenserServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::DispenserServiceWindow
-{
-	Q_OBJECT
+class DispenserServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::DispenserServiceWindow {
+    Q_OBJECT
 
-public:
-	DispenserServiceWindow(ServiceMenuBackend* aBackend, QWidget* aParent = 0);
+  public:
+    DispenserServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
-public:
-	virtual bool initialize();
-	virtual bool shutdown();
-	virtual bool activate();
-	virtual bool deactivate();
+  public:
+    virtual bool initialize();
+    virtual bool shutdown();
+    virtual bool activate();
+    virtual bool deactivate();
 };
 
 //------------------------------------------------------------------------

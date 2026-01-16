@@ -6,27 +6,25 @@
 #include "Hardware/FR/PayPrinters.h"
 
 //--------------------------------------------------------------------------------
-template <class T>
-class PayFRBase : public ShtrihRetractorFRLite<T>
-{
-public:
-	PayFRBase();
+template <class T> class PayFRBase : public ShtrihRetractorFRLite<T> {
+  public:
+    PayFRBase();
 
-protected:
-	/// Запросить и вывести в лог критичные параметры ФР.
-	virtual void processDeviceData();
+  protected:
+    /// Запросить и вывести в лог критичные параметры ФР.
+    virtual void processDeviceData();
 
-	/// Снять Z-отчет.
-	virtual bool execZReport(bool aAuto);
+    /// Снять Z-отчет.
+    virtual bool execZReport(bool aAuto);
 
-	/// Добавить общие статусы.
-	virtual void appendStatusCodes(ushort aFlags, TStatusCodes& aStatusCodes);
+    /// Добавить общие статусы.
+    virtual void appendStatusCodes(ushort aFlags, TStatusCodes &aStatusCodes);
 
-	/// Забрать чек в ретрактор.
-	virtual bool retract();
+    /// Забрать чек в ретрактор.
+    virtual bool retract();
 
-	/// Id модели подключенного принтера.
-	uchar mPrinterModelId;
+    /// Id модели подключенного принтера.
+    uchar mPrinterModelId;
 };
 
 //--------------------------------------------------------------------------------

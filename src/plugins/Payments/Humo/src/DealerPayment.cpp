@@ -104,7 +104,7 @@ bool DealerPayment::haveLocalData() {
         return false;
     }
 
-    SDK::Plugin::IEnvironment *env = mFactory->getEnviroment();
+    SDK::Plugin::IEnvironment *env = mFactory->getEnvironment();
 
     if (env) {
         QString dataFile = QDir(env->getKernelDataDirectory()).filePath(urlParts[1]);

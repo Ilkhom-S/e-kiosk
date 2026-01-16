@@ -5,54 +5,53 @@
 #include "Hardware/Common/ProtocolBase.h"
 
 //--------------------------------------------------------------------------------
-class Creator : public ProtocolBase
-{
-public:
-	Creator();
+class Creator : public ProtocolBase {
+  public:
+    Creator();
 
-	/// Установить порт.
-	void setPort(SDK::Driver::IIOPort* aPort);
+    /// Установить порт.
+    void setPort(SDK::Driver::IIOPort *aPort);
 
-	/// Выполнить команду протокола.
-	TResult processCommand(const QByteArray& aCommandData, QByteArray& aUnpackedAnswer, bool aIOLogsDebugMode = false);
+    /// Выполнить команду протокола.
+    TResult processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, bool aIOLogsDebugMode = false);
 
-private:
-	/// Послать пакет данных в порт.
-	bool sendPacket(const QByteArray& aData);
+  private:
+    /// Послать пакет данных в порт.
+    bool sendPacket(const QByteArray &aData);
 
-	/// Получить пакет данных из порта.
-	bool receivePacket(QByteArray& aData);
+    /// Получить пакет данных из порта.
+    bool receivePacket(QByteArray &aData);
 
-	/// Пересчитать базовый индекс пакета в прочитанных из USB порта данных и обрезать USB данные справа в пределах
-	/// прочитанного пакета.
-	bool checkUSBData(QByteArray& aData, int& aBase) const;
+    /// Пересчитать базовый индекс пакета в прочитанных из USB порта данных и обрезать USB данные справа в пределах
+    /// прочитанного пакета.
+    bool checkUSBData(QByteArray &aData, int &aBase) const;
 
-	/// Обрезать прочитанные данные, оставив только данные протокола.
-	void trimUSBData(QByteArray& aData);
+    /// Обрезать прочитанные данные, оставив только данные протокола.
+    void trimUSBData(QByteArray &aData);
 
-	/// Подсчет контрольной суммы пакета данных.
-	char calcCRC(const QByteArray& aData);
+    /// Подсчет контрольной суммы пакета данных.
+    char calcCRC(const QByteArray &aData);
 
-	/// Упаковать команду.
-	void packData(const QByteArray& aCommandPacket, QByteArray& aPacket);
+    /// Упаковать команду.
+    void packData(const QByteArray &aCommandPacket, QByteArray &aPacket);
 
-	/// Прочитать ответный пакет данных от устройства.
-	bool readAnswer(QByteArray& aData);
+    /// Прочитать ответный пакет данных от устройства.
+    bool readAnswer(QByteArray &aData);
 
-	/// Прочитать ответ.
-	TResult receiveAnswer(QByteArray& aAnswer);
+    /// Прочитать ответ.
+    TResult receiveAnswer(QByteArray &aAnswer);
 
-	/// Проверить ответ.
-	TResult checkAnswer(const QByteArray& aAnswer);
+    /// Проверить ответ.
+    TResult checkAnswer(const QByteArray &aAnswer);
 
-	/// Отправить ACK.
-	bool sendACK();
+    /// Отправить ACK.
+    bool sendACK();
 
-	/// Отправить NAK.
-	bool sendNAK();
+    /// Отправить NAK.
+    bool sendNAK();
 
-	/// Печатать логи обмена с устройством в отладочном режиме.
-	bool mIOLogsDebugMode;
+    /// Печатать логи обмена с устройством в отладочном режиме.
+    bool mIOLogsDebugMode;
 };
 
 //--------------------------------------------------------------------------------

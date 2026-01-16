@@ -7,26 +7,24 @@
 #include "../Base/ShtrihSerialFR.h"
 
 //--------------------------------------------------------------------------------
-template <class T>
-class ShtrihRetractorFRLite : public T
-{
-	SET_SUBSERIES("Ejector")
+template <class T> class ShtrihRetractorFRLite : public T {
+    SET_SUBSERIES("Ejector")
 
-protected:
-	/// Инициализация устройства.
-	virtual bool updateParameters();
+  protected:
+    /// Инициализация устройства.
+    virtual bool updateParameters();
 
-	/// Отрезка.
-	virtual bool cut();
+    /// Отрезка.
+    virtual bool cut();
 
-	/// Добавить общие статусы.
-	virtual void appendStatusCodes(ushort aFlags, TStatusCodes& aStatusCodes);
+    /// Добавить общие статусы.
+    virtual void appendStatusCodes(ushort aFlags, TStatusCodes &aStatusCodes);
 
-	/// Получить таймаут незабранного чека.
-	virtual uchar getLeftReceiptTimeout();
+    /// Получить таймаут незабранного чека.
+    virtual uchar getLeftReceiptTimeout();
 
-	/// Выполнить действия после установки параметров системной таблицы.
-	void postSettingAction();
+    /// Выполнить действия после установки параметров системной таблицы.
+    void postSettingAction();
 };
 
 //--------------------------------------------------------------------------------

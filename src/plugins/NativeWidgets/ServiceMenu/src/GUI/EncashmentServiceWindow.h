@@ -16,35 +16,34 @@
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------
-class EncashmentServiceWindow : public EncashmentWindow
-{
-	Q_OBJECT
+class EncashmentServiceWindow : public EncashmentWindow {
+    Q_OBJECT
 
-public:
-	EncashmentServiceWindow(ServiceMenuBackend* aBackend, QWidget* aParent = 0);
+  public:
+    EncashmentServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
-	virtual bool initialize();
-	virtual bool shutdown();
-	virtual bool activate();
-	virtual bool deactivate();
+    virtual bool initialize();
+    virtual bool shutdown();
+    virtual bool activate();
+    virtual bool deactivate();
 
-protected:
-	virtual void updateUI();
-	void updateInfo();
+  protected:
+    virtual void updateUI();
+    void updateInfo();
 
-private slots:
-	void doPayload();
-	void onPrintBalance();
-	void onDeviceStatusChanged(const QString& aConfigName, const QString& aStatusString, const QString& aStatusColor,
-							   SDK::Driver::EWarningLevel::Enum aLevel);
+  private slots:
+    void doPayload();
+    void onPrintBalance();
+    void onDeviceStatusChanged(const QString &aConfigName, const QString &aStatusString, const QString &aStatusColor,
+                               SDK::Driver::EWarningLevel::Enum aLevel);
 
-private:
-	Ui::EncashmentServiceWindow ui;
+  private:
+    Ui::EncashmentServiceWindow ui;
 
-private:
-	QVariantMap mPayloadSettings;
-	QString mPayloadSettingsPath;
-	ServiceMenuBackend* mBackend;
+  private:
+    QVariantMap mPayloadSettings;
+    QString mPayloadSettingsPath;
+    ServiceMenuBackend *mBackend;
 };
 
 //------------------------------------------------------------------------

@@ -16,81 +16,77 @@
 // Project
 #include "API.h"
 
-namespace SDK
-{
-	namespace PaymentProcessor
-	{
-		class DealerSettings;
-	} // namespace PaymentProcessor
+namespace SDK {
+    namespace PaymentProcessor {
+        class DealerSettings;
+    } // namespace PaymentProcessor
 } // namespace SDK
 
-namespace
-{
-	const char* ParamRuntimePath = "ucs_runtime_path";
+namespace {
+    const char *ParamRuntimePath = "ucs_runtime_path";
 } // namespace
 
 //------------------------------------------------------------------------------
 class UcsChargeProvider : public QObject,
-						  public SDK::PaymentProcessor::IChargeProvider,
-						  public SDK::Plugin::IPlugin,
-						  public ILogable
-{
-	Q_OBJECT
+                          public SDK::PaymentProcessor::IChargeProvider,
+                          public SDK::Plugin::IPlugin,
+                          public ILogable {
+    Q_OBJECT
 
-public:
-	UcsChargeProvider(SDK::Plugin::IEnvironment* aFactory, const QString& aInstancePath);
-	~UcsChargeProvider();
+  public:
+    UcsChargeProvider(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    ~UcsChargeProvider();
 
-	//////////////////////////////////////////////////////////////////////////
-	/// Возвращает название плагина.
-	virtual QString getPluginName() const;
+    //////////////////////////////////////////////////////////////////////////
+    /// Возвращает название плагина.
+    virtual QString getPluginName() const;
 
-	/// Возвращает параметры плагина.
-	virtual QVariantMap getConfiguration() const;
+    /// Возвращает параметры плагина.
+    virtual QVariantMap getConfiguration() const;
 
-	/// Настраивает плагин.
-	virtual void setConfiguration(const QVariantMap& aParameters);
+    /// Настраивает плагин.
+    virtual void setConfiguration(const QVariantMap &aParameters);
 
-	/// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
-	virtual QString getConfigurationName() const;
+    /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
+    virtual QString getConfigurationName() const;
 
-	/// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
-	virtual bool saveConfiguration();
+    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
+    virtual bool saveConfiguration();
 
-	/// Проверяет успешно ли инициализировался плагин при создании.
-	virtual bool isReady() const;
+    /// Проверяет успешно ли инициализировался плагин при создании.
+    virtual bool isReady() const;
 
-	//////////////////////////////////////////////////////////////////////////
-	virtual bool subscribe(const char* aSignal, QObject* aReceiver, const char* aSlot);
-	virtual bool unsubscribe(const char* aSignal, QObject* aReceiver);
+    //////////////////////////////////////////////////////////////////////////
+    virtual bool subscribe(const char *aSignal, QObject *aReceiver, const char *aSlot);
+    virtual bool unsubscribe(const char *aSignal, QObject *aReceiver);
 
-	/// Возвращает метод оплаты, поддерживаемый провайдером
-	virtual QString getMethod();
+    /// Возвращает метод оплаты, поддерживаемый провайдером
+    virtual QString getMethod();
 
-	/// Включить приём средств
-	virtual bool enable(SDK::PaymentProcessor::TPaymentAmount aMaxAmount);
+    /// Включить приём средств
+    virtual bool enable(SDK::PaymentProcessor::TPaymentAmount aMaxAmount);
 
-	/// Выключение провайдера
-	virtual bool disable();
+    /// Выключение провайдера
+    virtual bool disable();
 
-signals:
-	void stacked(SDK::PaymentProcessor::SNote);
+  signals:
+    void stacked(SDK::PaymentProcessor::SNote);
 
-public slots:
-	void onEvent(const SDK::PaymentProcessor::Event& aEvent);
+  public slots:
+    void onEvent(const SDK::PaymentProcessor::Event &aEvent);
 
-private slots:
-	void onSaleComplete(double aAmount, int aCurrency, const QString& aRRN, const QString& aConfirmationCode);
-	void onEncashmentComplete();
+  private slots:
+    void onSaleComplete(double aAmount, int aCurrency, const QString &aRRN, const QString &aConfirmationCode);
+    void onEncashmentComplete();
 
-private:
-	QString mInstancePath;
-	QVariantMap mParameters;
-	SDK::Plugin::IEnvironment* mFactory;
-	SDK::PaymentProcessor::ICore* mCore;
-	SDK::PaymentProcessor::DealerSettings* mDealerSettings;
-	QSharedPointer<Ucs::API> mApi;
-	QSharedPointer<Ucs::API> mDatabaseUtils;
+  private:
+    QString mInstancePath;
+    QVariantMap mParameters;
+    SDK::Plugin::IEnvironment *mFactory;
+    SDK::PaymentProcessor::ICore *mCore;
+    SDK::PaymentProcessor::DealerSettings *mDealerSettings;
+    QSharedPointer<Ucs::API> mApi;
+    QSharedPointer<Ucs::API> mDatabaseUtils;
 };
 
 //------------------------------------------------------------------------------

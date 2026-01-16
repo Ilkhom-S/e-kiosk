@@ -22,8 +22,8 @@ SDK::Plugin::SPluginParameter setSessionOpeningTime();
 SDK::Plugin::SPluginParameter setNotPrinting(bool aVisible = false);
 
 // Модель подключенного принтера для Казначея.
-SDK::Plugin::SPluginParameter setPrinterModel(const QStringList& aModels, const QString& aDefault);
-SDK::Plugin::SPluginParameter setPrinterModel(const QString& aModel);
+SDK::Plugin::SPluginParameter setPrinterModel(const QStringList &aModels, const QString &aDefault);
+SDK::Plugin::SPluginParameter setPrinterModel(const QString &aModel);
 
 // Обнуление суммы в кассе при закрытии смены.
 SDK::Plugin::SPluginParameter setNullingSumInCash();

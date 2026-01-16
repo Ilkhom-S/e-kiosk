@@ -8,32 +8,30 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-namespace CCCTalk
-{
-	const char NAK = '\x05';
-	const char BUSY = '\x06';
+namespace CCCTalk {
+    const char NAK = '\x05';
+    const char BUSY = '\x06';
 
-	/// Константа для вычисления контрольной суммы.
-	const ushort Polynominal = 0x1021;
+    /// Константа для вычисления контрольной суммы.
+    const ushort Polynominal = 0x1021;
 
-	/// Последний бит для вычисления CRC.
-	const ushort LastBit = 0x8000;
+    /// Последний бит для вычисления CRC.
+    const ushort LastBit = 0x8000;
 
-	/// Минимальный размер ответного пакета.
-	const int MinAnswerSize = 5;
+    /// Минимальный размер ответного пакета.
+    const int MinAnswerSize = 5;
 
-	/// Максимальное количество повторов из-за BUSY устройства.
-	const int MaxBusyNAKRepeats = 3;
+    /// Максимальное количество повторов из-за BUSY устройства.
+    const int MaxBusyNAKRepeats = 3;
 
-	/// Таймауты, [мс].
-	namespace Timeouts
-	{
-		/// Повтор после BUSY или NAK-а.
-		const int NAKBusy = 1000;
+    /// Таймауты, [мс].
+    namespace Timeouts {
+        /// Повтор после BUSY или NAK-а.
+        const int NAKBusy = 1000;
 
-		/// Дефолтный для ожидания ответа.
-		const int Reading = 500;
-	} // namespace Timeouts
+        /// Дефолтный для ожидания ответа.
+        const int Reading = 500;
+    } // namespace Timeouts
 } // namespace CCCTalk
 
 //--------------------------------------------------------------------------------

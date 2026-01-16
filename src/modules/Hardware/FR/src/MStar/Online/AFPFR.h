@@ -11,131 +11,130 @@
 #include "AFPFRDataTypes.h"
 
 //--------------------------------------------------------------------------------
-class AFPFR : public TSerialFRBase
-{
-	SET_SERIES("AFP")
+class AFPFR : public TSerialFRBase {
+    SET_SERIES("AFP")
 
-public:
-	AFPFR();
+  public:
+    AFPFR();
 
-	/// Возвращает список поддерживаемых устройств.
-	static QStringList getModelList();
+    /// Возвращает список поддерживаемых устройств.
+    static QStringList getModelList();
 
-protected:
-	/// Попытка самоидентификации.
-	virtual bool isConnected();
+  protected:
+    /// Попытка самоидентификации.
+    virtual bool isConnected();
 
-	/// Получить статус.
-	virtual bool getStatus(TStatusCodes& aStatusCodes);
+    /// Получить статус.
+    virtual bool getStatus(TStatusCodes &aStatusCodes);
 
-	/// Инициализация устройства.
-	virtual bool updateParameters();
+    /// Инициализация устройства.
+    virtual bool updateParameters();
 
-	/// Получить данные тега последней фискализации.
-	bool getLastFiscalizationData(int aField, QVariant& aData);
+    /// Получить данные тега последней фискализации.
+    bool getLastFiscalizationData(int aField, QVariant &aData);
 
-	/// Запросить и вывести в лог критичные параметры ФР.
-	virtual void processDeviceData();
+    /// Запросить и вывести в лог критичные параметры ФР.
+    virtual void processDeviceData();
 
-	/// Загрузить названия отделов.
-	bool loadSectionNames();
+    /// Загрузить названия отделов.
+    bool loadSectionNames();
 
-	/// Получить дату и время ФР.
-	virtual QDateTime getDateTime();
+    /// Получить дату и время ФР.
+    virtual QDateTime getDateTime();
 
-	/// Получить параметр системной таблицы.
-	bool getFRParameter(const CAFPFR::FRParameters::SData& aData, QVariant& aValue);
+    /// Получить параметр системной таблицы.
+    bool getFRParameter(const CAFPFR::FRParameters::SData &aData, QVariant &aValue);
 
-	/// Установить параметр системной таблицы.
-	bool setFRParameter(const CAFPFR::FRParameters::SData& aData, QVariant aValue);
+    /// Установить параметр системной таблицы.
+    bool setFRParameter(const CAFPFR::FRParameters::SData &aData, QVariant aValue);
 
-	/// Выполнить команду.
-	TResult processCommand(char aCommand, CAFPFR::TData* aAnswer = nullptr);
-	TResult processCommand(char aCommand, const CAFPFR::TData& aCommandData, CAFPFR::TData* aAnswer = nullptr);
-	TResult processCommand(char aCommand, const CAFPFR::TData& aCommandData, CAFPFR::TData* aAnswer,
-						   CAFPFR::EAnswerTypes::Enum aAnswerType);
-	TResult processCommand(char aCommand, const CAFPFR::TData& aCommandData, CAFPFR::TData* aAnswer,
-						   const CAFPFR::TAnswerTypes& aAnswerTypes);
+    /// Выполнить команду.
+    TResult processCommand(char aCommand, CAFPFR::TData *aAnswer = nullptr);
+    TResult processCommand(char aCommand, const CAFPFR::TData &aCommandData, CAFPFR::TData *aAnswer = nullptr);
+    TResult processCommand(char aCommand, const CAFPFR::TData &aCommandData, CAFPFR::TData *aAnswer,
+                           CAFPFR::EAnswerTypes::Enum aAnswerType);
+    TResult processCommand(char aCommand, const CAFPFR::TData &aCommandData, CAFPFR::TData *aAnswer,
+                           const CAFPFR::TAnswerTypes &aAnswerTypes);
 
-	TResult processCommand(char aCommand, const QVariant& aCommandData, CAFPFR::TData* aAnswer = nullptr);
-	TResult processCommand(char aCommand, const QVariant& aCommandData, CAFPFR::TData* aAnswer,
-						   CAFPFR::EAnswerTypes::Enum aAnswerType);
-	TResult processCommand(char aCommand, const QVariant& aCommandData, CAFPFR::TData* aAnswer,
-						   const CAFPFR::TAnswerTypes& aAnswerTypes);
+    TResult processCommand(char aCommand, const QVariant &aCommandData, CAFPFR::TData *aAnswer = nullptr);
+    TResult processCommand(char aCommand, const QVariant &aCommandData, CAFPFR::TData *aAnswer,
+                           CAFPFR::EAnswerTypes::Enum aAnswerType);
+    TResult processCommand(char aCommand, const QVariant &aCommandData, CAFPFR::TData *aAnswer,
+                           const CAFPFR::TAnswerTypes &aAnswerTypes);
 
-	/// Выполнить команду.
-	EResult::Enum performCommand(TStatusCodes& aStatusCodes, char aCommand, CAFPFR::TData& aAnswerData);
+    /// Выполнить команду.
+    EResult::Enum performCommand(TStatusCodes &aStatusCodes, char aCommand, CAFPFR::TData &aAnswerData);
 
-	/// Обработка ответа на предыдущей команды. Автоисправление некоторых ошибок.
-	virtual bool processAnswer(char aCommand, char aError);
+    /// Обработка ответа на предыдущей команды. Автоисправление некоторых ошибок.
+    virtual bool processAnswer(char aCommand, char aError);
 
-	/// Печать фискального чека.
-	virtual bool performFiscal(const QStringList& aReceipt, const SDK::Driver::SPaymentData& aPaymentData,
-							   quint32* aFDNumber = nullptr);
+    /// Печать фискального чека.
+    virtual bool performFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData,
+                               quint32 *aFDNumber = nullptr);
 
-	/// Получить фискальные теги по номеру документа.
-	virtual bool getFiscalFields(quint32 aFDNumber, SDK::Driver::TFiscalPaymentData& aFPData,
-								 SDK::Driver::TComplexFiscalPaymentData& aPSData);
+    /// Получить фискальные теги по номеру документа.
+    virtual bool getFiscalFields(quint32 aFDNumber, SDK::Driver::TFiscalPaymentData &aFPData,
+                                 SDK::Driver::TComplexFiscalPaymentData &aPSData);
 
-	/// Собрать данные о сессии перед выполнением Z-отчета.
-	QVariantMap getSessionOutData();
+    /// Собрать данные о сессии перед выполнением Z-отчета.
+    QVariantMap getSessionOutData();
 
-	/// Напечатать [и выдать] чек.
-	virtual bool processReceipt(const QStringList& aReceipt, bool aProcessing = true);
+    /// Напечатать [и выдать] чек.
+    virtual bool processReceipt(const QStringList &aReceipt, bool aProcessing = true);
 
-	/// Напечатать строку.
-	virtual bool printLine(const QByteArray& aString);
+    /// Напечатать строку.
+    virtual bool printLine(const QByteArray &aString);
 
-	/// Отрезка.
-	virtual bool cut();
+    /// Отрезка.
+    virtual bool cut();
 
-	/// Открыть документ.
-	virtual bool openDocument(char aType);
+    /// Открыть документ.
+    virtual bool openDocument(char aType);
 
-	/// Продажа.
-	virtual bool sale(const SDK::Driver::SUnitData& aUnitData);
+    /// Продажа.
+    virtual bool sale(const SDK::Driver::SUnitData &aUnitData);
 
-	/// Закрыть документ.
-	virtual bool closeDocument(bool aProcessing = true);
+    /// Закрыть документ.
+    virtual bool closeDocument(bool aProcessing = true);
 
-	/// Получить состояние смены.
-	virtual SDK::Driver::ESessionState::Enum getSessionState();
+    /// Получить состояние смены.
+    virtual SDK::Driver::ESessionState::Enum getSessionState();
 
-	/// Получить состояние документа.
-	virtual SDK::Driver::EDocumentState::Enum getDocumentState();
+    /// Получить состояние документа.
+    virtual SDK::Driver::EDocumentState::Enum getDocumentState();
 
-	/// Открыть смену.
-	virtual bool openSession();
+    /// Открыть смену.
+    virtual bool openSession();
 
-	/// Локальная печать X-отчета.
-	virtual bool processXReport();
+    /// Локальная печать X-отчета.
+    virtual bool processXReport();
 
-	/// Печать Z отчета.
-	virtual bool performZReport(bool aPrintDeferredReports);
+    /// Печать Z отчета.
+    virtual bool performZReport(bool aPrintDeferredReports);
 
-	/// Снять Z-отчет.
-	virtual bool execZReport(bool aAuto);
+    /// Снять Z-отчет.
+    virtual bool execZReport(bool aAuto);
 
-	/// Получить сумму в кассе.
-	virtual double getAmountInCash();
+    /// Получить сумму в кассе.
+    virtual double getAmountInCash();
 
-	/// Печать выплаты.
-	virtual bool processPayout(double aAmount);
+    /// Печать выплаты.
+    virtual bool processPayout(double aAmount);
 
-	/// Установить флаги по ошибке в ответе.
-	void setErrorFlags();
+    /// Установить флаги по ошибке в ответе.
+    void setErrorFlags();
 
-	/// Получить данные об ФР.
-	bool getFRData(const CAFPFR::FRInfo::SData& aInfo, CAFPFR::TData& aData);
+    /// Получить данные об ФР.
+    bool getFRData(const CAFPFR::FRInfo::SData &aInfo, CAFPFR::TData &aData);
 
-	/// Включить/выключить режим непечати документов.
-	virtual bool setNotPrintDocument(bool aEnabled, bool aZReport = false);
+    /// Включить/выключить режим непечати документов.
+    virtual bool setNotPrintDocument(bool aEnabled, bool aZReport = false);
 
-	/// Данные модели.
-	CAFPFR::Models::SData mModelData;
+    /// Данные модели.
+    CAFPFR::Models::SData mModelData;
 
-	/// Протокол.
-	AFPFRProtocol mProtocol;
+    /// Протокол.
+    AFPFRProtocol mProtocol;
 };
 
 //--------------------------------------------------------------------------------

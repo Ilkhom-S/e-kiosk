@@ -75,7 +75,7 @@ class PaymentFactoryBase : public QObject, public SDK::Plugin::IPlugin, public S
     NetworkTaskManager *getNetworkTaskManager() const;
 
     /// Получить окружение
-    SDK::Plugin::IEnvironment *getEnviroment() const {
+    SDK::Plugin::IEnvironment *getEnvironment() const {
         return mFactory;
     }
 

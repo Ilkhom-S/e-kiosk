@@ -9,87 +9,74 @@
 // Project
 #include "USBDeviceModelData.h"
 
-namespace CUSBDevice
-{
+namespace CUSBDevice {
 
-	//--------------------------------------------------------------------------------
-	template class ProductDataBase<SProductData>;
-	template class ProductDataBase<CMifareReader::SModelData>;
+    //--------------------------------------------------------------------------------
+    template class ProductDataBase<SProductData>;
+    template class ProductDataBase<CMifareReader::SModelData>;
 
-	CUSBVendors::Data DetectingData::mVendorData;
+    CUSBVendors::Data DetectingData::mVendorData;
 
-	//--------------------------------------------------------------------------------
-	template <class T>
-	QStringList ProductDataBase<T>::getModelList(const QString& aVendor)
-	{
-		QStringList result;
+    //--------------------------------------------------------------------------------
+    template <class T> QStringList ProductDataBase<T>::getModelList(const QString &aVendor) {
+        QStringList result;
 
-		foreach (const T& data, mBuffer)
-		{
-			result << aVendor + " " + data.model;
-		}
+        foreach (const T &data, mBuffer) {
+            result << aVendor + " " + data.model;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	//--------------------------------------------------------------------------------
-	template <class T>
-	void ProductDataBase<T>::setDefaultModel(const QString& aModel)
-	{
-		T data;
-		data.model = aModel;
-		data.verified = false;
+    //--------------------------------------------------------------------------------
+    template <class T> void ProductDataBase<T>::setDefaultModel(const QString &aModel) {
+        T data;
+        data.model = aModel;
+        data.verified = false;
 
-		setDefault(data);
-	}
+        setDefault(data);
+    }
 
-	//--------------------------------------------------------------------------------
-	template <class T>
-	TProductData ProductDataBase<T>::getProductData()
-	{
-		return mProductData;
-	}
+    //--------------------------------------------------------------------------------
+    template <class T> TProductData ProductDataBase<T>::getProductData() {
+        return mProductData;
+    }
 
-	//--------------------------------------------------------------------------------
-	void DetectingData::set(const QString& aVendor, quint16 aPID, const QString& aModel, bool aVerified)
-	{
-		data().clear();
+    //--------------------------------------------------------------------------------
+    void DetectingData::set(const QString &aVendor, quint16 aPID, const QString &aModel, bool aVerified) {
+        data().clear();
 
-		quint16 VID = mVendorData[aVendor];
-		data()[VID].append(aPID, SProductData(aVendor + " " + aModel, aVerified));
-	}
+        quint16 VID = mVendorData[aVendor];
+        data()[VID].append(aPID, SProductData(aVendor + " " + aModel, aVerified));
+    }
 
-	//--------------------------------------------------------------------------------
-	void DetectingData::set(const QString& aVendor, const QString& aDeviceName, quint16 aPID)
-	{
-		data().clear();
+    //--------------------------------------------------------------------------------
+    void DetectingData::set(const QString &aVendor, const QString &aDeviceName, quint16 aPID) {
+        data().clear();
 
-		quint16 VID = mVendorData[aVendor];
-		data()[VID].append(aPID, SProductData(aDeviceName, true));
-	}
+        quint16 VID = mVendorData[aVendor];
+        data()[VID].append(aPID, SProductData(aDeviceName, true));
+    }
 
-	//--------------------------------------------------------------------------------
-	void DetectingData::set(const SDetectingData& aDetectingData)
-	{
-		data().clear();
+    //--------------------------------------------------------------------------------
+    void DetectingData::set(const SDetectingData &aDetectingData) {
+        data().clear();
 
-		quint16 VID = mVendorData[aDetectingData.vendor];
-		data()[VID].append(aDetectingData.PID, SProductData(aDetectingData.vendor + " " + aDetectingData.model, true));
-	}
+        quint16 VID = mVendorData[aDetectingData.vendor];
+        data()[VID].append(aDetectingData.PID, SProductData(aDetectingData.vendor + " " + aDetectingData.model, true));
+    }
 
-	//--------------------------------------------------------------------------------
-	void DetectingData::set(const QString& aVendor, const TProductData& aProductData)
-	{
-		data().clear();
+    //--------------------------------------------------------------------------------
+    void DetectingData::set(const QString &aVendor, const TProductData &aProductData) {
+        data().clear();
 
-		quint16 VID = mVendorData[aVendor];
-		TProductData& productData = data()[VID].data();
+        quint16 VID = mVendorData[aVendor];
+        TProductData &productData = data()[VID].data();
 
-		for (auto it = aProductData.begin(); it != aProductData.end(); ++it)
-		{
-			productData.insert(it.key(), SProductData(aVendor + " " + it->model, it->verified));
-		}
-	}
+        for (auto it = aProductData.begin(); it != aProductData.end(); ++it) {
+            productData.insert(it.key(), SProductData(aVendor + " " + it->model, it->verified));
+        }
+    }
 
 } // namespace CUSBDevice
 

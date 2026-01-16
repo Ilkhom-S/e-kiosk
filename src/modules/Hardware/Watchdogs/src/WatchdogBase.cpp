@@ -7,107 +7,94 @@
 #include "WatchdogBase.h"
 
 //-----------------------------------------------------------------------------
-WatchdogBase::WatchdogBase()
-{
-	mPingTimer.moveToThread(&mThread);
+WatchdogBase::WatchdogBase() {
+    mPingTimer.moveToThread(&mThread);
 
-	connect(&mPingTimer, SIGNAL(timeout()), SLOT(onPing()));
+    connect(&mPingTimer, SIGNAL(timeout()), SLOT(onPing()));
 
-	mPollingInterval = 5000;
+    mPollingInterval = 5000;
 
-	mIOMessageLogging = ELoggingType::ReadWrite;
-	mSensorDisabledValue = false;
-	setConfigParameter(CHardware::Watchdog::CanRegisterKey, false);
-	setConfigParameter(CHardware::Watchdog::CanWakeUpPC, false);
-	mStatusCodesSpecification = DeviceStatusCode::PSpecifications(new WatchdogStatusCode::CSpecifications());
+    mIOMessageLogging = ELoggingType::ReadWrite;
+    mSensorDisabledValue = false;
+    setConfigParameter(CHardware::Watchdog::CanRegisterKey, false);
+    setConfigParameter(CHardware::Watchdog::CanWakeUpPC, false);
+    mStatusCodesSpecification = DeviceStatusCode::PSpecifications(new WatchdogStatusCode::CSpecifications());
 }
 
 //----------------------------------------------------------------------------
-bool WatchdogBase::updateParameters()
-{
-	setPingEnable(true);
+bool WatchdogBase::updateParameters() {
+    setPingEnable(true);
 
-	return true;
+    return true;
 }
 
 //--------------------------------------------------------------------------------
-bool WatchdogBase::release()
-{
-	setPingEnable(false);
+bool WatchdogBase::release() {
+    setPingEnable(false);
 
-	return TWatchdogBase::release();
+    return TWatchdogBase::release();
 }
 
 //-----------------------------------------------------------------------------
-void WatchdogBase::setPingEnable(bool aEnabled)
-{
-	if (checkConnectionAbility() && mPingTimer.interval())
-	{
-		toLog(LogLevel::Normal, aEnabled ? "Ping is enabled." : "Pinging is disabled.");
+void WatchdogBase::setPingEnable(bool aEnabled) {
+    if (checkConnectionAbility() && mPingTimer.interval()) {
+        toLog(LogLevel::Normal, aEnabled ? "Ping is enabled." : "Pinging is disabled.");
 
-		QMetaObject::invokeMethod(&mPingTimer, aEnabled ? "start" : "stop", Qt::QueuedConnection);
-	}
+        QMetaObject::invokeMethod(&mPingTimer, aEnabled ? "start" : "stop", Qt::QueuedConnection);
+    }
 }
 
 //---------------------------------------------------------------------------
-void WatchdogBase::cleanStatusCodes(TStatusCodes& aStatusCodes)
-{
-	bool needUpdateConfiguration = false;
+void WatchdogBase::cleanStatusCodes(TStatusCodes &aStatusCodes) {
+    bool needUpdateConfiguration = false;
 
-	for (auto it = CWatchdogs::SensorData.data().begin(); it != CWatchdogs::SensorData.data().end(); ++it)
-	{
-		QString sensor = it.key();
-		QString sensorValue = getConfigParameter(sensor, CHardwareSDK::Values::Auto).toString();
+    for (auto it = CWatchdogs::SensorData.data().begin(); it != CWatchdogs::SensorData.data().end(); ++it) {
+        QString sensor = it.key();
+        QString sensorValue = getConfigParameter(sensor, CHardwareSDK::Values::Auto).toString();
 
-		if (containsConfigParameter(sensor) && (sensorValue == CHardwareSDK::Values::Auto))
-		{
-			needUpdateConfiguration = true;
+        if (containsConfigParameter(sensor) && (sensorValue == CHardwareSDK::Values::Auto)) {
+            needUpdateConfiguration = true;
 
-			bool sensorActive = aStatusCodes.contains(it->statusCode) != mSensorDisabledValue;
-			sensorValue = sensorActive ? CHardwareSDK::Values::Use : CHardwareSDK::Values::NotUse;
+            bool sensorActive = aStatusCodes.contains(it->statusCode) != mSensorDisabledValue;
+            sensorValue = sensorActive ? CHardwareSDK::Values::Use : CHardwareSDK::Values::NotUse;
 
-			setConfigParameter(sensor, sensorValue);
-		}
+            setConfigParameter(sensor, sensorValue);
+        }
 
-		if (sensorValue != CHardwareSDK::Values::Use)
-		{
-			aStatusCodes.remove(it->statusCode);
-		}
-	}
+        if (sensorValue != CHardwareSDK::Values::Use) {
+            aStatusCodes.remove(it->statusCode);
+        }
+    }
 
-	if (needUpdateConfiguration)
-	{
-		emit configurationChanged();
-	}
+    if (needUpdateConfiguration) {
+        emit configurationChanged();
+    }
 
-	TWatchdogBase::cleanStatusCodes(aStatusCodes);
+    TWatchdogBase::cleanStatusCodes(aStatusCodes);
 }
 
 //--------------------------------------------------------------------------------
-void WatchdogBase::emitStatusCodes(TStatusCollection& aStatusCollection, int aExtendedStatus)
-{
-	TWatchdogBase::emitStatusCodes(aStatusCollection, aExtendedStatus);
+void WatchdogBase::emitStatusCodes(TStatusCollection &aStatusCollection, int aExtendedStatus) {
+    TWatchdogBase::emitStatusCodes(aStatusCollection, aExtendedStatus);
 
-	TStatusCodes statusCodes = getStatusCodes(aStatusCollection);
+    TStatusCodes statusCodes = getStatusCodes(aStatusCollection);
 
-	foreach (int statusCode, statusCodes)
-	{
-		auto it =
-			std::find_if(CWatchdogs::SensorData.data().begin(), CWatchdogs::SensorData.data().end(),
-						 [&](const CWatchdogs::SSensorData& aData) -> bool { return aData.statusCode == statusCode; });
+    foreach (int statusCode, statusCodes) {
+        auto it =
+            std::find_if(CWatchdogs::SensorData.data().begin(), CWatchdogs::SensorData.data().end(),
+                         [&](const CWatchdogs::SSensorData &aData) -> bool { return aData.statusCode == statusCode; });
 
-		if (it != CWatchdogs::SensorData.data().end())
-		{
-			QString actionValue = getConfigParameter(it->action).toString();
+        if (it != CWatchdogs::SensorData.data().end()) {
+            QString actionValue = getConfigParameter(it->action).toString();
 
-			if ((actionValue == CHardwareSDK::Values::Use) && CWatchdogs::SensorActionData.data().contains(actionValue))
-			{
-				int extendedStatus = CWatchdogs::SensorActionData[actionValue];
+            if ((actionValue == CHardwareSDK::Values::Use) &&
+                CWatchdogs::SensorActionData.data().contains(actionValue)) {
+                int extendedStatus = CWatchdogs::SensorActionData[actionValue];
 
-				emitStatusCode(statusCode, extendedStatus);
-			}
-		}
-	}
+                emitStatusCode(statusCode, extendedStatus);
+            }
+        }
+    }
 }
 
 //----------------------------------------------------------------------------

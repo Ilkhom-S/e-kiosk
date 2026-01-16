@@ -15,273 +15,234 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------
-namespace CHardwareManager
-{
-	const QString StatusOK = "#1d7e00";
-	const QString StatusWarning = "#ffc014";
-	const QString StatusError = "#7e0000";
+namespace CHardwareManager {
+    const QString StatusOK = "#1d7e00";
+    const QString StatusWarning = "#ffc014";
+    const QString StatusError = "#7e0000";
 } // namespace CHardwareManager
 
 //------------------------------------------------------------------------
-HardwareManager::HardwareManager(SDK::Plugin::IEnvironment* aFactory, PPSDK::ICore* aCore)
-	: mFactory(aFactory), mCore(aCore)
-{
-	mDeviceService = mCore->getDeviceService();
+HardwareManager::HardwareManager(SDK::Plugin::IEnvironment *aFactory, PPSDK::ICore *aCore)
+    : mFactory(aFactory), mCore(aCore) {
+    mDeviceService = mCore->getDeviceService();
 
-	connect(mDeviceService, SIGNAL(deviceDetected(const QString&)), this, SIGNAL(deviceDetected(const QString&)));
-	connect(mDeviceService, SIGNAL(detectionStopped()), this, SIGNAL(detectionStopped()));
-	connect(mDeviceService,
-			SIGNAL(deviceStatusChanged(const QString&, SDK::Driver::EWarningLevel::Enum, const QString&, int)), this,
-			SLOT(deviceStatusChanged(const QString&, SDK::Driver::EWarningLevel::Enum, const QString&)));
+    connect(mDeviceService, SIGNAL(deviceDetected(const QString &)), this, SIGNAL(deviceDetected(const QString &)));
+    connect(mDeviceService, SIGNAL(detectionStopped()), this, SIGNAL(detectionStopped()));
+    connect(mDeviceService,
+            SIGNAL(deviceStatusChanged(const QString &, SDK::Driver::EWarningLevel::Enum, const QString &, int)), this,
+            SLOT(deviceStatusChanged(const QString &, SDK::Driver::EWarningLevel::Enum, const QString &)));
 
-	foreach (QString config, mDeviceService->getConfigurations(false))
-	{
-		mCurrentConfiguration[config] = mDeviceService->getDeviceConfiguration(config);
-	}
+    foreach (QString config, mDeviceService->getConfigurations(false)) {
+        mCurrentConfiguration[config] = mDeviceService->getDeviceConfiguration(config);
+    }
 }
 
 //------------------------------------------------------------------------
-HardwareManager::~HardwareManager() {}
-
-//------------------------------------------------------------------------
-bool HardwareManager::isConfigurationChanged() const
-{
-	return !(mCurrentConfiguration == getConfiguration());
+HardwareManager::~HardwareManager() {
 }
 
 //------------------------------------------------------------------------
-void HardwareManager::resetConfiguration()
-{
-	mCurrentConfiguration = getConfiguration();
+bool HardwareManager::isConfigurationChanged() const {
+    return !(mCurrentConfiguration == getConfiguration());
 }
 
 //------------------------------------------------------------------------
-void HardwareManager::detect(const QString& aDeviceType)
-{
-	mDeviceService->detect(aDeviceType);
+void HardwareManager::resetConfiguration() {
+    mCurrentConfiguration = getConfiguration();
 }
 
 //------------------------------------------------------------------------
-void HardwareManager::stopDetection()
-{
-	mDeviceService->stopDetection();
+void HardwareManager::detect(const QString &aDeviceType) {
+    mDeviceService->detect(aDeviceType);
 }
 
 //------------------------------------------------------------------------
-QStringList HardwareManager::getConfigurations() const
-{
-	return mDeviceService->getConfigurations();
+void HardwareManager::stopDetection() {
+    mDeviceService->stopDetection();
 }
 
 //------------------------------------------------------------------------
-void HardwareManager::setConfigurations(const QStringList& aConfigurations)
-{
-	mDeviceService->saveConfigurations(aConfigurations);
+QStringList HardwareManager::getConfigurations() const {
+    return mDeviceService->getConfigurations();
 }
 
 //------------------------------------------------------------------------
-QVariantMap HardwareManager::getConfiguration() const
-{
-	QVariantMap result;
-	QStringList configList(mDeviceService->getConfigurations());
-
-	foreach (QString config, configList)
-	{
-		result[config] = getDeviceConfiguration(config);
-	}
-
-	return result;
+void HardwareManager::setConfigurations(const QStringList &aConfigurations) {
+    mDeviceService->saveConfigurations(aConfigurations);
 }
 
 //------------------------------------------------------------------------
-bool HardwareManager::setConfiguration(const QVariantMap& aConfig)
-{
-	if (mCurrentConfiguration == aConfig)
-	{
-		return true;
-	}
+QVariantMap HardwareManager::getConfiguration() const {
+    QVariantMap result;
+    QStringList configList(mDeviceService->getConfigurations());
 
-	// Обновляем параметры устройств
-	foreach (QString config, aConfig.keys())
-	{
-		mDeviceService->setDeviceConfiguration(config, aConfig[config].toMap());
-	}
+    foreach (QString config, configList) {
+        result[config] = getDeviceConfiguration(config);
+    }
 
-	return mDeviceService->saveConfigurations(aConfig.keys());
+    return result;
 }
 
 //------------------------------------------------------------------------
-QVariantMap HardwareManager::getDeviceConfiguration(const QString& aConfigName) const
-{
-	QVariantMap config = mDeviceService->getDeviceConfiguration(aConfigName);
+bool HardwareManager::setConfiguration(const QVariantMap &aConfig) {
+    if (mCurrentConfiguration == aConfig) {
+        return true;
+    }
 
-	// Если конфигурация пустая, то не найден необходимый ресурс. Какой-нибудь сом-порт.
-	// Попробуем получить описание через плагин устройства
-	if (config.isEmpty())
-	{
-		SDK::Plugin::IPlugin* plugin = mFactory->getPluginLoader()->createPlugin(aConfigName, aConfigName);
-		SDK::Driver::IDevice* device = dynamic_cast<SDK::Driver::IDevice*>(plugin);
+    // Обновляем параметры устройств
+    foreach (QString config, aConfig.keys()) {
+        mDeviceService->setDeviceConfiguration(config, aConfig[config].toMap());
+    }
 
-		if (device)
-		{
-			config = device->getDeviceConfiguration();
-		}
-	}
-
-	return config;
+    return mDeviceService->saveConfigurations(aConfig.keys());
 }
 
 //------------------------------------------------------------------------
-void HardwareManager::setDeviceConfiguration(const QString& aConfigurationName, const QVariantMap& aConfig)
-{
-	mDeviceService->setDeviceConfiguration(aConfigurationName, aConfig);
+QVariantMap HardwareManager::getDeviceConfiguration(const QString &aConfigName) const {
+    QVariantMap config = mDeviceService->getDeviceConfiguration(aConfigName);
+
+    // Если конфигурация пустая, то не найден необходимый ресурс. Какой-нибудь сом-порт.
+    // Попробуем получить описание через плагин устройства
+    if (config.isEmpty()) {
+        SDK::Plugin::IPlugin *plugin = mFactory->getPluginLoader()->createPlugin(aConfigName, aConfigName);
+        SDK::Driver::IDevice *device = dynamic_cast<SDK::Driver::IDevice *>(plugin);
+
+        if (device) {
+            config = device->getDeviceConfiguration();
+        }
+    }
+
+    return config;
 }
 
 //------------------------------------------------------------------------
-QStringList HardwareManager::getDriverList() const
-{
-	return mDeviceService->getDriverList();
+void HardwareManager::setDeviceConfiguration(const QString &aConfigurationName, const QVariantMap &aConfig) {
+    mDeviceService->setDeviceConfiguration(aConfigurationName, aConfig);
 }
 
 //------------------------------------------------------------------------
-PPSDK::TModelList HardwareManager::getModelList(const QString& aFilter) const
-{
-	return mDeviceService->getModelList(aFilter);
+QStringList HardwareManager::getDriverList() const {
+    return mDeviceService->getDriverList();
 }
 
 //------------------------------------------------------------------------
-SDK::Plugin::TParameterList HardwareManager::getDriverParameters(const QString& aDriverPath) const
-{
-	return mDeviceService->getDriverParameters(aDriverPath);
+PPSDK::TModelList HardwareManager::getModelList(const QString &aFilter) const {
+    return mDeviceService->getModelList(aFilter);
 }
 
 //------------------------------------------------------------------------
-QString HardwareManager::createDevice(const QString& aDriverPath, const QVariantMap& aConfig)
-{
-	return mDeviceService->createDevice(aDriverPath, aConfig);
+SDK::Plugin::TParameterList HardwareManager::getDriverParameters(const QString &aDriverPath) const {
+    return mDeviceService->getDriverParameters(aDriverPath);
 }
 
 //------------------------------------------------------------------------
-bool HardwareManager::checkDevice(const QString& aConfigName)
-{
-	DSDK::IDevice* device = mDeviceService->acquireDevice(aConfigName);
-
-	if (device)
-	{
-		return true;
-	}
-
-	return false;
+QString HardwareManager::createDevice(const QString &aDriverPath, const QVariantMap &aConfig) {
+    return mDeviceService->createDevice(aDriverPath, aConfig);
 }
 
 //------------------------------------------------------------------------
-DSDK::IDevice* HardwareManager::getDevice(const QString& aConfigName)
-{
-	return mDeviceService->acquireDevice(aConfigName);
+bool HardwareManager::checkDevice(const QString &aConfigName) {
+    DSDK::IDevice *device = mDeviceService->acquireDevice(aConfigName);
+
+    if (device) {
+        return true;
+    }
+
+    return false;
 }
 
 //------------------------------------------------------------------------
-void HardwareManager::releaseDevice(const QString& aConfigName)
-{
-	DSDK::IDevice* device(getDevice(aConfigName));
-
-	if (device)
-	{
-		mDeviceService->releaseDevice(device);
-	}
+DSDK::IDevice *HardwareManager::getDevice(const QString &aConfigName) {
+    return mDeviceService->acquireDevice(aConfigName);
 }
 
 //------------------------------------------------------------------------
-void HardwareManager::releaseAll()
-{
-	mDeviceService->releaseAll();
+void HardwareManager::releaseDevice(const QString &aConfigName) {
+    DSDK::IDevice *device(getDevice(aConfigName));
+
+    if (device) {
+        mDeviceService->releaseDevice(device);
+    }
 }
 
 //------------------------------------------------------------------------
-void HardwareManager::updateStatuses()
-{
-	QStringList configurations(getConfigurations());
-
-	foreach (const QString& configuration, configurations)
-	{
-		auto status = mDeviceService->getDeviceStatus(configuration);
-		if (status)
-		{
-			deviceStatusChanged(configuration, status->level(), status->description());
-		}
-	}
+void HardwareManager::releaseAll() {
+    mDeviceService->releaseAll();
 }
 
 //------------------------------------------------------------------------
-void HardwareManager::deviceStatusChanged(const QString& aConfigName, DSDK::EWarningLevel::Enum aLevel,
-										  const QString& aDescription)
-{
-	QString newStatus(aDescription);
+void HardwareManager::updateStatuses() {
+    QStringList configurations(getConfigurations());
 
-	if (newStatus.isEmpty())
-	{
-		newStatus = tr("#unknown_status");
-	}
+    foreach (const QString &configuration, configurations) {
+        auto status = mDeviceService->getDeviceStatus(configuration);
+        if (status) {
+            deviceStatusChanged(configuration, status->level(), status->description());
+        }
+    }
+}
 
-	QString statusColor;
+//------------------------------------------------------------------------
+void HardwareManager::deviceStatusChanged(const QString &aConfigName, DSDK::EWarningLevel::Enum aLevel,
+                                          const QString &aDescription) {
+    QString newStatus(aDescription);
 
-	switch (aLevel)
-	{
-	case DSDK::EWarningLevel::OK:
-	{
-		statusColor = CHardwareManager::StatusOK;
-		break;
-	}
-	case DSDK::EWarningLevel::Warning:
-	{
-		statusColor = CHardwareManager::StatusWarning;
-		break;
-	}
-	case DSDK::EWarningLevel::Error:
-	{
-		statusColor = CHardwareManager::StatusError;
-		break;
-	}
-	}
+    if (newStatus.isEmpty()) {
+        newStatus = tr("#unknown_status");
+    }
 
-	emit deviceStatusChanged(aConfigName, newStatus, statusColor, aLevel);
+    QString statusColor;
+
+    switch (aLevel) {
+        case DSDK::EWarningLevel::OK: {
+            statusColor = CHardwareManager::StatusOK;
+            break;
+        }
+        case DSDK::EWarningLevel::Warning: {
+            statusColor = CHardwareManager::StatusWarning;
+            break;
+        }
+        case DSDK::EWarningLevel::Error: {
+            statusColor = CHardwareManager::StatusError;
+            break;
+        }
+    }
+
+    emit deviceStatusChanged(aConfigName, newStatus, statusColor, aLevel);
 }
 
 //---------------------------------------------------------------------------
-bool HardwareManager::isFiscalPrinterPresent(bool aVirtual, bool aCheckPrintFullZReport)
-{
-	bool isFiscal = false;
-	bool isVirtualFiscal = false;
+bool HardwareManager::isFiscalPrinterPresent(bool aVirtual, bool aCheckPrintFullZReport) {
+    bool isFiscal = false;
+    bool isVirtualFiscal = false;
 
-	// Проверяем наличие пусть даже и облачного ФР
-	bool haveVirtualFiscal = mCore->getPrinterService()->canPrintReceipt(PPSDK::CReceiptType::ZReport, false);
+    // Проверяем наличие пусть даже и облачного ФР
+    bool haveVirtualFiscal = mCore->getPrinterService()->canPrintReceipt(PPSDK::CReceiptType::ZReport, false);
 
-	// Проверяем наличие аппаратного ФР в фискальном режиме или принтера для виртуального фискальника
-	QStringList configNames = getConfigurations();
+    // Проверяем наличие аппаратного ФР в фискальном режиме или принтера для виртуального фискальника
+    QStringList configNames = getConfigurations();
 
-	foreach (const QString config, configNames)
-	{
-		QString deviceType = config.section(".", 2, 2);
+    foreach (const QString config, configNames) {
+        QString deviceType = config.section(".", 2, 2);
 
-		if (aVirtual && DSDK::CComponents::isPrinter(deviceType))
-		{
-			auto device = getDevice(config);
-			auto printer = device ? dynamic_cast<DSDK::IPrinter*>(device) : nullptr;
+        if (aVirtual && DSDK::CComponents::isPrinter(deviceType)) {
+            auto device = getDevice(config);
+            auto printer = device ? dynamic_cast<DSDK::IPrinter *>(device) : nullptr;
 
-			isVirtualFiscal = isVirtualFiscal || (haveVirtualFiscal && printer->isDeviceReady(false));
-		}
+            isVirtualFiscal = isVirtualFiscal || (haveVirtualFiscal && printer->isDeviceReady(false));
+        }
 
-		if ((deviceType == DSDK::CComponents::DocumentPrinter) || (deviceType == DSDK::CComponents::FiscalRegistrator))
-		{
-			auto device = getDevice(config);
-			auto fiscalPrinter = device ? dynamic_cast<DSDK::IFiscalPrinter*>(device) : nullptr;
+        if ((deviceType == DSDK::CComponents::DocumentPrinter) ||
+            (deviceType == DSDK::CComponents::FiscalRegistrator)) {
+            auto device = getDevice(config);
+            auto fiscalPrinter = device ? dynamic_cast<DSDK::IFiscalPrinter *>(device) : nullptr;
 
-			isFiscal = isFiscal || (fiscalPrinter && fiscalPrinter->isFiscal() && fiscalPrinter->isDeviceReady(false) &&
-									(aCheckPrintFullZReport ? fiscalPrinter->canProcessZBuffer() : true));
-		}
-	}
+            isFiscal = isFiscal || (fiscalPrinter && fiscalPrinter->isFiscal() && fiscalPrinter->isDeviceReady(false) &&
+                                    (aCheckPrintFullZReport ? fiscalPrinter->canProcessZBuffer() : true));
+        }
+    }
 
-	return aVirtual ? (isFiscal || isVirtualFiscal) : isFiscal;
+    return aVirtual ? (isFiscal || isVirtualFiscal) : isFiscal;
 }
 
 //------------------------------------------------------------------------

@@ -6,67 +6,62 @@
 
 //--------------------------------------------------------------------------------
 /// Константы USB-порта.
-namespace CUSBPort
-{
-	/// Пауза при открытии, [мс].
-	const int OpeningPause = 500;
+namespace CUSBPort {
+    /// Пауза при открытии, [мс].
+    const int OpeningPause = 500;
 
-	/// Идентификационные теги устройств на USB-порту.
-	namespace DeviceTags
-	{
-		const char ACPI[] = "ACPI";		/// ACPI-устрйоство.
-		const char Mouse[] = "Mouse";	/// Mouse.
-		const char USBPDO[] = "USBPDO"; /// Physical Device Object (PDO).
-	} // namespace DeviceTags
+    /// Идентификационные теги устройств на USB-порту.
+    namespace DeviceTags {
+        const char ACPI[] = "ACPI";     /// ACPI-устрйоство.
+        const char Mouse[] = "Mouse";   /// Mouse.
+        const char USBPDO[] = "USBPDO"; /// Physical Device Object (PDO).
+    } // namespace DeviceTags
 
-	/// Размер буфера для чтения по умолчанию.
-	const int DefaultMaxReadSize = 1024;
+    /// Размер буфера для чтения по умолчанию.
+    const int DefaultMaxReadSize = 1024;
 
-	/// Пустой буфер.
-	const TReadingBuffer EmptyBuffer = TReadingBuffer(DefaultMaxReadSize, ASCII::NUL);
+    /// Пустой буфер.
+    const TReadingBuffer EmptyBuffer = TReadingBuffer(DefaultMaxReadSize, ASCII::NUL);
 
-	/// GUIDы для автопоиска портов. Класс нужен для использования в static-фунцкии.
-	class Uuids : public TUuids
-	{
-	public:
-		Uuids()
-		{
-			append(GUID_DEVINTERFACE_COMPORT);
-			append(GUIDs::USB1);
-			append(GUIDs::USBHID);
-		}
-	};
+    /// GUIDы для автопоиска портов. Класс нужен для использования в static-фунцкии.
+    class Uuids : public TUuids {
+      public:
+        Uuids() {
+            append(GUID_DEVINTERFACE_COMPORT);
+            append(GUIDs::USB1);
+            append(GUIDs::USBHID);
+        }
+    };
 
-	/// Системное свойство для формирования пути для открытия порта.
-	const DWORD PathProperty = SPDRP_PHYSICAL_DEVICE_OBJECT_NAME;
+    /// Системное свойство для формирования пути для открытия порта.
+    const DWORD PathProperty = SPDRP_PHYSICAL_DEVICE_OBJECT_NAME;
 } // namespace CUSBPort
 
 //--------------------------------------------------------------------------------
-class USBPort : public AsyncSerialPort
-{
-	SET_SERIES("USB")
+class USBPort : public AsyncSerialPort {
+    SET_SERIES("USB")
 
-public:
-	USBPort();
+  public:
+    USBPort();
 
-	/// Очистить буферы порта.
-	virtual bool clear();
+    /// Очистить буферы порта.
+    virtual bool clear();
 
-	/// Получить системные свойства устройств.
-	TWinDeviceProperties getDevicesProperties(bool aForce, bool aPDODetecting = false);
+    /// Получить системные свойства устройств.
+    TWinDeviceProperties getDevicesProperties(bool aForce, bool aPDODetecting = false);
 
-protected:
-	/// Проверить готовность порта.
-	virtual bool checkReady();
+  protected:
+    /// Проверить готовность порта.
+    virtual bool checkReady();
 
-	/// Открыть порт.
-	virtual bool performOpen();
+    /// Открыть порт.
+    virtual bool performOpen();
 
-	/// Прочитать данные.
-	virtual bool processReading(QByteArray& aData, int aTimeout);
+    /// Прочитать данные.
+    virtual bool processReading(QByteArray &aData, int aTimeout);
 
-	/// Мьютекс для защиты статических пропертей портов.
-	static QMutex mSystemPropertyMutex;
+    /// Мьютекс для защиты статических пропертей портов.
+    static QMutex mSystemPropertyMutex;
 };
 
 //--------------------------------------------------------------------------------

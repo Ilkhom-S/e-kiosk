@@ -23,107 +23,104 @@
 #define LIB_USB_CALL(aName, ...) handleResult(#aName, aName(__VA_ARGS__))
 
 //--------------------------------------------------------------------------------
-namespace CLibUSBPort
-{
-	/// Таймаут отправки 1 байта, [мс].
-	const double ByteTimeout = 0.01;
+namespace CLibUSBPort {
+    /// Таймаут отправки 1 байта, [мс].
+    const double ByteTimeout = 0.01;
 
-	/// Таймаут системных операций при отправке данных, [мс].
-	const double SystemTimeout = 1;
+    /// Таймаут системных операций при отправке данных, [мс].
+    const double SystemTimeout = 1;
 
-	/// Таймаут для отправки данных, [мс].
-	inline int writingTimeout(int aSize)
-	{
-		return qCeil(SystemTimeout + aSize * ByteTimeout);
-	}
+    /// Таймаут для отправки данных, [мс].
+    inline int writingTimeout(int aSize) {
+        return qCeil(SystemTimeout + aSize * ByteTimeout);
+    }
 
-	/// Ошибки пропажи порта.
-	const QVector<int> DisappearingErrors =
-		QVector<int>() << LIBUSB_ERROR_IO		  /// Ошибка ввода/вывода
-					   << LIBUSB_ERROR_NO_DEVICE; /// Устройство отсутствует (возможно, оно было отсоединено)
+    /// Ошибки пропажи порта.
+    const QVector<int> DisappearingErrors =
+        QVector<int>() << LIBUSB_ERROR_IO         /// Ошибка ввода/вывода
+                       << LIBUSB_ERROR_NO_DEVICE; /// Устройство отсутствует (возможно, оно было отсоединено)
 } // namespace CLibUSBPort
 
 //--------------------------------------------------------------------------------
-class LibUSBPort : public IOPortBase
-{
-	SET_SERIES("LibUSB")
+class LibUSBPort : public IOPortBase {
+    SET_SERIES("LibUSB")
 
-public:
-	LibUSBPort();
+  public:
+    LibUSBPort();
 
-	/// Опрашивает данные портов.
-	virtual void initialize();
+    /// Опрашивает данные портов.
+    virtual void initialize();
 
-	/// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
-	virtual bool release();
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    virtual bool release();
 
-	/// Открыть порт.
-	virtual bool open();
+    /// Открыть порт.
+    virtual bool open();
 
-	/// Закрыть порт.
-	virtual bool close();
+    /// Закрыть порт.
+    virtual bool close();
 
-	/// Прочитать данные.
-	virtual bool read(QByteArray& aData, int aTimeout = DefaultReadTimeout, int aMinSize = 1);
+    /// Прочитать данные.
+    virtual bool read(QByteArray &aData, int aTimeout = DefaultReadTimeout, int aMinSize = 1);
 
-	/// Передать данные.
-	virtual bool write(const QByteArray& aData);
+    /// Передать данные.
+    virtual bool write(const QByteArray &aData);
 
-	/// Установить устройство.
-	void setDevice(libusb_device* aDevice);
+    /// Установить устройство.
+    void setDevice(libusb_device *aDevice);
 
-	/// Получить устройство.
-	libusb_device* getDevice() const;
+    /// Получить устройство.
+    libusb_device *getDevice() const;
 
-	/// Подключено новое устройство?
-	virtual bool deviceConnected();
+    /// Подключено новое устройство?
+    virtual bool deviceConnected();
 
-	/// Открыт?
-	virtual bool opened();
+    /// Открыт?
+    virtual bool opened();
 
-	/// Порт существует?
-	virtual bool isExist();
+    /// Порт существует?
+    virtual bool isExist();
 
-	/// Получить системные свойства устройств.
-	CLibUSB::TDeviceProperties getDevicesProperties(bool aForce);
+    /// Получить системные свойства устройств.
+    CLibUSB::TDeviceProperties getDevicesProperties(bool aForce);
 
-protected:
-	/// Идентификация.
-	virtual bool checkExistence();
+  protected:
+    /// Идентификация.
+    virtual bool checkExistence();
 
-	/// Проверить готовность порта.
-	virtual bool checkReady();
+    /// Проверить готовность порта.
+    virtual bool checkReady();
 
-	/// Передать данные.
-	bool performWrite(const QByteArray& aData);
+    /// Передать данные.
+    bool performWrite(const QByteArray &aData);
 
-	/// Обработать результат выполнения функции LibUSB.
-	TResult handleResult(const QString& aFunctionName, int aResult);
+    /// Обработать результат выполнения функции LibUSB.
+    TResult handleResult(const QString &aFunctionName, int aResult);
 
-	/// Список данных соединений.
-	QList<libusb_device*> mDevices;
+    /// Список данных соединений.
+    QList<libusb_device *> mDevices;
 
-	/// Устройство.
-	libusb_device* mDevice;
+    /// Устройство.
+    libusb_device *mDevice;
 
-	/// Буфер для чтения.
-	typedef QVector<char> TReadingBuffer;
-	TReadingBuffer mReadingBuffer;
+    /// Буфер для чтения.
+    typedef QVector<char> TReadingBuffer;
+    TReadingBuffer mReadingBuffer;
 
-	/// Handle устройства.
-	libusb_device_handle* mHandle;
+    /// Handle устройства.
+    libusb_device_handle *mHandle;
 
-	/// Данные устройств.
-	CLibUSB::TDeviceProperties mDevicesProperties;
+    /// Данные устройств.
+    CLibUSB::TDeviceProperties mDevicesProperties;
 
-	/// Параметры устройства.
-	CLibUSB::SDeviceProperties mDeviceProperties;
+    /// Параметры устройства.
+    CLibUSB::SDeviceProperties mDeviceProperties;
 
-	/// Существует в системе.
-	bool mExist;
+    /// Существует в системе.
+    bool mExist;
 
-	/// Мьютекс для защиты статических пропертей портов.
-	static QMutex mDevicesPropertyMutex;
+    /// Мьютекс для защиты статических пропертей портов.
+    static QMutex mDevicesPropertyMutex;
 };
 
 //--------------------------------------------------------------------------------

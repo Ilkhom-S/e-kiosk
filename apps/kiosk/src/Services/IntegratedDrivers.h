@@ -5,47 +5,47 @@
 #include "DeviceManager/DeviceManager.h"
 
 //------------------------------------------------------------------------------
-class IntegratedDrivers
-{
-public:
-	typedef QSet<QString> TPaths;
+class IntegratedDrivers {
+  public:
+    typedef QSet<QString> TPaths;
 
-	IntegratedDrivers();
+    IntegratedDrivers();
 
-	/// Список моделей и драйверов для каждой модели.
-	typedef QMap<QString, QStringList> TModelList;
+    /// Список моделей и драйверов для каждой модели.
+    typedef QMap<QString, QStringList> TModelList;
 
-	/// Инициализация.
-	void initialize(DeviceManager* aDeviceManager);
+    /// Инициализация.
+    void initialize(DeviceManager *aDeviceManager);
 
-	/// Фильтрация списка драверов (поддерживаемых устройств).
-	void filterModelList(TModelList& aModelList) const;
+    /// Фильтрация списка драйверов (поддерживаемых устройств).
+    void filterModelList(TModelList &aModelList) const;
 
-	/// Получение списка параметров драйвера.
-	void filterDriverParameters(const QString& aDriverPath, SDK::Plugin::TParameterList& aParameterList) const;
+    /// Получение списка параметров драйвера.
+    void filterDriverParameters(const QString &aDriverPath, SDK::Plugin::TParameterList &aParameterList) const;
 
-	/// Фильтрация списка путей драйверов.
-	void filterDriverList(QStringList& aDriverList) const;
+    /// Фильтрация списка путей драйверов.
+    void filterDriverList(QStringList &aDriverList) const;
 
-	/// Проверить путь драйвера при создании устройства.
-	void checkDriverPath(QString& aDriverPath, const QVariantMap& aConfig);
+    /// Проверить путь драйвера при создании устройства.
+    void checkDriverPath(QString &aDriverPath, const QVariantMap &aConfig);
 
-private:
-	struct SData
-	{
-		TPaths paths;
-		QStringList models;
+  private:
+    struct SData {
+        TPaths paths;
+        QStringList models;
 
-		SData() {}
-		SData(const TPaths& aPaths, const QStringList& aModels) : paths(aPaths), models(aModels) {}
-	};
+        SData() {
+        }
+        SData(const TPaths &aPaths, const QStringList &aModels) : paths(aPaths), models(aModels) {
+        }
+    };
 
-	typedef QMap<QString, SData> TData;
-	TData mData;
+    typedef QMap<QString, SData> TData;
+    TData mData;
 
-	DeviceManager* mDeviceManager;
+    DeviceManager *mDeviceManager;
 };
 
-uint qHash(const IntegratedDrivers::TPaths& aPaths);
+uint qHash(const IntegratedDrivers::TPaths &aPaths);
 
 //------------------------------------------------------------------------------

@@ -5,28 +5,27 @@
 #include "Hardware/Printers/PortPOSPrinters.h"
 
 //--------------------------------------------------------------------------------
-class CitizenPPU231 : public TSerialPOSPrinter
-{
-	SET_SUBSERIES("CitizenPPU231")
+class CitizenPPU231 : public TSerialPOSPrinter {
+    SET_SUBSERIES("CitizenPPU231")
 
-public:
-	CitizenPPU231();
+  public:
+    CitizenPPU231();
 
-protected:
-	/// Попытка самоидентификации.
-	virtual bool isConnected();
+  protected:
+    /// Попытка самоидентификации.
+    virtual bool isConnected();
 
-	/// Получить статус.
-	virtual bool getStatus(TStatusCodes& aStatusCodes);
+    /// Получить статус.
+    virtual bool getStatus(TStatusCodes &aStatusCodes);
 
-	/// Инициализация устройства.
-	virtual bool updateParameters();
+    /// Инициализация устройства.
+    virtual bool updateParameters();
 
-	/// Напечатать чек.
-	virtual bool printReceipt(const Tags::TLexemeReceipt& aLexemeReceipt);
+    /// Напечатать чек.
+    virtual bool printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt);
 
-	/// Печать штрих-кода.
-	virtual bool printBarcode(const QString& aBarcode);
+    /// Печать штрих-кода.
+    virtual bool printBarcode(const QString &aBarcode);
 };
 
 //--------------------------------------------------------------------------------

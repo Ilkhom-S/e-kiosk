@@ -15,21 +15,20 @@
 #include <Common/ILog.h>
 #include <SDK/PaymentProcessor/Scripting/Core.h>
 
-class WebPageLogger : public QWebPage
-{
-	Q_OBJECT
-public:
-	WebPageLogger::WebPageLogger(QObject* aParent, SDK::PaymentProcessor::Scripting::Core* aCoreProxy, ILog* aLog)
-		: QWebPage(aParent), mCoreProxy(aCoreProxy), mLog(aLog)
-	{
-	}
-	~WebPageLogger() {}
+class WebPageLogger : public QWebPage {
+    Q_OBJECT
+  public:
+    WebPageLogger::WebPageLogger(QObject *aParent, SDK::PaymentProcessor::Scripting::Core *aCoreProxy, ILog *aLog)
+        : QWebPage(aParent), mCoreProxy(aCoreProxy), mLog(aLog) {
+    }
+    ~WebPageLogger() {
+    }
 
-protected:
-	virtual void javaScriptConsoleMessage(const QString& message, int lineNumber, const QString& sourceID);
-	virtual void javaScriptAlert(QWebFrame* frame, const QString& msg);
+  protected:
+    virtual void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
+    virtual void javaScriptAlert(QWebFrame *frame, const QString &msg);
 
-private:
-	SDK::PaymentProcessor::Scripting::Core* mCoreProxy;
-	ILog* mLog;
+  private:
+    SDK::PaymentProcessor::Scripting::Core *mCoreProxy;
+    ILog *mLog;
 };

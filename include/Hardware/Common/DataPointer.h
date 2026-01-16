@@ -3,27 +3,31 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-template <class T>
-struct SPData
-{
-public:
-	SPData<T>() : mData(0) {}
+template <class T> struct SPData {
+  public:
+    SPData<T>() : mData(0) {
+    }
 
-	operator T() { return mData; }
+    operator T() {
+        return mData;
+    }
 
-	SPData<T>& operator=(T aResult)
-	{
-		mData = aResult;
+    SPData<T> &operator=(T aResult) {
+        mData = aResult;
 
-		return *this;
-	}
+        return *this;
+    }
 
-	T* operator&() { return &mData; }
+    T *operator&() {
+        return &mData;
+    }
 
-	operator bool() { return mData; }
+    operator bool() {
+        return mData;
+    }
 
-private:
-	T mData;
+  private:
+    T mData;
 };
 
 //--------------------------------------------------------------------------------

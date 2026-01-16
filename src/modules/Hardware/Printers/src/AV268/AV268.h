@@ -5,60 +5,53 @@
 #include "Hardware/Printers/PortPrintersBase.h"
 
 //--------------------------------------------------------------------------------
-class AV268 : public TSerialPrinterBase
-{
-	SET_SERIES("SysFuture")
+class AV268 : public TSerialPrinterBase {
+    SET_SERIES("SysFuture")
 
-	enum Enum
-	{
-		Simple,
-		Extended,
-		Plus,
-		Unknown
-	};
+    enum Enum { Simple, Extended, Plus, Unknown };
 
-public:
-	AV268();
+  public:
+    AV268();
 
-	/// Возвращает список поддерживаемых устройств.
-	static QStringList getModelList();
+    /// Возвращает список поддерживаемых устройств.
+    static QStringList getModelList();
 
-	/// Подключает и инициализует устройство.
-	virtual void initialize();
+    /// Подключает и инициализует устройство.
+    virtual void initialize();
 
-protected:
-	/// Попытка самоидентификации.
-	virtual bool isConnected();
+  protected:
+    /// Попытка самоидентификации.
+    virtual bool isConnected();
 
-	/// Получить статус.
-	virtual bool getStatus(TStatusCodes& aStatusCodes);
+    /// Получить статус.
+    virtual bool getStatus(TStatusCodes &aStatusCodes);
 
-	/// Инициализация устройства.
-	virtual bool updateParameters();
+    /// Инициализация устройства.
+    virtual bool updateParameters();
 
-	/// Печать строки.
-	virtual bool printLine(const QByteArray& aString);
+    /// Печать строки.
+    virtual bool printLine(const QByteArray &aString);
 
-	/// Обработка чека после печати.
-	virtual bool receiptProcessing();
+    /// Обработка чека после печати.
+    virtual bool receiptProcessing();
 
-	/// Получение ответа, задержка перед чтением ответа в мс.
-	virtual bool getAnswer(QByteArray& aAnswer, bool aNeedDelay = false);
+    /// Получение ответа, задержка перед чтением ответа в мс.
+    virtual bool getAnswer(QByteArray &aAnswer, bool aNeedDelay = false);
 
-	/// Выполнение команды.
-	bool processCommand(const QByteArray& aCommand, QByteArray* aAnswer = 0);
+    /// Выполнение команды.
+    bool processCommand(const QByteArray &aCommand, QByteArray *aAnswer = 0);
 
-	/// Ожидание очистки буфера принтера.
-	bool waitBufferClearing();
+    /// Ожидание очистки буфера принтера.
+    bool waitBufferClearing();
 
-	/// Флаг переполнения буфера.
-	bool mOverflow;
+    /// Флаг переполнения буфера.
+    bool mOverflow;
 
-	/// Флаг инициализации, для понижения уровня надежности определения устройства.
-	bool mInitialize;
+    /// Флаг инициализации, для понижения уровня надежности определения устройства.
+    bool mInitialize;
 
-	/// Допустимые настройки презентера и ретрактора.
-	Enum mModelType;
+    /// Допустимые настройки презентера и ретрактора.
+    Enum mModelType;
 };
 
 //--------------------------------------------------------------------------------

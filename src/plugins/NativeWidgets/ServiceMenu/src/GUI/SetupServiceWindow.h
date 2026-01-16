@@ -11,24 +11,23 @@
 #include "IServiceWindow.h"
 
 //------------------------------------------------------------------------
-class SetupServiceWindow : public QFrame, public ServiceWindowBase, public Ui::SetupServiceWindow
-{
-	Q_OBJECT
+class SetupServiceWindow : public QFrame, public ServiceWindowBase, public Ui::SetupServiceWindow {
+    Q_OBJECT
 
-public:
-	SetupServiceWindow(ServiceMenuBackend* aBackend, QWidget* aParent = 0);
+  public:
+    SetupServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
-	virtual bool initialize();
-	virtual bool shutdown();
-	virtual bool activate();
-	virtual bool deactivate();
+    virtual bool initialize();
+    virtual bool shutdown();
+    virtual bool activate();
+    virtual bool deactivate();
 
-protected slots:
-	// Активация/деактивация вкладок
-	void onCurrentPageChanged(int aIndex);
+  protected slots:
+    // Активация/деактивация вкладок
+    void onCurrentPageChanged(int aIndex);
 
-private:
-	int mCurrentPageIndex;
+  private:
+    int mCurrentPageIndex;
 };
 
 //------------------------------------------------------------------------

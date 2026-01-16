@@ -20,17 +20,19 @@
 #include "Hardware/Protocols/Common/ProtocolUtils.h"
 
 //--------------------------------------------------------------------------------
-class ProtocolBase : public ILogable
-{
-public:
-	ProtocolBase() : mPort(nullptr) {}
+class ProtocolBase : public ILogable {
+  public:
+    ProtocolBase() : mPort(nullptr) {
+    }
 
-	/// Установить порт.
-	void setPort(SDK::Driver::IIOPort* aPort) { mPort = aPort; }
+    /// Установить порт.
+    void setPort(SDK::Driver::IIOPort *aPort) {
+        mPort = aPort;
+    }
 
-protected:
-	/// Порт.
-	SDK::Driver::IIOPort* mPort;
+  protected:
+    /// Порт.
+    SDK::Driver::IIOPort *mPort;
 };
 
 //--------------------------------------------------------------------------------

@@ -9,99 +9,85 @@
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
-IOPortBase::IOPortBase() : mType(EPortTypes::Unknown), mDeviceIOLoging(ELoggingType::None), mOpeningTimeout(0) {}
-
-//--------------------------------------------------------------------------------
-void IOPortBase::setOpeningTimeout(int aTimeout)
-{
-	mOpeningTimeout = aTimeout;
-	setConfigParameter(CHardware::Port::OpeningTimeout, aTimeout);
+IOPortBase::IOPortBase() : mType(EPortTypes::Unknown), mDeviceIOLoging(ELoggingType::None), mOpeningTimeout(0) {
 }
 
 //--------------------------------------------------------------------------------
-QString IOPortBase::getDeviceType()
-{
-	return CComponents::IOPort;
+void IOPortBase::setOpeningTimeout(int aTimeout) {
+    mOpeningTimeout = aTimeout;
+    setConfigParameter(CHardware::Port::OpeningTimeout, aTimeout);
 }
 
 //--------------------------------------------------------------------------------
-bool IOPortBase::clear()
-{
-	return true;
+QString IOPortBase::getDeviceType() {
+    return CComponents::IOPort;
 }
 
 //--------------------------------------------------------------------------------
-QString IOPortBase::getName() const
-{
-	return mSystemName;
+bool IOPortBase::clear() {
+    return true;
 }
 
 //--------------------------------------------------------------------------------
-bool IOPortBase::release()
-{
-	bool closingResult = close();
-	bool result = MetaDevice::release();
-
-	return closingResult && result;
+QString IOPortBase::getName() const {
+    return mSystemName;
 }
 
 //--------------------------------------------------------------------------------
-EPortTypes::Enum IOPortBase::getType()
-{
-	return mType;
+bool IOPortBase::release() {
+    bool closingResult = close();
+    bool result = MetaDevice::release();
+
+    return closingResult && result;
 }
 
 //--------------------------------------------------------------------------------
-void IOPortBase::setDeviceConfiguration(const QVariantMap& aConfiguration)
-{
-	MetaDevice::setDeviceConfiguration(aConfiguration);
-
-	if (aConfiguration.contains(CHardwareSDK::SystemName))
-	{
-		mSystemName = aConfiguration[CHardwareSDK::SystemName].toString();
-	}
-
-	if (aConfiguration.contains(CHardware::Port::DeviceModelName))
-	{
-		mConnectedDeviceName = aConfiguration[CHardware::Port::DeviceModelName].toString();
-	}
-
-	if (aConfiguration.contains(CHardware::Port::IOLogging))
-	{
-		mDeviceIOLoging = aConfiguration[CHardware::Port::IOLogging].value<ELoggingType::Enum>();
-	}
-
-	if (aConfiguration.contains(CHardware::Port::OpeningTimeout))
-	{
-		mOpeningTimeout = aConfiguration[CHardware::Port::OpeningTimeout].toInt();
-	}
+EPortTypes::Enum IOPortBase::getType() {
+    return mType;
 }
 
 //--------------------------------------------------------------------------------
-void IOPortBase::adjustData(const QStringList& aMine, const QStringList& aOther)
-{
-	QVariantMap outDeviceData;
-	outDeviceData.insert(CDeviceData::Ports::Mine, aMine.join("\n"));
-	outDeviceData.insert(CDeviceData::Ports::Other, aOther.join("\n"));
-	setConfigParameter(CHardwareSDK::DeviceData, outDeviceData);
+void IOPortBase::setDeviceConfiguration(const QVariantMap &aConfiguration) {
+    MetaDevice::setDeviceConfiguration(aConfiguration);
 
-	if (!isAutoDetecting())
-	{
-		QString portData = outDeviceData[CDeviceData::Ports::Mine].toString();
-		QString otherData = outDeviceData[CDeviceData::Ports::Other].toString();
+    if (aConfiguration.contains(CHardwareSDK::SystemName)) {
+        mSystemName = aConfiguration[CHardwareSDK::SystemName].toString();
+    }
 
-		if (!portData.isEmpty())
-		{
-			toLog(LogLevel::Normal, "Port data:\n" + portData);
-		}
+    if (aConfiguration.contains(CHardware::Port::DeviceModelName)) {
+        mConnectedDeviceName = aConfiguration[CHardware::Port::DeviceModelName].toString();
+    }
 
-		if (!otherData.isEmpty())
-		{
-			bool justConnected = getConfigParameter(CHardware::Port::JustConnected, false).toBool();
-			LogLevel::Enum logLevel = (portData.isEmpty() && !justConnected) ? LogLevel::Normal : LogLevel::Debug;
-			toLog(logLevel, "Port data additional:\n" + otherData);
-		}
-	}
+    if (aConfiguration.contains(CHardware::Port::IOLogging)) {
+        mDeviceIOLoging = aConfiguration[CHardware::Port::IOLogging].value<ELoggingType::Enum>();
+    }
+
+    if (aConfiguration.contains(CHardware::Port::OpeningTimeout)) {
+        mOpeningTimeout = aConfiguration[CHardware::Port::OpeningTimeout].toInt();
+    }
+}
+
+//--------------------------------------------------------------------------------
+void IOPortBase::adjustData(const QStringList &aMine, const QStringList &aOther) {
+    QVariantMap outDeviceData;
+    outDeviceData.insert(CDeviceData::Ports::Mine, aMine.join("\n"));
+    outDeviceData.insert(CDeviceData::Ports::Other, aOther.join("\n"));
+    setConfigParameter(CHardwareSDK::DeviceData, outDeviceData);
+
+    if (!isAutoDetecting()) {
+        QString portData = outDeviceData[CDeviceData::Ports::Mine].toString();
+        QString otherData = outDeviceData[CDeviceData::Ports::Other].toString();
+
+        if (!portData.isEmpty()) {
+            toLog(LogLevel::Normal, "Port data:\n" + portData);
+        }
+
+        if (!otherData.isEmpty()) {
+            bool justConnected = getConfigParameter(CHardware::Port::JustConnected, false).toBool();
+            LogLevel::Enum logLevel = (portData.isEmpty() && !justConnected) ? LogLevel::Normal : LogLevel::Debug;
+            toLog(logLevel, "Port data additional:\n" + otherData);
+        }
+    }
 }
 
 //--------------------------------------------------------------------------------

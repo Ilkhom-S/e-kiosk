@@ -1,647 +1,566 @@
 /* @file Реализация сервиса для работы с устройствами. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QFileInfo>
-#include <QtConcurrent/QtConcurrentRun>
-#include <Common/QtHeadersEnd.h>
-
 // STL
 #include <algorithm>
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtConcurrent/QtConcurrentRun>
+#include <QtCore/QFileInfo>
+#include <Common/QtHeadersEnd.h>
+
 // SDK
+#include <SDK/Drivers/Components.h>
+#include <SDK/Drivers/DeviceStatus.h>
+#include <SDK/Drivers/FR/FiscalFields.h>
+#include <SDK/Drivers/HardwareConstants.h>
+#include <SDK/Drivers/InteractionTypes.h>
 #include <SDK/PaymentProcessor/Core/Event.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
-#include <SDK/Drivers/InteractionTypes.h>
-#include <SDK/Drivers/DeviceStatus.h>
-#include <SDK/Drivers/Components.h>
-#include <SDK/Drivers/HardwareConstants.h>
-#include <SDK/Drivers/FR/FiscalFields.h>
 
-// Modules
-#include "DeviceManager/DeviceManager.h"
-
-// Project
+// System
 #include "DatabaseUtils/IHardwareDatabaseUtils.h"
-#include "Services/ServiceNames.h"
-#include "Services/PluginService.h"
+#include "DeviceManager/DeviceManager.h"
 #include "Services/DatabaseService.h"
+#include "Services/PluginService.h"
+#include "Services/ServiceNames.h"
 #include "Services/SettingsService.h"
 #include "System/IApplication.h"
+
+// Project
 #include "DeviceService.h"
 
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-DeviceService* DeviceService::instance(IApplication* aApplication)
-{
-	return static_cast<DeviceService*>(aApplication->getCore()->getService(CServices::DeviceService));
+DeviceService *DeviceService::instance(IApplication *aApplication) {
+    return static_cast<DeviceService *>(aApplication->getCore()->getService(CServices::DeviceService));
 }
 
 //------------------------------------------------------------------------------
 DeviceService::Status::Status()
-	: mLevel(SDK::Driver::EWarningLevel::Error), mDescription(tr("#status_undefined")), mStatus(0)
-{
+    : mLevel(SDK::Driver::EWarningLevel::Error), mDescription(tr("#status_undefined")), mStatus(0) {
 }
 
 //------------------------------------------------------------------------------
-DeviceService::Status::Status(SDK::Driver::EWarningLevel::Enum aLevel, const QString& aDescription, int aStatus)
-	: mLevel(aLevel), mDescription(aDescription), mStatus(aStatus)
-{
+DeviceService::Status::Status(SDK::Driver::EWarningLevel::Enum aLevel, const QString &aDescription, int aStatus)
+    : mLevel(aLevel), mDescription(aDescription), mStatus(aStatus) {
 }
 
 //------------------------------------------------------------------------------
-DeviceService::Status::Status(const Status& aStatus)
-	: mLevel(aStatus.mLevel), mDescription(aStatus.mDescription), mStatus(aStatus.mStatus)
-{
+DeviceService::Status::Status(const Status &aStatus)
+    : mLevel(aStatus.mLevel), mDescription(aStatus.mDescription), mStatus(aStatus.mStatus) {
 }
 
 //------------------------------------------------------------------------------
-SDK::Driver::EWarningLevel::Enum DeviceService::Status::level() const
-{
-	return mLevel;
+SDK::Driver::EWarningLevel::Enum DeviceService::Status::level() const {
+    return mLevel;
 }
 
 //------------------------------------------------------------------------------
-const QString& DeviceService::Status::description() const
-{
-	return mDescription;
+const QString &DeviceService::Status::description() const {
+    return mDescription;
 }
 
 //------------------------------------------------------------------------------
-bool DeviceService::Status::isMatched(SDK::Driver::EWarningLevel::Enum aLevel) const
-{
-	return (mLevel <= aLevel && DSDK::getStatusType(mStatus) != DSDK::EStatus::Interface);
+bool DeviceService::Status::isMatched(SDK::Driver::EWarningLevel::Enum aLevel) const {
+    return (mLevel <= aLevel && DSDK::getStatusType(mStatus) != DSDK::EStatus::Interface);
 }
 
 //------------------------------------------------------------------------------
-DeviceService::DeviceService(IApplication* aApplication)
-	: mDeviceManager(nullptr), mAccessMutex(QMutex::Recursive), mApplication(aApplication),
-	  mLog(aApplication->getLog()), mDatabaseUtils(nullptr)
-{
-	connect(&mDetectionResult, SIGNAL(finished()), this, SLOT(onDetectionFinished()));
+DeviceService::DeviceService(IApplication *aApplication)
+    : mDeviceManager(nullptr), mAccessMutex(QMutex::Recursive), mApplication(aApplication),
+      mLog(aApplication->getLog()), mDatabaseUtils(nullptr) {
+    connect(&mDetectionResult, SIGNAL(finished()), this, SLOT(onDetectionFinished()));
 
-	mDeviceCreationOrder[DSDK::CComponents::Watchdog] = EDeviceCreationOrder::AtStart;
-	mDeviceCreationOrder[DSDK::CComponents::Health] = EDeviceCreationOrder::AtStart;
+    mDeviceCreationOrder[DSDK::CComponents::Watchdog] = EDeviceCreationOrder::AtStart;
+    mDeviceCreationOrder[DSDK::CComponents::Health] = EDeviceCreationOrder::AtStart;
 
 #ifdef TC_USE_TOKEN
-	mDeviceCreationOrder[DSDK::CComponents::Token] = EDeviceCreationOrder::AtStart;
+    mDeviceCreationOrder[DSDK::CComponents::Token] = EDeviceCreationOrder::AtStart;
 #endif
 }
 
 //------------------------------------------------------------------------------
-bool DeviceService::initialize()
-{
-	// Вытаскиваем загрузчик плагинов.
-	PluginService* pluginManager = PluginService::instance(mApplication);
+bool DeviceService::initialize() {
+    // Вытаскиваем загрузчик плагинов.
+    PluginService *pluginManager = PluginService::instance(mApplication);
 
-	mDeviceManager = new DeviceManager(pluginManager->getPluginLoader());
-	mDeviceManager->setLog(mApplication->getLog());
+    mDeviceManager = new DeviceManager(pluginManager->getPluginLoader());
+    mDeviceManager->setLog(mApplication->getLog());
 
-	// Здесь используем DirectConnction для того, чтобы инициализация устройства при автопоиске
-	// производилась из потока автопоиска и не грузила основной поток.
-	connect(mDeviceManager, SIGNAL(deviceDetected(const QString&, SDK::Driver::IDevice*)), this,
-			SLOT(onDeviceDetected(const QString&, SDK::Driver::IDevice*)), Qt::DirectConnection);
+    // Здесь используем DirectConnction для того, чтобы инициализация устройства при автопоиске
+    // производилась из потока автопоиска и не грузила основной поток.
+    connect(mDeviceManager, SIGNAL(deviceDetected(const QString &, SDK::Driver::IDevice *)), this,
+            SLOT(onDeviceDetected(const QString &, SDK::Driver::IDevice *)), Qt::DirectConnection);
 
-	mDatabaseUtils = DatabaseService::instance(mApplication)->getDatabaseUtils<IHardwareDatabaseUtils>();
+    mDatabaseUtils = DatabaseService::instance(mApplication)->getDatabaseUtils<IHardwareDatabaseUtils>();
 
-	mDeviceManager->initialize();
+    mDeviceManager->initialize();
 
-	mIntegratedDrivers.initialize(mDeviceManager);
+    mIntegratedDrivers.initialize(mDeviceManager);
 
-	return true;
+    return true;
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::finishInitialize()
-{
-	// Повторный эмит статусов всех устройств
-	QMapIterator<QString, Status> it(mDeviceStatusCache);
+void DeviceService::finishInitialize() {
+    // Повторный эмит статусов всех устройств
+    QMapIterator<QString, Status> it(mDeviceStatusCache);
 
-	while (it.hasNext())
-	{
-		it.next();
-		Status status = it.value();
+    while (it.hasNext()) {
+        it.next();
+        Status status = it.value();
 
-		emit deviceStatusChanged(it.key(), status.mLevel, status.mDescription, status.mStatus);
-	}
+        emit deviceStatusChanged(it.key(), status.mLevel, status.mDescription, status.mStatus);
+    }
 
-	// Создаём устройства, которым положено запускаться при старте системы
-	foreach (auto deviceInstance, getConfigurations(false))
-	{
-		QString deviceType = deviceInstance.section('.', 2, 2);
+    // Создаём устройства, которым положено запускаться при старте системы
+    foreach (auto deviceInstance, getConfigurations(false)) {
+        QString deviceType = deviceInstance.section('.', 2, 2);
 
-		if (mDeviceCreationOrder.contains(deviceType) &&
-			mDeviceCreationOrder.value(deviceType) == EDeviceCreationOrder::AtStart)
-		{
-			acquireDevice(deviceInstance);
-		}
-	}
+        if (mDeviceCreationOrder.contains(deviceType) &&
+            mDeviceCreationOrder.value(deviceType) == EDeviceCreationOrder::AtStart) {
+            acquireDevice(deviceInstance);
+        }
+    }
 
-	LOG(mLog, LogLevel::Normal, "DeviceService initialized.");
+    LOG(mLog, LogLevel::Normal, "DeviceService initialized.");
 }
 
 //---------------------------------------------------------------------------
-bool DeviceService::canShutdown()
-{
-	return true;
+bool DeviceService::canShutdown() {
+    return true;
 }
 
 //------------------------------------------------------------------------------
-bool DeviceService::shutdown()
-{
-	if (mDetectionResult.isRunning())
-	{
-		stopDetection();
+bool DeviceService::shutdown() {
+    if (mDetectionResult.isRunning()) {
+        stopDetection();
 
-		mDetectionResult.waitForFinished();
-	}
+        mDetectionResult.waitForFinished();
+    }
 
-	releaseAll();
+    releaseAll();
 
-	delete mDeviceManager;
+    delete mDeviceManager;
 
-	return true;
+    return true;
 }
 
 //------------------------------------------------------------------------------
-QString DeviceService::getName() const
-{
-	return CServices::DeviceService;
+QString DeviceService::getName() const {
+    return CServices::DeviceService;
 }
 
 //------------------------------------------------------------------------------
-QVariantMap DeviceService::getParameters() const
-{
-	return QVariantMap();
+QVariantMap DeviceService::getParameters() const {
+    return QVariantMap();
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::resetParameters(const QSet<QString>&) {}
-
-//------------------------------------------------------------------------------
-const QSet<QString>& DeviceService::getRequiredServices() const
-{
-	static QSet<QString> requiredServices = QSet<QString>() << CServices::DatabaseService << CServices::PluginService;
-
-	return requiredServices;
+void DeviceService::resetParameters(const QSet<QString> &) {
 }
 
 //------------------------------------------------------------------------------
-DeviceService::~DeviceService() {}
+const QSet<QString> &DeviceService::getRequiredServices() const {
+    static QSet<QString> requiredServices = QSet<QString>() << CServices::DatabaseService << CServices::PluginService;
 
-//------------------------------------------------------------------------------
-void DeviceService::detect(const QString& aFilter)
-{
-	mAccessMutex.lock();
-
-	mDetectionResult.setFuture(QtConcurrent::run(this, &DeviceService::doDetect, aFilter));
+    return requiredServices;
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::doDetect(const QString& aFilter)
-{
-	LOG(mLog, LogLevel::Normal, "Starting device detection...");
-	mDeviceManager->detect(aFilter);
+DeviceService::~DeviceService() {
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::stopDetection()
-{
-	mDeviceManager->stopDetection();
+void DeviceService::detect(const QString &aFilter) {
+    mAccessMutex.lock();
+
+    mDetectionResult.setFuture(QtConcurrent::run(this, &DeviceService::doDetect, aFilter));
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::onDetectionFinished()
-{
-	mAccessMutex.unlock();
-
-	emit detectionStopped();
-	LOG(mLog, LogLevel::Normal, "Device detection is completed or terminated.");
+void DeviceService::doDetect(const QString &aFilter) {
+    LOG(mLog, LogLevel::Normal, "Starting device detection...");
+    mDeviceManager->detect(aFilter);
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::onDeviceDetected(const QString& aConfigName, DSDK::IDevice* aDevice)
-{
-	mAcquiredDevices.insert(aConfigName, aDevice);
-
-	initializeDevice(aConfigName, aDevice);
-
-	emit deviceDetected(aConfigName);
+void DeviceService::stopDetection() {
+    mDeviceManager->stopDetection();
 }
 
 //------------------------------------------------------------------------------
-bool DeviceService::initializeDevice(const QString& aConfigName, DSDK::IDevice* aDevice)
-{
-	// Устанавливаем параметры, необходимые для инициализации устройства.
-	foreach (const QString& deviceType, mInitParameters.keys())
-	{
-		if (aConfigName.indexOf(deviceType) != -1)
-		{
-			aDevice->setDeviceConfiguration(mInitParameters[deviceType]);
-		}
-	}
+void DeviceService::onDetectionFinished() {
+    mAccessMutex.unlock();
 
-	// Подписываемся на события об изменении статуса устройства.
-	aDevice->subscribe(SDK::Driver::IDevice::StatusSignal, this,
-					   SLOT(onDeviceStatus(SDK::Driver::EWarningLevel::Enum, const QString&, int)));
-
-	// Инициализируем устройство.
-	aDevice->initialize();
-
-	// Добавляем имя устройства как параметр в БД.
-	mDatabaseUtils->setDeviceParam(aConfigName, PPSDK::CDatabaseConstants::Parameters::DeviceName, aDevice->getName());
-
-	return true;
+    emit detectionStopped();
+    LOG(mLog, LogLevel::Normal, "Device detection is completed or terminated.");
 }
 
 //------------------------------------------------------------------------------
-DSDK::IDevice* DeviceService::acquireDevice(const QString& aInstancePath)
-{
-	QMutexLocker lock(&mAccessMutex);
+void DeviceService::onDeviceDetected(const QString &aConfigName, DSDK::IDevice *aDevice) {
+    mAcquiredDevices.insert(aConfigName, aDevice);
 
-	QString instancePath(aInstancePath);
-	QString configInstancePath(instancePath);
-	mDeviceManager->checkITInstancePath(instancePath);
+    initializeDevice(aConfigName, aDevice);
 
-	if (mAcquiredDevices.contains(instancePath))
-	{
-		return mAcquiredDevices.value(instancePath);
-	}
-	else
-	{
-		DSDK::IDevice* device = mDeviceManager->acquireDevice(instancePath, configInstancePath);
-
-		if (device)
-		{
-			mAcquiredDevices.insert(instancePath, device);
-
-			QMap<int, PPSDK::SKeySettings> keys =
-				SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>()->getKeys();
-
-			if (keys.contains(0))
-			{
-				QVariantMap configuration;
-				configuration.insert(CFiscalSDK::AutomaticNumber, keys.value(0).ap);
-				device->setDeviceConfiguration(configuration);
-			}
-
-			initializeDevice(instancePath, device);
-		}
-
-		return device;
-	}
+    emit deviceDetected(aConfigName);
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::releaseDevice(DSDK::IDevice* aDevice)
-{
-	QMutexLocker lock(&mAccessMutex);
+bool DeviceService::initializeDevice(const QString &aConfigName, DSDK::IDevice *aDevice) {
+    // Устанавливаем параметры, необходимые для инициализации устройства.
+    foreach (const QString &deviceType, mInitParameters.keys()) {
+        if (aConfigName.indexOf(deviceType) != -1) {
+            aDevice->setDeviceConfiguration(mInitParameters[deviceType]);
+        }
+    }
 
-	mAcquiredDevices.remove(mAcquiredDevices.key(aDevice));
+    // Подписываемся на события об изменении статуса устройства.
+    aDevice->subscribe(SDK::Driver::IDevice::StatusSignal, this,
+                       SLOT(onDeviceStatus(SDK::Driver::EWarningLevel::Enum, const QString &, int)));
 
-	mDeviceManager->releaseDevice(aDevice);
+    // Инициализируем устройство.
+    aDevice->initialize();
+
+    // Добавляем имя устройства как параметр в БД.
+    mDatabaseUtils->setDeviceParam(aConfigName, PPSDK::CDatabaseConstants::Parameters::DeviceName, aDevice->getName());
+
+    return true;
 }
 
 //------------------------------------------------------------------------------
-PPSDK::IDeviceService::UpdateFirmwareResult DeviceService::updateFirmware(const QByteArray& aFirmware,
-																		  const QString& aDeviceGUID)
-{
-	// TODO: сделать проверку выше (например, в апдейтере) на то, что файл открывается и что он не пуст
-	QMutexLocker lock(&mAccessMutex);
+DSDK::IDevice *DeviceService::acquireDevice(const QString &aInstancePath) {
+    QMutexLocker lock(&mAccessMutex);
 
-	DSDK::IDevice* device = nullptr;
+    QString instancePath(aInstancePath);
+    QString configInstancePath(instancePath);
+    mDeviceManager->checkITInstancePath(instancePath);
 
-	LOG(mLog, LogLevel::Normal, QString("Start update firmware device with GUID %1.").arg(aDeviceGUID));
+    if (mAcquiredDevices.contains(instancePath)) {
+        return mAcquiredDevices.value(instancePath);
+    } else {
+        DSDK::IDevice *device = mDeviceManager->acquireDevice(instancePath, configInstancePath);
 
-	for (TAcquiredDevices::iterator it = mAcquiredDevices.begin(); it != mAcquiredDevices.end(); ++it)
-	{
-		if (it.key().contains(aDeviceGUID))
-		{
-			device = it.value();
-		}
-	}
+        if (device) {
+            mAcquiredDevices.insert(instancePath, device);
 
-	if (!device)
-	{
-		LOG(mLog, LogLevel::Error, QString("No device with GUID %1 for updating the firmware.").arg(aDeviceGUID));
-		return IDeviceService::NoDevice;
-	}
+            QMap<int, PPSDK::SKeySettings> keys =
+                SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>()->getKeys();
 
-	if (!device->canUpdateFirmware())
-	{
-		LOG(mLog, LogLevel::Error, "The device cannot be updated.");
-		return IDeviceService::CantUpdate;
-	}
+            if (keys.contains(0)) {
+                QVariantMap configuration;
+                configuration.insert(CFiscalSDK::AutomaticNumber, keys.value(0).ap);
+                device->setDeviceConfiguration(configuration);
+            }
 
-	device->updateFirmware(aFirmware);
+            initializeDevice(instancePath, device);
+        }
 
-	return IDeviceService::OK;
+        return device;
+    }
 }
 
 //------------------------------------------------------------------------------
-QString DeviceService::createDevice(const QString& aDriverPath, const QVariantMap& aConfig)
-{
-	QMutexLocker lock(&mAccessMutex);
+void DeviceService::releaseDevice(DSDK::IDevice *aDevice) {
+    QMutexLocker lock(&mAccessMutex);
 
-	QString driverPath(aDriverPath);
-	mIntegratedDrivers.checkDriverPath(driverPath, aConfig);
+    mAcquiredDevices.remove(mAcquiredDevices.key(aDevice));
 
-	TNamedDevice result = mDeviceManager->createDevice(driverPath, aConfig);
-
-	if (result.second)
-	{
-		mAcquiredDevices.insert(result.first, result.second);
-
-		QMap<int, PPSDK::SKeySettings> keys =
-			SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>()->getKeys();
-
-		if (keys.contains(0))
-		{
-			QVariantMap configuration;
-			configuration.insert(CFiscalSDK::AutomaticNumber, keys.value(0).ap);
-			result.second->setDeviceConfiguration(configuration);
-		}
-
-		initializeDevice(result.first, result.second);
-	}
-	else
-	{
-		LOG(mLog, LogLevel::Error, QString("Failed to create device %1 .").arg(driverPath));
-	}
-
-	return result.first;
+    mDeviceManager->releaseDevice(aDevice);
 }
 
 //------------------------------------------------------------------------------
-SDK::PaymentProcessor::TModelList DeviceService::getModelList(const QString& aFilter) const
-{
-	PPSDK::TModelList result = mDeviceManager->getModelList(aFilter);
-	mIntegratedDrivers.filterModelList(result);
+PPSDK::IDeviceService::UpdateFirmwareResult DeviceService::updateFirmware(const QByteArray &aFirmware,
+                                                                          const QString &aDeviceGUID) {
+    // TODO: сделать проверку выше (например, в апдейтере) на то, что файл открывается и что он не пуст
+    QMutexLocker lock(&mAccessMutex);
 
-	return result;
+    DSDK::IDevice *device = nullptr;
+
+    LOG(mLog, LogLevel::Normal, QString("Start update firmware device with GUID %1.").arg(aDeviceGUID));
+
+    for (TAcquiredDevices::iterator it = mAcquiredDevices.begin(); it != mAcquiredDevices.end(); ++it) {
+        if (it.key().contains(aDeviceGUID)) {
+            device = it.value();
+        }
+    }
+
+    if (!device) {
+        LOG(mLog, LogLevel::Error, QString("No device with GUID %1 for updating the firmware.").arg(aDeviceGUID));
+        return IDeviceService::NoDevice;
+    }
+
+    if (!device->canUpdateFirmware()) {
+        LOG(mLog, LogLevel::Error, "The device cannot be updated.");
+        return IDeviceService::CantUpdate;
+    }
+
+    device->updateFirmware(aFirmware);
+
+    return IDeviceService::OK;
 }
 
 //------------------------------------------------------------------------------
-QStringList DeviceService::getAcquiredDevicesList() const
-{
-	QMutexLocker lock(&mAccessMutex);
+QString DeviceService::createDevice(const QString &aDriverPath, const QVariantMap &aConfig) {
+    QMutexLocker lock(&mAccessMutex);
 
-	return mAcquiredDevices.keys();
+    QString driverPath(aDriverPath);
+    mIntegratedDrivers.checkDriverPath(driverPath, aConfig);
+
+    TNamedDevice result = mDeviceManager->createDevice(driverPath, aConfig);
+
+    if (result.second) {
+        mAcquiredDevices.insert(result.first, result.second);
+
+        QMap<int, PPSDK::SKeySettings> keys =
+            SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>()->getKeys();
+
+        if (keys.contains(0)) {
+            QVariantMap configuration;
+            configuration.insert(CFiscalSDK::AutomaticNumber, keys.value(0).ap);
+            result.second->setDeviceConfiguration(configuration);
+        }
+
+        initializeDevice(result.first, result.second);
+    } else {
+        LOG(mLog, LogLevel::Error, QString("Failed to create device %1 .").arg(driverPath));
+    }
+
+    return result.first;
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::releaseAll()
-{
-	QMutexLocker lock(&mAccessMutex);
+SDK::PaymentProcessor::TModelList DeviceService::getModelList(const QString &aFilter) const {
+    PPSDK::TModelList result = mDeviceManager->getModelList(aFilter);
+    mIntegratedDrivers.filterModelList(result);
 
-	foreach (DSDK::IDevice* device, mAcquiredDevices.values())
-	{
-		releaseDevice(device);
-	}
+    return result;
 }
 
 //------------------------------------------------------------------------------
-QString DeviceService::getDeviceConfigName(DSDK::IDevice* aDevice)
-{
-	QMutexLocker lock(&mAccessMutex);
+QStringList DeviceService::getAcquiredDevicesList() const {
+    QMutexLocker lock(&mAccessMutex);
 
-	return mAcquiredDevices.key(aDevice);
+    return mAcquiredDevices.keys();
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::setInitParameters(const QString& aDeviceType, const QVariantMap& aParameters)
-{
-	mInitParameters[aDeviceType] = aParameters;
+void DeviceService::releaseAll() {
+    QMutexLocker lock(&mAccessMutex);
+
+    foreach (DSDK::IDevice *device, mAcquiredDevices.values()) {
+        releaseDevice(device);
+    }
 }
 
 //------------------------------------------------------------------------------
-QStringList DeviceService::getConfigurations(bool aAllowOldConfigs) const
-{
-	PPSDK::TerminalSettings* settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
-	QStringList configurations = settings->getDeviceList();
+QString DeviceService::getDeviceConfigName(DSDK::IDevice *aDevice) {
+    QMutexLocker lock(&mAccessMutex);
 
-	if (aAllowOldConfigs)
-	{
-		for (int i = 0; i < configurations.size(); ++i)
-		{
-			mDeviceManager->checkITInstancePath(configurations[i]);
-		}
-	}
+    return mAcquiredDevices.key(aDevice);
+}
 
-	// Обязательные устройства "присуствуют" всегда
-	QStringList driverList = mDeviceManager->getDriverList();
-	QStringList requiredDevices;
+//------------------------------------------------------------------------------
+void DeviceService::setInitParameters(const QString &aDeviceType, const QVariantMap &aParameters) {
+    mInitParameters[aDeviceType] = aParameters;
+}
 
-	requiredDevices << DSDK::CComponents::Health;
+//------------------------------------------------------------------------------
+QStringList DeviceService::getConfigurations(bool aAllowOldConfigs) const {
+    PPSDK::TerminalSettings *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
+    QStringList configurations = settings->getDeviceList();
+
+    if (aAllowOldConfigs) {
+        for (int i = 0; i < configurations.size(); ++i) {
+            mDeviceManager->checkITInstancePath(configurations[i]);
+        }
+    }
+
+    // Обязательные устройства "присуствуют" всегда
+    QStringList driverList = mDeviceManager->getDriverList();
+    QStringList requiredDevices;
+
+    requiredDevices << DSDK::CComponents::Health;
 #ifdef TC_USE_TOKEN
-	requiredDevices << DSDK::CComponents::Token;
+    requiredDevices << DSDK::CComponents::Token;
 #endif
 
-	foreach (QString type, requiredDevices)
-	{
-		auto isDevicePresent = [type](const QString& aConfigurationName) -> bool
-		{
-			return aConfigurationName.contains(type);
-		};
+    foreach (QString type, requiredDevices) {
+        auto isDevicePresent = [type](const QString &aConfigurationName) -> bool {
+            return aConfigurationName.contains(type);
+        };
 
-		if (std::find_if(configurations.begin(), configurations.end(), isDevicePresent) == configurations.end() &&
-			std::find_if(driverList.begin(), driverList.end(), isDevicePresent) != driverList.end())
-		{
-			configurations << *std::find_if(driverList.begin(), driverList.end(), isDevicePresent);
-		}
-	}
+        if (std::find_if(configurations.begin(), configurations.end(), isDevicePresent) == configurations.end() &&
+            std::find_if(driverList.begin(), driverList.end(), isDevicePresent) != driverList.end()) {
+            configurations << *std::find_if(driverList.begin(), driverList.end(), isDevicePresent);
+        }
+    }
 
-	return configurations;
+    return configurations;
 }
 
 //------------------------------------------------------------------------------
-bool DeviceService::saveConfigurations(const QStringList& aConfigList)
-{
-	// Проходимся по всем задействованным устройствам и сохраняем конфигурацию.
-	foreach (const QString& configName, aConfigList)
-	{
-		DSDK::IDevice* device = acquireDevice(configName);
+bool DeviceService::saveConfigurations(const QStringList &aConfigList) {
+    // Проходимся по всем задействованным устройствам и сохраняем конфигурацию.
+    foreach (const QString &configName, aConfigList) {
+        DSDK::IDevice *device = acquireDevice(configName);
 
-		if (device)
-		{
-			mDeviceManager->saveConfiguration(device);
-		}
-		else
-		{
-			LOG(mLog, LogLevel::Error,
-				QString("Failed to set device configuration. No such device: %1.").arg(configName));
-		}
-	}
+        if (device) {
+            mDeviceManager->saveConfiguration(device);
+        } else {
+            LOG(mLog, LogLevel::Error,
+                QString("Failed to set device configuration. No such device: %1.").arg(configName));
+        }
+    }
 
-	PPSDK::TerminalSettings* settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
-	settings->setDeviceList(aConfigList);
+    PPSDK::TerminalSettings *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
+    settings->setDeviceList(aConfigList);
 
-	mDatabaseUtils->removeUnknownDevice(aConfigList);
+    mDatabaseUtils->removeUnknownDevice(aConfigList);
 
-	// Посылаем сигнал, чтобы остальные сервисы обновили устройства.
-	emit configurationUpdated();
+    // Посылаем сигнал, чтобы остальные сервисы обновили устройства.
+    emit configurationUpdated();
 
-	return true;
+    return true;
 }
 
 //------------------------------------------------------------------------------
-QVariantMap DeviceService::getDeviceConfiguration(const QString& aConfigName)
-{
-	QMutexLocker lock(&mAccessMutex);
+QVariantMap DeviceService::getDeviceConfiguration(const QString &aConfigName) {
+    QMutexLocker lock(&mAccessMutex);
 
-	DSDK::IDevice* device = acquireDevice(aConfigName);
+    DSDK::IDevice *device = acquireDevice(aConfigName);
 
-	if (device)
-	{
-		return mDeviceManager->getDeviceConfiguration(device);
-	}
-	else
-	{
-		LOG(mLog, LogLevel::Error, QString("Failed to set device configuration. No such device: %1.").arg(aConfigName));
-		return QVariantMap();
-	}
+    if (device) {
+        return mDeviceManager->getDeviceConfiguration(device);
+    } else {
+        LOG(mLog, LogLevel::Error, QString("Failed to set device configuration. No such device: %1.").arg(aConfigName));
+        return QVariantMap();
+    }
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::setDeviceConfiguration(const QString& aConfigName, const QVariantMap& aConfig)
-{
-	DSDK::IDevice* device = acquireDevice(aConfigName);
+void DeviceService::setDeviceConfiguration(const QString &aConfigName, const QVariantMap &aConfig) {
+    DSDK::IDevice *device = acquireDevice(aConfigName);
 
-	// Производим переинициализацию устройства.
-	if (device)
-	{
-		device->release();
+    // Производим переинициализацию устройства.
+    if (device) {
+        device->release();
 
-		{
-			QMutexLocker lock(&mAccessMutex);
+        {
+            QMutexLocker lock(&mAccessMutex);
 
-			mDeviceManager->setDeviceConfiguration(device, aConfig);
-		}
+            mDeviceManager->setDeviceConfiguration(device, aConfig);
+        }
 
-		device->initialize();
-	}
-	else
-	{
-		LOG(mLog, LogLevel::Error, QString("Failed to set device configuration. No such device: %1.").arg(aConfigName));
-	}
+        device->initialize();
+    } else {
+        LOG(mLog, LogLevel::Error, QString("Failed to set device configuration. No such device: %1.").arg(aConfigName));
+    }
 }
 
 //------------------------------------------------------------------------------
-SDK::Plugin::TParameterList DeviceService::getDriverParameters(const QString& aDriverPath) const
-{
-	SDK::Plugin::TParameterList result = mDeviceManager->getDriverParameters(aDriverPath);
-	mIntegratedDrivers.filterDriverParameters(aDriverPath, result);
+SDK::Plugin::TParameterList DeviceService::getDriverParameters(const QString &aDriverPath) const {
+    SDK::Plugin::TParameterList result = mDeviceManager->getDriverParameters(aDriverPath);
+    mIntegratedDrivers.filterDriverParameters(aDriverPath, result);
 
-	return result;
+    return result;
 }
 
 //------------------------------------------------------------------------------
-QStringList DeviceService::getDriverList() const
-{
-	// Выдаем список драйверов всех устройств, кроме портов.
-	QStringList result = mDeviceManager->getDriverList().filter(QRegExp(".+\\.Driver\\.(?!IOPort)"));
-	mIntegratedDrivers.filterDriverList(result);
+QStringList DeviceService::getDriverList() const {
+    // Выдаем список драйверов всех устройств, кроме портов.
+    QStringList result = mDeviceManager->getDriverList().filter(QRegExp(".+\\.Driver\\.(?!IOPort)"));
+    mIntegratedDrivers.filterDriverList(result);
 
-	return result;
+    return result;
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::overwriteDeviceStatus(DSDK::IDevice* aDevice, DSDK::EWarningLevel::Enum aLevel,
-										  const QString& aDescription, int aStatus)
-{
-	// Берём последний статус и пишем в БД, только если новый статус отличается по WarningLevel
-	QString configName = mAcquiredDevices.key(aDevice);
+void DeviceService::overwriteDeviceStatus(DSDK::IDevice *aDevice, DSDK::EWarningLevel::Enum aLevel,
+                                          const QString &aDescription, int aStatus) {
+    // Берём последний статус и пишем в БД, только если новый статус отличается по WarningLevel
+    QString configName = mAcquiredDevices.key(aDevice);
 
-	if (!mDeviceStatusCache.contains(configName) || mDeviceStatusCache[configName].mLevel != aLevel ||
-		DSDK::getStatusType(mDeviceStatusCache[configName].mStatus) == DSDK::EStatus::Interface)
-	{
-		Status status(aLevel, aDescription, aStatus);
+    if (!mDeviceStatusCache.contains(configName) || mDeviceStatusCache[configName].mLevel != aLevel ||
+        DSDK::getStatusType(mDeviceStatusCache[configName].mStatus) == DSDK::EStatus::Interface) {
+        Status status(aLevel, aDescription, aStatus);
 
-		statusChanged(aDevice, status);
-	}
+        statusChanged(aDevice, status);
+    }
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::onDeviceStatus(DSDK::EWarningLevel::Enum aLevel, const QString& aDescription, int aStatus)
-{
-	LogLevel::Enum logLevel = (aLevel == DSDK::EWarningLevel::OK)	   ? LogLevel::Normal
-							  : (aLevel == DSDK::EWarningLevel::Error) ? LogLevel::Error
-																	   : LogLevel::Warning;
-	LOG(mLog, logLevel, QString("Received statuses: %1, status %2").arg(aDescription).arg(aStatus));
+void DeviceService::onDeviceStatus(DSDK::EWarningLevel::Enum aLevel, const QString &aDescription, int aStatus) {
+    LogLevel::Enum logLevel = (aLevel == DSDK::EWarningLevel::OK)      ? LogLevel::Normal
+                              : (aLevel == DSDK::EWarningLevel::Error) ? LogLevel::Error
+                                                                       : LogLevel::Warning;
+    LOG(mLog, logLevel, QString("Received statuses: %1, status %2").arg(aDescription).arg(aStatus));
 
-	DSDK::IDevice* device = dynamic_cast<DSDK::IDevice*>(sender());
+    DSDK::IDevice *device = dynamic_cast<DSDK::IDevice *>(sender());
 
-	if (device)
-	{
-		Status status(aLevel, aDescription, aStatus);
+    if (device) {
+        Status status(aLevel, aDescription, aStatus);
 
-		statusChanged(device, status);
+        statusChanged(device, status);
 
-		// Удаляем неиспользуемые устройства.
-		foreach (auto configName, mDeviceStatusCache.keys())
-		{
-			if (!mAcquiredDevices.contains(configName))
-			{
-				mDeviceStatusCache.remove(configName);
-			}
-		}
-	}
+        // Удаляем неиспользуемые устройства.
+        foreach (auto configName, mDeviceStatusCache.keys()) {
+            if (!mAcquiredDevices.contains(configName)) {
+                mDeviceStatusCache.remove(configName);
+            }
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::statusChanged(DSDK::IDevice* aDevice, Status& aStatus)
-{
-	DSDK::EStatus::Enum statusType = DSDK::getStatusType(aStatus.mStatus);
+void DeviceService::statusChanged(DSDK::IDevice *aDevice, Status &aStatus) {
+    DSDK::EStatus::Enum statusType = DSDK::getStatusType(aStatus.mStatus);
 
-	// Если данный статус зарегистрирован в исключениях, то мы его не обрабатываем.
-	if (statusType == DSDK::EStatus::Service)
-	{
-		return;
-	}
+    // Если данный статус зарегистрирован в исключениях, то мы его не обрабатываем.
+    if (statusType == DSDK::EStatus::Service) {
+        return;
+    }
 
-	// Запоминаем последние статусы.
-	QString configName = mAcquiredDevices.key(aDevice);
-	mDeviceStatusCache[configName] = aStatus;
+    // Запоминаем последние статусы.
+    QString configName = mAcquiredDevices.key(aDevice);
+    mDeviceStatusCache[configName] = aStatus;
 
-	LogLevel::Enum logLevel = (aStatus.mLevel == DSDK::EWarningLevel::OK)	   ? LogLevel::Normal
-							  : (aStatus.mLevel == DSDK::EWarningLevel::Error) ? LogLevel::Error
-																			   : LogLevel::Warning;
-	LOG(mLog, logLevel,
-		QString("Send statuses: %1, status %2, device %3")
-			.arg(aStatus.mDescription)
-			.arg(aStatus.mStatus)
-			.arg(configName));
+    LogLevel::Enum logLevel = (aStatus.mLevel == DSDK::EWarningLevel::OK)      ? LogLevel::Normal
+                              : (aStatus.mLevel == DSDK::EWarningLevel::Error) ? LogLevel::Error
+                                                                               : LogLevel::Warning;
+    LOG(mLog, logLevel,
+        QString("Send statuses: %1, status %2, device %3")
+            .arg(aStatus.mDescription)
+            .arg(aStatus.mStatus)
+            .arg(configName));
 
-	if (statusType != DSDK::EStatus::Interface)
-	{
-		// Обновляем имя и информацию об устройстве в базе, т.к. возможно уточнено имя после обращения к устройству.
-		mDatabaseUtils->setDeviceParam(configName, PPSDK::CDatabaseConstants::Parameters::DeviceName,
-									   aDevice->getName());
-		QVariantMap deviceConfig = aDevice->getDeviceConfiguration();
+    if (statusType != DSDK::EStatus::Interface) {
+        // Обновляем имя и информацию об устройстве в базе, т.к. возможно уточнено имя после обращения к устройству.
+        mDatabaseUtils->setDeviceParam(configName, PPSDK::CDatabaseConstants::Parameters::DeviceName,
+                                       aDevice->getName());
+        QVariantMap deviceConfig = aDevice->getDeviceConfiguration();
 
-		if (deviceConfig.contains(CHardwareSDK::DeviceData))
-		{
-			mDatabaseUtils->setDeviceParam(configName, PPSDK::CDatabaseConstants::Parameters::DeviceInfo,
-										   deviceConfig[CHardwareSDK::DeviceData].toString());
-		}
+        if (deviceConfig.contains(CHardwareSDK::DeviceData)) {
+            mDatabaseUtils->setDeviceParam(configName, PPSDK::CDatabaseConstants::Parameters::DeviceInfo,
+                                           deviceConfig[CHardwareSDK::DeviceData].toString());
+        }
 
-		// Пишем статус в БД.
-		mDatabaseUtils->addDeviceStatus(configName, aStatus.mLevel, aStatus.mDescription);
-	}
+        // Пишем статус в БД.
+        mDatabaseUtils->addDeviceStatus(configName, aStatus.mLevel, aStatus.mDescription);
+    }
 
-	emit deviceStatusChanged(configName, aStatus.mLevel, aStatus.mDescription, aStatus.mStatus);
+    emit deviceStatusChanged(configName, aStatus.mLevel, aStatus.mDescription, aStatus.mStatus);
 }
 
 //------------------------------------------------------------------------------
-QSharedPointer<PPSDK::IDeviceStatus> DeviceService::getDeviceStatus(const QString& aConfigName)
-{
-	if (mDeviceStatusCache.contains(aConfigName))
-	{
-		return QSharedPointer<PPSDK::IDeviceStatus>(new Status(mDeviceStatusCache.value(aConfigName)));
-	}
+QSharedPointer<PPSDK::IDeviceStatus> DeviceService::getDeviceStatus(const QString &aConfigName) {
+    if (mDeviceStatusCache.contains(aConfigName)) {
+        return QSharedPointer<PPSDK::IDeviceStatus>(new Status(mDeviceStatusCache.value(aConfigName)));
+    }
 
-	return QSharedPointer<PPSDK::IDeviceStatus>(nullptr);
+    return QSharedPointer<PPSDK::IDeviceStatus>(nullptr);
 }
 
 //------------------------------------------------------------------------------

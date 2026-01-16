@@ -2,126 +2,110 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QString>
-#include <QtCore/QSet>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
+#include <QtCore/QSet>
+#include <QtCore/QString>
 #include <Common/QtHeadersEnd.h>
 
-// Проект
+// System
+#include "Services/AudioService.h"
+#include "Services/ServiceNames.h"
 #include "System/IApplication.h"
 #include "System/SettingsConstants.h"
-#include "Services/ServiceNames.h"
-#include "Services/AudioService.h"
 
-//---------------------------------------------------------------------------
-namespace CAudioService
-{
-	/// Название лога.
-	const char LogName[] = "Interface";
+namespace CAudioService {
+    /// Название лога.
+    const char LogName[] = "Interface";
 } // namespace CAudioService
 
 //---------------------------------------------------------------------------
-AudioService* AudioService::instance(IApplication* aApplication)
-{
-	return static_cast<AudioService*>(aApplication->getCore()->getService(CServices::AudioService));
+AudioService *AudioService::instance(IApplication *aApplication) {
+    return static_cast<AudioService *>(aApplication->getCore()->getService(CServices::AudioService));
 }
 
 //---------------------------------------------------------------------------
-AudioService::AudioService(IApplication* aApplication) : mApplication(aApplication), ILogable(CAudioService::LogName)
-{
-	// Получаем директорию с файлами интерфейса из настроек.
-	mInterfacePath =
-		IApplication::toAbsolutePath(mApplication->getSettings().value(CSettings::InterfacePath).toString());
+AudioService::AudioService(IApplication *aApplication) : mApplication(aApplication), ILogable(CAudioService::LogName) {
+    // Получаем директорию с файлами интерфейса из настроек.
+    mInterfacePath =
+        IApplication::toAbsolutePath(mApplication->getSettings().value(CSettings::InterfacePath).toString());
 }
 
 //---------------------------------------------------------------------------
-AudioService::~AudioService() {}
+AudioService::~AudioService() {
+}
 
 //---------------------------------------------------------------------------
-bool AudioService::initialize()
-{
-	mPlayer = QSharedPointer<QMediaPlayer>(new QMediaPlayer());
-	connect(mPlayer.data(), SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(stateChanged(QMediaPlayer::State)));
+bool AudioService::initialize() {
+    mPlayer = QSharedPointer<QMediaPlayer>(new QMediaPlayer());
+    connect(mPlayer.data(), SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(stateChanged(QMediaPlayer::State)));
 
-	return true;
+    return true;
 }
 
 //------------------------------------------------------------------------------
-void AudioService::finishInitialize() {}
-
-//---------------------------------------------------------------------------
-bool AudioService::canShutdown()
-{
-	return true;
+void AudioService::finishInitialize() {
 }
 
 //---------------------------------------------------------------------------
-bool AudioService::shutdown()
-{
-	return true;
+bool AudioService::canShutdown() {
+    return true;
 }
 
 //---------------------------------------------------------------------------
-QString AudioService::getName() const
-{
-	return CServices::AudioService;
+bool AudioService::shutdown() {
+    return true;
 }
 
 //---------------------------------------------------------------------------
-const QSet<QString>& AudioService::getRequiredServices() const
-{
-	static QSet<QString> requiredResources;
-	return requiredResources;
+QString AudioService::getName() const {
+    return CServices::AudioService;
 }
 
 //---------------------------------------------------------------------------
-QVariantMap AudioService::getParameters() const
-{
-	return QVariantMap();
+const QSet<QString> &AudioService::getRequiredServices() const {
+    static QSet<QString> requiredResources;
+    return requiredResources;
 }
 
 //---------------------------------------------------------------------------
-void AudioService::resetParameters(const QSet<QString>&) {}
-
-//---------------------------------------------------------------------------
-void AudioService::play(const QString& aFileName)
-{
-	QString filePath = mInterfacePath + "/" + aFileName;
-
-	if (QFile::exists(filePath))
-	{
-		if (mPlayer->state() != QMediaPlayer::StoppedState)
-		{
-			stop();
-		}
-
-		mPlayer->setMedia(QUrl::fromLocalFile(filePath));
-		mPlayer->play();
-	}
-	else
-	{
-		stop();
-
-		toLog(LogLevel::Warning, QString("Audio file %1 not found.").arg(aFileName));
-	}
+QVariantMap AudioService::getParameters() const {
+    return QVariantMap();
 }
 
 //---------------------------------------------------------------------------
-void AudioService::stop()
-{
-	if (mPlayer)
-	{
-		mPlayer->stop();
-	}
+void AudioService::resetParameters(const QSet<QString> &) {
 }
 
 //---------------------------------------------------------------------------
-void AudioService::stateChanged(QMediaPlayer::State aState)
-{
-	if (aState == QMediaPlayer::StoppedState)
-	{
-	}
+void AudioService::play(const QString &aFileName) {
+    QString filePath = mInterfacePath + "/" + aFileName;
+
+    if (QFile::exists(filePath)) {
+        if (mPlayer->state() != QMediaPlayer::StoppedState) {
+            stop();
+        }
+
+        mPlayer->setMedia(QUrl::fromLocalFile(filePath));
+        mPlayer->play();
+    } else {
+        stop();
+
+        toLog(LogLevel::Warning, QString("Audio file %1 not found.").arg(aFileName));
+    }
+}
+
+//---------------------------------------------------------------------------
+void AudioService::stop() {
+    if (mPlayer) {
+        mPlayer->stop();
+    }
+}
+
+//---------------------------------------------------------------------------
+void AudioService::stateChanged(QMediaPlayer::State aState) {
+    if (aState == QMediaPlayer::StoppedState) {
+    }
 }
 
 //---------------------------------------------------------------------------

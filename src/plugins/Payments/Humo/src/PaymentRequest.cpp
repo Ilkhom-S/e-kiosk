@@ -23,150 +23,129 @@
 #include "Payment.h"
 #include "PaymentRequest.h"
 
-
 using SDK::PaymentProcessor::SProvider;
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-PaymentRequest::PaymentRequest(Payment* aPayment, const QString& aName) : mPayment(aPayment), mName(aName)
-{
-	addParameter("SD", aPayment->getKeySettings().sd);
-	addParameter("AP", aPayment->getKeySettings().ap);
-	addParameter("OP", aPayment->getKeySettings().op);
+PaymentRequest::PaymentRequest(Payment *aPayment, const QString &aName) : mPayment(aPayment), mName(aName) {
+    addParameter("SD", aPayment->getKeySettings().sd);
+    addParameter("AP", aPayment->getKeySettings().ap);
+    addParameter("OP", aPayment->getKeySettings().op);
 
-	addParameter("SESSION", aPayment->getSession());
-	addParameter("COMMENT", aPayment->getInitialSession());
+    addParameter("SESSION", aPayment->getSession());
+    addParameter("COMMENT", aPayment->getInitialSession());
 
-	addParameter("AMOUNT", aPayment->getAmount());
-	addParameter("AMOUNT_ALL", aPayment->getAmountAll());
+    addParameter("AMOUNT", aPayment->getAmount());
+    addParameter("AMOUNT_ALL", aPayment->getAmountAll());
 
-	addParameter("NUMBER", QString());
-	addParameter("ACCOUNT", QString());
+    addParameter("NUMBER", QString());
+    addParameter("ACCOUNT", QString());
 
-	addParameter("CRC", aPayment->getParameter(PPSDK::CPayment::Parameters::CRC).value);
+    addParameter("CRC", aPayment->getParameter(PPSDK::CPayment::Parameters::CRC).value);
 }
 
 //---------------------------------------------------------------------------
-void PaymentRequest::addProviderParameters(const QString& aStep)
-{
-	// Добавляем в платёж все external параметры
-	foreach (auto parameter, mPayment->getParameters())
-	{
-		if (parameter.external)
-		{
-			addParameter(parameter.name, parameter.value);
-		}
-	}
+void PaymentRequest::addProviderParameters(const QString &aStep) {
+    // Добавляем в платёж все external параметры
+    foreach (auto parameter, mPayment->getParameters()) {
+        if (parameter.external) {
+            addParameter(parameter.name, parameter.value);
+        }
+    }
 
-	auto provider = mPayment->getProviderSettings();
+    auto provider = mPayment->getProviderSettings();
 
-	// Берём все внешние параметры для отправки на сервер и заменяем в них макросы на
-	// значения параметров платежа.
-	if (provider.processor.requests.contains(aStep.toUpper()))
-	{
-		foreach (const SProvider::SProcessingTraits::SRequest::SField& field,
-				 provider.processor.requests[aStep.toUpper()].requestFields)
-		{
-			QString value = field.value;
-			bool needMask = false;
+    // Берём все внешние параметры для отправки на сервер и заменяем в них макросы на
+    // значения параметров платежа.
+    if (provider.processor.requests.contains(aStep.toUpper())) {
+        foreach (const SProvider::SProcessingTraits::SRequest::SField &field,
+                 provider.processor.requests[aStep.toUpper()].requestFields) {
+            QString value = field.value;
+            bool needMask = false;
 
-			QRegExp macroPattern("\\{(.+)\\}");
-			macroPattern.setMinimal(true);
+            QRegExp macroPattern("\\{(.+)\\}");
+            macroPattern.setMinimal(true);
 
-			while (macroPattern.indexIn(value) != -1)
-			{
-				auto pp = mPayment->getParameter(macroPattern.cap(1));
-				value.replace(macroPattern.cap(0), pp.value.toString());
+            while (macroPattern.indexIn(value) != -1) {
+                auto pp = mPayment->getParameter(macroPattern.cap(1));
+                value.replace(macroPattern.cap(0), pp.value.toString());
 
-				needMask = pp.crypted || needMask;
-			}
+                needMask = pp.crypted || needMask;
+            }
 
-			if (field.crypted)
-			{
-				switch (field.algorithm)
-				{
-				case SProvider::SProcessingTraits::SRequest::SField::Md5:
-					value = QString::fromLatin1(
-						QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Md5).toHex());
-					break;
+            if (field.crypted) {
+                switch (field.algorithm) {
+                    case SProvider::SProcessingTraits::SRequest::SField::Md5:
+                        value = QString::fromLatin1(
+                            QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Md5).toHex());
+                        break;
 
-				case SProvider::SProcessingTraits::SRequest::SField::Sha1:
-					value = QString::fromLatin1(
-						QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Sha1).toHex());
-					break;
+                    case SProvider::SProcessingTraits::SRequest::SField::Sha1:
+                        value = QString::fromLatin1(
+                            QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Sha1).toHex());
+                        break;
 
-				case SProvider::SProcessingTraits::SRequest::SField::Sha256:
+                    case SProvider::SProcessingTraits::SRequest::SField::Sha256:
 #if QT_VERSION >= 0x050000
-					value = QString::fromLatin1(
-						QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Sha256).toHex());
+                        value = QString::fromLatin1(
+                            QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Sha256).toHex());
 #else
-					value = QString::fromLatin1(
-						CCryptographicHash::hash(value.toLatin1(), CCryptographicHash::Sha256).toHex());
+                        value = QString::fromLatin1(
+                            CCryptographicHash::hash(value.toLatin1(), CCryptographicHash::Sha256).toHex());
 #endif
-					break;
+                        break;
 
-				default:
-				{
-					ICryptEngine* cryptEngine = mPayment->getPaymentFactory()->getCryptEngine();
+                    default: {
+                        ICryptEngine *cryptEngine = mPayment->getPaymentFactory()->getCryptEngine();
 
-					QByteArray encryptedValue;
+                        QByteArray encryptedValue;
 
-					QString error;
+                        QString error;
 
-					if (cryptEngine->encrypt(provider.processor.keyPair, value.toLatin1(), encryptedValue, error))
-					{
-						value = QString::fromLatin1(encryptedValue);
-					}
-					else
-					{
-						LOG(mPayment->getPaymentFactory()->getLog(), LogLevel::Error,
-							QString("Payment %1. Failed to encrypt parameter %2. Error: %3.")
-								.arg(mPayment->getID())
-								.arg(field.name)
-								.arg(error));
-					}
-				}
-				}
+                        if (cryptEngine->encrypt(provider.processor.keyPair, value.toLatin1(), encryptedValue, error)) {
+                            value = QString::fromLatin1(encryptedValue);
+                        } else {
+                            LOG(mPayment->getPaymentFactory()->getLog(), LogLevel::Error,
+                                QString("Payment %1. Failed to encrypt parameter %2. Error: %3.")
+                                    .arg(mPayment->getID())
+                                    .arg(field.name)
+                                    .arg(error));
+                        }
+                    }
+                }
 
-				addParameter(field.name, value, "**CRYPTED**");
-			}
-			else if (needMask)
-			{
-				// Создаем маскированную копию поля для журналирования
-				PPSDK::SecurityFilter filter(provider, PPSDK::SProviderField::SecuritySubsystem::Log);
+                addParameter(field.name, value, "**CRYPTED**");
+            } else if (needMask) {
+                // Создаем маскированную копию поля для журналирования
+                PPSDK::SecurityFilter filter(provider, PPSDK::SProviderField::SecuritySubsystem::Log);
 
-				QString logValue = field.value;
+                QString logValue = field.value;
 
-				QRegExp macroPattern("\\{(.+)\\}");
-				macroPattern.setMinimal(true);
+                QRegExp macroPattern("\\{(.+)\\}");
+                macroPattern.setMinimal(true);
 
-				while (macroPattern.indexIn(logValue) != -1)
-				{
-					logValue.replace(macroPattern.cap(0),
-									 filter.apply(macroPattern.cap(1),
-												  mPayment->getParameter(macroPattern.cap(1)).value.toString()));
-				}
+                while (macroPattern.indexIn(logValue) != -1) {
+                    logValue.replace(macroPattern.cap(0),
+                                     filter.apply(macroPattern.cap(1),
+                                                  mPayment->getParameter(macroPattern.cap(1)).value.toString()));
+                }
 
-				addParameter(field.name, value, logValue);
-			}
-			else
-			{
-				addParameter(field.name, value);
-			}
-		}
-	}
+                addParameter(field.name, value, logValue);
+            } else {
+                addParameter(field.name, value);
+            }
+        }
+    }
 }
 
 //---------------------------------------------------------------------------
-Payment* PaymentRequest::getPayment() const
-{
-	return mPayment;
+Payment *PaymentRequest::getPayment() const {
+    return mPayment;
 }
 
 //---------------------------------------------------------------------------
-const QString& PaymentRequest::getName() const
-{
-	return mName;
+const QString &PaymentRequest::getName() const {
+    return mName;
 }
 
 //---------------------------------------------------------------------------

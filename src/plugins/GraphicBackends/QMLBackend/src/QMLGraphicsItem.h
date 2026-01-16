@@ -17,47 +17,48 @@ class ILog;
 
 //---------------------------------------------------------------------------
 /// Интерфейс для созданного движком графического объекта.
-class QMLGraphicsItem : public SDK::GUI::IGraphicsItem
-{
-public:
-	QMLGraphicsItem(const SDK::GUI::GraphicsItemInfo& aInfo, QQmlEngine* aEngine, ILog* aLog);
+class QMLGraphicsItem : public SDK::GUI::IGraphicsItem {
+  public:
+    QMLGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo, QQmlEngine *aEngine, ILog *aLog);
 
-	/// Вызывается перед отображением виджета.
-	virtual void show();
+    /// Вызывается перед отображением виджета.
+    virtual void show();
 
-	/// Вызывается для сброса/настройки виджета.
-	virtual void reset(const QVariantMap& aParameters);
+    /// Вызывается для сброса/настройки виджета.
+    virtual void reset(const QVariantMap &aParameters);
 
-	/// Вызывается перед сокрытием виджета.
-	virtual void hide();
+    /// Вызывается перед сокрытием виджета.
+    virtual void hide();
 
-	/// Посылает уведомление виджету.
-	virtual void notify(const QString& aReason, const QVariantMap& aParameters);
+    /// Посылает уведомление виджету.
+    virtual void notify(const QString &aReason, const QVariantMap &aParameters);
 
-	/// Проверяет готов ли виджет.
-	virtual bool isValid() const;
+    /// Проверяет готов ли виджет.
+    virtual bool isValid() const;
 
-	/// Возвращает описание ошибки.
-	virtual QString getError() const;
+    /// Возвращает описание ошибки.
+    virtual QString getError() const;
 
-	/// Возвращает виджет.
-	virtual QQuickItem* getWidget() const;
+    /// Возвращает виджет.
+    virtual QQuickItem *getWidget() const;
 
-	virtual QWidget* getNativeWidget() const { return nullptr; }
+    virtual QWidget *getNativeWidget() const {
+        return nullptr;
+    }
 
-	/// Возвращает контекст виджета.
-	virtual QVariantMap getContext() const;
+    /// Возвращает контекст виджета.
+    virtual QVariantMap getContext() const;
 
-private:
-	/// Конвертирует ошибку, упакованную в QVariant, в строку.
-	QString translateError(const QVariant& aError) const;
+  private:
+    /// Конвертирует ошибку, упакованную в QVariant, в строку.
+    QString translateError(const QVariant &aError) const;
 
-private:
-	ILog* mLog;
-	QString mError;
-	QQmlEngine* mEngine;
-	QSharedPointer<QQuickItem> mItem;
-	SDK::GUI::GraphicsItemInfo mInfo;
+  private:
+    ILog *mLog;
+    QString mError;
+    QQmlEngine *mEngine;
+    QSharedPointer<QQuickItem> mItem;
+    SDK::GUI::GraphicsItemInfo mInfo;
 };
 
 //---------------------------------------------------------------------------

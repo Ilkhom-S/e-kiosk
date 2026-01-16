@@ -7,34 +7,28 @@ using namespace SDK::Driver;
 using namespace SDK::Plugin;
 
 //------------------------------------------------------------------------------
-template <class T>
-IPlugin* CreatePlugin(IEnvironment* aEnvironment, const QString& aInstancePath)
-{
-	return new DevicePluginBase<T>(CComponents::CoinAcceptor, aEnvironment, aInstancePath);
+template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
+    return new DevicePluginBase<T>(CComponents::CoinAcceptor, aEnvironment, aInstancePath);
 }
 
 //------------------------------------------------------------------------------
-template <class T>
-TParameterList EnumParameters()
-{
-	return createNamedList<T>(T::getModelList(), CComponents::CoinAcceptor)
-		   << setProtocol(ProtocolNames::CashDevice::CCTalk)
+template <class T> TParameterList EnumParameters() {
+    return createNamedList<T>(T::getModelList(), CComponents::CoinAcceptor)
+           << setProtocol(ProtocolNames::CashDevice::CCTalk)
 
-		   // ID валюты. TODO: необходимо получать поддержку валют статически от каждого протокола.
-		   << SPluginParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId, false,
-							   QT_TRANSLATE_NOOP("BillAcceptorParameters", "BillAcceptorParameters#system_currency_id"),
-							   QString(), QVariant(),
-							   QStringList()
-								   << "643" << "810" << "978" << "840" << "980" << "398" << "756" << "356" << "364");
+           // ID валюты. TODO: необходимо получать поддержку валют статически от каждого протокола.
+           << SPluginParameter(CHardwareSDK::CashAcceptor::SystemCurrencyId, false,
+                               QT_TRANSLATE_NOOP("BillAcceptorParameters", "BillAcceptorParameters#system_currency_id"),
+                               QString(), QVariant(),
+                               QStringList()
+                                   << "643" << "810" << "978" << "840" << "980" << "398" << "756" << "356" << "364");
 }
 
 //------------------------------------------------------------------------------
-template <class T>
-TParameterList CCTalkParameters()
-{
-	using namespace CHardware::CashDevice;
+template <class T> TParameterList CCTalkParameters() {
+    using namespace CHardware::CashDevice;
 
-	return EnumParameters<T>() << setProtocolType(CCTalkTypes::CRC8, QStringList() << CCTalkTypes::CRC8);
+    return EnumParameters<T>() << setProtocolType(CCTalkTypes::CRC8, QStringList() << CCTalkTypes::CRC8);
 }
 
 //------------------------------------------------------------------------------

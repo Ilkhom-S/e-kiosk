@@ -5,29 +5,27 @@
 #include "PayFRBase.h"
 
 //--------------------------------------------------------------------------------
-template <class T>
-class PayOnline : public PayFRBase<T>
-{
-	SET_SUBSERIES("PayOnline")
+template <class T> class PayOnline : public PayFRBase<T> {
+    SET_SUBSERIES("PayOnline")
 
-public:
-	PayOnline();
+  public:
+    PayOnline();
 
-	/// Устанавливает конфигурацию устройству.
-	virtual void setDeviceConfiguration(const QVariantMap& aConfiguration);
+    /// Устанавливает конфигурацию устройству.
+    virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
-protected:
-	/// Запросить и вывести в лог критичные параметры ФР.
-	virtual void processDeviceData();
+  protected:
+    /// Запросить и вывести в лог критичные параметры ФР.
+    virtual void processDeviceData();
 
-	/// Включить/выключить режим непечати документов.
-	virtual bool setNotPrintDocument(bool aEnabled, bool aZReport = false);
+    /// Включить/выключить режим непечати документов.
+    virtual bool setNotPrintDocument(bool aEnabled, bool aZReport = false);
 
-	/// Получить таймаут незабранного чека.
-	virtual uchar getLeftReceiptTimeout();
+    /// Получить таймаут незабранного чека.
+    virtual uchar getLeftReceiptTimeout();
 
-	/// Вытолкнуть чек.
-	virtual bool push();
+    /// Вытолкнуть чек.
+    virtual bool push();
 };
 
 typedef PayOnline<ShtrihOnlineFRBase<ShtrihTCPFRBase>> PayOnlineTCP;

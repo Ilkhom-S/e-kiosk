@@ -17,40 +17,39 @@
 typedef QPair<int, int> TMoneyPosition;
 
 //--------------------------------------------------------------------------------
-class AdaptiveFiscalLogic
-{
-public:
-	AdaptiveFiscalLogic(const QVariantMap& aConfiguration);
+class AdaptiveFiscalLogic {
+  public:
+    AdaptiveFiscalLogic(const QVariantMap &aConfiguration);
 
-	/// Уместить терминальную квитанцию в реквизиты ПФД-шаблона
-	bool adjustReceipt(const QStringList& aReceipt);
+    /// Уместить терминальную квитанцию в реквизиты ПФД-шаблона
+    bool adjustReceipt(const QStringList &aReceipt);
 
-	/// Получить текстовые реквизиты
-	QStringList& getTextProperties();
+    /// Получить текстовые реквизиты
+    QStringList &getTextProperties();
 
-private:
-	/// Уместить терминальную квитанцию в реквизиты ПФД-шаблона
-	bool adjustReceipt(const QStringList& aReceipt, const TMoneyPosition& aMoneyPosition,
-					   CSparkFR::TextProperties::EPosition::Enum aPosition);
+  private:
+    /// Уместить терминальную квитанцию в реквизиты ПФД-шаблона
+    bool adjustReceipt(const QStringList &aReceipt, const TMoneyPosition &aMoneyPosition,
+                       CSparkFR::TextProperties::EPosition::Enum aPosition);
 
-	/// Получить границы участка шаблона с денежными данными
-	TMoneyPosition getMoneyPosition();
+    /// Получить границы участка шаблона с денежными данными
+    TMoneyPosition getMoneyPosition();
 
-	/// Получить буфер из строки, разделенный по максимальной длине строки
-	QStringList getSeparatedBuffer(const QString& aLine);
+    /// Получить буфер из строки, разделенный по максимальной длине строки
+    QStringList getSeparatedBuffer(const QString &aLine);
 
-	/// Удалить разделитель в чеке для вписывания его в ПФД
-	void removeDelimeter(QStringList& aText, CSparkFR::TextProperties::EPosition::Enum aPosition);
+    /// Удалить разделитель в чеке для вписывания его в ПФД
+    void removeDelimeter(QStringList &aText, CSparkFR::TextProperties::EPosition::Enum aPosition);
 
-	/// Уместить буфер текста в реквизит ПФД-шаблона
-	bool adjustBuffer(QStringList& aBuffer,
-					  CSparkFR::TextProperties::EPosition::Enum aPosition = CSparkFR::TextProperties::EPosition::No);
+    /// Уместить буфер текста в реквизит ПФД-шаблона
+    bool adjustBuffer(QStringList &aBuffer,
+                      CSparkFR::TextProperties::EPosition::Enum aPosition = CSparkFR::TextProperties::EPosition::No);
 
-	/// Конфигурация - настройки чека и шаблон
-	QVariantMap mConfiguration;
+    /// Конфигурация - настройки чека и шаблон
+    QVariantMap mConfiguration;
 
-	/// Текстовые реквизиты
-	QStringList mTextProperties;
+    /// Текстовые реквизиты
+    QStringList mTextProperties;
 };
 
 //--------------------------------------------------------------------------------

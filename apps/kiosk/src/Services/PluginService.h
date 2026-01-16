@@ -26,108 +26,109 @@
 
 //------------------------------------------------------------------------------
 class PluginService : public QObject,
-					  public ILogable,
-					  public SDK::PaymentProcessor::IService,
-					  public SDK::PaymentProcessor::IServiceState,
-					  private SDK::Plugin::IKernel
-{
-	Q_OBJECT
+                      public ILogable,
+                      public SDK::PaymentProcessor::IService,
+                      public SDK::PaymentProcessor::IServiceState,
+                      private SDK::Plugin::IKernel {
+    Q_OBJECT
 
-public:
-	PluginService(IApplication* aApplication);
-	virtual ~PluginService();
+  public:
+    PluginService(IApplication *aApplication);
+    virtual ~PluginService();
 
-	static PluginService* instance(IApplication* aApplication);
+    static PluginService *instance(IApplication *aApplication);
 
-	/// Методы интерфейса IService
+    /// Методы интерфейса IService
 
-	/// Инициализация сервиса.
-	virtual bool initialize();
+    /// Инициализация сервиса.
+    virtual bool initialize();
 
-	/// IService: Закончена инициализация всех сервисов.
-	virtual void finishInitialize();
+    /// IService: Закончена инициализация всех сервисов.
+    virtual void finishInitialize();
 
-	/// IService: Возвращает false, если сервис не может быть остановлен в текущий момент.
-	virtual bool canShutdown();
+    /// IService: Возвращает false, если сервис не может быть остановлен в текущий момент.
+    virtual bool canShutdown();
 
-	/// Завершение работы сервиса.
-	virtual bool shutdown();
+    /// Завершение работы сервиса.
+    virtual bool shutdown();
 
-	/// Возвращает имя сервиса.
-	virtual QString getName() const;
+    /// Возвращает имя сервиса.
+    virtual QString getName() const;
 
-	/// Список зависимостей.
-	virtual const QSet<QString>& getRequiredServices() const;
+    /// Список зависимостей.
+    virtual const QSet<QString> &getRequiredServices() const;
 
-	/// Получить параметры сервиса.
-	virtual QVariantMap getParameters() const;
+    /// Получить параметры сервиса.
+    virtual QVariantMap getParameters() const;
 
-	/// Сброс служебной информации.
-	virtual void resetParameters(const QSet<QString>& aParameters);
+    /// Сброс служебной информации.
+    virtual void resetParameters(const QSet<QString> &aParameters);
 
-	/// Возвращает список загруженных плагинов
-	virtual QString getState() const;
+    /// Возвращает список загруженных плагинов
+    virtual QString getState() const;
 
-	/// Возвращает загрузчик плагинов.
-	virtual SDK::Plugin::IPluginLoader* getPluginLoader();
+    /// Возвращает загрузчик плагинов.
+    virtual SDK::Plugin::IPluginLoader *getPluginLoader();
 
-	/// Методы интерфейса SDK::Plugin::IKernel
-	/// Возвращает логгер.
-	virtual ILog* getLog(const QString& aName = "") const;
+    /// Методы интерфейса SDK::Plugin::IKernel
+    /// Возвращает логгер.
+    virtual ILog *getLog(const QString &aName = "") const;
 
-	/// Возвращает версию ядра.
-	virtual QString getVersion() const;
+    /// Возвращает версию ядра.
+    virtual QString getVersion() const;
 
-	/// Возвращает рабочу папку ядра.
-	virtual QString getDirectory() const;
+    /// Возвращает рабочу папку ядра.
+    virtual QString getDirectory() const;
 
-	/// Возвращает каталог для хранения данных/конфигов приложения.
-	virtual QString getDataDirectory() const;
+    /// Возвращает каталог для хранения данных/конфигов приложения.
+    virtual QString getDataDirectory() const;
 
-	/// Возвращает каталог для хранения лог-файлов приложения.
-	virtual QString getLogsDirectory() const;
+    /// Возвращает каталог для хранения лог-файлов приложения.
+    virtual QString getLogsDirectory() const;
 
-	/// Возвращает корневую папку для расширений.
-	virtual QString getPluginDirectory() const;
+    /// Возвращает корневую папку для расширений.
+    virtual QString getPluginDirectory() const;
 
-	/// Сообщает имеется ли для данной пары плагин-объект конфигурация.
-	/// Используется для хранения конфигураций плагинов в прикладной программе.
-	virtual bool canConfigurePlugin(const QString& aInstancePath) const;
+    /// Сообщает имеется ли для данной пары плагин-объект конфигурация.
+    /// Используется для хранения конфигураций плагинов в прикладной программе.
+    virtual bool canConfigurePlugin(const QString &aInstancePath) const;
 
-	/// Возвращает конфигурацию для данной пары плагин-объект.
-	/// Используется для хранения конфигураций плагинов в прикладной программе.
-	virtual QVariantMap getPluginConfiguration(const QString& aInstancePath) const;
+    /// Возвращает конфигурацию для данной пары плагин-объект.
+    /// Используется для хранения конфигураций плагинов в прикладной программе.
+    virtual QVariantMap getPluginConfiguration(const QString &aInstancePath) const;
 
-	/// Сообщает сможет ли сохранить конфигурацию для данной пары плагин-объект.
-	/// Используется для хранения конфигураций плагинов в прикладной программе.
-	virtual bool canSavePluginConfiguration(const QString& aInstancePath) const;
+    /// Сообщает сможет ли сохранить конфигурацию для данной пары плагин-объект.
+    /// Используется для хранения конфигураций плагинов в прикладной программе.
+    virtual bool canSavePluginConfiguration(const QString &aInstancePath) const;
 
-	/// Сохраняет конфигурацию для данной пары плагин-объект.
-	/// Используется для хранения конфигураций плагинов в прикладной программе.
-	virtual bool savePluginConfiguration(const QString& aInstancePath, const QVariantMap& aParamenters);
+    /// Сохраняет конфигурацию для данной пары плагин-объект.
+    /// Используется для хранения конфигураций плагинов в прикладной программе.
+    virtual bool savePluginConfiguration(const QString &aInstancePath, const QVariantMap &aParamenters);
 
-	virtual SDK::Plugin::IExternalInterface* getInterface(const QString& aInterface);
+    virtual SDK::Plugin::IExternalInterface *getInterface(const QString &aInterface);
 
-	/// Возвращает загрузчик плагинов.
-	using SDK::Plugin::IKernel::getPluginLoader;
-	virtual SDK::Plugin::IPluginLoader* getPluginLoader() const { return mPluginLoader; }
+    /// Возвращает загрузчик плагинов.
+    using SDK::Plugin::IKernel::getPluginLoader;
+    virtual SDK::Plugin::IPluginLoader *getPluginLoader() const {
+        return mPluginLoader;
+    }
 
-private:
-	/// Проверяет плагин на валидность и если необходимо запрещает его загрузку.
-	void verifyPlugins();
+  private:
+    /// Проверяет плагин на валидность и если необходимо запрещает его загрузку.
+    void verifyPlugins();
 
-private:
-	/// Интерфейс приложения.
-	IApplication* mApplication;
+  private:
+    /// Интерфейс приложения.
+    IApplication *mApplication;
 
-	/// Загрузчик плагинов.
-	SDK::Plugin::IPluginLoader* mPluginLoader;
+    /// Загрузчик плагинов.
+    SDK::Plugin::IPluginLoader *mPluginLoader;
 
-	/// Потоки проверки подписи плагинов.
-	QFutureSynchronizer<void> mPluginVerifierSynchronizer;
+    /// Потоки проверки подписи плагинов.
+    QFutureSynchronizer<void> mPluginVerifierSynchronizer;
 
-	QMap<QString, QString> mSignedPlugins;
-	QStringList mUnsignedPlugins;
+    QMap<QString, QString> mSignedPlugins;
+    QStringList mUnsignedPlugins;
 };
 
 //------------------------------------------------------------------------------

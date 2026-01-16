@@ -9,36 +9,31 @@ using namespace PrinterStatusCode;
 
 //--------------------------------------------------------------------------------
 // Модели данной реализации.
-namespace CSTAR
-{
-	inline QStringList getEjectorModels()
-	{
-		return QStringList() << Models::TUP592 << Models::TUP992 << Models::UnknownEjector;
-	}
+namespace CSTAR {
+    inline QStringList getEjectorModels() {
+        return QStringList() << Models::TUP592 << Models::TUP992 << Models::UnknownEjector;
+    }
 } // namespace CSTAR
 
 //--------------------------------------------------------------------------------
-EjectorStarPrinter::EjectorStarPrinter()
-{
-	using namespace CHardware::Printer;
+EjectorStarPrinter::EjectorStarPrinter() {
+    using namespace CHardware::Printer;
 
-	setConfigParameter(RetractorEnable, true);
-	setConfigParameter(Settings::PreviousReceipt, Values::Retract);
-	setConfigParameter(Settings::NotTakenReceipt, Values::Retract);
+    setConfigParameter(RetractorEnable, true);
+    setConfigParameter(Settings::PreviousReceipt, Values::Retract);
+    setConfigParameter(Settings::NotTakenReceipt, Values::Retract);
 
-	mModels = CSTAR::getEjectorModels();
+    mModels = CSTAR::getEjectorModels();
 }
 
 //--------------------------------------------------------------------------------
-QStringList EjectorStarPrinter::getModelList()
-{
-	return CSTAR::getEjectorModels();
+QStringList EjectorStarPrinter::getModelList() {
+    return CSTAR::getEjectorModels();
 }
 
 //--------------------------------------------------------------------------------
-bool EjectorStarPrinter::retract()
-{
-	return StarPrinter::retract() && waitEjectorState(false);
+bool EjectorStarPrinter::retract() {
+    return StarPrinter::retract() && waitEjectorState(false);
 }
 
 //--------------------------------------------------------------------------------

@@ -41,122 +41,121 @@
 typedef OPOSPollingDeviceBase<ProtoFR, OPOS::OPOSFiscalPrinter> TPollingOPOSFR;
 typedef FRBase<PrinterBase<TPollingOPOSFR>> TOPOSFR;
 
-class OPOSMStarTUPK : public TOPOSFR
-{
-	SET_SERIES("Multisoft")
+class OPOSMStarTUPK : public TOPOSFR {
+    SET_SERIES("Multisoft")
 
-public:
-	OPOSMStarTUPK();
+  public:
+    OPOSMStarTUPK();
 
-	/// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
-	virtual bool release();
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    virtual bool release();
 
-	/// Возвращает список сконфигурированных OPOS устройств.
-	static QStringList getProfileNames();
+    /// Возвращает список сконфигурированных OPOS устройств.
+    static QStringList getProfileNames();
 
-protected:
-	/// Инициализировать ресурсы.
-	virtual void initializeResources();
+  protected:
+    /// Инициализировать ресурсы.
+    virtual void initializeResources();
 
-	/// Попытка самоидентификации.
-	virtual bool isConnected();
+    /// Попытка самоидентификации.
+    virtual bool isConnected();
 
-	/// Проверка возможности выполнения функционала, предполагающего связь с устройством.
-	virtual bool checkConnectionAbility();
+    /// Проверка возможности выполнения функционала, предполагающего связь с устройством.
+    virtual bool checkConnectionAbility();
 
-	/// Получить статус.
-	virtual bool getStatus(TStatusCodes& aStatusCodes);
+    /// Получить статус.
+    virtual bool getStatus(TStatusCodes &aStatusCodes);
 
-	/// Фоновая логика при появлении определенных состояний устройства.
-	virtual void postPollingAction(const TStatusCollection& aNewStatusCollection,
-								   const TStatusCollection& aOldStatusCollection);
+    /// Фоновая логика при появлении определенных состояний устройства.
+    virtual void postPollingAction(const TStatusCollection &aNewStatusCollection,
+                                   const TStatusCollection &aOldStatusCollection);
 
-	/// Проверить параметры налога.
-	virtual bool checkTax(SDK::Driver::TVAT aVAT, CFR::Taxes::SData& aData);
+    /// Проверить параметры налога.
+    virtual bool checkTax(SDK::Driver::TVAT aVAT, CFR::Taxes::SData &aData);
 
-	/// Напечатать [и выдать] чек.
-	virtual bool processReceipt(const QStringList& aReceipt, bool aProcessing = true);
+    /// Напечатать [и выдать] чек.
+    virtual bool processReceipt(const QStringList &aReceipt, bool aProcessing = true);
 
-	/// Инициализация устройства.
-	virtual bool updateParameters();
+    /// Инициализация устройства.
+    virtual bool updateParameters();
 
-	/// Печать фискального чека.
-	virtual bool performFiscal(const QStringList& aReceipt, const SDK::Driver::SPaymentData& aPaymentData,
-							   quint32* aFDNumber = nullptr);
+    /// Печать фискального чека.
+    virtual bool performFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData,
+                               quint32 *aFDNumber = nullptr);
 
-	/// Печать Z отчета.
-	virtual bool performZReport(bool aPrintDeferredReports);
+    /// Печать Z отчета.
+    virtual bool performZReport(bool aPrintDeferredReports);
 
-	/// Локальная печать X-отчета.
-	virtual bool processXReport();
+    /// Локальная печать X-отчета.
+    virtual bool processXReport();
 
-	/// Печать выплаты.
-	virtual bool processPayout(double aAmount);
+    /// Печать выплаты.
+    virtual bool processPayout(double aAmount);
 
-	/// Получить сумму в кассе.
-	virtual double getAmountInCash();
+    /// Получить сумму в кассе.
+    virtual double getAmountInCash();
 
-	/// Печать X-отчета. Параметром задаётся набор дополнительных строк для печати (например баланс).
-	virtual bool performXReport(const QStringList& aReceipt);
+    /// Печать X-отчета. Параметром задаётся набор дополнительных строк для печати (например баланс).
+    virtual bool performXReport(const QStringList &aReceipt);
 
-	/// Печать выплаты.
-	virtual bool performEncashment(const QStringList& aReceipt, double aAmount);
+    /// Печать выплаты.
+    virtual bool performEncashment(const QStringList &aReceipt, double aAmount);
 
-	// TODO: посмотреть, можно ли это сделать закрытием чека - фискального или нефискального или есть просто отрезка.
-	/// Обработка чека после печати.
-	virtual bool receiptProcessing();
+    // TODO: посмотреть, можно ли это сделать закрытием чека - фискального или нефискального или есть просто отрезка.
+    /// Обработка чека после печати.
+    virtual bool receiptProcessing();
 
-	/// Напечатать строку.
-	virtual bool printLine(const QVariant& aLine);
+    /// Напечатать строку.
+    virtual bool printLine(const QVariant &aLine);
 
-	/// Вызывает int-метод в рабочем потоке, возвращает и обработывает результат.
-	virtual SOPOSResult processIntMethod(TIntMethod aMethod, const QString& aFunctionData);
+    /// Вызывает int-метод в рабочем потоке, возвращает и обработывает результат.
+    virtual SOPOSResult processIntMethod(TIntMethod aMethod, const QString &aFunctionData);
 
-	/// Получить состояние смены.
-	virtual SDK::Driver::ESessionState::Enum getSessionState();
+    /// Получить состояние смены.
+    virtual SDK::Driver::ESessionState::Enum getSessionState();
 
-	/// Получить состояние документа.
-	virtual SDK::Driver::EDocumentState::Enum getDocumentState();
+    /// Получить состояние документа.
+    virtual SDK::Driver::EDocumentState::Enum getDocumentState();
 
-	/// Сделать фискальный чек.
-	bool makeFiscal(const SDK::Driver::SPaymentData& aPaymentData);
+    /// Сделать фискальный чек.
+    bool makeFiscal(const SDK::Driver::SPaymentData &aPaymentData);
 
-	/// Отмена открытого фискального/нефискального документа.
-	bool abortDocument();
+    /// Отмена открытого фискального/нефискального документа.
+    bool abortDocument();
 
-	/// Включить доступность параметра.
-	void setEnable(COPOSMStarTUPK::Parameters::Enum aParameter, bool aEnable);
+    /// Включить доступность параметра.
+    void setEnable(COPOSMStarTUPK::Parameters::Enum aParameter, bool aEnable);
 
-	/// Возвращает свободных мест или отчетов в буфере Z-отчётов.
-	bool getZBufferSlots(int& aSlots, bool aFilled);
+    /// Возвращает свободных мест или отчетов в буфере Z-отчётов.
+    bool getZBufferSlots(int &aSlots, bool aFilled);
 
-	/// Z отчет.
-	virtual bool execZReport(bool aAuto);
+    /// Z отчет.
+    virtual bool execZReport(bool aAuto);
 
-	/// Печать отложенных Z отчетов.
-	bool printDeferredZReports();
+    /// Печать отложенных Z отчетов.
+    bool printDeferredZReports();
 
-	/// Фиксирование ошибки в контексте выполнения вызвавшего ее функционала.
-	bool fixError(SDK::Driver::EFiscalPrinterCommand::Enum aCommand, TBoolMethod aFunction);
+    /// Фиксирование ошибки в контексте выполнения вызвавшего ее функционала.
+    bool fixError(SDK::Driver::EFiscalPrinterCommand::Enum aCommand, TBoolMethod aFunction);
 
-	/// Получить описание ошибки.
-	virtual QString getErrorDescription();
+    /// Получить описание ошибки.
+    virtual QString getErrorDescription();
 
-	/// Нативный интерфейс драйвера.
-	typedef OposFiscalPrinter_CCO::IOPOSFiscalPrinter_1_12 TNativeDriver;
-	TNativeDriver* mNativeDriver;
+    /// Нативный интерфейс драйвера.
+    typedef OposFiscalPrinter_CCO::IOPOSFiscalPrinter_1_12 TNativeDriver;
+    TNativeDriver *mNativeDriver;
 
-	/// Флаг ошибки NAND-флеш памяти.
-	bool mMemoryError;
+    /// Флаг ошибки NAND-флеш памяти.
+    bool mMemoryError;
 
-	/// Последняя операция.
-	QList<TBoolMethod> mLastHandledOperations;
+    /// Последняя операция.
+    QList<TBoolMethod> mLastHandledOperations;
 
-	/// Обрабатываемые ошибки.
-	QList<COPOSMStarTUPK::SErrorData> mErrors;
+    /// Обрабатываемые ошибки.
+    QList<COPOSMStarTUPK::SErrorData> mErrors;
 
-	/// Версия прошивки.
-	int mFWVersion;
+    /// Версия прошивки.
+    int mFWVersion;
 };
 
 /// Перевод денежных сумм из представления с плавающей точкой в формат ФР.

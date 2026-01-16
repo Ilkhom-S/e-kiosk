@@ -4,9 +4,8 @@
 #include "PinPaymentStatusRequest.h"
 
 //---------------------------------------------------------------------------
-PinPaymentStatusRequest::PinPaymentStatusRequest(Payment* aPayment) : PaymentStatusRequest(aPayment)
-{
-	addParameter("PIN_DATA", 1);
+PinPaymentStatusRequest::PinPaymentStatusRequest(Payment *aPayment) : PaymentStatusRequest(aPayment) {
+    addParameter("PIN_DATA", 1);
 }
 
 //---------------------------------------------------------------------------

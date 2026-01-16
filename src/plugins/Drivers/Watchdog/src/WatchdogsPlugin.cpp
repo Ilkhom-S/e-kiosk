@@ -7,55 +7,48 @@ using namespace SDK::Plugin;
 using namespace SDK::Driver;
 
 //------------------------------------------------------------------------------
-template <class T>
-IPlugin* CreatePlugin(IEnvironment* aEnvironment, const QString& aInstancePath)
-{
-	return new DevicePluginBase<T>("Watchdogs", aEnvironment, aInstancePath);
+template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
+    return new DevicePluginBase<T>("Watchdogs", aEnvironment, aInstancePath);
 }
 
 //------------------------------------------------------------------------------
-template <class T>
-TParameterList defaultParameters(const QString& aModel)
-{
-	return modifyPriority(createNamedList<T>(aModel), EDetectingPriority::VeryHigh);
+template <class T> TParameterList defaultParameters(const QString &aModel) {
+    return modifyPriority(createNamedList<T>(aModel), EDetectingPriority::VeryHigh);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter addSensor(const QString& aName, const QString& aTranslation)
-{
-	return SPluginParameter(aName, false, aTranslation, QString(), CHardwareSDK::Values::Auto,
-							QStringList() << CHardwareSDK::Values::Use << CHardwareSDK::Values::NotUse, false);
+SPluginParameter addSensor(const QString &aName, const QString &aTranslation) {
+    return SPluginParameter(aName, false, aTranslation, QString(), CHardwareSDK::Values::Auto,
+                            QStringList() << CHardwareSDK::Values::Use << CHardwareSDK::Values::NotUse, false);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter addSensorAction(const QString& aName, const QString& aTranslation)
-{
-	return SPluginParameter(aName, false, aTranslation, QString(), CHardwareSDK::Values::NotUse,
-							QStringList() << CHardwareSDK::Values::NotUse
-										  << CHardware::Watchdog::Sensor::ActionValue::LockTerminal
-										  << CHardware::Watchdog::Sensor::ActionValue::EnterServiceMenu,
-							false);
+SPluginParameter addSensorAction(const QString &aName, const QString &aTranslation) {
+    return SPluginParameter(aName, false, aTranslation, QString(), CHardwareSDK::Values::NotUse,
+                            QStringList() << CHardwareSDK::Values::NotUse
+                                          << CHardware::Watchdog::Sensor::ActionValue::LockTerminal
+                                          << CHardware::Watchdog::Sensor::ActionValue::EnterServiceMenu,
+                            false);
 }
 
-#define ADD_SENSOR(aName, aSensorTranslation, aSensorActionTranslation)  \
-	addSensor(CHardware::Watchdog::Sensor::aName, aSensorTranslation) /* \
+#define ADD_SENSOR(aName, aSensorTranslation, aSensorActionTranslation)                                                \
+    addSensor(CHardware::Watchdog::Sensor::aName, aSensorTranslation) /*                                               \
 << addSensorAction(CHardware::Watchdog::Sensor::Action::aName, aSensorActionTranslation)*/
 
 //------------------------------------------------------------------------------
-QVector<SPluginParameter> AlarmParameters(const QString& aModel)
-{
-	return defaultParameters<Alarm>(aModel)
-		   << ADD_SENSOR(LowerUnit, QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#lower_unit_sensor"),
-						 QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#lower_unit_sensor_action"))
-		   << ADD_SENSOR(UpperUnit, QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#upper_unit_sensor"),
-						 QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#upper_unit_sensor_action"))
-		   << ADD_SENSOR(Safe, QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#safe_unit_sensor"),
-						 QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#safe_unit_sensor_action"));
+QVector<SPluginParameter> AlarmParameters(const QString &aModel) {
+    return defaultParameters<Alarm>(aModel)
+           << ADD_SENSOR(LowerUnit, QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#lower_unit_sensor"),
+                         QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#lower_unit_sensor_action"))
+           << ADD_SENSOR(UpperUnit, QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#upper_unit_sensor"),
+                         QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#upper_unit_sensor_action"))
+           << ADD_SENSOR(Safe, QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#safe_unit_sensor"),
+                         QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#safe_unit_sensor_action"));
 }
 
 //------------------------------------------------------------------------------
-#define WD_PLUGIN_WITH_PARAMETERS(aClassName, aName, aParameters) \
-	COMMON_DRIVER_WITH_PARAMETERS(aClassName, &CreatePlugin<aClassName>, std::bind(&aParameters, #aName))
+#define WD_PLUGIN_WITH_PARAMETERS(aClassName, aName, aParameters)                                                      \
+    COMMON_DRIVER_WITH_PARAMETERS(aClassName, &CreatePlugin<aClassName>, std::bind(&aParameters, #aName))
 #define WD_PLUGIN(aName) COMMON_DRIVER(aName, std::bind(&defaultParameters<aName>, #aName))
 
 BEGIN_REGISTER_PLUGIN

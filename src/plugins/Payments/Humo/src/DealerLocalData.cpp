@@ -7,101 +7,86 @@
 // Project
 #include "DealerLocalData.h"
 
-
 //------------------------------------------------------------------------------
-DealerLocalData::DealerLocalData() {}
-
-//------------------------------------------------------------------------------
-bool DealerLocalData::loadInfo(const QString& aFileName)
-{
-	mColumns.clear();
-
-	QFile file(aFileName);
-
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-	{
-		return false;
-	}
-
-	QTextStream in(&file);
-	in.setCodec("UTF-8");
-	if (!in.atEnd())
-	{
-		foreach (auto column, in.readLine().trimmed().split(";"))
-		{
-			QStringList columnHeader = column.split("=");
-			if (columnHeader.size() != 2)
-			{
-				return false;
-			}
-			mColumns << QPair<QString, QString>(columnHeader[0], columnHeader[1]);
-		}
-	}
-
-	if (mColumns.size() > 0)
-	{
-		mFilePath = aFileName;
-
-		return true;
-	}
-
-	return false;
+DealerLocalData::DealerLocalData() {
 }
 
 //------------------------------------------------------------------------------
-QString DealerLocalData::getFirstField() const
-{
-	if (mColumns.size())
-	{
-		return mColumns.first().first;
-	}
+bool DealerLocalData::loadInfo(const QString &aFileName) {
+    mColumns.clear();
 
-	return "";
+    QFile file(aFileName);
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return false;
+    }
+
+    QTextStream in(&file);
+    in.setCodec("UTF-8");
+    if (!in.atEnd()) {
+        foreach (auto column, in.readLine().trimmed().split(";")) {
+            QStringList columnHeader = column.split("=");
+            if (columnHeader.size() != 2) {
+                return false;
+            }
+            mColumns << QPair<QString, QString>(columnHeader[0], columnHeader[1]);
+        }
+    }
+
+    if (mColumns.size() > 0) {
+        mFilePath = aFileName;
+
+        return true;
+    }
+
+    return false;
 }
 
 //------------------------------------------------------------------------------
-QList<QPair<QString, QString>> DealerLocalData::getColumns() const
-{
-	return mColumns;
+QString DealerLocalData::getFirstField() const {
+    if (mColumns.size()) {
+        return mColumns.first().first;
+    }
+
+    return "";
 }
 
 //------------------------------------------------------------------------------
-bool DealerLocalData::findNumber(const QString& aFirstColumnValue, QMap<QString, QString>& aParameters)
-{
-	aParameters.clear();
+QList<QPair<QString, QString>> DealerLocalData::getColumns() const {
+    return mColumns;
+}
 
-	QFile file(mFilePath);
+//------------------------------------------------------------------------------
+bool DealerLocalData::findNumber(const QString &aFirstColumnValue, QMap<QString, QString> &aParameters) {
+    aParameters.clear();
 
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-	{
-		return false;
-	}
+    QFile file(mFilePath);
 
-	bool headerSkipped = false;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return false;
+    }
 
-	QTextStream in(&file);
-	in.setCodec("UTF-8");
-	while (!in.atEnd())
-	{
-		if (!headerSkipped)
-		{
-			headerSkipped = true;
-		}
+    bool headerSkipped = false;
 
-		QStringList columns = in.readLine().trimmed().split(";");
+    QTextStream in(&file);
+    in.setCodec("UTF-8");
+    while (!in.atEnd()) {
+        if (!headerSkipped) {
+            headerSkipped = true;
+        }
 
-		if (columns[0] == aFirstColumnValue)
-		{
-			for (int i = 0; i < mColumns.size() && i < columns.size(); i++)
-			{
-				aParameters.insert(mColumns[i].first, columns[i]);
-			}
+        QStringList columns = in.readLine().trimmed().split(";");
 
-			return aParameters.size() > 0;
-		}
-	}
+        if (columns[0] == aFirstColumnValue) {
+            for (int i = 0; i < mColumns.size() && i < columns.size(); i++) {
+                aParameters.insert(mColumns[i].first, columns[i]);
+            }
 
-	return false;
+            return aParameters.size() > 0;
+        }
+    }
+
+    return false;
 }
 
 //------------------------------------------------------------------------------

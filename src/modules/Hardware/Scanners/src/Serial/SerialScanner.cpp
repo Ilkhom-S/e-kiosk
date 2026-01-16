@@ -5,23 +5,20 @@
 #include "SerialScanner.h"
 
 //--------------------------------------------------------------------------------
-SerialScanner::SerialScanner()
-{
-	mDeviceName = "Generic serial HID";
-	mAutoDetectable = false;
+SerialScanner::SerialScanner() {
+    mDeviceName = "Generic serial HID";
+    mAutoDetectable = false;
 }
 
 //--------------------------------------------------------------------------------
-bool SerialScanner::getData(QByteArray& aAnswer)
-{
-	if (mIOPort->getType() == SDK::Driver::EPortTypes::VirtualCOM)
-	{
-		QVariantMap configuration;
-		configuration.insert(CHardware::Port::COM::WaitResult, true);
-		mIOPort->setDeviceConfiguration(configuration);
-	}
+bool SerialScanner::getData(QByteArray &aAnswer) {
+    if (mIOPort->getType() == SDK::Driver::EPortTypes::VirtualCOM) {
+        QVariantMap configuration;
+        configuration.insert(CHardware::Port::COM::WaitResult, true);
+        mIOPort->setDeviceConfiguration(configuration);
+    }
 
-	return TSerialScanner::getData(aAnswer);
+    return TSerialScanner::getData(aAnswer);
 }
 
 //--------------------------------------------------------------------------------

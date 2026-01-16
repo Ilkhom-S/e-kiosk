@@ -9,45 +9,40 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CCashAcceptor
-{
-	typedef QSet<SDK::Driver::ECashAcceptorStatus::Enum> TStatusSet;
+namespace CCashAcceptor {
+    typedef QSet<SDK::Driver::ECashAcceptorStatus::Enum> TStatusSet;
 
-	/// Группы статусов.
-	namespace Set
-	{
-		using namespace SDK::Driver::ECashAcceptorStatus;
+    /// Группы статусов.
+    namespace Set {
+        using namespace SDK::Driver::ECashAcceptorStatus;
 
-		const TStatusSet GeneralStatuses = TStatusSet() << OK << Warning << Error << MechanicFailure;
-		const TStatusSet NormalStatuses = TStatusSet() << OK << Disabled << Enabled << Inhibit;
-		const TStatusSet BadStatuses = TStatusSet() << Warning << Error << MechanicFailure;
-		const TStatusSet BusyStatuses = TStatusSet() << Busy << Rejected << Cheated << OperationError;
-		const TStatusSet SpecialStatuses = TStatusSet() << Rejected << Cheated << StackerFull << StackerOpen;
-		const TStatusSet BadSpecialStatuses = TStatusSet() << Cheated << StackerFull << StackerOpen;
-		const TStatusSet ErrorStatuses = TStatusSet() << Error << StackerFull << StackerOpen << MechanicFailure;
-		const TStatusSet MainStatuses = GeneralStatuses + SpecialStatuses;
-		const TStatusSet LongStatuses =
-			NormalStatuses + BadStatuses + ErrorStatuses + (TStatusSet() << Busy << BillOperation << Escrow);
-	} // namespace Set
+        const TStatusSet GeneralStatuses = TStatusSet() << OK << Warning << Error << MechanicFailure;
+        const TStatusSet NormalStatuses = TStatusSet() << OK << Disabled << Enabled << Inhibit;
+        const TStatusSet BadStatuses = TStatusSet() << Warning << Error << MechanicFailure;
+        const TStatusSet BusyStatuses = TStatusSet() << Busy << Rejected << Cheated << OperationError;
+        const TStatusSet SpecialStatuses = TStatusSet() << Rejected << Cheated << StackerFull << StackerOpen;
+        const TStatusSet BadSpecialStatuses = TStatusSet() << Cheated << StackerFull << StackerOpen;
+        const TStatusSet ErrorStatuses = TStatusSet() << Error << StackerFull << StackerOpen << MechanicFailure;
+        const TStatusSet MainStatuses = GeneralStatuses + SpecialStatuses;
+        const TStatusSet LongStatuses =
+            NormalStatuses + BadStatuses + ErrorStatuses + (TStatusSet() << Busy << BillOperation << Escrow);
+    } // namespace Set
 
-	/// Таблица соответствия спец. статусов обычным статусам.
-	namespace SpecialStatus
-	{
-		using namespace SDK::Driver::ECashAcceptorStatus;
+    /// Таблица соответствия спец. статусов обычным статусам.
+    namespace SpecialStatus {
+        using namespace SDK::Driver::ECashAcceptorStatus;
 
-		class CSpecifications : public CSpecification<Enum, Enum>
-		{
-		public:
-			CSpecifications()
-			{
-				append(StackerFull, MechanicFailure);
-				append(StackerOpen, MechanicFailure);
-				append(Cheated, Warning);
-			}
-		};
+        class CSpecifications : public CSpecification<Enum, Enum> {
+          public:
+            CSpecifications() {
+                append(StackerFull, MechanicFailure);
+                append(StackerOpen, MechanicFailure);
+                append(Cheated, Warning);
+            }
+        };
 
-		static CSpecifications Specification;
-	} // namespace SpecialStatus
+        static CSpecifications Specification;
+    } // namespace SpecialStatus
 } // namespace CCashAcceptor
 
 //--------------------------------------------------------------------------------

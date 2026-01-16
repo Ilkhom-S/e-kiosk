@@ -35,173 +35,166 @@ class DeviceManager;
 #pragma deprecated(overwriteDeviceStatus)
 
 /// Варианты момента создания устройства
-namespace EDeviceCreationOrder
-{
-	enum Enum
-	{
-		OnDemand,
-		AtStart
-	};
+namespace EDeviceCreationOrder {
+    enum Enum { OnDemand, AtStart };
 } // namespace EDeviceCreationOrder
 
 //------------------------------------------------------------------------------
 /// Реализация сервиса для работы с устройствами.
-class DeviceService : public SDK::PaymentProcessor::IDeviceService, public SDK::PaymentProcessor::IService
-{
-	Q_OBJECT
+class DeviceService : public SDK::PaymentProcessor::IDeviceService, public SDK::PaymentProcessor::IService {
+    Q_OBJECT
 
-public:
-	/// структура - статус устройства
-	class Status : public SDK::PaymentProcessor::IDeviceStatus
-	{
-	public:
-		Status();
-		Status(const Status& aStatus);
-		explicit Status(SDK::Driver::EWarningLevel::Enum aLevel, const QString& aDescription, int aStatus);
+  public:
+    /// структура - статус устройства
+    class Status : public SDK::PaymentProcessor::IDeviceStatus {
+      public:
+        Status();
+        Status(const Status &aStatus);
+        explicit Status(SDK::Driver::EWarningLevel::Enum aLevel, const QString &aDescription, int aStatus);
 
-	public:
-		/// Уровень тревожности
-		virtual SDK::Driver::EWarningLevel::Enum level() const;
+      public:
+        /// Уровень тревожности
+        virtual SDK::Driver::EWarningLevel::Enum level() const;
 
-		/// Описание статуса
-		virtual const QString& description() const;
+        /// Описание статуса
+        virtual const QString &description() const;
 
-		/// Проверить содержимое статуса на удовлетворение определенному уровню
-		bool isMatched(SDK::Driver::EWarningLevel::Enum aLevel) const;
+        /// Проверить содержимое статуса на удовлетворение определенному уровню
+        bool isMatched(SDK::Driver::EWarningLevel::Enum aLevel) const;
 
-	public:
-		SDK::Driver::EWarningLevel::Enum mLevel;
-		QString mDescription;
-		int mStatus;
-	};
+      public:
+        SDK::Driver::EWarningLevel::Enum mLevel;
+        QString mDescription;
+        int mStatus;
+    };
 
-public:
-	/// Получение экземпляра DeviceService.
-	static DeviceService* instance(IApplication* aApplication);
+  public:
+    /// Получение экземпляра DeviceService.
+    static DeviceService *instance(IApplication *aApplication);
 
-	DeviceService(IApplication* aApplication);
-	virtual ~DeviceService();
+    DeviceService(IApplication *aApplication);
+    virtual ~DeviceService();
 
-	/// Инициализация сервиса.
-	virtual bool initialize();
+    /// Инициализация сервиса.
+    virtual bool initialize();
 
-	/// IService: Закончена инициализация всех сервисов.
-	virtual void finishInitialize();
+    /// IService: Закончена инициализация всех сервисов.
+    virtual void finishInitialize();
 
-	/// Возвращает false, если сервис не может быть остановлен в текущий момент.
-	virtual bool canShutdown();
+    /// Возвращает false, если сервис не может быть остановлен в текущий момент.
+    virtual bool canShutdown();
 
-	/// Завершение работы сервиса.
-	virtual bool shutdown();
+    /// Завершение работы сервиса.
+    virtual bool shutdown();
 
-	/// Возвращает имя сервиса.
-	virtual QString getName() const;
+    /// Возвращает имя сервиса.
+    virtual QString getName() const;
 
-	/// Получение списка зависимостей.
-	virtual const QSet<QString>& getRequiredServices() const;
+    /// Получение списка зависимостей.
+    virtual const QSet<QString> &getRequiredServices() const;
 
-	/// Получить параметры сервиса.
-	virtual QVariantMap getParameters() const;
+    /// Получить параметры сервиса.
+    virtual QVariantMap getParameters() const;
 
-	/// Сброс служебной информации.
-	virtual void resetParameters(const QSet<QString>& aParameters);
+    /// Сброс служебной информации.
+    virtual void resetParameters(const QSet<QString> &aParameters);
 
-	// IDeviceService
+    // IDeviceService
 
-	/// Неблокирующий поиск всех устройств.
-	virtual void detect(const QString& aDeviceType);
+    /// Неблокирующий поиск всех устройств.
+    virtual void detect(const QString &aDeviceType);
 
-	/// Прервать поиск устройств.
-	virtual void stopDetection();
+    /// Прервать поиск устройств.
+    virtual void stopDetection();
 
-	/// Получить полный список конфигураций.
-	virtual QStringList getConfigurations(bool aAllowOldConfigs = true) const;
+    /// Получить полный список конфигураций.
+    virtual QStringList getConfigurations(bool aAllowOldConfigs = true) const;
 
-	/// Сохранить cписок конфигураций.
-	virtual bool saveConfigurations(const QStringList& aConfigList);
+    /// Сохранить cписок конфигураций.
+    virtual bool saveConfigurations(const QStringList &aConfigList);
 
-	/// Добавить список параметров, необходимых для инициализации устройств.
-	virtual void setInitParameters(const QString& aDeviceType, const QVariantMap& aParameters);
+    /// Добавить список параметров, необходимых для инициализации устройств.
+    virtual void setInitParameters(const QString &aDeviceType, const QVariantMap &aParameters);
 
-	/// Подключение/захват устройства. aDeviceNumber - номер среди одинаковых устройств.
-	virtual SDK::Driver::IDevice* acquireDevice(const QString& aInstancePath);
+    /// Подключение/захват устройства. aDeviceNumber - номер среди одинаковых устройств.
+    virtual SDK::Driver::IDevice *acquireDevice(const QString &aInstancePath);
 
-	/// Создание устройства.
-	virtual QString createDevice(const QString& aDriverPath, const QVariantMap& aConfig);
+    /// Создание устройства.
+    virtual QString createDevice(const QString &aDriverPath, const QVariantMap &aConfig);
 
-	/// Отключение/освобождение указанного устройства.
-	virtual void releaseDevice(SDK::Driver::IDevice* aDevice);
+    /// Отключение/освобождение указанного устройства.
+    virtual void releaseDevice(SDK::Driver::IDevice *aDevice);
 
-	/// Обновить прошивку устройства.
-	virtual UpdateFirmwareResult updateFirmware(const QByteArray& aFirmware, const QString& aDeviceGUID);
+    /// Обновить прошивку устройства.
+    virtual UpdateFirmwareResult updateFirmware(const QByteArray &aFirmware, const QString &aDeviceGUID);
 
-	/// Получение списка параметров драйвера.
-	virtual SDK::Plugin::TParameterList getDriverParameters(const QString& aDriverPath) const;
+    /// Получение списка параметров драйвера.
+    virtual SDK::Plugin::TParameterList getDriverParameters(const QString &aDriverPath) const;
 
-	/// Получить конфигурацию утройства и всех, связанных с ним.
-	virtual QVariantMap getDeviceConfiguration(const QString& aConfigName);
+    /// Получить конфигурацию утройства и всех, связанных с ним.
+    virtual QVariantMap getDeviceConfiguration(const QString &aConfigName);
 
-	/// Устанавливает конфигурацию устройству.
-	virtual void setDeviceConfiguration(const QString& aConfigName, const QVariantMap& aConfig);
+    /// Устанавливает конфигурацию устройству.
+    virtual void setDeviceConfiguration(const QString &aConfigName, const QVariantMap &aConfig);
 
-	/// Получение списка драверов (поддерживаемых устройств).
-	virtual SDK::PaymentProcessor::TModelList getModelList(const QString& aFilter) const;
+    /// Получение списка драверов (поддерживаемых устройств).
+    virtual SDK::PaymentProcessor::TModelList getModelList(const QString &aFilter) const;
 
-	/// Получение списка драйверов.
-	virtual QStringList getDriverList() const;
+    /// Получение списка драйверов.
+    virtual QStringList getDriverList() const;
 
-	/// Возвращает список имен созданных устройств.
-	virtual QStringList getAcquiredDevicesList() const;
+    /// Возвращает список имен созданных устройств.
+    virtual QStringList getAcquiredDevicesList() const;
 
-	/// Получить имя конфига по устроойству.
-	virtual QString getDeviceConfigName(SDK::Driver::IDevice* aDevice);
+    /// Получить имя конфига по устроойству.
+    virtual QString getDeviceConfigName(SDK::Driver::IDevice *aDevice);
 
-	/// Получить статус устройства по имени конфигурации.
-	virtual QSharedPointer<SDK::PaymentProcessor::IDeviceStatus> getDeviceStatus(const QString& aConfigName);
+    /// Получить статус устройства по имени конфигурации.
+    virtual QSharedPointer<SDK::PaymentProcessor::IDeviceStatus> getDeviceStatus(const QString &aConfigName);
 
-	/// Освобождает все устройства.
-	virtual void releaseAll();
+    /// Освобождает все устройства.
+    virtual void releaseAll();
 
-	/// Перезаписать статус устройства (#29565)
-	virtual void overwriteDeviceStatus(SDK::Driver::IDevice* aDevice, SDK::Driver::EWarningLevel::Enum aLevel,
-									   const QString& aDescription, int aStatus);
+    /// Перезаписать статус устройства (#29565)
+    virtual void overwriteDeviceStatus(SDK::Driver::IDevice *aDevice, SDK::Driver::EWarningLevel::Enum aLevel,
+                                       const QString &aDescription, int aStatus);
 
-private:
-	void doDetect(const QString& aDeviceType);
-	bool initializeDevice(const QString& aConfigName, SDK::Driver::IDevice* aDevice);
-	void statusChanged(SDK::Driver::IDevice* aDevice, Status& aStatus);
+  private:
+    void doDetect(const QString &aDeviceType);
+    bool initializeDevice(const QString &aConfigName, SDK::Driver::IDevice *aDevice);
+    void statusChanged(SDK::Driver::IDevice *aDevice, Status &aStatus);
 
-private slots:
-	void onDeviceDetected(const QString& aConfigName, SDK::Driver::IDevice* aDevice);
-	void onDetectionFinished();
-	void onDeviceStatus(SDK::Driver::EWarningLevel::Enum aLevel, const QString& aDescription, int aStatus);
+  private slots:
+    void onDeviceDetected(const QString &aConfigName, SDK::Driver::IDevice *aDevice);
+    void onDetectionFinished();
+    void onDeviceStatus(SDK::Driver::EWarningLevel::Enum aLevel, const QString &aDescription, int aStatus);
 
-private:
-	DeviceManager* mDeviceManager;
+  private:
+    DeviceManager *mDeviceManager;
 
-	/// Общий список параметров, необходимых для инициализации устройств.
-	QMap<QString, QVariantMap> mInitParameters;
+    /// Общий список параметров, необходимых для инициализации устройств.
+    QMap<QString, QVariantMap> mInitParameters;
 
-	/// Здесь хранится результат запуска detectа.
-	QFutureWatcher<void> mDetectionResult;
+    /// Здесь хранится результат запуска detectа.
+    QFutureWatcher<void> mDetectionResult;
 
-	mutable QMutex mAccessMutex;
+    mutable QMutex mAccessMutex;
 
-	/// Список всех использованных устройств.
-	typedef QMap<QString, SDK::Driver::IDevice*> TAcquiredDevices;
-	TAcquiredDevices mAcquiredDevices;
+    /// Список всех использованных устройств.
+    typedef QMap<QString, SDK::Driver::IDevice *> TAcquiredDevices;
+    TAcquiredDevices mAcquiredDevices;
 
-	/// Кэш для статусов устройств.
-	QMap<QString, Status> mDeviceStatusCache;
+    /// Кэш для статусов устройств.
+    QMap<QString, Status> mDeviceStatusCache;
 
-	/// Параметр момента создания устройств
-	QMap<QString, int> mDeviceCreationOrder;
+    /// Параметр момента создания устройств
+    QMap<QString, int> mDeviceCreationOrder;
 
-	IApplication* mApplication;
-	ILog* mLog;
-	IHardwareDatabaseUtils* mDatabaseUtils;
+    IApplication *mApplication;
+    ILog *mLog;
+    IHardwareDatabaseUtils *mDatabaseUtils;
 
-	IntegratedDrivers mIntegratedDrivers;
+    IntegratedDrivers mIntegratedDrivers;
 };
 
 //------------------------------------------------------------------------------

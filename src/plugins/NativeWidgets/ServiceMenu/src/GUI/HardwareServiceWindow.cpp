@@ -19,169 +19,149 @@
 #include "HardwareServiceWindow.h"
 
 //------------------------------------------------------------------------
-HardwareServiceWindow::HardwareServiceWindow(ServiceMenuBackend* aBackend, QWidget* aParent)
-	: QFrame(aParent), ServiceWindowBase(aBackend), mWindow(new HardwareWindow(aBackend))
-{
-	setupUi(this);
+HardwareServiceWindow::HardwareServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
+    : QFrame(aParent), ServiceWindowBase(aBackend), mWindow(new HardwareWindow(aBackend)) {
+    setupUi(this);
 
-	mWindow->setParent(this);
-	mWindow->setSlotCreationMode(HardwareWindow::OpenEditorAfterCreation);
+    mWindow->setParent(this);
+    mWindow->setSlotCreationMode(HardwareWindow::OpenEditorAfterCreation);
 
-	wContainer->setCurrentWidget(wMainPage);
+    wContainer->setCurrentWidget(wMainPage);
 
-	wMainPage->setLayout(new QHBoxLayout);
-	wMainPage->layout()->addWidget(mWindow);
+    wMainPage->setLayout(new QHBoxLayout);
+    wMainPage->layout()->addWidget(mWindow);
 
-	wEditorPage->setLayout(new QHBoxLayout);
+    wEditorPage->setLayout(new QHBoxLayout);
 
-	connect(mWindow, SIGNAL(detectionStarted()), SLOT(onDetectionStarted()));
-	connect(mWindow, SIGNAL(detectionFinished()), SLOT(onDetectionFinished()));
-	connect(mWindow, SIGNAL(applyingStarted()), SLOT(onApplyingStarted()));
-	connect(mWindow, SIGNAL(applyingFinished()), SLOT(onApplyingFinished()));
-	connect(mWindow, SIGNAL(editSlot(DeviceSlot*, EditorPane*)), SLOT(onEditSlot(DeviceSlot*, EditorPane*)));
-	connect(mWindow, SIGNAL(removeSlot(DeviceSlot*)), SLOT(onRemoveSlot(DeviceSlot*)));
+    connect(mWindow, SIGNAL(detectionStarted()), SLOT(onDetectionStarted()));
+    connect(mWindow, SIGNAL(detectionFinished()), SLOT(onDetectionFinished()));
+    connect(mWindow, SIGNAL(applyingStarted()), SLOT(onApplyingStarted()));
+    connect(mWindow, SIGNAL(applyingFinished()), SLOT(onApplyingFinished()));
+    connect(mWindow, SIGNAL(editSlot(DeviceSlot *, EditorPane *)), SLOT(onEditSlot(DeviceSlot *, EditorPane *)));
+    connect(mWindow, SIGNAL(removeSlot(DeviceSlot *)), SLOT(onRemoveSlot(DeviceSlot *)));
 }
 
 //------------------------------------------------------------------------
-bool HardwareServiceWindow::activate()
-{
-	mWindow->setConfiguration(mBackend->getHardwareManager()->getConfiguration());
+bool HardwareServiceWindow::activate() {
+    mWindow->setConfiguration(mBackend->getHardwareManager()->getConfiguration());
 
-	return true;
+    return true;
 }
 
 //------------------------------------------------------------------------
-bool HardwareServiceWindow::deactivate()
-{
-	wContainer->setCurrentWidget(wMainPage);
-	mBackend->getHardwareManager()->setConfigurations(mWindow->getConfiguration().keys());
-	mBackend->saveConfiguration();
+bool HardwareServiceWindow::deactivate() {
+    wContainer->setCurrentWidget(wMainPage);
+    mBackend->getHardwareManager()->setConfigurations(mWindow->getConfiguration().keys());
+    mBackend->saveConfiguration();
 
-	return true;
+    return true;
 }
 
 //------------------------------------------------------------------------
-bool HardwareServiceWindow::initialize()
-{
-	if (!mWindow->initialize())
-	{
-		return false;
-	}
+bool HardwareServiceWindow::initialize() {
+    if (!mWindow->initialize()) {
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 //------------------------------------------------------------------------
-bool HardwareServiceWindow::shutdown()
-{
-	mWindow->shutdown();
+bool HardwareServiceWindow::shutdown() {
+    mWindow->shutdown();
 
-	return true;
+    return true;
 }
 
 //------------------------------------------------------------------------
-void HardwareServiceWindow::onDetectionStarted()
-{
-	GUI::MessageBox::wait(tr("#detecting_devices"), true);
-	GUI::MessageBox::subscribe(this);
+void HardwareServiceWindow::onDetectionStarted() {
+    GUI::MessageBox::wait(tr("#detecting_devices"), true);
+    GUI::MessageBox::subscribe(this);
 
-	QVariantMap params;
-	params[SDK::GUI::CMessageBox::ButtonType] = SDK::GUI::MessageBoxParams::Text;
-	params[SDK::GUI::CMessageBox::ButtonText] = tr("#stop_search");
+    QVariantMap params;
+    params[SDK::GUI::CMessageBox::ButtonType] = SDK::GUI::MessageBoxParams::Text;
+    params[SDK::GUI::CMessageBox::ButtonText] = tr("#stop_search");
 
-	GUI::MessageBox::update(params);
+    GUI::MessageBox::update(params);
 }
 
 //------------------------------------------------------------------------
-void HardwareServiceWindow::onDetectionFinished()
-{
-	mBackend->getHardwareManager()->setConfigurations(mWindow->getConfiguration().keys());
+void HardwareServiceWindow::onDetectionFinished() {
+    mBackend->getHardwareManager()->setConfigurations(mWindow->getConfiguration().keys());
 
-	// Обновляем статусы найденных железок
-	mBackend->getHardwareManager()->updateStatuses();
+    // Обновляем статусы найденных железок
+    mBackend->getHardwareManager()->updateStatuses();
 
-	GUI::MessageBox::hide();
+    GUI::MessageBox::hide();
 }
 
 //------------------------------------------------------------------------
-void HardwareServiceWindow::onEditSlot(DeviceSlot* aSlot, EditorPane* aPane)
-{
-	connect(aPane, SIGNAL(finished()), SLOT(onEditFinished()), Qt::UniqueConnection);
+void HardwareServiceWindow::onEditSlot(DeviceSlot *aSlot, EditorPane *aPane) {
+    connect(aPane, SIGNAL(finished()), SLOT(onEditFinished()), Qt::UniqueConnection);
 
-	wContainer->setCurrentWidget(wEditorPage);
+    wContainer->setCurrentWidget(wEditorPage);
 
-	wEditorPage->layout()->addWidget(aPane->getWidget());
+    wEditorPage->layout()->addWidget(aPane->getWidget());
 
-	if (aSlot->getType() == SDK::Driver::CComponents::Modem)
-	{
-		GUI::MessageBox::wait(tr("#closing_connection"));
-		mBackend->getNetworkManager()->closeConnection();
-		GUI::MessageBox::hide();
-	}
+    if (aSlot->getType() == SDK::Driver::CComponents::Modem) {
+        GUI::MessageBox::wait(tr("#closing_connection"));
+        mBackend->getNetworkManager()->closeConnection();
+        GUI::MessageBox::hide();
+    }
 }
 
 //------------------------------------------------------------------------
-void HardwareServiceWindow::onRemoveSlot(DeviceSlot* aSlot)
-{
-	mWindow->removeDeviceSlot(aSlot, true);
+void HardwareServiceWindow::onRemoveSlot(DeviceSlot *aSlot) {
+    mWindow->removeDeviceSlot(aSlot, true);
 }
 
 //------------------------------------------------------------------------
-void HardwareServiceWindow::onEditFinished()
-{
-	wContainer->setCurrentWidget(wMainPage);
+void HardwareServiceWindow::onEditFinished() {
+    wContainer->setCurrentWidget(wMainPage);
 
-	EditorPane* editor = qobject_cast<EditorPane*>(sender());
-	if (editor)
-	{
-		wEditorPage->layout()->removeWidget(editor->getWidget());
-		QString deviceType(editor->getSlot()->getType());
+    EditorPane *editor = qobject_cast<EditorPane *>(sender());
+    if (editor) {
+        wEditorPage->layout()->removeWidget(editor->getWidget());
+        QString deviceType(editor->getSlot()->getType());
 
-		if (editor->isChanged())
-		{
-			editor->getSlot()->setParameterValues(editor->getParameterValues());
-			mWindow->checkDeviceSlot(editor->getSlot());
+        if (editor->isChanged()) {
+            editor->getSlot()->setParameterValues(editor->getParameterValues());
+            mWindow->checkDeviceSlot(editor->getSlot());
 
-			mBackend->toLog(QString("UPDATE device: %1").arg(editor->getSlot()->getModel()));
-		}
-		else if (editor->getSlot()->getModel().isEmpty())
-		{
-			mWindow->removeDeviceSlot(editor->getSlot());
-		}
+            mBackend->toLog(QString("UPDATE device: %1").arg(editor->getSlot()->getModel()));
+        } else if (editor->getSlot()->getModel().isEmpty()) {
+            mWindow->removeDeviceSlot(editor->getSlot());
+        }
 
-		if (deviceType == SDK::Driver::CComponents::Modem)
-		{
-			mBackend->getNetworkManager()->openConnection();
-		}
-	}
+        if (deviceType == SDK::Driver::CComponents::Modem) {
+            mBackend->getNetworkManager()->openConnection();
+        }
+    }
 
-	disconnect(sender(), SIGNAL(finished()), this, SLOT(onEditFinished()));
+    disconnect(sender(), SIGNAL(finished()), this, SLOT(onEditFinished()));
 }
 
 //------------------------------------------------------------------------
-void HardwareServiceWindow::onApplyingStarted()
-{
-	GUI::MessageBox::wait(tr("#applying_configuration"));
+void HardwareServiceWindow::onApplyingStarted() {
+    GUI::MessageBox::wait(tr("#applying_configuration"));
 }
 
 //------------------------------------------------------------------------
-void HardwareServiceWindow::onApplyingFinished()
-{
-	GUI::MessageBox::hide(true);
+void HardwareServiceWindow::onApplyingFinished() {
+    GUI::MessageBox::hide(true);
 
-	// Для переинициализации свежедобавленного устройства. В противном случае не работает тест купюроприемника.
-	mWindow->setConfiguration(mBackend->getHardwareManager()->getConfiguration());
+    // Для переинициализации свежедобавленного устройства. В противном случае не работает тест купюроприемника.
+    mWindow->setConfiguration(mBackend->getHardwareManager()->getConfiguration());
 }
 
 //------------------------------------------------------------------------
-void HardwareServiceWindow::onClicked(const QVariantMap& /*aParameters*/)
-{
-	GUI::MessageBox::hide();
-	GUI::MessageBox::wait(tr("#waiting_stop_search"));
+void HardwareServiceWindow::onClicked(const QVariantMap & /*aParameters*/) {
+    GUI::MessageBox::hide();
+    GUI::MessageBox::wait(tr("#waiting_stop_search"));
 
-	mWindow->abortDetection();
+    mWindow->abortDetection();
 
-	mBackend->toLog(QString("Button clicked: %1").arg(tr("#stop_search")));
+    mBackend->toLog(QString("Button clicked: %1").arg(tr("#stop_search")));
 }
 
 //------------------------------------------------------------------------

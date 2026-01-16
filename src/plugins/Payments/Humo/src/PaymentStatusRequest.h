@@ -6,10 +6,9 @@
 #include "PaymentRequest.h"
 
 //---------------------------------------------------------------------------
-class PaymentStatusRequest : public PaymentRequest
-{
-public:
-	PaymentStatusRequest(Payment* aPayment);
+class PaymentStatusRequest : public PaymentRequest {
+  public:
+    PaymentStatusRequest(Payment *aPayment);
 };
 
 //---------------------------------------------------------------------------

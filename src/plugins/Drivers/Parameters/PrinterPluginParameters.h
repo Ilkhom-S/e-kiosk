@@ -26,25 +26,25 @@ SDK::Plugin::SPluginParameter setFontSize(int aMin, int aMax, int aDefault, int 
 
 /// Межстрочный интервал.
 SDK::Plugin::SPluginParameter setLineSpacing(int aMin, int aMax, int aDefault, int aInterval,
-											 const QString& aOptionalTranslation = "");
+                                             const QString &aOptionalTranslation = "");
 
 /// Коэффициент промотки.
 SDK::Plugin::SPluginParameter setFeedingFactor();
 
 /// Петля.
-SDK::Plugin::SPluginParameter setLoopEnabled(const QString& aOptionalTranslation = "", bool aAuto = true);
+SDK::Plugin::SPluginParameter setLoopEnabled(const QString &aOptionalTranslation = "", bool aAuto = true);
 
 /// Таймаут для действия с незабранным чеком.
 SDK::Plugin::SPluginParameter setLeftReceiptTimeout(bool aZero = false);
 
 /// Действие с незабранным чеком по таймауту.
-SDK::Plugin::SPluginParameter setLeftReceiptAction(const QString& aParameter, bool aRetract, bool aPush,
-												   const QString aDefault, bool aAuto = true,
-												   const QString& aOptionalTranslation = "");
+SDK::Plugin::SPluginParameter setLeftReceiptAction(const QString &aParameter, bool aRetract, bool aPush,
+                                                   const QString aDefault, bool aAuto = true,
+                                                   const QString &aOptionalTranslation = "");
 
 /// Длина презентации чека.
-SDK::Plugin::SPluginParameter setPresentationLength(const QString& aOptionalTranslation = "", int aMin = -1,
-													int aMax = -1);
+SDK::Plugin::SPluginParameter setPresentationLength(const QString &aOptionalTranslation = "", int aMin = -1,
+                                                    int aMax = -1);
 
 /// Длина презентации чека.
 SDK::Plugin::SPluginParameter setCustomCodepage();
@@ -53,6 +53,6 @@ SDK::Plugin::SPluginParameter setCustomCodepage();
 SDK::Plugin::SPluginParameter setFiscalChequeCreation();
 
 /// Обратная промотка.
-SDK::Plugin::SPluginParameter setBackFeed(const QString& aOptionalTranslation = "");
+SDK::Plugin::SPluginParameter setBackFeed(const QString &aOptionalTranslation = "");
 
 //------------------------------------------------------------------------------

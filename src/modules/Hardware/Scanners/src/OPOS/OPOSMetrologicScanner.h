@@ -16,64 +16,62 @@
 
 //--------------------------------------------------------------------------------
 /// Константы OPOS-cканеров.
-namespace COPOSScanners
-{
-	/// Величина префикса удаляемых данных.
-	const int Prefix = 4;
+namespace COPOSScanners {
+    /// Величина префикса удаляемых данных.
+    const int Prefix = 4;
 
-	/// Таймаут Claim-а, [мс]. Связи с реальностью почти не имеет.
-	const int ClaimTimeout = 20 * 60 * 1000;
+    /// Таймаут Claim-а, [мс]. Связи с реальностью почти не имеет.
+    const int ClaimTimeout = 20 * 60 * 1000;
 
-	/// Количество попыток для Claim-а при определенных ошибках.
-	const int ClaimAttempts = 10;
+    /// Количество попыток для Claim-а при определенных ошибках.
+    const int ClaimAttempts = 10;
 } // namespace COPOSScanners
 
 //--------------------------------------------------------------------------------
 typedef HIDBase<OPOSPollingDeviceBase<ProtoOPOSScanner, OPOS::OPOSScanner>> TPollingOPOSScanner;
 
-class OPOSMetrologicScanner : public TPollingOPOSScanner
-{
-	SET_SERIES("Honeywell")
+class OPOSMetrologicScanner : public TPollingOPOSScanner {
+    SET_SERIES("Honeywell")
 
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-	OPOSMetrologicScanner();
+  public:
+    OPOSMetrologicScanner();
 
-	/// Возвращает список сконфигурированных OPOS устройств.
-	static QStringList getProfileNames();
+    /// Возвращает список сконфигурированных OPOS устройств.
+    static QStringList getProfileNames();
 
-	/// Включает/выключает устройство на чтение штрих-кодов. Пикать все равно будет.
-	virtual bool enable(bool aReady);
+    /// Включает/выключает устройство на чтение штрих-кодов. Пикать все равно будет.
+    virtual bool enable(bool aReady);
 
-protected slots:
-	/// Вызывается по приходу данных от сканера.
-	void onGotData(const QString& aName, int aArgumentsCount, void* aArgumentsValues);
+  protected slots:
+    /// Вызывается по приходу данных от сканера.
+    void onGotData(const QString &aName, int aArgumentsCount, void *aArgumentsValues);
 
-protected:
-	/// Инициализировать ресурсы.
-	virtual void initializeResources();
+  protected:
+    /// Инициализировать ресурсы.
+    virtual void initializeResources();
 
-	/// Идентифицирует устройство.
-	virtual bool isConnected();
+    /// Идентифицирует устройство.
+    virtual bool isConnected();
 
-	/// Проверка возможности выполнения функционала, предполагающего связь с устройством.
-	virtual bool checkConnectionAbility();
+    /// Проверка возможности выполнения функционала, предполагающего связь с устройством.
+    virtual bool checkConnectionAbility();
 
-	/// Инициализация устройства.
-	virtual bool updateParameters();
+    /// Инициализация устройства.
+    virtual bool updateParameters();
 
-	/// Получить и обработать статус.
-	virtual bool processStatus(TStatusCodes& aStatusCodes);
+    /// Получить и обработать статус.
+    virtual bool processStatus(TStatusCodes &aStatusCodes);
 
-	/// Включает/выключает устройство.
-	bool setAvailable(bool aEnable);
+    /// Включает/выключает устройство.
+    bool setAvailable(bool aEnable);
 
-	/// Мьютекс для операций со считанными данными.
-	QMutex mDataMutex;
+    /// Мьютекс для операций со считанными данными.
+    QMutex mDataMutex;
 
-	/// Был включен извне.
-	bool mExEnabled;
+    /// Был включен извне.
+    bool mExEnabled;
 };
 
 //--------------------------------------------------------------------------------

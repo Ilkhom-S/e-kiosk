@@ -7,71 +7,69 @@
 #include "POSParameters.h"
 
 //--------------------------------------------------------------------------------
-template <class T>
-class POSPrinter : public T
-{
-	SET_SERIES("POS")
+template <class T> class POSPrinter : public T {
+    SET_SERIES("POS")
 
-public:
-	POSPrinter();
+  public:
+    POSPrinter();
 
-protected:
-	/// Попытка самоидентификации.
-	virtual bool isConnected();
+  protected:
+    /// Попытка самоидентификации.
+    virtual bool isConnected();
 
-	/// Получить Id модели.
-	virtual bool getModelId(QByteArray& aAnswer) const;
+    /// Получить Id модели.
+    virtual bool getModelId(QByteArray &aAnswer) const;
 
-	/// Распарсить Id модели.
-	virtual char parseModelId(QByteArray& aAnswer);
+    /// Распарсить Id модели.
+    virtual char parseModelId(QByteArray &aAnswer);
 
-	/// Получить статус.
-	virtual bool getStatus(TStatusCodes& aStatusCodes);
+    /// Получить статус.
+    virtual bool getStatus(TStatusCodes &aStatusCodes);
 
-	/// Инициализация устройства.
-	virtual bool updateParameters();
+    /// Инициализация устройства.
+    virtual bool updateParameters();
 
-	/// Печать строки.
-	virtual bool printLine(const QByteArray& aString);
+    /// Печать строки.
+    virtual bool printLine(const QByteArray &aString);
 
-	/// Печать штрих-кода.
-	virtual bool printBarcode(const QString& aBarcode);
+    /// Печать штрих-кода.
+    virtual bool printBarcode(const QString &aBarcode);
 
-	/// Напечатать картинку.
-	virtual bool printImage(const QImage& aImage, const Tags::TTypes& aTags);
+    /// Напечатать картинку.
+    virtual bool printImage(const QImage &aImage, const Tags::TTypes &aTags);
 
-	/// Запросить и сохранить параметры устройства.
-	virtual void processDeviceData();
+    /// Запросить и сохранить параметры устройства.
+    virtual void processDeviceData();
 
-	/// Получить ответ на запрос статуса.
-	bool readStatusAnswer(QByteArray& aAnswer, int aTimeout, int aBytesCount) const;
+    /// Получить ответ на запрос статуса.
+    bool readStatusAnswer(QByteArray &aAnswer, int aTimeout, int aBytesCount) const;
 
-	/// Проверка верифицированности модели.
-	void checkVerifying();
+    /// Проверка верифицированности модели.
+    void checkVerifying();
 
-	/// Выполнение предварительных операций перед печатью штрих-кода.
-	QByteArray prepareBarcodePrinting();
+    /// Выполнение предварительных операций перед печатью штрих-кода.
+    QByteArray prepareBarcodePrinting();
 
-	/// В плагине только дефолтные модели.
-	bool isOnlyDefaultModels();
+    /// В плагине только дефолтные модели.
+    bool isOnlyDefaultModels();
 
-	/// Данные моделей.
-	POSPrinters::ModelData mModelData;
+    /// Данные моделей.
+    POSPrinters::ModelData mModelData;
 
-	/// ID модели.
-	char mModelID;
+    /// ID модели.
+    char mModelID;
 
-	/// Флаг переполнения буфера.
-	bool mOverflow;
+    /// Флаг переполнения буфера.
+    bool mOverflow;
 
-	/// Русская кодовая страница.
-	char mRussianCodePage;
+    /// Русская кодовая страница.
+    char mRussianCodePage;
 
-	/// Таймаут печати строки.
-	int mPrintingStringTimeout;
+    /// Таймаут печати строки.
+    int mPrintingStringTimeout;
 
-	/// Параметры.
-	POSPrinters::SParameters mParameters;
+    /// Параметры.
+    POSPrinters::SParameters mParameters;
 };
 
 //--------------------------------------------------------------------------------

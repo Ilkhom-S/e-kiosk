@@ -14,49 +14,47 @@
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------
-namespace CTokenWindow
-{
-	const QString WarningStyleSheet = "background-color: rgb(255, 192, 192);";
-	const QString DefaultStyleSheet = "";
+namespace CTokenWindow {
+    const QString WarningStyleSheet = "background-color: rgb(255, 192, 192);";
+    const QString DefaultStyleSheet = "";
 } // namespace CTokenWindow
 
 //------------------------------------------------------------------------
-class TokenWindow : public QFrame, protected Ui_TokenWindow
-{
-	Q_OBJECT
+class TokenWindow : public QFrame, protected Ui_TokenWindow {
+    Q_OBJECT
 
-public:
-	TokenWindow(ServiceMenuBackend* aBackend, QWidget* aParent);
+  public:
+    TokenWindow(ServiceMenuBackend *aBackend, QWidget *aParent);
 
-	virtual ~TokenWindow();
+    virtual ~TokenWindow();
 
-	/// Начальная инициализация формы.
-	virtual void initialize(const CCrypt::TokenStatus& aStatus);
+    /// Начальная инициализация формы.
+    virtual void initialize(const CCrypt::TokenStatus &aStatus);
 
-	// Отформатировать токен
-	void doFormat();
+    // Отформатировать токен
+    void doFormat();
 
-signals:
-	/// Начало и конец процедуры создания ключей.
-	void beginFormat();
-	void endFormat();
+  signals:
+    /// Начало и конец процедуры создания ключей.
+    void beginFormat();
+    void endFormat();
 
-	/// Сигнал об ошибке во время создания или регистрации ключей.
-	void error(QString aError);
+    /// Сигнал об ошибке во время создания или регистрации ключей.
+    void error(QString aError);
 
-protected slots:
-	void onFormatButtonClicked();
-	void onFormatTaskFinished();
+  protected slots:
+    void onFormatButtonClicked();
+    void onFormatTaskFinished();
 
-private:
-	void updateUI(const CCrypt::TokenStatus& aStatus);
+  private:
+    void updateUI(const CCrypt::TokenStatus &aStatus);
 
-protected:
-	QVariantMap mTaskParameters;
+  protected:
+    QVariantMap mTaskParameters;
 
-	QFutureWatcher<bool> mFormatTaskWatcher;
+    QFutureWatcher<bool> mFormatTaskWatcher;
 
-	ServiceMenuBackend* mBackend;
+    ServiceMenuBackend *mBackend;
 };
 
 //------------------------------------------------------------------------

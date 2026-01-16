@@ -9,9 +9,9 @@
 // SDK
 #include <SDK/Drivers/WarningLevel.h>
 
-// Modules
-#include "Hardware/Common/HardwareConstants.h"
+// System
 #include "Hardware/Common/BaseStatusDescriptions.h"
+#include "Hardware/Common/HardwareConstants.h"
 
 // Project
 #include "UcsDevice.h"
@@ -19,193 +19,170 @@
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
-namespace Ucs
-{
-	/// Имя устройства по умолчанию.
-	const char DeviceName[] = "UCS";
+namespace Ucs {
+    /// Имя устройства по умолчанию.
+    const char DeviceName[] = "UCS";
 } // namespace Ucs
 
 //--------------------------------------------------------------------------------
-UcsDevice::UcsDevice() : mCore(nullptr) {}
-
-//--------------------------------------------------------------------------------
-UcsDevice::~UcsDevice() {}
-
-//--------------------------------------------------------------------------------
-void UcsDevice::updateFirmware(const QByteArray&) {}
-
-//--------------------------------------------------------------------------------
-bool UcsDevice::canUpdateFirmware()
-{
-	return false;
+UcsDevice::UcsDevice() : mCore(nullptr) {
 }
 
 //--------------------------------------------------------------------------------
-SDK::Driver::IDevice::IDetectingIterator* UcsDevice::getDetectingIterator()
-{
-	resetDetectingIterator();
-
-	return this;
+UcsDevice::~UcsDevice() {
 }
 
 //--------------------------------------------------------------------------------
-void UcsDevice::setDeviceConfiguration(const QVariantMap& aConfiguration)
-{
-	for (auto it = aConfiguration.begin(); it != aConfiguration.end(); ++it)
-	{
-		setConfigParameter(it.key(), it.value());
-	}
+void UcsDevice::updateFirmware(const QByteArray &) {
 }
 
 //--------------------------------------------------------------------------------
-QString UcsDevice::getName() const
-{
-	return Ucs::DeviceName;
+bool UcsDevice::canUpdateFirmware() {
+    return false;
 }
 
 //--------------------------------------------------------------------------------
-void UcsDevice::setLog(ILog* aLog)
-{
-	if (!ILogable::getLog() && aLog->getName() == Ucs::LogName)
-	{
-		ILogable::setLog(aLog);
-	}
+SDK::Driver::IDevice::IDetectingIterator *UcsDevice::getDetectingIterator() {
+    resetDetectingIterator();
+
+    return this;
 }
 
 //--------------------------------------------------------------------------------
-bool UcsDevice::subscribe(const char* aSignal, QObject* aReceiver, const char* aSlot)
-{
-	return connect(this, aSignal, aReceiver, aSlot, Qt::ConnectionType(Qt::UniqueConnection | Qt::QueuedConnection));
+void UcsDevice::setDeviceConfiguration(const QVariantMap &aConfiguration) {
+    for (auto it = aConfiguration.begin(); it != aConfiguration.end(); ++it) {
+        setConfigParameter(it.key(), it.value());
+    }
 }
 
 //--------------------------------------------------------------------------------
-bool UcsDevice::unsubscribe(const char* aSignal, QObject* aReceiver)
-{
-	return disconnect(aSignal, aReceiver);
+QString UcsDevice::getName() const {
+    return Ucs::DeviceName;
 }
 
 //--------------------------------------------------------------------------------
-bool UcsDevice::release()
-{
-	Ucs::API::getInstance(mCore, getLog())->disable();
-	return true;
+void UcsDevice::setLog(ILog *aLog) {
+    if (!ILogable::getLog() && aLog->getName() == Ucs::LogName) {
+        ILogable::setLog(aLog);
+    }
 }
 
 //--------------------------------------------------------------------------------
-void UcsDevice::initialize()
-{
-	QSharedPointer<Ucs::API> api = Ucs::API::getInstance(mCore, getLog());
-	connect(api.data(), SIGNAL(ready()), this, SLOT(onReady()));
-
-	DeviceStatusCode::CSpecifications specifications;
-	if (api->isReady())
-	{
-		sendStatus(EWarningLevel::OK, specifications[DeviceStatusCode::OK::OK].translation, EStatus::Actual);
-	}
-	else
-	{
-		sendStatus(EWarningLevel::Error, specifications[DeviceStatusCode::Error::ThirdPartyDriverFail].translation,
-				   EStatus::Actual);
-	}
+bool UcsDevice::subscribe(const char *aSignal, QObject *aReceiver, const char *aSlot) {
+    return connect(this, aSignal, aReceiver, aSlot, Qt::ConnectionType(Qt::UniqueConnection | Qt::QueuedConnection));
 }
 
 //--------------------------------------------------------------------------------
-void UcsDevice::onReady()
-{
-	DeviceStatusCode::CSpecifications specifications;
-	sendStatus(EWarningLevel::OK, specifications[DeviceStatusCode::OK::OK].translation, EStatus::Actual);
+bool UcsDevice::unsubscribe(const char *aSignal, QObject *aReceiver) {
+    return disconnect(aSignal, aReceiver);
 }
 
 //--------------------------------------------------------------------------------
-void UcsDevice::onState(int aState, const QString& aDeviceName, bool aLast)
-{
-	if (aLast)
-	{
-		EWarningLevel::Enum state = EWarningLevel::OK;
-		QString message;
-
-		DeviceStatusCode::CSpecifications specifications;
-		sendStatus(state, message.isEmpty() ? specifications[DeviceStatusCode::OK::OK].translation : message,
-				   EStatus::Actual);
-	}
+bool UcsDevice::release() {
+    Ucs::API::getInstance(mCore, getLog())->disable();
+    return true;
 }
 
 //--------------------------------------------------------------------------------
-void UcsDevice::onEjected() {}
+void UcsDevice::initialize() {
+    QSharedPointer<Ucs::API> api = Ucs::API::getInstance(mCore, getLog());
+    connect(api.data(), SIGNAL(ready()), this, SLOT(onReady()));
 
-//--------------------------------------------------------------------------------
-void UcsDevice::sendStatus(EWarningLevel::Enum aLevel, const QString& aMessage, int aStatus)
-{
-	QString s = QString("%1%2%3").arg(aLevel).arg(aMessage).arg(aStatus);
-
-	if (s != mLastGeneralizedStatus)
-	{
-		emit status(aLevel, aMessage, aStatus);
-	}
-
-	mLastGeneralizedStatus = s;
+    DeviceStatusCode::CSpecifications specifications;
+    if (api->isReady()) {
+        sendStatus(EWarningLevel::OK, specifications[DeviceStatusCode::OK::OK].translation, EStatus::Actual);
+    } else {
+        sendStatus(EWarningLevel::Error, specifications[DeviceStatusCode::Error::ThirdPartyDriverFail].translation,
+                   EStatus::Actual);
+    }
 }
 
 //--------------------------------------------------------------------------------
-bool UcsDevice::isDeviceReady() const
-{
-	QSharedPointer<Ucs::API> api = Ucs::API::getInstance(mCore, getLog());
-
-	return api && api->isReady();
+void UcsDevice::onReady() {
+    DeviceStatusCode::CSpecifications specifications;
+    sendStatus(EWarningLevel::OK, specifications[DeviceStatusCode::OK::OK].translation, EStatus::Actual);
 }
 
 //--------------------------------------------------------------------------------
-bool UcsDevice::find()
-{
-	if (Ucs::API::getInstance(mCore, getLog())->isReady())
-	{
-		setConfigParameter(CHardwareSDK::ModelName, Ucs::DeviceName);
+void UcsDevice::onState(int aState, const QString &aDeviceName, bool aLast) {
+    if (aLast) {
+        EWarningLevel::Enum state = EWarningLevel::OK;
+        QString message;
 
-		return true;
-	}
-
-	return false;
+        DeviceStatusCode::CSpecifications specifications;
+        sendStatus(state, message.isEmpty() ? specifications[DeviceStatusCode::OK::OK].translation : message,
+                   EStatus::Actual);
+    }
 }
 
 //--------------------------------------------------------------------------------
-QVariantMap UcsDevice::getDeviceConfiguration() const
-{
-	QReadLocker lock(&mConfigurationGuard);
-
-	return mConfiguration;
+void UcsDevice::onEjected() {
 }
 
 //--------------------------------------------------------------------------------
-void UcsDevice::setConfigParameter(const QString& aName, const QVariant& aValue)
-{
-	QWriteLocker lock(&mConfigurationGuard);
+void UcsDevice::sendStatus(EWarningLevel::Enum aLevel, const QString &aMessage, int aStatus) {
+    QString s = QString("%1%2%3").arg(aLevel).arg(aMessage).arg(aStatus);
 
-	mConfiguration.insert(aName, aValue);
+    if (s != mLastGeneralizedStatus) {
+        emit status(aLevel, aMessage, aStatus);
+    }
+
+    mLastGeneralizedStatus = s;
 }
 
 //--------------------------------------------------------------------------------
-QVariant UcsDevice::getConfigParameter(const QString& aName) const
-{
-	QReadLocker lock(&mConfigurationGuard);
+bool UcsDevice::isDeviceReady() const {
+    QSharedPointer<Ucs::API> api = Ucs::API::getInstance(mCore, getLog());
 
-	return mConfiguration.value(aName);
+    return api && api->isReady();
 }
 
 //--------------------------------------------------------------------------------
-bool UcsDevice::containsConfigParameter(const QString& aName) const
-{
-	QReadLocker lock(&mConfigurationGuard);
+bool UcsDevice::find() {
+    if (Ucs::API::getInstance(mCore, getLog())->isReady()) {
+        setConfigParameter(CHardwareSDK::ModelName, Ucs::DeviceName);
 
-	return mConfiguration.contains(aName);
+        return true;
+    }
+
+    return false;
+}
+
+//--------------------------------------------------------------------------------
+QVariantMap UcsDevice::getDeviceConfiguration() const {
+    QReadLocker lock(&mConfigurationGuard);
+
+    return mConfiguration;
+}
+
+//--------------------------------------------------------------------------------
+void UcsDevice::setConfigParameter(const QString &aName, const QVariant &aValue) {
+    QWriteLocker lock(&mConfigurationGuard);
+
+    mConfiguration.insert(aName, aValue);
+}
+
+//--------------------------------------------------------------------------------
+QVariant UcsDevice::getConfigParameter(const QString &aName) const {
+    QReadLocker lock(&mConfigurationGuard);
+
+    return mConfiguration.value(aName);
+}
+
+//--------------------------------------------------------------------------------
+bool UcsDevice::containsConfigParameter(const QString &aName) const {
+    QReadLocker lock(&mConfigurationGuard);
+
+    return mConfiguration.contains(aName);
 }
 
 //------------------------------------------------------------------------------
-void UcsDevice::eject() {}
+void UcsDevice::eject() {
+}
 
 //------------------------------------------------------------------------------
-void UcsDevice::setCore(SDK::PaymentProcessor::ICore* aCore)
-{
-	mCore = aCore;
+void UcsDevice::setCore(SDK::PaymentProcessor::ICore *aCore) {
+    mCore = aCore;
 }
 
 //--------------------------------------------------------------------------------

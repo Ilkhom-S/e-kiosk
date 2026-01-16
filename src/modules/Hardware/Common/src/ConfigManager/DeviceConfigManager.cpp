@@ -9,72 +9,64 @@
 #include "DeviceConfigManager.h"
 
 //--------------------------------------------------------------------------------
-DeviceConfigManager::DeviceConfigManager() : mConfigurationGuard(QReadWriteLock::Recursive), mCodec(nullptr) {}
-
-//--------------------------------------------------------------------------------
-void DeviceConfigManager::setConfiguration(const QVariantMap& aConfiguration)
-{
-	for (auto it = aConfiguration.begin(); it != aConfiguration.end(); ++it)
-	{
-		setConfigParameter(it.key(), it.value());
-	}
+DeviceConfigManager::DeviceConfigManager() : mConfigurationGuard(QReadWriteLock::Recursive), mCodec(nullptr) {
 }
 
 //--------------------------------------------------------------------------------
-QVariantMap DeviceConfigManager::getConfiguration() const
-{
-	QReadLocker lock(&mConfigurationGuard);
-
-	return mConfiguration;
+void DeviceConfigManager::setConfiguration(const QVariantMap &aConfiguration) {
+    for (auto it = aConfiguration.begin(); it != aConfiguration.end(); ++it) {
+        setConfigParameter(it.key(), it.value());
+    }
 }
 
 //--------------------------------------------------------------------------------
-void DeviceConfigManager::setConfigParameter(const QString& aName, const QVariant& aValue)
-{
-	QWriteLocker lock(&mConfigurationGuard);
+QVariantMap DeviceConfigManager::getConfiguration() const {
+    QReadLocker lock(&mConfigurationGuard);
 
-	mConfiguration.insert(aName, aValue);
+    return mConfiguration;
 }
 
 //--------------------------------------------------------------------------------
-void DeviceConfigManager::setLConfigParameter(const QString& aName, const QByteArray& aData)
-{
-	QByteArray data = ProtocolUtils::clean(aData.simplified());
-	QString value = mCodec ? mCodec->toUnicode(data) : data;
+void DeviceConfigManager::setConfigParameter(const QString &aName, const QVariant &aValue) {
+    QWriteLocker lock(&mConfigurationGuard);
 
-	setConfigParameter(aName, value);
+    mConfiguration.insert(aName, aValue);
 }
 
 //--------------------------------------------------------------------------------
-QVariant DeviceConfigManager::getConfigParameter(const QString& aName) const
-{
-	QReadLocker lock(&mConfigurationGuard);
+void DeviceConfigManager::setLConfigParameter(const QString &aName, const QByteArray &aData) {
+    QByteArray data = ProtocolUtils::clean(aData.simplified());
+    QString value = mCodec ? mCodec->toUnicode(data) : data;
 
-	return mConfiguration.value(aName);
+    setConfigParameter(aName, value);
 }
 
 //--------------------------------------------------------------------------------
-QVariant DeviceConfigManager::getConfigParameter(const QString& aName, const QVariant& aDefault) const
-{
-	QReadLocker lock(&mConfigurationGuard);
+QVariant DeviceConfigManager::getConfigParameter(const QString &aName) const {
+    QReadLocker lock(&mConfigurationGuard);
 
-	return mConfiguration.value(aName, aDefault);
+    return mConfiguration.value(aName);
 }
 
 //--------------------------------------------------------------------------------
-void DeviceConfigManager::removeConfigParameter(const QString& aName)
-{
-	QWriteLocker lock(&mConfigurationGuard);
+QVariant DeviceConfigManager::getConfigParameter(const QString &aName, const QVariant &aDefault) const {
+    QReadLocker lock(&mConfigurationGuard);
 
-	mConfiguration.remove(aName);
+    return mConfiguration.value(aName, aDefault);
 }
 
 //--------------------------------------------------------------------------------
-bool DeviceConfigManager::containsConfigParameter(const QString& aName) const
-{
-	QReadLocker lock(&mConfigurationGuard);
+void DeviceConfigManager::removeConfigParameter(const QString &aName) {
+    QWriteLocker lock(&mConfigurationGuard);
 
-	return mConfiguration.contains(aName);
+    mConfiguration.remove(aName);
+}
+
+//--------------------------------------------------------------------------------
+bool DeviceConfigManager::containsConfigParameter(const QString &aName) const {
+    QReadLocker lock(&mConfigurationGuard);
+
+    return mConfiguration.contains(aName);
 }
 
 //--------------------------------------------------------------------------------

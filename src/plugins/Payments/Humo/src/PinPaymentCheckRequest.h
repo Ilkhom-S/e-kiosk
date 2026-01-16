@@ -6,10 +6,9 @@
 #include "PaymentCheckRequest.h"
 
 //---------------------------------------------------------------------------
-class PinPaymentCheckRequest : public PaymentCheckRequest
-{
-public:
-	PinPaymentCheckRequest(Payment* aPayment, bool aFake);
+class PinPaymentCheckRequest : public PaymentCheckRequest {
+  public:
+    PinPaymentCheckRequest(Payment *aPayment, bool aFake);
 };
 
 //---------------------------------------------------------------------------

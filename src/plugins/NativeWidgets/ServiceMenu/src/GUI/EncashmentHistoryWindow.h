@@ -12,25 +12,24 @@
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------
-class EncashmentHistoryWindow : public QWidget, protected Ui_EncashmentHistoryWindow
-{
-	Q_OBJECT
+class EncashmentHistoryWindow : public QWidget, protected Ui_EncashmentHistoryWindow {
+    Q_OBJECT
 
-public:
-	EncashmentHistoryWindow(ServiceMenuBackend* aBackend, QWidget* aParent);
+  public:
+    EncashmentHistoryWindow(ServiceMenuBackend *aBackend, QWidget *aParent);
 
-	virtual ~EncashmentHistoryWindow();
+    virtual ~EncashmentHistoryWindow();
 
-public slots:
-	void updateHistory();
+  public slots:
+    void updateHistory();
 
-private slots:
-	void printEncashment(int aIndex);
+  private slots:
+    void printEncashment(int aIndex);
 
-protected:
-	ServiceMenuBackend* mBackend;
-	QList<QWidget*> mWidgets;
-	QSignalMapper* mSignalMapper;
+  protected:
+    ServiceMenuBackend *mBackend;
+    QList<QWidget *> mWidgets;
+    QSignalMapper *mSignalMapper;
 };
 
 //------------------------------------------------------------------------

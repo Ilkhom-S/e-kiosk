@@ -10,37 +10,35 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-namespace CLDogWD
-{
-	/// Адрес платы.
-	const char Address = '\x10';
+namespace CLDogWD {
+    /// Адрес платы.
+    const char Address = '\x10';
 
-	/// Конечный байт пакета.
-	const char Postfix = '\x0D';
+    /// Конечный байт пакета.
+    const char Postfix = '\x0D';
 
-	/// Маскированный конечный байт пакета.
-	const char MaskedPostfix[] = "\x40\xCD";
+    /// Маскированный конечный байт пакета.
+    const char MaskedPostfix[] = "\x40\xCD";
 
-	/// Минимальный размер ответного пакета.
-	const int MinAnswerSize = 4;
+    /// Минимальный размер ответного пакета.
+    const int MinAnswerSize = 4;
 
-	/// Маска корректного ответа для адреса и команды.
-	const char AnswerMask = '\x80';
+    /// Маска корректного ответа для адреса и команды.
+    const char AnswerMask = '\x80';
 
-	typedef QPair<char, QByteArray> TReplaceData;
-	typedef QList<TReplaceData> TReplaceDataList;
+    typedef QPair<char, QByteArray> TReplaceData;
+    typedef QList<TReplaceData> TReplaceDataList;
 
-	/// Список данных для маскирования.
-	const TReplaceDataList ReplaceDataList = TReplaceDataList()
-											 << TReplaceData('\x40', QByteArray::fromRawData("\x40\x00", 2))
-											 << TReplaceData('\x0D', MaskedPostfix);
+    /// Список данных для маскирования.
+    const TReplaceDataList ReplaceDataList = TReplaceDataList()
+                                             << TReplaceData('\x40', QByteArray::fromRawData("\x40\x00", 2))
+                                             << TReplaceData('\x0D', MaskedPostfix);
 
-	/// Таймауты, [мс].
-	namespace Timeouts
-	{
-		/// Чтение ответа.
-		const ushort Answer = 2000;
-	} // namespace Timeouts
+    /// Таймауты, [мс].
+    namespace Timeouts {
+        /// Чтение ответа.
+        const ushort Answer = 2000;
+    } // namespace Timeouts
 } // namespace CLDogWD
 
 //--------------------------------------------------------------------------------

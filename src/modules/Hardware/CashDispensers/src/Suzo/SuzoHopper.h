@@ -9,63 +9,60 @@
 #include "Hardware/Dispensers/PortDispenser.h"
 
 //--------------------------------------------------------------------------------
-namespace CSuzo
-{
-	/// Статус выдачи монет.
-	struct SStatus
-	{
-		uchar Id;
-		int remains;
-		int paid;
-		int unpaid;
+namespace CSuzo {
+    /// Статус выдачи монет.
+    struct SStatus {
+        uchar Id;
+        int remains;
+        int paid;
+        int unpaid;
 
-		SStatus() : Id(0), remains(0), paid(0), unpaid(0) {}
-		SStatus(char aId, int aRemains, int aPaid, int aUnpaid)
-			: Id(uchar(aId)), remains(uchar(aRemains)), paid(uchar(aPaid)), unpaid(uchar(aUnpaid))
-		{
-		}
-	};
+        SStatus() : Id(0), remains(0), paid(0), unpaid(0) {
+        }
+        SStatus(char aId, int aRemains, int aPaid, int aUnpaid)
+            : Id(uchar(aId)), remains(uchar(aRemains)), paid(uchar(aPaid)), unpaid(uchar(aUnpaid)) {
+        }
+    };
 } // namespace CSuzo
 
 //--------------------------------------------------------------------------------
-class SuzoHopper : public CCTalkDeviceBase<PortDispenser>
-{
-	SET_SUBSERIES("Suzo")
+class SuzoHopper : public CCTalkDeviceBase<PortDispenser> {
+    SET_SUBSERIES("Suzo")
 
-public:
-	SuzoHopper();
+  public:
+    SuzoHopper();
 
-	/// Получить поддерживаемые типы протоколов.
-	static QStringList getProtocolTypes();
+    /// Получить поддерживаемые типы протоколов.
+    static QStringList getProtocolTypes();
 
-	/// Возвращает список поддерживаемых устройств.
-	static QStringList getModelList();
+    /// Возвращает список поддерживаемых устройств.
+    static QStringList getModelList();
 
-protected:
-	/// Инициализация устройства.
-	virtual bool updateParameters();
+  protected:
+    /// Инициализация устройства.
+    virtual bool updateParameters();
 
-	/// Выполнить команду.
-	virtual TResult execCommand(const QByteArray& aCommand, const QByteArray& aCommandData,
-								QByteArray* aAnswer = nullptr);
+    /// Выполнить команду.
+    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+                                QByteArray *aAnswer = nullptr);
 
-	/// Получить статус.
-	virtual bool getStatus(TStatusCodes& aStatusCodes);
+    /// Получить статус.
+    virtual bool getStatus(TStatusCodes &aStatusCodes);
 
-	/// Установить режим выдачи: 1 / набор.
-	bool setSingleMode(bool aEnable);
+    /// Установить режим выдачи: 1 / набор.
+    bool setSingleMode(bool aEnable);
 
-	/// Активировать/деактивировать приём.
-	bool setEnable(bool aEnabled);
+    /// Активировать/деактивировать приём.
+    bool setEnable(bool aEnabled);
 
-	/// Получить статус выдачи монет.
-	bool getDispensingStatus(CSuzo::SStatus& aStatus);
+    /// Получить статус выдачи монет.
+    bool getDispensingStatus(CSuzo::SStatus &aStatus);
 
-	/// Выдать.
-	virtual void performDispense(int aUnit, int aItems);
+    /// Выдать.
+    virtual void performDispense(int aUnit, int aItems);
 
-	/// Режим выдачи монет.
-	bool mSingleMode;
+    /// Режим выдачи монет.
+    bool mSingleMode;
 };
 
 //--------------------------------------------------------------------------------

@@ -14,43 +14,39 @@
 // Modules
 #include <Common/ILogable.h>
 
-namespace UcsDB
-{
+namespace UcsDB {
 
-	//------------------------------------------------------------------------------
-	struct Encashment
-	{
-		QDateTime date;
-		QStringList receipt;
-		int printed;
+    //------------------------------------------------------------------------------
+    struct Encashment {
+        QDateTime date;
+        QStringList receipt;
+        int printed;
 
-		Encashment();
-	};
+        Encashment();
+    };
 
+    //------------------------------------------------------------------------------
+    class DatabaseUtils : public ILogable {
+        typedef QSharedPointer<IDatabaseQuery> TQueryPointer;
 
-	//------------------------------------------------------------------------------
-	class DatabaseUtils : public ILogable
-	{
-		typedef QSharedPointer<IDatabaseQuery> TQueryPointer;
+      public:
+        DatabaseUtils(SDK::PaymentProcessor::IDatabaseService *aDatabaseService, ILog *aLog);
 
-	public:
-		DatabaseUtils(SDK::PaymentProcessor::IDatabaseService* aDatabaseService, ILog* aLog);
+        bool isReadOnly() const;
 
-		bool isReadOnly() const;
+        bool save(const Encashment &aEncashment);
 
-		bool save(const Encashment& aEncashment);
+        QList<Encashment> getAllNotPrinted() const;
 
-		QList<Encashment> getAllNotPrinted() const;
+        bool markAsPrinted(const Encashment &aEncashment);
 
-		bool markAsPrinted(const Encashment& aEncashment);
+      private:
+        bool initTables();
 
-	private:
-		bool initTables();
-
-	private:
-		SDK::PaymentProcessor::IDatabaseService* mDatabase;
-		bool mReadOnly;
-	};
+      private:
+        SDK::PaymentProcessor::IDatabaseService *mDatabase;
+        bool mReadOnly;
+    };
 
 } // namespace UcsDB
 //------------------------------------------------------------------------------

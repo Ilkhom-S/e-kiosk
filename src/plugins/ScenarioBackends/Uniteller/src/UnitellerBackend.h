@@ -24,128 +24,132 @@
 // Project
 #include "Uniteller.h"
 
-
 class IApplication;
 
 //--------------------------------------------------------------------------
-namespace SDK
-{
-	namespace PaymentProcessor
-	{
-		class ICore;
-	} // namespace PaymentProcessor
+namespace SDK {
+    namespace PaymentProcessor {
+        class ICore;
+    } // namespace PaymentProcessor
 
-	namespace Plugin
-	{
-		class IEnvironment;
-	} // namespace Plugin
+    namespace Plugin {
+        class IEnvironment;
+    } // namespace Plugin
 } // namespace SDK
 
-namespace Uniteller
-{
-	class API;
+namespace Uniteller {
+    class API;
 } // namespace Uniteller
 
 namespace PPSDK = SDK::PaymentProcessor;
 
+namespace CUnitellerBackend {
+    const QString PluginName = "CardBackend";
+    const QString ScriptObjectName = "CardPOS";
 
-namespace CUnitellerBackend
-{
-	const QString PluginName = "CardBackend";
-	const QString ScriptObjectName = "CardPOS";
+    //--------------------------------------------------------------------------
+    class UnitellerCore : public SDK::PaymentProcessor::Scripting::IBackendScenarioObject, public ILogable {
+        Q_OBJECT
 
-	//--------------------------------------------------------------------------
-	class UnitellerCore : public SDK::PaymentProcessor::Scripting::IBackendScenarioObject, public ILogable
-	{
-		Q_OBJECT
+      public:
+        UnitellerCore(SDK::PaymentProcessor::ICore *aCore, ILog *aLog, QSharedPointer<Uniteller::API> aAPI);
 
-	public:
-		UnitellerCore(SDK::PaymentProcessor::ICore* aCore, ILog* aLog, QSharedPointer<Uniteller::API> aAPI);
+      public:
+        virtual QString getName() const {
+            return CUnitellerBackend::ScriptObjectName;
+        }
 
-	public:
-		virtual QString getName() const { return CUnitellerBackend::ScriptObjectName; }
+      signals:
+        void onTimeout();
 
-	signals:
-		void onTimeout();
+        /// Ждет поднесения карты (прикладывай или вставляй)
+        void onReadyToCard();
 
-		/// Ждет поднесения карты (прикладывай или вставляй)
-		void onReadyToCard();
+        /// Показать сообщение пользователю
+        void onShowMessage(const QString &aMessage);
 
-		/// Показать сообщение пользователю
-		void onShowMessage(const QString& aMessage);
+        /// Сообщить пользователю об ошибке
+        void onError(const QString &aMessage);
 
-		/// Сообщить пользователю об ошибке
-		void onError(const QString& aMessage);
+        void onPINRequired();
 
-		void onPINRequired();
+        /// Сообщение о вводе пина, может передаваться от 0 до 4х звездочек
+        void onEnterPin(const QString &aPinString);
 
-		/// Сообщение о вводе пина, может передаваться от 0 до 4х звездочек
-		void onEnterPin(const QString& aPinString);
+        /// Сообщение о переходе к обмену с процессингом после ввода пина
+        void onOnlineRequired();
 
-		/// Сообщение о переходе к обмену с процессингом после ввода пина
-		void onOnlineRequired();
+        void cardInserted();
+        void cardOut();
 
-		void cardInserted();
-		void cardOut();
+        // Дерни за веревочкУ, карта выскочит
+        void ejected();
 
-		// Дерни за веревочкУ, карта выскочит
-		void ejected();
+      public slots:
+        void ejectCard();
 
-	public slots:
-		void ejectCard();
+      private slots:
+        void onDeviceEvent(Uniteller::DeviceEvent::Enum aEvent, Uniteller::KeyCode::Enum aKeyCode);
+        void onPrintReceipt(const QStringList &aLines);
 
-	private slots:
-		void onDeviceEvent(Uniteller::DeviceEvent::Enum aEvent, Uniteller::KeyCode::Enum aKeyCode);
-		void onPrintReceipt(const QStringList& aLines);
+      private:
+        SDK::PaymentProcessor::ICore *mCore;
 
-	private:
-		SDK::PaymentProcessor::ICore* mCore;
+        QTimer mDummyTimer;
+        int mCountPINNumbers;
+    };
 
-		QTimer mDummyTimer;
-		int mCountPINNumbers;
-	};
+    //--------------------------------------------------------------------------
+    class UnitellerBackendPlugin
+        : public SDK::Plugin::IFactory<SDK::PaymentProcessor::Scripting::IBackendScenarioObject> {
+      public:
+        UnitellerBackendPlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
 
-	//--------------------------------------------------------------------------
-	class UnitellerBackendPlugin
-		: public SDK::Plugin::IFactory<SDK::PaymentProcessor::Scripting::IBackendScenarioObject>
-	{
-	public:
-		UnitellerBackendPlugin(SDK::Plugin::IEnvironment* aFactory, const QString& aInstancePath);
+      public:
+        /// Возвращает название плагина.
+        virtual QString getPluginName() const {
+            return CUnitellerBackend::PluginName;
+        }
 
-	public:
-		/// Возвращает название плагина.
-		virtual QString getPluginName() const { return CUnitellerBackend::PluginName; }
+        /// Возвращает параметры плагина.
+        virtual QVariantMap getConfiguration() const {
+            return QVariantMap();
+        }
 
-		/// Возвращает параметры плагина.
-		virtual QVariantMap getConfiguration() const { return QVariantMap(); }
+        /// Настраивает плагин.
+        virtual void setConfiguration(const QVariantMap &aParameters) {
+            Q_UNUSED(aParameters);
+        }
 
-		/// Настраивает плагин.
-		virtual void setConfiguration(const QVariantMap& aParameters) { Q_UNUSED(aParameters); }
+        /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
+        virtual QString getConfigurationName() const {
+            return mInstancePath;
+        }
 
-		/// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
-		virtual QString getConfigurationName() const { return mInstancePath; }
+        /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
+        virtual bool saveConfiguration() {
+            return mEnvironment->saveConfiguration(CUnitellerBackend::PluginName, getConfiguration());
+        }
 
-		/// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
-		virtual bool saveConfiguration()
-		{
-			return mEnvironment->saveConfiguration(CUnitellerBackend::PluginName, getConfiguration());
-		}
+        /// Проверяет успешно ли инициализировался плагин при создании.
+        virtual bool isReady() const {
+            return true;
+        }
 
-		/// Проверяет успешно ли инициализировался плагин при создании.
-		virtual bool isReady() const { return true; }
+        /// Возвращает список имен классов, которые создает фабрика.
+        virtual QStringList getClassNames() const {
+            return QStringList(CUnitellerBackend::PluginName);
+        }
 
-		/// Возвращает список имен классов, которые создает фабрика.
-		virtual QStringList getClassNames() const { return QStringList(CUnitellerBackend::PluginName); }
+        /// Создает класс c заданным именем.
+        virtual PPSDK::Scripting::IBackendScenarioObject *create(const QString &aClassName) const;
 
-		/// Создает класс c заданным именем.
-		virtual PPSDK::Scripting::IBackendScenarioObject* create(const QString& aClassName) const;
+      private:
+        QString mInstancePath;
+        SDK::Plugin::IEnvironment *mEnvironment;
 
-	private:
-		QString mInstancePath;
-		SDK::Plugin::IEnvironment* mEnvironment;
-
-	private:
-		QSharedPointer<PPSDK::Scripting::IBackendScenarioObject> mObject;
-	};
+      private:
+        QSharedPointer<PPSDK::Scripting::IBackendScenarioObject> mObject;
+    };
 
 } // namespace CUnitellerBackend

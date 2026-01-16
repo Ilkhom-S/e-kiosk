@@ -6,50 +6,49 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола ShtrihFR.
-class ShtrihFRProtocol : public ProtocolBase
-{
-public:
-	ShtrihFRProtocol();
+class ShtrihFRProtocol : public ProtocolBase {
+  public:
+    ShtrihFRProtocol();
 
-	/// Выполнить команду.
-	TResult processCommand(const QByteArray& aCommandData, QByteArray& aUnpackedAnswer, int aTimeout);
+    /// Выполнить команду.
+    TResult processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, int aTimeout);
 
-	/// Установить таймаут технологических посылок.
-	void setTransportTimeout(int aTimeout);
+    /// Установить таймаут технологических посылок.
+    void setTransportTimeout(int aTimeout);
 
-private:
-	/// Подсчет CRC.
-	uchar calcCRC(const QByteArray& aData);
+  private:
+    /// Подсчет CRC.
+    uchar calcCRC(const QByteArray &aData);
 
-	/// Исполнить команду.
-	bool execCommand(const QByteArray& aCommand, QByteArray& aAnswer, int aTimeout);
+    /// Исполнить команду.
+    bool execCommand(const QByteArray &aCommand, QByteArray &aAnswer, int aTimeout);
 
-	/// Переполучить ответ.
-	bool regetAnswer(QByteArray& aAnswerData);
+    /// Переполучить ответ.
+    bool regetAnswer(QByteArray &aAnswerData);
 
-	/// Прочитать данные.
-	bool readData(QByteArray& aData, int aTimeout = SDK::Driver::IIOPort::DefaultReadTimeout);
+    /// Прочитать данные.
+    bool readData(QByteArray &aData, int aTimeout = SDK::Driver::IIOPort::DefaultReadTimeout);
 
-	/// Проверка пришедших из порта данных.
-	bool check(const QByteArray& aAnswer);
+    /// Проверка пришедших из порта данных.
+    bool check(const QByteArray &aAnswer);
 
-	/// Прочитать ответ.
-	bool getAnswer(QByteArray& aData, int aTimeout);
+    /// Прочитать ответ.
+    bool getAnswer(QByteArray &aData, int aTimeout);
 
-	/// Открыть сеанс связи.
-	bool openSession();
+    /// Открыть сеанс связи.
+    bool openSession();
 
-	/// Отправить ACK.
-	bool sendACK();
+    /// Отправить ACK.
+    bool sendACK();
 
-	/// Отправить NAK.
-	bool sendNAK();
+    /// Отправить NAK.
+    bool sendNAK();
 
-	/// Отправить ENQ.
-	bool sendENQ();
+    /// Отправить ENQ.
+    bool sendENQ();
 
-	/// Таймаут технологических посылок.
-	int mTransportTimeout;
+    /// Таймаут технологических посылок.
+    int mTransportTimeout;
 };
 
 //--------------------------------------------------------------------------------

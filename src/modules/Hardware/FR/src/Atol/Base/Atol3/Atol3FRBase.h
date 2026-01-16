@@ -9,24 +9,23 @@
 #include "../AtolFRBase.h"
 
 //--------------------------------------------------------------------------------
-class Atol3FRBase : public AtolFRBase
-{
-	SET_SERIES("ATOL3")
+class Atol3FRBase : public AtolFRBase {
+    SET_SERIES("ATOL3")
 
-	Atol3FRBase();
+    Atol3FRBase();
 
-protected:
-	/// Попытка самоидентификации.
-	virtual bool isConnected();
+  protected:
+    /// Попытка самоидентификации.
+    virtual bool isConnected();
 
-	/// Выполнить команду.
-	virtual TResult performCommand(const QByteArray& aCommandData, QByteArray& aAnswer, int aTimeout);
+    /// Выполнить команду.
+    virtual TResult performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout);
 
-	/// Протокол.
-	Atol3FRProtocol mProtocol;
+    /// Протокол.
+    Atol3FRProtocol mProtocol;
 
-	/// Id задачи.
-	uchar mTId;
+    /// Id задачи.
+    uchar mTId;
 };
 
 //--------------------------------------------------------------------------------

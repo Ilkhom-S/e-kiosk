@@ -11,26 +11,24 @@
 #include "PortScanner.h"
 
 //--------------------------------------------------------------------------------
-namespace CUSBScanner
-{
-	/// Количество байтов в буфере для чтения ответа (независимо от наличия ответа) из USB-канала.
-	const int USBAnswerSize = 100;
+namespace CUSBScanner {
+    /// Количество байтов в буфере для чтения ответа (независимо от наличия ответа) из USB-канала.
+    const int USBAnswerSize = 100;
 } // namespace CUSBScanner
 
 //--------------------------------------------------------------------------------
 typedef PortScanner<USBDeviceBase<PortPollingDeviceBase<ProtoHID>>> TUSBScanner;
 
-class USBScanner : public TUSBScanner
-{
-public:
-	USBScanner();
+class USBScanner : public TUSBScanner {
+  public:
+    USBScanner();
 
-	/// Возвращает список поддерживаемых устройств.
-	static QStringList getModelList();
+    /// Возвращает список поддерживаемых устройств.
+    static QStringList getModelList();
 
-protected:
-	/// Получить данные
-	virtual bool getData(QByteArray& aAnswer);
+  protected:
+    /// Получить данные
+    virtual bool getData(QByteArray &aAnswer);
 };
 
 //--------------------------------------------------------------------------------

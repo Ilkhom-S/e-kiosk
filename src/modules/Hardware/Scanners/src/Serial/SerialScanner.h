@@ -13,14 +13,13 @@
 //--------------------------------------------------------------------------------
 typedef PortScanner<SerialDeviceBase<PortPollingDeviceBase<ProtoHID>>> TSerialScanner;
 
-class SerialScanner : public TSerialScanner
-{
-public:
-	SerialScanner();
+class SerialScanner : public TSerialScanner {
+  public:
+    SerialScanner();
 
-protected:
-	/// Получить данные
-	virtual bool getData(QByteArray& aAnswer);
+  protected:
+    /// Получить данные
+    virtual bool getData(QByteArray &aAnswer);
 };
 
 //--------------------------------------------------------------------------------

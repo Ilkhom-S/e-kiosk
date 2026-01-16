@@ -10,28 +10,22 @@
 using namespace SDK::Plugin;
 
 //------------------------------------------------------------------------------
-template <class T>
-IPlugin* CreatePlugin(IEnvironment* aEnvironment, const QString& aInstancePath)
-{
-	return new DevicePluginBase<T>("Puloon dispenser", aEnvironment, aInstancePath);
+template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
+    return new DevicePluginBase<T>("Puloon dispenser", aEnvironment, aInstancePath);
 }
 
 //------------------------------------------------------------------------------
-template <>
-IPlugin* CreatePlugin<SuzoHopper>(IEnvironment* aEnvironment, const QString& aInstancePath)
-{
-	return new DevicePluginBase<SuzoHopper>("Suzo hopper", aEnvironment, aInstancePath);
+template <> IPlugin *CreatePlugin<SuzoHopper>(IEnvironment *aEnvironment, const QString &aInstancePath) {
+    return new DevicePluginBase<SuzoHopper>("Suzo hopper", aEnvironment, aInstancePath);
 }
 
 //------------------------------------------------------------------------------
-template <class T>
-TParameterList defaultParameters(const QString& aDefaultName)
-{
-	return createNamedList<T>(T::getModelList(), aDefaultName);
+template <class T> TParameterList defaultParameters(const QString &aDefaultName) {
+    return createNamedList<T>(T::getModelList(), aDefaultName);
 }
 
-#define COMMON_DISPENSER_PLUGIN(aClassName, aDefaultName) \
-	COMMON_DRIVER(aClassName, std::bind(&defaultParameters<aClassName>, aDefaultName))
+#define COMMON_DISPENSER_PLUGIN(aClassName, aDefaultName)                                                              \
+    COMMON_DRIVER(aClassName, std::bind(&defaultParameters<aClassName>, aDefaultName))
 
 // Регистрация плагинов.
 BEGIN_REGISTER_PLUGIN

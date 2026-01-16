@@ -3,21 +3,19 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-namespace EOSMPCommandId
-{
-	enum Enum
-	{
-		IdentificationData, /// Строка для идентификации.
+namespace EOSMPCommandId {
+    enum Enum {
+        IdentificationData, /// Строка для идентификации.
 
-		/// Команды.
-		Identification, /// Идентификация.
-		ResetModem,		/// Перезагрузка модема.
-		StartTimer,		/// Запуск таймера.
-		StopTimer,		/// Останов таймера.
-		Ping,			/// Пинг сторожа.
-		RebootPC,		/// Перезагрузка PC.
-		GetSensorStatus /// Получить статусы датчиков.
-	};
+        /// Команды.
+        Identification, /// Идентификация.
+        ResetModem,     /// Перезагрузка модема.
+        StartTimer,     /// Запуск таймера.
+        StopTimer,      /// Останов таймера.
+        Ping,           /// Пинг сторожа.
+        RebootPC,       /// Перезагрузка PC.
+        GetSensorStatus /// Получить статусы датчиков.
+    };
 } // namespace EOSMPCommandId
 
 //--------------------------------------------------------------------------------

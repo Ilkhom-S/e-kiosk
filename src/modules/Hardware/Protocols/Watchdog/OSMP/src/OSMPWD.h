@@ -6,21 +6,20 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола KKM.
-class OSMPWDProtocol : public ProtocolBase
-{
-public:
-	/// Выполнить команду протокола.
-	TResult processCommand(const QByteArray& aCommandData, QByteArray* aUnpackedData = nullptr);
+class OSMPWDProtocol : public ProtocolBase {
+  public:
+    /// Выполнить команду протокола.
+    TResult processCommand(const QByteArray &aCommandData, QByteArray *aUnpackedData = nullptr);
 
-private:
-	/// Подсчет контрольной суммы пакета данных.
-	const uchar calcCRC(const QByteArray& aData);
+  private:
+    /// Подсчет контрольной суммы пакета данных.
+    const uchar calcCRC(const QByteArray &aData);
 
-	/// Распаковка пришедших из порта данных.
-	bool checkAnswer(const QByteArray& aAnswerData);
+    /// Распаковка пришедших из порта данных.
+    bool checkAnswer(const QByteArray &aAnswerData);
 
-	/// Получить пакет данных из порта.
-	bool read(QByteArray& aData);
+    /// Получить пакет данных из порта.
+    bool read(QByteArray &aData);
 };
 
 //--------------------------------------------------------------------------------

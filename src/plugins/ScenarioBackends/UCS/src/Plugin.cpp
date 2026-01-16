@@ -17,21 +17,19 @@ using namespace SDK::Driver;
 using namespace SDK::Plugin;
 
 //------------------------------------------------------------------------------
-static IPlugin* CreatePlugin(IEnvironment* aEnvironment, const QString& aInstancePath)
-{
-	auto plugin = new DevicePluginBase<UcsDevice>(Ucs::ModelName, aEnvironment, aInstancePath);
+static IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
+    auto plugin = new DevicePluginBase<UcsDevice>(Ucs::ModelName, aEnvironment, aInstancePath);
 
-	plugin->setCore(dynamic_cast<SDK::PaymentProcessor::ICore*>(
-		aEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore)));
-	plugin->setLog(aEnvironment->getLog(Ucs::LogName));
+    plugin->setCore(dynamic_cast<SDK::PaymentProcessor::ICore *>(
+        aEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore)));
+    plugin->setLog(aEnvironment->getLog(Ucs::LogName));
 
-	return plugin;
+    return plugin;
 }
 
-TParameterList defaultParameters()
-{
-	return TParameterList() << SPluginParameter(CHardwareSDK::ModelName, false, CPPT::ModelName, QString(),
-												Ucs::ModelName, QStringList() << Ucs::ModelName, true);
+TParameterList defaultParameters() {
+    return TParameterList() << SPluginParameter(CHardwareSDK::ModelName, false, CPPT::ModelName, QString(),
+                                                Ucs::ModelName, QStringList() << Ucs::ModelName, true);
 }
 
 // Регистрация плагина.

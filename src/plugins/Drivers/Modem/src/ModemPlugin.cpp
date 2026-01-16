@@ -6,9 +6,8 @@
 using namespace SDK::Plugin;
 
 //------------------------------------------------------------------------------
-TParameterList EnumParameters()
-{
-	return createNamedList<ATGSMModem>("GSM AT compatible modem");
+TParameterList EnumParameters() {
+    return createNamedList<ATGSMModem>("GSM AT compatible modem");
 }
 
 // Регистрация плагина.

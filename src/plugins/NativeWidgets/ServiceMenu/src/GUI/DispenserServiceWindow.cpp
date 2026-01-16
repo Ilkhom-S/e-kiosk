@@ -16,63 +16,55 @@
 #include "DispenserServiceWindow.h"
 
 //------------------------------------------------------------------------
-DispenserServiceWindow::DispenserServiceWindow(ServiceMenuBackend* aBackend, QWidget* aParent)
-	: QFrame(aParent), ServiceWindowBase(aBackend)
-{
-	setupUi(this);
+DispenserServiceWindow::DispenserServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
+    : QFrame(aParent), ServiceWindowBase(aBackend) {
+    setupUi(this);
 }
 
 //------------------------------------------------------------------------
-bool DispenserServiceWindow::activate()
-{
-	lwCashUnits->clear();
+bool DispenserServiceWindow::activate() {
+    lwCashUnits->clear();
 
-	PPSDK::TCashUnitsState cashUnitState = mBackend->getCore()->getFundsService()->getDispenser()->getCashUnitsState();
+    PPSDK::TCashUnitsState cashUnitState = mBackend->getCore()->getFundsService()->getDispenser()->getCashUnitsState();
 
-	if (cashUnitState.isEmpty())
-	{
-		return false;
-	}
+    if (cashUnitState.isEmpty()) {
+        return false;
+    }
 
-	foreach (QString device, cashUnitState.keys())
-	{
-		QVariantMap config = mBackend->getHardwareManager()->getDeviceConfiguration(device);
+    foreach (QString device, cashUnitState.keys()) {
+        QVariantMap config = mBackend->getHardwareManager()->getDeviceConfiguration(device);
 
-		for (const PPSDK::SCashUnit& cashUnit : cashUnitState.value(device))
-		{
-			QListWidgetItem* item = new QListWidgetItem(QString("%1:%2 -> %3 x %4 %5 = %6%7")
-															.arg(config.value("system_name").toString())
-															.arg(config.value("model_name").toString())
-															.arg(cashUnit.nominal)
-															.arg(cashUnit.count)
-															.arg(tr("#pts"))
-															.arg(cashUnit.nominal * cashUnit.count)
-															.arg(cashUnit.currencyName),
-														lwCashUnits);
+        for (const PPSDK::SCashUnit &cashUnit : cashUnitState.value(device)) {
+            QListWidgetItem *item = new QListWidgetItem(QString("%1:%2 -> %3 x %4 %5 = %6%7")
+                                                            .arg(config.value("system_name").toString())
+                                                            .arg(config.value("model_name").toString())
+                                                            .arg(cashUnit.nominal)
+                                                            .arg(cashUnit.count)
+                                                            .arg(tr("#pts"))
+                                                            .arg(cashUnit.nominal * cashUnit.count)
+                                                            .arg(cashUnit.currencyName),
+                                                        lwCashUnits);
 
-			lwCashUnits->addItem(item);
-		}
-	}
+            lwCashUnits->addItem(item);
+        }
+    }
 
-	return true;
+    return true;
 }
 
 //------------------------------------------------------------------------
-bool DispenserServiceWindow::deactivate()
-{
-	return true;
+bool DispenserServiceWindow::deactivate() {
+    return true;
 }
 
 //------------------------------------------------------------------------
-bool DispenserServiceWindow::initialize()
-{
-	return true;
+bool DispenserServiceWindow::initialize() {
+    return true;
 }
 
 //------------------------------------------------------------------------
-bool DispenserServiceWindow::shutdown()
-{
-	return true;
+bool DispenserServiceWindow::shutdown() {
+    return true;
 }
 
 //------------------------------------------------------------------------

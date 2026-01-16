@@ -5,31 +5,30 @@
 #include "CCNetCashAcceptorBase.h"
 
 //--------------------------------------------------------------------------------
-class CCNetCreator : public CCNetCashAcceptorBase
-{
-	SET_SUBSERIES("Creator")
+class CCNetCreator : public CCNetCashAcceptorBase {
+    SET_SUBSERIES("Creator")
 
-public:
-	CCNetCreator();
+  public:
+    CCNetCreator();
 
-protected:
-	/// Запросить и сохранить параметры устройства.
-	virtual void processDeviceData(QByteArray& aAnswer);
+  protected:
+    /// Запросить и сохранить параметры устройства.
+    virtual void processDeviceData(QByteArray &aAnswer);
 
-	/// Обновить прошивку.
-	virtual bool performUpdateFirmware(const QByteArray& aBuffer);
+    /// Обновить прошивку.
+    virtual bool performUpdateFirmware(const QByteArray &aBuffer);
 
-	/// Изменить скорость работы.
-	virtual bool performBaudRateChanging(const SDK::Driver::TPortParameters& aPortParameters);
+    /// Изменить скорость работы.
+    virtual bool performBaudRateChanging(const SDK::Driver::TPortParameters &aPortParameters);
 
-	/// Записать головную часть прошивки.
-	bool writeHead(const QByteArray& aBuffer);
+    /// Записать головную часть прошивки.
+    bool writeHead(const QByteArray &aBuffer);
 
-	/// Записать блок данных.
-	bool writeBlock(const QByteArray& aBuffer, int aIndex, bool aLast);
+    /// Записать блок данных.
+    bool writeBlock(const QByteArray &aBuffer, int aIndex, bool aLast);
 
-	/// Распарсить данные устройства.
-	QString parseDeviceData(const QByteArray& aData, const QString& aPattern);
+    /// Распарсить данные устройства.
+    QString parseDeviceData(const QByteArray &aData, const QString &aPattern);
 };
 
 //--------------------------------------------------------------------------------

@@ -17,72 +17,70 @@
 #include "Hardware/CashDevices/CCTalkDeviceConstants.h"
 
 //--------------------------------------------------------------------------------
-template <class T>
-class CCTalkDeviceBase : public T
-{
-	SET_SERIES("ccTalk")
+template <class T> class CCTalkDeviceBase : public T {
+    SET_SERIES("ccTalk")
 
-public:
-	CCTalkDeviceBase();
+  public:
+    CCTalkDeviceBase();
 
-	/// Получить поддерживаемые тпы протоколов.
-	static QStringList getProtocolTypes();
+    /// Получить поддерживаемые тпы протоколов.
+    static QStringList getProtocolTypes();
 
-protected:
-	/// Запросить и сохранить параметры устройства.
-	virtual void processDeviceData();
+  protected:
+    /// Запросить и сохранить параметры устройства.
+    virtual void processDeviceData();
 
-	/// Попытка самоидентификации.
-	virtual bool isConnected();
+    /// Попытка самоидентификации.
+    virtual bool isConnected();
 
-	/// Попытка самоидентификации.
-	bool checkConnection();
+    /// Попытка самоидентификации.
+    bool checkConnection();
 
-	/// Распарсить данные прошивки.
-	virtual double parseFWVersion(const QByteArray& aAnswer);
+    /// Распарсить данные прошивки.
+    virtual double parseFWVersion(const QByteArray &aAnswer);
 
-	/// Выполнить команду.
-	virtual TResult execCommand(const QByteArray& aCommand, const QByteArray& aCommandData,
-								QByteArray* aAnswer = nullptr);
+    /// Выполнить команду.
+    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+                                QByteArray *aAnswer = nullptr);
 
-	/// Распарсить дату.
-	QDate parseDate(const QByteArray& aData);
+    /// Распарсить дату.
+    QDate parseDate(const QByteArray &aData);
 
-	/// Данные всех моделей.
-	typedef QSharedPointer<CCCTalk::CModelDataBase> PAllModelData;
-	PAllModelData mAllModelData;
+    /// Данные всех моделей.
+    typedef QSharedPointer<CCCTalk::CModelDataBase> PAllModelData;
+    PAllModelData mAllModelData;
 
-	/// Базовый год (для парсинга дат).
-	int mBaseYear;
+    /// Базовый год (для парсинга дат).
+    int mBaseYear;
 
-	/// Протокол.
-	CCTalkCAProtocol mProtocol;
+    /// Протокол.
+    CCTalkCAProtocol mProtocol;
 
-	/// Индекс события.
-	int mEventIndex;
+    /// Индекс события.
+    int mEventIndex;
 
-	// TODO: в базу.
-	/// Последние девайс-коды устройства.
-	TDeviceCodes mCodes;
+    // TODO: в базу.
+    /// Последние девайс-коды устройства.
+    TDeviceCodes mCodes;
 
-	/// Номер прошивки.
-	double mFWVersion;
+    /// Номер прошивки.
+    double mFWVersion;
 
-	/// Модели данной реализации.
-	QStringList mModels;
+    /// Модели данной реализации.
+    QStringList mModels;
 
-	/// Данные модели.
-	CCCTalk::SModelData mModelData;
+    /// Данные модели.
+    CCCTalk::SModelData mModelData;
 
-	/// Адрес устройства.
-	uchar mAddress;
+    /// Адрес устройства.
+    uchar mAddress;
 
-	/// Поддерживаемые тпы протоколов.
-	QStringList mProtocolTypes;
+    /// Поддерживаемые тпы протоколов.
+    QStringList mProtocolTypes;
 
-	/// Данные ошибок.
-	typedef QSharedPointer<CCCTalk::ErrorDataBase> PErrorData;
-	PErrorData mErrorData;
+    /// Данные ошибок.
+    typedef QSharedPointer<CCCTalk::ErrorDataBase> PErrorData;
+    PErrorData mErrorData;
 };
 
 //--------------------------------------------------------------------------------

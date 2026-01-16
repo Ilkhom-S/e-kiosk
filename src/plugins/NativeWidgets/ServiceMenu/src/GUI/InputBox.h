@@ -12,38 +12,37 @@
 #include "Common/QtHeadersEnd.h"
 
 //---------------------------------------------------------------------------
-class InputBox : public QWidget
-{
-	Q_OBJECT
+class InputBox : public QWidget {
+    Q_OBJECT
 
-public:
-	typedef std::function<bool(const QString&)> ValidatorFunction;
+  public:
+    typedef std::function<bool(const QString &)> ValidatorFunction;
 
-public:
-	InputBox(QWidget* parent, ValidatorFunction aValidator);
-	~InputBox();
+  public:
+    InputBox(QWidget *parent, ValidatorFunction aValidator);
+    ~InputBox();
 
-public:
-	void setLabelText(const QString& aText);
-	void setTextValue(const QString& aValue);
+  public:
+    void setLabelText(const QString &aText);
+    void setTextValue(const QString &aValue);
 
-	QString textValue() const;
+    QString textValue() const;
 
-signals:
-	void accepted();
+  signals:
+    void accepted();
 
-private slots:
-	void onOK();
-	void onCancel();
-	void mySetFocus();
-	void onTextChanged();
+  private slots:
+    void onOK();
+    void onCancel();
+    void mySetFocus();
+    void onTextChanged();
 
-private:
-	virtual void showEvent(QShowEvent* aEvent);
+  private:
+    virtual void showEvent(QShowEvent *aEvent);
 
-private:
-	Ui::InputBox ui;
-	ValidatorFunction mValidator;
+  private:
+    Ui::InputBox ui;
+    ValidatorFunction mValidator;
 };
 
 //---------------------------------------------------------------------------

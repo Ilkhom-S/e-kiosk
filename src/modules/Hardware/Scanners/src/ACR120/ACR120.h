@@ -8,26 +8,25 @@
 //--------------------------------------------------------------------------------
 typedef PollingDeviceBase<ProtoHID> TPollingHID;
 
-class ACR120 : public TPollingHID
-{
-public:
-	ACR120();
+class ACR120 : public TPollingHID {
+  public:
+    ACR120();
 
-	/// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
-	virtual bool release();
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    virtual bool release();
 
-private:
-	/// Попытка самоидентификации.
-	virtual bool isConnected();
+  private:
+    /// Попытка самоидентификации.
+    virtual bool isConnected();
 
-	/// Получить статус.
-	virtual bool getStatus(TStatusCodes& aStatusCodes);
+    /// Получить статус.
+    virtual bool getStatus(TStatusCodes &aStatusCodes);
 
-	/// Хендл устройства.
-	qint16 mHandle;
+    /// Хендл устройства.
+    qint16 mHandle;
 
-	/// Приложена ли карта.
-	bool mCardPresent;
+    /// Приложена ли карта.
+    bool mCardPresent;
 };
 
 //--------------------------------------------------------------------------------

@@ -28,173 +28,174 @@
 #include "Ucs.h"
 #include "DatabaseUtils.h"
 
-
 namespace PPSDK = SDK::PaymentProcessor;
 
 class NetworkTaskManager;
 
 //---------------------------------------------------------------------------
-namespace Ucs
-{
-	const char LogName[] = "Ucs";
-	const char ScriptObjectName[] = "Ucs";
-	const char EncashmentTask[] = "ucs_encash_sync";
+namespace Ucs {
+    const char LogName[] = "Ucs";
+    const char ScriptObjectName[] = "Ucs";
+    const char EncashmentTask[] = "ucs_encash_sync";
 
-	typedef void* (*EftpCreate)(char* szConfigPath);
-	typedef void (*EftpDestroy)(void* pvSelf);
+    typedef void *(*EftpCreate)(char *szConfigPath);
+    typedef void (*EftpDestroy)(void *pvSelf);
 
-	typedef int (*FUN_IDLE)(void* pvData);
-	typedef int (*EftpDo)(void* pvSelf, char* pchInBuffer, char* pchOutBuffer, FUN_IDLE pfIdle, void* pvData);
+    typedef int (*FUN_IDLE)(void *pvData);
+    typedef int (*EftpDo)(void *pvSelf, char *pchInBuffer, char *pchOutBuffer, FUN_IDLE pfIdle, void *pvData);
 } // namespace Ucs
 
 //---------------------------------------------------------------------------
-namespace Ucs
-{
-	class BaseResponse;
-	typedef QSharedPointer<BaseResponse> BaseResponsePtr;
+namespace Ucs {
+    class BaseResponse;
+    typedef QSharedPointer<BaseResponse> BaseResponsePtr;
 
-	class AuthResponse;
-	class UscEncashTask;
+    class AuthResponse;
+    class UscEncashTask;
 
-	//---------------------------------------------------------------------------
-	/// API для работы с сервисом
-	class API : public SDK::PaymentProcessor::Scripting::IBackendScenarioObject, public ILogable
-	{
-		Q_OBJECT
+    //---------------------------------------------------------------------------
+    /// API для работы с сервисом
+    class API : public SDK::PaymentProcessor::Scripting::IBackendScenarioObject, public ILogable {
+        Q_OBJECT
 
-		API(SDK::PaymentProcessor::ICore* aCore, ILog* aLog);
+        API(SDK::PaymentProcessor::ICore *aCore, ILog *aLog);
 
-	public:
-		struct TResponse
-		{
-			int result;
-			APIState::Enum state;
-			QByteArray response;
+      public:
+        struct TResponse {
+            int result;
+            APIState::Enum state;
+            QByteArray response;
 
-			TResponse::TResponse() : result(-1), state(APIState::None) {}
-			explicit TResponse::TResponse(int aResult, APIState::Enum aState, const QByteArray& aResponse)
-				: result(aResult), state(aState), response(aResponse)
-			{
-			}
-		};
+            TResponse::TResponse() : result(-1), state(APIState::None) {
+            }
+            explicit TResponse::TResponse(int aResult, APIState::Enum aState, const QByteArray &aResponse)
+                : result(aResult), state(aState), response(aResponse) {
+            }
+        };
 
-	public:
-		static QSharedPointer<API> getInstance(SDK::PaymentProcessor::ICore* aCore, ILog* aLog);
+      public:
+        static QSharedPointer<API> getInstance(SDK::PaymentProcessor::ICore *aCore, ILog *aLog);
 
-	public:
-		virtual QString getName() const { return Ucs::ScriptObjectName; }
+      public:
+        virtual QString getName() const {
+            return Ucs::ScriptObjectName;
+        }
 
-		bool setupRuntime(const QString& aRuntimePath);
+        bool setupRuntime(const QString &aRuntimePath);
 
-		bool isReady() const;
+        bool isReady() const;
 
-	public slots:
-		/// Начать процедуру оплаты, включая атворизацию, инкассацию и тд
-		bool enable(PPSDK::TPaymentAmount aAmount);
+      public slots:
+        /// Начать процедуру оплаты, включая атворизацию, инкассацию и тд
+        bool enable(PPSDK::TPaymentAmount aAmount);
 
-		/// Отсоединиться
-		void disable();
+        /// Отсоединиться
+        void disable();
 
-		void eftpCleanup();
+        void eftpCleanup();
 
-		/// EFTPOS запросы
-		void login();
+        /// EFTPOS запросы
+        void login();
 
-		void sale(double aAmount);
-		void breakSale();
-		void status();
+        void sale(double aAmount);
+        void breakSale();
+        void status();
 
-		bool encashmentOK() { return !mNeedEncashment; }
-		void encashment(bool aOnDemand = true);
-		/// Возвращает последнюю ошибку
-		bool isOK() { return mLastError.isEmpty(); }
+        bool encashmentOK() {
+            return !mNeedEncashment;
+        }
+        void encashment(bool aOnDemand = true);
+        /// Возвращает последнюю ошибку
+        bool isOK() {
+            return mLastError.isEmpty();
+        }
 
-		/// Слот для задачи планировщика
-		void onEncashTaskFinished(const QString& aName, bool aComplete);
+        /// Слот для задачи планировщика
+        void onEncashTaskFinished(const QString &aName, bool aComplete);
 
-	signals:
-		void hold();
-		void ready();
-		void readyToCard();
-		void error(const QString& aMessage);
-		void breakComplete();
-		void encashmentComplete();
-		void pinRequired();
-		void onlineRequired();
-		void message(const QString& aMessage);
-		void saleComplete(double aAmount, int aCurrency, const QString& aRRN, const QString& aConfirmationCode);
-		void doComplete(bool aLastLine);
+      signals:
+        void hold();
+        void ready();
+        void readyToCard();
+        void error(const QString &aMessage);
+        void breakComplete();
+        void encashmentComplete();
+        void pinRequired();
+        void onlineRequired();
+        void message(const QString &aMessage);
+        void saleComplete(double aAmount, int aCurrency, const QString &aRRN, const QString &aConfirmationCode);
+        void doComplete(bool aLastLine);
 
-	private slots:
-		TResponse send(const QByteArray& aRequest, bool aWaitOperationComplete = true);
-		void onResponseFinished();
-		void onReceiptPrinted(int aJobIndex, bool aError);
+      private slots:
+        TResponse send(const QByteArray &aRequest, bool aWaitOperationComplete = true);
+        void onResponseFinished();
+        void onReceiptPrinted(int aJobIndex, bool aError);
 
-	private:
-		void doEncashment(bool aOnDemand, bool aSkipPrintReceipt = false);
-		QByteArray makeRequest(char aClass, char aCode, const QByteArray& aData = QByteArray());
-		QString translateErrorMessage(const QString& aError, const QString& aMessage) const;
+      private:
+        void doEncashment(bool aOnDemand, bool aSkipPrintReceipt = false);
+        QByteArray makeRequest(char aClass, char aCode, const QByteArray &aData = QByteArray());
+        QString translateErrorMessage(const QString &aError, const QString &aMessage) const;
 
-		void printAllEncashments();
+        void printAllEncashments();
 
-		void killOldUCSProcess();
+        void killOldUCSProcess();
 
-	private:
-		/// Обработчики ответов сервера
-		bool isErrorResponse(BaseResponsePtr aResponse);
-		bool isLoginResponse(BaseResponsePtr aResponse);
-		bool isPrintLineResponse(BaseResponsePtr aResponse);
-		bool isConsoleResponse(BaseResponsePtr aResponse);
-		bool isEnchashmentResponse(BaseResponsePtr aResponse);
-		bool isBreakResponse(BaseResponsePtr aResponse);
-		bool isInitialResponse(BaseResponsePtr aResponse);
-		bool isPINRequiredResponse(BaseResponsePtr aResponse);
-		bool isOnlineRequiredResponse(BaseResponsePtr aResponse);
-		bool isAuthResponse(BaseResponsePtr aResponse);
-		bool isHoldResponse(BaseResponsePtr aResponse);
-		bool isMessageResponse(BaseResponsePtr aResponse);
+      private:
+        /// Обработчики ответов сервера
+        bool isErrorResponse(BaseResponsePtr aResponse);
+        bool isLoginResponse(BaseResponsePtr aResponse);
+        bool isPrintLineResponse(BaseResponsePtr aResponse);
+        bool isConsoleResponse(BaseResponsePtr aResponse);
+        bool isEnchashmentResponse(BaseResponsePtr aResponse);
+        bool isBreakResponse(BaseResponsePtr aResponse);
+        bool isInitialResponse(BaseResponsePtr aResponse);
+        bool isPINRequiredResponse(BaseResponsePtr aResponse);
+        bool isOnlineRequiredResponse(BaseResponsePtr aResponse);
+        bool isAuthResponse(BaseResponsePtr aResponse);
+        bool isHoldResponse(BaseResponsePtr aResponse);
+        bool isMessageResponse(BaseResponsePtr aResponse);
 
-	private:
-		void printReceipt();
-		void saveEncashmentReport();
+      private:
+        void printReceipt();
+        void saveEncashmentReport();
 
-	private:
-		SDK::PaymentProcessor::ICore* mCore;
-		SDK::PaymentProcessor::TerminalSettings* mTerminalSettings;
-		QString mTerminalID;
-		QDateTime mLoggedIn;
-		bool mLastLineReceived;
+      private:
+        SDK::PaymentProcessor::ICore *mCore;
+        SDK::PaymentProcessor::TerminalSettings *mTerminalSettings;
+        QString mTerminalID;
+        QDateTime mLoggedIn;
+        bool mLastLineReceived;
 
-		QStringList mCurrentReceipt;
+        QStringList mCurrentReceipt;
 
-		bool isLoggedIn() const;
-		bool isLoggedInExpired() const;
+        bool isLoggedIn() const;
+        bool isLoggedInExpired() const;
 
-	private:
-		QString mLastError;
+      private:
+        QString mLastError;
 
-	protected:
-		int mTimerEncashID;
-		void timerEvent(QTimerEvent* aEvent);
+      protected:
+        int mTimerEncashID;
+        void timerEvent(QTimerEvent *aEvent);
 
-	private:
-		bool mRuntimeInit;
-		EftpCreate mEftpCreate;
-		EftpDestroy mEftpDestroy;
-		EftpDo mEftpDo;
-		void* mPySelf; // Управляющий объект библиотеки
+      private:
+        bool mRuntimeInit;
+        EftpCreate mEftpCreate;
+        EftpDestroy mEftpDestroy;
+        EftpDo mEftpDo;
+        void *mPySelf; // Управляющий объект библиотеки
 
-		QFutureWatcher<TResponse> mResponseWatcher;
-		APIState::Enum mTerminalState;
-		SDK::PaymentProcessor::TPaymentAmount mMaxAmount;
-		bool mNeedEncashment;
-		bool mNeedPrintAllEncashmentReports;
-		UcsDB::DatabaseUtils mDatabase;
-		QSharedPointer<Ucs::AuthResponse> mAuthResponse;
-		QMap<int, UcsDB::Encashment> mEncashmentInPrint;
+        QFutureWatcher<TResponse> mResponseWatcher;
+        APIState::Enum mTerminalState;
+        SDK::PaymentProcessor::TPaymentAmount mMaxAmount;
+        bool mNeedEncashment;
+        bool mNeedPrintAllEncashmentReports;
+        UcsDB::DatabaseUtils mDatabase;
+        QSharedPointer<Ucs::AuthResponse> mAuthResponse;
+        QMap<int, UcsDB::Encashment> mEncashmentInPrint;
 
-	private:
-		UscEncashTask* mEncashmentTask;
-	};
+      private:
+        UscEncashTask *mEncashmentTask;
+    };
 
 } // namespace Ucs

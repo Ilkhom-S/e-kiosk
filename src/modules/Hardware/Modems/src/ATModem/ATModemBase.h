@@ -9,39 +9,38 @@
 // Project
 #include "ATGSMModemConstants.h"
 //--------------------------------------------------------------------------------
-class ATModemBase : public SerialDeviceBase<PortDeviceBase<DeviceBase<ProtoModem>>>
-{
-public:
-	ATModemBase();
+class ATModemBase : public SerialDeviceBase<PortDeviceBase<DeviceBase<ProtoModem>>> {
+  public:
+    ATModemBase();
 
-	/// Сброс.
-	virtual bool reset();
+    /// Сброс.
+    virtual bool reset();
 
-	/// Устанавливает строку инициализации.
-	virtual bool setInitString(const QString& aInitString);
+    /// Устанавливает строку инициализации.
+    virtual bool setInitString(const QString &aInitString);
 
-protected:
-	/// Идентифицирует устройство.
-	virtual bool isConnected();
+  protected:
+    /// Идентифицирует устройство.
+    virtual bool isConnected();
 
-	/// Включение/выключение локального эха.
-	bool enableLocalEcho(bool aEnable);
+    /// Включение/выключение локального эха.
+    bool enableLocalEcho(bool aEnable);
 
-	/// Составляет командую строку, добавляя необходимые префиксы и окончания.
-	QByteArray makeCommand(const QString& aCommand);
+    /// Составляет командую строку, добавляя необходимые префиксы и окончания.
+    QByteArray makeCommand(const QString &aCommand);
 
-	/// Посылает команду и читает ответ на неё.
-	bool processCommand(const QByteArray& aCommand, int aTimeout = CATGSMModem::Timeouts::Default);
-	bool processCommand(const QByteArray& aCommand, QByteArray& aAnswer, int aTimeout = CATGSMModem::Timeouts::Default);
+    /// Посылает команду и читает ответ на неё.
+    bool processCommand(const QByteArray &aCommand, int aTimeout = CATGSMModem::Timeouts::Default);
+    bool processCommand(const QByteArray &aCommand, QByteArray &aAnswer, int aTimeout = CATGSMModem::Timeouts::Default);
 
-	/// Разбор имени модема
-	virtual void setDeviceName(const QByteArray& aFullName);
+    /// Разбор имени модема
+    virtual void setDeviceName(const QByteArray &aFullName);
 
-	/// Теребим модем командой AT
-	bool checkAT(int aTimeout);
+    /// Теребим модем командой AT
+    bool checkAT(int aTimeout);
 
-	/// Таймаут запроса конфигурации модема
-	int mModemConfigTimeout;
+    /// Таймаут запроса конфигурации модема
+    int mModemConfigTimeout;
 };
 
 //--------------------------------------------------------------------------------

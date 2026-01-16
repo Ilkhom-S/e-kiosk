@@ -65,7 +65,7 @@ class AdPayment : public PaymentBase {
     /// Попытка проведения платежа.
     virtual void performTransaction();
 
-    /// Критичекая ошибка, проведение платежа прекращается.
+    /// Критическая ошибка, проведение платежа прекращается.
     virtual bool isCriticalError(int aError) const;
 
     /// При ошибке проведения устанавливает таймауты для следующей попытки.

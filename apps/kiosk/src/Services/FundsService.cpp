@@ -31,159 +31,139 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-FundsService* FundsService::instance(IApplication* aApplication)
-{
-	return static_cast<FundsService*>(aApplication->getCore()->getService(CServices::FundsService));
+FundsService *FundsService::instance(IApplication *aApplication) {
+    return static_cast<FundsService *>(aApplication->getCore()->getService(CServices::FundsService));
 }
 
 //---------------------------------------------------------------------------
-FundsService::FundsService(IApplication* aApplication)
-	: ILogable(CFundsService::LogName), mApplication(aApplication), mCashDispenserManager(nullptr),
-	  mCashAcceptorManager(nullptr)
-{
+FundsService::FundsService(IApplication *aApplication)
+    : ILogable(CFundsService::LogName), mApplication(aApplication), mCashDispenserManager(nullptr),
+      mCashAcceptorManager(nullptr) {
 }
 
 //---------------------------------------------------------------------------
-FundsService::~FundsService() {}
+FundsService::~FundsService() {
+}
 
 //---------------------------------------------------------------------------
-bool FundsService::initialize()
-{
-	if (!mCashAcceptorManager)
-	{
-		mCashAcceptorManager = new CashAcceptorManager(mApplication);
-		mCashAcceptorManager->setParent(this);
-	}
+bool FundsService::initialize() {
+    if (!mCashAcceptorManager) {
+        mCashAcceptorManager = new CashAcceptorManager(mApplication);
+        mCashAcceptorManager->setParent(this);
+    }
 
-	if (!mCashDispenserManager)
-	{
-		mCashDispenserManager = new CashDispenserManager(mApplication);
-		mCashDispenserManager->setParent(this);
-	}
+    if (!mCashDispenserManager) {
+        mCashDispenserManager = new CashDispenserManager(mApplication);
+        mCashDispenserManager->setParent(this);
+    }
 
-	auto database = DatabaseService::instance(mApplication)->getDatabaseUtils<IPaymentDatabaseUtils>();
+    auto database = DatabaseService::instance(mApplication)->getDatabaseUtils<IPaymentDatabaseUtils>();
 
-	return mCashAcceptorManager->initialize(database) && mCashDispenserManager->initialize(database);
+    return mCashAcceptorManager->initialize(database) && mCashDispenserManager->initialize(database);
 }
 
 //------------------------------------------------------------------------------
-void FundsService::finishInitialize() {}
-
-//---------------------------------------------------------------------------
-bool FundsService::canShutdown()
-{
-	return true;
+void FundsService::finishInitialize() {
 }
 
 //---------------------------------------------------------------------------
-bool FundsService::shutdown()
-{
-	if (mCashAcceptorManager)
-	{
-		mCashAcceptorManager->shutdown();
-		delete mCashAcceptorManager;
-		mCashAcceptorManager = nullptr;
-	}
-
-	if (mCashDispenserManager)
-	{
-		mCashDispenserManager->shutdown();
-		delete mCashDispenserManager;
-		mCashDispenserManager = nullptr;
-	}
-
-	return true;
+bool FundsService::canShutdown() {
+    return true;
 }
 
 //---------------------------------------------------------------------------
-QString FundsService::getName() const
-{
-	return CServices::FundsService;
+bool FundsService::shutdown() {
+    if (mCashAcceptorManager) {
+        mCashAcceptorManager->shutdown();
+        delete mCashAcceptorManager;
+        mCashAcceptorManager = nullptr;
+    }
+
+    if (mCashDispenserManager) {
+        mCashDispenserManager->shutdown();
+        delete mCashDispenserManager;
+        mCashDispenserManager = nullptr;
+    }
+
+    return true;
 }
 
 //---------------------------------------------------------------------------
-const QSet<QString>& FundsService::getRequiredServices() const
-{
-	static QSet<QString> requiredServices = QSet<QString>() << CServices::SettingsService << CServices::DeviceService
-															<< CServices::DatabaseService;
-
-	return requiredServices;
+QString FundsService::getName() const {
+    return CServices::FundsService;
 }
 
 //---------------------------------------------------------------------------
-QVariantMap FundsService::getParameters() const
-{
-	QVariantMap parameters;
+const QSet<QString> &FundsService::getRequiredServices() const {
+    static QSet<QString> requiredServices = QSet<QString>() << CServices::SettingsService << CServices::DeviceService
+                                                            << CServices::DatabaseService;
 
-	parameters[PPSDK::CServiceParameters::Funds::RejectCount] = mCashAcceptorManager->getRejectCount();
-
-	return parameters;
+    return requiredServices;
 }
 
 //---------------------------------------------------------------------------
-void FundsService::resetParameters(const QSet<QString>& aParameters)
-{
-	if (aParameters.contains(PPSDK::CServiceParameters::Funds::RejectCount))
-	{
-		auto dbUtils = DatabaseService::instance(mApplication)->getDatabaseUtils<IHardwareDatabaseUtils>();
-		dbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
-								PPSDK::CDatabaseConstants::Parameters::RejectCount, 0);
-	}
+QVariantMap FundsService::getParameters() const {
+    QVariantMap parameters;
+
+    parameters[PPSDK::CServiceParameters::Funds::RejectCount] = mCashAcceptorManager->getRejectCount();
+
+    return parameters;
+}
+
+//---------------------------------------------------------------------------
+void FundsService::resetParameters(const QSet<QString> &aParameters) {
+    if (aParameters.contains(PPSDK::CServiceParameters::Funds::RejectCount)) {
+        auto dbUtils = DatabaseService::instance(mApplication)->getDatabaseUtils<IHardwareDatabaseUtils>();
+        dbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
+                                PPSDK::CDatabaseConstants::Parameters::RejectCount, 0);
+    }
 }
 
 //------------------------------------------------------------------------------
-QString FundsService::getState() const
-{
-	// Получаем список всех доступных устройств.
-	PPSDK::TerminalSettings* settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
-	QStringList deviceList = settings->getDeviceList().filter(
-		QRegExp(QString("(%1|%2)").arg(DSDK::CComponents::BillAcceptor).arg(DSDK::CComponents::CoinAcceptor)));
+QString FundsService::getState() const {
+    // Получаем список всех доступных устройств.
+    PPSDK::TerminalSettings *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
+    QStringList deviceList = settings->getDeviceList().filter(
+        QRegExp(QString("(%1|%2)").arg(DSDK::CComponents::BillAcceptor).arg(DSDK::CComponents::CoinAcceptor)));
 
-	QStringList result;
+    QStringList result;
 
-	foreach (const QString& configurationName, deviceList)
-	{
-		DSDK::IDevice* device = DeviceService::instance(mApplication)->acquireDevice(configurationName);
-		if (device)
-		{
-			QStringList dd = device->getDeviceConfiguration().value(CHardwareSDK::DeviceData).toString().split("\n");
-			if (!dd.isEmpty())
-			{
-				QVariantMap ddMap;
-				foreach (QString param, dd)
-				{
-					if (param.isEmpty())
-						continue;
+    foreach (const QString &configurationName, deviceList) {
+        DSDK::IDevice *device = DeviceService::instance(mApplication)->acquireDevice(configurationName);
+        if (device) {
+            QStringList dd = device->getDeviceConfiguration().value(CHardwareSDK::DeviceData).toString().split("\n");
+            if (!dd.isEmpty()) {
+                QVariantMap ddMap;
+                foreach (QString param, dd) {
+                    if (param.isEmpty())
+                        continue;
 
-					QStringList pp = param.split(":");
-					if (!pp.isEmpty())
-					{
-						ddMap.insert(pp.first().trimmed(), pp.last().trimmed());
-					}
-				}
+                    QStringList pp = param.split(":");
+                    if (!pp.isEmpty()) {
+                        ddMap.insert(pp.first().trimmed(), pp.last().trimmed());
+                    }
+                }
 
-				result << DeviceService::instance(mApplication)
-							  ->getDeviceConfiguration(configurationName)
-							  .value(CHardwareSDK::ModelName)
-							  .toString()
-					   << ddMap.value(CHardwareSDK::SerialNumber).toString() << ddMap.value("firmware").toString();
-			}
-		}
-	}
+                result << DeviceService::instance(mApplication)
+                              ->getDeviceConfiguration(configurationName)
+                              .value(CHardwareSDK::ModelName)
+                              .toString()
+                       << ddMap.value(CHardwareSDK::SerialNumber).toString() << ddMap.value("firmware").toString();
+            }
+        }
+    }
 
-	return result.join(";");
+    return result.join(";");
 }
 
 //---------------------------------------------------------------------------
-SDK::PaymentProcessor::ICashAcceptorManager* FundsService::getAcceptor() const
-{
-	return mCashAcceptorManager;
+SDK::PaymentProcessor::ICashAcceptorManager *FundsService::getAcceptor() const {
+    return mCashAcceptorManager;
 }
 
 //---------------------------------------------------------------------------
-SDK::PaymentProcessor::ICashDispenserManager* FundsService::getDispenser() const
-{
-	return mCashDispenserManager;
+SDK::PaymentProcessor::ICashDispenserManager *FundsService::getDispenser() const {
+    return mCashDispenserManager;
 }
 
 //---------------------------------------------------------------------------

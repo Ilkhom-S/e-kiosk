@@ -9,65 +9,64 @@
 #include "Hardware/CashAcceptors/SerialCashAcceptor.h"
 
 //--------------------------------------------------------------------------------
-class SSPCashAcceptor : public TSerialCashAcceptor
-{
-	SET_SERIES("SSP")
+class SSPCashAcceptor : public TSerialCashAcceptor {
+    SET_SERIES("SSP")
 
-public:
-	SSPCashAcceptor();
+  public:
+    SSPCashAcceptor();
 
-	/// Возвращает список поддерживаемых устройств.
-	static QStringList getModelList();
+    /// Возвращает список поддерживаемых устройств.
+    static QStringList getModelList();
 
-	/// Принять купюру.
-	virtual bool stack();
+    /// Принять купюру.
+    virtual bool stack();
 
-	/// Вернуть купюру.
-	virtual bool reject();
+    /// Вернуть купюру.
+    virtual bool reject();
 
-protected:
-	/// Попытка самоидентификации.
-	virtual bool isConnected();
+  protected:
+    /// Попытка самоидентификации.
+    virtual bool isConnected();
 
-	/// Установка параметров по умолчанию.
-	virtual bool setDefaultParameters();
+    /// Установка параметров по умолчанию.
+    virtual bool setDefaultParameters();
 
-	/// Запросить и сохранить параметры устройства.
-	virtual void processDeviceData();
+    /// Запросить и сохранить параметры устройства.
+    virtual void processDeviceData();
 
-	/// Применить таблицу номиналов.
-	virtual bool applyParTable();
+    /// Применить таблицу номиналов.
+    virtual bool applyParTable();
 
-	/// Изменение режима приема денег.
-	virtual bool enableMoneyAcceptingMode(bool aEnabled);
+    /// Изменение режима приема денег.
+    virtual bool enableMoneyAcceptingMode(bool aEnabled);
 
-	/// Загрузка таблицы номиналов из устройства.
-	virtual bool loadParTable();
+    /// Загрузка таблицы номиналов из устройства.
+    virtual bool loadParTable();
 
-	/// Получить статусы.
-	virtual bool checkStatuses(TStatusData& aData);
+    /// Получить статусы.
+    virtual bool checkStatuses(TStatusData &aData);
 
-	/// Локальный сброс.
-	virtual bool processReset();
+    /// Локальный сброс.
+    virtual bool processReset();
 
-	/// Выполнить команду.
-	virtual TResult execCommand(const QByteArray& aCommand, const QByteArray& aCommandData,
-								QByteArray* aAnswer = nullptr);
+    /// Выполнить команду.
+    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+                                QByteArray *aAnswer = nullptr);
 
-	/// Обновить прошивку.
-	virtual bool performUpdateFirmware(const QByteArray& aBuffer);
+    /// Обновить прошивку.
+    virtual bool performUpdateFirmware(const QByteArray &aBuffer);
 
-	/// Изменить скорость работы.
-	bool performBaudRateChanging(bool aUp);
+    /// Изменить скорость работы.
+    bool performBaudRateChanging(bool aUp);
 
-	/// Протокол.
-	SSPProtocol mProtocol;
+    /// Протокол.
+    SSPProtocol mProtocol;
 
-	/// Удачна ли была последняя транзакция связи с устройством.
-	bool mLastConnectionOK;
+    /// Удачна ли была последняя транзакция связи с устройством.
+    bool mLastConnectionOK;
 
-	/// Признак включенности на прием денег.
-	bool mEnabled;
+    /// Признак включенности на прием денег.
+    bool mEnabled;
 };
 
 //--------------------------------------------------------------------------------

@@ -17,83 +17,65 @@ template class VirtualDeviceBase<CashAcceptorBase<DeviceBase<ProtoCashAcceptor>>
 template class VirtualDeviceBase<DispenserBase<DeviceBase<ProtoDispenser>>>;
 
 //---------------------------------------------------------------------------------
-template <class T>
-VirtualDeviceBase<T>::VirtualDeviceBase()
-{
-	mDeviceName = "Virtual";
+template <class T> VirtualDeviceBase<T>::VirtualDeviceBase() {
+    mDeviceName = "Virtual";
 }
 
 //---------------------------------------------------------------------------------
-template <class T>
-void VirtualDeviceBase<T>::initialize()
-{
-	START_IN_WORKING_THREAD(initialize)
+template <class T> void VirtualDeviceBase<T>::initialize() {
+    START_IN_WORKING_THREAD(initialize)
 
-	T::initialize();
+    T::initialize();
 
-	// Меняем поток на главный, иначе фильтр событий не будет работать.
-	moveToThread(qApp->thread());
+    // Меняем поток на главный, иначе фильтр событий не будет работать.
+    moveToThread(qApp->thread());
 
-	// Подписываемся на уведобления о событиях от приложения.
-	qApp->installEventFilter(this);
+    // Подписываемся на уведобления о событиях от приложения.
+    qApp->installEventFilter(this);
 }
 
 //---------------------------------------------------------------------------------
-template <class T>
-bool VirtualDeviceBase<T>::release()
-{
-	qApp->removeEventFilter(this);
+template <class T> bool VirtualDeviceBase<T>::release() {
+    qApp->removeEventFilter(this);
 
-	return T::release();
+    return T::release();
 }
 
 //---------------------------------------------------------------------------------
-template <class T>
-bool VirtualDeviceBase<T>::getStatus(TStatusCodes& aStatusCodes)
-{
-	aStatusCodes += mStatusCodes;
+template <class T> bool VirtualDeviceBase<T>::getStatus(TStatusCodes &aStatusCodes) {
+    aStatusCodes += mStatusCodes;
 
-	return true;
+    return true;
 }
 
 //--------------------------------------------------------------------------------
-template <class T>
-void VirtualDeviceBase<T>::blinkStatusCode(int aStatusCode)
-{
-	mStatusCodes.insert(aStatusCode);
-	onPoll();
+template <class T> void VirtualDeviceBase<T>::blinkStatusCode(int aStatusCode) {
+    mStatusCodes.insert(aStatusCode);
+    onPoll();
 
-	mStatusCodes.remove(aStatusCode);
-	onPoll();
+    mStatusCodes.remove(aStatusCode);
+    onPoll();
 }
 
 //--------------------------------------------------------------------------------
-template <class T>
-void VirtualDeviceBase<T>::changeStatusCode(int aStatusCode)
-{
-	if (mStatusCodes.contains(aStatusCode))
-	{
-		mStatusCodes.remove(aStatusCode);
-	}
-	else
-	{
-		mStatusCodes.insert(aStatusCode);
-	}
+template <class T> void VirtualDeviceBase<T>::changeStatusCode(int aStatusCode) {
+    if (mStatusCodes.contains(aStatusCode)) {
+        mStatusCodes.remove(aStatusCode);
+    } else {
+        mStatusCodes.insert(aStatusCode);
+    }
 }
 
 //---------------------------------------------------------------------------------
-template <class T>
-bool VirtualDeviceBase<T>::eventFilter(QObject* /*aWatched*/, QEvent* aEvent)
-{
-	if ((aEvent->type() == QEvent::KeyPress) && aEvent->spontaneous())
-	{
-		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(aEvent);
+template <class T> bool VirtualDeviceBase<T>::eventFilter(QObject * /*aWatched*/, QEvent *aEvent) {
+    if ((aEvent->type() == QEvent::KeyPress) && aEvent->spontaneous()) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(aEvent);
 
-		filterKeyEvent(keyEvent->key(), keyEvent->modifiers());
-		onPoll();
-	}
+        filterKeyEvent(keyEvent->key(), keyEvent->modifiers());
+        onPoll();
+    }
 
-	return false;
+    return false;
 }
 
 //---------------------------------------------------------------------------------

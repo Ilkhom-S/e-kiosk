@@ -11,31 +11,26 @@
 #include "DeviceConfigManager.h"
 
 //---------------------------------------------------------------------------
-class ConfigCleaner
-{
-public:
-	ConfigCleaner(DeviceConfigManager* aConfigManager, const QStringList& aKeys)
-		: mPerformer(aConfigManager), mKeys(aKeys)
-	{
-	}
+class ConfigCleaner {
+  public:
+    ConfigCleaner(DeviceConfigManager *aConfigManager, const QStringList &aKeys)
+        : mPerformer(aConfigManager), mKeys(aKeys) {
+    }
 
-	~ConfigCleaner()
-	{
-		if (mPerformer)
-		{
-			foreach (const QString& key, mKeys)
-			{
-				mPerformer->removeConfigParameter(key);
-			}
-		}
-	}
+    ~ConfigCleaner() {
+        if (mPerformer) {
+            foreach (const QString &key, mKeys) {
+                mPerformer->removeConfigParameter(key);
+            }
+        }
+    }
 
-private:
-	/// Класс-владелец конфига.
-	DeviceConfigManager* mPerformer;
+  private:
+    /// Класс-владелец конфига.
+    DeviceConfigManager *mPerformer;
 
-	/// Список ключей конфига для удаления данных.
-	QStringList mKeys;
+    /// Список ключей конфига для удаления данных.
+    QStringList mKeys;
 };
 
 //--------------------------------------------------------------------------------

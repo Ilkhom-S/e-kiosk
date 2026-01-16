@@ -5,18 +5,16 @@
 #include "CCTalkAcceptorBase.h"
 
 //--------------------------------------------------------------------------------
-template <class T>
-class CCTalkComplexEnableAcceptor : public T
-{
-	SET_SUBSERIES("ComplexEnabling")
+template <class T> class CCTalkComplexEnableAcceptor : public T {
+    SET_SUBSERIES("ComplexEnabling")
 
-protected:
-	/// Фоновая логика при появлении определенных состояний устройства.
-	virtual void postPollingAction(const TStatusCollection& aNewStatusCollection,
-								   const TStatusCollection& aOldStatusCollection);
+  protected:
+    /// Фоновая логика при появлении определенных состояний устройства.
+    virtual void postPollingAction(const TStatusCollection &aNewStatusCollection,
+                                   const TStatusCollection &aOldStatusCollection);
 
-	/// Применить таблицу номиналов.
-	virtual bool applyParTable();
+    /// Применить таблицу номиналов.
+    virtual bool applyParTable();
 };
 
 //--------------------------------------------------------------------------------

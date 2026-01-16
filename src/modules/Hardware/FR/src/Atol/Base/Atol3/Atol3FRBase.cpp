@@ -8,107 +8,91 @@
 using namespace ProtocolUtils;
 
 //--------------------------------------------------------------------------------
-Atol3FRBase::Atol3FRBase() : mTId(0) {}
-
-//--------------------------------------------------------------------------------
-bool Atol3FRBase::isConnected()
-{
-	mProtocol.setPort(mIOPort);
-	mProtocol.setLog(mLog);
-	mProtocol.cancel();
-
-	return AtolFRBase::isConnected();
+Atol3FRBase::Atol3FRBase() : mTId(0) {
 }
 
 //--------------------------------------------------------------------------------
-TResult Atol3FRBase::performCommand(const QByteArray& aCommandData, QByteArray& aAnswer, int aTimeout)
-{
-	mProtocol.setPort(mIOPort);
-	mProtocol.setLog(mLog);
+bool Atol3FRBase::isConnected() {
+    mProtocol.setPort(mIOPort);
+    mProtocol.setLog(mLog);
+    mProtocol.cancel();
 
-	QTime clockTimer;
-	clockTimer.start();
+    return AtolFRBase::isConnected();
+}
 
-	mTId = (mTId == uchar(CAtol3FR::LastTId)) ? ASCII::NUL : ++mTId;
-	TResult result = mProtocol.processCommand(mTId, aCommandData, aAnswer);
+//--------------------------------------------------------------------------------
+TResult Atol3FRBase::performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout) {
+    mProtocol.setPort(mIOPort);
+    mProtocol.setLog(mLog);
 
-	using namespace CAtol3FR;
+    QTime clockTimer;
+    clockTimer.start();
 
-	if (aAnswer[0] == States::InProgress)
-	{
-		do
-		{
-			result = mProtocol.waitForAnswer(aAnswer, CAtol3FR::Timeouts::WaitForAnswer);
-		} while ((clockTimer.elapsed() < aTimeout) &&
-				 ((result == CommandResult::NoAnswer) || (aAnswer[0] == States::InProgress)));
-	}
+    mTId = (mTId == uchar(CAtol3FR::LastTId)) ? ASCII::NUL : ++mTId;
+    TResult result = mProtocol.processCommand(mTId, aCommandData, aAnswer);
 
-	if (!result)
-	{
-		mProtocol.cancel();
+    using namespace CAtol3FR;
 
-		return result;
-	}
+    if (aAnswer[0] == States::InProgress) {
+        do {
+            result = mProtocol.waitForAnswer(aAnswer, CAtol3FR::Timeouts::WaitForAnswer);
+        } while ((clockTimer.elapsed() < aTimeout) &&
+                 ((result == CommandResult::NoAnswer) || (aAnswer[0] == States::InProgress)));
+    }
 
-	auto answerResult = [&](const QString aLog) -> TResult
-	{
-		if (!aLog.isEmpty())
-			toLog(LogLevel::Error, mDeviceName + QString(": %1, aborting").arg(aLog));
-		mProtocol.cancel();
-		return CommandResult::Answer;
-	};
+    if (!result) {
+        mProtocol.cancel();
 
-	if (aAnswer.isEmpty())
-	{
-		toLog(LogLevel::Error, mDeviceName + ": No task state, trying to get the result");
+        return result;
+    }
 
-		if (!mProtocol.getResult(mTId, aAnswer) || aAnswer.isEmpty())
-		{
-			return answerResult("No task state again");
-		}
-	}
+    auto answerResult = [&](const QString aLog) -> TResult {
+        if (!aLog.isEmpty())
+            toLog(LogLevel::Error, mDeviceName + QString(": %1, aborting").arg(aLog));
+        mProtocol.cancel();
+        return CommandResult::Answer;
+    };
 
-	char state = aAnswer[0];
-	aAnswer = aAnswer.mid(1);
+    if (aAnswer.isEmpty()) {
+        toLog(LogLevel::Error, mDeviceName + ": No task state, trying to get the result");
 
-	if ((state == States::AsyncResult) || (state == States::AsyncError))
-	{
-		if (!aAnswer.isEmpty())
-		{
-			uchar TId = uchar(aAnswer[0]);
+        if (!mProtocol.getResult(mTId, aAnswer) || aAnswer.isEmpty()) {
+            return answerResult("No task state again");
+        }
+    }
 
-			if (mTId != TId)
-			{
-				return answerResult(QString("Invalid task Id = %1, need %2").arg(toHexLog(TId)).arg(toHexLog(mTId)));
-			}
+    char state = aAnswer[0];
+    aAnswer = aAnswer.mid(1);
 
-			aAnswer = aAnswer.mid(1);
-		}
-		else
-		{
-			toLog(LogLevel::Error, mDeviceName + ": No task Id, trying to get the result");
+    if ((state == States::AsyncResult) || (state == States::AsyncError)) {
+        if (!aAnswer.isEmpty()) {
+            uchar TId = uchar(aAnswer[0]);
 
-			if (!mProtocol.getResult(mTId, aAnswer) || aAnswer.isEmpty())
-			{
-				return answerResult("No task Id again");
-			}
-		}
-	}
+            if (mTId != TId) {
+                return answerResult(QString("Invalid task Id = %1, need %2").arg(toHexLog(TId)).arg(toHexLog(mTId)));
+            }
 
-	if ((state == States::Result) || (state == States::AsyncResult))
-	{
-		mProtocol.sendACK(mTId);
+            aAnswer = aAnswer.mid(1);
+        } else {
+            toLog(LogLevel::Error, mDeviceName + ": No task Id, trying to get the result");
 
-		return CommandResult::OK;
-	}
-	else if ((state == States::Error) || (state == States::AsyncError))
-	{
-		mProtocol.cancel();
+            if (!mProtocol.getResult(mTId, aAnswer) || aAnswer.isEmpty()) {
+                return answerResult("No task Id again");
+            }
+        }
+    }
 
-		return CommandResult::OK;
-	}
+    if ((state == States::Result) || (state == States::AsyncResult)) {
+        mProtocol.sendACK(mTId);
 
-	return answerResult(QString("Task %1 state = %2").arg(toHexLog(mTId)).arg(toHexLog(state)));
+        return CommandResult::OK;
+    } else if ((state == States::Error) || (state == States::AsyncError)) {
+        mProtocol.cancel();
+
+        return CommandResult::OK;
+    }
+
+    return answerResult(QString("Task %1 state = %2").arg(toHexLog(mTId)).arg(toHexLog(state)));
 }
 
 //--------------------------------------------------------------------------------

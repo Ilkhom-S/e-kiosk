@@ -11,106 +11,105 @@
 #include "CCNetCashAcceptorDataTypes.h"
 
 //--------------------------------------------------------------------------------
-class CCNetCashAcceptorBase : public TSerialCashAcceptor
-{
-	SET_SERIES("CCNet")
+class CCNetCashAcceptorBase : public TSerialCashAcceptor {
+    SET_SERIES("CCNet")
 
-public:
-	CCNetCashAcceptorBase();
+  public:
+    CCNetCashAcceptorBase();
 
-	/// Возвращает список поддерживаемых устройств.
-	static QStringList getModelList();
+    /// Возвращает список поддерживаемых устройств.
+    static QStringList getModelList();
 
-	/// Принять купюру.
-	virtual bool stack();
+    /// Принять купюру.
+    virtual bool stack();
 
-	/// Вернуть купюру.
-	virtual bool reject();
+    /// Вернуть купюру.
+    virtual bool reject();
 
-protected:
-	/// Попытка самоидентификации.
-	virtual bool isConnected();
+  protected:
+    /// Попытка самоидентификации.
+    virtual bool isConnected();
 
-	/// Установка параметров по умолчанию.
-	virtual bool setDefaultParameters();
+    /// Установка параметров по умолчанию.
+    virtual bool setDefaultParameters();
 
-	/// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней логики.
-	virtual void cleanSpecificStatusCodes(TStatusCodes& aStatusCodes);
+    /// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней логики.
+    virtual void cleanSpecificStatusCodes(TStatusCodes &aStatusCodes);
 
-	/// Изменение режима приема денег.
-	virtual bool enableMoneyAcceptingMode(bool aEnabled);
+    /// Изменение режима приема денег.
+    virtual bool enableMoneyAcceptingMode(bool aEnabled);
 
-	/// Загрузка таблицы номиналов из устройства.
-	virtual bool loadParTable();
+    /// Загрузка таблицы номиналов из устройства.
+    virtual bool loadParTable();
 
-	/// Получить статус.
-	virtual bool checkStatus(QByteArray& aAnswer);
+    /// Получить статус.
+    virtual bool checkStatus(QByteArray &aAnswer);
 
-	/// Попытка самоидентификации.
-	bool checkConnection(QByteArray& aAnswer);
+    /// Попытка самоидентификации.
+    bool checkConnection(QByteArray &aAnswer);
 
-	/// Локальный сброс.
-	virtual bool processReset();
+    /// Локальный сброс.
+    virtual bool processReset();
 
-	/// Состояние - не Busy или PowerUp, но может быть Initialization.
-	bool isNotBusyPowerUp();
+    /// Состояние - не Busy или PowerUp, но может быть Initialization.
+    bool isNotBusyPowerUp();
 
-	/// Выполнить команду.
-	virtual TResult execCommand(const QByteArray& aCommand, const QByteArray& aCommandData,
-								QByteArray* aAnswer = nullptr);
-	virtual TResult performCommand(const QByteArray& aCommand, const QByteArray& aCommandData,
-								   QByteArray* aAnswer = nullptr);
+    /// Выполнить команду.
+    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+                                QByteArray *aAnswer = nullptr);
+    virtual TResult performCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+                                   QByteArray *aAnswer = nullptr);
 
-	/// Обновить прошивку.
-	virtual bool performUpdateFirmware(const QByteArray& aBuffer);
+    /// Обновить прошивку.
+    virtual bool performUpdateFirmware(const QByteArray &aBuffer);
 
-	/// Отправить блок данных обновления прошивки.
-	bool processBlockUpdating(uint aAddress, const QByteArray& aBuffer, int& aRepeat, int& aIndex);
+    /// Отправить блок данных обновления прошивки.
+    bool processBlockUpdating(uint aAddress, const QByteArray &aBuffer, int &aRepeat, int &aIndex);
 
-	/// Изменить скорость работы.
-	bool changeBaudRate(bool aHigh);
+    /// Изменить скорость работы.
+    bool changeBaudRate(bool aHigh);
 
-	/// Изменить скорость работы.
-	virtual bool performBaudRateChanging(const SDK::Driver::TPortParameters& aPortParameters);
+    /// Изменить скорость работы.
+    virtual bool performBaudRateChanging(const SDK::Driver::TPortParameters &aPortParameters);
 
-	/// Отправить буфер данных обновления прошивки.
-	virtual bool processUpdating(const QByteArray& aBuffer, int aSectionSize);
+    /// Отправить буфер данных обновления прошивки.
+    virtual bool processUpdating(const QByteArray &aBuffer, int aSectionSize);
 
-	/// Получить статус процесса обновления прошивки.
-	char getUpdatingStatus();
+    /// Получить статус процесса обновления прошивки.
+    char getUpdatingStatus();
 
-	/// Ждать выхода из Busy-подобных состояний.
-	bool waitNotBusyPowerUp();
+    /// Ждать выхода из Busy-подобных состояний.
+    bool waitNotBusyPowerUp();
 
-	/// Получить имя модели по ответу на запрос идентификации.
-	SBaseModelData getModelData(const QByteArray& aAnswer);
+    /// Получить имя модели по ответу на запрос идентификации.
+    SBaseModelData getModelData(const QByteArray &aAnswer);
 
-	/// Запросить и сохранить параметры устройства.
-	virtual void processDeviceData(QByteArray& aAnswer);
+    /// Запросить и сохранить параметры устройства.
+    virtual void processDeviceData(QByteArray &aAnswer);
 
-	/// Поддерживается ли монетоприемник.
-	bool isCoinAcceptorSupported() const;
+    /// Поддерживается ли монетоприемник.
+    bool isCoinAcceptorSupported() const;
 
-	/// Протокол.
-	CCNetProtocol mProtocol;
+    /// Протокол.
+    CCNetProtocol mProtocol;
 
-	/// Номер прошивки.
-	int mFirmware;
+    /// Номер прошивки.
+    int mFirmware;
 
-	/// Список поддерживаемых плагином моделей.
-	QStringList mSupportedModels;
+    /// Список поддерживаемых плагином моделей.
+    QStringList mSupportedModels;
 
-	/// Валюта.
-	int mCurrencyCode;
+    /// Валюта.
+    int mCurrencyCode;
 
-	/// Последний ответ.
-	QByteArray mLastAnswer;
+    /// Последний ответ.
+    QByteArray mLastAnswer;
 
-	/// Данные команд и ответов.
-	CCCNet::Commands::Data mCommandData;
+    /// Данные команд и ответов.
+    CCCNet::Commands::Data mCommandData;
 
-	/// Нужно менять скорость при перепрошивке?
-	bool mNeedChangeBaudrate;
+    /// Нужно менять скорость при перепрошивке?
+    bool mNeedChangeBaudrate;
 };
 
 //--------------------------------------------------------------------------------

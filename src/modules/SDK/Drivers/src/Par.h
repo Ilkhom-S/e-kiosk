@@ -10,50 +10,42 @@
 #include <QtCore/QMetaType>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK
-{
-	namespace Driver
-	{
+namespace SDK {
+    namespace Driver {
 
-		//--------------------------------------------------------------------------------
-		namespace ECashReceiver
-		{
-			enum Enum
-			{
-				BillAcceptor,
-				CoinAcceptor
-			};
-		} // namespace ECashReceiver
+        //--------------------------------------------------------------------------------
+        namespace ECashReceiver {
+            enum Enum { BillAcceptor, CoinAcceptor };
+        } // namespace ECashReceiver
 
-		struct SPar
-		{
-			double nominal;	  /// Номинал.
-			int currencyId;	  /// Цифровой код валюты.
-			QString currency; /// Буквенный код валюты.
-			bool enabled;	  /// Доступность номинала со стороны платежной логики (то, что может запретить сервис).
-			bool inhibit; /// Доступность номинала со стороны логики драйвера (неизвестная или неподдерживаемая валюта,
-						  /// 0-й номинал и пр.).
-			QString serialNumber;			  /// Серийный номер купюры (актуально для конкретной банкноты).
-			ECashReceiver::Enum cashReceiver; /// Приемник денежных средств.
+        struct SPar {
+            double nominal;   /// Номинал.
+            int currencyId;   /// Цифровой код валюты.
+            QString currency; /// Буквенный код валюты.
+            bool enabled;     /// Доступность номинала со стороны платежной логики (то, что может запретить сервис).
+            bool inhibit; /// Доступность номинала со стороны логики драйвера (неизвестная или неподдерживаемая валюта,
+                          /// 0-й номинал и пр.).
+            QString serialNumber;             /// Серийный номер купюры (актуально для конкретной банкноты).
+            ECashReceiver::Enum cashReceiver; /// Приемник денежных средств.
 
-			SPar();
-			SPar(double aNominal, const QString& aCurrency,
-				 ECashReceiver::Enum aCashReceiver = ECashReceiver::BillAcceptor, bool aEnabled = true,
-				 bool aInhibit = true);
-			SPar(double aNominal, int aCurrencyId, ECashReceiver::Enum aCashReceiver = ECashReceiver::BillAcceptor,
-				 bool aEnabled = true, bool aInhibit = false);
+            SPar();
+            SPar(double aNominal, const QString &aCurrency,
+                 ECashReceiver::Enum aCashReceiver = ECashReceiver::BillAcceptor, bool aEnabled = true,
+                 bool aInhibit = true);
+            SPar(double aNominal, int aCurrencyId, ECashReceiver::Enum aCashReceiver = ECashReceiver::BillAcceptor,
+                 bool aEnabled = true, bool aInhibit = false);
 
-			bool operator==(const SPar& aPar) const;
-			bool isEqual(const SPar& aPar) const;
-			bool operator<(const SPar& aPar) const;
-		};
+            bool operator==(const SPar &aPar) const;
+            bool isEqual(const SPar &aPar) const;
+            bool operator<(const SPar &aPar) const;
+        };
 
-		/// Таблица номиналов.
-		typedef QList<SPar> TParList;
-		typedef QMap<int, SPar> TParTable;
-		typedef QPair<int, SDK::Driver::SPar> TParData;
+        /// Таблица номиналов.
+        typedef QList<SPar> TParList;
+        typedef QMap<int, SPar> TParTable;
+        typedef QPair<int, SDK::Driver::SPar> TParData;
 
-	} // namespace Driver
+    } // namespace Driver
 } // namespace SDK
 
 bool isParListEqual(SDK::Driver::TParList aParList1, SDK::Driver::TParList aParList2);

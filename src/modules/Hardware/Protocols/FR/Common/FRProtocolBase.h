@@ -17,23 +17,22 @@
 
 //--------------------------------------------------------------------------------
 /// Базовый класс протокола FRProtocolBase.
-class FRProtocolBase : public DeviceProtocolBase<IFRProtocol>
-{
-public:
-	FRProtocolBase();
+class FRProtocolBase : public DeviceProtocolBase<IFRProtocol> {
+  public:
+    FRProtocolBase();
 
-	/// Открыта ли сессия.
-	virtual bool isSessionOpened();
+    /// Открыта ли сессия.
+    virtual bool isSessionOpened();
 
-protected:
-	/// Локальный кодек.
-	QTextCodec* mCodec;
+  protected:
+    /// Локальный кодек.
+    QTextCodec *mCodec;
 
-	/// Открыта ли сессия.
-	bool mSessionOpened;
+    /// Открыта ли сессия.
+    bool mSessionOpened;
 
-	/// Необходимо выполнить Z-отчет (для ФР без буфера).
-	bool mNeedCloseSession;
+    /// Необходимо выполнить Z-отчет (для ФР без буфера).
+    bool mNeedCloseSession;
 };
 
 //--------------------------------------------------------------------------------

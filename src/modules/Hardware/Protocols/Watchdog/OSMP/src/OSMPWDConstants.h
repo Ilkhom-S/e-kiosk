@@ -5,16 +5,15 @@
 #include "Hardware/Common/ASCII.h"
 
 //--------------------------------------------------------------------------------
-namespace COSMPWD
-{
-	/// Начало пакета - фиксированный байт.
-	const char Prefix = '\xA5';
+namespace COSMPWD {
+    /// Начало пакета - фиксированный байт.
+    const char Prefix = '\xA5';
 
-	/// Минимальный размер ответного пакета.
-	const int MinPacketAnswerSize = 4;
+    /// Минимальный размер ответного пакета.
+    const int MinPacketAnswerSize = 4;
 
-	/// Дефолтный таймаут для ожидания ответа на команду, [мс].
-	const int DefaultTimeout = 500;
+    /// Дефолтный таймаут для ожидания ответа на команду, [мс].
+    const int DefaultTimeout = 500;
 } // namespace COSMPWD
 
 //--------------------------------------------------------------------------------

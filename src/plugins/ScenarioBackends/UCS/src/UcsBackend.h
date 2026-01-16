@@ -24,73 +24,76 @@
 // Project
 #include "Ucs.h"
 
-
 class IApplication;
 
 //--------------------------------------------------------------------------
-namespace SDK
-{
-	namespace PaymentProcessor
-	{
-		class ICore;
-	} // namespace PaymentProcessor
+namespace SDK {
+    namespace PaymentProcessor {
+        class ICore;
+    } // namespace PaymentProcessor
 
-	namespace Plugin
-	{
-		class IEnvironment;
-	} // namespace Plugin
+    namespace Plugin {
+        class IEnvironment;
+    } // namespace Plugin
 } // namespace SDK
 
 namespace PPSDK = SDK::PaymentProcessor;
 
-namespace Ucs
-{
-	const QString PluginName = "Ucs";
+namespace Ucs {
+    const QString PluginName = "Ucs";
 
-	//--------------------------------------------------------------------------
-	class UcsBackendPlugin : public SDK::Plugin::IFactory<SDK::PaymentProcessor::Scripting::IBackendScenarioObject>
-	{
-	public:
-		UcsBackendPlugin(SDK::Plugin::IEnvironment* aFactory, const QString& aInstancePath)
-			: mInstancePath(aInstancePath), mEnvironment(aFactory)
-		{
-		}
+    //--------------------------------------------------------------------------
+    class UcsBackendPlugin : public SDK::Plugin::IFactory<SDK::PaymentProcessor::Scripting::IBackendScenarioObject> {
+      public:
+        UcsBackendPlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+            : mInstancePath(aInstancePath), mEnvironment(aFactory) {
+        }
 
-	public:
-		/// Возвращает название плагина.
-		virtual QString getPluginName() const { return Ucs::PluginName; }
+      public:
+        /// Возвращает название плагина.
+        virtual QString getPluginName() const {
+            return Ucs::PluginName;
+        }
 
-		/// Возвращает параметры плагина.
-		virtual QVariantMap getConfiguration() const { return QVariantMap(); }
+        /// Возвращает параметры плагина.
+        virtual QVariantMap getConfiguration() const {
+            return QVariantMap();
+        }
 
-		/// Настраивает плагин.
-		virtual void setConfiguration(const QVariantMap& aParameters) { Q_UNUSED(aParameters); }
+        /// Настраивает плагин.
+        virtual void setConfiguration(const QVariantMap &aParameters) {
+            Q_UNUSED(aParameters);
+        }
 
-		/// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
-		virtual QString getConfigurationName() const { return mInstancePath; }
+        /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
+        virtual QString getConfigurationName() const {
+            return mInstancePath;
+        }
 
-		/// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
-		virtual bool saveConfiguration()
-		{
-			return mEnvironment->saveConfiguration(Ucs::PluginName, getConfiguration());
-		}
+        /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
+        virtual bool saveConfiguration() {
+            return mEnvironment->saveConfiguration(Ucs::PluginName, getConfiguration());
+        }
 
-		/// Проверяет успешно ли инициализировался плагин при создании.
-		virtual bool isReady() const { return true; }
+        /// Проверяет успешно ли инициализировался плагин при создании.
+        virtual bool isReady() const {
+            return true;
+        }
 
-		/// Возвращает список имен классов, которые создает фабрика.
-		virtual QStringList getClassNames() const { return QStringList(Ucs::PluginName); }
+        /// Возвращает список имен классов, которые создает фабрика.
+        virtual QStringList getClassNames() const {
+            return QStringList(Ucs::PluginName);
+        }
 
-		/// Создает класс c заданным именем.
-		virtual PPSDK::Scripting::IBackendScenarioObject* create(const QString& aClassName) const
-		{
-			PPSDK::ICore* core = dynamic_cast<PPSDK::ICore*>(mEnvironment->getInterface(PPSDK::CInterfaces::ICore));
-			return Ucs::API::getInstance(core, mEnvironment->getLog(PluginName)).data();
-		}
+        /// Создает класс c заданным именем.
+        virtual PPSDK::Scripting::IBackendScenarioObject *create(const QString &aClassName) const {
+            PPSDK::ICore *core = dynamic_cast<PPSDK::ICore *>(mEnvironment->getInterface(PPSDK::CInterfaces::ICore));
+            return Ucs::API::getInstance(core, mEnvironment->getLog(PluginName)).data();
+        }
 
-	private:
-		QString mInstancePath;
-		SDK::Plugin::IEnvironment* mEnvironment;
-	};
+      private:
+        QString mInstancePath;
+        SDK::Plugin::IEnvironment *mEnvironment;
+    };
 
 } // namespace Ucs

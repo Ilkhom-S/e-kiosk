@@ -23,7 +23,7 @@ class PinGetCardListResponse : public Response {
     /// Предикат истинен, если ответ сервера не содержит ошибок.
     virtual bool isOk();
 
-    /// Возращает список описаний пин-карт, полученных из овета сервера.
+    /// Возвращает список описаний пин-карт, полученных из ответа сервера.
     virtual const QList<SPinCard> &getCards() const;
 
   private:

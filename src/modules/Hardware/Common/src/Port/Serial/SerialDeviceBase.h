@@ -13,85 +13,82 @@ typedef QList<int> TSerialDevicePortParameter;
 typedef QMap<int, TSerialDevicePortParameter> TSerialDevicePortParameters;
 
 /// Параметры COM-порта.
-struct SSerialPortParameters
-{
-	int baudRate;
-	int parity;
-	int RTS;
-	int DTR;
-	int byteSize;
+struct SSerialPortParameters {
+    int baudRate;
+    int parity;
+    int RTS;
+    int DTR;
+    int byteSize;
 
-	SSerialPortParameters() : baudRate(0), parity(0), RTS(0), DTR(0), byteSize(8) {}
-	SSerialPortParameters(int aBaudRate, int aParity, int aRTS, int aDTR, int aByteSize)
-		: baudRate(aBaudRate), parity(aParity), RTS(aRTS), DTR(aDTR), byteSize(aByteSize)
-	{
-	}
+    SSerialPortParameters() : baudRate(0), parity(0), RTS(0), DTR(0), byteSize(8) {
+    }
+    SSerialPortParameters(int aBaudRate, int aParity, int aRTS, int aDTR, int aByteSize)
+        : baudRate(aBaudRate), parity(aParity), RTS(aRTS), DTR(aDTR), byteSize(aByteSize) {
+    }
 };
 
 //--------------------------------------------------------------------------------
-template <class T>
-class SerialDeviceBase : public T
-{
-	SET_INTERACTION_TYPE(COM)
+template <class T> class SerialDeviceBase : public T {
+    SET_INTERACTION_TYPE(COM)
 
-public:
-	SerialDeviceBase();
+  public:
+    SerialDeviceBase();
 
-	/// Получение списка настроек порта, необязательных для редактирования пользователем.
-	static QStringList getOptionalPortSettings();
+    /// Получение списка настроек порта, необязательных для редактирования пользователем.
+    static QStringList getOptionalPortSettings();
 
 #pragma region SDK::Driver::IDevice interface
-	/// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
-	virtual bool release();
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    virtual bool release();
 
-	/// Переформировывает список параметров для автопоиска и устанавливает 1-й набор параметров из этого списка.
-	virtual SDK::Driver::IDevice::IDetectingIterator* getDetectingIterator();
+    /// Переформировывает список параметров для автопоиска и устанавливает 1-й набор параметров из этого списка.
+    virtual SDK::Driver::IDevice::IDetectingIterator *getDetectingIterator();
 #pragma endregion
 
 #pragma region SDK::Driver::IDetectingIterator interface
-	/// Переход к следующим параметрам устройства.
-	virtual bool moveNext();
+    /// Переход к следующим параметрам устройства.
+    virtual bool moveNext();
 
-	/// Поиск устройства на текущих параметрах.
-	virtual bool find();
+    /// Поиск устройства на текущих параметрах.
+    virtual bool find();
 #pragma endregion
 
-protected:
-	/// Идентификация.
-	virtual bool checkExistence();
+  protected:
+    /// Идентификация.
+    virtual bool checkExistence();
 
-	/// Получить и обработать статус.
-	virtual bool processStatus(TStatusCodes& aStatusCodes);
+    /// Получить и обработать статус.
+    virtual bool processStatus(TStatusCodes &aStatusCodes);
 
-	/// Формирует список параметров порта для поиска устройства.
-	bool makeSearchingList();
+    /// Формирует список параметров порта для поиска устройства.
+    bool makeSearchingList();
 
-	/// Проверка возможности выполнения функционала, предполагающего связь с устройством.
-	virtual bool checkConnectionAbility();
+    /// Проверка возможности выполнения функционала, предполагающего связь с устройством.
+    virtual bool checkConnectionAbility();
 
-	/// Состояние окружения устройства изменилось.
-	virtual bool environmentChanged();
+    /// Состояние окружения устройства изменилось.
+    virtual bool environmentChanged();
 
-	/// Статус порты был изменен.
-	bool mPortStatusChanged;
+    /// Статус порты был изменен.
+    bool mPortStatusChanged;
 
 #pragma region Searching data
-	/// Набор параметров порта, с которыми может работать устройство.
-	TSerialDevicePortParameters mPortParameters;
+    /// Набор параметров порта, с которыми может работать устройство.
+    TSerialDevicePortParameters mPortParameters;
 
-	/// Список параметров порта для поиска.
-	typedef QList<SSerialPortParameters> TSearchingPortParameters;
-	TSearchingPortParameters mSearchingPortParameters;
+    /// Список параметров порта для поиска.
+    typedef QList<SSerialPortParameters> TSearchingPortParameters;
+    TSearchingPortParameters mSearchingPortParameters;
 
-	/// Параметры порта для поиска.
-	SSerialPortParameters mCurrentParameter;
+    /// Параметры порта для поиска.
+    SSerialPortParameters mCurrentParameter;
 
-	/// Итератор на следующие параметры порта для поиска.
-	TSearchingPortParameters::iterator mNextParameterIterator;
+    /// Итератор на следующие параметры порта для поиска.
+    TSearchingPortParameters::iterator mNextParameterIterator;
 #pragma endregion
 };
 
 //--------------------------------------------------------------------------------
-double getFrameSize(const SDK::Driver::TPortParameters& aPortParameters);
+double getFrameSize(const SDK::Driver::TPortParameters &aPortParameters);
 
 //---------------------------------------------------------------------------

@@ -13,72 +13,73 @@ class IServiceWindow;
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------
-class MainServiceWindow : public QWidget, public Ui::MainServiceWindow
-{
-	Q_OBJECT
+class MainServiceWindow : public QWidget, public Ui::MainServiceWindow {
+    Q_OBJECT
 
-public:
-	MainServiceWindow(ServiceMenuBackend* aBackend, QWidget* aParent = 0);
+  public:
+    MainServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
-	bool initialize();
-	void shutdown();
+    bool initialize();
+    void shutdown();
 
-	QWidget* getMainWidget() { return wPasswordPage; }
+    QWidget *getMainWidget() {
+        return wPasswordPage;
+    }
 
-	WizardWindow* getScreenByName(const QString& aScreenName);
+    WizardWindow *getScreenByName(const QString &aScreenName);
 
-	// Выход из сервисного меню
-	bool closeServiceMenu(bool aExitByNotify, const QString& aMessage, bool aStartIdle = false);
+    // Выход из сервисного меню
+    bool closeServiceMenu(bool aExitByNotify, const QString &aMessage, bool aStartIdle = false);
 
-private slots:
-	// Активация/деактивация вкладок
-	void onCurrentPageChanged(int aIndex);
+  private slots:
+    // Активация/деактивация вкладок
+    void onCurrentPageChanged(int aIndex);
 
-	// Авторизация пользователя
-	void onProceedLogin();
+    // Авторизация пользователя
+    void onProceedLogin();
 
-	void onCancelAuthorization();
+    void onCancelAuthorization();
 
-	// Выход из сервисного меню
-	void onCloseServiceMenu();
+    // Выход из сервисного меню
+    void onCloseServiceMenu();
 
-	// Перезагрузка приложения
-	void onRebootApplication();
+    // Перезагрузка приложения
+    void onRebootApplication();
 
-	// Останов приложения
-	void onStopApplication();
+    // Останов приложения
+    void onStopApplication();
 
-	// Перезагрузка терминала
-	void onRebootTerminal();
+    // Перезагрузка терминала
+    void onRebootTerminal();
 
-	// Блокирование/разблокирование терминала
-	void onToggleLock();
+    // Блокирование/разблокирование терминала
+    void onToggleLock();
 
-	// Для обработки сигналов цифровой клавиатуры
-	void onBackspaceClicked();
-	void onClearClicked();
-	void onDigitClicked();
+    // Для обработки сигналов цифровой клавиатуры
+    void onBackspaceClicked();
+    void onClearClicked();
+    void onDigitClicked();
 
-	void onIdleTimeout();
-	void onDateTimeRefresh();
+    void onIdleTimeout();
+    void onDateTimeRefresh();
 
-	void onAbstractButtonClicked();
+    void onAbstractButtonClicked();
 
-private:
-	void applyConfiguration();
-	bool applyAccessRights();
-	void closeMenu(bool aStartIdle = false);
+  private:
+    void applyConfiguration();
+    bool applyAccessRights();
+    void closeMenu(bool aStartIdle = false);
 
-	void connectAllAbstractButtons(QWidget* aParentWidget);
+    void connectAllAbstractButtons(QWidget *aParentWidget);
 
-private:
-	int mCurrentPageIndex;
-	QTimer mIdleTimer;
-	QTimer mDateTimeTimer;
-	QVariantMap mTerminalInfo;
+  private:
+    int mCurrentPageIndex;
+    QTimer mIdleTimer;
+    QTimer mDateTimeTimer;
+    QVariantMap mTerminalInfo;
 
-	QList<IServiceWindow*> mServiceWindowList;
-	ServiceMenuBackend* mBackend;
+    QList<IServiceWindow *> mServiceWindowList;
+    ServiceMenuBackend *mBackend;
 };
 
 //------------------------------------------------------------------------

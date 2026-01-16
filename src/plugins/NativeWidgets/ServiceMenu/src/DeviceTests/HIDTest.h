@@ -12,43 +12,40 @@
 #include <SDK/Drivers/IHID.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK
-{
-	namespace Driver
-	{
-		class IDevice;
-	} // namespace Driver
+namespace SDK {
+    namespace Driver {
+        class IDevice;
+    } // namespace Driver
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class HIDTest : public SDK::PaymentProcessor::IDeviceTest
-{
-	Q_OBJECT
+class HIDTest : public SDK::PaymentProcessor::IDeviceTest {
+    Q_OBJECT
 
-public:
-	HIDTest(SDK::Driver::IDevice* aDevice, const QString& aInstancePath);
+  public:
+    HIDTest(SDK::Driver::IDevice *aDevice, const QString &aInstancePath);
 
-	/// Возвращает имена и описания тестов.
-	virtual QList<QPair<QString, QString>> getTestNames() const;
+    /// Возвращает имена и описания тестов.
+    virtual QList<QPair<QString, QString>> getTestNames() const;
 
-	/// Запускает тестирование устройства.
-	virtual bool run(const QString& aName = QString());
+    /// Запускает тестирование устройства.
+    virtual bool run(const QString &aName = QString());
 
-	/// Остановка процесса тестирования.
-	virtual void stop();
+    /// Остановка процесса тестирования.
+    virtual void stop();
 
-	/// Можно тестировать?
-	virtual bool isReady();
+    /// Можно тестировать?
+    virtual bool isReady();
 
-	/// Возвращает true, если тест устройства возвращает результат теста
-	virtual bool hasResult();
+    /// Возвращает true, если тест устройства возвращает результат теста
+    virtual bool hasResult();
 
-private slots:
-	void onData(const QVariantMap& aData);
+  private slots:
+    void onData(const QVariantMap &aData);
 
-private:
-	ObjectPointer<SDK::Driver::IHID> mHID;
-	QList<QPair<QString, QString>> mTestNames;
+  private:
+    ObjectPointer<SDK::Driver::IHID> mHID;
+    QList<QPair<QString, QString>> mTestNames;
 };
 
 //------------------------------------------------------------------------------

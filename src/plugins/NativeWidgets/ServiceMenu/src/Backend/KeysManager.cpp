@@ -16,146 +16,128 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------
-KeysManager::KeysManager(SDK::PaymentProcessor::ICore* aCore) : mCore(aCore), mIsGenerated(false)
-{
-	mCryptService = mCore->getCryptService();
-	mTerminalSettings = static_cast<PPSDK::TerminalSettings*>(
-		mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
+KeysManager::KeysManager(SDK::PaymentProcessor::ICore *aCore) : mCore(aCore), mIsGenerated(false) {
+    mCryptService = mCore->getCryptService();
+    mTerminalSettings = static_cast<PPSDK::TerminalSettings *>(
+        mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 }
 
 //------------------------------------------------------------------------
-KeysManager::~KeysManager() {}
-
-//------------------------------------------------------------------------
-bool KeysManager::generateKey(QVariantMap& aKeysParam)
-{
-	QString login(aKeysParam[CServiceTags::Login].toString());
-	QString password(aKeysParam[CServiceTags::Password].toString());
-	QString description(aKeysParam[CServiceTags::KeyPairDescription].toString());
-	QString keyPairNumber(aKeysParam[CServiceTags::KeyPairNumber].toString());
-	QString url(mTerminalSettings->getKeygenURL());
-
-	if (url.isEmpty())
-	{
-		aKeysParam[CServiceTags::Error] = "#url_is_empty";
-		mIsGenerated = false;
-	}
-
-	EKeysUtilsError::Enum result = static_cast<EKeysUtilsError::Enum>(
-		mCryptService->generateKey(keyPairNumber.toInt(), login, password, url, mSD, mAP, mOP, description));
-
-	aKeysParam[CServiceTags::Error] = errorToString(result);
-
-	mIsGenerated = result == EKeysUtilsError::Ok;
-
-	return mIsGenerated;
+KeysManager::~KeysManager() {
 }
 
 //------------------------------------------------------------------------
-bool KeysManager::formatToken()
-{
-	auto status = tokenStatus();
+bool KeysManager::generateKey(QVariantMap &aKeysParam) {
+    QString login(aKeysParam[CServiceTags::Login].toString());
+    QString password(aKeysParam[CServiceTags::Password].toString());
+    QString description(aKeysParam[CServiceTags::KeyPairDescription].toString());
+    QString keyPairNumber(aKeysParam[CServiceTags::KeyPairNumber].toString());
+    QString url(mTerminalSettings->getKeygenURL());
 
-	if (status.available)
-	{
-		if (!status.initialized)
-		{
-			return mCryptService->getCryptEngine()->initializeToken(CCrypt::ETypeEngine::RuToken);
-		}
+    if (url.isEmpty()) {
+        aKeysParam[CServiceTags::Error] = "#url_is_empty";
+        mIsGenerated = false;
+    }
 
-		return true;
-	}
+    EKeysUtilsError::Enum result = static_cast<EKeysUtilsError::Enum>(
+        mCryptService->generateKey(keyPairNumber.toInt(), login, password, url, mSD, mAP, mOP, description));
 
-	return false;
-}
+    aKeysParam[CServiceTags::Error] = errorToString(result);
 
+    mIsGenerated = result == EKeysUtilsError::Ok;
 
-//------------------------------------------------------------------------
-QList<int> KeysManager::getLoadedKeys() const
-{
-	return mCryptService->getLoadedKeys();
-}
-
-//------------------------------------------------------------------------
-bool KeysManager::isDefaultKeyOP(const QString& aOP)
-{
-	PPSDK::ICryptService::SKeyInfo key = mCryptService->getKeyInfo(0);
-
-	return key.isValid() && key.op == aOP;
+    return mIsGenerated;
 }
 
 //------------------------------------------------------------------------
-CCrypt::TokenStatus KeysManager::tokenStatus() const
-{
-	return mCryptService->getCryptEngine()->getTokenStatus(CCrypt::ETypeEngine::RuToken);
+bool KeysManager::formatToken() {
+    auto status = tokenStatus();
+
+    if (status.available) {
+        if (!status.initialized) {
+            return mCryptService->getCryptEngine()->initializeToken(CCrypt::ETypeEngine::RuToken);
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 //------------------------------------------------------------------------
-bool KeysManager::saveKey()
-{
-	return mCryptService->saveKey();
+QList<int> KeysManager::getLoadedKeys() const {
+    return mCryptService->getLoadedKeys();
 }
 
 //------------------------------------------------------------------------
-bool KeysManager::allowAnyKeyPair() const
-{
-	return mTerminalSettings->getServiceMenuSettings().allowAnyKeyPair;
+bool KeysManager::isDefaultKeyOP(const QString &aOP) {
+    PPSDK::ICryptService::SKeyInfo key = mCryptService->getKeyInfo(0);
+
+    return key.isValid() && key.op == aOP;
 }
 
 //------------------------------------------------------------------------
-bool KeysManager::isConfigurationChanged() const
-{
-	return mIsGenerated;
+CCrypt::TokenStatus KeysManager::tokenStatus() const {
+    return mCryptService->getCryptEngine()->getTokenStatus(CCrypt::ETypeEngine::RuToken);
 }
 
 //------------------------------------------------------------------------
-void KeysManager::resetConfiguration()
-{
-	mIsGenerated = false;
+bool KeysManager::saveKey() {
+    return mCryptService->saveKey();
 }
 
 //------------------------------------------------------------------------
-QString KeysManager::getSD() const
-{
-	return mSD;
+bool KeysManager::allowAnyKeyPair() const {
+    return mTerminalSettings->getServiceMenuSettings().allowAnyKeyPair;
 }
 
 //------------------------------------------------------------------------
-QString KeysManager::getAP() const
-{
-	return mAP;
+bool KeysManager::isConfigurationChanged() const {
+    return mIsGenerated;
 }
 
 //------------------------------------------------------------------------
-QString KeysManager::getOP() const
-{
-	return mOP;
+void KeysManager::resetConfiguration() {
+    mIsGenerated = false;
 }
 
 //------------------------------------------------------------------------
-QString KeysManager::errorToString(EKeysUtilsError::Enum aCode) const
-{
-	switch (aCode)
-	{
-	case EKeysUtilsError::Ok:
-		return tr("#ok");
-	case EKeysUtilsError::NetworkError:
-		return tr("#network_error");
-	case EKeysUtilsError::WrongPassword:
-		return tr("#wrong_login_or_password");
-	case EKeysUtilsError::WrongServerAnswer:
-		return tr("#wrong_server_answer");
-	case EKeysUtilsError::WrongLocalTime:
-		return tr("#wrong_local_time");
-	case EKeysUtilsError::UnknownServerError:
-		return tr("#unknown_server_error");
-	case EKeysUtilsError::KeyPairCreateError:
-		return tr("#key_pair_create_error");
-	case EKeysUtilsError::KeyExportError:
-		return tr("#key_export_error");
-	}
+QString KeysManager::getSD() const {
+    return mSD;
+}
 
-	return tr("#unknown_error");
+//------------------------------------------------------------------------
+QString KeysManager::getAP() const {
+    return mAP;
+}
+
+//------------------------------------------------------------------------
+QString KeysManager::getOP() const {
+    return mOP;
+}
+
+//------------------------------------------------------------------------
+QString KeysManager::errorToString(EKeysUtilsError::Enum aCode) const {
+    switch (aCode) {
+        case EKeysUtilsError::Ok:
+            return tr("#ok");
+        case EKeysUtilsError::NetworkError:
+            return tr("#network_error");
+        case EKeysUtilsError::WrongPassword:
+            return tr("#wrong_login_or_password");
+        case EKeysUtilsError::WrongServerAnswer:
+            return tr("#wrong_server_answer");
+        case EKeysUtilsError::WrongLocalTime:
+            return tr("#wrong_local_time");
+        case EKeysUtilsError::UnknownServerError:
+            return tr("#unknown_server_error");
+        case EKeysUtilsError::KeyPairCreateError:
+            return tr("#key_pair_create_error");
+        case EKeysUtilsError::KeyExportError:
+            return tr("#key_export_error");
+    }
+
+    return tr("#unknown_error");
 }
 
 //------------------------------------------------------------------------

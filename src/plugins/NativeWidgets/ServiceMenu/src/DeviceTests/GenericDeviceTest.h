@@ -12,42 +12,39 @@
 #include <Common/ObjectPointer.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK
-{
-	namespace Driver
-	{
-		class IDevice;
-	} // namespace Driver
+namespace SDK {
+    namespace Driver {
+        class IDevice;
+    } // namespace Driver
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class GenericDeviceTest : public SDK::PaymentProcessor::IDeviceTest
-{
-	Q_OBJECT
+class GenericDeviceTest : public SDK::PaymentProcessor::IDeviceTest {
+    Q_OBJECT
 
-public:
-	GenericDeviceTest(SDK::Driver::IDevice* aDevice);
-	virtual ~GenericDeviceTest();
+  public:
+    GenericDeviceTest(SDK::Driver::IDevice *aDevice);
+    virtual ~GenericDeviceTest();
 
-	/// Возвращает имена и описания тестов.
-	virtual QList<QPair<QString, QString>> getTestNames() const;
+    /// Возвращает имена и описания тестов.
+    virtual QList<QPair<QString, QString>> getTestNames() const;
 
-	virtual bool run(const QString& aTestName);
+    virtual bool run(const QString &aTestName);
 
-	virtual void stop();
+    virtual void stop();
 
-	virtual bool isReady();
+    virtual bool isReady();
 
-	virtual bool hasResult();
+    virtual bool hasResult();
 
-private slots:
-	void onTestFinished();
+  private slots:
+    void onTestFinished();
 
-private:
-	QFutureWatcher<void> mResult;
-	ObjectPointer<SDK::Driver::IDevice> mDevice;
+  private:
+    QFutureWatcher<void> mResult;
+    ObjectPointer<SDK::Driver::IDevice> mDevice;
 
-	const QString mGenericTest;
+    const QString mGenericTest;
 };
 
 //------------------------------------------------------------------------------

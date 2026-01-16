@@ -41,13 +41,9 @@ DL_DECLARE_FUN_THROW(CertFindCertificateInStore, PCCERT_CONTEXT,
                      (IN HCERTSTORE)(IN DWORD)(IN DWORD)(IN DWORD)(IN const void *)(IN PCCERT_CONTEXT))
 DL_DECLARE_FUN_THROW(CertFreeCertificateContext, BOOL, (IN PCCERT_CONTEXT))
 DL_DECLARE_FUN_THROW(CertGetNameString, BOOL, (IN PCCERT_CONTEXT)(IN DWORD)(IN DWORD)(IN void *)(OUT LPTSTR)(IN DWORD))
-DL_DECLARE_FUN_THROW(
-    CryptQueryObject, BOOL,
-    (IN DWORD)(IN const void
-                   *)(IN DWORD)(IN DWORD)(IN DWORD)(OUT DWORD *)(OUT DWORD *)(OUT DWORD *)(OUT HCERTSTORE
-                                                                                               *)(OUT HCRYPTMSG
-                                                                                                      *)(OUT const void
-                                                                                                             **))
+DL_DECLARE_FUN_THROW(CryptQueryObject, BOOL,
+                     (IN DWORD)(IN const void *)(IN DWORD)(IN DWORD)(IN DWORD)(
+                         OUT DWORD *)(OUT DWORD *)(OUT DWORD *)(OUT HCERTSTORE *)(OUT HCRYPTMSG *)(OUT const void **))
 DL_USE_MODULE_END()
 
 //--------------------------------------------------------------------------------

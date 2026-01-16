@@ -5,41 +5,36 @@
 #include "WelcomeWizardPage.h"
 
 //----------------------------------------------------------------------------
-WelcomeWizardPage::WelcomeWizardPage(ServiceMenuBackend* aBackend, QWidget* aParent) : WizardPageBase(aBackend, aParent)
-{
-	setupUi(this);
+WelcomeWizardPage::WelcomeWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
+    : WizardPageBase(aBackend, aParent) {
+    setupUi(this);
 
-	connect(btnSetup, SIGNAL(clicked()), SLOT(onRunSetup()));
+    connect(btnSetup, SIGNAL(clicked()), SLOT(onRunSetup()));
 }
 
 //---------------------------------------------------------------------------
-bool WelcomeWizardPage::initialize()
-{
-	return true;
+bool WelcomeWizardPage::initialize() {
+    return true;
 }
 
 //---------------------------------------------------------------------------
-bool WelcomeWizardPage::shutdown()
-{
-	return true;
+bool WelcomeWizardPage::shutdown() {
+    return true;
 }
 
 //---------------------------------------------------------------------------
-bool WelcomeWizardPage::activate()
-{
-	return true;
+bool WelcomeWizardPage::activate() {
+    return true;
 }
 
 //---------------------------------------------------------------------------
-bool WelcomeWizardPage::deactivate()
-{
-	return true;
+bool WelcomeWizardPage::deactivate() {
+    return true;
 }
 
 //---------------------------------------------------------------------------
-void WelcomeWizardPage::onRunSetup()
-{
-	emit pageEvent(CWizardContext::RunSetup, true);
+void WelcomeWizardPage::onRunSetup() {
+    emit pageEvent(CWizardContext::RunSetup, true);
 }
 
 //---------------------------------------------------------------------------

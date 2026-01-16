@@ -13,51 +13,47 @@
 #include <SDK/Drivers/IDispenser.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK
-{
-	namespace Driver
-	{
-		class IDevice;
-	} // namespace Driver
-	namespace PaymentProcessor
-	{
-		class ICore;
-	} // namespace PaymentProcessor
+namespace SDK {
+    namespace Driver {
+        class IDevice;
+    } // namespace Driver
+    namespace PaymentProcessor {
+        class ICore;
+    } // namespace PaymentProcessor
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class DispenserTest : public SDK::PaymentProcessor::IDeviceTest
-{
-	Q_OBJECT
+class DispenserTest : public SDK::PaymentProcessor::IDeviceTest {
+    Q_OBJECT
 
-public:
-	DispenserTest(SDK::Driver::IDevice* aDevice, const QString& aConfigurationName,
-				  SDK::PaymentProcessor::ICore* aCore);
+  public:
+    DispenserTest(SDK::Driver::IDevice *aDevice, const QString &aConfigurationName,
+                  SDK::PaymentProcessor::ICore *aCore);
 
-	/// Возвращает имена и описания тестов.
-	virtual QList<QPair<QString, QString>> getTestNames() const;
+    /// Возвращает имена и описания тестов.
+    virtual QList<QPair<QString, QString>> getTestNames() const;
 
-	/// Запускает тестирование устройства.
-	virtual bool run(const QString& aName = QString());
+    /// Запускает тестирование устройства.
+    virtual bool run(const QString &aName = QString());
 
-	/// Остановка процесса тестирования.
-	virtual void stop();
+    /// Остановка процесса тестирования.
+    virtual void stop();
 
-	/// Можно тестировать?
-	virtual bool isReady();
+    /// Можно тестировать?
+    virtual bool isReady();
 
-	/// Возвращает true, если тест устройства возвращает результат теста
-	virtual bool hasResult();
+    /// Возвращает true, если тест устройства возвращает результат теста
+    virtual bool hasResult();
 
-private slots:
-	void onDispensed(int aCashUnit, int aCount);
-	void onRejected(int aCashUnit, int aCount);
+  private slots:
+    void onDispensed(int aCashUnit, int aCount);
+    void onRejected(int aCashUnit, int aCount);
 
-private:
-	ObjectPointer<SDK::Driver::IDispenser> mDispenser;
-	QString mConfigurationName;
-	SDK::PaymentProcessor::ICore* mCore;
-	QStringList mResults;
+  private:
+    ObjectPointer<SDK::Driver::IDispenser> mDispenser;
+    QString mConfigurationName;
+    SDK::PaymentProcessor::ICore *mCore;
+    QStringList mResults;
 };
 
 //------------------------------------------------------------------------------

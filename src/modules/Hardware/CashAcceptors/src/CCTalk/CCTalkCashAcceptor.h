@@ -9,64 +9,63 @@
 //--------------------------------------------------------------------------------
 typedef CCTalkAcceptorBase<TSerialCashAcceptor> TCCTalkCashAcceptor;
 
-class CCTalkCashAcceptor : public TCCTalkCashAcceptor
-{
-public:
-	CCTalkCashAcceptor();
+class CCTalkCashAcceptor : public TCCTalkCashAcceptor {
+  public:
+    CCTalkCashAcceptor();
 
-	/// Возвращает список поддерживаемых устройств.
-	static QStringList getModelList();
+    /// Возвращает список поддерживаемых устройств.
+    static QStringList getModelList();
 
-	/// Принять купюру.
-	virtual bool stack();
+    /// Принять купюру.
+    virtual bool stack();
 
-	/// Вернуть купюру.
-	virtual bool reject();
+    /// Вернуть купюру.
+    virtual bool reject();
 
-protected:
-	/// Запросить и сохранить параметры устройства.
-	virtual void processDeviceData();
+  protected:
+    /// Запросить и сохранить параметры устройства.
+    virtual void processDeviceData();
 
-	/// Получить буферизованные статусы.
-	virtual bool getBufferedStatuses(QByteArray& aAnswer);
+    /// Получить буферизованные статусы.
+    virtual bool getBufferedStatuses(QByteArray &aAnswer);
 
-	/// Распарсить данные о купюре.
-	virtual void parseCreditData(uchar aCredit, uchar aError, TStatusCodes& aStatusCodes);
+    /// Распарсить данные о купюре.
+    virtual void parseCreditData(uchar aCredit, uchar aError, TStatusCodes &aStatusCodes);
 
-	/// Локальный сброс.
-	virtual bool processReset();
+    /// Локальный сброс.
+    virtual bool processReset();
 
-	/// Установка параметров по умолчанию.
-	virtual bool setDefaultParameters();
+    /// Установка параметров по умолчанию.
+    virtual bool setDefaultParameters();
 
-	/// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней логики.
-	virtual void cleanSpecificStatusCodes(TStatusCodes& aStatusCodes);
+    /// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней логики.
+    virtual void cleanSpecificStatusCodes(TStatusCodes &aStatusCodes);
 
-	/// Распарсить данные прошивки.
-	virtual double parseFWVersion(const QByteArray& aAnswer);
+    /// Распарсить данные прошивки.
+    virtual double parseFWVersion(const QByteArray &aAnswer);
 
-	/// Загрузка таблицы номиналов из устройства.
-	virtual bool loadParTable();
+    /// Загрузка таблицы номиналов из устройства.
+    virtual bool loadParTable();
 
-	/// Получить данные валюты.
-	virtual bool parseCurrencyData(const QByteArray& aData, CCCTalk::SCurrencyData& aCurrencyData);
+    /// Получить данные валюты.
+    virtual bool parseCurrencyData(const QByteArray &aData, CCCTalk::SCurrencyData &aCurrencyData);
 
-	/// Вернуть/уложить купюру.
-	bool route(bool aDirection);
+    /// Вернуть/уложить купюру.
+    bool route(bool aDirection);
 
-	/// Коэффициенты для вычисления номиналов. Зависят от кода валюты.
-	QMap<QByteArray, double> mScalingFactors;
+    /// Коэффициенты для вычисления номиналов. Зависят от кода валюты.
+    QMap<QByteArray, double> mScalingFactors;
 
-	/// Виртуальный статус движения купюры после эскроу.
-	struct SRouting
-	{
-		bool direction;
-		bool active;
+    /// Виртуальный статус движения купюры после эскроу.
+    struct SRouting {
+        bool direction;
+        bool active;
 
-		SRouting() : direction(false), active(false) {}
-	};
+        SRouting() : direction(false), active(false) {
+        }
+    };
 
-	SRouting mVirtualRouting;
+    SRouting mVirtualRouting;
 };
 
 //--------------------------------------------------------------------------------

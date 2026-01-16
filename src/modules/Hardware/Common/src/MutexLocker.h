@@ -11,34 +11,33 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-class MutexLocker
-{
-	typedef QMap<QThread*, QThread*> TMatchedThreads;
-	typedef QPair<QThread*, int> TLocksCounter;
-	typedef QMap<QMutex*, TLocksCounter> TThreadsLocked;
+class MutexLocker {
+    typedef QMap<QThread *, QThread *> TMatchedThreads;
+    typedef QPair<QThread *, int> TLocksCounter;
+    typedef QMap<QMutex *, TLocksCounter> TThreadsLocked;
 
-public:
-	MutexLocker(QMutex* aMutex);
-	~MutexLocker();
+  public:
+    MutexLocker(QMutex *aMutex);
+    ~MutexLocker();
 
-	/// Замапить потока с ограниченной синхронизацией на вызвавший его поток.
-	static void setMatchedThread(QThread* aOwner, QThread* aMatched);
+    /// Замапить потока с ограниченной синхронизацией на вызвавший его поток.
+    static void setMatchedThread(QThread *aOwner, QThread *aMatched);
 
-	/// Удалить данные потоке с ограниченной синхронизацией.
-	static void clearMatchedThread(QThread* aOwner);
+    /// Удалить данные потоке с ограниченной синхронизацией.
+    static void clearMatchedThread(QThread *aOwner);
 
-private:
-	/// Рабочий мьютекс.
-	QMutex* mMutex;
+  private:
+    /// Рабочий мьютекс.
+    QMutex *mMutex;
 
-	/// Таблица соответствия потока, вызвавшего локер, и замещающего его потока с ограниченной синхронизацией.
-	static TMatchedThreads mMatchedThreads;
+    /// Таблица соответствия потока, вызвавшего локер, и замещающего его потока с ограниченной синхронизацией.
+    static TMatchedThreads mMatchedThreads;
 
-	/// Потоки, залочившие мьютексы + количество локов (для рекурсивных мьютексов).
-	static TThreadsLocked mThreadsLocked;
+    /// Потоки, залочившие мьютексы + количество локов (для рекурсивных мьютексов).
+    static TThreadsLocked mThreadsLocked;
 
-	// Мьютекс для защиты ресурсов.
-	static QMutex mResourceMutex;
+    // Мьютекс для защиты ресурсов.
+    static QMutex mResourceMutex;
 };
 
 //--------------------------------------------------------------------------------

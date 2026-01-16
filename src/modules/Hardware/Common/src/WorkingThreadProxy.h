@@ -14,49 +14,48 @@
 #include "Hardware/Common/FunctionTypes.h"
 
 //--------------------------------------------------------------------------------
-class WorkingThreadProxy : public QObject
-{
-	Q_OBJECT
+class WorkingThreadProxy : public QObject {
+    Q_OBJECT
 
-public:
-	WorkingThreadProxy(QThread* aWorkingThread);
+  public:
+    WorkingThreadProxy(QThread *aWorkingThread);
 
-	/// Вызывает метод в рабочем потоке и возвращает результат.
-	template <class T>
-	T invokeMethod(std::function<T()> aMethod);
+    /// Вызывает метод в рабочем потоке и возвращает результат.
+    template <class T> T invokeMethod(std::function<T()> aMethod);
 
-signals:
-	/// Сигналы для обработки указанного метода в нити объекта.
-	void invoke(TVoidMethod aMethod);
-	void invoke(TBoolMethod aMethod, bool* aResult);
-	void invoke(TIntMethod aMethod, int* aResult);
-	void invoke(TDoubleMethod aMethod, double* aResult);
-	void invoke(TStringMethod aMethod, QString* aResult);
+  signals:
+    /// Сигналы для обработки указанного метода в нити объекта.
+    void invoke(TVoidMethod aMethod);
+    void invoke(TBoolMethod aMethod, bool *aResult);
+    void invoke(TIntMethod aMethod, int *aResult);
+    void invoke(TDoubleMethod aMethod, double *aResult);
+    void invoke(TStringMethod aMethod, QString *aResult);
 
-protected slots:
-	/// Обработчики сигнала invoke.
-	void onInvoke(TVoidMethod aMethod);
-	void onInvoke(TBoolMethod aMethod, bool* aResult);
-	void onInvoke(TIntMethod aMethod, int* aResult);
-	void onInvoke(TDoubleMethod aMethod, double* aResult);
-	void onInvoke(TStringMethod aMethod, QString* aResult);
+  protected slots:
+    /// Обработчики сигнала invoke.
+    void onInvoke(TVoidMethod aMethod);
+    void onInvoke(TBoolMethod aMethod, bool *aResult);
+    void onInvoke(TIntMethod aMethod, int *aResult);
+    void onInvoke(TDoubleMethod aMethod, double *aResult);
+    void onInvoke(TStringMethod aMethod, QString *aResult);
 
-	void checkThreadStarted();
+    void checkThreadStarted();
 
-protected:
-	WorkingThreadProxy() {}
+  protected:
+    WorkingThreadProxy() {
+    }
 
-	/// Из рабочего ли потока происходит вызов.
-	bool isWorkingThread();
+    /// Из рабочего ли потока происходит вызов.
+    bool isWorkingThread();
 
-	/// Поток, который будет считаться рабочим.
-	QThread* mWorkingThread;
+    /// Поток, который будет считаться рабочим.
+    QThread *mWorkingThread;
 
-	/// Мьютекс для операций при старте потока.
-	QMutex mStartMutex;
+    /// Мьютекс для операций при старте потока.
+    QMutex mStartMutex;
 
-	/// Wait-condition для операций при старте потока.
-	QWaitCondition mStartCondition;
+    /// Wait-condition для операций при старте потока.
+    QWaitCondition mStartCondition;
 };
 
 //---------------------------------------------------------------------------

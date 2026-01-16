@@ -7,39 +7,37 @@
 #include "CCNetCashAcceptorBase.h"
 
 //--------------------------------------------------------------------------------
-namespace CCCNetCashcodeGX
-{
-	/// Пауза после резета, [мс].
-	const int ResetPause = 15 * 1000;
+namespace CCCNetCashcodeGX {
+    /// Пауза после резета, [мс].
+    const int ResetPause = 15 * 1000;
 
-	/// Выход из initilaize-а.
-	const int ExitInitializeTimeout = 20 * 1000;
+    /// Выход из initilaize-а.
+    const int ExitInitializeTimeout = 20 * 1000;
 } // namespace CCCNetCashcodeGX
 
 //--------------------------------------------------------------------------------
-class CCNetCashcodeGX : public CCNetCashAcceptorBase
-{
-	SET_SUBSERIES("CashcodeGX")
+class CCNetCashcodeGX : public CCNetCashAcceptorBase {
+    SET_SUBSERIES("CashcodeGX")
 
-public:
-	CCNetCashcodeGX();
+  public:
+    CCNetCashcodeGX();
 
-protected:
-	/// Проверка возможности выполнения функционала, предполагающего связь с устройством.
-	virtual bool checkConnectionAbility();
+  protected:
+    /// Проверка возможности выполнения функционала, предполагающего связь с устройством.
+    virtual bool checkConnectionAbility();
 
-	/// Выполнить команду.
-	virtual TResult performCommand(const QByteArray& aCommand, const QByteArray& aCommandData,
-								   QByteArray* aAnswer = nullptr);
+    /// Выполнить команду.
+    virtual TResult performCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+                                   QByteArray *aAnswer = nullptr);
 
-	/// Локальный сброс.
-	virtual bool processReset();
+    /// Локальный сброс.
+    virtual bool processReset();
 
-	/// Отправить буфер данных обновления прошивки для купюроприемника Cashcode GX.
-	virtual bool processUpdating(const QByteArray& aBuffer, int aSectionSize);
+    /// Отправить буфер данных обновления прошивки для купюроприемника Cashcode GX.
+    virtual bool processUpdating(const QByteArray &aBuffer, int aSectionSize);
 
-	/// Изменить скорость работы.
-	virtual bool performBaudRateChanging(const SDK::Driver::TPortParameters& aPortParameters);
+    /// Изменить скорость работы.
+    virtual bool performBaudRateChanging(const SDK::Driver::TPortParameters &aPortParameters);
 };
 
 //--------------------------------------------------------------------------------

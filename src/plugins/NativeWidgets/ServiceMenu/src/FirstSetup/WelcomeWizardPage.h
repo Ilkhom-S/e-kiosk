@@ -13,21 +13,20 @@
 class ServiceMenuBackend;
 
 //---------------------------------------------------------------------------
-class WelcomeWizardPage : public WizardPageBase, protected Ui::WelcomeWizardPage
-{
-	Q_OBJECT
+class WelcomeWizardPage : public WizardPageBase, protected Ui::WelcomeWizardPage {
+    Q_OBJECT
 
-public:
-	WelcomeWizardPage(ServiceMenuBackend* aBackend, QWidget* aParent = 0);
+  public:
+    WelcomeWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
-	virtual bool initialize();
-	virtual bool shutdown();
+    virtual bool initialize();
+    virtual bool shutdown();
 
-	virtual bool activate();
-	virtual bool deactivate();
+    virtual bool activate();
+    virtual bool deactivate();
 
-private slots:
-	void onRunSetup();
+  private slots:
+    void onRunSetup();
 };
 
 //---------------------------------------------------------------------------

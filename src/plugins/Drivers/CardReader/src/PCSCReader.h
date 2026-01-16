@@ -24,51 +24,50 @@
 #include "Hardware/Common/BaseStatusTypes.h"
 
 //--------------------------------------------------------------------------------
-class PCSCReader : public QObject, public ILogable
-{
-public:
-	PCSCReader();
-	~PCSCReader();
+class PCSCReader : public QObject, public ILogable {
+  public:
+    PCSCReader();
+    ~PCSCReader();
 
-	/// Сброс карты по питанию.
-	virtual bool reset(QByteArray& aAnswer);
+    /// Сброс карты по питанию.
+    virtual bool reset(QByteArray &aAnswer);
 
-	/// Получить список кардридеров
-	QStringList getReaderList();
+    /// Получить список кардридеров
+    QStringList getReaderList();
 
-	/// Подключиться к ридеру
-	bool connect(const QString& aReaderName);
+    /// Подключиться к ридеру
+    bool connect(const QString &aReaderName);
 
-	/// Проверка подключены ли мы к ридеру
-	bool isConnected() const;
+    /// Проверка подключены ли мы к ридеру
+    bool isConnected() const;
 
-	/// Обменяться с картой или ридером пакетами APDU
-	bool communicate(const QByteArray& aRequest, QByteArray& aResponse);
+    /// Обменяться с картой или ридером пакетами APDU
+    bool communicate(const QByteArray &aRequest, QByteArray &aResponse);
 
-	/// Отключится от ридера
-	void disconnect(bool aEject);
+    /// Отключится от ридера
+    void disconnect(bool aEject);
 
-	/// Получить последние статус-коды
-	TStatusCodes getStatusCodes();
+    /// Получить последние статус-коды
+    TStatusCodes getStatusCodes();
 
-private:
-	/// Обработка результата выполнения функции работы с ридером/картой/SAM-модулем
-	bool handleResult(const QString& aFunctionName, HRESULT aResultCode);
+  private:
+    /// Обработка результата выполнения функции работы с ридером/картой/SAM-модулем
+    bool handleResult(const QString &aFunctionName, HRESULT aResultCode);
 
-	/// Контекст карты
-	SCARDCONTEXT mContext;
+    /// Контекст карты
+    SCARDCONTEXT mContext;
 
-	/// Хендл карты
-	SCARDHANDLE mCard;
+    /// Хендл карты
+    SCARDHANDLE mCard;
 
-	/// Используемый протокол
-	unsigned mActiveProtocol;
+    /// Используемый протокол
+    unsigned mActiveProtocol;
 
-	/// Заголовок протокольного запроса к ридеру
-	SCARD_IO_REQUEST mPioSendPci;
+    /// Заголовок протокольного запроса к ридеру
+    SCARD_IO_REQUEST mPioSendPci;
 
-	/// Статус-коды результатов операций
-	TStatusCodes mStatusCodes;
+    /// Статус-коды результатов операций
+    TStatusCodes mStatusCodes;
 };
 
 //--------------------------------------------------------------------------------

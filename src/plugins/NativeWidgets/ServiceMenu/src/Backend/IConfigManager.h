@@ -3,17 +3,17 @@
 #pragma once
 
 //------------------------------------------------------------------------
-class IConfigManager
-{
-public:
-	virtual ~IConfigManager() {}
+class IConfigManager {
+  public:
+    virtual ~IConfigManager() {
+    }
 
-public:
-	/// Конфигурация изменилась?
-	virtual bool isConfigurationChanged() const = 0;
+  public:
+    /// Конфигурация изменилась?
+    virtual bool isConfigurationChanged() const = 0;
 
-	/// Делаем текущую конфигурацию начальной
-	virtual void resetConfiguration() = 0;
+    /// Делаем текущую конфигурацию начальной
+    virtual void resetConfiguration() = 0;
 };
 
 //------------------------------------------------------------------------

@@ -26,138 +26,148 @@
 class IApplication;
 
 /*
-	Описание настроек ini файла
+        Описание настроек ini файла
 
-	Расположение: %WORK_DIR%/data/scheduler.ini
+        Расположение: %WORK_DIR%/data/scheduler.ini
 
-	[task_name]
-	type   - имя класса выполняющего задачу
-	period - интервал запуска задачи в секундах (используется, если не задано время запуска time)
-	time   - время запуска задачи в формат ЧЧ:ММ или специальное значение startup/first_run
-	repeat_count_if_fail - кол-во повторов запуска задачи, в случае ошибки выполнения задачи.
-	time_threshold - кол-во секунд рандомизации времени запуска (в плюс)
-	params - строка, передающаяся как параметр запускаемой задачи
+        [task_name]
+        type   - имя класса выполняющего задачу
+        period - интервал запуска задачи в секундах (используется, если не задано время запуска time)
+        time   - время запуска задачи в формат ЧЧ:ММ или специальное значение startup/first_run
+        repeat_count_if_fail - кол-во повторов запуска задачи, в случае ошибки выполнения задачи.
+        time_threshold - кол-во секунд рандомизации времени запуска (в плюс)
+        params - строка, передающаяся как параметр запускаемой задачи
 
-	Расположение: %WORK_DIR%/user/scheduler_config.ini
+        Расположение: %WORK_DIR%/user/scheduler_config.ini
 
-	[task_name]
-	last_execute - время последнего запуска задачи в формате ГГГГ.ММ.ДД ЧЧ:ММ:СС (этот параметр выставляется программой
-   после запуска задачи)
+        [task_name]
+        last_execute - время последнего запуска задачи в формате ГГГГ.ММ.ДД ЧЧ:ММ:СС (этот параметр выставляется
+   программой после запуска задачи)
 */
 
 //---------------------------------------------------------------------------
 class SchedulerService : public QObject,
-						 public SDK::PaymentProcessor::ISchedulerService,
-						 public SDK::PaymentProcessor::IService,
-						 private ILogable
-{
-	Q_OBJECT
+                         public SDK::PaymentProcessor::ISchedulerService,
+                         public SDK::PaymentProcessor::IService,
+                         private ILogable {
+    Q_OBJECT
 
-public:
-	/// Получение SchedulerService'а.
-	static SchedulerService* instance(IApplication* aApplication);
+  public:
+    /// Получение SchedulerService'а.
+    static SchedulerService *instance(IApplication *aApplication);
 
-	SchedulerService(IApplication* aApplication);
-	virtual ~SchedulerService();
+    SchedulerService(IApplication *aApplication);
+    virtual ~SchedulerService();
 
-	/// IService: Инициализация сервиса.
-	virtual bool initialize();
+    /// IService: Инициализация сервиса.
+    virtual bool initialize();
 
-	/// IService: Закончена инициализация всех сервисов.
-	virtual void finishInitialize();
+    /// IService: Закончена инициализация всех сервисов.
+    virtual void finishInitialize();
 
-	/// IService: Возвращает false, если сервис не может быть остановлен в текущий момент.
-	virtual bool canShutdown();
+    /// IService: Возвращает false, если сервис не может быть остановлен в текущий момент.
+    virtual bool canShutdown();
 
-	/// IService: Завершение работы сервиса.
-	virtual bool shutdown();
+    /// IService: Завершение работы сервиса.
+    virtual bool shutdown();
 
-	/// IService: Возвращает имя сервиса.
-	virtual QString getName() const;
+    /// IService: Возвращает имя сервиса.
+    virtual QString getName() const;
 
-	/// IService: Список необходимых сервисов.
-	virtual const QSet<QString>& getRequiredServices() const;
+    /// IService: Список необходимых сервисов.
+    virtual const QSet<QString> &getRequiredServices() const;
 
-	/// IService: Получить параметры сервиса.
-	virtual QVariantMap getParameters() const;
+    /// IService: Получить параметры сервиса.
+    virtual QVariantMap getParameters() const;
 
-	/// IService: Сброс служебной информации.
-	virtual void resetParameters(const QSet<QString>& aParameters);
+    /// IService: Сброс служебной информации.
+    virtual void resetParameters(const QSet<QString> &aParameters);
 
-private:
-	class Item
-	{
-	public:
-		Item();
-		Item(const QString& aName, const QSettings& aSettings, const QSettings& aUserSettings);
+  private:
+    class Item {
+      public:
+        Item();
+        Item(const QString &aName, const QSettings &aSettings, const QSettings &aUserSettings);
 
-		/// Проверка корректности конфигурации задачи.
-		bool isOK() const;
+        /// Проверка корректности конфигурации задачи.
+        bool isOK() const;
 
-		/// Создать таймер сработающий в запланированное время.
-		QTimer* createTimer();
+        /// Создать таймер сработающий в запланированное время.
+        QTimer *createTimer();
 
-		/// Запуск задачи.
-		bool execute(SDK::PaymentProcessor::ITask* aTask, ILog* aLog);
+        /// Запуск задачи.
+        bool execute(SDK::PaymentProcessor::ITask *aTask, ILog *aLog);
 
-		/// Записываем в item результат выполнения таска
-		void complete(bool aComplete);
+        /// Записываем в item результат выполнения таска
+        void complete(bool aComplete);
 
-		QString name() const { return mName; }
-		QString type() const { return mType; }
-		QString params() const { return mParams; }
-		QDateTime lastExecute() const { return mLastExecute; }
-		bool onlyOnce() const { return mOnlyOnce; }
+        QString name() const {
+            return mName;
+        }
+        QString type() const {
+            return mType;
+        }
+        QString params() const {
+            return mParams;
+        }
+        QDateTime lastExecute() const {
+            return mLastExecute;
+        }
+        bool onlyOnce() const {
+            return mOnlyOnce;
+        }
 
-		int failCount() const { return mFailExecuteCounter; }
+        int failCount() const {
+            return mFailExecuteCounter;
+        }
 
-	private:
-		QString mType;			// Тип задачи
-		QString mParams;		// Параметры задачи
-		QString mName;			// Имя задачи
-		QTime mTime;			// Время запуска задачи
-		int mPeriod;			// Переодичность запуска задачи в секундах, действует если не задано конкретное время
-		bool mTriggeredOnStart; // Запускать первый раз сразу при старте
-		int mTimeThreshold;		// Максимальный разброс времени при запуске задачи в секундах
-		int mRepeatCountIfFail; // Количество повторов в случае ошибки
-		int mRetryTimeout;		// Таймаут повторного запуска в случае неуспеха в cекундах
-		bool mOnlyOnce;			// Запускать задачу только один раз
+      private:
+        QString mType;          // Тип задачи
+        QString mParams;        // Параметры задачи
+        QString mName;          // Имя задачи
+        QTime mTime;            // Время запуска задачи
+        int mPeriod;            // Переодичность запуска задачи в секундах, действует если не задано конкретное время
+        bool mTriggeredOnStart; // Запускать первый раз сразу при старте
+        int mTimeThreshold;     // Максимальный разброс времени при запуске задачи в секундах
+        int mRepeatCountIfFail; // Количество повторов в случае ошибки
+        int mRetryTimeout;      // Таймаут повторного запуска в случае неуспеха в cекундах
+        bool mOnlyOnce;         // Запускать задачу только один раз
 
-	private:
-		QDateTime mLastExecute;	 // Время последнего запуска задачи
-		int mFailExecuteCounter; // Счетчик неудачных запусков задачи
-	};
+      private:
+        QDateTime mLastExecute;  // Время последнего запуска задачи
+        int mFailExecuteCounter; // Счетчик неудачных запусков задачи
+    };
 
-private:
-	/// Запустить таймер задания.
-	bool schedule(Item& aItem) const;
+  private:
+    /// Запустить таймер задания.
+    bool schedule(Item &aItem) const;
 
-	/// Сохранить время и результат последнего запуска задачи.
-	void saveLastExecute(Item& aItem, bool aComplete);
+    /// Сохранить время и результат последнего запуска задачи.
+    void saveLastExecute(Item &aItem, bool aComplete);
 
-	/// Включение автообновления клиента
-	void setupAutoUpdate();
+    /// Включение автообновления клиента
+    void setupAutoUpdate();
 
-	/// Включение энергосберегающего режима дисплея по расписанию
-	void setupDisplayOnOff();
+    /// Включение энергосберегающего режима дисплея по расписанию
+    void setupDisplayOnOff();
 
-private slots:
-	/// Запустить таймеры всех заданий.
-	void scheduleAll();
+  private slots:
+    /// Запустить таймеры всех заданий.
+    void scheduleAll();
 
-	/// Выполнить задание.
-	void execute();
+    /// Выполнить задание.
+    void execute();
 
-	/// Обработчик завершения выполнения таска
-	void onTaskComplete(const QString& aName, bool aComplete);
+    /// Обработчик завершения выполнения таска
+    void onTaskComplete(const QString &aName, bool aComplete);
 
-private:
-	IApplication* mApplication;
-	QThread mThread;
+  private:
+    IApplication *mApplication;
+    QThread mThread;
 
-	QMap<QString, Item> mItems;
-	QMap<QString, SDK::PaymentProcessor::ITask*> mWorkingTasks;
-	QReadWriteLock mLock;
+    QMap<QString, Item> mItems;
+    QMap<QString, SDK::PaymentProcessor::ITask *> mWorkingTasks;
+    QReadWriteLock mLock;
 };
 
 //---------------------------------------------------------------------------

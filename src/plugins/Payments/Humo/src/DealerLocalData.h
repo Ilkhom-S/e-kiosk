@@ -7,27 +7,25 @@
 #include <QtCore/QMap>
 #include <Common/QtHeadersEnd.h>
 
-
 //------------------------------------------------------------------------------
-class DealerLocalData
-{
-public:
-	DealerLocalData();
+class DealerLocalData {
+  public:
+    DealerLocalData();
 
-	bool loadInfo(const QString& aFileName);
+    bool loadInfo(const QString &aFileName);
 
-	QString getFirstField() const;
+    QString getFirstField() const;
 
-	/// Получить имя параметра, по которому будем искать запись в таблице
-	QList<QPair<QString, QString>> getColumns() const;
+    /// Получить имя параметра, по которому будем искать запись в таблице
+    QList<QPair<QString, QString>> getColumns() const;
 
-	/// Найти запись по значению первого столбца
-	bool findNumber(const QString& aFirstColumnValue, QMap<QString, QString>& aParameters);
+    /// Найти запись по значению первого столбца
+    bool findNumber(const QString &aFirstColumnValue, QMap<QString, QString> &aParameters);
 
-private:
-	QString mFilePath;
+  private:
+    QString mFilePath;
 
-	QList<QPair<QString, QString>> mColumns;
+    QList<QPair<QString, QString>> mColumns;
 };
 
 //------------------------------------------------------------------------------

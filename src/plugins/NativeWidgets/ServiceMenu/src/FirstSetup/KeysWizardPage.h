@@ -9,27 +9,26 @@ class KeysWindow;
 class IServiceBackend;
 
 //------------------------------------------------------------------------
-class KeysWizardPage : public WizardPageBase
-{
-	Q_OBJECT
+class KeysWizardPage : public WizardPageBase {
+    Q_OBJECT
 
-public:
-	KeysWizardPage(ServiceMenuBackend* aBackend, QWidget* aParent = 0);
+  public:
+    KeysWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
-	virtual bool initialize();
-	virtual bool shutdown();
+    virtual bool initialize();
+    virtual bool shutdown();
 
-	virtual bool activate();
-	virtual bool deactivate();
+    virtual bool activate();
+    virtual bool deactivate();
 
-private slots:
-	void onBeginGenerating();
-	void onEndGenerating();
+  private slots:
+    void onBeginGenerating();
+    void onEndGenerating();
 
-	void onError(QString aError);
+    void onError(QString aError);
 
-private:
-	KeysWindow* mKeysWindow;
+  private:
+    KeysWindow *mKeysWindow;
 };
 
 //------------------------------------------------------------------------

@@ -21,347 +21,294 @@
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
-CCNetProtocol::CCNetProtocol() : mAddress(0) {}
-
-//--------------------------------------------------------------------------------
-void CCNetProtocol::setAddress(char aAddress)
-{
-	mAddress = aAddress;
+CCNetProtocol::CCNetProtocol() : mAddress(0) {
 }
 
 //--------------------------------------------------------------------------------
-void CCNetProtocol::changePortParameters(TPortParameters aParameters)
-{
-	mPortParameters = aParameters;
+void CCNetProtocol::setAddress(char aAddress) {
+    mAddress = aAddress;
 }
 
 //--------------------------------------------------------------------------------
-ushort CCNetProtocol::calcCRC16(const QByteArray& aData)
-{
-	ushort CRC = 0;
-
-	for (int i = 0; i < aData.size(); ++i)
-	{
-		ushort byteCRC = 0;
-		ushort value = uchar(CRC ^ aData[i]);
-
-		for (int j = 0; j < 8; ++j)
-		{
-			ushort data = byteCRC >> 1;
-			byteCRC = ((byteCRC ^ value) & 1) ? (data ^ CCCNet::Polynominal) : data;
-			value = value >> 1;
-		}
-
-		CRC = byteCRC ^ (CRC >> 8);
-	}
-
-	return CRC;
+void CCNetProtocol::changePortParameters(TPortParameters aParameters) {
+    mPortParameters = aParameters;
 }
 
 //--------------------------------------------------------------------------------
-void CCNetProtocol::pack(QByteArray& aCommandData)
-{
-	aCommandData.prepend(mAddress);
-	aCommandData.prepend(CCCNet::Prefix);
+ushort CCNetProtocol::calcCRC16(const QByteArray &aData) {
+    ushort CRC = 0;
 
-	int length = aCommandData.size() + 3;
+    for (int i = 0; i < aData.size(); ++i) {
+        ushort byteCRC = 0;
+        ushort value = uchar(CRC ^ aData[i]);
 
-	if (length < 256)
-	{
-		aCommandData.insert(2, char(length));
-	}
-	else
-	{
-		aCommandData.insert(2, ASCII::NUL);
-		aCommandData.insert(5,
-							QByteArray::fromHex(QString("%1").arg(length + 2, 4, 16, QChar(ASCII::Zero)).toLatin1()));
-	}
+        for (int j = 0; j < 8; ++j) {
+            ushort data = byteCRC >> 1;
+            byteCRC = ((byteCRC ^ value) & 1) ? (data ^ CCCNet::Polynominal) : data;
+            value = value >> 1;
+        }
 
-	ushort CRC = calcCRC16(aCommandData);
-	aCommandData.append(uchar(CRC));
-	aCommandData.append(uchar(CRC >> 8));
+        CRC = byteCRC ^ (CRC >> 8);
+    }
+
+    return CRC;
 }
 
 //--------------------------------------------------------------------------------
-QString CCNetProtocol::check(const QByteArray& aAnswer)
-{
-	// минимальный размер ответа
-	if (aAnswer.size() < CCCNet::MinAnswerSize)
-	{
-		return QString("CCNet: Invalid answer length = %1, need %2 minimum")
-			.arg(aAnswer.size())
-			.arg(CCCNet::MinAnswerSize);
-	}
+void CCNetProtocol::pack(QByteArray &aCommandData) {
+    aCommandData.prepend(mAddress);
+    aCommandData.prepend(CCCNet::Prefix);
 
-	// первый байт
-	char prefix = aAnswer[0];
+    int length = aCommandData.size() + 3;
 
-	if (prefix != CCCNet::Prefix)
-	{
-		return QString("CCNet: Invalid prefix = %1, need = %2")
-			.arg(ProtocolUtils::toHexLog(prefix))
-			.arg(ProtocolUtils::toHexLog(CCCNet::Prefix));
-	}
+    if (length < 256) {
+        aCommandData.insert(2, char(length));
+    } else {
+        aCommandData.insert(2, ASCII::NUL);
+        aCommandData.insert(5,
+                            QByteArray::fromHex(QString("%1").arg(length + 2, 4, 16, QChar(ASCII::Zero)).toLatin1()));
+    }
 
-	// адрес
-	char address = aAnswer[1];
-
-	if (address != mAddress)
-	{
-		return QString("CCNet: Invalid address = %1, need = %2")
-			.arg(ProtocolUtils::toHexLog(address))
-			.arg(ProtocolUtils::toHexLog(mAddress));
-	}
-
-	// длина
-	int length = uchar(aAnswer[2]);
-
-	if (length != aAnswer.size())
-	{
-		return QString("CCNet: Invalid length = %1, need %2").arg(aAnswer.size()).arg(length);
-	}
-
-	// CRC
-	ushort answerCRC = calcCRC16(aAnswer.left(length - 2));
-	ushort CRC = qToBigEndian(aAnswer.right(2).toHex().toUShort(0, 16));
-
-	if (CRC != answerCRC)
-	{
-		return QString("CCNet: Invalid CRC = %1, need %2")
-			.arg(ProtocolUtils::toHexLog(CRC))
-			.arg(ProtocolUtils::toHexLog(answerCRC));
-	}
-
-	return "";
+    ushort CRC = calcCRC16(aCommandData);
+    aCommandData.append(uchar(CRC));
+    aCommandData.append(uchar(CRC >> 8));
 }
 
 //--------------------------------------------------------------------------------
-TResult CCNetProtocol::processCommand(const QByteArray& aCommandData, QByteArray& aAnswerData,
-									  const CCCNet::Commands::SData& aData)
-{
-	// Формируем пакет запроса
-	QByteArray request = aCommandData;
-	pack(request);
+QString CCNetProtocol::check(const QByteArray &aAnswer) {
+    // минимальный размер ответа
+    if (aAnswer.size() < CCCNet::MinAnswerSize) {
+        return QString("CCNet: Invalid answer length = %1, need %2 minimum")
+            .arg(aAnswer.size())
+            .arg(CCCNet::MinAnswerSize);
+    }
 
-	// Выполняем команду
-	int NAKCounter = 1;
-	int checkingCounter = 1;
+    // первый байт
+    char prefix = aAnswer[0];
 
-	do
-	{
-		toLog(LogLevel::Normal, QString("CCNet: >> {%1}").arg(QString(request.toHex())));
-		aAnswerData.clear();
+    if (prefix != CCCNet::Prefix) {
+        return QString("CCNet: Invalid prefix = %1, need = %2")
+            .arg(ProtocolUtils::toHexLog(prefix))
+            .arg(ProtocolUtils::toHexLog(CCCNet::Prefix));
+    }
 
-		if (!mPort->write(request))
-		{
-			return CommandResult::Port;
-		}
+    // адрес
+    char address = aAnswer[1];
 
-		if (!mPortParameters.isEmpty())
-		{
-			SleepHelper::msleep(CCCNet::ChangingBaudRatePause);
+    if (address != mAddress) {
+        return QString("CCNet: Invalid address = %1, need = %2")
+            .arg(ProtocolUtils::toHexLog(address))
+            .arg(ProtocolUtils::toHexLog(mAddress));
+    }
 
-			int baudrate = mPortParameters[IOPort::COM::EParameters::BaudRate];
-			bool result = mPort->setParameters(mPortParameters);
-			mPortParameters.clear();
+    // длина
+    int length = uchar(aAnswer[2]);
 
-			if (!result)
-			{
-				toLog(LogLevel::Error, "CCNet: Failed to set port parameters");
-				return CommandResult::Port;
-			}
+    if (length != aAnswer.size()) {
+        return QString("CCNet: Invalid length = %1, need %2").arg(aAnswer.size()).arg(length);
+    }
 
-			toLog(LogLevel::Normal, QString("CCNet: Baud rate has changed to %1.").arg(baudrate));
-		}
+    // CRC
+    ushort answerCRC = calcCRC16(aAnswer.left(length - 2));
+    ushort CRC = qToBigEndian(aAnswer.right(2).toHex().toUShort(0, 16));
 
-		TResult result = getAnswer(aAnswerData, aData);
+    if (CRC != answerCRC) {
+        return QString("CCNet: Invalid CRC = %1, need %2")
+            .arg(ProtocolUtils::toHexLog(CRC))
+            .arg(ProtocolUtils::toHexLog(answerCRC));
+    }
 
-		if (result == CommandResult::Transport)
-		{
-			NAKCounter++;
-		}
-		else if (result == CommandResult::Protocol)
-		{
-			checkingCounter++;
-		}
-		else
-		{
-			return result;
-		}
-	} while ((NAKCounter <= CCCNet::MaxRepeatPacket) && (checkingCounter <= CCCNet::MaxRepeatPacket));
-
-	return (checkingCounter <= CCCNet::MaxRepeatPacket) ? CommandResult::Transport : CommandResult::Protocol;
+    return "";
 }
 
 //--------------------------------------------------------------------------------
-TResult CCNetProtocol::getAnswer(QByteArray& aAnswerData, const CCCNet::Commands::SData& aData)
-{
-	TAnswers answers;
+TResult CCNetProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData,
+                                      const CCCNet::Commands::SData &aData) {
+    // Формируем пакет запроса
+    QByteArray request = aCommandData;
+    pack(request);
 
-	if (!readAnswers(answers, aData.timeout))
-	{
-		return CommandResult::Port;
-	}
+    // Выполняем команду
+    int NAKCounter = 1;
+    int checkingCounter = 1;
 
-	if (answers.isEmpty())
-	{
-		return CommandResult::NoAnswer;
-	}
+    do {
+        toLog(LogLevel::Normal, QString("CCNet: >> {%1}").arg(QString(request.toHex())));
+        aAnswerData.clear();
 
-	int index = -1;
-	QStringList logs;
-	aAnswerData = answers[0];
+        if (!mPort->write(request)) {
+            return CommandResult::Port;
+        }
 
-	for (int i = 0; i < answers.size(); ++i)
-	{
-		logs << check(answers[i]);
+        if (!mPortParameters.isEmpty()) {
+            SleepHelper::msleep(CCCNet::ChangingBaudRatePause);
 
-		if (logs.last().isEmpty())
-		{
-			index = i;
-		}
-	}
+            int baudrate = mPortParameters[IOPort::COM::EParameters::BaudRate];
+            bool result = mPort->setParameters(mPortParameters);
+            mPortParameters.clear();
 
-	for (int i = 0; i < answers.size(); ++i)
-	{
-		QString log = QString("CCNet: << {%1}").arg(answers[i].toHex().data());
+            if (!result) {
+                toLog(LogLevel::Error, "CCNet: Failed to set port parameters");
+                return CommandResult::Port;
+            }
 
-		if (!logs[i].isEmpty())
-		{
-			toLog(LogLevel::Normal, log);
-			toLog(LogLevel::Error, logs[i]);
-		}
-		else if (i != index)
-		{
-			toLog(LogLevel::Normal, log + " - omitted");
-		}
-		else
-		{
-			toLog(LogLevel::Normal, log);
-		}
-	}
+            toLog(LogLevel::Normal, QString("CCNet: Baud rate has changed to %1.").arg(baudrate));
+        }
 
-	if (index == -1)
-	{
-		toLog(LogLevel::Normal, "CCNet: Answer does not contains any logic data or it is incomplete answer");
-		return CommandResult::Protocol;
-	}
+        TResult result = getAnswer(aAnswerData, aData);
 
-	int length = uchar(answers[index][2]);
-	aAnswerData = answers[index].mid(3, length - 5);
+        if (result == CommandResult::Transport) {
+            NAKCounter++;
+        } else if (result == CommandResult::Protocol) {
+            checkingCounter++;
+        } else {
+            return result;
+        }
+    } while ((NAKCounter <= CCCNet::MaxRepeatPacket) && (checkingCounter <= CCCNet::MaxRepeatPacket));
 
-	if (aAnswerData[0] == CCCNet::NAK)
-	{
-		toLog(LogLevel::Normal, "CCNet: Answer contains NAK, attemp to repeat command");
-		return CommandResult::Transport;
-	}
-
-	if (aData.hostACK)
-	{
-		sendACK();
-	}
-
-	return CommandResult::OK;
+    return (checkingCounter <= CCCNet::MaxRepeatPacket) ? CommandResult::Transport : CommandResult::Protocol;
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetProtocol::readAnswers(TAnswers& aAnswers, int aTimeout)
-{
-	QByteArray answer;
+TResult CCNetProtocol::getAnswer(QByteArray &aAnswerData, const CCCNet::Commands::SData &aData) {
+    TAnswers answers;
 
-	int length = 0;
-	int index = 0;
+    if (!readAnswers(answers, aData.timeout)) {
+        return CommandResult::Port;
+    }
 
-	QTime clockTimer;
-	clockTimer.restart();
+    if (answers.isEmpty()) {
+        return CommandResult::NoAnswer;
+    }
 
-	do
-	{
-		QByteArray answerData;
+    int index = -1;
+    QStringList logs;
+    aAnswerData = answers[0];
 
-		if (!mPort->read(answerData, 20))
-		{
-			return false;
-		}
+    for (int i = 0; i < answers.size(); ++i) {
+        logs << check(answers[i]);
 
-		answer.append(answerData);
-		int begin = index;
-		int lastBegin;
+        if (logs.last().isEmpty()) {
+            index = i;
+        }
+    }
 
-		do
-		{
-			lastBegin = begin;
-			begin = answer.indexOf(CCCNet::Prefix, begin);
+    for (int i = 0; i < answers.size(); ++i) {
+        QString log = QString("CCNet: << {%1}").arg(answers[i].toHex().data());
 
-			if (begin == -1)
-			{
-				break;
-			}
-			else if (answer.size() > 2)
-			{
-				if (begin < answer.size())
-				{
-					index = begin;
-				}
+        if (!logs[i].isEmpty()) {
+            toLog(LogLevel::Normal, log);
+            toLog(LogLevel::Error, logs[i]);
+        } else if (i != index) {
+            toLog(LogLevel::Normal, log + " - omitted");
+        } else {
+            toLog(LogLevel::Normal, log);
+        }
+    }
 
-				length = uchar(answer[begin + 2]);
-				begin += length;
+    if (index == -1) {
+        toLog(LogLevel::Normal, "CCNet: Answer does not contains any logic data or it is incomplete answer");
+        return CommandResult::Protocol;
+    }
 
-				if (begin < answer.size())
-				{
-					index = begin;
-				}
-			}
-		} while (lastBegin != begin);
-	} while ((clockTimer.elapsed() < aTimeout) && ((answer.mid(index).size() != length) || !length));
+    int length = uchar(answers[index][2]);
+    aAnswerData = answers[index].mid(3, length - 5);
 
-	if (answer.isEmpty())
-	{
-		toLog(LogLevel::Normal, "CCNet: << {}");
-		return true;
-	}
+    if (aAnswerData[0] == CCCNet::NAK) {
+        toLog(LogLevel::Normal, "CCNet: Answer contains NAK, attemp to repeat command");
+        return CommandResult::Transport;
+    }
 
-	int size = answer.size();
-	int begin = answer.indexOf(CCCNet::Prefix);
+    if (aData.hostACK) {
+        sendACK();
+    }
 
-	if (begin == -1)
-	{
-		begin = size;
-	}
-
-	if (begin)
-	{
-		aAnswers << answer.mid(0, begin);
-	}
-
-	do
-	{
-		int next = size;
-		int shiftLength = -1;
-
-		if (size >= (begin + 3))
-		{
-			shiftLength = uchar(answer[begin + 2]);
-			next = begin + shiftLength;
-		}
-
-		aAnswers << answer.mid(begin, next - begin);
-
-		int shift = (shiftLength <= 0) ? 1 : shiftLength;
-		begin = answer.indexOf(CCCNet::Prefix, begin + shift);
-	} while (begin != -1);
-
-	return true;
+    return CommandResult::OK;
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetProtocol::sendACK()
-{
-	QByteArray command(1, CCCNet::ACK);
-	pack(command);
-	toLog(LogLevel::Normal, QString("CCNet: >> {%1} - ACK").arg(command.toHex().data()));
+bool CCNetProtocol::readAnswers(TAnswers &aAnswers, int aTimeout) {
+    QByteArray answer;
 
-	return mPort->write(command);
+    int length = 0;
+    int index = 0;
+
+    QTime clockTimer;
+    clockTimer.restart();
+
+    do {
+        QByteArray answerData;
+
+        if (!mPort->read(answerData, 20)) {
+            return false;
+        }
+
+        answer.append(answerData);
+        int begin = index;
+        int lastBegin;
+
+        do {
+            lastBegin = begin;
+            begin = answer.indexOf(CCCNet::Prefix, begin);
+
+            if (begin == -1) {
+                break;
+            } else if (answer.size() > 2) {
+                if (begin < answer.size()) {
+                    index = begin;
+                }
+
+                length = uchar(answer[begin + 2]);
+                begin += length;
+
+                if (begin < answer.size()) {
+                    index = begin;
+                }
+            }
+        } while (lastBegin != begin);
+    } while ((clockTimer.elapsed() < aTimeout) && ((answer.mid(index).size() != length) || !length));
+
+    if (answer.isEmpty()) {
+        toLog(LogLevel::Normal, "CCNet: << {}");
+        return true;
+    }
+
+    int size = answer.size();
+    int begin = answer.indexOf(CCCNet::Prefix);
+
+    if (begin == -1) {
+        begin = size;
+    }
+
+    if (begin) {
+        aAnswers << answer.mid(0, begin);
+    }
+
+    do {
+        int next = size;
+        int shiftLength = -1;
+
+        if (size >= (begin + 3)) {
+            shiftLength = uchar(answer[begin + 2]);
+            next = begin + shiftLength;
+        }
+
+        aAnswers << answer.mid(begin, next - begin);
+
+        int shift = (shiftLength <= 0) ? 1 : shiftLength;
+        begin = answer.indexOf(CCCNet::Prefix, begin + shift);
+    } while (begin != -1);
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------
+bool CCNetProtocol::sendACK() {
+    QByteArray command(1, CCCNet::ACK);
+    pack(command);
+    toLog(LogLevel::Normal, QString("CCNet: >> {%1} - ACK").arg(command.toHex().data()));
+
+    return mPort->write(command);
 }
 
 //--------------------------------------------------------------------------------
