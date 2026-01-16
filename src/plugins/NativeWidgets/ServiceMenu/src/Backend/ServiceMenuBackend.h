@@ -18,19 +18,16 @@
 // Modules
 #include <Common/ILog.h>
 
-namespace SDK
-{
-	namespace PaymentProcessor
-	{
-		class ICore;
-		class INetworkService;
-		class TerminalSettings;
-	} // namespace PaymentProcessor
-	namespace Plugin
-	{
-		class IEnvironment;
-		class IPlugin;
-	} // namespace Plugin
+namespace SDK {
+    namespace PaymentProcessor {
+        class ICore;
+        class INetworkService;
+        class TerminalSettings;
+    } // namespace PaymentProcessor
+    namespace Plugin {
+        class IEnvironment;
+        class IPlugin;
+    } // namespace Plugin
 } // namespace SDK
 
 class IConfigManager;
@@ -40,140 +37,131 @@ class NetworkManager;
 class PaymentManager;
 
 //------------------------------------------------------------------------
-namespace CServiceMenuBackend
-{
-	const QString LogName = "ServiceMenu";
-	const int HeartbeatTimeout = 60 * 1000;
+namespace CServiceMenuBackend {
+    const QString LogName = "ServiceMenu";
+    const int HeartbeatTimeout = 60 * 1000;
 } // namespace CServiceMenuBackend
 
 //------------------------------------------------------------------------
-class ServiceMenuBackend : public QObject
-{
-	Q_OBJECT
+class ServiceMenuBackend : public QObject {
+    Q_OBJECT
 
-public:
-	ServiceMenuBackend(SDK::Plugin::IEnvironment* aFactory, ILog* aLog);
-	~ServiceMenuBackend();
+  public:
+    ServiceMenuBackend(SDK::Plugin::IEnvironment *aFactory, ILog *aLog);
+    ~ServiceMenuBackend();
 
-public:
-	enum AccessRights
-	{
-		Diagnostic,
-		ViewLogs,
+  public:
+    enum AccessRights {
+        Diagnostic,
+        ViewLogs,
 
-		SetupHardware,
-		SetupNetwork,
-		SetupKeys,
+        SetupHardware,
+        SetupNetwork,
+        SetupKeys,
 
-		ViewPaymentSummary,
-		ViewPayments,
-		ProcessPayments,
-		PrintReceipts,
+        ViewPaymentSummary,
+        ViewPayments,
+        ProcessPayments,
+        PrintReceipts,
 
-		Encash,
+        Encash,
 
-		StopApplication,
-		RebootTerminal,
-		LockTerminal
-	};
+        StopApplication,
+        RebootTerminal,
+        LockTerminal
+    };
 
-	typedef QSet<AccessRights> TAccessRights;
+    typedef QSet<AccessRights> TAccessRights;
 
-	enum HandlerType
-	{
-		Info = 0,
-		Hardware,
-		Encashment,
-		Payment,
-		System,
-		Keys
-	};
+    enum HandlerType { Info = 0, Hardware, Encashment, Payment, System, Keys };
 
-public:
-	/// Авторизация и получение прав доступа.
-	virtual bool authorize(const QString& aPassword);
+  public:
+    /// Авторизация и получение прав доступа.
+    virtual bool authorize(const QString &aPassword);
 
-	/// Возвращает текущие права системы.
-	virtual TAccessRights getAccessRights() const;
+    /// Возвращает текущие права системы.
+    virtual TAccessRights getAccessRights() const;
 
-	/// Бэкэнд поддерживает авторизацию?
-	virtual bool isAuthorizationEnabled() const;
+    /// Бэкэнд поддерживает авторизацию?
+    virtual bool isAuthorizationEnabled() const;
 
-	// Изменились ли настройки
-	bool isConfigurationChanged();
+    // Изменились ли настройки
+    bool isConfigurationChanged();
 
-public:
-	HardwareManager* getHardwareManager();
-	KeysManager* getKeysManager();
-	NetworkManager* getNetworkManager();
-	PaymentManager* getPaymentManager();
+  public:
+    HardwareManager *getHardwareManager();
+    KeysManager *getKeysManager();
+    NetworkManager *getNetworkManager();
+    PaymentManager *getPaymentManager();
 
-public:
-	void toLog(const QString& aMessage);
-	void toLog(LogLevel::Enum aLevel, const QString& aMessage);
-	SDK::PaymentProcessor::ICore* getCore() const;
+  public:
+    void toLog(const QString &aMessage);
+    void toLog(LogLevel::Enum aLevel, const QString &aMessage);
+    SDK::PaymentProcessor::ICore *getCore() const;
 
-public:
-	void getTerminalInfo(QVariantMap& aTerminalInfo);
+  public:
+    void getTerminalInfo(QVariantMap &aTerminalInfo);
 
-	void sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType);
-	void sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType, const QVariantMap& aParameters);
+    void sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType);
+    void sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType, const QVariantMap &aParameters);
 
-	/// Сохранить полную конфигурацию
-	bool saveConfiguration();
-	void setConfiguration(const QVariantMap& aParameters);
-	QVariantMap getConfiguration() const;
+    /// Сохранить полную конфигурацию
+    bool saveConfiguration();
+    void setConfiguration(const QVariantMap &aParameters);
+    QVariantMap getConfiguration() const;
 
-	/// Сохранить состояние кассет диспенсера
-	void saveDispenserUnitState();
+    /// Сохранить состояние кассет диспенсера
+    void saveDispenserUnitState();
 
-	/// Вывести в лог и на печать разницу между сохраненным состоянием диспенсера и текущим
-	void printDispenserDiffState();
+    /// Вывести в лог и на печать разницу между сохраненным состоянием диспенсера и текущим
+    void printDispenserDiffState();
 
-	/// Вызываем, если требуется обновить config.xml
-	void needUpdateConfigs();
+    /// Вызываем, если требуется обновить config.xml
+    void needUpdateConfigs();
 
-	bool hasAnyPassword() const;
+    bool hasAnyPassword() const;
 
-	/// С какими правами зашли в сервисное меню
-	QString getUserRole() const { return mUserRole; }
+    /// С какими правами зашли в сервисное меню
+    QString getUserRole() const {
+        return mUserRole;
+    }
 
-	QList<QWidget*> getExternalWidgets(bool aReset = true);
+    QList<QWidget *> getExternalWidgets(bool aReset = true);
 
-	void startHeartbeat();
-	void stopHeartbeat();
+    void startHeartbeat();
+    void stopHeartbeat();
 
-private slots:
-	void sendHearthbeat();
+  private slots:
+    void sendHeartbeat();
 
-private:
-	SDK::PaymentProcessor::ICore* mCore;
-	SDK::Plugin::IEnvironment* mFactory;
-	QSharedPointer<HardwareManager> mHardwareManager;
-	QSharedPointer<KeysManager> mKeysManager;
-	QSharedPointer<NetworkManager> mNetworkManager;
-	QSharedPointer<PaymentManager> mPaymentManager;
+  private:
+    SDK::PaymentProcessor::ICore *mCore;
+    SDK::Plugin::IEnvironment *mFactory;
+    QSharedPointer<HardwareManager> mHardwareManager;
+    QSharedPointer<KeysManager> mKeysManager;
+    QSharedPointer<NetworkManager> mNetworkManager;
+    QSharedPointer<PaymentManager> mPaymentManager;
 
-	QList<IConfigManager*> mConfigList;
+    QList<IConfigManager *> mConfigList;
 
-	QList<SDK::Plugin::IPlugin*> mWidgetPluginList;
+    QList<SDK::Plugin::IPlugin *> mWidgetPluginList;
 
-	ILog* mLog;
-	SDK::PaymentProcessor::TerminalSettings* mTerminalSettings;
+    ILog *mLog;
+    SDK::PaymentProcessor::TerminalSettings *mTerminalSettings;
 
-	TAccessRights mAccessRights;
-	QString mUserRole;
+    TAccessRights mAccessRights;
+    QString mUserRole;
 
-	QVariantMap mParameters;
+    QVariantMap mParameters;
 
-	bool mAutoEncashmentEnabled;
-	bool mAuthorizationEnabled;
+    bool mAutoEncashmentEnabled;
+    bool mAuthorizationEnabled;
 
-	/// Состояние кассет диспенсера на момент входа в СМ
-	SDK::PaymentProcessor::TCashUnitsState mCashUnitsState;
+    /// Состояние кассет диспенсера на момент входа в СМ
+    SDK::PaymentProcessor::TCashUnitsState mCashUnitsState;
 
-	/// Таймер отправки харбитов
-	QTimer mHearthbeatTimer;
+    /// Таймер отправки харбитов
+    QTimer mHeartbeatTimer;
 };
 
 //---------------------------------------------------------------------------

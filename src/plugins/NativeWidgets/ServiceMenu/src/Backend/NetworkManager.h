@@ -15,83 +15,80 @@
 // Project
 #include "IConfigManager.h"
 
-namespace SDK
-{
-	namespace PaymentProcessor
-	{
-		class ICore;
-		class INetworkService;
-		class TerminalSettings;
-		class Directory;
-	} // namespace PaymentProcessor
+namespace SDK {
+    namespace PaymentProcessor {
+        class ICore;
+        class INetworkService;
+        class TerminalSettings;
+        class Directory;
+    } // namespace PaymentProcessor
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class NetworkManager : public QObject, public IConfigManager
-{
-	Q_OBJECT
+class NetworkManager : public QObject, public IConfigManager {
+    Q_OBJECT
 
-public:
-	NetworkManager(SDK::PaymentProcessor::ICore* aCore);
-	~NetworkManager();
+  public:
+    NetworkManager(SDK::PaymentProcessor::ICore *aCore);
+    ~NetworkManager();
 
-public:
-	/// Настройки соединения изменились?
-	virtual bool isConfigurationChanged() const;
+  public:
+    /// Настройки соединения изменились?
+    virtual bool isConfigurationChanged() const;
 
-	/// Делаем текущую конфигурацию начальной
-	virtual void resetConfiguration();
+    /// Делаем текущую конфигурацию начальной
+    virtual void resetConfiguration();
 
-public:
-	/// Устанавливает соединение.
-	bool openConnection(bool aWait = false);
+  public:
+    /// Устанавливает соединение.
+    bool openConnection(bool aWait = false);
 
-	/// Разрывает соединение.
-	bool closeConnection();
+    /// Разрывает соединение.
+    bool closeConnection();
 
-	/// Проверяет установленно ли соединение.
-	bool isConnected(bool aUseCache = false) const;
+    /// Проверяет установленно ли соединение.
+    bool isConnected(bool aUseCache = false) const;
 
-	/// Возвращает параметры активного соединения.
-	SDK::PaymentProcessor::SConnection getConnection() const;
+    /// Возвращает параметры активного соединения.
+    SDK::PaymentProcessor::SConnection getConnection() const;
 
-	/// Сохраняет настройки соединения в памяти
-	void setConnection(const SDK::PaymentProcessor::SConnection& aConnection);
+    /// Сохраняет настройки соединения в памяти
+    void setConnection(const SDK::PaymentProcessor::SConnection &aConnection);
 
-	/// Тестирует соединение: устанавливает, проверяет доступность ресурса aHost, разрывает.
-	bool testConnection(QString& aErrorMessage);
+    /// Тестирует соединение: устанавливает, проверяет доступность ресурса aHost, разрывает.
+    bool testConnection(QString &aErrorMessage);
 
-	/// Поиск всех установленных в системе модемов.
-	QList<QPair<QString, QString>> getModems() const;
+    /// Поиск всех установленных в системе модемов.
+    QList<QPair<QString, QString>> getModems() const;
 
-	/// Поиск всех установленных в системе сетевых интерфейсов.
-	QStringList getInterfaces() const;
+    /// Поиск всех установленных в системе сетевых интерфейсов.
+    QStringList getInterfaces() const;
 
-	/// Список всех соединений в системе.
-	QStringList getRemoteConnections() const;
+    /// Список всех соединений в системе.
+    QStringList getRemoteConnections() const;
 
-	/// Список всех локальных соединений в системе.
-	QStringList getLocalConnections() const;
+    /// Список всех локальных соединений в системе.
+    QStringList getLocalConnections() const;
 
-	/// Получить имена шаблонов соединений
-	QStringList getConnectionTemplates() const;
+    /// Получить имена шаблонов соединений
+    QStringList getConnectionTemplates() const;
 
-	/// Создать dialup соединение
-	bool createDialupConnection(const SDK::PaymentProcessor::SConnection& aConnection, const QString& aNetworkDevice);
+    /// Создать dialup соединение
+    bool createDialupConnection(const SDK::PaymentProcessor::SConnection &aConnection, const QString &aNetworkDevice);
 
-	/// Удалить dialup соединение
-	bool removeDialupConnection(const SDK::PaymentProcessor::SConnection& aConnection);
+    /// Удалить dialup соединение
+    bool removeDialupConnection(const SDK::PaymentProcessor::SConnection &aConnection);
 
-	void getNetworkInfo(QVariantMap& aResult) const;
+    void getNetworkInfo(QVariantMap &aResult) const;
 
-private:
-	SDK::PaymentProcessor::ICore* mCore;
-	SDK::PaymentProcessor::INetworkService* mNetworkService;
-	SDK::PaymentProcessor::TerminalSettings* mTerminalSettings;
-	SDK::PaymentProcessor::Directory* mDirectory;
+  private:
+    SDK::PaymentProcessor::ICore *mCore;
+    SDK::PaymentProcessor::INetworkService *mNetworkService;
+    SDK::PaymentProcessor::TerminalSettings *mTerminalSettings;
+    SDK::PaymentProcessor::Directory *mDirectory;
 
-	SDK::PaymentProcessor::SConnection mInitialConnection;
-	SDK::PaymentProcessor::SConnection mSelectedConnection;
+    SDK::PaymentProcessor::SConnection mInitialConnection;
+    SDK::PaymentProcessor::SConnection mSelectedConnection;
 };
 
 //---------------------------------------------------------------------------

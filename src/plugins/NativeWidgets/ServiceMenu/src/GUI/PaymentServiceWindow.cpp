@@ -396,7 +396,7 @@ QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
             case Status:
                 return mPaymentInfoList[row].getStatus();
             case Processed:
-                return mPaymentInfoList[row].isProccesed();
+                return mPaymentInfoList[row].isProcessed();
             default:
                 return QVariant();
         }
@@ -429,7 +429,7 @@ QVariant PaymentTableModel::data(const QModelIndex &index, int role) const {
             case Status:
                 return mPaymentInfoList[row].getStatusString();
             case Processed:
-                return mPaymentInfoList[row].isProccesed();
+                return mPaymentInfoList[row].isProcessed();
             default:
                 return QVariant();
         }

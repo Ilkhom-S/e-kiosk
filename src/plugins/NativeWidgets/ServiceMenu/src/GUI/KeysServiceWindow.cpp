@@ -6,121 +6,109 @@
 #include <Common/QtHeadersEnd.h>
 
 // Modules
-#include <Common/Application.h>
+#include <Common/BasicApplication.h>
+
+// SDK
 #include <SDK/PaymentProcessor/Core/ICore.h>
 
-// Проект
-#include "MessageBox/MessageBox.h"
+// System
 #include "Backend/KeysManager.h"
 #include "Backend/ServiceMenuBackend.h"
+#include "MessageBox/MessageBox.h"
+
+// Project
 #include "KeysServiceWindow.h"
 
-//------------------------------------------------------------------------
-KeysServiceWindow::KeysServiceWindow(ServiceMenuBackend* aBackend, QWidget* aParent)
-	: QFrame(aParent), ServiceWindowBase(aBackend)
-{
-	setupUi(this);
+KeysServiceWindow::KeysServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
+    : QFrame(aParent), ServiceWindowBase(aBackend) {
+    setupUi(this);
 
-	mWindow = new KeysWindow(aBackend, this);
+    mWindow = new KeysWindow(aBackend, this);
 
-	connect(mWindow, SIGNAL(beginGenerating()), SLOT(onBeginGenerating()));
-	connect(mWindow, SIGNAL(endGenerating()), SLOT(onEndGenerating()));
-	connect(mWindow, SIGNAL(error(QString)), SLOT(onError(QString)));
+    connect(mWindow, SIGNAL(beginGenerating()), SLOT(onBeginGenerating()));
+    connect(mWindow, SIGNAL(endGenerating()), SLOT(onEndGenerating()));
+    connect(mWindow, SIGNAL(error(QString)), SLOT(onError(QString)));
 
-	mWindow->setParent(this);
-	wContainer->setLayout(new QHBoxLayout);
-	wContainer->layout()->setSpacing(0);
-	wContainer->layout()->setMargin(0);
-	wContainer->layout()->addWidget(mWindow);
+    mWindow->setParent(this);
+    wContainer->setLayout(new QHBoxLayout);
+    wContainer->layout()->setSpacing(0);
+    wContainer->layout()->setMargin(0);
+    wContainer->layout()->addWidget(mWindow);
 }
 
 //------------------------------------------------------------------------
-bool KeysServiceWindow::activate()
-{
-	auto tokenStatus = mBackend->getKeysManager()->tokenStatus();
+bool KeysServiceWindow::activate() {
+    auto tokenStatus = mBackend->getKeysManager()->tokenStatus();
 
-	mWindow->initialize(tokenStatus.available, tokenStatus.initialized);
+    mWindow->initialize(tokenStatus.available, tokenStatus.initialized);
 
-	return true;
+    return true;
 }
 
 //------------------------------------------------------------------------
-bool KeysServiceWindow::deactivate()
-{
-	return true;
+bool KeysServiceWindow::deactivate() {
+    return true;
 }
 
 //------------------------------------------------------------------------
-bool KeysServiceWindow::initialize()
-{
-	auto tokenStatus = mBackend->getKeysManager()->tokenStatus();
+bool KeysServiceWindow::initialize() {
+    auto tokenStatus = mBackend->getKeysManager()->tokenStatus();
 
-	mWindow->initialize(tokenStatus.available, tokenStatus.initialized);
+    mWindow->initialize(tokenStatus.available, tokenStatus.initialized);
 
-	return true;
+    return true;
 }
 
 //------------------------------------------------------------------------
-bool KeysServiceWindow::shutdown()
-{
-	return true;
+bool KeysServiceWindow::shutdown() {
+    return true;
 }
 
 //------------------------------------------------------------------------
-void KeysServiceWindow::onBeginGenerating()
-{
-	if (GUI::MessageBox::question(tr("#question_generate_keys_warning")))
-	{
-		GUI::MessageBox::hide();
-		GUI::MessageBox::wait(tr("#creating_keys"));
+void KeysServiceWindow::onBeginGenerating() {
+    if (GUI::MessageBox::question(tr("#question_generate_keys_warning"))) {
+        GUI::MessageBox::hide();
+        GUI::MessageBox::wait(tr("#creating_keys"));
 
-		mWindow->doGenerate();
-	}
+        mWindow->doGenerate();
+    }
 }
 
 //------------------------------------------------------------------------
-void KeysServiceWindow::onEndGenerating()
-{
-	GUI::MessageBox::hide();
+void KeysServiceWindow::onEndGenerating() {
+    GUI::MessageBox::hide();
 
-	QString generateResult;
-	generateResult = "\n" + tr("#sd") + " " + mBackend->getKeysManager()->getSD() + "\n";
-	generateResult += tr("#ap") + " " + mBackend->getKeysManager()->getAP() + "\n";
-	generateResult += tr("#op") + " " + mBackend->getKeysManager()->getOP();
+    QString generateResult;
+    generateResult = "\n" + tr("#sd") + " " + mBackend->getKeysManager()->getSD() + "\n";
+    generateResult += tr("#ap") + " " + mBackend->getKeysManager()->getAP() + "\n";
+    generateResult += tr("#op") + " " + mBackend->getKeysManager()->getOP();
 
-	if (GUI::MessageBox::question(tr("#question_save_and_register_keys") + generateResult))
-	{
-		if (mWindow->save())
-		{
-			mBackend->saveConfiguration();
+    if (GUI::MessageBox::question(tr("#question_save_and_register_keys") + generateResult)) {
+        if (mWindow->save()) {
+            mBackend->saveConfiguration();
 
-			if (mBackend->getKeysManager()->isDefaultKeyOP(mBackend->getKeysManager()->getOP()))
-			{
-				if (MessageBox::question(tr("#question_need_new_config")))
-				{
-					mBackend->needUpdateConfigs();
-				}
-			}
+            if (mBackend->getKeysManager()->isDefaultKeyOP(mBackend->getKeysManager()->getOP())) {
+                if (MessageBox::question(tr("#question_need_new_config"))) {
+                    mBackend->needUpdateConfigs();
+                }
+            }
 
-			QVariantMap params;
-			params["signal"] = "close";
-			mBackend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, params);
-			mBackend->sendEvent(SDK::PaymentProcessor::EEventType::CloseApplication);
-		}
-	}
-	else
-	{
-		auto tokenStatus = mBackend->getKeysManager()->tokenStatus();
+            QVariantMap params;
+            params["signal"] = "close";
+            mBackend->sendEvent(SDK::PaymentProcessor::EEventType::UpdateScenario, params);
+            mBackend->sendEvent(SDK::PaymentProcessor::EEventType::CloseApplication);
+        }
+    } else {
+        auto tokenStatus = mBackend->getKeysManager()->tokenStatus();
 
-		mWindow->initialize(tokenStatus.available, tokenStatus.initialized);
-	}
+        mWindow->initialize(tokenStatus.available, tokenStatus.initialized);
+    }
 }
 
 //------------------------------------------------------------------------
-void KeysServiceWindow::onError(QString aError)
-{
-	GUI::MessageBox::hide();
-	GUI::MessageBox::critical(aError);
+void KeysServiceWindow::onError(QString aError) {
+    GUI::MessageBox::hide();
+    GUI::MessageBox::critical(aError);
 }
 
 //------------------------------------------------------------------------

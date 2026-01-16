@@ -15,7 +15,7 @@
 
 // System
 #include "Backend/ServiceMenuBackend.h"
-#include "MessageBox/MessageBox.h"
+#include "GUI/MessageBox/MessageBox.h"
 
 // Project
 #include "FirstSetup.h"

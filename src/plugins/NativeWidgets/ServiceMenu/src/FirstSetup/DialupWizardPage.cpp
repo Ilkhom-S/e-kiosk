@@ -19,8 +19,8 @@
 #include "Backend/NetworkManager.h"
 #include "Backend/ServiceMenuBackend.h"
 #include "GUI/DialupConnectionWindow.h"
+#include "GUI/MessageBox/MessageBox.h"
 #include "GUI/ServiceTags.h"
-#include "MessageBox/MessageBox.h"
 
 // Project
 #include "DialupWizardPage.h"

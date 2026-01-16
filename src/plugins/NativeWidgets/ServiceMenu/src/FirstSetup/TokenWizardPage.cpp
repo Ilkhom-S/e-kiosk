@@ -1,102 +1,93 @@
 /* @file Окно настройки RuToken. */
 
-// Project
-#include "MessageBox/MessageBox.h"
-#include "Backend/ServiceMenuBackend.h"
+// System
 #include "Backend/KeysManager.h"
+#include "Backend/ServiceMenuBackend.h"
+#include "GUI/MessageBox/MessageBox.h"
 #include "GUI/TokenWindow.h"
+
+// Project
 #include "TokenWizardPage.h"
 
-//------------------------------------------------------------------------
-TokenWizardPage::TokenWizardPage(ServiceMenuBackend* aBackend, QWidget* aParent)
-	: WizardPageBase(aBackend, aParent), mUIUpdateTimer(0)
-{
-	mTokenWindow = new TokenWindow(aBackend, this);
+TokenWizardPage::TokenWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
+    : WizardPageBase(aBackend, aParent), mUIUpdateTimer(0) {
+    mTokenWindow = new TokenWindow(aBackend, this);
 
-	connect(mTokenWindow, SIGNAL(beginFormat()), SLOT(onBeginFormat()));
-	connect(mTokenWindow, SIGNAL(endFormat()), SLOT(onEndFormat()));
-	connect(mTokenWindow, SIGNAL(error(QString)), SLOT(onError(QString)));
+    connect(mTokenWindow, SIGNAL(beginFormat()), SLOT(onBeginFormat()));
+    connect(mTokenWindow, SIGNAL(endFormat()), SLOT(onEndFormat()));
+    connect(mTokenWindow, SIGNAL(error(QString)), SLOT(onError(QString)));
 
-	setLayout(new QHBoxLayout(this));
-	layout()->setSpacing(0);
-	layout()->setMargin(0);
-	layout()->addWidget(mTokenWindow);
+    setLayout(new QHBoxLayout(this));
+    layout()->setSpacing(0);
+    layout()->setMargin(0);
+    layout()->addWidget(mTokenWindow);
 }
 
 //------------------------------------------------------------------------
-bool TokenWizardPage::initialize()
-{
-	auto status = mBackend->getKeysManager()->tokenStatus();
+bool TokenWizardPage::initialize() {
+    auto status = mBackend->getKeysManager()->tokenStatus();
 
-	mTokenWindow->initialize(status);
-	emit pageEvent("#can_proceed", status.isOK());
+    mTokenWindow->initialize(status);
+    emit pageEvent("#can_proceed", status.isOK());
 
-	if (!status.isOK())
-	{
-		mUIUpdateTimer = startTimer(1000);
-	}
+    if (!status.isOK()) {
+        mUIUpdateTimer = startTimer(1000);
+    }
 
-	return true;
+    return true;
 }
 
 //------------------------------------------------------------------------
-bool TokenWizardPage::shutdown()
-{
-	killTimer(mUIUpdateTimer);
-	return true;
+bool TokenWizardPage::shutdown() {
+    killTimer(mUIUpdateTimer);
+    return true;
 }
 
 //------------------------------------------------------------------------
-bool TokenWizardPage::activate()
-{
-	mTokenWindow->initialize(mBackend->getKeysManager()->tokenStatus());
+bool TokenWizardPage::activate() {
+    mTokenWindow->initialize(mBackend->getKeysManager()->tokenStatus());
 
-	return true;
+    return true;
 }
 
 //------------------------------------------------------------------------
-bool TokenWizardPage::deactivate()
-{
-	killTimer(mUIUpdateTimer);
-	return true;
+bool TokenWizardPage::deactivate() {
+    killTimer(mUIUpdateTimer);
+    return true;
 }
 
 //----------------------------------------------------------------------------
-void TokenWizardPage::onBeginFormat()
-{
-	GUI::MessageBox::hide();
-	GUI::MessageBox::wait(tr("#format_token"));
+void TokenWizardPage::onBeginFormat() {
+    GUI::MessageBox::hide();
+    GUI::MessageBox::wait(tr("#format_token"));
 
-	killTimer(mUIUpdateTimer);
+    killTimer(mUIUpdateTimer);
 
-	mTokenWindow->doFormat();
+    mTokenWindow->doFormat();
 }
 
 //----------------------------------------------------------------------------
-void TokenWizardPage::onEndFormat()
-{
-	GUI::MessageBox::hide();
+void TokenWizardPage::onEndFormat() {
+    GUI::MessageBox::hide();
 
-	mUIUpdateTimer = startTimer(1000);
+    mUIUpdateTimer = startTimer(1000);
 }
 
 //----------------------------------------------------------------------------
-void TokenWizardPage::onError(QString aError)
-{
-	GUI::MessageBox::hide();
-	GUI::MessageBox::critical(aError);
+void TokenWizardPage::onError(QString aError) {
+    GUI::MessageBox::hide();
+    GUI::MessageBox::critical(aError);
 
-	mUIUpdateTimer = startTimer(1000);
+    mUIUpdateTimer = startTimer(1000);
 }
 
 //------------------------------------------------------------------------
-void TokenWizardPage::timerEvent(QTimerEvent*)
-{
-	auto status = mBackend->getKeysManager()->tokenStatus();
+void TokenWizardPage::timerEvent(QTimerEvent *) {
+    auto status = mBackend->getKeysManager()->tokenStatus();
 
-	mTokenWindow->initialize(status);
+    mTokenWindow->initialize(status);
 
-	emit pageEvent("#can_proceed", status.isOK());
+    emit pageEvent("#can_proceed", status.isOK());
 }
 
 //------------------------------------------------------------------------

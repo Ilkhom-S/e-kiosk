@@ -27,6 +27,9 @@ ek_add_application(EKiosk
 # Link common include INTERFACE target so `include/` headers are available
 target_link_libraries(EKiosk PUBLIC ek_common)
 
+# Link Boost includes for SDK headers that use Boost
+target_link_libraries(EKiosk PUBLIC ek_boost)
+
 # Option to enable test mode (disables kiosk restrictions, e.g. killing explorer.exe)
 option(EKIOSK_TEST_MODE "Enable test mode (no kiosk restrictions)" ON)
 if(EKIOSK_TEST_MODE)
