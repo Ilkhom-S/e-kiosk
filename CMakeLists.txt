@@ -9,6 +9,15 @@ endif()
 
 project(EKioskRoot VERSION 1.0.0 LANGUAGES CXX C)
 
+# Allow overriding the public include directory via environment variable (compat: TC_INCLUDES_DIR)
+# Fallback to ${CMAKE_SOURCE_DIR}/include. This makes includes resolvable in alternate layouts.
+if(DEFINED ENV{TC_INCLUDES_DIR})
+    set(EK_INCLUDES_DIR $ENV{TC_INCLUDES_DIR} CACHE PATH "Path to public include dir (overridden by TC_INCLUDES_DIR env)")
+elseif(NOT DEFINED EK_INCLUDES_DIR)
+    set(EK_INCLUDES_DIR ${CMAKE_SOURCE_DIR}/include CACHE PATH "Path to public include dir")
+endif()
+message(STATUS "Using EK includes dir: ${EK_INCLUDES_DIR}")
+
 # Global Qt detection for all modules/apps/tests
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 
@@ -38,8 +47,9 @@ endif()
 
 # Create an INTERFACE target `ek_common` that exports the common include dir
 add_library(ek_common INTERFACE)
+# Use the overridable EK_INCLUDES_DIR so downstream builds can point to a different include tree
 target_include_directories(ek_common INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${EK_INCLUDES_DIR}>
     $<INSTALL_INTERFACE:include>
 )
 
