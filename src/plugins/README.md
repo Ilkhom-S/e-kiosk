@@ -60,6 +60,7 @@ file(GLOB SOURCES src/*.cpp src/*.h)
 
 # For all plugin types
 ek_add_plugin(my_plugin
+    FOLDER "plugins/my_plugin"
     SOURCES ${SOURCES}
     QT_MODULES Core SerialPort
     DEPENDS HardwareCommon DriversSDK

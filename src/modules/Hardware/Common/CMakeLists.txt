@@ -47,6 +47,7 @@ set(ALL_SOURCES
 )
 
 ek_add_library(HardwareCommon
+    FOLDER "modules/Hardware/Common"
     SOURCES ${ALL_SOURCES}
     QT_MODULES Core
     INCLUDE_DIRS

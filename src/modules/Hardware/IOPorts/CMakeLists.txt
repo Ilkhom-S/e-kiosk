@@ -36,6 +36,7 @@ elseif(UNIX AND NOT APPLE)
 endif()
 
 ek_add_library(HardwareIOPorts
+    FOLDER "modules/Hardware/IOPorts"
     SOURCES ${IOPORTS_SOURCES}
     QT_MODULES Core Network
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}

@@ -90,6 +90,7 @@ QByteArray hash(const QByteArray& data, const QString& algorithm);
 ```cmake
 find_package(libipriv REQUIRED)
 ek_add_library(CryptEngine
+    FOLDER "modules/CryptEngine"
     SOURCES ${SOURCES}
     DEPENDS libipriv boost
 )
