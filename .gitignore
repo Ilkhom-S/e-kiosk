@@ -150,6 +150,13 @@ logs/
 # Temporary files
 tmp/
 temp/
+Testing/
+
+# Test artifacts
+test-results/
+test_output/
+*.test
+*.xml
 
 # CMake user presets
 CMakeUserPresets.json
