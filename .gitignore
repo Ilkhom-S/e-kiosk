@@ -157,6 +157,11 @@ test-results/
 test_output/
 *.test
 *.xml
+test-*.xml
+qtest-*.xml
+
+# Qt Test specific
+*.qtest
 
 # CMake user presets
 CMakeUserPresets.json
