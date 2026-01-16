@@ -23,7 +23,6 @@
 #include <SDK/PaymentProcessor/Payment/Step.h>
 
 // ThirdParty
-#include <boost/bind.hpp>
 #include <boost/bind/bind.hpp>
 
 // System

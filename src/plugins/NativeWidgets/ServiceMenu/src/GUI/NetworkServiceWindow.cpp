@@ -15,7 +15,6 @@
 #include <SDK/PaymentProcessor/Core/ICore.h>
 
 // ThirdParty
-#include <boost/bind.hpp>
 #include <boost/bind/bind.hpp>
 #include <boost/ref.hpp>
 
