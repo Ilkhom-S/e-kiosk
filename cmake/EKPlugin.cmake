@@ -2,7 +2,7 @@
 
 function(ek_add_plugin TARGET_NAME)
     set(options "")
-    set(oneValueArgs INSTALL_DIR)
+    set(oneValueArgs INSTALL_DIR FOLDER)
     set(multiValueArgs SOURCES QT_MODULES DEPENDS INCLUDE_DIRS COMPILE_DEFINITIONS LIBRARIES)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -19,8 +19,15 @@ function(ek_add_plugin TARGET_NAME)
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${ARG_INSTALL_DIR}
         OUTPUT_NAME ${TARGET_NAME}
         DEBUG_POSTFIX "d"
-        FOLDER "plugins"
     )
+    # Compute plugin folder (default plugins/<directory-name>)
+    if(ARG_FOLDER)
+        set(_ek_folder "${ARG_FOLDER}")
+    else()
+        get_filename_component(_ek_module_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+        set(_ek_folder "plugins/${_ek_module_name}")
+    endif()
+    set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "${_ek_folder}")
     if(ARG_QT_MODULES)
         foreach(qt_module ${ARG_QT_MODULES})
             target_link_libraries(${TARGET_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::${qt_module})

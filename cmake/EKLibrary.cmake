@@ -2,7 +2,7 @@
 
 function(ek_add_library TARGET_NAME)
     set(options "")
-    set(oneValueArgs "")
+    set(oneValueArgs "FOLDER")
     set(multiValueArgs SOURCES QT_MODULES DEPENDS INCLUDE_DIRS COMPILE_DEFINITIONS LIBRARIES)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -22,8 +22,14 @@ function(ek_add_library TARGET_NAME)
     list(APPEND _props OUTPUT_NAME ${TARGET_NAME} DEBUG_POSTFIX "d")
     set_target_properties(${TARGET_NAME} PROPERTIES ${_props})
 
-    # Group module libraries under the 'modules' folder in IDE project views
-    set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "modules")
+    # Compute folder for module libraries (defaults to modules/<directory-name>)
+    if(ARG_FOLDER)
+        set(_ek_folder "${ARG_FOLDER}")
+    else()
+        get_filename_component(_ek_module_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+        set(_ek_folder "modules/${_ek_module_name}")
+    endif()
+    set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "${_ek_folder}")
 
     if(ARG_QT_MODULES)
         foreach(qt_module ${ARG_QT_MODULES})

@@ -2,7 +2,7 @@
 
 function(ek_add_application TARGET_NAME)
     set(options CONSOLE)
-    set(oneValueArgs "")
+    set(oneValueArgs FOLDER)
     set(multiValueArgs SOURCES QT_MODULES DEPENDS INCLUDE_DIRS COMPILE_DEFINITIONS LIBRARIES RESOURCES)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -20,8 +20,15 @@ function(ek_add_application TARGET_NAME)
             AUTOMOC ON
             AUTOUIC ON
             AUTORCC ON
-            FOLDER "apps"
         )
+        # Compute application folder (default apps/<directory-name>)
+        if(ARG_FOLDER)
+            set(_ek_folder "${ARG_FOLDER}")
+        else()
+            get_filename_component(_ek_module_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+            set(_ek_folder "apps/${_ek_module_name}")
+        endif()
+        set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "${_ek_folder}")
     endif()
     if(DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY AND NOT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "")
         set(_ek_runtime_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

@@ -8,7 +8,7 @@ endfunction()
 
 function(ek_add_test TEST_NAME)
     set(options GUI NO_QT)
-    set(oneValueArgs TIMEOUT WORKING_DIRECTORY)
+    set(oneValueArgs TIMEOUT WORKING_DIRECTORY FOLDER)
     set(multiValueArgs SOURCES QT_MODULES DEPENDS LIBRARIES INCLUDE_DIRS LABELS)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -19,8 +19,15 @@ function(ek_add_test TEST_NAME)
         AUTOMOC ON
         AUTOUIC ON
         AUTORCC ON
-        FOLDER "tests"
     )
+    # Compute test folder (default tests/<directory-name>)
+    if(ARG_FOLDER)
+        set(_ek_folder "${ARG_FOLDER}")
+    else()
+        get_filename_component(_ek_module_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+        set(_ek_folder "tests/${_ek_module_name}")
+    endif()
+    set_target_properties(${TEST_NAME} PROPERTIES FOLDER "${_ek_folder}")
     if(NOT ARG_NO_QT)
         find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
         target_link_libraries(${TEST_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Test)
