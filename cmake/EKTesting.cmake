@@ -19,6 +19,7 @@ function(ek_add_test TEST_NAME)
         AUTOMOC ON
         AUTOUIC ON
         AUTORCC ON
+        FOLDER "tests"
     )
     if(NOT ARG_NO_QT)
         find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)

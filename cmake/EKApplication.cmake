@@ -20,6 +20,7 @@ function(ek_add_application TARGET_NAME)
             AUTOMOC ON
             AUTOUIC ON
             AUTORCC ON
+            FOLDER "apps"
         )
     endif()
     if(DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY AND NOT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "")

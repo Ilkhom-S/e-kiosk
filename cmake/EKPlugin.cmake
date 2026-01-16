@@ -19,6 +19,7 @@ function(ek_add_plugin TARGET_NAME)
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${ARG_INSTALL_DIR}
         OUTPUT_NAME ${TARGET_NAME}
         DEBUG_POSTFIX "d"
+        FOLDER "plugins"
     )
     if(ARG_QT_MODULES)
         foreach(qt_module ${ARG_QT_MODULES})

@@ -22,6 +22,9 @@ function(ek_add_library TARGET_NAME)
     list(APPEND _props OUTPUT_NAME ${TARGET_NAME} DEBUG_POSTFIX "d")
     set_target_properties(${TARGET_NAME} PROPERTIES ${_props})
 
+    # Group module libraries under the 'modules' folder in IDE project views
+    set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "modules")
+
     if(ARG_QT_MODULES)
         foreach(qt_module ${ARG_QT_MODULES})
             target_link_libraries(${TARGET_NAME} PUBLIC Qt${QT_VERSION_MAJOR}::${qt_module})
