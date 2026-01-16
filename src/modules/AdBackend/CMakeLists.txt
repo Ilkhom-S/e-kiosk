@@ -3,6 +3,7 @@
 file(GLOB ADBACKEND_SOURCES
     src/*.cpp
     src/*.h
+    src/*.qrc
 )
 
 # Ensure Qt components are found for this module
