@@ -73,6 +73,15 @@ All new targets (applications, libraries, plugins, tests) **must** use the EKios
 - Use `ek_add_translations()` for Qt translations
 - Use `ek_enable_static_analysis()` for static analysis (clang-tidy, cppcheck)
 
+**Translations & Qt LinguistTools** ⚠️
+
+- Building translations requires Qt Linguist Tools (`lrelease`/`lupdate`). During configure, CMake runs `find_package(Qt${QT_VERSION_MAJOR} COMPONENTS LinguistTools)`; if not found it falls back to searching for a `lrelease` executable on PATH.
+- If you see: `Qt LinguistTools not found. Translation support disabled.` — ensure either:
+  - your `CMAKE_PREFIX_PATH` points to a Qt installation that includes LinguistTools (e.g. `-DCMAKE_PREFIX_PATH=C:/Qt/5.15.2/msvc2019_64`), or
+  - `lrelease` is on your PATH (Windows: add `C:/Qt/.../bin`), or
+  - install the Linguist Tools via the Qt Maintenance Tool.
+- You can explicitly disable translation compilation with `-DEK_ENABLE_TRANSLATIONS=OFF`, but translations are required in the repository for correct localization and should be enabled on build machines.
+
 See [cmake/README.md](../cmake/README.md) for detailed usage, rationale, and copy-paste examples for each helper.
 
 **Do not manually define targets or install rules—always use the helpers.**

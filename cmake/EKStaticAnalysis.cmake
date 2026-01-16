@@ -20,8 +20,25 @@ function(ek_enable_static_analysis target)
     if(EKSA_CPPCHECK)
         find_program(CPPCHECK_EXECUTABLE NAMES cppcheck)
         if(CPPCHECK_EXECUTABLE)
+            set(CPPCHECK_ARGS
+                ${CPPCHECK_EXECUTABLE}
+                --enable=all
+                --inconclusive
+                --force
+                --inline-suppr
+                --std=c++14
+            )
+
+            # Exclude third-party vendored code and vcpkg-installed artifacts from scans
+            if(EXISTS "${CMAKE_SOURCE_DIR}/thirdparty")
+                list(APPEND CPPCHECK_ARGS --exclude "${CMAKE_SOURCE_DIR}/thirdparty")
+            endif()
+            if(EXISTS "${CMAKE_SOURCE_DIR}/vcpkg_installed")
+                list(APPEND CPPCHECK_ARGS --exclude "${CMAKE_SOURCE_DIR}/vcpkg_installed")
+            endif()
+
             set_target_properties(${target} PROPERTIES
-                CXX_CPPCHECK "${CPPCHECK_EXECUTABLE};--enable=all;--inconclusive;--force;--inline-suppr;--std=c++14"
+                CXX_CPPCHECK "${CPPCHECK_ARGS}"
             )
         else()
             message(WARNING "cppcheck not found: static analysis will be skipped for ${target}")

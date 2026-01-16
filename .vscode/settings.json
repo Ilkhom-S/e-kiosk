@@ -57,6 +57,7 @@
     "EMONEY",
     "ENCASHMENT",
     "Encashments",
+    "endforeach",
     "endfunction",
     "enfr",
     "ERTS",
@@ -245,5 +246,28 @@
   "cmake.buildArgs": [],
   "cmake.ctestArgs": [],
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+
+  // Exclude vendored and vcpkg folders from file search and editor scanning to reduce IDE diagnostics
+  "files.exclude": {
+    "**/thirdparty": true,
+    "**/vcpkg_installed": true
+  },
+  "search.exclude": {
+    "**/thirdparty": true,
+    "**/vcpkg_installed": true
+  },
+
+  // If you use a cppcheck extension that supports these settings, they will
+  // exclude vendored folders from on-the-fly checks and save-time runs.
+  "cppcheck.excludes": [
+    "${workspaceFolder}/thirdparty",
+    "${workspaceFolder}/vcpkg_installed"
+  ],
+  "cppcheck.additionalArgs": [
+    "--suppress=missingIncludeSystem",
+    "--exclude=${workspaceFolder}/thirdparty",
+    "--exclude=${workspaceFolder}/vcpkg_installed"
+  ],
+
   "markdown.validate.fileLinks.relativePathBase": "workspaceFolder"
 }
