@@ -1,4 +1,33 @@
 {
+  "buildPresets": [
+    {
+      "configuration": "Debug",
+      "configurePreset": "win-msvc-qt5-x64",
+      "description": "Builds the Debug configuration using the Visual Studio generator",
+      "displayName": "Build Debug (Win: Qt5 x64 MSVC)",
+      "name": "build-msvc-qt5-x64-debug"
+    },
+    {
+      "configuration": "Release",
+      "configurePreset": "win-msvc-qt5-x64",
+      "description": "Builds the Release configuration using the Visual Studio generator",
+      "displayName": "Build Release (Win: Qt5 x64 MSVC)",
+      "name": "build-msvc-qt5-x64-release"
+    },
+    {
+      "configuration": "Debug",
+      "configurePreset": "win-msvc-qt6-x64",
+      "description": "Builds the Debug configuration using the Visual Studio generator",
+      "displayName": "Build Debug (Win: Qt6 x64 MSVC)",
+      "name": "build-msvc-qt6-x64-debug"
+    },
+    {
+      "configurePreset": "win-qt5-x64",
+      "description": "Build using Ninja generator (single-config). Ensure configure preset uses Debug if needed.",
+      "displayName": "Build (Win: Qt5 x64 Ninja)",
+      "name": "build-ninja-qt5-x64"
+    }
+  ],
   "configurePresets": [
     {
       "binaryDir": "${sourceDir}/build/${presetName}",
@@ -171,35 +200,6 @@
       "displayName": "Linux: Qt6 x86",
       "inherits": ["base"],
       "name": "linux-x86"
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "build-msvc-qt5-x64-debug",
-      "displayName": "Build Debug (Win: Qt5 x64 MSVC)",
-      "configurePreset": "win-msvc-qt5-x64",
-      "configuration": "Debug",
-      "description": "Builds the Debug configuration using the Visual Studio generator"
-    },
-    {
-      "name": "build-msvc-qt5-x64-release",
-      "displayName": "Build Release (Win: Qt5 x64 MSVC)",
-      "configurePreset": "win-msvc-qt5-x64",
-      "configuration": "Release",
-      "description": "Builds the Release configuration using the Visual Studio generator"
-    },
-    {
-      "name": "build-msvc-qt6-x64-debug",
-      "displayName": "Build Debug (Win: Qt6 x64 MSVC)",
-      "configurePreset": "win-msvc-qt6-x64",
-      "configuration": "Debug",
-      "description": "Builds the Debug configuration using the Visual Studio generator"
-    },
-    {
-      "name": "build-ninja-qt5-x64",
-      "displayName": "Build (Win: Qt5 x64 Ninja)",
-      "configurePreset": "win-qt5-x64",
-      "description": "Build using Ninja generator (single-config). Ensure configure preset uses Debug if needed."
     }
   ],
   "version": 3
