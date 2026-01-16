@@ -49,7 +49,7 @@ class ILog {
     /// Устанавливает направление вывода.
     virtual void setDestination(const QString &aDestination) = 0;
 
-    /// Устанавливает минимальный уровень, ниже которого логгирование
+    /// Устанавливает минимальный уровень, ниже которого логирование
     /// игнорируется.
     virtual void setLevel(LogLevel::Enum aLevel) = 0;
 

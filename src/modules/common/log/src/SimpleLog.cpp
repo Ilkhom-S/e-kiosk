@@ -233,7 +233,7 @@ void SimpleLog::safeWrite(LogLevel::Enum aLevel, const QString &aMessage) {
 
     QString formattedMessage = QTime::currentTime().toString("hh:mm:ss.zzz ");
 
-    formattedMessage += QString("T:%1 ").arg((quint32)QThread::currentThreadId(), 8, 16, QLatin1Char('0'));
+    formattedMessage += QString("T:%1 ").arg((quint64)QThread::currentThreadId(), 16, 16, QLatin1Char('0'));
 
     switch (aLevel) {
         case LogLevel::Normal:

@@ -80,8 +80,8 @@ typedef QSharedPointer<DestinationFile> DestinationFilePtr;
 //---------------------------------------------------------------------------
 class SimpleLog : public ILog {
   public:
-    SimpleLog(const QString &aName = "Default", LogType::Enum aType = LogType::File,
-              LogLevel::Enum aMaxLogLevel = LogLevel::Normal);
+    explicit SimpleLog(const QString &aName = "Default", LogType::Enum aType = LogType::File,
+                       LogLevel::Enum aMaxLogLevel = LogLevel::Normal);
     virtual ~SimpleLog();
 
     // Методы интерфейса ILog

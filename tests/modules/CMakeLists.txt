@@ -6,6 +6,7 @@
 # add_subdirectory(db)
 
 message(STATUS "Configuring module tests")
+add_subdirectory(Common)
 add_subdirectory(kiosk)
 add_subdirectory(Connection)
 add_subdirectory(NetworkTaskManager)
