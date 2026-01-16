@@ -28,6 +28,21 @@ The CMake configuration will detect your platform and select the correct Qt vers
    cmake --preset <your-preset>
    ```
 
+   Note: You can override the project's public include directory (useful when using a separate header tree or during porting) by setting the `EK_INCLUDES_DIR` environment variable or passing `-DEK_INCLUDES_DIR` to CMake. Examples:
+
+   - PowerShell (temporary for the session):
+
+     ```powershell
+     $env:EK_INCLUDES_DIR = 'C:\path\to\includes'
+     cmake --preset <your-preset>
+     ```
+
+   - CMake configure-time override:
+
+     ```sh
+     cmake -DEK_INCLUDES_DIR=/path/to/includes --preset <your-preset>
+     ```
+
 3. Build the project:
 
    ```sh
