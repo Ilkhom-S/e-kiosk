@@ -12,7 +12,7 @@ file(GLOB DRIVERSSDK_HEADERS
 )
 
 ek_add_library(DriversSDK
-    FOLDER "modules/SDK/Drivers"
+    FOLDER "modules/SDK"
     SOURCES ${DRIVERSSDK_SOURCES} ${DRIVERSSDK_HEADERS}
     QT_MODULES Core Widgets
     DEPENDS ek_common

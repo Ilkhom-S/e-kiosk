@@ -11,7 +11,7 @@ file(GLOB KEYSUTILS_SOURCES
 # Ensure Qt components are found for this module
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
-ek_add_library(KeysUtils FOLDER "modules/KeysUtils" SOURCES ${KEYSUTILS_SOURCES}
+ek_add_library(KeysUtils FOLDER "modules" SOURCES ${KEYSUTILS_SOURCES}
     QT_MODULES Core
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src
 )

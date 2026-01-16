@@ -8,7 +8,7 @@ file(GLOB FR_SOURCES
 )
 
 ek_add_plugin(fiscal_registers
-    FOLDER "plugins/Drivers/FR"
+    FOLDER "plugins/Drivers"
     SOURCES ${FR_SOURCES}
     QT_MODULES Core
     DEPENDS

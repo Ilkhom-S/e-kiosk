@@ -12,7 +12,7 @@ endif()
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
 ek_add_library(SysUtils
-    FOLDER "modules/SysUtils"
+    FOLDER "modules"
     SOURCES ${SYSUTILS_SOURCES}
     QT_MODULES Core
     LIBRARIES Advapi32 DelayImpHlp

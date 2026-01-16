@@ -12,7 +12,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Concurrent REQUIRED)
 find_package(Boost REQUIRED)
 
 ek_add_library(ScenarioEngine
-    FOLDER "modules/ScenarioEngine"
+    FOLDER "modules"
     SOURCES ${SCENARIOENGINE_SOURCES}
     QT_MODULES Core Concurrent
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS}

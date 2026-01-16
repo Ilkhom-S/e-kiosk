@@ -13,7 +13,7 @@ set(PRINTERS_HEADERS
 )
 
 ek_add_library(HardwarePrinters
-    FOLDER "modules/Hardware/Printers"
+    FOLDER "modules/Hardware"
     SOURCES ${PRINTERS_SOURCES} ${PRINTERS_HEADERS}
     QT_MODULES Core
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}

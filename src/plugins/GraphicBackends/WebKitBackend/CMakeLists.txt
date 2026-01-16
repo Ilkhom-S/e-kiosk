@@ -30,7 +30,7 @@ else()
 endif()
 
 ek_add_plugin(webkit_backend
-    FOLDER "plugins/GraphicBackends/WebKitBackend"
+    FOLDER "plugins/GraphicBackends"
     SOURCES ${WEBKITBACKEND_SOURCES}
     QT_MODULES ${WEBKIT_QT_MODULES}
     DEPENDS PluginsSDK

@@ -22,7 +22,7 @@ set(CARDREADERS_HEADERS
     ${CMAKE_SOURCE_DIR}/include/Hardware/CardReaders/CardReaderStatusCodes.h
 )
 ek_add_library(Cardreaders
-    FOLDER "modules/Hardware/Cardreaders"
+    FOLDER "modules/Hardware"
     SOURCES ${CARDREADERS_SOURCES} ${CARDREADERS_HEADERS}
     QT_MODULES Core
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
@@ -48,7 +48,7 @@ set(CASHACCEPTORS_HEADERS
     ${CMAKE_SOURCE_DIR}/include/Hardware/CashAcceptors/CurrencyDescriptions.h
 )
 ek_add_library(CashAcceptors
-    FOLDER "modules/Hardware/CashAcceptors"
+    FOLDER "modules/Hardware"
     SOURCES ${CASHACCEPTORS_SOURCES} ${CASHACCEPTORS_HEADERS}
     QT_MODULES Core
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
@@ -65,7 +65,7 @@ set(CASHDISPENSERS_HEADERS
     ${CMAKE_SOURCE_DIR}/include/Hardware/Dispensers/DispenserStatusCodes.h
 )
 ek_add_library(CashDispensers
-    FOLDER "modules/Hardware/CashDispensers"
+    FOLDER "modules/Hardware"
     SOURCES ${CASHDISPENSERS_SOURCES} ${CASHDISPENSERS_HEADERS}
     QT_MODULES Core
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
@@ -78,7 +78,7 @@ file(GLOB_RECURSE COINACCEPTORS_SOURCES
     CoinAcceptors/src/*.h
 )
 ek_add_library(CoinAcceptors
-    FOLDER "modules/Hardware/CoinAcceptors"
+    FOLDER "modules/Hardware"
     SOURCES ${COINACCEPTORS_SOURCES}
     QT_MODULES Core
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
@@ -108,7 +108,7 @@ if(EKIOSK_ENABLE_FR)
         ${CMAKE_SOURCE_DIR}/include/Hardware/FR/FRStatusCodes.h
     )
     ek_add_library(HardwareFR
-        FOLDER "modules/Hardware/HardwareFR"
+        FOLDER "modules/Hardware"
         SOURCES ${HARDWAREFR_SOURCES} ${HARDWAREFR_HEADERS}
         QT_MODULES Core
         INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
@@ -128,7 +128,7 @@ if(EKIOSK_ENABLE_FR)
         ${CMAKE_SOURCE_DIR}/include/Hardware/Modems/ModemStatusCodes.h
     )
     ek_add_library(HardwareModems
-        FOLDER "modules/Hardware/HardwareModems"
+        FOLDER "modules/Hardware"
         SOURCES ${HARDWAREMODEMS_SOURCES} ${HARDWAREMODEMS_HEADERS}
         QT_MODULES Core
         INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
@@ -164,7 +164,7 @@ if(EKIOSK_ENABLE_FR)
         )
     endif()
     ek_add_library(HardwareProtocols
-        FOLDER "modules/Hardware/HardwareProtocols"
+        FOLDER "modules/Hardware"
         SOURCES ${HARDWAREPROTOCOLS_SOURCES} ${HARDWAREPROTOCOLS_HEADERS}
         QT_MODULES Core
         INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
@@ -182,7 +182,7 @@ if(EKIOSK_ENABLE_FR)
         ${CMAKE_SOURCE_DIR}/include/Hardware/HID/HIDBase.h
     )
     ek_add_library(HardwareScanners
-        FOLDER "modules/Hardware/HardwareScanners"
+        FOLDER "modules/Hardware"
         SOURCES ${HARDWARESCANNERS_SOURCES} ${HARDWARESCANNERS_HEADERS}
         QT_MODULES Core
         INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}

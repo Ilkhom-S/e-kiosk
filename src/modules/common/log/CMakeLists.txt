@@ -12,7 +12,7 @@ file(GLOB LOG_SOURCES
 )
 
 ek_add_library(Log
-    FOLDER "modules/Common/Log"
+    FOLDER "modules/Common"
     SOURCES ${LOG_SOURCES}
     DEPENDS ek_common SysUtils
 )

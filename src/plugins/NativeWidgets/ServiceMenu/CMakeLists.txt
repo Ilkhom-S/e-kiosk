@@ -17,7 +17,7 @@ file(GLOB_RECURSE SERVICEMENU_RESOURCES
 )
 
 ek_add_plugin(service_menu
-    FOLDER "plugins/NativeWidgets/ServiceMenu"
+    FOLDER "plugins"
     SOURCES ${SERVICEMENU_SOURCES} ${SERVICEMENU_UI_FILES} ${SERVICEMENU_RESOURCES}
     QT_MODULES Core Gui Widgets Network
     DEPENDS

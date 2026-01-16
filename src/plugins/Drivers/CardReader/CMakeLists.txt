@@ -8,7 +8,7 @@ file(GLOB CARDREADER_SOURCES
 )
 
 ek_add_plugin(card_readers
-    FOLDER "plugins/Drivers/CardReader"
+    FOLDER "plugins/Drivers"
     SOURCES ${CARDREADER_SOURCES}
     QT_MODULES Core
     DEPENDS

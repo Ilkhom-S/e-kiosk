@@ -6,7 +6,7 @@ file(GLOB DEVICEMANAGER_SOURCES
 )
 
 ek_add_library(DeviceManager
-    FOLDER "modules/DeviceManager"
+    FOLDER "modules"
     SOURCES ${DEVICEMANAGER_SOURCES}
     QT_MODULES Core Concurrent
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}

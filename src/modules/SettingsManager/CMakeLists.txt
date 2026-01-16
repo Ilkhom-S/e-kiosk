@@ -9,7 +9,7 @@ file(GLOB SETTINGSMANAGER_SOURCES
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
 ek_add_library(SettingsManager
-    FOLDER "modules/SettingsManager"
+    FOLDER "modules"
     SOURCES ${SETTINGSMANAGER_SOURCES}
     QT_MODULES Core
     DEPENDS ek_boost

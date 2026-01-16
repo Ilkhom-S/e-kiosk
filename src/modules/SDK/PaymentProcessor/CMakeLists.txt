@@ -8,7 +8,7 @@ file(GLOB_RECURSE PPSDK_SOURCES
 # Public headers live under EK includes dir; let ek_common provide ${EK_INCLUDES_DIR}
 # ek_add_library will export the include dir passed in INCLUDE_DIRS as PUBLIC.
 ek_add_library(PPSDK
-    FOLDER "modules/SDK/PaymentProcessor"
+    FOLDER "modules/SDK"
     SOURCES ${PPSDK_SOURCES}
     QT_MODULES Core Widgets
     INCLUDE_DIRS ${EK_INCLUDES_DIR}

@@ -12,7 +12,7 @@ endif()
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
 ek_add_library(DebugUtils
-    FOLDER "modules/DebugUtils"
+    FOLDER "modules"
     SOURCES ${DEBUGUTILS_SOURCES}
     QT_MODULES Core
     LIBRARIES Advapi32 User32

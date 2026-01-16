@@ -8,7 +8,7 @@ file(GLOB BILLDISPENSERS_SOURCES
 )
 
 ek_add_plugin(bill_dispensers
-    FOLDER "plugins/Drivers/BillDispensers"
+    FOLDER "plugins/Drivers"
     SOURCES ${BILLDISPENSERS_SOURCES}
     QT_MODULES Core
     DEPENDS
