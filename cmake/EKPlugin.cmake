@@ -34,6 +34,7 @@ function(ek_add_plugin TARGET_NAME)
     target_include_directories(${TARGET_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include # ensure public headers are visible for automoc/IDE
     )
     if(ARG_INCLUDE_DIRS)
         target_include_directories(${TARGET_NAME} PRIVATE ${ARG_INCLUDE_DIRS})
