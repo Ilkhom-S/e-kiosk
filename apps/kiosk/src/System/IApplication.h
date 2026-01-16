@@ -5,6 +5,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QSettings>
+#include <QtCore/QDir>
 #include <QtGui/QImage>
 #include <Common/QtHeadersEnd.h>
 
@@ -67,11 +68,18 @@ class IApplication {
 
     //---------------------------------------------------------------------------
     // Возвращает абсолютный путь из aPath
-    static QString toAbsolutePath(const QString &aPath);
+    static QString toAbsolutePath(const QString &aPath) {
+        if (QDir(aPath).isAbsolute()) {
+            return QDir::cleanPath(aPath);
+        }
+        return QDir::cleanPath(QDir::currentPath() + QDir::separator() + aPath);
+    }
 
     //---------------------------------------------------------------------------
     // Возвращает текущую рабочую папку
-    static QString getWorkingDirectory();
+    static QString getWorkingDirectory() {
+        return QDir::currentPath();
+    }
 };
 
 //---------------------------------------------------------------------------
