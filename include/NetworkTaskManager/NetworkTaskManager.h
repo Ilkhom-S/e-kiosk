@@ -1,4 +1,4 @@
 /* @file Менеджер сетевых задач. */
 
 // System
-#include "../../modules/NetworkTaskManager/src/NetworkTaskManager.h"
+#include "../../src/modules/NetworkTaskManager/src/NetworkTaskManager.h"

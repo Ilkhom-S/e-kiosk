@@ -1,4 +1,4 @@
-/* @file Дилерский платёж через процессинг Киберплат. */
+/* @file Дилерский платёж через процессинг Хумо. */
 
 #pragma once
 
@@ -14,36 +14,34 @@
 #include "Payment.h"
 #include "DealerLocalData.h"
 
-
 //------------------------------------------------------------------------------
-class DealerPayment : public Payment
-{
-public:
-	DealerPayment(PaymentFactory* aFactory);
+class DealerPayment : public Payment {
+  public:
+    DealerPayment(PaymentFactory *aFactory);
 
-protected:
-	/// Запрос на проведение платежа.
-	virtual bool check(bool aFakeCheck);
+  protected:
+    /// Запрос на проведение платежа.
+    virtual bool check(bool aFakeCheck);
 
-	/// Транзакция.
-	virtual bool pay();
+    /// Транзакция.
+    virtual bool pay();
 
-	/// Запрос статуса платежа.
-	virtual bool status();
+    /// Запрос статуса платежа.
+    virtual bool status();
 
-protected:
-	/// Выставляет коды ошибок сервера в OK
-	void setStateOk();
+  protected:
+    /// Выставляет коды ошибок сервера в OK
+    void setStateOk();
 
-	bool haveLocalData();
+    bool haveLocalData();
 
-	QString getAddinfo(QMap<QString, QString>& aValues);
+    QString getAddinfo(QMap<QString, QString> &aValues);
 
-	QString getAddFields();
+    QString getAddFields();
 
-protected:
-	PaymentFactory* mFactory;
-	DealerLocalData mLocalData;
+  protected:
+    PaymentFactory *mFactory;
+    DealerLocalData mLocalData;
 };
 
 //---------------------------------------------------------------------------

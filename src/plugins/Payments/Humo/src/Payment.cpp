@@ -1,4 +1,4 @@
-/* @file Базовый платёж через процессинг Киберплат. */
+/* @file Базовый платёж через процессинг Хумо. */
 
 // Stl
 
@@ -121,7 +121,7 @@ Response *Payment::sendRequest(const QUrl &aUrl, Request &aRequest) {
 //---------------------------------------------------------------------------
 bool Payment::isCriticalError(int aError) const {
     switch (aError) {
-        case EServerError::BadSummFormat:
+        case EServerError::BadSumFormat:
         case EServerError::BadNumberFormat:
         case EServerError::BadAccountFormat:
         case EServerError::OperatorNumberReject:

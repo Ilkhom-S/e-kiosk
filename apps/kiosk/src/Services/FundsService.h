@@ -23,65 +23,63 @@ class IApplication;
 class CashDispenserManager;
 class CashAcceptorManager;
 
-namespace CFundsService
-{
-	const char LogName[] = "Funds";
+namespace CFundsService {
+    const char LogName[] = "Funds";
 } // namespace CFundsService
 
 //---------------------------------------------------------------------------
 class FundsService : public QObject,
-					 public SDK::PaymentProcessor::IFundsService,
-					 public SDK::PaymentProcessor::IService,
-					 public SDK::PaymentProcessor::IServiceState,
-					 private ILogable
-{
-	Q_OBJECT
+                     public SDK::PaymentProcessor::IFundsService,
+                     public SDK::PaymentProcessor::IService,
+                     public SDK::PaymentProcessor::IServiceState,
+                     private ILogable {
+    Q_OBJECT
 
-public:
-	/// Получение экземпляра FundsService.
-	static FundsService* instance(IApplication* aApplication);
+  public:
+    /// Получение экземпляра FundsService.
+    static FundsService *instance(IApplication *aApplication);
 
-	FundsService(IApplication* aApplication);
-	virtual ~FundsService();
+    FundsService(IApplication *aApplication);
+    virtual ~FundsService();
 
-	/// Инициализация сервиса.
-	virtual bool initialize();
+    /// Инициализация сервиса.
+    virtual bool initialize();
 
-	/// IService: Закончена инициализация всех сервисов.
-	virtual void finishInitialize();
+    /// IService: Закончена инициализация всех сервисов.
+    virtual void finishInitialize();
 
-	/// Возвращает false, если сервис не может быть остановлен в текущий момент.
-	virtual bool canShutdown();
+    /// Возвращает false, если сервис не может быть остановлен в текущий момент.
+    virtual bool canShutdown();
 
-	/// Остановка сервиса.
-	virtual bool shutdown();
+    /// Остановка сервиса.
+    virtual bool shutdown();
 
-	/// Имя сервиса.
-	virtual QString getName() const;
+    /// Имя сервиса.
+    virtual QString getName() const;
 
-	/// Получить параметры сервиса.
-	virtual QVariantMap getParameters() const;
+    /// Получить параметры сервиса.
+    virtual QVariantMap getParameters() const;
 
-	/// Получение списка зависимостей.
-	virtual const QSet<QString>& getRequiredServices() const;
+    /// Получение списка зависимостей.
+    virtual const QSet<QString> &getRequiredServices() const;
 
-	/// Сброс служебной информации.
-	virtual void resetParameters(const QSet<QString>& aParameters);
+    /// Сброс служебной информации.
+    virtual void resetParameters(const QSet<QString> &aParameters);
 
-	/// Возвращает уникальный набор параметров для устройств с денежными средствами
-	virtual QString getState() const;
+    /// Возвращает уникальный набор параметров для устройств с денежными средствами
+    virtual QString getState() const;
 
-public:
-	/// Получить интерфейс для работы с источниками денег.
-	virtual SDK::PaymentProcessor::ICashAcceptorManager* getAcceptor() const;
+  public:
+    /// Получить интерфейс для работы с источниками денег.
+    virtual SDK::PaymentProcessor::ICashAcceptorManager *getAcceptor() const;
 
-	/// Получить интерфейс для работы с устройствами выдачи денег.
-	virtual SDK::PaymentProcessor::ICashDispenserManager* getDispenser() const;
+    /// Получить интерфейс для работы с устройствами выдачи денег.
+    virtual SDK::PaymentProcessor::ICashDispenserManager *getDispenser() const;
 
-private:
-	IApplication* mApplication;
-	CashDispenserManager* mCashDispenserManager;
-	CashAcceptorManager* mCashAcceptorManager;
+  private:
+    IApplication *mApplication;
+    CashDispenserManager *mCashDispenserManager;
+    CashAcceptorManager *mCashAcceptorManager;
 };
 
 //---------------------------------------------------------------------------

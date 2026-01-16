@@ -14,7 +14,7 @@ if(QT_VERSION_MAJOR EQUAL 5)
             SOURCES ${PAYMENT_SOURCES}
             QT_MODULES Core Qml Script
             INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
-            DEPENDS Core ek_boost
+            DEPENDS ek_boost
             COMPILE_DEFINITIONS _UNICODE UNICODE
         )
     else()
@@ -23,7 +23,7 @@ if(QT_VERSION_MAJOR EQUAL 5)
             SOURCES ${PAYMENT_SOURCES}
             QT_MODULES Core Qml
             INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
-            DEPENDS Core ek_boost
+            DEPENDS ek_boost
             COMPILE_DEFINITIONS _UNICODE UNICODE NO_QTSCRIPT
         )
     endif()
@@ -33,7 +33,7 @@ else()
         SOURCES ${PAYMENT_SOURCES}
         QT_MODULES Core Qml
         INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
-        DEPENDS Core boost
+        DEPENDS boost
         COMPILE_DEFINITIONS _UNICODE UNICODE QT6_NO_SCRIPT NO_QTSCRIPT
     )
 endif()

@@ -1,4 +1,4 @@
-/* @file Базовый платёж через процессинг Киберплат. */
+/* @file Базовый платёж через процессинг Хумо. */
 
 // Stl
 
@@ -109,7 +109,7 @@ Response *AdPayment::sendRequest(const QUrl &aUrl, Request &aRequest) {
 //---------------------------------------------------------------------------
 bool AdPayment::isCriticalError(int aError) const {
     switch (aError) {
-        case EServerError::BadSummFormat:
+        case EServerError::BadSumFormat:
         case EServerError::BadNumberFormat:
         case EServerError::BadAccountFormat:
         case EServerError::ErrorDate:
@@ -203,7 +203,7 @@ void AdPayment::setProcessError() {
 void AdPayment::performTransaction() {
     toLog(LogLevel::Normal, QString("AdPayment %1. Processing...").arg(getID()));
 
-    // Если дошли до этапа оплаты, сохраняем данные в базу, чтобы предотвратить задвоение платежа.
+    // Если дошли до этапа оплаты, сохраняем данные в базу, чтобы предотвратить дубликат платежа.
     setParameter(SParameter(PPSDK::CPayment::Parameters::Step, CPayment::Steps::Pay, true));
 
     if (!getPaymentFactory()->savePayment(this)) {

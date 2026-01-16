@@ -14,7 +14,7 @@ namespace SDK {
 
             //------------------------------------------------------------------------------
             FundsService::FundsService(ICore *aCore)
-                : mCore(aCore), mFundsService(mCore->getFundsService()), mAvaliableAmount(0.0) {
+                : mCore(aCore), mFundsService(mCore->getFundsService()), mAvailableAmount(0.0) {
                 connect(mFundsService->getAcceptor(), SIGNAL(error(qint64, QString)), SIGNAL(error(qint64, QString)));
                 connect(mFundsService->getAcceptor(), SIGNAL(warning(qint64, QString)),
                         SIGNAL(warning(qint64, QString)));
@@ -52,16 +52,16 @@ namespace SDK {
             //------------------------------------------------------------------------------
             bool FundsService::canDispense() {
                 TPaymentAmount aRequiredAmount = mCore->getPaymentService()->getChangeAmount();
-                mAvaliableAmount = mFundsService->getDispenser()->canDispense(aRequiredAmount);
+                mAvailableAmount = mFundsService->getDispenser()->canDispense(aRequiredAmount);
 
-                return !qFuzzyIsNull(mAvaliableAmount);
+                return !qFuzzyIsNull(mAvailableAmount);
             }
 
             //------------------------------------------------------------------------------
             void FundsService::dispense() {
-                if (!qFuzzyIsNull(mAvaliableAmount)) {
-                    mFundsService->getDispenser()->dispense(mAvaliableAmount);
-                    mAvaliableAmount = 0;
+                if (!qFuzzyIsNull(mAvailableAmount)) {
+                    mFundsService->getDispenser()->dispense(mAvailableAmount);
+                    mAvailableAmount = 0;
                 }
             }
 

@@ -48,7 +48,7 @@ namespace SDK {
                     BadSignature = 6,
 
                     /// Неправильный формат суммы или значение суммы вне допустимого диапазона
-                    BadSummFormat = 7,
+                    BadSumFormat = 7,
 
                     /// Неправильный формат номера телефона
                     BadNumberFormat = 8,

@@ -1,4 +1,4 @@
 /* @file Сетевая задача. */
 
 // System
-#include "../../modules/NetworkTaskManager/src/NetworkTask.h"
+#include "../../src/modules/NetworkTaskManager/src/NetworkTask.h"

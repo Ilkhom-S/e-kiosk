@@ -85,7 +85,7 @@ bool CryptService::initialize() {
     }
 
     if (!result || !QFile::exists(terminalKey.publicKeyPath) || !QFile::exists(terminalKey.secretKeyPath)) {
-        // Ключ не подошёл или отсутвует, надо создать.
+        // Ключ не подошёл или отсутствует, надо создать.
         QString keyPath = mApplication->getUserDataPath() + "/keys";
 
         QDir keysDir;
@@ -101,7 +101,7 @@ bool CryptService::initialize() {
         QFile::rename(terminalKey.secretKeyPath, terminalKey.secretKeyPath + backupExt);
         QFile::rename(terminalKey.publicKeyPath, terminalKey.publicKeyPath + backupExt);
 
-        if (!crypt.createKeyPair(keyPath, "root", "CyberPlat", terminalKey.secretPassword, terminalKey.serialNumber,
+        if (!crypt.createKeyPair(keyPath, "root", "Humo", terminalKey.secretPassword, terminalKey.serialNumber,
                                  error)) {
             LOG(mLog, LogLevel::Error, QString("Failed to create terminal key pair. Error: %1.").arg(error));
             return false;
@@ -392,7 +392,7 @@ SDK::PaymentProcessor::ICryptService::SKeyInfo CryptService::getKeyInfo(int aKey
 bool CryptService::saveKey() {
     LOG(mApplication->getLog(), LogLevel::Normal, QString("Saving key pair %1.").arg(mKeyPair.id));
 
-    // Формируем и сохраяняем ключ.
+    // Формируем и сохраняем ключ.
     ICryptEngine *crypt = &CCryptEngine::instance();
 
     PP::SKeySettings key;

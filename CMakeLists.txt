@@ -53,5 +53,4 @@ add_subdirectory(src)
 add_subdirectory(apps)
 add_subdirectory(tests)
 
-# Diagnostic checks were removed (temporary helper) - see commit history if needed
 

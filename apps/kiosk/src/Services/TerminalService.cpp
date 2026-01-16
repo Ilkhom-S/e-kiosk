@@ -9,7 +9,7 @@
 #include <Common/QtHeadersEnd.h>
 
 // Modules
-#include <Common/Application.h>
+#include <Common/BasicApplication.h>
 #include <Common/ExceptionFilter.h>
 #include <Common/Version.h>
 
@@ -155,7 +155,7 @@ void TerminalService::finishInitialize() {
         SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
     PPSDK::SKeySettings key = terminalSettings->getKeys().value(0);
 
-    // Устанавливаем User-Agent (Имя_ПО + Версия_ПО + код_диллера + код_точки + код_оператора)
+    // Устанавливаем User-Agent (Имя_ПО + Версия_ПО + код_дилера + код_точки + код_оператора)
     QString userAgent = Humo::Application + " " + Humo::getVersion();
     if (key.isValid) {
         userAgent.append(" SD:" + key.sd + " AP:" + key.ap + " OP:" + key.op);
@@ -549,7 +549,7 @@ void TerminalService::sendFeedback(const QString &aSenderSubsystem, const QStrin
         sendBody += "&";
 
         sendBody += "subject=" + QString("TC3:%1").arg(aSenderSubsystem).toUtf8().toPercentEncoding() + "&";
-        sendBody += "email=" + QString("help@cyberplat.com").toUtf8().toPercentEncoding() + "&";
+        sendBody += "email=" + QString("help@humo.tj").toUtf8().toPercentEncoding() + "&";
         sendBody += "message=" + aMessage.toUtf8().toPercentEncoding() + "&";
 
         if (qint64 paymentId = mApplication->getCore()->getPaymentService()->getActivePayment()) {

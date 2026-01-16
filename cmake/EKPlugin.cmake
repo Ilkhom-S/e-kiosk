@@ -10,7 +10,11 @@ function(ek_add_plugin TARGET_NAME)
         set(ARG_INSTALL_DIR "plugins")
     endif()
     add_library(${TARGET_NAME} SHARED ${ARG_SOURCES})
+    # Ensure Qt auto-generation (moc/uic/rcc) runs for plugin targets that use Qt
     set_target_properties(${TARGET_NAME} PROPERTIES
+        AUTOMOC ON
+        AUTOUIC ON
+        AUTORCC ON
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${ARG_INSTALL_DIR}
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${ARG_INSTALL_DIR}
         OUTPUT_NAME ${TARGET_NAME}
@@ -37,6 +41,30 @@ function(ek_add_plugin TARGET_NAME)
     if(ARG_COMPILE_DEFINITIONS)
         target_compile_definitions(${TARGET_NAME} PRIVATE ${ARG_COMPILE_DEFINITIONS})
     endif()
+
+    # Sanitize link libraries: remove accidental literal 'Core' entries that
+    # may end up as 'Core.lib' in generated MSBuild projects. This is a
+    # pragmatic workaround for legacy or transitive entries. Prefer to fix
+    # the root cause if possible (look for target_link_libraries(... Core)).
+    get_target_property(_tmp_link_libs ${TARGET_NAME} LINK_LIBRARIES)
+    if(_tmp_link_libs)
+        set(_filtered_libs)
+        set(_removed_core FALSE)
+        foreach(_ll ${_tmp_link_libs})
+            string(TOUPPER _ll_up "${_ll}")
+            if(_ll_up MATCHES "(^|;)?CORE(\\.LIB)?(;|$)")
+                message(STATUS "Removing accidental link '${_ll}' from target ${TARGET_NAME}")
+                set(_removed_core TRUE)
+            else()
+                list(APPEND _filtered_libs ${_ll})
+            endif()
+        endforeach()
+        if(_removed_core)
+            # Override the LINK_LIBRARIES property with the filtered list
+            set_target_properties(${TARGET_NAME} PROPERTIES LINK_LIBRARIES "${_filtered_libs}")
+        endif()
+    endif()
+
     install(TARGETS ${TARGET_NAME}
         RUNTIME DESTINATION bin/${ARG_INSTALL_DIR}
         LIBRARY DESTINATION lib/${ARG_INSTALL_DIR}

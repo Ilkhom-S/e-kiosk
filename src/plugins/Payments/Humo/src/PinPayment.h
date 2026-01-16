@@ -1,4 +1,4 @@
-/* @file Пиновый платёж через процессинг Киберплат. */
+/* @file Пиновый платёж через процессинг Хумо. */
 
 #pragma once
 
@@ -6,35 +6,32 @@
 #include "Payment.h"
 
 //------------------------------------------------------------------------------
-namespace CPin
-{
-	const char UIFieldName[] = "CARD";
+namespace CPin {
+    const char UIFieldName[] = "CARD";
 } // namespace CPin
 
-
 //------------------------------------------------------------------------------
-class PinPayment : public Payment
-{
-public:
-	PinPayment(PaymentFactory* aFactory);
+class PinPayment : public Payment {
+  public:
+    PinPayment(PaymentFactory *aFactory);
 
 #pragma region SDK::PaymentProcessor::IPayment interface
 
-	/// Возвращает true, если платёж можно провести в оффлайне.
-	virtual bool canProcessOffline() const;
+    /// Возвращает true, если платёж можно провести в оффлайне.
+    virtual bool canProcessOffline() const;
 
 #pragma endregion
 
-protected:
-	/// Получение лимитов для данного платежа
-	virtual bool getLimits(double& aMinAmount, double& aMaxAmount);
+  protected:
+    /// Получение лимитов для данного платежа
+    virtual bool getLimits(double &aMinAmount, double &aMaxAmount);
 
-	/// Возвращает true, если ограничения на сумму платежа зависят от переданного параметра.
-	virtual bool limitsDependOnParameter(const SParameter& aParameter);
+    /// Возвращает true, если ограничения на сумму платежа зависят от переданного параметра.
+    virtual bool limitsDependOnParameter(const SParameter &aParameter);
 
-protected:
-	/// Создаёт класс запроса по идентификатору шага.
-	virtual Request* createRequest(const QString& aStep);
+  protected:
+    /// Создаёт класс запроса по идентификатору шага.
+    virtual Request *createRequest(const QString &aStep);
 };
 
 //---------------------------------------------------------------------------
