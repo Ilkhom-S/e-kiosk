@@ -136,6 +136,7 @@
     "QCOMPARE",
     "qlonglong",
     "QMLBACKEND",
+    "qntp",
     "qobject",
     "qrand",
     "qstate",
@@ -165,6 +166,7 @@
     "WATCHSERVICECLIENT",
     "XMLPATTERNS",
     "Yarus",
+    "Zint",
     "Автоинкассация",
     "алиаса",
     "бекапов",
@@ -249,16 +251,6 @@
   "cmake.buildArgs": [],
   "cmake.ctestArgs": [],
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-
-  // Exclude vendored and vcpkg folders from file search and editor scanning to reduce IDE diagnostics
-  "files.exclude": {
-    "**/thirdparty": true,
-    "**/vcpkg_installed": true
-  },
-  "search.exclude": {
-    "**/thirdparty": true,
-    "**/vcpkg_installed": true
-  },
 
   // If you use a cppcheck extension that supports these settings, they will
   // exclude vendored folders from on-the-fly checks and save-time runs.

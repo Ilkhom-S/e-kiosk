@@ -130,6 +130,8 @@ if(EXISTS "${THIRD_PARTY_DIR}/zint")
     set(ZINT_SHARED OFF CACHE BOOL "Disable shared library" FORCE)
     set(ZINT_STATIC ON CACHE BOOL "Enable static library" FORCE)
     set(ZINT_FRONTEND OFF CACHE BOOL "Disable frontend" FORCE)
+    # Disable Qt frontend when building as a thirdparty dependency to avoid adding GUI targets
+    # This keeps IDE/project outlines clean; enable explicitly in a standalone zint build if needed.
     set(ZINT_USE_QT ON CACHE BOOL "Enable Qt support" FORCE)
     set(ZINT_QT6 OFF CACHE BOOL "Use Qt5" FORCE)
     set(ZINT_USE_PNG OFF CACHE BOOL "Disable PNG support" FORCE)
@@ -215,22 +217,5 @@ endfunction()
 # Place known thirdparty targets under thirdparty/<name>
 ek_set_folder_for_target(EK::LibUSB "thirdparty/LibUSB")
 
-# Some thirdparty libraries add example/test executables that clutter the IDE root view.
-# Re-home known example/test targets into `thirdparty/<name>/` folders so the IDE tree stays tidy.
-# libipriv: examples and tests
-if(TARGET basic_encryption)
-    set_target_properties(basic_encryption PROPERTIES FOLDER "thirdparty/libipriv/examples")
-endif()
-if(TARGET digital_signatures)
-    set_target_properties(digital_signatures PROPERTIES FOLDER "thirdparty/libipriv/examples")
-endif()
-if(TARGET key_export_import)
-    set_target_properties(key_export_import PROPERTIES FOLDER "thirdparty/libipriv/examples")
-endif()
-if(TARGET test_libipriv)
-    set_target_properties(test_libipriv PROPERTIES FOLDER "thirdparty/libipriv/tests")
-endif()
-
 message(STATUS "[thirdparty] Thirdparty configuration complete")
-message(STATUS "[thirdparty] Available targets: EK::SingleApplication, EK::SmsMessage, EK::qntp, EK::libipriv, EK::LibUSB, EK::QZint, EK::zint, EK::DelayImpHlp")
 message(STATUS "[thirdparty] Available targets: EK::SingleApplication, EK::SmsMessage, EK::qntp, EK::libipriv, EK::LibUSB, EK::QZint, EK::zint, EK::DelayImpHlp")
