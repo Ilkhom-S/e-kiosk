@@ -8,6 +8,7 @@ file(GLOB MODEM_SOURCES
 )
 
 ek_add_plugin(modems
+    FOLDER "plugins/Drivers/Modem"
     SOURCES ${MODEM_SOURCES}
     QT_MODULES Core
     DEPENDS

@@ -5,8 +5,7 @@ file(GLOB PACKER_SOURCES
     src/*.h
 )
 
-ek_add_library(Packer
-    SOURCES ${PACKER_SOURCES}
+ek_add_library(Packer FOLDER "modules/Packer" SOURCES ${PACKER_SOURCES}
     QT_MODULES Core
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src
 )

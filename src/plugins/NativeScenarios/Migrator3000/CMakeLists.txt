@@ -8,6 +8,7 @@ file(GLOB MIGRATOR_SOURCES
 )
 
 ek_add_plugin(migrator3000_scenario
+    FOLDER "plugins/NativeScenarios/Migrator3000"
     SOURCES ${MIGRATOR_SOURCES}
     QT_MODULES Core Network
     DEPENDS

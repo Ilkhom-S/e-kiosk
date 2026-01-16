@@ -13,6 +13,7 @@ set(AD_VERSION_RC ${CMAKE_SOURCE_DIR}/include/Common/CoreVersion.rc)
 list(APPEND AD_SOURCES ${CMAKE_SOURCE_DIR}/include/SDK/GUI/IAdSource.h)
 
 ek_add_plugin(ad
+    FOLDER "plugins/Ad"
     SOURCES ${AD_SOURCES} ${AD_VERSION_RC}
     QT_MODULES Core Sql Network Qml
     DEPENDS

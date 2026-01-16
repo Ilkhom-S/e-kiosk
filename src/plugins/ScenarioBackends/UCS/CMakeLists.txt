@@ -13,6 +13,7 @@ file(GLOB UCS_RESOURCES
 )
 
 ek_add_plugin(ucs
+    FOLDER "plugins/ScenarioBackends/UCS"
     SOURCES ${UCS_SOURCES} ${UCS_RESOURCES}
     QT_MODULES Core Network
     DEPENDS

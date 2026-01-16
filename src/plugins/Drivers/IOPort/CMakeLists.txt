@@ -8,6 +8,7 @@ file(GLOB IOPORT_SOURCES
 )
 
 ek_add_plugin(io_ports
+    FOLDER "plugins/Drivers/IOPort"
     SOURCES ${IOPORT_SOURCES}
     QT_MODULES Core
     DEPENDS

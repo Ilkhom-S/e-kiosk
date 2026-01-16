@@ -8,6 +8,7 @@ file(GLOB WATCHDOG_SOURCES
 )
 
 ek_add_plugin(watchdogs
+    FOLDER "plugins/Drivers/Watchdog"
     SOURCES ${WATCHDOG_SOURCES}
     QT_MODULES Core
     DEPENDS

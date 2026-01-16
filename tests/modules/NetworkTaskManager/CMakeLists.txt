@@ -8,6 +8,7 @@ message(STATUS "Configuring NetworkTaskManager module tests")
 # NetworkTaskManager tests
 file(GLOB NETWORKTASKMANAGER_SOURCES *.cpp *.h)
 ek_add_test(TestNetworkTaskManager
+    FOLDER "tests/NetworkTaskManager"
     SOURCES ${NETWORKTASKMANAGER_SOURCES}
     QT_MODULES Test Core Network
     DEPENDS NetworkTaskManager BasicApplication

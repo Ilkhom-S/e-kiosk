@@ -8,6 +8,7 @@ file(GLOB BILLACCEPTOR_SOURCES
 )
 
 ek_add_plugin(bill_acceptors
+    FOLDER "plugins/Drivers/BillAcceptor"
     SOURCES ${BILLACCEPTOR_SOURCES}
     QT_MODULES Core
     DEPENDS

@@ -9,6 +9,7 @@ file(GLOB WATCHSERVICECLIENT_SOURCES
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Network REQUIRED)
 
 ek_add_library(WatchServiceClient
+    FOLDER "modules/WatchServiceClient"
     SOURCES ${WATCHSERVICECLIENT_SOURCES}
     QT_MODULES Core Network
     DEPENDS Log MessageQueue ek_boost

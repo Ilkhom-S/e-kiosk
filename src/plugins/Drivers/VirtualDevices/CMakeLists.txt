@@ -8,6 +8,7 @@ file(GLOB VIRTUALDEVICES_SOURCES
 )
 
 ek_add_plugin(virtual_devices
+    FOLDER "plugins/Drivers/VirtualDevices"
     SOURCES ${VIRTUALDEVICES_SOURCES}
     QT_MODULES Core
     DEPENDS

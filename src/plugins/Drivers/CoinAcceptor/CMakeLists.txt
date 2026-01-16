@@ -8,6 +8,7 @@ file(GLOB COINACCEPTOR_SOURCES
 )
 
 ek_add_plugin(coin_acceptors
+    FOLDER "plugins/Drivers/CoinAcceptor"
     SOURCES ${COINACCEPTOR_SOURCES}
     QT_MODULES Core
     DEPENDS

@@ -19,6 +19,7 @@ else()
 endif()
 
 ek_add_plugin(qml_backend
+    FOLDER "plugins/GraphicBackends/QMLBackend"
     SOURCES ${QMLBACKEND_SOURCES}
     QT_MODULES ${QML_QT_MODULES}
     DEPENDS PluginsSDK

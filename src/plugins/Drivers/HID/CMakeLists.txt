@@ -8,6 +8,7 @@ file(GLOB HID_SOURCES
 )
 
 ek_add_plugin(hid_devices
+    FOLDER "plugins/Drivers/HID"
     SOURCES ${HID_SOURCES}
     QT_MODULES Core
     DEPENDS

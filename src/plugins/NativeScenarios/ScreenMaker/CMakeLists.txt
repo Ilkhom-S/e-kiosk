@@ -19,6 +19,7 @@ else()
 endif()
 
 ek_add_plugin(screen_maker_scenario
+    FOLDER "plugins/NativeScenarios/ScreenMaker"
     SOURCES ${SCREENMAKER_SOURCES} ${SCREENMAKER_RESOURCES}
     QT_MODULES ${SM_QT_MODULES}
     DEPENDS

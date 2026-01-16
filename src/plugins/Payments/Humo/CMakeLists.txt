@@ -8,6 +8,7 @@ file(GLOB HUMO_SOURCES
 )
 
 ek_add_plugin(humo_payments
+    FOLDER "plugins/Payments/Humo"
     SOURCES ${HUMO_SOURCES}
     QT_MODULES Core Xml Network
     DEPENDS

@@ -13,6 +13,7 @@ file(GLOB UNITELLER_RESOURCES
 )
 
 ek_add_plugin(uniteller
+    FOLDER "plugins/ScenarioBackends/Uniteller"
     SOURCES ${UNITELLER_SOURCES} ${UNITELLER_RESOURCES}
     QT_MODULES Core Network
     DEPENDS

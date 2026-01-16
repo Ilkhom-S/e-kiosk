@@ -15,6 +15,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Xml Network Sql REQUIRED)
 find_package(Boost REQUIRED)
 
 ek_add_library(AdBackend
+    FOLDER "modules/AdBackend"
     SOURCES ${ADBACKEND_SOURCES}
     QT_MODULES Core Xml Network Sql
     DEPENDS NetworkTaskManager SysUtils

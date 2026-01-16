@@ -19,6 +19,7 @@ set(PRINTER_HEADERS
 )
 
 ek_add_plugin(printers
+    FOLDER "plugins/Drivers/Printer"
     SOURCES ${PRINTER_SOURCES} ${PRINTER_PARAMS} ${PRINTER_HEADERS}
     QT_MODULES Core Gui
     DEPENDS

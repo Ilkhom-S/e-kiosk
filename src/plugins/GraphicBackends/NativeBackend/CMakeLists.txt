@@ -8,6 +8,7 @@ file(GLOB NATIVEBACKEND_SOURCES
 )
 
 ek_add_plugin(native_backend
+    FOLDER "plugins/GraphicBackends/NativeBackend"
     SOURCES ${NATIVEBACKEND_SOURCES}
     QT_MODULES Core Widgets
     DEPENDS PluginsSDK ek_common

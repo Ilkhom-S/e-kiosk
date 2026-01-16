@@ -11,6 +11,7 @@ set(WATCHDOGS_HEADERS
 )
 
 ek_add_library(HardwareWatchdogs
+    FOLDER "modules/Hardware/Watchdogs"
     SOURCES ${WATCHDOGS_SOURCES} ${WATCHDOGS_HEADERS}
     QT_MODULES Core
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}

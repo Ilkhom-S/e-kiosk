@@ -15,6 +15,7 @@ set(RESOURCE_FILES ${CMAKE_SOURCE_DIR}/ekiosk.qrc)
 
 # Application target with Qt modules and resources
 ek_add_application(EKiosk
+    FOLDER "apps/kiosk"
     SOURCES ${SOURCES} ${HEADERS} ${UI_FILES} ${RESOURCE_FILES}
     QT_MODULES Core Widgets Sql PrintSupport Network Multimedia Xml SerialPort WebSockets WebEngineWidgets
     INCLUDE_DIRS src

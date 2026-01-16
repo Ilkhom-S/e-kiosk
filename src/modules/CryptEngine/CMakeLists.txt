@@ -9,6 +9,7 @@ file(GLOB CRYPTENGINE_SOURCES
 )
 
 ek_add_library(CryptEngine
+    FOLDER "modules/CryptEngine"
     SOURCES ${CRYPTENGINE_SOURCES}
     QT_MODULES Core
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}

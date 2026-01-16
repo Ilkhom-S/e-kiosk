@@ -6,6 +6,7 @@ file(GLOB PLUGINSSDK_SOURCES
 )
 
 ek_add_library(PluginsSDK
+    FOLDER "modules/SDK/Plugins"
     SOURCES ${PLUGINSSDK_SOURCES}
     QT_MODULES Core
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src

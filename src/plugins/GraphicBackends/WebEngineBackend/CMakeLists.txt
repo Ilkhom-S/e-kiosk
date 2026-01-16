@@ -23,6 +23,7 @@ else()
 endif()
 
 ek_add_plugin(webengine_backend
+    FOLDER "plugins/GraphicBackends/WebEngineBackend"
     SOURCES ${WEBENGINEBACKEND_SOURCES}
     QT_MODULES ${WEBENGINE_QT_MODULES}
     DEPENDS PluginsSDK
