@@ -114,8 +114,8 @@ This makes module ownership explicit and eases future Qt6 porting.
   - ek_enable_static_analysis() from EKStaticAnalysis.cmake
 
   See cmake/README.md for detailed usage, rationale, and examples for each helper.
-
-**Why:**
+  Folder grouping & IDE layout: The ek*add*\* helpers accept an optional `FOLDER` argument (or will compute a sensible default) to group targets in IDE project outlines. Prefer grouping targets as `modules/<module>`, `plugins/<path>`, `apps/<app>`, `tests/<path>` and `thirdparty/<name>` so vendored or example targets do not clutter the root. When working with thirdparty aliases, prefer setting the `FOLDER` on the real target (or use a safe wrapper such as `ek_set_folder_for_target`) rather than on an ALIAS target.
+  **Why:**
 
 - Ensures consistent build, test, install, and packaging logic across all apps and modules
 - Simplifies CMakeLists.txt files and reduces boilerplate
