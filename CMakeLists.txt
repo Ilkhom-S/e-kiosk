@@ -52,3 +52,6 @@ target_include_directories(ek_boost INTERFACE ${Boost_INCLUDE_DIRS})
 add_subdirectory(src)
 add_subdirectory(apps)
 add_subdirectory(tests)
+
+# Diagnostic checks were removed (temporary helper) - see commit history if needed
+
