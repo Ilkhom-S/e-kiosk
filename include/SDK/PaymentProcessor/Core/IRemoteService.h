@@ -89,7 +89,7 @@ namespace SDK {
             /// Добавляет в очередь команду на получение скриншота.
             virtual int registerScreenshotCommand() = 0;
 
-            /// Добавляет в очередь команду на перегенерацию ключей
+            /// Добавляет в очередь команду на новую генерацию ключей
             virtual int registerGenerateKeyCommand(const QString &login, const QString &password) = 0;
 
             /// Зарегистрировать номер произвольной команды

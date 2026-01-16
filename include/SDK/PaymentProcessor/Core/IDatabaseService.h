@@ -18,7 +18,7 @@ namespace SDK {
             /// Выполнение запроса по строке.
             virtual bool execQuery(const QString &aQuery) = 0;
 
-            /// Подготавливает запрос к биндингу параметров.
+            /// Подготавливает запрос к привязке параметров.
             virtual QSharedPointer<IDatabaseQuery> prepareQuery(const QString &aQuery) = 0;
 
             /// Создание запроса по строке и его выполнение.

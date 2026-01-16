@@ -1,4 +1,4 @@
 /* @file Протокол EBDS. */
 
 // System
-#include "../../../../modules/Hardware/Protocols/CashAcceptor/EBDS/src/EBDS.h"
+#include "../../../src/modules/Hardware/Protocols/CashAcceptor/EBDS/src/EBDS.h"

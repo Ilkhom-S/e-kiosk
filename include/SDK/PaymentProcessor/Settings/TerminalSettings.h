@@ -1,2 +1,2 @@
 // System
-#include "../../../../Modules/SDK/PaymentProcessor/src/TerminalSettings.h"
+#include "../../../src/modules/SDK/PaymentProcessor/src/TerminalSettings.h"

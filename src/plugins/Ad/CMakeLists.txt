@@ -19,7 +19,7 @@ ek_add_plugin(ad
     NetworkTaskManager
     AdBackend
     INCLUDE_DIRS
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/include/SDK/GUI
+    ek_common
+    ${CMAKE_SOURCE_DIR}/apps/kiosk/src
     INSTALL_DIR plugins
 )

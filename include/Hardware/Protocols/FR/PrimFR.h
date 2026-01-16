@@ -1,4 +1,4 @@
 /* @file Протокол Prim FR. */
 
 // System
-#include "../../../../modules/Hardware/Protocols/FR/Prim/src/PrimFR.h"
+#include "../../../src/modules/Hardware/Protocols/FR/Prim/src/PrimFR.h"

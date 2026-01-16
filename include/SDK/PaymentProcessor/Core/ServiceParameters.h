@@ -24,7 +24,7 @@ namespace SDK {
             } // namespace Printing
 
             namespace Payment {
-                const char UnprocessedPaymentCount[] = "unprocessed_payments"; /// Число необработаных платежей
+                const char UnprocessedPaymentCount[] = "unprocessed_payments"; /// Число необработанных платежей
                 const char PaymentsPerDay[] = "payments_per_day";              /// Число платежей за день
             } // namespace Payment
 
