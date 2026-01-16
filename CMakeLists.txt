@@ -10,7 +10,6 @@ endif()
 project(EKioskRoot VERSION 1.0.0 LANGUAGES CXX C)
 
 # Allow overriding the public include directory via the EK_INCLUDES_DIR environment variable
-# (preferred). Do NOT fallback to legacy TC_INCLUDES_DIR to avoid cross-project coupling.
 # Final fallback is ${CMAKE_SOURCE_DIR}/include to keep local builds working.
 if(DEFINED ENV{EK_INCLUDES_DIR})
     set(EK_INCLUDES_DIR $ENV{EK_INCLUDES_DIR} CACHE PATH "Path to public include dir (overridden by EK_INCLUDES_DIR env)")
