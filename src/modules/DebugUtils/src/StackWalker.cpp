@@ -306,7 +306,7 @@ class StackWalkerInternal {
             BOOL     Publics;                // contains public symbols
     };
     */
-    typedef struct IMAGEHLP_MODULE64_V2 {
+    struct IMAGEHLP_MODULE64_V2 {
         DWORD SizeOfStruct;        // set to sizeof(IMAGEHLP_MODULE64)
         DWORD64 BaseOfImage;       // base load address of module
         DWORD ImageSize;           // virtual size of the loaded module
@@ -822,7 +822,7 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread, const CONTEXT *context, PReadPro
                                 LPVOID pUserData) {
     CONTEXT c;
     ;
-    CallstackEntry csEntry;
+    struct CallstackEntry csEntry;
     IMAGEHLP_SYMBOL64 *pSym = NULL;
     StackWalkerInternal::IMAGEHLP_MODULE64_V2 Module;
     IMAGEHLP_LINE64 Line;
@@ -919,7 +919,7 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread, const CONTEXT *context, PReadPro
         csEntry.name[0] = 0;
         csEntry.undName[0] = 0;
         csEntry.undFullName[0] = 0;
-        csEntry.offsetFromSmybol = 0;
+        csEntry.offsetFromSymbol = 0;
         csEntry.offsetFromLine = 0;
         csEntry.lineFileName[0] = 0;
         csEntry.lineNumber = 0;
@@ -932,7 +932,7 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread, const CONTEXT *context, PReadPro
         if (s.AddrPC.Offset != 0) {
             // we seem to have a valid PC
             // show procedure info (SymGetSymFromAddr64())
-            if (this->m_sw->pSGSFA(this->m_hProcess, s.AddrPC.Offset, &(csEntry.offsetFromSmybol), pSym) != FALSE) {
+            if (this->m_sw->pSGSFA(this->m_hProcess, s.AddrPC.Offset, &(csEntry.offsetFromSymbol), pSym) != FALSE) {
                 // TODO: Mache dies sicher...!
                 strcpy_s(csEntry.name, pSym->Name);
                 // UnDecorateSymbolName()
@@ -1059,7 +1059,7 @@ void StackWalker::OnLoadModule(LPCSTR img, LPCSTR mod, DWORD64 baseAddr, DWORD s
     OnOutput(buffer);
 }
 
-void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry &entry) {
+void StackWalker::OnCallstackEntry(CallstackEntryType eType, struct CallstackEntry &entry) {
     CHAR buffer[STACKWALK_MAX_NAMELEN];
     if ((eType != lastEntry) && (entry.offset != 0)) {
         if (entry.name[0] == 0)

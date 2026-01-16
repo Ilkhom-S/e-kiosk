@@ -24,7 +24,7 @@ class QStackWalker : protected StackWalker {
     }
 
   protected:
-    virtual void OnCallstackEntry(CallstackEntryType eType, CallstackEntry &entry) {
+    virtual void OnCallstackEntry(CallstackEntryType eType, struct CallstackEntry &entry) {
         CHAR buffer[STACKWALK_MAX_NAMELEN];
 
         if ((eType != lastEntry) && (entry.offset != 0)) {

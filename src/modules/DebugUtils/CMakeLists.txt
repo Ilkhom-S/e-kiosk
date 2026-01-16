@@ -2,20 +2,25 @@
 
 # Platform-specific source files
 if(WIN32)
-    file(GLOB DEBUGUTILS_SOURCES
-        src/*.cpp
-        src/*.h
+    # Use Boost.Stacktrace implementation instead of old Windows DbgHelp
+    set(DEBUGUTILS_SOURCES
+        src/DebugUtils.cpp
+        src/StackWalker.h # Keep for compatibility but not used
+        src/QStackWalker.h # Keep for compatibility but not used
     )
 endif()
 
 # Ensure Qt components are found for this module
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
+# Find Boost stacktrace using the correct target
+find_package(boost_stacktrace_windbg CONFIG REQUIRED)
+
 ek_add_library(DebugUtils
     FOLDER "modules"
     SOURCES ${DEBUGUTILS_SOURCES}
     QT_MODULES Core
-    LIBRARIES Advapi32 User32
+    LIBRARIES Boost::stacktrace_windbg
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
 )
 

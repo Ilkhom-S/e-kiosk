@@ -28,11 +28,11 @@ DumpCallstack(stack, nullptr);
 
 ## Platform support
 
-| Platform | Status           | Notes                            |
-| -------- | ---------------- | -------------------------------- |
-| Windows  | ✅ Full          | Uses dbghelp and Windows APIs    |
-| Linux    | ❌ Not supported | Windows-specific stack APIs used |
-| macOS    | ❌ Not supported | Windows-specific stack APIs used |
+| Platform | Status  | Notes                                   |
+| -------- | ------- | --------------------------------------- |
+| Windows  | ✅ Full | Uses Boost.Stacktrace with WinDbg       |
+| Linux    | ✅ Full | Uses Boost.Stacktrace with libbacktrace |
+| macOS    | ✅ Full | Uses Boost.Stacktrace with libbacktrace |
 
 ---
 

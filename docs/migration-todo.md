@@ -8,6 +8,7 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [ ] Refactor shared code into src/ and include/
 - [x] Add `BaseApplication` module under `src/modules/common` and port `apps/kiosk` to use it
 - [x] Implement DebugUtils module
+- [x] Modernize DebugUtils to use Boost.Stacktrace (cross-platform stack tracing)
 - [x] Implement Connection module and move tests to tests/modules/
 - [x] Implement NetworkTaskManager module and move tests to tests/modules/
 - [x] Standardize all adopted modules to use ek_add_library with proper parameters

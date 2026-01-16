@@ -30,7 +30,7 @@ class StackWalkerInternal; // forward
 class StackWalker {
   public:
     typedef enum StackWalkOptions {
-        // No addition info will be retrived
+        // No addition info will be retrieved
         // (only the address is available)
         RetrieveNone = 0,
 
@@ -46,7 +46,7 @@ class StackWalker {
         // Also retrieve the version for the DLL/EXE
         RetrieveFileVersion = 8,
 
-        // Contains all the abouve
+        // Contains all the above
         RetrieveVerbose = 0xF,
 
         // Generate a "good" symbol-search-path
@@ -91,12 +91,12 @@ class StackWalker {
 
   protected:
     // Entry for each Callstack-Entry
-    typedef struct CallstackEntry {
+    struct CallstackEntry {
         DWORD64 offset; // if 0, we have no valid entry
         CHAR name[STACKWALK_MAX_NAMELEN];
         CHAR undName[STACKWALK_MAX_NAMELEN];
         CHAR undFullName[STACKWALK_MAX_NAMELEN];
-        DWORD64 offsetFromSmybol;
+        DWORD64 offsetFromSymbol;
         DWORD offsetFromLine;
         DWORD lineNumber;
         CHAR lineFileName[STACKWALK_MAX_NAMELEN];
@@ -107,12 +107,12 @@ class StackWalker {
         CHAR loadedImageName[STACKWALK_MAX_NAMELEN];
     } CallstackEntry;
 
-    typedef enum CallstackEntryType { firstEntry, nextEntry, lastEntry };
+    enum CallstackEntryType { firstEntry, nextEntry, lastEntry };
 
     virtual void OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName);
     virtual void OnLoadModule(LPCSTR img, LPCSTR mod, DWORD64 baseAddr, DWORD size, DWORD result, LPCSTR symType,
                               LPCSTR pdbName, ULONGLONG fileVersion);
-    virtual void OnCallstackEntry(CallstackEntryType eType, CallstackEntry &entry);
+    virtual void OnCallstackEntry(CallstackEntryType eType, struct CallstackEntry &entry);
     virtual void OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr);
     virtual void OnOutput(LPCSTR szText);
 

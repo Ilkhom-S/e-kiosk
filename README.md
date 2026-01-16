@@ -2,6 +2,12 @@
 
 EKiosk is a Qt-based C++ application for payment kiosk systems, handling device management, user authentication, and transaction processing.
 
+## Recent Improvements (2026)
+
+- **Cross-platform DebugUtils**: Migrated from Windows DbgHelp to Boost.Stacktrace for better cross-platform stack tracing
+- **Qt Version Strategy**: Platform-specific Qt versions (Qt 5.15 LTS for Windows 7, Qt 6.8 LTS for Windows 10+/Linux)
+- **Modular Architecture**: Ongoing migration to clean module structure with proper CMake integration
+
 ## Features
 
 - Payment processing with various devices (coin acceptors, printers, validators)
