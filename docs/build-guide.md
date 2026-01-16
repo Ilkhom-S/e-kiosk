@@ -88,6 +88,12 @@ All new targets (applications, libraries, plugins, tests) **must** use the EKios
 - Use `ek_add_translations()` for Qt translations
 - Use `ek_enable_static_analysis()` for static analysis (clang-tidy, cppcheck)
 
+Folder / IDE grouping
+
+- The `ek_add_*` helpers accept an optional `FOLDER` argument to explicitly control the IDE project folder for the generated target (Visual Studio, CLion, etc.).
+- If `FOLDER` is omitted, the helper will compute a sensible default (for example: `modules/<module-name>`, `plugins/<path>`, `apps/<app-name>`, `tests/<path>`).
+- To override the default, pass `FOLDER "<folder/path>"` in the helper call, e.g. `ek_add_plugin(myplugin FOLDER "plugins/Payments/Humo" SOURCES ...)`.
+
 **Translations & Qt LinguistTools** ⚠️
 
 - Building translations requires Qt Linguist Tools (`lrelease`/`lupdate`). During configure, CMake runs `find_package(Qt${QT_VERSION_MAJOR} COMPONENTS LinguistTools)`; if not found it falls back to searching for a `lrelease` executable on PATH.

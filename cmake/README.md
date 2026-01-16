@@ -44,6 +44,12 @@ include(cmake/EKStaticAnalysis.cmake)
 ek_add_library(mylib SOURCES src/foo.cpp src/bar.cpp)
 ```
 
+Folder / IDE grouping
+
+- All `ek_add_*` helpers support an optional `FOLDER` one-value argument that controls the IDE project folder for the generated target (Visual Studio / other IDEs).
+- When `FOLDER` is omitted, helpers will compute a sensible default (e.g. `modules/<module-name>` for `ek_add_library` called from `src/modules/<module>`, `plugins/<path>` for plugins, `apps/<app-name>` for applications, and `tests/<path>` for tests).
+- You can override the computed value by passing `FOLDER "<your/folder/path>"` in the helper call.
+
 **Why:**
 
 - Consistent library setup (Qt, warnings, install, etc.)
