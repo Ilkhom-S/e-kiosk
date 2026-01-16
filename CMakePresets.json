@@ -173,5 +173,34 @@
       "name": "linux-x86"
     }
   ],
+  "buildPresets": [
+    {
+      "name": "build-msvc-qt5-x64-debug",
+      "displayName": "Build Debug (Win: Qt5 x64 MSVC)",
+      "configurePreset": "win-msvc-qt5-x64",
+      "configuration": "Debug",
+      "description": "Builds the Debug configuration using the Visual Studio generator"
+    },
+    {
+      "name": "build-msvc-qt5-x64-release",
+      "displayName": "Build Release (Win: Qt5 x64 MSVC)",
+      "configurePreset": "win-msvc-qt5-x64",
+      "configuration": "Release",
+      "description": "Builds the Release configuration using the Visual Studio generator"
+    },
+    {
+      "name": "build-msvc-qt6-x64-debug",
+      "displayName": "Build Debug (Win: Qt6 x64 MSVC)",
+      "configurePreset": "win-msvc-qt6-x64",
+      "configuration": "Debug",
+      "description": "Builds the Debug configuration using the Visual Studio generator"
+    },
+    {
+      "name": "build-ninja-qt5-x64",
+      "displayName": "Build (Win: Qt5 x64 Ninja)",
+      "configurePreset": "win-qt5-x64",
+      "description": "Build using Ninja generator (single-config). Ensure configure preset uses Debug if needed."
+    }
+  ],
   "version": 3
 }
