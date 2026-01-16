@@ -21,6 +21,7 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [ ] Add CI for modular builds and tests
 - [x] Implement platform-specific Qt version strategy (Qt 5.15 LTS for Windows 7, Qt 6.8 LTS for Windows 10+/Linux)
 - [x] Update all documentation for Qt version strategy (platform-compatibility.md, coding-standards.md, copilot-instructions.md, build-guide.md)
+- [x] Fix interface header AUTOMOC processing for PPSDK and Connection modules
 
 ## Notes
 

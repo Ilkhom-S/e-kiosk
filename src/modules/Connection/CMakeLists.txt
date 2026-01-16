@@ -30,3 +30,8 @@ ek_add_library(Connection
 if(WIN32)
     target_link_libraries(Connection PUBLIC Rasapi32)
 endif()
+
+# Add IConnection interface header for AUTOMOC processing
+if(EXISTS "${CMAKE_SOURCE_DIR}/include/Connection/IConnection.h")
+    target_sources(Connection PRIVATE "${CMAKE_SOURCE_DIR}/include/Connection/IConnection.h")
+endif()

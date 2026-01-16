@@ -23,7 +23,7 @@ ek_add_plugin(service_menu
     SOURCES ${SERVICEMENU_SOURCES} ${SERVICEMENU_UI_FILES} ${SERVICEMENU_RESOURCES}
     QT_MODULES Core Gui Widgets Network
     DEPENDS
-    App
+    BasicApplication
     Connection
     PluginsSDK
     DriversSDK

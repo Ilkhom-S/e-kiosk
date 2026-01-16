@@ -264,6 +264,12 @@ Always include a **Platform Compatibility** section for every module, specifying
 - Mirror src/ structure in tests/ for coverage.
 - Follow conventional commits and update docs for all major changes.
 
+## Build Guidelines
+
+- **Targeted Builds:** When making code changes, prefer building only the specific target/project affected rather than the entire project, as the project is large. Use `cmake --build . --target <target_name>` for local builds.
+- **Local vs Global CMake:** Always try building with local CMake configuration first (`cmake --build .`) unless global CMake reconfiguration is required (e.g., when changing CMakeLists.txt files that affect dependencies).
+- **Incremental Testing:** After code changes, test builds on the specific component before committing to avoid long build times on the full project.
+
 ## References
 
 - [Getting Started](../docs/getting-started.md)

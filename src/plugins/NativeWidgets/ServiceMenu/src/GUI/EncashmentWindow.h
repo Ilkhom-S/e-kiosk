@@ -1,4 +1,4 @@
-/* @file Базовый виджет для инкасации */
+/* @file Базовый виджет для инкассации */
 #pragma once
 
 // Qt
@@ -16,37 +16,36 @@
 class ServiceMenuBackend;
 
 //---------------------------------------------------------------------------
-class EncashmentWindow : public QWidget, public ServiceWindowBase
-{
-	Q_OBJECT
+class EncashmentWindow : public QWidget, public ServiceWindowBase {
+    Q_OBJECT
 
-public:
-	EncashmentWindow(ServiceMenuBackend* aBackend, QWidget* aParent = 0);
-	virtual ~EncashmentWindow();
+  public:
+    EncashmentWindow(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
+    virtual ~EncashmentWindow();
 
-public:
-	virtual bool activate();
-	virtual bool deactivate();
+  public:
+    virtual bool activate();
+    virtual bool deactivate();
 
-protected slots:
-	void doEncashment();
-	virtual bool doEncashmentProcess();
-	void onPrintZReport();
-	void onPeceiptPrinted(qint64 aJobIndex, bool aErrorHappened);
+  protected slots:
+    void doEncashment();
+    virtual bool doEncashmentProcess();
+    void onPrintZReport();
+    void onReceiptPrinted(qint64 aJobIndex, bool aErrorHappened);
 
-protected:
-	virtual void updateUI() = 0;
+  protected:
+    virtual void updateUI() = 0;
 
-protected:
-	QString mMessageSuccess;
-	QString mMessageError;
-	bool mEncashmentWithZReport;
-	qint64 mLastPrintJob;
+  protected:
+    QString mMessageSuccess;
+    QString mMessageError;
+    bool mEncashmentWithZReport;
+    qint64 mLastPrintJob;
 
-protected:
-	QTimer mIdleTimer;
-	InputBox* mInputBox;
-	EncashmentHistoryWindow* mHistoryWindow;
+  protected:
+    QTimer mIdleTimer;
+    InputBox *mInputBox;
+    EncashmentHistoryWindow *mHistoryWindow;
 };
 
 //---------------------------------------------------------------------------

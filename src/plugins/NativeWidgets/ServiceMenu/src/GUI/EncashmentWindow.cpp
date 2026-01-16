@@ -156,7 +156,7 @@ void EncashmentWindow::onPrintZReport() {
         if (canPrintFullZReport) {
             fullZReport = GUI::MessageBox::question(msg);
         } else {
-            GUI::MessageBox::modal(msg, SDK::GUI::MessageBoxParams::Warning);
+            GUI::MessageBox::warning(msg);
         }
 
         mIdleTimer.stop();
@@ -168,7 +168,7 @@ void EncashmentWindow::onPrintZReport() {
             int jobIndex = mBackend->getPaymentManager()->printZReport(fullZReport);
             if (jobIndex == -1) {
                 mBackend->toLog(LogLevel::Debug, QString("JOB id=%1 CREATE FAIL.").arg(jobIndex));
-                MessageBox::warning(tr("#full_zreport_print_failed"));
+                GUI::MessageBox::warning(tr("#full_zreport_print_failed"));
             } else {
                 mBackend->toLog(LogLevel::Debug, QString("JOB id=%1 CREATE.").arg(jobIndex));
             }
@@ -180,10 +180,10 @@ void EncashmentWindow::onPrintZReport() {
 }
 
 //------------------------------------------------------------------------
-void EncashmentWindow::onPeceiptPrinted(qint64 aJobIndex, bool aErrorHappened) {
+void EncashmentWindow::onReceiptPrinted(qint64 aJobIndex, bool aErrorHappened) {
     if (mLastPrintJob && mLastPrintJob == aJobIndex) {
         mBackend->toLog(LogLevel::Debug, QString("JOB id=%1 ALREADY COMPLETE. SKIP SLOT.").arg(aJobIndex));
-        MessageBox::hide();
+        GUI::MessageBox::hide();
         return;
     }
 

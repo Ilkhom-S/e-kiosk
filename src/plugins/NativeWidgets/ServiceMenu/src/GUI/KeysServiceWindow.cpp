@@ -88,7 +88,7 @@ void KeysServiceWindow::onEndGenerating() {
             mBackend->saveConfiguration();
 
             if (mBackend->getKeysManager()->isDefaultKeyOP(mBackend->getKeysManager()->getOP())) {
-                if (MessageBox::question(tr("#question_need_new_config"))) {
+                if (GUI::MessageBox::question(tr("#question_need_new_config"))) {
                     mBackend->needUpdateConfigs();
                 }
             }

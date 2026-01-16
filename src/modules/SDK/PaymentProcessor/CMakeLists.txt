@@ -25,3 +25,11 @@ else()
     # Fall back to include path in source tree during development
     target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/Core/IRemoteClient.h")
 endif()
+
+# Add IDeviceTest interface header for AUTOMOC processing
+if(EXISTS "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/IDeviceTest.h")
+    target_sources(PPSDK PRIVATE "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/IDeviceTest.h")
+else()
+    # Fall back to include path in source tree during development
+    target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/IDeviceTest.h")
+endif()
