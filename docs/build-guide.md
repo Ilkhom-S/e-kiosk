@@ -19,6 +19,20 @@ EKiosk automatically selects the appropriate Qt version based on your platform:
 
 The CMake configuration will detect your platform and select the correct Qt version automatically.
 
+## Qt Environment Variables
+
+Before configuring the project, set the appropriate Qt path environment variables based on your platform and Qt version:
+
+- **Windows Qt 5 x64 MSVC**: `QT5_X64_PATH=C:/Qt/5.15.2/msvc2019_64`
+- **Windows Qt 6 x64 MSVC**: `QT6_X64_PATH=C:/Qt/6.8.0/msvc2019_64`
+- **Windows Qt 5 x86 MSVC**: `QT5_X86_PATH=C:/Qt/5.15.2/msvc2019`
+- **Windows Qt 6 x86 MSVC**: `QT6_X86_PATH=C:/Qt/6.8.0/msvc2019`
+- **Linux Qt 6 x64**: `LINUX_QT_PATH=/opt/Qt/6.8.0/gcc_64`
+
+Adjust the paths to match your actual Qt installation directories. These variables are used by the CMake presets to automatically set `CMAKE_PREFIX_PATH`.
+
+For permanent setup, add them to your system environment variables or include them in your development environment configuration.
+
 ## Building
 
 1. Configure Qt kits in your IDE or set up environment variables.
