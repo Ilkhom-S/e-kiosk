@@ -181,10 +181,54 @@ else()
     message(WARNING "DelayImpHlp not found")
 endif()
 
-# Attempt to place any known thirdparty aliases into the thirdparty folder for IDEs
-if(TARGET EK::LibUSB)
-    # If underlying LibUSB target exists it will be grouped as well by CMake
-    set_target_properties(EK::LibUSB PROPERTIES FOLDER "thirdparty/LibUSB")
+# Helper to set FOLDER either on the given target or on the aliased real target
+function(ek_set_folder_for_target _target _folder)
+    if(NOT TARGET ${_target})
+        return()
+    endif()
+    # If the target looks like an EK:: alias, prefer setting the folder on the underlying name
+    string(REGEX MATCH "^EK::" _has_ek_prefix "${_target}")
+    if(_has_ek_prefix)
+        string(REGEX REPLACE "^EK::" "" _real ${_target})
+        if(TARGET ${_real})
+            get_target_property(_tp_real ${_real} TYPE)
+            if(NOT _tp_real STREQUAL "ALIAS")
+                set_target_properties(${_real} PROPERTIES FOLDER "${_folder}")
+            endif()
+            return()
+        else()
+            # underlying real target not present - skip setting on alias
+            return()
+        endif()
+    endif()
+
+    # For non-EK names, ensure we do not call set_target_properties on ALIAS targets directly
+    get_target_property(_tp ${_target} TYPE)
+    if(_tp STREQUAL "ALIAS")
+        # Can't set properties on alias targets; skip it
+        return()
+    endif()
+
+    set_target_properties(${_target} PROPERTIES FOLDER "${_folder}")
+endfunction()
+
+# Place known thirdparty targets under thirdparty/<name>
+ek_set_folder_for_target(EK::LibUSB "thirdparty/LibUSB")
+
+# Some thirdparty libraries add example/test executables that clutter the IDE root view.
+# Re-home known example/test targets into `thirdparty/<name>/` folders so the IDE tree stays tidy.
+# libipriv: examples and tests
+if(TARGET basic_encryption)
+    set_target_properties(basic_encryption PROPERTIES FOLDER "thirdparty/libipriv/examples")
+endif()
+if(TARGET digital_signatures)
+    set_target_properties(digital_signatures PROPERTIES FOLDER "thirdparty/libipriv/examples")
+endif()
+if(TARGET key_export_import)
+    set_target_properties(key_export_import PROPERTIES FOLDER "thirdparty/libipriv/examples")
+endif()
+if(TARGET test_libipriv)
+    set_target_properties(test_libipriv PROPERTIES FOLDER "thirdparty/libipriv/tests")
 endif()
 
 message(STATUS "[thirdparty] Thirdparty configuration complete")
