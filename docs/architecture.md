@@ -1,6 +1,6 @@
 # EKiosk Architecture Overview
 
-EKiosk is a modular Qt C++ project for self-service kiosks. The architecture is split into clear layers and modules for maintainability and scalability.
+EKiosk is a modular Qt C++ project for self-service kiosks. The architecture follows a service-oriented design with clear separation of concerns, modular components, and a comprehensive plugin system.
 
 ## Documentation Index
 
@@ -9,68 +9,169 @@ EKiosk is a modular Qt C++ project for self-service kiosks. The architecture is 
 - [Coding Standards](coding-standards.md)
 - [Platform Compatibility](platform-compatibility.md)
 - [Multilanguage Support](multilanguage.md)
-- [Logging Module](modules/logging.md)
-- [BaseApplication Module](modules/base_application.md)
-- [SysUtils Module](modules/sysutils.md)
+- [Services Documentation](services/README.md)
+- [Plugin System Architecture](plugins/README.md)
 - [Migration Plan & TODO](migration-todo.md)
 
-## Key Concepts
+## Key Architectural Concepts
 
-- **Layered design:** UI, modules, devices, connection, utilities
-- **Multiple executables:** All applications are in the `apps/` folder. Each app is a separate subfolder with its own code and build setup.
-- **Per-app modular structure:**
-  - Each app (e.g., `kiosk`, `Updater`, `UpdaterSplashScreen`, `WatchService`, `WatchServiceController`) has its own folder under `apps/`.
-  - Each app contains its own `src/` (for code) and `CMakeLists.txt` (for build configuration).
-  - Platform/build folders (e.g., `msvc/`) can be placed at the app root if needed.
-- **Shared code:** To be refactored into top-level `src/` (shared code) and `include/` (public headers) as modularization proceeds.
-- **Third-party libraries:** In `thirdparty/`.
-- **Tests:** Mirror the structure of `src/` in the `tests/` folder for unit/integration tests.
+### Service-Oriented Architecture
 
-### Applications in `apps/` (2026)
+EKiosk uses a service-oriented architecture where all major functionality is exposed through well-defined service interfaces. Services are managed by the `ServiceController` and accessed through the `ICore` interface.
 
-- `kiosk`: Main kiosk application
+**Service Categories:**
+
+- **Core Infrastructure**: Database, Network, Settings, Event services
+- **Payment Processing**: Crypt, Payment, Funds services
+- **Hardware Management**: Device, HID, Printer, Audio services
+- **User Interface**: GUI, Terminal services
+- **System Integration**: Remote, Scheduler, Plugin services
+- **Business Logic**: Ad, Hook services
+
+### Plugin System
+
+EKiosk features a comprehensive plugin system based on Qt plugins with custom factory interfaces:
+
+- **Plugin Architecture**: All plugins implement the `SDK::Plugin::IPluginFactory` interface
+- **Plugin Categories**: GraphicBackends, Payments, Drivers, NativeScenarios
+- **Plugin Lifecycle**: Discovery, registration, instantiation, initialization, operation, shutdown
+- **Inter-Plugin Communication**: Message passing and interface sharing through the Plugin Service
+
+### Modular Design
+
+- **Layered Architecture**: UI, business logic, services, hardware abstraction, utilities
+- **Shared Modules**: Reusable components in `src/modules/` with public headers in `include/`
+- **Application Structure**: Multiple executables in `apps/` with per-app modular structure
+- **Test Organization**: Mirrors source structure in `tests/` for comprehensive coverage
+
+## Application Structure (2026)
+
+### Applications in `apps/`
+
+- `kiosk`: Main kiosk application with full service integration
 - `Updater`: Automatic software update manager
-- `UpdaterSplashScreen`: Shows splash screen during update
-- `WatchService`: (planned) Windows service for monitoring
-- `WatchServiceController`: (planned) System tray controller for WatchService
+- `UpdaterSplashScreen`: Update splash screen display
+- `WatchService`: Windows service for system monitoring
+- `WatchServiceController`: System tray controller for WatchService
 
 ### Modular CMake Setup
 
-- The `apps/CMakeLists.txt` adds each app subdirectory using `add_subdirectory(<AppFolder>)`.
-- Each app has its own `CMakeLists.txt` for building.
-- The root `CMakeLists.txt` includes `add_subdirectory(apps)` to build all apps.
+- Root `CMakeLists.txt` orchestrates the build
+- `apps/CMakeLists.txt` adds each application subdirectory
+- Each app has its own `CMakeLists.txt` with `ek_add_application()`
+- Shared modules use `ek_add_library()` with proper dependencies
+- Plugins use `ek_add_plugin()` for consistent plugin building
 
-### Example (2026 Modular Structure)
+## Core Components
+
+### Service Layer
+
+The service layer provides the fundamental functionality:
+
+```cpp
+// Service access through ICore interface
+auto core = dynamic_cast<SDK::PaymentProcessor::ICore*>(
+    environment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+
+// Access specific services
+auto databaseService = core->getDatabaseService();
+auto paymentService = core->getPaymentService();
+auto pluginService = core->getPluginService();
+```
+
+### Module System
+
+Shared modules provide reusable functionality:
+
+- **BaseApplication**: Qt application base class with common functionality
+- **DebugUtils**: Cross-platform stack tracing and debugging utilities
+- **Connection**: Network connectivity and connection management
+- **NetworkTaskManager**: HTTP client with task queuing and retry logic
+- **Logging**: Structured logging with multiple output targets
+- **SysUtils**: System utilities and platform-specific operations
+- **UpdateEngine**: Software update management and deployment
+- **Hardware**: Hardware abstraction layer for device management
+- **CryptEngine**: Cryptographic operations and key management
+
+### Plugin Framework
+
+Plugins extend EKiosk functionality:
+
+```cpp
+class MyPlugin : public SDK::Plugin::IPlugin {
+public:
+    bool initialize(SDK::Plugin::IKernel *kernel) override {
+        // Access services through kernel
+        mDatabase = kernel->getDatabaseService();
+        mEventService = kernel->getEventService();
+        return true;
+    }
+};
+```
+
+## Directory Structure (2026)
 
 ```text
 ekiosk/
-├── apps/
-│   ├── kiosk/
-│   │   ├── src/
-│   │   └── CMakeLists.txt
-│   ├── Updater/
-│   │   └── CMakeLists.txt (planned)
-│   ├── UpdaterSplashScreen/
-│   │   └── CMakeLists.txt (planned)
-│   ├── WatchService/
-│   │   └── CMakeLists.txt (planned)
-│   ├── WatchServiceController/
-│   │   └── CMakeLists.txt (planned)
+├── apps/                    # Executable applications
+│   ├── kiosk/              # Main kiosk application
+│   │   ├── src/            # Application-specific code
+│   │   └── CMakeLists.txt  # Application build config
+│   ├── Updater/            # Update manager
 │   └── ...
-├── src/         # (future: shared code)
-├── include/     # (future: shared headers)
-├── thirdparty/
-├── tests/
-├── docs/
-└── ...
+├── src/                     # Shared modules and libraries
+│   └── modules/            # Modular components
+│       ├── common/         # BaseApplication, DebugUtils
+│       ├── connection/     # Connection management
+│       ├── network/        # NetworkTaskManager
+│       └── ...
+├── include/                 # Public headers for modules
+├── thirdparty/              # Vendored dependencies
+│   ├── SingleApplication/  # Qt single application
+│   ├── libusb/            # USB device support
+│   └── ...
+├── tests/                   # Unit and integration tests
+│   ├── modules/           # Module-specific tests
+│   └── apps/              # Application tests
+├── docs/                    # Documentation
+│   ├── services/          # Service documentation
+│   ├── modules/           # Module documentation
+│   └── plugins/           # Plugin documentation
+├── plugins/                 # Plugin implementations
+│   ├── GraphicBackends/   # UI rendering plugins
+│   ├── Payments/          # Payment processor plugins
+│   └── ...
+└── cmake/                  # Build system helpers
 ```
 
-See the above docs for details on each topic.
+## Service Integration
+
+Services work together to provide comprehensive functionality:
+
+- **Database Service** stores configuration and transaction data
+- **Network Service** handles external communications
+- **Event Service** coordinates inter-component messaging
+- **Plugin Service** manages plugin lifecycle and communication
+- **Payment Services** process transactions and manage funds
+- **Hardware Services** interface with peripherals
+- **UI Services** manage user interaction
+
+## Platform Support
+
+- **Windows 7**: Qt 5.15 LTS (VC toolset 142) - transitional support
+- **Windows 10/11**: Qt 6.8 LTS (MSVC, Ninja)
+- **Linux**: Qt 6.8 LTS (GCC, Clang, Ninja)
+
+## Development Workflow
+
+1. **Service Development**: Implement services with clean interfaces
+2. **Plugin Development**: Create plugins using service interfaces
+3. **Application Assembly**: Combine services and plugins in applications
+4. **Testing**: Comprehensive unit and integration testing
+5. **Deployment**: Platform-specific builds and packaging
 
 ---
 
-**For any new app or structural change, update this document and related docs to keep the architecture clear and up to date.**
+**For any architectural changes, update this document and related documentation to maintain clarity.**
 
----
-
-_This file is now a summary. For details, see the linked documentation files._
+_This architecture supports scalable, maintainable kiosk applications with comprehensive service integration._

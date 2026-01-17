@@ -42,51 +42,51 @@ auto networkService = core->getNetworkService();
 
 ### Core Infrastructure Services
 
-| Service | Interface | Purpose |
-|---------|-----------|---------|
-| [Database Service](database.md) | `IDatabaseService` | Database connectivity and operations |
-| [Network Service](network.md) | `INetworkService` | Network connectivity and HTTP communications |
-| [Settings Service](settings.md) | `ISettingsService` | Configuration management |
-| [Event Service](event.md) | `IEventService` | Event distribution and messaging |
+| Service                         | Interface          | Purpose                                      |
+| ------------------------------- | ------------------ | -------------------------------------------- |
+| [Database Service](database.md) | `IDatabaseService` | Database connectivity and operations         |
+| [Network Service](network.md)   | `INetworkService`  | Network connectivity and HTTP communications |
+| [Settings Service](settings.md) | `ISettingsService` | Configuration management                     |
+| [Event Service](event.md)       | `IEventService`    | Event distribution and messaging             |
 
 ### Payment Processing Services
 
-| Service | Interface | Purpose |
-|---------|-----------|---------|
-| [Crypt Service](crypt.md) | `ICryptService` | Cryptographic operations and key management |
+| Service                       | Interface         | Purpose                                       |
+| ----------------------------- | ----------------- | --------------------------------------------- |
+| [Crypt Service](crypt.md)     | `ICryptService`   | Cryptographic operations and key management   |
 | [Payment Service](payment.md) | `IPaymentService` | Payment processing and transaction management |
-| [Funds Service](funds.md) | `IFundsService` | Cash handling operations |
+| [Funds Service](funds.md)     | `IFundsService`   | Cash handling operations                      |
 
 ### Hardware Management Services
 
-| Service | Interface | Purpose |
-|---------|-----------|---------|
-| [Device Service](device.md) | `IDeviceService` | Hardware device management |
-| [HID Service](hid.md) | `IHIDService` | Human interface device management |
-| [Printer Service](printer.md) | `IPrinterService` | Printing operations |
-| [Audio Service](audio.md) | `IAudioService` | Audio playback and management |
+| Service                       | Interface         | Purpose                           |
+| ----------------------------- | ----------------- | --------------------------------- |
+| [Device Service](device.md)   | `IDeviceService`  | Hardware device management        |
+| [HID Service](hid.md)         | `IHIDService`     | Human interface device management |
+| [Printer Service](printer.md) | `IPrinterService` | Printing operations               |
+| [Audio Service](audio.md)     | `IAudioService`   | Audio playback and management     |
 
 ### User Interface Services
 
-| Service | Interface | Purpose |
-|---------|-----------|---------|
-| [GUI Service](gui.md) | `IGUIService` | Graphical user interface management |
-| [Terminal Service](terminal.md) | `ITerminalService` | Terminal-level operations |
+| Service                         | Interface          | Purpose                             |
+| ------------------------------- | ------------------ | ----------------------------------- |
+| [GUI Service](gui.md)           | `IGUIService`      | Graphical user interface management |
+| [Terminal Service](terminal.md) | `ITerminalService` | Terminal-level operations           |
 
 ### System Integration Services
 
-| Service | Interface | Purpose |
-|---------|-----------|---------|
-| [Remote Service](remote.md) | `IRemoteService` | Remote monitoring and control |
+| Service                           | Interface           | Purpose                        |
+| --------------------------------- | ------------------- | ------------------------------ |
+| [Remote Service](remote.md)       | `IRemoteService`    | Remote monitoring and control  |
 | [Scheduler Service](scheduler.md) | `ISchedulerService` | Task scheduling and automation |
-| [Plugin Service](plugin.md) | `IService` | Plugin management |
+| [Plugin Service](plugin.md)       | `IPluginService`    | Plugin management              |
 
 ### Business Logic Services
 
-| Service | Interface | Purpose |
-|---------|-----------|---------|
-| [Ad Service](ad.md) | `IService` | Advertising content management |
-| [Hook Service](hook.md) | `IService` | Extension points and hooks |
+| Service                 | Interface  | Purpose                        |
+| ----------------------- | ---------- | ------------------------------ |
+| [Ad Service](ad.md)     | `IService` | Advertising content management |
+| [Hook Service](hook.md) | `IService` | Extension points and hooks     |
 
 ## Service Implementation Guidelines
 
