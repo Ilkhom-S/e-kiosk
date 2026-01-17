@@ -36,6 +36,33 @@
   /* @file Реализация клиента, взаимодействующего с сервером рекламы. */
   ```
 
+- **Method Comments in Headers:** All public and protected methods in header files should be commented in Russian where possible, using the same style as function comments (//--------------------------------------------------------------------------- followed by // [Description in Russian]).
+
+- **Constants and Variables Comments:** Constants, static variables, and other declarations should be commented with `///` for descriptions, followed by inline comments if needed. For example:
+
+  ```cpp
+  namespace CConnection {
+      /// Период проверки статуса соединения.
+      const int DefaultCheckPeriod = 60 * 1000; // 1 минута
+
+      /// Период пинга соединения.
+      const int DefaultPingPeriod = 15 * 60 * 1000; // 15 минут
+
+      /// Таймаут запроса проверки соединения.
+      const int PingTimeout = 30 * 1000; // 30 секунд
+
+      /// Хост по умолчанию для проверки соединения.
+      const QString DefaultCheckHost = "http://mon.humo.tj:80/ping";
+
+      /// Строка ответа по умолчанию для проверки соединения.
+      const QString DefaultCheckResponse = "";
+  } // namespace CConnection
+  ```
+
+- **Complex Logic Comments in CPP Files:** In implementation files, if logic is complex or a developer may not understand, place Russian comments explaining what's happening, e.g., "// Планируем перезагрузку ЕК по истечении рекламы."
+
+- **Interface Separators:** If a class implements more than one interface or has multiple sections, separate them with `//--------------------------------------------------------------------------------` or use `#pragma region` and `#pragma endregion` for better organization.
+
 - **Include Order:**
   - **Include Order:**
   1.  Corresponding header (the header for this implementation file)
