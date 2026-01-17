@@ -1,8 +1,8 @@
 /* @file Реализация интерфейса работы с PC/SC API. */
 
-// Modules
-#include "SysUtils/ISysUtils.h"
+// System
 #include "Hardware/Protocols/Common/ProtocolUtils.h"
+#include "SysUtils/ISysUtils.h"
 
 // Project
 #include "PCSCReader.h"

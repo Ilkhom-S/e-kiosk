@@ -24,7 +24,7 @@ namespace CardReaderStatusCode {
 
 #define ADD_CR_WARNING(aStatusCode, aTranslation) ADD_CR_STATUS(aStatusCode, Warning, aTranslation)
 #define ADD_CR_ERROR(aStatusCode, aTranslation) ADD_CR_STATUS(aStatusCode, Error, aTranslation)
-#define ADD_CR_SС_OPERATION_ERROR(aStatusCode, aTranslation)                                                           \
+#define ADD_CR_SC_OPERATION_ERROR(aStatusCode, aTranslation)                                                           \
     ADD_CR_STATUS_DATA(aStatusCode, SCOperarionError, Warning, "Operation error - " #aStatusCode, aTranslation)
 #define ADD_CR_REJECT(aStatusCode)                                                                                     \
     ADD_CA_TYPE(Reject, aStatusCode, Rejected, Warning, "Reject by " #aStatusCode,                                     \
@@ -39,10 +39,10 @@ namespace CardReaderStatusCode {
             ADD_CR_SPECIAL(NeedReloading, QCoreApplication::translate("CardReaderStatuses", "#need_reloading"));
 
             /// Ошибки при работе со смарт-картой.
-            ADD_CR_SС_OPERATION_ERROR(Unknown, QCoreApplication::translate("CardReaderStatuses", "#unknown"));
-            ADD_CR_SС_OPERATION_ERROR(Certificate, QCoreApplication::translate("CardReaderStatuses", "#certificate"));
-            ADD_CR_SС_OPERATION_ERROR(Security, QCoreApplication::translate("CardReaderStatuses", "#security"));
-            ADD_CR_SС_OPERATION_ERROR(Memory, QCoreApplication::translate("CardReaderStatuses", "#memory"));
+            ADD_CR_SC_OPERATION_ERROR(Unknown, QCoreApplication::translate("CardReaderStatuses", "#unknown"));
+            ADD_CR_SC_OPERATION_ERROR(Certificate, QCoreApplication::translate("CardReaderStatuses", "#certificate"));
+            ADD_CR_SC_OPERATION_ERROR(Security, QCoreApplication::translate("CardReaderStatuses", "#security"));
+            ADD_CR_SC_OPERATION_ERROR(Memory, QCoreApplication::translate("CardReaderStatuses", "#memory"));
 
             /// Режекты.
             ADD_CR_REJECT(Unknown);

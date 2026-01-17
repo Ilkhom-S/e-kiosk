@@ -54,7 +54,7 @@ ek_add_library(HardwareCommon
     ${CMAKE_SOURCE_DIR}/include/Hardware
     ${CMAKE_SOURCE_DIR}/include/SDK/Drivers
     ${CMAKE_CURRENT_SOURCE_DIR}
-    DEPENDS EK::LibUSB
+    DEPENDS EK::LibUSB ek_common
     COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 

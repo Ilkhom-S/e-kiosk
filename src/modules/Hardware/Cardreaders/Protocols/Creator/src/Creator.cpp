@@ -6,14 +6,13 @@
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
 
-// Modules
+// System
 #include "Hardware/Common/HardwareConstants.h"
 
 // Project
 #include "Creator.h"
 #include "CreatorConstants.h"
 
-//--------------------------------------------------------------------------------
 Creator::Creator() : mIOLogsDebugMode(false) {
 }
 

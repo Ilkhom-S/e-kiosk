@@ -1,5 +1,6 @@
 /* @file Колбеки для функционала dll кардридера IDTech. */
 
+// Project
 #include "IDTechReader.h"
 
 #ifndef __FUNCTION_NAME__

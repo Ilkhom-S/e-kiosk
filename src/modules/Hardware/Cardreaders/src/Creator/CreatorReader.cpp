@@ -1,11 +1,11 @@
 /* @file Кардридер Creator. */
 
-// Modules
+// System
+#include "../EMV/EMVAdapter.h"
 #include "Hardware/CardReaders/CardReaderStatusesDescriptions.h"
 
 // Project
 #include "CreatorReader.h"
-#include "../EMV/EMVAdapter.h"
 #include "CreatorReaderConstants.h"
 #include "CreatorReaderDetectingData.h"
 

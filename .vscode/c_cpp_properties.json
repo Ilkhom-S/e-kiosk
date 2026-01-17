@@ -5,20 +5,10 @@
       "includePath": [
         "${workspaceFolder}/include",
         "${workspaceFolder}/src",
-        "${workspaceFolder}/vcpkg_installed/x64-windows/include",
         "${workspaceFolder}/thirdparty",
-        "c:/Qt/5.15.2/msvc2019_64/include"
+        "D:/Qt/5.15.2/msvc2019_64/include",
+        "${workspaceFolder}/**"
       ],
-      "browse": {
-        "path": [
-          "${workspaceFolder}/include",
-          "${workspaceFolder}/src",
-          "${workspaceFolder}/vcpkg_installed/x64-windows/include",
-          "${workspaceFolder}/thirdparty",
-          "c:/Qt/5.15.2/msvc2019_64/include"
-        ],
-        "limitSymbolsToIncludedHeaders": true
-      },
       "defines": ["_DEBUG", "UNICODE", "_UNICODE"],
       "windowsSdkVersion": "10.0.26100.0",
       "compilerPath": "cl.exe",

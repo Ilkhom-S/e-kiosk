@@ -80,9 +80,10 @@ bool Shtrih::isConnected() {
     QString log;
 
     if (!CrossDeviceLogData.isEmpty() && !PowerInterrupterLogData.isEmpty()) {
-        QString("%1 and %2 have no address").arg(CrossDeviceLogData).arg(PowerInterrupterLogData);
+        log = QString("%1 and %2 have no address").arg(CrossDeviceLogData).arg(PowerInterrupterLogData);
     } else if (!CrossDeviceLogData.isEmpty() || !PowerInterrupterLogData.isEmpty()) {
-        QString("%1 has no address").arg(!CrossDeviceLogData.isEmpty() ? CrossDeviceLogData : PowerInterrupterLogData);
+        log = QString("%1 has no address")
+                  .arg(!CrossDeviceLogData.isEmpty() ? CrossDeviceLogData : PowerInterrupterLogData);
     }
 
     if (!log.isEmpty()) {
@@ -167,7 +168,7 @@ bool Shtrih::getCommandPacket(int aCommand, QByteArray &aCommandPacket, const QB
         }
         //-------------------------------------------------------
         default: {
-            toLog(LogLevel::Error, QString("Shtrih: The commmand %1 is not implemented").arg(aCommand));
+            toLog(LogLevel::Error, QString("Shtrih: The command %1 is not implemented").arg(aCommand));
             return false;
         }
     }

@@ -15,6 +15,7 @@ add_subdirectory(modules/MessageQueue)
 add_subdirectory(modules/AdBackend)
 add_subdirectory(modules/KeysUtils)
 add_subdirectory(modules/Payment)
+add_subdirectory(modules/Hardware)
 
 # SDK modules
 add_subdirectory(modules/SDK)

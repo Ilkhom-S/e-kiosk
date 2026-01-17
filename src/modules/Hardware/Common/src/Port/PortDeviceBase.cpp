@@ -1,14 +1,14 @@
 /* @file Базовый класс устройств на порту. */
 
-// Modules
+// System
+#include "Hardware/CardReaders/ProtoMifareReader.h"
+#include "Hardware/CashAcceptors/ProtoCashAcceptor.h"
 #include "Hardware/Common/PollingDeviceBase.h"
 #include "Hardware/Common/ProtoDevices.h"
 #include "Hardware/Dispensers/ProtoDispenser.h"
-#include "Hardware/CashAcceptors/ProtoCashAcceptor.h"
-#include "Hardware/Watchdogs/ProtoWatchdog.h"
 #include "Hardware/FR/ProtoFR.h"
-#include "Hardware/CardReaders/ProtoMifareReader.h"
 #include "Hardware/HID/ProtoHID.h"
+#include "Hardware/Watchdogs/ProtoWatchdog.h"
 
 // Project
 #include "PortDeviceBase.h"
@@ -51,12 +51,12 @@ template <class T> void PortDeviceBase<T>::addPortData() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void PortDeviceBase<T>::finaliseInitialization() {
+template <class T> void PortDeviceBase<T>::finalizeInitialization() {
     addPortData();
 
     mControlRemoving = mIOPort->getDeviceConfiguration()[CHardware::Port::COM::ControlRemoving].toBool();
 
-    T::finaliseInitialization();
+    T::finalizeInitialization();
 }
 
 //--------------------------------------------------------------------------------

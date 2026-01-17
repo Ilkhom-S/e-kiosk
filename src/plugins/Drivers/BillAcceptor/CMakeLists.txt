@@ -25,4 +25,4 @@ file(GLOB TS_FILES_EN src/locale/bill_acceptors_en.ts)
 file(GLOB TS_FILES_TG src/locale/bill_acceptors_tg.ts)
 file(GLOB TS_FILES_UZ src/locale/bill_acceptors_uz.ts)
 
-# TODO: Add multi-locale translation handling
+

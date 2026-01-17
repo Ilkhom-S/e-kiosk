@@ -2,9 +2,9 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QtAlgorithms>
-#include <QtCore/QWriteLocker>
 #include <QtCore/QReadLocker>
+#include <QtCore/QWriteLocker>
+#include <QtCore/QtAlgorithms>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
@@ -191,8 +191,8 @@ template <class T> void MetaDevice<T>::logDeviceData(const SLogData &aData) cons
 
     QReadLocker lock(&mConfigurationGuard);
 
-    if (mConfiguration[CHardwareSDK::RequiredDevice].value<IDevice *>() && !aData.requiedDevice.isEmpty()) {
-        toLog(LogLevel::Normal, "Requied device data:" + aData.requiedDevice);
+    if (mConfiguration[CHardwareSDK::RequiredDevice].value<IDevice *>() && !aData.requiredDevice.isEmpty()) {
+        toLog(LogLevel::Normal, "Required device data:" + aData.requiredDevice);
     }
 }
 
@@ -213,7 +213,7 @@ template <class T> SLogData MetaDevice<T>::getDeviceData() const {
             data.insert(key, configuration[key].toString());
         }
 
-        result.requiedDevice = DeviceUtils::getPartDeviceData(data);
+        result.requiredDevice = DeviceUtils::getPartDeviceData(data);
     }
 
     TDeviceData data;

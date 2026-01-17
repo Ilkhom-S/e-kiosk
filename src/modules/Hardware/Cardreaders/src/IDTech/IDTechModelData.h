@@ -21,7 +21,7 @@ namespace CIDTech {
         const char Kiosk_III_IV[] = "IDTech ViVOpay Kiosk III/IV";
 
         namespace EModes {
-            enum Enum { Unknown = 0, COM, USB, HID, BT, Keydoard };
+            enum Enum { Unknown = 0, COM, USB, HID, BT, Keyboard };
         } // namespace EModes
 
         struct SData {

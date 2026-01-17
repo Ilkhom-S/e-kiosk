@@ -45,7 +45,7 @@ class IDTechReader : public PollingDeviceBase<ProtoHID> {
     /// Инициализировать библиотеки.
     bool initializeLibraries();
 
-    /// Проверить наличие и функциональноть библиотеки - получить её версию.
+    /// Проверить наличие и функциональность библиотеки - получить её версию.
     template <class T>
     bool checkLibrary(const char *aName, const char *aFunctionName, std::function<QString(T)> aFunction);
 
@@ -65,10 +65,10 @@ class IDTechReader : public PollingDeviceBase<ProtoHID> {
     int mId;
 
   private:
-    /// Статический эксземпляр класса.
+    /// Статический экземпляр класса.
     static IDTechReader *mInstance;
 
-    /// Счетчик эксземпляров класса.
+    /// Счетчик экземпляров класса.
     static int mInstanceCounter;
 };
 

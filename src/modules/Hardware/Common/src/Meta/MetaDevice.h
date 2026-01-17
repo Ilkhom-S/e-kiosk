@@ -40,7 +40,7 @@ struct SLogData {
     QString device; /// данные устройства.
     QString config; /// данные config.xml, относящиеся к работе устройства.
 
-    QString requiedDevice; /// ini плагина зависимого устройства.
+    QString requiredDevice; /// ini плагина зависимого устройства.
 };
 
 //--------------------------------------------------------------------------------
@@ -87,10 +87,10 @@ class MetaDevice : public T, public SDK::Driver::IDevice::IDetectingIterator, pu
     /// Возвращает название устройства.
     virtual QString getName() const;
 
-    /// Переформировывает список параметров для автопоиска и устанавливает 1-й набор параметров из этого списка.
+    /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из этого списка.
     virtual SDK::Driver::IDevice::IDetectingIterator *getDetectingIterator();
 
-    /// Подключает и инициализует устройство. Обертка для вызова функционала в рабочем потоке.
+    /// Подключает и инициализирует устройство. Обертка для вызова функционала в рабочем потоке.
     virtual void initialize();
 
     /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
@@ -127,7 +127,7 @@ class MetaDevice : public T, public SDK::Driver::IDevice::IDetectingIterator, pu
 #pragma endregion
 
   protected:
-    /// Автопоиск?
+    /// Авто поиск?
     bool isAutoDetecting() const;
 
     /// Получение параметров устройства.
@@ -164,7 +164,7 @@ class MetaDevice : public T, public SDK::Driver::IDevice::IDetectingIterator, pu
     /// Время последнего логгирования.
     QDate mLogDate;
 
-    /// Итерация автопоиска.
+    /// Итерация авто поиска.
     int mDetectingPosition;
 
     /// Устройство инициализировано.

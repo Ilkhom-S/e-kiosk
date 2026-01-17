@@ -1,8 +1,8 @@
 /* @file Класс-обёртка над EMV протоколом. */
 
+// Project
 #include "EMVAdapter.h"
 #include "EMVConstants.h"
-
 #include "TLV.h"
 
 namespace EMV {

@@ -1,12 +1,12 @@
 /* @file POS-принтер. */
 
+// STL
+#include <algorithm>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QSet>
 #include <Common/QtHeadersEnd.h>
-
-// STL
-#include <algorithm>
 
 // Project
 #include "POSPrinter.h"
@@ -184,7 +184,7 @@ template <class T> bool POSPrinter<T>::updateParameters() {
     // TODO: устанавливать размеры ячейки сетки для печати, с учетом выбранного режима.
     QByteArray command = QByteArray(CPOSPrinter::Command::Initialize) + CPOSPrinter::Command::SetEnabled +
                          CPOSPrinter::Command::SetCodePage(mRussianCodePage) + CPOSPrinter::Command::SetUSCharacterSet +
-                         CPOSPrinter::Command::SetStandartMode + CPOSPrinter::Command::AlignLeft;
+                         CPOSPrinter::Command::SetStandardMode + CPOSPrinter::Command::AlignLeft;
 
     int lineSpacing = getConfigParameter(CHardware::Printer::Settings::LineSpacing, 0).toInt();
 

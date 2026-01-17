@@ -34,7 +34,7 @@ template <class T> class PortDeviceBase : public T {
     virtual bool checkExistence();
 
     /// Завершение инициализации.
-    virtual void finaliseInitialization();
+    virtual void finalizeInitialization();
 
     /// Получить и обработать статус.
     virtual bool processStatus(TStatusCodes &aStatusCodes);
