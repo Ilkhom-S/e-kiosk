@@ -1,0 +1,122 @@
+/* @file Шаблон реализации фабрики плагинов. */
+
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QDebug>
+#include <Common/QtHeadersEnd.h>
+
+// SDK
+#include <SDK/Plugins/PluginFactory.h>
+
+// Проект
+#include "TemplatePluginFactory.h"
+#include "TemplatePlugin.h"
+
+/// Статические переменные фабрики.
+/// Определяют метаданные плагина, общие для всех экземпляров фабрики.
+QString SDK::Plugin::PluginFactory::mName = "Template Plugin";
+QString SDK::Plugin::PluginFactory::mDescription = "Minimal template plugin for plugin development";
+QString SDK::Plugin::PluginFactory::mAuthor = "EKiosk Template";
+QString SDK::Plugin::PluginFactory::mVersion = "1.0";
+QString SDK::Plugin::PluginFactory::mModuleName = "template_plugin";
+
+//---------------------------------------------------------------------------
+// Конструктор фабрики.
+/// Выполняет инициализацию фабрики плагинов.
+TemplatePluginFactory::TemplatePluginFactory() {
+    qDebug() << "TemplatePluginFactory created";
+
+    // Здесь можно добавить инициализацию фабрики:
+    // - Регистрация типов QML
+    // - Инициализация статических ресурсов
+    // - Подготовка общих настроек
+}
+
+//---------------------------------------------------------------------------
+// Деструктор фабрики.
+/// Выполняет очистку ресурсов фабрики.
+TemplatePluginFactory::~TemplatePluginFactory() {
+    qDebug() << "TemplatePluginFactory destroyed";
+
+    // Здесь выполняется очистка ресурсов фабрики:
+    // - Освобождение общих ресурсов
+    // - Закрытие соединений
+    // - Сброс статических данных
+}
+
+//---------------------------------------------------------------------------
+// Возвращает название плагина.
+/// @return QString с названием плагина для отображения
+QString TemplatePluginFactory::getName() const {
+    return "Template Plugin (Factory Override)";
+}
+
+//---------------------------------------------------------------------------
+// Возвращает описание плагина.
+/// @return QString с подробным описанием плагина
+QString TemplatePluginFactory::getDescription() const {
+    return "Minimal template plugin for plugin development (Factory Override)";
+}
+
+//---------------------------------------------------------------------------
+// Возвращает список доступных плагинов.
+/// @return QStringList с именами плагинов, которые может создать эта фабрика
+QStringList TemplatePluginFactory::getPluginList() const {
+    // Возвращаем список плагинов, которые поддерживает эта фабрика
+    // В шаблоне поддерживается только один тип плагина
+    return QStringList() << "TemplatePlugin.Instance";
+}
+
+//---------------------------------------------------------------------------
+// Создаёт новый экземпляр плагина.
+/// @param aInstancePath Уникальный путь к экземпляру плагина
+/// @param aConfigPath Путь к конфигурации плагина
+/// @return указатель на созданный плагин или nullptr при ошибке
+SDK::Plugin::IPlugin *TemplatePluginFactory::createPlugin(const QString &aInstancePath, const QString &aConfigPath) {
+    qDebug() << "Creating TemplatePlugin with instance path:" << aInstancePath;
+
+    try {
+        // Создаём новый экземпляр плагина
+        TemplatePlugin *plugin = new TemplatePlugin(this, aInstancePath);
+
+        // Добавляем в список созданных плагинов для корректного уничтожения
+        mCreatedPlugins[plugin] = aInstancePath;
+
+        // Пример дополнительной инициализации:
+        // - Загрузка конфигурации
+        // - Проверка зависимостей
+        // - Инициализация подключений
+
+        return plugin;
+
+    } catch (const std::exception &e) {
+        qCritical() << "Failed to create TemplatePlugin:" << e.what();
+        return nullptr;
+    } catch (...) {
+        qCritical() << "Failed to create TemplatePlugin: unknown error";
+        return nullptr;
+    }
+}
+
+//---------------------------------------------------------------------------
+// Уничтожает экземпляр плагина.
+/// @param aPlugin Указатель на плагин для уничтожения
+/// @return true если плагин был успешно уничтожен, false если плагин не найден
+bool TemplatePluginFactory::destroyPlugin(SDK::Plugin::IPlugin *aPlugin) {
+    if (aPlugin && mCreatedPlugins.contains(aPlugin)) {
+        qDebug() << "Destroying TemplatePlugin:" << aPlugin->getPluginName();
+
+        // Удаляем из списка отслеживаемых плагинов
+        mCreatedPlugins.remove(aPlugin);
+
+        // Безопасно уничтожаем плагин
+        delete static_cast<TemplatePlugin*>(aPlugin);
+
+        return true;
+    }
+
+    qWarning() << "Attempted to destroy unknown plugin";
+    return false;
+}
+
+//------------------------------------------------------------------------------

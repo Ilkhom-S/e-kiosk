@@ -1,0 +1,95 @@
+/* @file Шаблон объявления плагина. */
+
+#pragma once
+
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QObject>
+#include <Common/QtHeadersEnd.h>
+
+// SDK
+#include <SDK/Plugins/IPlugin.h>
+
+//------------------------------------------------------------------------------
+/// Пример реализации плагина с базовой функциональностью.
+/// Этот класс демонстрирует минимальную реализацию плагина EKiosk.
+/// Для создания нового плагина скопируйте этот файл и замените:
+/// - TemplatePlugin -> YourPluginName
+/// - Добавьте свою функциональность в методы
+/// - Реализуйте необходимые интерфейсы (IGraphicsBackend, IPaymentProcessor и т.д.)
+class TemplatePlugin : public QObject, public SDK::Plugin::IPlugin {
+    Q_OBJECT
+
+  public:
+    /// Конструктор плагина.
+    /// @param aEnvironment Указатель на окружение плагина (фабрика)
+    /// @param aInstancePath Путь к экземпляру плагина (уникальный идентификатор)
+    TemplatePlugin(SDK::Plugin::IEnvironment *aEnvironment, const QString &aInstancePath);
+
+    /// Деструктор плагина.
+    /// Выполняет очистку ресурсов.
+    ~TemplatePlugin();
+
+#pragma region SDK::Plugin::IPlugin interface
+
+    /// IPlugin: Возвращает название плагина.
+    /// Используется для идентификации плагина в логах и интерфейсе.
+    virtual QString getPluginName() const override;
+
+    /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
+    /// Используется для сохранения/загрузки настроек плагина.
+    virtual QString getConfigurationName() const override;
+
+    /// IPlugin: Возвращает текущие параметры плагина.
+    /// Возвращает копию конфигурации для чтения.
+    virtual QVariantMap getConfiguration() const override;
+
+    /// IPlugin: Настраивает плагин новыми параметрами.
+    /// @param aConfiguration Новые параметры конфигурации
+    /// Вызывается при загрузке настроек или изменении конфигурации.
+    virtual void setConfiguration(const QVariantMap &aConfiguration) override;
+
+    /// IPlugin: Сохраняет конфигурацию плагина в постоянное хранилище.
+    /// @return true если сохранение успешно, false в случае ошибки
+    /// Сохраняет текущие настройки в .ini файл или хранилище приложения.
+    virtual bool saveConfiguration() override;
+
+    /// Проверяет успешно ли инициализировался плагин при создании.
+    /// @return true если плагин готов к работе, false если инициализация не удалась
+    /// Используется фабрикой для проверки корректности создания плагина.
+    virtual bool isReady() const override;
+
+#pragma endregion
+
+    /// Пример пользовательской функциональности плагина.
+    /// Возвращает приветственное сообщение.
+    /// @return QString с приветствием
+    QString getHelloMessage() const;
+
+    /// Пример метода для выполнения основной работы плагина.
+    /// Здесь должна быть реализована основная логика плагина.
+    void doWork();
+
+    /// Пример метода для обработки ошибок.
+    /// @param errorMessage Сообщение об ошибке
+    void handleError(const QString &errorMessage);
+
+  private:
+    /// Указатель на окружение плагина (фабрика).
+    /// Предоставляет доступ к логам, ядру и другим сервисам.
+    SDK::Plugin::IEnvironment *mEnvironment;
+
+    /// Путь к экземпляру плагина.
+    /// Уникальный идентификатор экземпляра плагина.
+    QString mInstancePath;
+
+    /// Текущая конфигурация плагина.
+    /// Хранит все параметры плагина в виде ключ-значение.
+    QVariantMap mConfiguration;
+
+    /// Пример пользовательского поля.
+    /// Демонстрирует хранение состояния плагина.
+    QString mHelloMessage;
+};
+
+//------------------------------------------------------------------------------
