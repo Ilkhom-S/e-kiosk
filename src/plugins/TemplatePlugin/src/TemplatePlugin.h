@@ -56,6 +56,14 @@ class Q_DECL_EXPORT TemplatePlugin : public QObject, public SDK::Plugin::IPlugin
     /// @return QString с сообщением
     QString getHelloMessage() const;
 
+    /// Выполняет основную работу плагина.
+    /// Пример метода для демонстрации функциональности.
+    void doWork();
+
+    /// Обрабатывает ошибки плагина.
+    /// @param errorMessage Сообщение об ошибке
+    void handleError(const QString &errorMessage);
+
   private:
     /// Указатель на окружение плагина.
     SDK::Plugin::IEnvironment *mEnvironment;
