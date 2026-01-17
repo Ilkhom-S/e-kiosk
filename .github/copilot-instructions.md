@@ -24,20 +24,28 @@
   }
   ```
 
+- **File Header Comments:** All header (.h/.hpp) and implementation (.cpp/.cc) files must start with a Russian comment in the format `/* @file [Description in Russian]. */` to describe the file's purpose. For example:
+
+  ```cpp
+  /* @file Шаблон объявления плагина. */
+  ```
+
+  or
+
+  ```cpp
+  /* @file Реализация клиента, взаимодействующего с сервером рекламы. */
+  ```
+
 - **Include Order:**
-
   - **Include Order:**
-
   1.  Corresponding header (the header for this implementation file)
       #include "MyClass.h"
   2.  Project headers and Qt headers
-
   - Wrap Qt headers between `Common/QtHeadersBegin.h` and `Common/QtHeadersEnd.h` to suppress Qt warnings on MSVC.
     #include "Common/QtHeadersBegin.h"
     #include <QtCore/QString>
     #include "Common/QtHeadersEnd.h"
   - Other project headers from `include/` come alongside these.
-
   3.  Third-party headers
       #include <boost/optional.hpp>
   4.  Standard library headers
@@ -103,7 +111,6 @@ This makes module ownership explicit and eases future Qt6 porting.
 ## CMake Guidelines
 
 - **Use EKiosk CMake Helpers:** Always use the helper functions from cmake/ for all new targets and when refactoring existing CMakeLists.txt files. These include:
-
   - ek_add_library() from EKLibrary.cmake
   - ek_add_application() from EKApplication.cmake
   - ek_add_plugin() from EKPlugin.cmake
@@ -130,6 +137,258 @@ This makes module ownership explicit and eases future Qt6 porting.
 - If a use case is not covered, extend the helper or document the exception in the code and docs.
 - **Qt Version Agnostic:** Use Qt${QT_VERSION_MAJOR}::Module syntax.
 - **Platform Checks:** Use if(WIN32), if(UNIX AND NOT APPLE), if(APPLE) for platform-specific code.
+
+# Plugin System Architecture
+
+EKiosk uses a modular plugin system based on Qt plugins with custom factory interfaces. All plugins must implement the `SDK::Plugin::IPluginFactory` interface and be built using the `ek_add_plugin()` CMake helper.
+
+## Plugin Structure
+
+### Directory Layout
+
+```
+src/plugins/
+├── CategoryName/                    # Plugin category (e.g., GraphicBackends, Payments)
+│   ├── PluginName/                  # Individual plugin
+│   │   ├── CMakeLists.txt           # Plugin build configuration
+│   │   ├── README.md                # Plugin-specific documentation
+│   │   ├── src/                     # Source files
+│   │   │   ├── PluginFactory.h/.cpp # Factory implementation
+│   │   │   ├── PluginImpl.h/.cpp    # Plugin implementation
+│   │   │   └── plugin.json          # Qt plugin metadata
+│   │   └── tests/                   # Plugin-specific tests
+│   │       └── plugin_test.cpp
+```
+
+### Core Interfaces
+
+- **`SDK::Plugin::IPluginFactory`**: Creates plugin instances, provides metadata
+- **`SDK::Plugin::IPlugin`**: Base plugin interface with lifecycle methods
+- **`SDK::Plugin::IKernel`**: Application kernel providing services to plugins
+
+## Creating New Plugins
+
+### 1. Plugin Factory Implementation
+
+```cpp
+class MyPluginFactory : public QObject, public SDK::Plugin::IPluginFactory {
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "SDK.Plugin.PluginFactory" FILE "my_plugin.json")
+    Q_INTERFACES(SDK::Plugin::IPluginFactory)
+
+public:
+    // IPluginFactory implementation
+    QString getName() const override { return "My Plugin"; }
+    QString getDescription() const override { return "Description of my plugin"; }
+    QString getAuthor() const override { return "Author Name"; }
+    QString getVersion() const override { return "1.0"; }
+    QStringList getPluginList() const override { return QStringList() << "MyPlugin.Instance"; }
+
+    SDK::Plugin::IPlugin *createPlugin(const QString &instancePath) override {
+        return new MyPlugin(instancePath);
+    }
+};
+```
+
+### 2. Plugin Implementation
+
+```cpp
+class MyPlugin : public SDK::Plugin::IPlugin {
+public:
+    MyPlugin(const QString &instancePath) : m_instancePath(instancePath) {}
+
+    bool initialize(SDK::Plugin::IKernel *kernel) override {
+        m_kernel = kernel;
+        m_log = kernel->getLog("MyPlugin");
+        return true;
+    }
+
+    bool start() override {
+        LOG(m_log, LogLevel::Normal, "MyPlugin started");
+        return true;
+    }
+
+    bool stop() override {
+        LOG(m_log, LogLevel::Normal, "MyPlugin stopped");
+        return true;
+    }
+
+private:
+    QString m_instancePath;
+    SDK::Plugin::IKernel *m_kernel;
+    ILog *m_log;
+};
+```
+
+### 3. Qt Plugin Metadata (plugin.json)
+
+```json
+{
+  "IID": "SDK.Plugin.PluginFactory",
+  "version": "1.0",
+  "name": "MyPlugin",
+  "description": "My plugin description",
+  "author": "Author Name"
+}
+```
+
+### 4. CMake Configuration
+
+```cmake
+include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
+
+set(MY_PLUGIN_SOURCES
+    src/MyPluginFactory.cpp
+    src/MyPlugin.cpp
+)
+
+ek_add_plugin(my_plugin
+    FOLDER "plugins/CategoryName"
+    SOURCES ${MY_PLUGIN_SOURCES}
+    QT_MODULES Core  # Add required Qt modules
+)
+```
+
+## Plugin Testing Framework
+
+All plugins must have comprehensive tests using the mock kernel infrastructure.
+
+### Test Structure
+
+```
+tests/plugins/
+├── common/                          # Shared testing utilities
+│   ├── MockObjects.h/.cpp           # Mock implementations
+│   ├── PluginTestBase.h/.cpp        # Base test class
+│   └── CMakeLists.txt
+├── CategoryName/
+│   ├── PluginName/
+│   │   ├── plugin_test.cpp          # Plugin-specific tests
+│   │   └── CMakeLists.txt
+```
+
+### Writing Plugin Tests
+
+```cpp
+#include "../common/PluginTestBase.h"
+
+class MyPluginTest : public QObject {
+    Q_OBJECT
+
+private slots:
+    void testPluginLoading();
+    void testPluginInitialization();
+    void testPluginFunctionality();
+
+private:
+    PluginTestBase m_testBase;
+};
+
+void MyPluginTest::testPluginLoading() {
+    SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
+    QVERIFY(factory != nullptr);
+    QCOMPARE(factory->getName(), QString("My Plugin"));
+}
+
+void MyPluginTest::testPluginInitialization() {
+    // Test plugin initialization with mock kernel
+    // Verify proper setup and error handling
+}
+
+void MyPluginTest::testPluginFunctionality() {
+    // Test actual plugin functionality
+    // Use mock objects to verify behavior
+}
+```
+
+### Test CMake Configuration
+
+```cmake
+ek_add_test(my_plugin_test
+    FOLDER "tests/plugins"
+    SOURCES plugin_test.cpp
+    DEPENDS PluginTestCommon my_plugin
+    QT_MODULES Test Core
+)
+```
+
+## Plugin Documentation Requirements
+
+### Plugin README.md
+
+Each plugin must have a README.md in its root directory with:
+
+- Plugin purpose and functionality
+- Configuration options
+- Usage examples
+- Dependencies and requirements
+- Build instructions
+- Testing instructions
+
+### Central Plugin Documentation
+
+Full documentation must be maintained in `docs/plugins/` with:
+
+- Plugin architecture overview
+- Integration guides
+- API reference
+- Configuration reference
+- Troubleshooting guides
+- Migration notes
+
+### Documentation Checklist
+
+- [ ] Plugin README.md exists and is up-to-date
+- [ ] docs/plugins/PluginName.md exists with full documentation
+- [ ] API documentation includes all public interfaces
+- [ ] Configuration examples provided
+- [ ] Integration examples for common use cases
+- [ ] Testing documentation includes coverage and CI requirements
+
+## Plugin Categories
+
+### GraphicBackends
+
+- QMLBackend: Qt QML-based graphics rendering
+- NativeBackend: Native platform rendering
+- WebEngineBackend: Chromium-based rendering
+
+### Payments
+
+- Payment processors and gateways
+- Fiscal registration modules
+- Receipt generation
+
+### Drivers
+
+- Hardware device drivers
+- Communication protocols
+- Peripheral interfaces
+
+### NativeScenarios
+
+- Business logic modules
+- Workflow automation
+- Custom kiosk scenarios
+
+## Plugin Loading and Lifecycle
+
+1. **Discovery**: Qt plugin system scans plugin directories
+2. **Registration**: Plugins register with REGISTER_PLUGIN_WITH_PARAMETERS macro
+3. **Instantiation**: Factory creates plugin instances on demand
+4. **Initialization**: Plugin receives kernel reference and initializes
+5. **Operation**: Plugin runs and provides services
+6. **Shutdown**: Plugin cleanup and resource release
+
+## Best Practices
+
+- **Error Handling**: Always check return values and handle failures gracefully
+- **Logging**: Use kernel-provided logger for all diagnostic output
+- **Thread Safety**: Document thread safety guarantees
+- **Resource Management**: Properly clean up resources in stop()/destructor
+- **Configuration**: Support runtime configuration changes
+- **Testing**: Maintain high test coverage with mock kernel
+- **Documentation**: Keep README and docs/plugins/ current
 
 # Qt Version Compatibility
 
