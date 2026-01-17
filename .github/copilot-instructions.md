@@ -176,16 +176,22 @@ EKiosk uses a modular plugin system based on Qt plugins with custom factory inte
 ```
 src/plugins/
 ├── CategoryName/                    # Plugin category (e.g., GraphicBackends, Payments)
-│   ├── PluginName/                  # Individual plugin
-│   │   ├── CMakeLists.txt           # Plugin build configuration
-│   │   ├── README.md                # Plugin-specific documentation
-│   │   ├── src/                     # Source files
-│   │   │   ├── PluginFactory.h/.cpp # Factory implementation
-│   │   │   ├── PluginImpl.h/.cpp    # Plugin implementation
-│   │   │   └── plugin.json          # Qt plugin metadata
-│   │   └── tests/                   # Plugin-specific tests
-│   │       └── plugin_test.cpp
+│   └── PluginName/                  # Individual plugin
+│       ├── CMakeLists.txt           # Plugin build configuration
+│       ├── README.md                # Plugin-specific documentation
+│       └── src/                     # Source files
+│           ├── PluginFactory.h/.cpp # Factory implementation
+│           ├── PluginImpl.h/.cpp    # Plugin implementation
+│           └── plugin.json          # Qt plugin metadata
+
+tests/plugins/
+├── CategoryName/
+│   └── PluginName/
+│       ├── plugin_test.cpp          # Plugin-specific tests using kernel mocking
+│       └── CMakeLists.txt           # Test build configuration
 ```
+
+**Important:** Plugin tests must be placed in `tests/plugins/` (not `src/plugins/*/tests/`) and use kernel mocking infrastructure from `tests/plugins/common/` (MockKernel, MockLog, PluginTestBase) to ensure proper isolation and avoid Qt test framework cleanup crashes. Tests should achieve 100% coverage of all public methods in plugins and modules.
 
 ### Core Interfaces
 
@@ -278,7 +284,16 @@ ek_add_plugin(my_plugin
 
 ## Plugin Testing Framework
 
-All plugins must have comprehensive tests using the mock kernel infrastructure.
+All plugins must have comprehensive tests using the mock kernel infrastructure. Tests should achieve 100% coverage of all public methods in plugins and modules, including the complete call chain of classes and dependencies used during plugin execution.
+
+### Coverage Requirements
+
+**100% Coverage Definition:**
+
+- Test all public methods of the plugin factory and implementation classes
+- Test all classes instantiated and called by the plugin (e.g., AdPluginFactory → AdPluginImpl → dependent services)
+- Cover error paths, edge cases, and integration scenarios
+- Use DebugUtils for enhanced debugging when tests fail or for complex scenarios
 
 ### Test Structure
 
@@ -337,6 +352,84 @@ ek_add_test(my_plugin_test
     DEPENDS PluginTestCommon my_plugin
     QT_MODULES Test Core
 )
+```
+
+# DebugUtils Module
+
+## Purpose
+
+Provides debugging utilities for call stack dumping, unhandled exception handling and trace logging to help diagnose crashes and runtime issues.
+
+## Features
+
+- **Call Stack Dumping:** Cross-platform stack trace capture using Boost.Stacktrace
+- **Unhandled Exception Handling:** Global exception handlers for crash diagnostics
+- **Trace Logging:** Function entry/exit logging macros for debugging
+
+## Usage in Tests
+
+When writing tests, use DebugUtils for enhanced debugging capabilities:
+
+```cpp
+#include <DebugUtils/DebugUtils.h>
+
+// In test setup or when debugging failures
+QStringList stack;
+DumpCallstack(stack, nullptr);
+// Log or analyze stack for diagnostics
+
+// Enable trace logging for complex test scenarios
+ENABLE_TRACE_LOGGER("TestModule");
+LOG_TRACE("Test step started");
+```
+
+## Platform Support
+
+- **Windows:** Full support with Boost.Stacktrace + WinDbg
+- **Linux:** Full support with Boost.Stacktrace + libbacktrace
+- **macOS:** Full support with Boost.Stacktrace + libbacktrace
+
+## Testing Guidelines
+
+When writing tests with 100% coverage:
+
+- **Complete Call Chain Testing:** Test not just the plugin factory, but all classes and methods called during plugin execution
+- **Dependency Testing:** For plugins like AdPluginFactory that create AdPluginImpl instances, test the public methods and logic of AdPluginImpl and all dependent classes
+- **Integration Testing:** Ensure the entire plugin initialization and operation flow is covered, including error paths and edge cases
+
+### Handling Plugin Dependencies in Tests
+
+When plugins depend on external services (settings, database, network, etc.), mock these dependencies to ensure isolated testing:
+
+- **Identify Dependencies:** Check plugin initialization code for services required (e.g., IApplication, ISettingsManager, IDatabase)
+- **Create Mock Services:** Add mock implementations to `tests/plugins/common/MockObjects.h` following the pattern of MockKernel/MockLog
+- **Initialize Plugins Properly:** After creating a plugin instance, cast to the specific plugin implementation and call `initialize()` with the mock kernel
+- **Verify Readiness:** Always test `plugin->isReady()` after proper initialization to ensure all dependencies are satisfied
+- **Mock Complex Dependencies:** For plugins that create services internally (like AdService), either mock the service creation or provide minimal implementations that don't require external resources
+- **Partial Testing:** If full initialization is not possible due to complex application-level dependencies, test the plugin interface methods that don't require initialization, and document the limitations
+
+Example for testing plugin readiness:
+
+```cpp
+void MyPluginTest::testPluginCreation() {
+    SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
+    QVERIFY(factory != nullptr);
+
+    SDK::Plugin::IPlugin *plugin = factory->createPlugin("MyPlugin.Instance");
+    QVERIFY(plugin != nullptr);
+
+    // For plugins with complex dependencies, test interface without full init
+    QVERIFY(!plugin->getPluginName().isEmpty());
+    QVERIFY(!plugin->getConfigurationName().isEmpty());
+
+    // If possible, initialize and test readiness
+    MyPluginImpl *myPlugin = dynamic_cast<MyPluginImpl *>(plugin);
+    if (myPlugin && myPlugin->initialize(&m_testBase.getMockKernel())) {
+        QVERIFY(plugin->isReady());
+    }
+
+    factory->destroyPlugin(plugin);
+}
 ```
 
 ## Plugin Documentation Requirements
