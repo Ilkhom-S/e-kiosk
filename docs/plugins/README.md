@@ -225,11 +225,11 @@ TemplatePlugin::TemplatePlugin(SDK::Plugin::IEnvironment *aEnvironment)
     : mEnvironment(aEnvironment) {
     // Get logger
     ILog *log = mEnvironment->getLog("TemplatePlugin");
-    
+
     // Access core services
     auto core = dynamic_cast<SDK::PaymentProcessor::ICore*>(
         mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
-    
+
     // Use services...
 }
 ```
@@ -252,6 +252,378 @@ try {
 }
 ```
 
+## Available Core Services
+
+EKiosk provides a comprehensive set of core services accessible through the `ICore` interface. Each service offers specific functionality for different aspects of kiosk operation. Below is a detailed reference of all available services:
+
+### CryptService (Cryptography Service)
+
+**Purpose**: Provides cryptographic operations and key management for secure transactions.
+
+**Key Features**:
+
+- Key generation and registration with remote servers
+- Key storage and management
+- Key replacement operations
+- Access to cryptographic engine (`ICryptEngine`)
+
+**Access Pattern**:
+
+```cpp
+auto cryptService = core->getCryptService();
+ICryptEngine *cryptEngine = cryptService->getCryptEngine();
+
+// Generate new key
+int result = cryptService->generateKey(keyId, login, password, url, sd, ap, op, description);
+```
+
+**Common Usage**: Used in payment plugins (Humo, Ad payments) for secure transaction processing and key management.
+
+### EventService (Event Management Service)
+
+**Purpose**: Manages event distribution and communication between system components.
+
+**Key Features**:
+
+- Event subscription and publishing
+- Asynchronous event handling
+- System-wide notifications
+
+**Access Pattern**:
+
+```cpp
+auto eventService = core->getEventService();
+// Subscribe to events or publish notifications
+```
+
+### PaymentService (Payment Processing Service)
+
+**Purpose**: Handles payment operations and transaction management.
+
+**Key Features**:
+
+- Payment creation and management
+- Provider/operator management
+- Payment field access
+- Encashment operations
+- Transaction processing
+
+**Access Pattern**:
+
+```cpp
+auto paymentService = core->getPaymentService();
+
+// Create new payment
+qint64 paymentId = paymentService->createPayment(operatorId);
+
+// Get active payment
+qint64 activePayment = paymentService->getActivePayment();
+```
+
+**Common Usage**: Core payment processing in all payment-related plugins and scenarios.
+
+### DatabaseService (Database Access Service)
+
+**Purpose**: Provides database connectivity and query execution.
+
+**Key Features**:
+
+- Database connection management
+- Query execution
+- Transaction management
+- Data persistence
+
+**Access Pattern**:
+
+```cpp
+auto databaseService = core->getDatabaseService();
+// Execute queries and manage database operations
+```
+
+### DeviceService (Device Management Service)
+
+**Purpose**: Manages hardware devices connected to the kiosk.
+
+**Key Features**:
+
+- Device detection and enumeration
+- Device acquisition and release
+- Firmware updates
+- Device configuration management
+- Support for printers, card readers, bill acceptors, etc.
+
+**Access Pattern**:
+
+```cpp
+auto deviceService = core->getDeviceService();
+
+// Detect devices
+deviceService->detect("Printer"); // or specific device type
+
+// Acquire device
+SDK::Driver::IDevice *device = deviceService->acquireDevice(instancePath);
+```
+
+**Common Usage**: Used in hardware plugins (Printer, CardReader, BillAcceptor, etc.) for device control.
+
+### NetworkService (Network Communication Service)
+
+**Purpose**: Manages network connectivity and HTTP communications.
+
+**Key Features**:
+
+- Connection establishment and testing
+- Network task management via `NetworkTaskManager`
+- Connection parameter management
+- Error handling and status monitoring
+
+**Access Pattern**:
+
+```cpp
+auto networkService = core->getNetworkService();
+
+// Check connection
+bool connected = networkService->isConnected();
+
+// Get network task manager for HTTP requests
+NetworkTaskManager *taskManager = networkService->getNetworkTaskManager();
+```
+
+**Common Usage**: Used in payment plugins for server communication, remote monitoring, and data synchronization.
+
+### PrintingService (Print Management Service)
+
+**Purpose**: Handles receipt and document printing operations.
+
+**Key Features**:
+
+- Receipt printing
+- Document formatting
+- Printer status monitoring
+- Print queue management
+
+**Access Pattern**:
+
+```cpp
+auto printerService = core->getPrinterService();
+// Print receipts and documents
+```
+
+### FundsService (Cash Handling Service)
+
+**Purpose**: Manages cash acceptance and dispensing operations.
+
+**Key Features**:
+
+- Bill acceptor control
+- Coin acceptor management
+- Cash dispensing
+- Funds validation and counting
+
+**Access Pattern**:
+
+```cpp
+auto fundsService = core->getFundsService();
+// Handle cash operations
+```
+
+### HIDService (Human Interface Device Service)
+
+**Purpose**: Manages input devices like keyboards, touchscreens, and other HID devices.
+
+**Key Features**:
+
+- Input device management
+- Touchscreen control
+- Keyboard input handling
+- Device event processing
+
+**Access Pattern**:
+
+```cpp
+auto hidService = core->getHIDService();
+// Manage input devices and events
+```
+
+### SettingsService (Configuration Management Service)
+
+**Purpose**: Provides access to application settings and configuration.
+
+**Key Features**:
+
+- Settings storage and retrieval
+- Configuration management
+- Terminal settings access
+- Runtime configuration changes
+
+**Access Pattern**:
+
+```cpp
+auto settingsService = core->getSettingsService();
+
+// Get settings adapter
+ISettingsAdapter *adapter = settingsService->getAdapter("TerminalSettings");
+
+// Access terminal settings
+SDK::PaymentProcessor::TerminalSettings *terminalSettings = adapter->getTerminalSettings();
+```
+
+**Common Usage**: Used throughout the application for configuration access and runtime settings management.
+
+### GUIService (Graphical User Interface Service)
+
+**Purpose**: Manages graphical user interface components and rendering.
+
+**Key Features**:
+
+- UI component management
+- Graphics rendering coordination
+- Display management
+- User interface state management
+
+**Access Pattern**:
+
+```cpp
+auto guiService = core->getGUIService();
+// Manage UI components and rendering
+```
+
+### AudioService (Audio Management Service)
+
+**Purpose**: Handles audio playback and sound management.
+
+**Key Features**:
+
+- Sound playback
+- Audio file management
+- Volume control
+- Audio notifications
+
+**Access Pattern**:
+
+```cpp
+auto audioService = core->getAudioService();
+// Play sounds and manage audio output
+```
+
+### TerminalService (Terminal Control Service)
+
+**Purpose**: Provides terminal-level operations and system control.
+
+**Key Features**:
+
+- Terminal status monitoring
+- System control operations
+- Terminal configuration
+- System maintenance functions
+
+**Access Pattern**:
+
+```cpp
+auto terminalService = core->getTerminalService();
+// Control terminal operations
+```
+
+### RemoteService (Remote Monitoring Service)
+
+**Purpose**: Manages remote monitoring and communication with central systems.
+
+**Key Features**:
+
+- Remote status reporting
+- Command execution from remote systems
+- Monitoring data collection
+- Remote diagnostics
+
+**Access Pattern**:
+
+```cpp
+auto remoteService = core->getRemoteService();
+// Handle remote monitoring and commands
+```
+
+### SchedulerService (Task Scheduling Service)
+
+**Purpose**: Manages scheduled tasks and background operations.
+
+**Key Features**:
+
+- Task scheduling
+- Background job execution
+- Timer management
+- Automated operations
+
+**Access Pattern**:
+
+```cpp
+auto schedulerService = core->getSchedulerService();
+// Schedule and manage background tasks
+```
+
+### AdService (Advertising Service)
+
+**Purpose**: Manages advertising content and display operations.
+
+**Key Features**:
+
+- Ad content management
+- Display scheduling
+- Advertising playback
+- Content rotation
+
+**Access Pattern**:
+
+```cpp
+auto adService = core->getAdService();
+// Manage advertising content and display
+```
+
+### HookService (Extension Hook Service)
+
+**Purpose**: Provides extension points for custom functionality.
+
+**Key Features**:
+
+- Plugin extension hooks
+- Custom operation integration
+- Event interception
+- Functionality extension
+
+**Access Pattern**:
+
+```cpp
+auto hookService = core->getHookService();
+// Access extension hooks and custom operations
+```
+
+### PluginService (Plugin Management Service)
+
+**Purpose**: Manages plugin loading and lifecycle.
+
+**Key Features**:
+
+- Plugin discovery and loading
+- Plugin lifecycle management
+- Plugin configuration
+- Extension management
+
+**Access Pattern**:
+
+```cpp
+auto pluginService = core->getPluginService();
+// Manage plugins and extensions
+```
+
+## Service Implementation Notes
+
+- **Service Availability**: Not all services may be available at all times. Always check for service availability and handle `ServiceIsNotImplemented` exceptions.
+- **Thread Safety**: Services may have different thread safety guarantees. Check service documentation for threading considerations.
+- **Initialization Order**: Services are initialized in a specific order. Some services may depend on others being available first.
+- **Error Handling**: Services can throw exceptions or return error codes. Always implement proper error handling.
+- **Resource Management**: Some services manage system resources. Ensure proper cleanup when services are no longer needed.
+- **Configuration**: Many services are configurable through the `SettingsService`. Check service-specific configuration options.
+
+> **For detailed examples and code snippets**, see the [Plugin Documentation Template](template.md#accessing-services) which includes comprehensive examples for accessing environment settings, logging, core services, graphics engine services, and error handling patterns.
 > **For detailed examples and code snippets**, see the [Plugin Documentation Template](template.md#accessing-services) which includes comprehensive examples for accessing environment settings, logging, core services, graphics engine services, and error handling patterns.
 
 ## Plugin Testing Framework
