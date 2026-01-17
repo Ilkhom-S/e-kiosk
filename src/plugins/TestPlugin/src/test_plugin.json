@@ -1,7 +1,0 @@
-{
-  "IID": "SDK.Plugin.PluginFactory",
-  "version": "1.0",
-  "name": "test_plugin",
-  "description": "Minimal test plugin for verifying plugin system",
-  "author": "EKiosk Test"
-}

@@ -2,6 +2,11 @@
 
 #pragma once
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QObject>
+#include <Common/QtHeadersEnd.h>
+
 // SDK
 #include <Common/ILogable.h>
 
@@ -10,37 +15,45 @@
 #include <SDK/Plugins/IPluginFactory.h>
 
 //------------------------------------------------------------------------------
-class Plugin : public SDK::Plugin::IPlugin, public ILogable {
+/// Пример реализации плагина с функциональностью "Hello World".
+class Plugin : public QObject, public SDK::Plugin::IPlugin, public ILogable {
+    Q_OBJECT
+
   public:
     Plugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    ~Plugin();
 
   public:
 #pragma region SDK::Plugin::IPlugin interface
 
     /// IPlugin: Возвращает название плагина.
-    virtual QString getPluginName() const;
+    virtual QString getPluginName() const override;
 
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
-    virtual QString getConfigurationName() const;
+    virtual QString getConfigurationName() const override;
 
     /// IPlugin: Возвращает параметры плагина.
-    virtual QVariantMap getConfiguration() const;
+    virtual QVariantMap getConfiguration() const override;
 
     /// IPlugin: Настраивает плагин.
-    virtual void setConfiguration(const QVariantMap &aConfiguration);
+    virtual void setConfiguration(const QVariantMap &aConfiguration) override;
 
     /// IPlugin: Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
-    virtual bool saveConfiguration();
+    virtual bool saveConfiguration() override;
 
     /// Проверяет успешно ли инициализировался плагин при создании.
-    virtual bool isReady() const;
+    virtual bool isReady() const override;
 
 #pragma endregion
+
+    /// Пример функциональности плагина - возвращает приветственное сообщение.
+    QString getHelloMessage() const;
 
   private:
     SDK::Plugin::IEnvironment *mEnvironment;
     QString mInstancePath;
     QVariantMap mParameters;
+    QString mHelloMessage;
 };
 
 //------------------------------------------------------------------------------

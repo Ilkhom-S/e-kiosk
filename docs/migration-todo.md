@@ -23,7 +23,7 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [x] Implement platform-specific Qt version strategy (Qt 5.15 LTS for Windows 7, Qt 6.8 LTS for Windows 10+/Linux)
 - [x] Update all documentation for Qt version strategy (platform-compatibility.md, coding-standards.md, copilot-instructions.md, build-guide.md)
 - [x] Fix interface header AUTOMOC processing for PPSDK and Connection modules
-- [x] Refactor QMLBackend plugin: merge PluginFactoryDefinition.* into QMLBackendFactory.*, update CMake to explicit sources, add unit tests
+- [x] Refactor QMLBackend plugin: merge PluginFactoryDefinition._ into QMLBackendFactory._, update CMake to explicit sources, add unit tests
 
 ## Notes
 

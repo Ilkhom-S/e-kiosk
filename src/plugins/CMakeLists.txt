@@ -19,7 +19,7 @@ add_subdirectory(NativeWidgets)
 add_subdirectory(Payments)
 
 # Test plugin
-add_subdirectory(TestPlugin)
+add_subdirectory(TemplatePlugin)
 
 # Scenario backends
 add_subdirectory(ScenarioBackends)
