@@ -115,8 +115,11 @@ namespace SDK {
         //------------------------------------------------------------------------------
         void PluginFactory::shutdown() {
             if (mKernel) {
-                mKernel->getLog()->write(LogLevel::Normal,
-                                         QString("Shutting down plugin library \"%1\".").arg(getName()));
+                // Don't log during Qt shutdown to avoid crashes in test framework
+                if (QCoreApplication::instance() != nullptr) {
+                    mKernel->getLog()->write(LogLevel::Normal,
+                                             QString("Shutting down plugin library \"%1\".").arg(getName()));
+                }
 
                 foreach (IPlugin *plugin, mCreatedPlugins.keys()) {
                     delete plugin;

@@ -257,7 +257,16 @@ try {
 
 ## Plugin Testing Framework
 
-All plugins must have comprehensive tests using the mock kernel infrastructure.
+All plugins must have comprehensive tests using the mock kernel infrastructure. Tests should achieve 100% coverage of all public methods in plugins and modules, including the complete call chain of classes and dependencies used during plugin execution.
+
+### Coverage Requirements
+
+**100% Coverage Definition:**
+
+- Test all public methods of the plugin factory and implementation classes
+- Test all classes instantiated and called by the plugin (e.g., AdPluginFactory → AdPluginImpl → dependent services)
+- Cover error paths, edge cases, and integration scenarios
+- Use DebugUtils for enhanced debugging when tests fail or for complex scenarios
 
 ### Test Structure
 

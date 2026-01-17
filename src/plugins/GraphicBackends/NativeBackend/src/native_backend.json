@@ -1,0 +1,6 @@
+{
+  "IID": "SDK.Plugin.PluginFactory",
+  "version": "1.0",
+  "name": "NativeBackend",
+  "description": "Native QWidget graphics backend plugin"
+}

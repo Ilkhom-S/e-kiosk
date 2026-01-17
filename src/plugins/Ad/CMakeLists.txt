@@ -2,9 +2,25 @@
 
 include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
 
-file(GLOB AD_SOURCES
-    src/*.cpp
-    src/*.h
+set(AD_SOURCES
+    src/AdPluginFactory.cpp
+    src/AdPluginFactory.h
+    src/AdPluginImpl.cpp
+    src/AdPluginImpl.h
+    src/AdService.cpp
+    src/AdService.h
+    src/AdPayment.cpp
+    src/AdPayment.h
+    src/AdPaymentRequest.cpp
+    src/AdPaymentRequest.h
+    src/AdRemotePlugin.cpp
+    src/AdRemotePlugin.h
+    src/AdSourcePlugin.cpp
+    src/AdSourcePlugin.h
+    src/PaymentFactory.cpp
+    src/PaymentFactory.h
+    src/PaymentFactoryBase.cpp
+    src/PaymentFactoryBase.h
 )
 
 set(AD_VERSION_RC ${CMAKE_SOURCE_DIR}/include/Common/CoreVersion.rc)
@@ -13,7 +29,7 @@ set(AD_VERSION_RC ${CMAKE_SOURCE_DIR}/include/Common/CoreVersion.rc)
 list(APPEND AD_SOURCES ${CMAKE_SOURCE_DIR}/include/SDK/GUI/IAdSource.h)
 
 ek_add_plugin(ad
-    FOLDER "plugins"
+    FOLDER "plugins/BusinessLogic"
     SOURCES ${AD_SOURCES} ${AD_VERSION_RC}
     QT_MODULES Core Sql Network Qml
     DEPENDS

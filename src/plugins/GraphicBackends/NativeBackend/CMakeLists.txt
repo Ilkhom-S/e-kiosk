@@ -2,9 +2,12 @@
 
 include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
 
-file(GLOB NATIVEBACKEND_SOURCES
-    src/*.cpp
-    src/*.h
+set(NATIVEBACKEND_SOURCES
+    src/NativeBackend.cpp
+    src/NativeBackend.h
+    src/NativeBackendFactory.cpp
+    src/NativeBackendFactory.h
+    src/native_backend.json
 )
 
 set(VERSION_RC ${EK_INCLUDES_DIR}/Common/CoreVersion.rc)

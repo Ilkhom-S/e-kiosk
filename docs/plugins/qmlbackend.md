@@ -158,26 +158,26 @@ cmake --build build/msvc --target qml_backend_test
 
 ### Common Issues
 
-**QML Import Path Errors**
+### QML Import Path Errors
 
-```
+```text
 QQmlApplicationEngine failed to load component
 qrc:/qml/MainWindow.qml:3 module "CustomModule" is not installed
 ```
 
 **Solution**: Ensure QML import paths are configured in plugin settings
 
-**Plugin Loading Failures**
+### Plugin Loading Failures
 
-```
+```text
 Plugin "qml_backend" not loaded
 ```
 
 **Solution**: Verify Qt QML modules are available and plugin metadata is correct
 
-**Script Execution Errors**
+### Script Execution Errors
 
-```
+```text
 QML script execution failed
 ```
 

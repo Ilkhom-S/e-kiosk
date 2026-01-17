@@ -9,6 +9,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariantMap>
 #include <QtCore/QDir>
+#include <QtCore/QCoreApplication>
 #include <Common/QtHeadersEnd.h>
 
 // Plugin SDK
@@ -41,6 +42,10 @@ class MockLog : public ILog {
     virtual void adjustPadding(int aStep) override { /* Mock implementation - do nothing */
     }
     virtual void write(LogLevel::Enum aLevel, const QString &aMessage) override {
+        // Don't log during Qt shutdown to avoid crashes
+        if (QCoreApplication::instance() == nullptr) {
+            return;
+        }
         if (aLevel >= mLevel) {
             mMessages.append(QString("[%1] %2").arg(logLevelToString(aLevel)).arg(aMessage));
         }

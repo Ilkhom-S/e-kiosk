@@ -17,7 +17,8 @@ namespace CPaymentFactory {
     const char LogName[] = "Ad";
 } // namespace CPaymentFactory
 
-//------------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+// Конструктор базовой фабрики платежей
 PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
     : mInitialized(false), mFactory(aFactory), mInstancePath(aInstancePath), mCore(0), mCryptEngine(0) {
     try {

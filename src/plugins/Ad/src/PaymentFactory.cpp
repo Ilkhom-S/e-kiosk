@@ -48,7 +48,8 @@ namespace {
                     &CreatePaymentFactory);
 } // namespace
 
-//------------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+// Конструктор фабрики платежей
 PaymentFactory::PaymentFactory(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
     : PaymentFactoryBase(aFactory, aInstancePath) {
 }

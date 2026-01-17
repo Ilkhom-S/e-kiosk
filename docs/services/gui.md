@@ -664,7 +664,7 @@ private:
 };
 ```
 
-## Error Handling
+### Exception Handling
 
 ```cpp
 try {

@@ -53,7 +53,8 @@ QSharedPointer<Ad::Client> getAdClientInstance(SDK::Plugin::IEnvironment *aFacto
     return client;
 }
 
-//------------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+// Конструктор плагина
 AdRemotePlugin::AdRemotePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
     : ILogable(aFactory->getLog(Ad::CClient::LogName)), mFactory(aFactory), mInstancePath(aInstancePath) {
     mClient = getAdClientInstance(aFactory);

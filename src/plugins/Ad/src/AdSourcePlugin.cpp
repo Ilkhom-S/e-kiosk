@@ -37,7 +37,8 @@ namespace {
                     &CreateAdSourcePlugin);
 } // namespace
 
-//------------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+// Конструктор плагина источника рекламы
 AdSourcePlugin::AdSourcePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
     : mFactory(aFactory), mInstancePath(aInstancePath) {
     mClient = getAdClientInstance(aFactory);

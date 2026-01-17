@@ -41,7 +41,8 @@ namespace CPayment {
     } // namespace Parameters
 } // namespace CPayment
 
-//------------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+// Конструктор класса AdPayment
 AdPayment::AdPayment(PaymentFactory *aFactory)
     : PaymentBase(aFactory, aFactory->getCore()),
       mRequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine()) {
