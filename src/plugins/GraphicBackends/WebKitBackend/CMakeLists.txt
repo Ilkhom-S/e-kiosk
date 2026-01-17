@@ -7,9 +7,16 @@ if(NOT QT_VERSION_MAJOR EQUAL 5)
     return()
 endif()
 
-file(GLOB WEBKITBACKEND_SOURCES
-    src/*.cpp
-    src/*.h
+set(WEBKITBACKEND_SOURCES
+    src/WebKitBackendFactory.cpp
+    src/WebKitBackendFactory.h
+    src/WebKitBackend.cpp
+    src/WebKitBackend.h
+    src/WebGraphicsItem.cpp
+    src/WebGraphicsItem.h
+    src/WebPageLogger.cpp
+    src/WebPageLogger.h
+    src/webkit_backend.json
 )
 
 # WebKit is deprecated in Qt5.5+ and removed in Qt6
