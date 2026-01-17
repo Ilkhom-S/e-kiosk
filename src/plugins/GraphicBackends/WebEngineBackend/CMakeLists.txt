@@ -7,9 +7,18 @@ if(NOT QT_VERSION_MAJOR EQUAL 6)
     return()
 endif()
 
-file(GLOB WEBENGINEBACKEND_SOURCES
-    src/*.cpp
-    src/*.h
+set(WEBENGINEBACKEND_SOURCES
+    src/WebEngineBackendFactory.cpp
+    src/WebEngineBackendFactory.h
+    src/WebEngineBackend.cpp
+    src/WebEngineBackend.h
+    src/WebKitBackend.cpp
+    src/WebKitBackend.h
+    src/WebGraphicsItem.cpp
+    src/WebGraphicsItem.h
+    src/WebPageLogger.cpp
+    src/WebPageLogger.h
+    src/webengine_backend.json
 )
 
 # Qt6 only has WebEngine

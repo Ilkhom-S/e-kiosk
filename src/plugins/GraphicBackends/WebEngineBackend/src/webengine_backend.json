@@ -1,0 +1,7 @@
+{
+  "IID": "SDK.Plugin.PluginFactory",
+  "version": "1.0",
+  "name": "WebEngineBackend",
+  "description": "WebEngine based graphics backend for HTML widgets",
+  "author": "Humo"
+}
