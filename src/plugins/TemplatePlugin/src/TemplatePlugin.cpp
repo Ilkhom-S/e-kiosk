@@ -12,9 +12,7 @@
 #include "TemplatePlugin.h"
 
 TemplatePlugin::TemplatePlugin(SDK::Plugin::IEnvironment *aEnvironment, const QString &aInstancePath)
-    : mEnvironment(aEnvironment)
-    , mInstancePath(aInstancePath)
-    , mHelloMessage("Hello from Template Plugin!") {
+    : mEnvironment(aEnvironment), mInstancePath(aInstancePath), mHelloMessage("Hello from Template Plugin!") {
 
     // Логируем создание плагина
     qDebug() << "TemplatePlugin created with instance path:" << aInstancePath;
@@ -151,6 +149,23 @@ void TemplatePlugin::doWork() {
     //     ILog *log = mEnvironment->getLog("TemplatePlugin");
     //     log->write(LogLevel::Normal, "Work completed");
     // }
+
+    // Пример: доступ к сервисам ядра для выполнения работы
+    // try {
+    //     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore*>(
+    //         mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    //     if (core) {
+    //         // Использование сетевых сервисов
+    //         // auto networkService = core->getNetworkService();
+    //         // NetworkTaskManager *network = networkService->getNetworkTaskManager();
+    //
+    //         // Использование криптографических сервисов
+    //         // auto cryptService = core->getCryptService();
+    //         // ICryptEngine *cryptEngine = cryptService->getCryptEngine();
+    //     }
+    // } catch (const SDK::PaymentProcessor::ServiceIsNotImplemented &e) {
+    //     qWarning() << "Service access failed:" << e.what();
+    // }
 }
 
 //---------------------------------------------------------------------------
@@ -168,6 +183,18 @@ void TemplatePlugin::handleError(const QString &errorMessage) {
     // Пример: логирование через окружение
     // if (mEnvironment) {
     //     ILog *log = mEnvironment->getLog("TemplatePlugin");
-    //     log->write(LogLevel::Error, errorMessage);
+    //     log->write(LogLevel::Error, QString("Plugin error: %1").arg(errorMessage));
+    // }
+
+    // Пример: отправка уведомлений через ядро
+    // try {
+    //     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore*>(
+    //         mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
+    //     if (core) {
+    //         // Отправка уведомления о ошибке
+    //         // core->sendNotification("Plugin Error", errorMessage);
+    //     }
+    // } catch (const SDK::PaymentProcessor::ServiceIsNotImplemented &e) {
+    //     qCritical() << "Failed to send error notification:" << e.what();
     // }
 }
