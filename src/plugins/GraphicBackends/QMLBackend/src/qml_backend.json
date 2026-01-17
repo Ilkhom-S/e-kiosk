@@ -1,0 +1,7 @@
+{
+  "IID": "SDK.Plugin.PluginFactory",
+  "version": "1.0",
+  "name": "qml_backend",
+  "description": "QML based graphics backend for qml widgets",
+  "author": "Humo"
+}

@@ -26,9 +26,6 @@ namespace SDK {
         class PluginFactory : public QObject, public IPluginFactory, public IEnvironment {
             Q_OBJECT
             Q_INTERFACES(SDK::Plugin::IPluginFactory)
-#ifndef SDK_PLUGINS_NO_METADATA
-            Q_PLUGIN_METADATA(IID "com.humo.PluginFactory" FILE "plugin.json")
-#endif
 
           public:
             PluginFactory();

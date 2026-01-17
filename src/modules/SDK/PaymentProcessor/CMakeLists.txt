@@ -33,3 +33,11 @@ else()
     # Fall back to include path in source tree during development
     target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/IDeviceTest.h")
 endif()
+
+# Add EventTypes header for AUTOMOC processing (contains Q_ENUM)
+if(EXISTS "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Core/EventTypes.h")
+    target_sources(PPSDK PRIVATE "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Core/EventTypes.h")
+else()
+    # Fall back to include path in source tree during development
+    target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/Core/EventTypes.h")
+endif()

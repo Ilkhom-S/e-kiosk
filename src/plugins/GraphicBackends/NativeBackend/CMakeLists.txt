@@ -7,11 +7,13 @@ file(GLOB NATIVEBACKEND_SOURCES
     src/*.h
 )
 
+set(VERSION_RC ${EK_INCLUDES_DIR}/Common/CoreVersion.rc)
+
 ek_add_plugin(native_backend
     FOLDER "plugins/GraphicBackends"
     SOURCES ${NATIVEBACKEND_SOURCES}
     QT_MODULES Core Widgets
-    DEPENDS PluginsSDK ek_common
+    DEPENDS PluginsSDK ek_common ek_boost
 )
 
 # Note: Depends on boost from thirdparty

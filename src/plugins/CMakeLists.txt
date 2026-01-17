@@ -18,5 +18,8 @@ add_subdirectory(NativeWidgets)
 # Payments
 add_subdirectory(Payments)
 
+# Test plugin
+add_subdirectory(TestPlugin)
+
 # Scenario backends
 add_subdirectory(ScenarioBackends)
