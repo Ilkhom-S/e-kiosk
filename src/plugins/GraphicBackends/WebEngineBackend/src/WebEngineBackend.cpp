@@ -1,4 +1,4 @@
-/* @file Реализация плагина. */
+/* @file Реализация плагина WebEngineBackend. */
 
 // Qt
 #include <Common/QtHeadersBegin.h>

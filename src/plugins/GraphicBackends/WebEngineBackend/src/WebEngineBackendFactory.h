@@ -35,5 +35,6 @@ class WebEngineBackendFactory : public QObject, public SDK::Plugin::IPluginFacto
         return QStringList() << "WebEngineBackend.Instance";
     }
 
+    /// Создаёт экземпляр плагина WebEngineBackend.
     SDK::Plugin::IPlugin *createPlugin(const QString &instancePath) override;
 };

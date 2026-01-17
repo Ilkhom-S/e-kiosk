@@ -1,4 +1,4 @@
-/* @file Объявление плагина. */
+/* @file Объявление плагина WebKitBackend. */
 
 #pragma once
 

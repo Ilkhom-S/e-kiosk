@@ -1,4 +1,4 @@
-/* @file Графический объект. */
+/* @file Реализация графического объекта WebEngine для отображения веб-контента. */
 
 // Qt
 #include <Common/QtHeadersBegin.h>
