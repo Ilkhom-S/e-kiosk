@@ -1,14 +1,9 @@
-/* @file Определение сценария создания экранов. */
+/* @file DEPRECATED - See ScreenMakerFactory.h instead.
 
-// Plugin SDK
+MIGRATION NOTE: This file kept for backward compatibility only.
+The factory definition has been moved to ScreenMakerFactory.h.
+All NEW code should include "ScreenMakerFactory.h".
+*/
 
-// SDK
-#include <SDK/Plugins/PluginFactory.h>
-
-class ScreenMakerPluginFactory : public SDK::Plugin::PluginFactory {
-    Q_OBJECT
-    Q_INTERFACES(SDK::Plugin::IPluginFactory)
-    Q_PLUGIN_METADATA(IID "com.humo.screen_maker")
-};
-
-//------------------------------------------------------------------------------
+#pragma once
+#include "ScreenMakerFactory.h"

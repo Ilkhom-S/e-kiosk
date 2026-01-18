@@ -127,12 +127,14 @@ This makes module ownership explicit and eases future Qt6 porting.
 ### When to Move Headers to `include/`
 
 **Move header to `include/ModuleName/` if:**
+
 - ✅ Used by multiple modules/plugins (shared API)
 - ✅ Used by applications (`apps/`)
 - ✅ Part of the public SDK interface
 - ✅ Already has duplicate definitions in both `include/` and `src/`
 
 **Keep header in `src/` if:**
+
 - ✅ Only used within a single plugin (plugin-internal)
 - ✅ Only used within a single module (module-internal)
 - ✅ Not part of any public API

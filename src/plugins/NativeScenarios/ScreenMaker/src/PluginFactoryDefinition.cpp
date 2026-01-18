@@ -1,14 +1,6 @@
-/* @file Конфигурация фабрики. */
+/* @file DEPRECATED - Plugin metadata moved to ScreenMakerFactory.cpp.
 
-// Plugin SDK
-
-// SDK
-#include <SDK/Plugins/PluginFactory.h>
-
-QString SDK::Plugin::PluginFactory::mName = "Screenshot maker";
-QString SDK::Plugin::PluginFactory::mDescription = "Native scenario for create and edit ui screenshot";
-QString SDK::Plugin::PluginFactory::mAuthor = "Humo";
-QString SDK::Plugin::PluginFactory::mVersion = "1.0";
-QString SDK::Plugin::PluginFactory::mModuleName = "screen_maker";
-
-//------------------------------------------------------------------------------
+MIGRATION NOTE: All plugin metadata initialization now happens in ScreenMakerFactory.cpp.
+This file is kept temporarily for migration safety but can be removed once
+confirmed no other code depends on it.
+*/
