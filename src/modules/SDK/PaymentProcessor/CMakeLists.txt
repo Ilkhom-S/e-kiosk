@@ -10,7 +10,7 @@ file(GLOB_RECURSE PPSDK_SOURCES
 ek_add_library(PPSDK
     FOLDER "modules/SDK"
     SOURCES ${PPSDK_SOURCES}
-    QT_MODULES Core Widgets
+    QT_MODULES Core Widgets Qml
     INCLUDE_DIRS ${EK_INCLUDES_DIR}
     DEPENDS ek_boost ek_common
     COMPILE_DEFINITIONS _UNICODE UNICODE
@@ -40,4 +40,37 @@ if(EXISTS "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Core/EventTypes.h")
 else()
     # Fall back to include path in source tree during development
     target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/Core/EventTypes.h")
+endif()
+
+# Add scripting headers with Q_OBJECT for AUTOMOC processing
+set(SCRIPTING_HEADERS
+    IBackendScenarioObject.h
+    Settings.h
+    ScriptArray.h
+    PrinterService.h
+    NetworkService.h
+    PaymentService.h
+    HIDService.h
+    GUIService.h
+    FundsService.h
+    DeviceService.h
+    Core.h
+    AdService.h
+)
+
+foreach(HEADER ${SCRIPTING_HEADERS})
+    if(EXISTS "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Scripting/${HEADER}")
+        target_sources(PPSDK PRIVATE "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Scripting/${HEADER}")
+    else()
+        # Fall back to include path in source tree during development
+        target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/Scripting/${HEADER}")
+    endif()
+endforeach()
+
+# Add payment headers with Q_OBJECT for AUTOMOC processing
+if(EXISTS "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Payment/Step.h")
+    target_sources(PPSDK PRIVATE "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Payment/Step.h")
+else()
+    # Fall back to include path in source tree during development
+    target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/Payment/Step.h")
 endif()

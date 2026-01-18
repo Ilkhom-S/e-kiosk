@@ -14,7 +14,6 @@
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
 // ThirdParty
-#include <boost/bind.hpp>
 #include <boost/bind/bind.hpp>
 #include <boost/foreach.hpp>
 

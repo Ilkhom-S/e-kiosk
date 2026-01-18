@@ -16,7 +16,8 @@
 #include <DebugUtils/DebugUtils.h>
 
 #ifdef Q_OS_WIN
-#define NOMINMAX // HACK for QDateTime Qt 5.0.0
+#define NOMINMAX            // HACK for QDateTime Qt 5.0.0
+#define _WIN32_WINNT 0x0601 // Windows 7+ for Boost.Stacktrace compatibility
 #include <windows.h>
 #endif
 

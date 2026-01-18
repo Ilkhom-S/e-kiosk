@@ -28,6 +28,7 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [x] Refactor NativeBackend plugin: merge `PluginFactoryDefinition._` into `NativeBackendFactory._`, update CMake to explicit sources, add unit tests
 - [x] Refactor WebEngineBackend plugin: merge `PluginFactoryDefinition._` into `WebEngineBackendFactory._`, update CMake to explicit sources, add unit tests
 - [x] Update TemplatePlugin to use C++ static metadata instead of JSON files
+- [x] Complete Migrator3000 scenario plugin modernization: remove Qt plugin dependencies, add PPSDK and QtScript/QtQml dependencies, fix AUTOMOC processing
 
 ## Notes
 
