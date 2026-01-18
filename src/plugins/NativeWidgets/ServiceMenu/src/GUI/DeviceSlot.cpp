@@ -2,31 +2,30 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QtCore/QBuffer>
 #include <QtCore/QTimer>
 #include <QtCore/QUrl>
-#include <QtCore/QBuffer>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
-#include <SDK/Drivers/IDevice.h>
 #include <SDK/Drivers/Components.h>
+#include <SDK/Drivers/IDevice.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-// Project
-#include "MessageBox/MessageBox.h"
+// System
 #include "Backend/HardwareManager.h"
 #include "Backend/ServiceMenuBackend.h"
-
-#include "DeviceTests/GenericDeviceTest.h"
-#include "DeviceTests/PrinterTest.h"
 #include "DeviceTests/BillAcceptorTest.h"
 #include "DeviceTests/CoinAcceptorTest.h"
-#include "DeviceTests/HIDTest.h"
 #include "DeviceTests/DispenserTest.h"
+#include "DeviceTests/GenericDeviceTest.h"
+#include "DeviceTests/HIDTest.h"
+#include "DeviceTests/PrinterTest.h"
+#include "MessageBox/MessageBox.h"
 
+// Project
 #include "DeviceSlot.h"
 
-//------------------------------------------------------------------------
 DeviceSlot::DeviceSlot(ServiceMenuBackend *aBackend, const QString &aConfigurationName, bool aIsUserSlot,
                        const QString &aType)
     : mBackend(aBackend), mConfigurationName(aConfigurationName), mIsUserSlot(aIsUserSlot), mType(aType) {

@@ -6,18 +6,17 @@
 #include <QtWidgets/QWidget>
 #include <Common/QtHeadersEnd.h>
 
-// Plugin SDK
-#include <SDK/Plugins/PluginInitializer.h>
-#include <SDK/Plugins/IExternalInterface.h>
+// SDK
 #include <SDK/PaymentProcessor/Components.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Core/IGUIService.h>
+#include <SDK/Plugins/IExternalInterface.h>
+#include <SDK/Plugins/PluginInitializer.h>
 
 // Project
-#include "KeyboardWindow.h"
 #include "Keyboard.h"
+#include "KeyboardWindow.h"
 
-//--------------------------------------------------------------------------
 namespace CKeyboard {
     const QString PluginName = "VirtualKeyboard";
 } // namespace CKeyboard

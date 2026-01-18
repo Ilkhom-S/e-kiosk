@@ -2,9 +2,9 @@
 
 // Project
 #include "DeviceSlot.h"
+#include "EditorPane.h"
 #include "EditorPaneListItem.h"
 #include "IDeviceBackend.h"
-#include "EditorPane.h"
 #include "SIPStyle.h"
 
 namespace CEditorPane {
@@ -54,7 +54,7 @@ void EditorPane::setSlot(IDeviceBackend *aBackend, DeviceSlot *aSlot) {
         if (model == CEditorPane::SystemPrinterName) {
             parameter.possibleValues.insert(
                 QCoreApplication::translate("Hardware::PrinterParameters",
-                                            QT_TRANSLATE_NOOP("Hardware::PrinterParameters", "#sytem_printer_name")),
+                                            QT_TRANSLATE_NOOP("Hardware::PrinterParameters", "#system_printer_name")),
                 model);
         } else {
             parameter.possibleValues.insert(model, QVariant());

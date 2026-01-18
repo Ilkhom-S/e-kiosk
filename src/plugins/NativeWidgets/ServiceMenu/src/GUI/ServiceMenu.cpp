@@ -2,25 +2,26 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtWidgets/QGraphicsScene>
 #include <QtCore/QTime>
+#include <QtWidgets/QGraphicsScene>
 #include <Common/QtHeadersEnd.h>
 
-// Plugin SDK
-#include <SDK/Plugins/PluginInitializer.h>
-#include <SDK/Plugins/IPluginLoader.h>
-#include <SDK/Plugins/IExternalInterface.h>
+// SDK
 #include <SDK/PaymentProcessor/Components.h>
+#include <SDK/PaymentProcessor/Core/EventTypes.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Core/IGUIService.h>
-#include <SDK/PaymentProcessor/Core/EventTypes.h>
+#include <SDK/Plugins/IExternalInterface.h>
+#include <SDK/Plugins/IPluginLoader.h>
+#include <SDK/Plugins/PluginInitializer.h>
+
+// System
+#include "Backend/ServiceMenuBackend.h"
+#include "MessageBox/MessageBox.h"
 
 // Project
-#include "MessageBox/MessageBox.h"
-#include "Backend/ServiceMenuBackend.h"
 #include "ServiceMenu.h"
 
-//--------------------------------------------------------------------------
 namespace CServiceMenu {
     const QString PluginName = "ServiceMenu";
 } // namespace CServiceMenu

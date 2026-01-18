@@ -1,14 +1,14 @@
-/* @file Сценарий автоинкассации. */
+/* @file Сценарий авто инкассации. */
 
 //------------------------------------------------------------------------------
 // Инициализация сценария.
 function initialize(scenarioName) {
   // Состояния
-  ScenarioEngine.addState("main", { initial: true });
-  ScenarioEngine.addState("done", { final: true });
+  ScenarioEngine.addState('main', { initial: true });
+  ScenarioEngine.addState('done', { final: true });
 
   // Переходы между состояниями
-  ScenarioEngine.addTransition("main", "done", "close");
+  ScenarioEngine.addTransition('main', 'done', 'close');
 }
 
 //-----------------------------------------------------------------------------
@@ -26,10 +26,10 @@ function canStop() {
 //-----------------------------------------------------------------------------
 // Обработчик входа в состояние main.
 function mainEnterHandler(aParam) {
-  if (aParam.signal == "resume") {
+  if (aParam.signal == 'resume') {
     // Если сценарий уже выполняется, просто закроем его.
-    Core.postEvent(EventType.UpdateScenario, "close");
+    Core.postEvent(EventType.UpdateScenario, 'close');
   } else {
-    Core.graphics.show("AutoEncashment", { reset: true });
+    Core.graphics.show('AutoEncashment', { reset: true });
   }
 }

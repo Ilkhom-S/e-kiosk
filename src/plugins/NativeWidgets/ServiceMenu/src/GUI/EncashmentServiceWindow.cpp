@@ -6,26 +6,26 @@
 #include <Common/QtHeadersEnd.h>
 
 // SDK
-#include <SDK/PaymentProcessor/Core/ReceiptTypes.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
+#include <SDK/PaymentProcessor/Core/IFundsService.h>
 #include <SDK/PaymentProcessor/Core/IService.h>
 #include <SDK/PaymentProcessor/Core/ISettingsService.h>
-#include <SDK/PaymentProcessor/Settings/UserSettings.h>
+#include <SDK/PaymentProcessor/Core/ReceiptTypes.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
-#include <SDK/PaymentProcessor/Core/IFundsService.h>
+#include <SDK/PaymentProcessor/Settings/UserSettings.h>
 
-//
+// System
+#include "Backend/HardwareManager.h"
+#include "Backend/PaymentManager.h"
+#include "Backend/ServiceMenuBackend.h"
+#include "MessageBox/MessageBox.h"
 #include <SysUtils/ISysUtils.h>
 
-// Проект
-#include "MessageBox/MessageBox.h"
-#include "Backend/PaymentManager.h"
-#include "Backend/HardwareManager.h"
-#include "Backend/ServiceMenuBackend.h"
-#include "ServiceTags.h"
-#include "EncashmentServiceWindow.h"
+// Project
 #include "EncashmentHistoryWindow.h"
+#include "EncashmentServiceWindow.h"
 #include "InputBox.h"
+#include "ServiceTags.h"
 
 namespace {
     const QString PayloadSettings = "payload.ini";

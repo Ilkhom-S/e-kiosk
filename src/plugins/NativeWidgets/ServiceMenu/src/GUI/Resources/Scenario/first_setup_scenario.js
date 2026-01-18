@@ -1,24 +1,18 @@
 // Scenario initializer
-function initialize(scenarioName)
-{	
-	// Algorithm states
-	ScenarioEngine.addState("main", {initial:true});
-	ScenarioEngine.addState("done", {final:true});
-	
-	ScenarioEngine.addTransition("main", "done", "exit");
+function initialize(scenarioName) {
+  // Algorithm states
+  ScenarioEngine.addState('main', { initial: true });
+  ScenarioEngine.addState('done', { final: true });
+
+  ScenarioEngine.addTransition('main', 'done', 'exit');
 }
 
 // Scenario finalizer
-function finalze()
-{
-}
+function finalize() {}
 
 // State handlers
-function mainEnterHandler()
-{
-	Core.graphics.show("FirstSetup", {reset:true});
+function mainEnterHandler() {
+  Core.graphics.show('FirstSetup', { reset: true });
 }
 
-function mainExitHandler()
-{
-}
+function mainExitHandler() {}

@@ -1,21 +1,21 @@
 /* @file Окно настроек. */
 
 // SDK
-#include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/GUI/IGraphicsItem.h>
+#include <SDK/PaymentProcessor/Core/ICore.h>
 
-// Проект
-#include "Backend/ServiceMenuBackend.h"
+// System
 #include "Backend/KeysManager.h"
+#include "Backend/ServiceMenuBackend.h"
 
+// Project
+#include "DispenserServiceWindow.h"
+#include "HardwareServiceWindow.h"
+#include "KeysServiceWindow.h"
+#include "NetworkServiceWindow.h"
 #include "SetupServiceWindow.h"
 #include "TokenServiceWindow.h"
-#include "KeysServiceWindow.h"
-#include "HardwareServiceWindow.h"
-#include "NetworkServiceWindow.h"
-#include "DispenserServiceWindow.h"
 
-//------------------------------------------------------------------------
 SetupServiceWindow::SetupServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
     : QFrame(aParent), ServiceWindowBase(aBackend), mCurrentPageIndex(-1) {
     setupUi(this);

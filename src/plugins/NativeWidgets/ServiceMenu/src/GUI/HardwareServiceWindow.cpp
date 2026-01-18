@@ -8,17 +8,18 @@
 // SDK
 #include <SDK/Drivers/Components.h>
 
-// Проект
-#include "MessageBox/MessageBox.h"
-#include "Backend/NetworkManager.h"
+// System
 #include "Backend/HardwareManager.h"
+#include "Backend/NetworkManager.h"
 #include "Backend/ServiceMenuBackend.h"
-#include "HardwareWindow.h"
+#include "MessageBox/MessageBox.h"
+
+// Project
 #include "DeviceSlot.h"
 #include "EditorPane.h"
 #include "HardwareServiceWindow.h"
+#include "HardwareWindow.h"
 
-//------------------------------------------------------------------------
 HardwareServiceWindow::HardwareServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
     : QFrame(aParent), ServiceWindowBase(aBackend), mWindow(new HardwareWindow(aBackend)) {
     setupUi(this);

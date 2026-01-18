@@ -7,18 +7,19 @@
 
 // SDK
 #include <SDK/Drivers/IDevice.h>
-#include <SDK/PaymentProcessor/Core/IDeviceService.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
+#include <SDK/PaymentProcessor/Core/IDeviceService.h>
 
-// Проект
-#include "MessageBox/MessageBox.h"
+// System
 #include "Backend/HardwareManager.h"
 #include "Backend/NetworkManager.h"
 #include "Backend/ServiceMenuBackend.h"
+#include "MessageBox/MessageBox.h"
+
+// Project
 #include "DeviceSlot.h"
 #include "HardwareWindow.h"
 
-//------------------------------------------------------------------------
 static const char *Types[] = {
     QT_TRANSLATE_NOOP("Hardware::Types", "BillAcceptor"),
     QT_TRANSLATE_NOOP("Hardware::Types", "Dispenser"),

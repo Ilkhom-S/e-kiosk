@@ -390,10 +390,10 @@ The following plugins are installed by default with EKiosk:
 
 ### Graphic Backends
 
-- **[QMLBackend](qmlbackend.md)**: Qt QML-based graphics rendering
+- **[QMLBackend](qmlbackend.md)**: Qt QML-based graphics rendering - comprehensive QML and Qt Quick backend
 - **NativeBackend**: Native platform rendering
-- **[WebEngineBackend](webenginebackend.md)**: Chromium-based rendering (Qt6 only)
-- **[WebKitBackend](webkitbackend.md)**: Legacy WebKit rendering (Qt5 only)
+- **[WebEngineBackend](webenginebackend.md)**: Chromium-based rendering (Qt6 only) - comprehensive WebEngine backend
+- **[WebKitBackend](webkitbackend.md)**: Legacy WebKit rendering (Qt5 only) - comprehensive WebKit backend (deprecated)
 
 ### Payment Systems
 
@@ -423,8 +423,8 @@ The following plugins are installed by default with EKiosk:
 
 ### User Interface
 
-- **ServiceMenu**: Service menu interface
-- **Ad**: Advertising display components
+- **[ServiceMenu](servicemenu.md)**: Service menu interface - comprehensive service and maintenance interface
+- **[Ad](ad.md)**: Advertisement management plugin - comprehensive advertising content management and payment processing
 
 ## Contributing
 

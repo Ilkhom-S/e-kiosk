@@ -1,22 +1,23 @@
-/* @file Плагин автоинскасации терминала */
+/* @file Плагин авто инкассации терминала */
 
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QGraphicsScene>
 #include <Common/QtHeadersEnd.h>
 
-// Plugin SDK
-#include <SDK/Plugins/PluginInitializer.h>
-#include <SDK/Plugins/IExternalInterface.h>
+// SDK
 #include <SDK/PaymentProcessor/Components.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Core/IGUIService.h>
+#include <SDK/Plugins/IExternalInterface.h>
+#include <SDK/Plugins/PluginInitializer.h>
 
-// Проект
+// System
 #include "Backend/ServiceMenuBackend.h"
+
+// Project
 #include "AutoEncashment.h"
 
-//--------------------------------------------------------------------------
 namespace CAutoEncashment {
     const QString PluginName = "AutoEncashment";
 } // namespace CAutoEncashment

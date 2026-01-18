@@ -5,10 +5,9 @@
 #include <QtWidgets/QApplication>
 #include <Common/QtHeadersEnd.h>
 
-// Проект
+// Project
 #include "EditorPaneListItem.h"
 
-//------------------------------------------------------------------------
 EditorPaneListItemDelegate::EditorPaneListItemDelegate(QObject *aParent) : QStyledItemDelegate(aParent) {
 }
 

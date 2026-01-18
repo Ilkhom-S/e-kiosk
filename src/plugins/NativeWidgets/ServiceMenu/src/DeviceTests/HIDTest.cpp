@@ -6,15 +6,14 @@
 #include <Common/QtHeadersEnd.h>
 
 // SDK
-#include <SDK/PaymentProcessor/Core/ICore.h>
-#include <SDK/PaymentProcessor/Core/IHIDService.h>
 #include <SDK/Drivers/Components.h>
 #include <SDK/Drivers/HardwareConstants.h>
+#include <SDK/PaymentProcessor/Core/ICore.h>
+#include <SDK/PaymentProcessor/Core/IHIDService.h>
 
 // Project
 #include "HIDTest.h"
 
-//------------------------------------------------------------------------------
 namespace CHIDTest {
     const QString TestRead = QT_TRANSLATE_NOOP("HIDTest", "#test_read");
 } // namespace CHIDTest

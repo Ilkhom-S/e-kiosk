@@ -3,7 +3,6 @@
 // Project
 #include "CoinAcceptorTest.h"
 
-//------------------------------------------------------------------------------
 namespace CCoinAcceptorTest {
     const QString TestStacked = QT_TRANSLATE_NOOP("CoinAcceptorTest", "#test_stacked");
 } // namespace CCoinAcceptorTest

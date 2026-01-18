@@ -1,4 +1,4 @@
-/* @file Виджет автоинкасации */
+/* @file Виджет авто инкассации */
 
 // Qt
 #include <Common/QtHeadersBegin.h>
@@ -27,7 +27,7 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
 namespace CAutoEncashmentWindow {
-    // Максимальное время бездействия в окне автоинкасации.
+    // Максимальное время бездействия в окне авто инкассации.
     const int AutoEncashmentIdleTimeout = 2 * 60 * 1000; // 2 минуты.
 
     // Интервал обновления текущей даты/времени на экране.
@@ -58,7 +58,7 @@ AutoEncashmentWindow::AutoEncashmentWindow(ServiceMenuBackend *aBackend, QWidget
     connect(&mDateTimeTimer, SIGNAL(timeout()), SLOT(onDateTimeRefresh()));
 
     PaymentManager *paymentManager = mBackend->getPaymentManager();
-    connect(paymentManager, SIGNAL(receiptPrinted(qint64, bool)), SLOT(onPeceiptPrinted(qint64, bool)));
+    connect(paymentManager, SIGNAL(receiptPrinted(qint64, bool)), SLOT(onReceiptPrinted(qint64, bool)));
 
     mHistoryWindow = new EncashmentHistoryWindow(aBackend, this);
     ui.verticalLayoutHistory->insertWidget(0, mHistoryWindow, 1);

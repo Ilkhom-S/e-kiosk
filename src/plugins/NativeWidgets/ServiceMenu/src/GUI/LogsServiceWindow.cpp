@@ -11,11 +11,12 @@
 #include <SDK/PaymentProcessor/Core/ISettingsService.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
-// Project
+// System
 #include "Backend/ServiceMenuBackend.h"
+
+// Project
 #include "LogsServiceWindow.h"
 
-//------------------------------------------------------------------------
 LogsServiceWindow::LogsServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
     : QFrame(aParent), ServiceWindowBase(aBackend) {
     setupUi(this);

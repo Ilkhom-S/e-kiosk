@@ -1,11 +1,14 @@
 /* @file Окно с локальным соединением. */
 
 // Проект
-#include "Backend/ServiceMenuBackend.h"
-#include "UnmanagedConnectionWindow.h"
-#include "SIPStyle.h"
 
-//---------------------------------------------------------------------------
+// System
+#include "Backend/ServiceMenuBackend.h"
+
+// Project
+#include "SIPStyle.h"
+#include "UnmanagedConnectionWindow.h"
+
 UnmanagedConnectionWindow::UnmanagedConnectionWindow(QWidget *aParent) : QFrame(aParent) {
     setupUi(this);
 

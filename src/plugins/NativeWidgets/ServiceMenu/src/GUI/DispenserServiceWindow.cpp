@@ -10,12 +10,13 @@
 #include <SDK/PaymentProcessor/Core/IFundsService.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
-// Project
-#include "Backend/ServiceMenuBackend.h"
+// System
 #include "Backend/HardwareManager.h"
+#include "Backend/ServiceMenuBackend.h"
+
+// Project
 #include "DispenserServiceWindow.h"
 
-//------------------------------------------------------------------------
 DispenserServiceWindow::DispenserServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
     : QFrame(aParent), ServiceWindowBase(aBackend) {
     setupUi(this);

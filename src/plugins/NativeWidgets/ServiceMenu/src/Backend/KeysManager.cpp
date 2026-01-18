@@ -1,16 +1,16 @@
-/* @file Менеджер для работы с сключами */
+/* @file Менеджер для работы с ключами */
 
 // SDK
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Core/ICryptService.h>
-#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 #include <SDK/PaymentProcessor/Core/ISettingsService.h>
+#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
-// Modules
+// System
 #include <Crypt/ICryptEngine.h>
+#include "GUI/ServiceTags.h"
 
 // Project
-#include "GUI/ServiceTags.h"
 #include "KeysManager.h"
 
 namespace PPSDK = SDK::PaymentProcessor;

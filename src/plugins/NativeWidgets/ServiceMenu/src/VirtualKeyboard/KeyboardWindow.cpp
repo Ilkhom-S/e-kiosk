@@ -3,10 +3,10 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtGui/QKeyEvent>
-#include <QtWidgets/QGraphicsScene>
-#include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QGraphicsItem>
 #include <QtWidgets/QGraphicsProxyWidget>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsView>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
@@ -15,7 +15,6 @@
 // Project
 #include "KeyboardWindow.h"
 
-//---------------------------------------------------------------------------
 KeyboardWindow::KeyboardWindow(QWidget *parent) : QWidget(parent), mShifted(false), mAltMode(false) {
     ui.setupUi(this);
 

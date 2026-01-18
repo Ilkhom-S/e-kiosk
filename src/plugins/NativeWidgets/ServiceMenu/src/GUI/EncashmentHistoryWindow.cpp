@@ -2,19 +2,21 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtWidgets/QWidget>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QWidget>
 #include <Common/QtHeadersEnd.h>
 
+// SDK
 #include <SDK/PaymentProcessor/Core/ReceiptTypes.h>
 
-// Project
+// System
 #include "Backend/PaymentManager.h"
 #include "Backend/ServiceMenuBackend.h"
-#include "ServiceTags.h"
-#include "EncashmentHistoryWindow.h"
 
-//------------------------------------------------------------------------
+// Project
+#include "EncashmentHistoryWindow.h"
+#include "ServiceTags.h"
+
 EncashmentHistoryWindow::EncashmentHistoryWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
     : QWidget(aParent), mBackend(aBackend) {
     setupUi(this);

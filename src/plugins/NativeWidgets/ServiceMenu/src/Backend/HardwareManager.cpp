@@ -1,8 +1,8 @@
 /* @file Менеджер для работы с железом */
 
 // SDK
-#include <SDK/Drivers/IFiscalPrinter.h>
 #include <SDK/Drivers/Components.h>
+#include <SDK/Drivers/IFiscalPrinter.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Core/IPrinterService.h>
 #include <SDK/PaymentProcessor/Core/ReceiptTypes.h>

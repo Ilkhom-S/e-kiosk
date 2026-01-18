@@ -1,16 +1,15 @@
 /* @file Класс для тестирования принтеров. */
 
 // SDK
-#include <SDK/Drivers/IPrinter.h>
 #include <SDK/Drivers/IFiscalPrinter.h>
+#include <SDK/Drivers/IPrinter.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
-#include <SDK/PaymentProcessor/Core/ReceiptTypes.h>
 #include <SDK/PaymentProcessor/Core/IPrinterService.h>
+#include <SDK/PaymentProcessor/Core/ReceiptTypes.h>
 
 // Project
 #include "PrinterTest.h"
 
-//------------------------------------------------------------------------------
 namespace CPrinterTest {
     const QString PrintTestReceipt = QT_TRANSLATE_NOOP("PrinterTest", "#print_test_receipt");
 } // namespace CPrinterTest

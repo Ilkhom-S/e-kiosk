@@ -1,12 +1,12 @@
 /* @file Виджет, отображающий состояние устройства */
 
-// Project
+// System
 #include "Backend/HardwareManager.h"
 #include "Backend/ServiceMenuBackend.h"
 
+// Project
 #include "DeviceStatusWindow.h"
 
-//------------------------------------------------------------------------------
 DeviceStatusWindow::DeviceStatusWindow(ServiceMenuBackend *aBackend, const QString &aConfigurationName,
                                        QWidget *aParent)
     : DeviceSlot(aBackend, aConfigurationName) {

@@ -54,7 +54,7 @@ class HardwareManager : public QObject, public IConfigManager {
     /// Сохранить список конфигураций
     void setConfigurations(const QStringList &aConfigurations);
 
-    /// Получить полную конфигурацию всех устройстр
+    /// Получить полную конфигурацию всех устройств
     QVariantMap getConfiguration() const;
 
     /// Сохранить полную конфигурацию в памяти
@@ -69,7 +69,7 @@ class HardwareManager : public QObject, public IConfigManager {
     /// Получение списка всех драйверов.
     QStringList getDriverList() const;
 
-    /// Получение списка драверов (поддерживаемых устройств).
+    /// Получение списка драйверов (поддерживаемых устройств).
     SDK::PaymentProcessor::TModelList getModelList(const QString &aFilter = QString()) const;
 
     /// Получение списка параметров драйвера.
