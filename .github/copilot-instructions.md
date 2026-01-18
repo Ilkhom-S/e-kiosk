@@ -124,11 +124,25 @@ This makes module ownership explicit and eases future Qt6 porting.
 
 ## Header Organization and Public-Private Separation
 
-### Standard C++ Project Structure
+### When to Move Headers to `include/`
+
+**Move header to `include/ModuleName/` if:**
+- ✅ Used by multiple modules/plugins (shared API)
+- ✅ Used by applications (`apps/`)
+- ✅ Part of the public SDK interface
+- ✅ Already has duplicate definitions in both `include/` and `src/`
+
+**Keep header in `src/` if:**
+- ✅ Only used within a single plugin (plugin-internal)
+- ✅ Only used within a single module (module-internal)
+- ✅ Not part of any public API
+- ✅ Contains implementation details
+
+### Standard C++ Project Structure (For Public Headers)
 
 EKiosk follows the industry-standard C++ project structure for clear public API boundaries:
 
-**Folder Layout:**
+**Folder Layout (for headers moved to public):**
 
 ```
 include/ModuleName/
@@ -144,8 +158,8 @@ src/modules/ModuleName/
 
 1. **Public headers** contain the full class/interface definition and live in `include/`
 2. **Private implementation** contains only method bodies and lives in `src/modules/`
-3. **All includes** use the public path: `#include <ModuleName/Header.h>`
-4. **Never use relative paths** like `#include "../../modules/..."`
+3. **For public headers, all includes** use the public path: `#include <ModuleName/Header.h>`
+4. **Never use relative paths** like `#include "../../modules/..."` in any file
 
 ### Example: Scenario Module
 
@@ -200,20 +214,28 @@ All NEW code should include <ScenarioEngine/Scenario.h>.
 
 ### Header Migration Checklist
 
+**Only follow this checklist when a header meets the "Move" criteria above.**
+
 When refactoring a module from private headers to public headers:
 
-1. **✅ Create/update public header** in `include/ModuleName/Header.h`
+1. **✅ Verify the header should be public**
+   - Is it used across multiple modules/plugins?
+   - Is it part of the public API?
+   - Is there already a duplicate in `include/`?
+   - If not, **leave it in `src/` and stop here**
+
+2. **✅ Create/update public header** in `include/ModuleName/Header.h`
    - Full class definition
    - All public methods and signals/slots
    - Proper file header comment: `/* @file [Russian description]. */`
    - Use `#pragma once` for header guard
 
-2. **✅ Implement in source file** - `src/modules/ModuleName/src/Header.cpp`
+3. **✅ Implement in source file** - `src/modules/ModuleName/src/Header.cpp`
    - `#include <ModuleName/Header.h>` (use PUBLIC path, not local)
    - Only method implementations, no class definition
    - Same file header comment
 
-3. **✅ Convert private header** - `src/modules/ModuleName/src/Header.h`
+4. **✅ Convert private header** - `src/modules/ModuleName/src/Header.h`
    - **KEEP IT** for backward compatibility
    - Replace entire content with:
      ```cpp
@@ -223,12 +245,13 @@ When refactoring a module from private headers to public headers:
      ```
    - Add migration note explaining the change
 
-4. **✅ Update all includes** in the module:
-   - Change: `#include "Header.h"` → `#include <ModuleName/Header.h>`
+5. **✅ Fix relative paths to public headers**
+   - Only if the header already existed in `include/` AND files were using relative paths
    - Change: `#include "../../src/modules/ModuleName/src/Header.h"` → `#include <ModuleName/Header.h>`
-   - Never leave relative paths
+   - Change: `#include "Header.h"` → `#include <ModuleName/Header.h>` (only for moved headers)
+   - **Leave relative paths alone for plugin-internal headers in `src/`**
 
-5. **✅ Verify compilation**
+6. **✅ Verify compilation**
    - Build the module and tests
    - Ensure the redirect header works for any legacy code
 
