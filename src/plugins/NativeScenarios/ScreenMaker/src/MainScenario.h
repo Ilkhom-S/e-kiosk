@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <windows.h>
-
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QWidget>
