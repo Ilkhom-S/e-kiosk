@@ -70,7 +70,7 @@ ctest -R screen_maker_scenario_test
 ## Platform Support
 
 | Platform | Status | Notes          |
-|----------|--------|----------------|
+| -------- | ------ | -------------- |
 | Windows  | Full   | Supported      |
 | Linux    | TODO   | Not yet ported |
 | macOS    | TODO   | Not yet ported |
