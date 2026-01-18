@@ -51,8 +51,8 @@ auto [pluginVariable] = [kernel/plugin]->[method call]();
 **Examples:**
 
 - Qt5 + Qt6: Most plugins should support both
-- Qt6 only: WebEngineBackend (uses Qt WebEngine)
-- Qt5 only: WebKitBackend (uses deprecated Qt WebKit)
+- Qt 5.6+ and Qt6: WebEngineBackend (uses Qt WebEngine)
+- Qt 5.0-5.5 only (deprecated): WebKitBackend (uses deprecated Qt WebKit)
 
 ### Platform Support Table
 

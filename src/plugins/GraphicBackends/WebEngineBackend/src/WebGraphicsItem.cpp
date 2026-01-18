@@ -30,33 +30,38 @@ namespace CWebGraphicsItem {
 WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo, SDK::PaymentProcessor::Scripting::Core *aCore,
                                  ILog *aLog)
     : mCoreProxy(aCore), mLog(aLog), mItemLoaded(false), mContext(aInfo.context) {
-    mWebView = QSharedPointer<QGraphicsWebView>(new QGraphicsWebView());
+    // Создаем WebEngine виджет для отображения веб-контента
+    mWebView = QSharedPointer<QWebEngineView>(new QWebEngineView());
 
     mWebView->setPage(new WebPageLogger(this, mCoreProxy, mLog));
 
-    mWebView->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
-    mWebView->settings()->setAttribute(QWebSettings::LocalStorageEnabled, true);
-    mWebView->settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
-    mWebView->settings()->setAttribute(QWebSettings::LocalContentCanAccessFileUrls, true);
-    mWebView->settings()->setAttribute(QWebSettings::LocalContentCanAccessRemoteUrls, true);
-    mWebView->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, false);
-    mWebView->settings()->setAttribute(QWebSettings::JavascriptCanCloseWindows, false);
-    mWebView->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,
-                                       aInfo.parameters[CWebGraphicsItem::DebugKey] == "true");
+    // Настраиваем параметры безопасности и функциональности WebEngine
+    auto *settings = mWebView->settings();
+    settings->setAttribute(QWebEngineSettings::PluginsEnabled, true);
+    settings->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
+    settings->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
+    settings->setAttribute(QWebEngineSettings::LocalContentCanAccessFileUrls, true);
+    settings->setAttribute(QWebEngineSettings::LocalContentCanAccessRemoteUrls, true);
+    settings->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, false);
+    // Note: JavascriptCanCloseWindows and DeveloperExtrasEnabled may not be available in Qt 5.15
+    // settings->setAttribute(QWebEngineSettings::JavascriptCanCloseWindows, false);
+    // settings->setAttribute(QWebEngineSettings::DeveloperExtrasEnabled,
+    //                      aInfo.parameters.value(CWebGraphicsItem::DebugKey).toString() == "true");
     mWebView->setWindowFlags(Qt::FramelessWindowHint);
 
-    // Добавляем обновление страницы по F5
-    QKeySequence keys_refresh(QKeySequence::Refresh);
+    // Добавляем горячую клавишу F5 для обновления страницы
+    QKeySequence keysRefresh(QKeySequence::Refresh);
     QAction *actionRefresh = new QAction(this);
-    actionRefresh->setShortcut(keys_refresh);
+    actionRefresh->setShortcut(keysRefresh);
     mWebView->addAction(actionRefresh);
-    connect(actionRefresh, SIGNAL(triggered()), SLOT(onRefresh()));
+    connect(actionRefresh, &QAction::triggered, this, &WebGraphicsItem::onLoadFinished);
 
-    // Скрываем контекстное меню  'Обновить'
-    mWebView->page()->action(QWebPage::Reload)->setVisible(false);
+    // Скрываем контекстное меню 'Обновить'
+    mWebView->page()->action(QWebEnginePage::Reload)->setVisible(false);
 
-    connect(mWebView->page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
-            SLOT(onJavaScriptWindowObjectCleared()));
+    // Подключаем сигналы WebEngine для обработки загрузки и JavaScript взаимодействия
+    connect(mWebView.get(), &QWebEngineView::loadFinished, this, &WebGraphicsItem::onLoadFinished);
+    connect(mWebView.get(), &QWebEngineView::urlChanged, this, &WebGraphicsItem::onUrlChanged);
 
     // Получаем разрешение из конфига виджета (секция [web]).
     if (!aInfo.parameters.contains(CWebGraphicsItem::WidthKey) ||
@@ -68,8 +73,8 @@ WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo, SDK::P
     mWebView->setGeometry(QRect(0, 0, aInfo.parameters[CWebGraphicsItem::WidthKey].toInt(),
                                 aInfo.parameters[CWebGraphicsItem::HeightKey].toInt()));
 
-    // Анализируем контент.
-    QString path = aInfo.parameters[CWebGraphicsItem::StartPageKey];
+    // Анализируем и загружаем контент
+    QString path = aInfo.parameters.value(CWebGraphicsItem::StartPageKey, "");
     if (path.startsWith("http")) {
         // Загружаем удаленный адрес
         mWebView->load(QUrl(path));
@@ -80,20 +85,22 @@ WebGraphicsItem::WebGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo, SDK::P
 
         if (!content.open(QIODevice::ReadOnly | QIODevice::Text)) {
             LOG(mLog, LogLevel::Error, QString("Failed to load html content file '%1'.").arg(path));
+            mError = QString("Failed to load content file: %1").arg(path);
             return;
         }
+
         QTextStream stream(&content);
-        mWebView->setHtml(stream.readAll(), QUrl::fromLocalFile(aInfo.directory + "/"));
+        QString htmlContent = stream.readAll();
+        QUrl baseUrl = QUrl::fromLocalFile(aInfo.directory + "/");
+        mWebView->setHtml(htmlContent, baseUrl);
     }
     mUrl = path;
+}
 
-    // Импорт enum'a в виде свойств (QWebKit не понимает энумераторы внутри QObjectа, объявленные через Q_ENUMS).
-    const QMetaObject *metaObject = mEventTypeMetaInfo.metaObject();
-    QMetaEnum metaEnum = metaObject->enumerator(metaObject->indexOfEnumerator("Enum"));
-
-    for (int keyIndex = 0; keyIndex < metaEnum.keyCount(); keyIndex++) {
-        mEventTypeMetaInfo.setProperty(metaEnum.key(keyIndex), metaEnum.value(keyIndex));
-    }
+//---------------------------------------------------------------------------
+// Деструктор. Освобождает ресурсы WebEngine виджета.
+WebGraphicsItem::~WebGraphicsItem() {
+    // WebEngine resources are automatically cleaned up by QSharedPointer
 }
 
 //------------------------------------------------------------------------------
@@ -102,91 +109,109 @@ void WebGraphicsItem::onRefresh() {
 }
 
 //------------------------------------------------------------------------------
-void WebGraphicsItem::onJavaScriptWindowObjectCleared() {
-    QWebFrame *frame = qobject_cast<QWebFrame *>(sender());
 
-    if (frame) {
-        // Добавляем типы событий.
-        frame->addToJavaScriptWindowObject(SDK::PaymentProcessor::Scripting::CProxyNames::EventType,
-                                           &mEventTypeMetaInfo);
-        frame->addToJavaScriptWindowObject(SDK::PaymentProcessor::Scripting::CProxyNames::Core, mCoreProxy,
-                                           QWebFrame::QtOwnership); // TODO QJSEngine->QWebFrame ?
-        frame->addToJavaScriptWindowObject(CWebGraphicsItem::ContainerScriptObject, this,
-                                           QWebFrame::QtOwnership); // TODO QJSEngine->QWebFrame ?
+/// Обработчик завершения загрузки страницы WebEngine.
+/// Настраивает JavaScript взаимодействие и инициализирует обработчики.
+/// @param aOk true если страница загружена успешно
+void WebGraphicsItem::onLoadFinished(bool aOk) {
+    if (aOk) {
+        mItemLoaded = true;
 
-        connect(frame, SIGNAL(loadFinished(bool)), SLOT(onFrameLoaded(bool)), Qt::UniqueConnection);
+        // Настраиваем JavaScript объекты для взаимодействия с платежной системой
+        // В WebEngine JavaScript объекты добавляются через runJavaScript
+        QString jsSetup = QString("if (typeof %1 === 'undefined') { %1 = {}; }"
+                                  "console.log('WebEngine container initialized');")
+                              .arg(CWebGraphicsItem::ContainerScriptObject);
+
+        mWebView->page()->runJavaScript(jsSetup);
+
+        // Инициализируем JavaScript обработчики если они существуют
+        mWebView->page()->runJavaScript(
+            QString("if (typeof initialize === 'function') { "
+                    "    try { initialize(); console.log('JavaScript initialized successfully'); } "
+                    "    catch(e) { console.error('Initialize error:', e); } "
+                    "} else { "
+                    "    console.warn('No initialize function found in page'); "
+                    "}"));
+
+        // Обрабатываем отложенные сигналы
+        while (!mSignalQueue.isEmpty()) {
+            auto signalData = mSignalQueue.takeFirst();
+            QString signalName = signalData.first;
+            QList<QVariant> args = signalData.second;
+
+            // Вызываем JavaScript обработчики для сигналов
+            if (signalName == "onShow") {
+                mWebView->page()->runJavaScript("if (typeof onShow === 'function') { onShow(); }");
+            } else if (signalName == "onHide") {
+                mWebView->page()->runJavaScript("if (typeof onHide === 'function') { onHide(); }");
+            } else if (signalName == "onReset") {
+                // Для reset передаем параметры как JSON
+                if (!args.isEmpty() && args.first().canConvert<QVariantMap>()) {
+                    QVariantMap params = args.first().toMap();
+                    QString paramsJson = "{";
+                    for (auto it = params.begin(); it != params.end(); ++it) {
+                        if (it != params.begin())
+                            paramsJson += ",";
+                        paramsJson += QString("\"%1\":\"%2\"").arg(it.key(), it.value().toString());
+                    }
+                    paramsJson += "}";
+                    mWebView->page()->runJavaScript(
+                        QString("if (typeof onReset === 'function') { onReset(%1); }").arg(paramsJson));
+                }
+            } else if (signalName == "onNotify") {
+                // Для notify передаем reason и параметры
+                if (args.size() >= 2) {
+                    QString reason = args.first().toString();
+                    QVariantMap params = args.last().toMap();
+                    QString paramsJson = "{";
+                    for (auto it = params.begin(); it != params.end(); ++it) {
+                        if (it != params.begin())
+                            paramsJson += ",";
+                        paramsJson += QString("\"%1\":\"%2\"").arg(it.key(), it.value().toString());
+                    }
+                    paramsJson += "}";
+                    mWebView->page()->runJavaScript(
+                        QString("if (typeof onNotify === 'function') { onNotify('%1', %2); }").arg(reason, paramsJson));
+                }
+            }
+        }
+
+        LOG(mLog, LogLevel::Normal, "WebEngine page loaded and JavaScript initialized successfully");
+    } else {
+        mError = "Failed to load web page";
+        LOG(mLog, LogLevel::Error, mError);
     }
 }
 
-//---------------------------------------------------------------------------
-void WebGraphicsItem::onFrameLoaded(bool aOk) {
-    QWebFrame *frame = qobject_cast<QWebFrame *>(sender());
-
-    if (frame && aOk) {
-        foreach (QWebElement tag, frame->findAllElements("script")) {
-            if (tag.hasClass(CWebGraphicsItem::HandlerScriptClass)) {
-                // Производим инициализацию скрипта в странице
-                QVariant result =
-                    tag.evaluateJavaScript(QString("%1; true").arg(CWebGraphicsItem::InitializeHandlerSignature));
-
-                if (result.type() != QVariant::Bool || result.toBool() != true) {
-                    LOG(mLog, LogLevel::Error,
-                        "Web frame has no initialize() method or error occured. Graphics events are inaccessible.");
-                }
-
-                while (!mSingalQueue.isEmpty()) {
-                    QString signalName = mSingalQueue.first().first;
-
-                    switch (mSingalQueue.first().second.count()) {
-                        case 0:
-                            QMetaObject::invokeMethod(this, signalName.toLatin1());
-                            break;
-                        case 1:
-                            QMetaObject::invokeMethod(this, signalName.toLatin1(),
-                                                      Q_ARG(QVariantMap, mSingalQueue.first().second.first().toMap()));
-                            break;
-                        case 2:
-                            QMetaObject::invokeMethod(this, signalName.toLatin1(),
-                                                      Q_ARG(QString, mSingalQueue.first().second.first().toString()),
-                                                      Q_ARG(QVariantMap, mSingalQueue.first().second.last().toMap()));
-                            break;
-
-                        default:
-                            LOG(mLog, LogLevel::Warning,
-                                QString("Signal with wrong arguments queued: %1. Failed to emit.").arg(signalName));
-                    }
-
-                    mSingalQueue.takeFirst();
-                }
-
-                mItemLoaded = true;
-            }
-        }
-    } else {
-        LOG(mLog, LogLevel::Warning, "Cannot load frame " + mWebView->title());
-    }
+//------------------------------------------------------------------------------
+/// Обработчик изменения URL страницы.
+/// @param aUrl Новый URL страницы
+void WebGraphicsItem::onUrlChanged(const QUrl &aUrl) {
+    mUrl = aUrl.toString();
+    LOG(mLog, LogLevel::Normal, QString("WebEngine URL changed to: %1").arg(mUrl));
 }
 
 //---------------------------------------------------------------------------
 void WebGraphicsItem::show() {
-    mItemLoaded ? emit onShow() : mSingalQueue.push_back(qMakePair(QString("onShow"), QList<QVariant>()));
+    mItemLoaded ? emit onShow() : mSignalQueue.push_back(qMakePair(QString("onShow"), QList<QVariant>()));
 }
 
 //---------------------------------------------------------------------------
 void WebGraphicsItem::hide() {
-    mItemLoaded ? emit onHide() : mSingalQueue.push_back(qMakePair(QString("onHide"), QList<QVariant>()));
+    mItemLoaded ? emit onHide() : mSignalQueue.push_back(qMakePair(QString("onHide"), QList<QVariant>()));
 }
 
 //---------------------------------------------------------------------------
 void WebGraphicsItem::reset(const QVariantMap &aParameters) {
     mItemLoaded ? emit onReset(aParameters)
-                : mSingalQueue.push_back(qMakePair(QString("onReset"), QList<QVariant>() << aParameters));
+                : mSignalQueue.push_back(qMakePair(QString("onReset"), QList<QVariant>() << aParameters));
 }
 
 //---------------------------------------------------------------------------
 void WebGraphicsItem::notify(const QString &aReason, const QVariantMap &aParameters) {
     mItemLoaded ? emit onNotify(aReason, aParameters)
-                : mSingalQueue.push_back(qMakePair(QString("onNotify"), QList<QVariant>() << aReason << aParameters));
+                : mSignalQueue.push_back(qMakePair(QString("onNotify"), QList<QVariant>() << aReason << aParameters));
 }
 
 //---------------------------------------------------------------------------
@@ -196,8 +221,8 @@ QQuickItem *WebGraphicsItem::getWidget() const {
 }
 
 //---------------------------------------------------------------------------
-QVariantMap WebGraphicsItem::getContext() const {
-    return mContext;
+QWidget *WebGraphicsItem::getNativeWidget() const {
+    return mWebView.data();
 }
 
 //---------------------------------------------------------------------------
@@ -211,3 +236,6 @@ QString WebGraphicsItem::getError() const {
 }
 
 //---------------------------------------------------------------------------
+QVariantMap WebGraphicsItem::getContext() const {
+    return mContext;
+}

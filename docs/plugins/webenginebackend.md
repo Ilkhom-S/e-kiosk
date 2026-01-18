@@ -8,13 +8,13 @@ The WebEngineBackend plugin provides Chromium-based web rendering capabilities f
 
 ## Qt Version Compatibility
 
-**Qt6 Only** - This plugin requires Qt6 because:
+**Qt 5.6+ and Qt6** - This plugin supports Qt 5.6+ and Qt6 because:
 
-- Qt WebEngine is the modern web rendering engine in Qt6
-- Qt5's Qt WebEngine was less stable and had limited features
-- Qt6 provides better Chromium integration and security updates
+- Qt WebEngine is available starting from Qt 5.6
+- Qt6 provides enhanced Chromium integration and security updates
+- Modern web rendering with full Chromium support
 
-For Qt5 compatibility, use the **WebKitBackend** plugin instead.
+For Qt 5.0-5.5 compatibility, use the **WebKitBackend** plugin (deprecated).
 
 ## Quick start 🔧
 
@@ -80,7 +80,7 @@ webBackend->reload();
 
 The WebEngineBackend integrates with:
 
-- **Qt6 WebEngine**: Core rendering engine
+- **Qt WebEngine**: Core rendering engine (Qt 5.6+ and Qt6)
 - **EKiosk Kernel**: Service registration and lifecycle management
 - **Security Framework**: Web content isolation and sandboxing
 
@@ -92,10 +92,10 @@ cmake --build build/msvc --target webengine_backend_test
 
 ## Troubleshooting
 
-### Qt6 Requirement
+### Qt Version Requirement
 
-**Error**: Plugin fails to load on Qt5
-**Solution**: Use WebKitBackend for Qt5 compatibility, or upgrade to Qt6
+**Error**: Plugin fails to load on Qt versions before 5.6
+**Solution**: Use WebKitBackend for Qt 5.0-5.5 compatibility (deprecated), or upgrade to Qt 5.6+
 
 ### Chromium Dependencies
 
@@ -104,9 +104,9 @@ cmake --build build/msvc --target webengine_backend_test
 
 ## Migration notes
 
-- **From Qt5**: Migrate to WebKitBackend for Qt5, or upgrade to Qt6
-- **API Changes**: Qt6 WebEngine has different APIs than Qt5 WebEngine
-- **Security**: Enhanced security features in Qt6 WebEngine
+- **From Qt 5.0-5.5**: Migrate from WebKitBackend (deprecated) to WebEngineBackend
+- **API Changes**: Qt WebEngine APIs differ from Qt WebKit
+- **Security**: Enhanced security features in Qt WebEngine compared to WebKit
 
 ## Further reading
 

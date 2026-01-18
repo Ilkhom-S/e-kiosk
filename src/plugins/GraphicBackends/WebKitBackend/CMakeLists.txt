@@ -1,9 +1,10 @@
-# WebKitBackend graphic plugin - Qt 5 only
+# WebKitBackend graphic plugin - Qt 5.0-5.5 only (deprecated)
 
 include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
 
-# Only build WebKitBackend for Qt 5
-if(NOT QT_VERSION_MAJOR EQUAL 5)
+# Only build WebKitBackend for Qt 5.0-5.5
+if(NOT (QT_VERSION_MAJOR EQUAL 5 AND QT_VERSION_MINOR LESS 6))
+    message(STATUS "WebKitBackend only supports Qt 5.0-5.5, skipping for Qt ${QT_VERSION}")
     return()
 endif()
 
@@ -19,21 +20,14 @@ set(WEBKITBACKEND_SOURCES
     src/webkit_backend.json
 )
 
-# WebKit is deprecated in Qt5.5+ and removed in Qt6
-# Use WebEngine as alternative for Qt5.6+
+# WebKit is only available in Qt 5.0-5.5 (deprecated in 5.5, removed in 5.6)
+# This plugin is restricted to Qt 5.0-5.5 only
 find_package(Qt5 COMPONENTS WebKit WebKitWidgets QUIET)
 if(Qt5WebKit_FOUND)
     set(WEBKIT_QT_MODULES Widgets WebKit WebKitWidgets)
 else()
-    # Try WebEngine as fallback
-    find_package(Qt5 COMPONENTS WebEngine WebEngineWidgets QUIET)
-    if(Qt5WebEngine_FOUND)
-        set(WEBKIT_QT_MODULES Widgets WebEngine WebEngineWidgets)
-        add_compile_definitions(USE_WEBENGINE)
-    else()
-        message(WARNING "Neither WebKit nor WebEngine found for WebKitBackend")
-        set(WEBKIT_QT_MODULES Widgets)
-    endif()
+    message(WARNING "WebKit not found for WebKitBackend - this plugin requires Qt 5.0-5.5")
+    set(WEBKIT_QT_MODULES Widgets)
 endif()
 
 ek_add_plugin(webkit_backend

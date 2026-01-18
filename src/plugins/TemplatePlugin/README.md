@@ -28,7 +28,7 @@ This plugin provides the basic structure and boilerplate code needed to create a
    - Use search/replace to change `TemplatePlugin` → `YourPlugin`
    - Update class names, constants, and metadata
    - Add your plugin-specific functionality
-   - Update `CMakeLists.txt` and `template_plugin.json`
+   - Update `CMakeLists.txt`
 
 4. **Implement your functionality:**
    - Add business logic to the plugin class methods
@@ -48,8 +48,7 @@ TemplatePlugin/
 │   ├── TemplatePlugin._h            # Header template (copy this!)
 │   ├── TemplatePlugin._cpp          # Implementation template (copy this!)
 │   ├── TemplatePluginFactory._h     # Factory header template (copy this!)
-│   ├── TemplatePluginFactory._cpp   # Factory implementation template (copy this!)
-│   └── template_plugin.json         # Qt plugin metadata
+│   └── TemplatePluginFactory._cpp   # Factory implementation template (copy this!)
 └── ../tests/plugins/TemplatePlugin/  # Unit tests (separate directory)
     ├── CMakeLists.txt       # Test build configuration
     └── test_plugin_test.cpp # Comprehensive plugin tests
@@ -74,7 +73,7 @@ cp src/TemplatePluginFactory._cpp src/YourPluginFactory.cpp
 - Replace all occurrences of `TemplatePlugin` with `YourPlugin`
 - Update class names, namespaces, and constants
 - Add your specific plugin logic
-- Update metadata in the JSON file
+- Update metadata in the factory static variables
 - Modify CMakeLists.txt
 
 ### 3. Template File Contents
@@ -94,10 +93,9 @@ The template files include:
 ### Plugin Factory
 
 - Inherits from `SDK::Plugin::PluginFactory`
-- Implements `IPluginFactory` interface
-- Provides plugin metadata (name, description, version)
-- Overrides `createPlugin()` and `destroyPlugin()` for custom plugin instantiation
-- Uses modern Qt5/6 `Q_PLUGIN_METADATA` instead of deprecated `Q_EXPORT_PLUGIN2`
+- Provides plugin metadata via static member variables
+- Uses `REGISTER_PLUGIN_WITH_PARAMETERS` macro for automatic plugin registration
+- No manual override of factory methods needed - base class handles everything
 
 ### Plugin Implementation
 
@@ -107,17 +105,15 @@ The template files include:
 - Demonstrates configuration management and logging
 - Shows proper resource cleanup in destructor
 
-### Qt Plugin Metadata
+### Plugin Registration
 
-- JSON file defining plugin properties
-- Referenced by `Q_PLUGIN_METADATA` macro in factory class
-- Contains IID, version, name, description, author
+Plugin registration is handled automatically using the `REGISTER_PLUGIN_WITH_PARAMETERS` macro in the plugin implementation file. This registers the plugin with the factory system, allowing the base `PluginFactory` class to handle plugin discovery and instantiation.
 
-### CMake Configuration
+The registration includes:
 
-- Uses `ek_add_plugin()` helper macro
-- Defines plugin name, sources, dependencies
-- Sets up proper folder structure in IDE
+- Plugin path: `PaymentProcessor.Template.TemplatePlugin`
+- Constructor function: Creates plugin instances
+- Parameter enumeration: Defines configurable plugin parameters
 
 ## Customization Guide
 
@@ -125,26 +121,14 @@ The template files include:
 
 ```cpp
 // In TemplatePluginFactory.cpp
+QString SDK::Plugin::PluginFactory::mModuleName = "your_plugin_name";
 QString SDK::Plugin::PluginFactory::mName = "Your Plugin Name";
 QString SDK::Plugin::PluginFactory::mDescription = "Description of your plugin";
 QString SDK::Plugin::PluginFactory::mAuthor = "Your Name";
 QString SDK::Plugin::PluginFactory::mVersion = "1.0";
-QString SDK::Plugin::PluginFactory::mModuleName = "your_plugin_name";
 ```
 
-### 2. Update JSON Metadata
-
-```json
-{
-  "IID": "SDK.Plugin.PluginFactory",
-  "version": "1.0",
-  "name": "your_plugin_name",
-  "description": "Description of your plugin",
-  "author": "Your Name"
-}
-```
-
-### 3. Update CMakeLists.txt
+### 2. Update CMakeLists.txt
 
 ```cmake
 ek_add_plugin(your_plugin_name
@@ -275,8 +259,8 @@ endif()
 
 If your plugin can only support one Qt version, document it clearly:
 
-- **Qt6 Only**: Use Qt WebEngine (WebEngineBackend)
-- **Qt5 Only**: Use Qt WebKit (WebKitBackend)
+- **Qt 5.6+ and Qt6**: Use Qt WebEngine (WebEngineBackend)
+- **Qt 5.0-5.5 Only (Deprecated)**: Use Qt WebKit (WebKitBackend)
 
 ## Platform Compatibility
 

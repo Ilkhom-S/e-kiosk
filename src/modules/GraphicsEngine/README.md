@@ -20,7 +20,8 @@ flowchart TB
     GraphicsEngine --> Backend["GraphicBackend (plugin)"]
     Backend --> native["native_backend (Qt Widgets)"]
     Backend --> qml["qml_backend (Qt Quick)"]
-    Backend --> webkit["webkit_backend (WebKit)"]
+    Backend --> webkit["webkit_backend (WebKit, deprecated)"]
+    Backend --> webengine["webengine_backend (Qt WebEngine)"]
 ```
 
 ## Usage
@@ -86,8 +87,9 @@ Theme=default
 
 ## Backend Selection
 
-| Backend        | Best For     | Qt Modules   |
-| -------------- | ------------ | ------------ |
-| native_backend | Desktop apps | Qt Widgets   |
-| qml_backend    | Touch UI     | Qt Quick     |
-| webkit_backend | Web-based UI | Qt WebEngine |
+| Backend           | Best For                  | Qt Modules   |
+| ----------------- | ------------------------- | ------------ |
+| native_backend    | Desktop apps              | Qt Widgets   |
+| qml_backend       | Touch UI                  | Qt Quick     |
+| webkit_backend    | Web-based UI (deprecated) | Qt WebKit    |
+| webengine_backend | Web-based UI              | Qt WebEngine |

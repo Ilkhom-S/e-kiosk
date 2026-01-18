@@ -1,20 +1,22 @@
 # WebKitBackend Plugin
 
-Legacy WebKit-based web rendering backend for EKiosk applications.
+**⚠️ DEPRECATED** - Legacy WebKit-based web rendering backend for EKiosk applications. Use WebEngineBackend for Qt 5.6+.
 
 ## Purpose
 
 The WebKitBackend plugin provides WebKit-based web rendering capabilities for EKiosk applications. It implements web content display using Qt WebKit, providing compatibility with Qt5 applications.
 
+**Note**: Qt WebKit was removed in Qt 5.6. This plugin is only compatible with Qt 5.0-5.5. For Qt 5.6 and later, use the **WebEngineBackend** plugin instead.
+
 ## Qt Version Compatibility
 
-**Qt5 Only** - This plugin requires Qt5 because:
+**Qt 5.0-5.5 Only** - This plugin requires Qt 5.0-5.5 because:
 
-- Qt WebKit was deprecated and removed in Qt6
-- Qt6 uses Qt WebEngine as the modern replacement
-- WebKit provides legacy compatibility for existing Qt5 applications
+- Qt WebKit was deprecated and removed in Qt 5.6
+- Qt 5.6+ uses Qt WebEngine as the modern replacement
+- WebKit provides legacy compatibility for existing Qt 5.0-5.5 applications
 
-For Qt6 compatibility, use the **WebEngineBackend** plugin instead.
+For Qt 5.6 and later compatibility, use the **WebEngineBackend** plugin instead.
 
 ## Quick start 🔧
 
@@ -91,19 +93,19 @@ cmake --build build/msvc --target webkit_backend_test
 
 ## Troubleshooting
 
-### Qt5 Requirement
+### Qt Version Requirement
 
-**Error**: Plugin fails to load on Qt6
-**Solution**: Use WebEngineBackend for Qt6 compatibility, or downgrade to Qt5
+**Error**: Plugin fails to load on Qt 5.6+
+**Solution**: Use WebEngineBackend for Qt 5.6+ compatibility, or downgrade to Qt 5.0-5.5
 
 ### WebKit Limitations
 
 **Error**: Modern web features not supported
-**Solution**: Consider migrating to WebEngineBackend with Qt6
+**Solution**: Consider migrating to WebEngineBackend with Qt 5.6+
 
 ## Migration notes
 
-- **To Qt6**: Replace with WebEngineBackend plugin
+- **To Qt 5.6+**: Replace with WebEngineBackend plugin
 - **API Changes**: Qt WebKit APIs differ from Qt WebEngine
 - **Security**: WebKit has known security vulnerabilities; consider upgrading
 

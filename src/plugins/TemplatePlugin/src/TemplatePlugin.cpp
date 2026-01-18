@@ -198,3 +198,32 @@ void TemplatePlugin::handleError(const QString &errorMessage) {
     //     qCritical() << "Failed to send error notification:" << e.what();
     // }
 }
+
+//------------------------------------------------------------------------------
+// Регистрация плагина в системе.
+// Используется анонимное пространство имён для внутренней линковки.
+namespace {
+
+    /// Создаёт экземпляр плагина TemplatePlugin.
+    /// @param aFactory Указатель на фабрику плагинов
+    /// @param aInstancePath Путь к экземпляру плагина
+    /// @return указатель на созданный плагин
+    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+        return new TemplatePlugin(aFactory, aInstancePath);
+    }
+
+    /// Возвращает параметры плагина.
+    /// @return QVector с параметрами плагина
+    QVector<SDK::Plugin::SPluginParameter> EnumParameters() {
+        return QVector<SDK::Plugin::SPluginParameter>() << SDK::Plugin::SPluginParameter(
+                   SDK::Plugin::Parameters::Debug, SDK::Plugin::SPluginParameter::Bool, false,
+                   QT_TRANSLATE_NOOP("TemplatePluginParameters", "#debug_mode"),
+                   QT_TRANSLATE_NOOP("TemplatePluginParameters", "#debug_mode_help"), false);
+    }
+
+} // namespace
+
+/// Регистрация плагина в фабрике.
+/// Плагин регистрируется с указанием пути, конструктора и параметров.
+REGISTER_PLUGIN_WITH_PARAMETERS(SDK::Plugin::makePath(SDK::PaymentProcessor::Application, "Template", "TemplatePlugin"),
+                                &CreatePlugin, &EnumParameters);

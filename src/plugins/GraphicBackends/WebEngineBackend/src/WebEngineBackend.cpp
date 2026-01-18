@@ -13,7 +13,7 @@
 
 // SDK
 #include <SDK/PaymentProcessor/Components.h>
-#include <SDK/PaymentProcessor/Core/ICore>
+#include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/Plugins/IPluginFactory.h>
 #include <SDK/Plugins/PluginInitializer.h>
 

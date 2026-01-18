@@ -52,8 +52,8 @@ Some plugins may be Qt version-specific due to:
 
 **Examples:**
 
-- **WebEngineBackend**: Qt6 only (Qt WebEngine)
-- **WebKitBackend**: Qt5 only (Qt WebKit, deprecated in Qt6)
+- **WebEngineBackend**: Qt 5.6+ and Qt6 (Qt WebEngine)
+- **WebKitBackend**: Qt 5.0-5.5 only (Qt WebKit, deprecated)
 
 Document version requirements clearly in plugin README and docs.
 
@@ -70,15 +70,18 @@ Plugins should specify supported platforms and any limitations:
 ```text
 src/plugins/
 ├── CategoryName/                    # Plugin category (e.g., GraphicBackends, Payments)
-│   ├── PluginName/                  # Individual plugin
-│   │   ├── CMakeLists.txt           # Plugin build configuration
-│   │   ├── README.md                # Plugin-specific documentation
-│   │   ├── src/                     # Source files
-│   │   │   ├── PluginFactory.h/.cpp # Factory implementation
-│   │   │   ├── PluginImpl.h/.cpp    # Plugin implementation
-│   │   │   └── plugin.json          # Qt plugin metadata
-│   │   └── tests/                   # Plugin-specific tests
-│   │       └── plugin_test.cpp
+│   └── PluginName/                  # Individual plugin
+│       ├── CMakeLists.txt           # Plugin build configuration
+│       ├── README.md                # Plugin-specific documentation
+│       └── src/                     # Source files
+│           ├── PluginFactory.h/.cpp # Qt plugin factory (inherits from SDK::Plugin::PluginFactory)
+│           └── PluginImpl.h/.cpp    # Plugin implementation class
+
+tests/plugins/
+├── CategoryName/
+│   └── PluginName/
+│       ├── plugin_test.cpp          # Plugin-specific tests using kernel mocking
+│       └── CMakeLists.txt           # Test build configuration
 ```
 
 ### Core Interfaces
@@ -87,7 +90,11 @@ src/plugins/
 - **`SDK::Plugin::IPlugin`**: Base plugin interface with lifecycle methods
 - **`SDK::Plugin::IKernel`**: Application kernel providing services to plugins
 
-### Plugin Loading and Lifecycle
+## Plugin Metadata Source
+
+**Plugin metadata (name, description, author, version) comes from C++ static member variables**, not JSON files. The `PluginFactory` base class provides default implementations that return these static values.
+
+## Plugin Loading and Lifecycle
 
 1. **Discovery**: Qt plugin system scans plugin directories
 2. **Registration**: Plugins register with REGISTER_PLUGIN_WITH_PARAMETERS macro
@@ -96,7 +103,7 @@ src/plugins/
 5. **Operation**: Plugin runs and provides services
 6. **Shutdown**: Plugin cleanup and resource release
 
-### Best Practices
+## Best Practices
 
 - **Error Handling**: Always check return values and handle failures gracefully
 - **Logging**: Use kernel-provided logger for all diagnostic output
@@ -113,96 +120,90 @@ src/plugins/
 ### 1. Plugin Factory Implementation
 
 ```cpp
-class MyPluginFactory : public QObject, public SDK::Plugin::IPluginFactory {
+// PluginFactory.h
+class MyPluginFactory : public SDK::Plugin::PluginFactory {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "SDK.Plugin.PluginFactory" FILE "my_plugin.json")
+    Q_PLUGIN_METADATA(IID "SDK.Plugin.PluginFactory")  // No FILE parameter needed
     Q_INTERFACES(SDK::Plugin::IPluginFactory)
-
-public:
-    // IPluginFactory implementation
-    QString getName() const override { return "My Plugin"; }
-    QString getDescription() const override { return "Description of my plugin"; }
-    QString getAuthor() const override { return "Author Name"; }
-    QString getVersion() const override { return "1.0"; }
-    QStringList getPluginList() const override { return QStringList() << "MyPlugin.Instance"; }
-
-    SDK::Plugin::IPlugin *createPlugin(const QString &instancePath) override {
-        return new MyPlugin(instancePath);
-    }
 };
+
+// PluginFactory.cpp
+QString SDK::Plugin::PluginFactory::mModuleName = "my_plugin";
+QString SDK::Plugin::PluginFactory::mName = "My Plugin";
+QString SDK::Plugin::PluginFactory::mDescription = "Description of my plugin";
+QString SDK::Plugin::PluginFactory::mAuthor = "Author Name";
+QString SDK::Plugin::PluginFactory::mVersion = "1.0";
 ```
 
 ### 2. Plugin Implementation
 
 ```cpp
+// PluginImpl.h
 class MyPlugin : public SDK::Plugin::IPlugin {
 public:
-    MyPlugin(const QString &instancePath) : m_instancePath(instancePath) {}
+    MyPlugin(const QString &instancePath);
 
-    bool initialize(SDK::Plugin::IKernel *kernel) override {
-        m_kernel = kernel;
-        m_log = kernel->getLog("MyPlugin");
-
-        // Qt version compatibility example
-        #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            qInfo() << "Running on Qt6";
-        #else
-            qInfo() << "Running on Qt5";
-        #endif
-
-        return true;
-    }
-
-    bool start() override {
-        LOG(m_log, LogLevel::Normal, "MyPlugin started");
-        return true;
-    }
-
-    bool stop() override {
-        LOG(m_log, LogLevel::Normal, "MyPlugin stopped");
-        return true;
-    }
-
-private:
-    QString m_instancePath;
-    SDK::Plugin::IKernel *m_kernel;
-    ILog *m_log;
+    // IPlugin interface implementation
+    QString getPluginName() const override;
+    QVariantMap getConfiguration() const override;
+    void setConfiguration(const QVariantMap &config) override;
+    QString getConfigurationName() const override;
+    bool saveConfiguration() override;
+    bool isReady() const override;
+    bool initialize(SDK::Plugin::IKernel *kernel) override;
+    bool start() override;
+    bool stop() override;
 };
-```
 
-### 3. Qt Plugin Metadata (plugin.json)
+// PluginImpl.cpp
+namespace {
 
-```json
-{
-  "IID": "SDK.Plugin.PluginFactory",
-  "version": "1.0",
-  "name": "MyPlugin",
-  "description": "My plugin description",
-  "author": "Author Name"
+// Anonymous namespace for internal linkage
+SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+    return new MyPlugin(aInstancePath);
 }
+
+QVector<SDK::Plugin::SPluginParameter> EnumParameters() {
+    return QVector<SDK::Plugin::SPluginParameter>() << SDK::Plugin::SPluginParameter(
+        SDK::Plugin::Parameters::Debug, SDK::Plugin::SPluginParameter::Bool, false,
+        QT_TRANSLATE_NOOP("MyPluginParameters", "#debug_mode"),
+        QT_TRANSLATE_NOOP("MyPluginParameters", "#debug_mode_help"), false);
+}
+
+} // namespace
+
+// Register plugin with the system
+REGISTER_PLUGIN_WITH_PARAMETERS(
+    SDK::Plugin::makePath(SDK::PaymentProcessor::Application,
+                          SDK::PaymentProcessor::CComponents::SomeCategory,
+                          "MyPlugin"),
+    &CreatePlugin, &EnumParameters);
+
+MyPlugin::MyPlugin(const QString &instancePath) : m_instancePath(instancePath) {
+    // Constructor implementation
+}
+
+// Implement IPlugin methods...
 ```
 
-### 4. CMake Configuration
+### 3. CMake Configuration
 
 ```cmake
 include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
 
-# Qt version compatibility
-if(QT_VERSION_MAJOR EQUAL 6)
-    set(QT_COMPONENTS Core Widgets WebEngineCore)
-elseif(QT_VERSION_MAJOR EQUAL 5)
-    set(QT_COMPONENTS Core Widgets WebKit)
-endif()
-
 set(MY_PLUGIN_SOURCES
     src/MyPluginFactory.cpp
-    src/MyPlugin.cpp
+    src/MyPluginFactory.h
+    src/MyPluginImpl.cpp
+    src/MyPluginImpl.h
+    # No JSON file needed
 )
 
 ek_add_plugin(my_plugin
     FOLDER "plugins/CategoryName"
     SOURCES ${MY_PLUGIN_SOURCES}
-    QT_MODULES ${QT_COMPONENTS}  # Use version-appropriate modules
+    QT_MODULES Core  # Add required Qt modules
+    DEPENDS PluginsSDK ek_common
 )
 ```
 

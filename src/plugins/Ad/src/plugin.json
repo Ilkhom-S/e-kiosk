@@ -1,7 +1,0 @@
-{
-  "IID": "SDK.Plugin.PluginFactory",
-  "version": "1.0",
-  "name": "AdPlugin",
-  "description": "Advertising content management plugin for EKiosk",
-  "author": "Humo"
-}

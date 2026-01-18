@@ -4,23 +4,24 @@ UI rendering backend plugins.
 
 ## Available Backends
 
-| Plugin                          | Technology   | Best For         |
-| ------------------------------- | ------------ | ---------------- |
-| [NativeBackend](NativeBackend/) | Qt Widgets   | Desktop apps     |
-| [QmlBackend](QmlBackend/)       | Qt Quick/QML | Touch interfaces |
-| [WebkitBackend](WebkitBackend/) | Qt WebEngine | Web-based UI     |
+| Plugin                                   | Technology   | Best For                  |
+| ---------------------------------------- | ------------ | ------------------------- |
+| [NativeBackend](NativeBackend/)          | Qt Widgets   | Desktop apps              |
+| [QmlBackend](QmlBackend/)                | Qt Quick/QML | Touch interfaces          |
+| [WebkitBackend](WebkitBackend/)          | Qt WebKit    | Web-based UI (deprecated) |
+| [WebEngineBackend](../WebEngineBackend/) | Qt WebEngine | Web-based UI              |
 
 ## Backend Selection
 
 Choose based on your needs:
 
-| Feature       | Native | QML    | WebKit |
-| ------------- | ------ | ------ | ------ |
-| Touch UI      | ⭐⭐   | ⭐⭐⭐ | ⭐⭐⭐ |
-| Performance   | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐   |
-| Customization | ⭐⭐   | ⭐⭐⭐ | ⭐⭐⭐ |
-| Animations    | ⭐     | ⭐⭐⭐ | ⭐⭐⭐ |
-| Memory        | ⭐⭐⭐ | ⭐⭐   | ⭐     |
+| Feature       | Native | QML    | WebKit (deprecated) | WebEngine |
+| ------------- | ------ | ------ | ------------------- | --------- |
+| Touch UI      | ⭐⭐   | ⭐⭐⭐ | ⭐⭐⭐              | ⭐⭐⭐    |
+| Performance   | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐                | ⭐⭐⭐    |
+| Customization | ⭐⭐   | ⭐⭐⭐ | ⭐⭐⭐              | ⭐⭐⭐    |
+| Animations    | ⭐     | ⭐⭐⭐ | ⭐⭐⭐              | ⭐⭐⭐    |
+| Memory        | ⭐⭐⭐ | ⭐⭐   | ⭐                  | ⭐⭐      |
 
 ## Creating a Backend
 
@@ -110,15 +111,16 @@ Web-based UI rendering.
 **Pros**: Web technologies, designers can work  
 **Cons**: Higher resource usage, deprecated
 
-⚠️ **Note**: WebkitBackend requires migration to QtWebEngine for Qt5.6+ and Qt6.
+⚠️ **Note**: WebkitBackend is deprecated and only compatible with Qt 5.0-5.5. For Qt 5.6+ and Qt6, use WebEngineBackend instead.
 
 ## Platform Support
 
-| Backend       | Windows | Linux | macOS |
-| ------------- | ------- | ----- | ----- |
-| NativeBackend | ✅      | ✅    | ✅    |
-| QmlBackend    | ✅      | ✅    | ✅    |
-| WebkitBackend | ⚠️      | ⚠️    | ⚠️    |
+| Backend          | Windows | Linux | macOS |
+| ---------------- | ------- | ----- | ----- |
+| NativeBackend    | ✅      | ✅    | ✅    |
+| QmlBackend       | ✅      | ✅    | ✅    |
+| WebkitBackend    | ⚠️      | ⚠️    | ⚠️    |
+| WebEngineBackend | ✅      | ✅    | 🔬    |
 
 ## Dependencies
 

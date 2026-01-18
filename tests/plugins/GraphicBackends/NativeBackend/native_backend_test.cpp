@@ -37,7 +37,7 @@ class NativeBackendTest : public QObject {
 
 void NativeBackendTest::testPluginExists() {
     // Test that the NativeBackend plugin DLL was built successfully
-    QString pluginPath = "native_backendd.dll";
+    QString pluginPath = "Debug/native_backendd.dll";
     QVERIFY(QFile::exists(pluginPath));
 
     // Verify it's not empty (basic corruption check)
@@ -56,10 +56,11 @@ void NativeBackendTest::testFactoryInterface() {
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
 
-    // Test basic factory information
-    QVERIFY(!factory->getName().isEmpty());
-    QVERIFY(!factory->getDescription().isEmpty());
-    QVERIFY(!factory->getVersion().isEmpty());
+    // Test basic factory information with expected values
+    QCOMPARE(factory->getName(), QString("Native Backend"));
+    QCOMPARE(factory->getDescription(), QString("Native graphics backend for EKiosk"));
+    QCOMPARE(factory->getAuthor(), QString("CPP Static Author Test"));
+    QCOMPARE(factory->getVersion(), QString("1.0"));
     QVERIFY(!factory->getPluginList().isEmpty());
 }
 
@@ -68,7 +69,13 @@ void NativeBackendTest::testPluginCreation() {
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
 
-    SDK::Plugin::IPlugin *plugin = factory->createPlugin("NativeBackend.Instance", "NativeBackend.Instance");
+    // Get the registered plugin path
+    QStringList pluginList = factory->getPluginList();
+    QVERIFY(!pluginList.isEmpty());
+
+    QString pluginPath = pluginList.first(); // Should be "Application.GraphicsBackend.Native"
+
+    SDK::Plugin::IPlugin *plugin = factory->createPlugin(pluginPath, pluginPath);
     QVERIFY(plugin != nullptr);
 
     // Test plugin name
@@ -87,7 +94,12 @@ void NativeBackendTest::testPluginInitialization() {
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
 
-    SDK::Plugin::IPlugin *plugin = factory->createPlugin("NativeBackend.Instance", "NativeBackend.Instance");
+    // Get the registered plugin path
+    QStringList pluginList = factory->getPluginList();
+    QVERIFY(!pluginList.isEmpty());
+    QString pluginPath = pluginList.first();
+
+    SDK::Plugin::IPlugin *plugin = factory->createPlugin(pluginPath, pluginPath);
     QVERIFY(plugin != nullptr);
 
     // Test configuration methods (available without full initialization)
@@ -113,7 +125,12 @@ void NativeBackendTest::testPluginLifecycle() {
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
 
-    SDK::Plugin::IPlugin *plugin = factory->createPlugin("NativeBackend.Instance", "NativeBackend.Instance");
+    // Get the registered plugin path
+    QStringList pluginList = factory->getPluginList();
+    QVERIFY(!pluginList.isEmpty());
+    QString pluginPath = pluginList.first();
+
+    SDK::Plugin::IPlugin *plugin = factory->createPlugin(pluginPath, pluginPath);
     QVERIFY(plugin != nullptr);
 
     QVERIFY(!plugin->getConfigurationName().isEmpty());

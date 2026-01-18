@@ -3,11 +3,10 @@
 include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
 
 set(NATIVEBACKEND_SOURCES
-    src/NativeBackend.cpp
-    src/NativeBackend.h
     src/NativeBackendFactory.cpp
     src/NativeBackendFactory.h
-    src/native_backend.json
+    src/NativeBackend.cpp
+    src/NativeBackend.h
 )
 
 set(VERSION_RC ${EK_INCLUDES_DIR}/Common/CoreVersion.rc)

@@ -20,8 +20,8 @@ EKiosk will adopt a platform-specific Qt version strategy to maximize compatibil
 
 ### 2. Plugin Architecture Changes
 
-- [ ] Create new `WebEngineBackend` plugin for Qt 6 (WebEngine only)
-- [ ] Keep existing `WebKitBackend` plugin for Qt 5 Windows 7 only
+- [ ] Create new `WebEngineBackend` plugin for Qt 5.6+ and Qt 6 (WebEngine only)
+- [ ] Keep existing `WebKitBackend` plugin for Qt 5.0-5.5 only (deprecated)
 - [ ] Add conditional plugin builds in CMake based on Qt version and platform
 - [ ] Update QMLBackend for Qt 5/6 compatibility
 
@@ -44,7 +44,8 @@ EKiosk will adopt a platform-specific Qt version strategy to maximize compatibil
 ### Qt 5 (Windows 7 only)
 
 - Qt 5.15 LTS with VC toolset 142
-- WebKit/WebEngine fallback in WebKitBackend
+- Use WebEngineBackend (Qt WebEngine available from 5.6)
+- WebKitBackend not available (removed in Qt 5.6)
 - Legacy QML imports (will be updated to 2.15)
 
 ### Qt 6 (Windows 10+, Linux)
@@ -92,9 +93,14 @@ import Qt5Compat.GraphicalEffects 1.15  // Only for Qt 6
 ### Plugin Conditional Builds
 
 ```cmake
-# WebKitBackend - Qt 5 only
-if(QT_VERSION_MAJOR EQUAL 5)
+# WebKitBackend - Qt 5.0-5.5 only (deprecated)
+if(QT_VERSION_MAJOR EQUAL 5 AND QT_VERSION_MINOR LESS 6)
     add_subdirectory(WebKitBackend)
+endif()
+
+# WebEngineBackend - Qt 5.6+ and Qt 6
+if((QT_VERSION_MAJOR EQUAL 5 AND QT_VERSION_MINOR GREATER_EQUAL 6) OR QT_VERSION_MAJOR EQUAL 6)
+    add_subdirectory(WebEngineBackend)
 endif()
 
 # WebEngineBackend - Qt 6 only

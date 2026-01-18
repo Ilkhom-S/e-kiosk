@@ -5,6 +5,7 @@
 #include <SDK/PaymentProcessor/Components.h>
 #include <SDK/Plugins/IPluginFactory.h>
 #include <SDK/Plugins/IPluginLoader.h>
+#include <SDK/Plugins/PluginFactory.h>
 #include <SDK/Plugins/PluginInitializer.h>
 
 // Project

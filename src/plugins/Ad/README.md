@@ -1,24 +1,28 @@
 # Ad Plugin
 
-The Ad Plugin provides advertising content management and scheduling functionality for the EKiosk system.
+The Ad Plugin provides advertising content management and payment processing functionality for the EKiosk system. It implements a payment factory that handles advertisement-based payments and integrates with the broader advertising ecosystem.
 
 ## Overview
 
 The Ad Plugin manages:
 
-- Advertising campaign scheduling and display
-- Content management for advertisements
-- Payment integration for sponsored content
-- Remote advertisement updates
-- Statistics and reporting
+- **Payment Processing**: Advertisement-based payment transactions
+- **Content Integration**: Links payments to advertisement display
+- **Campaign Management**: Integration with advertising campaigns
+- **Remote Advertisement Updates**: Content management through remote services
+
+## Main Entry Point
+
+**Primary Plugin**: `PaymentFactory.cpp` - Implements payment factory for advertisement transactions
+**Supporting Components**: Ad service integration and content management
 
 ## Features
 
-- **Campaign Management**: Schedule and manage advertising campaigns
-- **Content Types**: Support for images, videos, and interactive content
-- **Payment Integration**: Monetization through sponsored advertisements
-- **Remote Management**: Update advertisements remotely
-- **Statistics**: Track advertisement performance and engagement
+- **Payment Factory**: Processes advertisement-sponsored payments
+- **Ad Integration**: Links payment transactions to advertisement display
+- **Content Management**: Manages advertisement content and campaigns
+- **Remote Updates**: Supports remote advertisement content updates
+- **Statistics**: Tracks payment and advertisement performance
 
 ## Dependencies
 
@@ -90,17 +94,22 @@ src/plugins/Ad/
 ├── CMakeLists.txt           # Build configuration
 ├── README.md               # Plugin documentation
 └── src/                    # Source files
-    ├── AdPluginFactory.h/.cpp    # Plugin factory
-    ├── AdPluginImpl.h/.cpp       # Plugin implementation
-    ├── AdService.h/.cpp          # Ad service
-    ├── AdPayment.h/.cpp          # Payment integration
-    ├── AdRemotePlugin.h/.cpp     # Remote management
-    ├── AdSourcePlugin.h/.cpp     # Content source
-    ├── PaymentFactory.h/.cpp     # Payment factory
-    ├── PaymentFactoryBase.h/.cpp # Base payment factory
-    ├── PluginLibraryDefinition.h/.cpp # Legacy definitions
-    └── plugin.json               # Qt plugin metadata
+    ├── PaymentFactory.cpp         # Main plugin entry point - payment factory
+    ├── AdPluginFactory.cpp        # Plugin metadata and factory base class
+    ├── AdService.h/.cpp           # Ad service implementation
+    ├── AdPayment.h/.cpp           # Payment processing for advertisements
+    ├── AdStatistics.h/.cpp        # Statistics and reporting
+    ├── AdRemoteUpdate.h/.cpp      # Remote content update functionality
+    ├── AdPluginImpl.h/.cpp        # Plugin implementation
+    ├── AdRemotePlugin.h/.cpp      # Remote management
+    ├── AdSourcePlugin.h/.cpp      # Content source
+    ├── PaymentFactoryBase.h/.cpp  # Base payment factory
+    └── PluginLibraryDefinition.h/.cpp # Legacy definitions
 ```
+
+**Main Entry Point**: `PaymentFactory.cpp` contains the `REGISTER_PLUGIN` macro and `CreatePaymentFactory` function that registers the plugin with the EKiosk system.
+
+**Metadata**: `AdPluginFactory.cpp` defines the static metadata (name, description, version, author) used by the plugin system.
 
 ## Building
 
@@ -113,6 +122,12 @@ cmake --build build/msvc --target ad
 ## Testing
 
 Run plugin tests:
+
+```bash
+ctest -R ad_plugin_test
+```
+
+Or run all plugin tests:
 
 ```bash
 ctest -R ad
@@ -167,6 +182,7 @@ This plugin has been migrated from the original TerminalClient implementation to
 - **Service Integration**: Now properly integrates with EKiosk services
 - **Plugin Architecture**: Follows standard IPluginFactory/IPlugin pattern
 - **Code Standards**: Updated to follow EKiosk coding standards with Russian comments
+- **Registration Refactor**: Main entry point moved to `PaymentFactory.cpp` with `REGISTER_PLUGIN` macro, metadata centralized in `AdPluginFactory.cpp`
 
 ## See Also
 

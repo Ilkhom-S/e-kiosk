@@ -180,9 +180,8 @@ src/plugins/
 │       ├── CMakeLists.txt           # Plugin build configuration
 │       ├── README.md                # Plugin-specific documentation
 │       └── src/                     # Source files
-│           ├── PluginFactory.h/.cpp # Factory implementation
-│           ├── PluginImpl.h/.cpp    # Plugin implementation
-│           └── plugin.json          # Qt plugin metadata
+│           ├── PluginFactory.h/.cpp # Qt plugin factory (inherits from SDK::Plugin::PluginFactory)
+│           └── PluginImpl.h/.cpp    # Plugin implementation class
 
 tests/plugins/
 ├── CategoryName/
@@ -199,88 +198,117 @@ tests/plugins/
 - **`SDK::Plugin::IPlugin`**: Base plugin interface with lifecycle methods
 - **`SDK::Plugin::IKernel`**: Application kernel providing services to plugins
 
+## Plugin Metadata Source
+
+**Plugin metadata (name, description, author, version) comes from C++ static member variables**, not JSON files. The `PluginFactory` base class provides default implementations that return these static values.
+
 ## Creating New Plugins
 
 ### 1. Plugin Factory Implementation
 
 ```cpp
-class MyPluginFactory : public QObject, public SDK::Plugin::IPluginFactory {
+// PluginFactory.h
+class MyPluginFactory : public SDK::Plugin::PluginFactory {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "SDK.Plugin.PluginFactory" FILE "my_plugin.json")
+    Q_PLUGIN_METADATA(IID "SDK.Plugin.PluginFactory")  // No FILE parameter needed
     Q_INTERFACES(SDK::Plugin::IPluginFactory)
-
-public:
-    // IPluginFactory implementation
-    QString getName() const override { return "My Plugin"; }
-    QString getDescription() const override { return "Description of my plugin"; }
-    QString getAuthor() const override { return "Author Name"; }
-    QString getVersion() const override { return "1.0"; }
-    QStringList getPluginList() const override { return QStringList() << "MyPlugin.Instance"; }
-
-    SDK::Plugin::IPlugin *createPlugin(const QString &instancePath) override {
-        return new MyPlugin(instancePath);
-    }
 };
+
+// PluginFactory.cpp
+QString SDK::Plugin::PluginFactory::mModuleName = "my_plugin";
+QString SDK::Plugin::PluginFactory::mName = "My Plugin";
+QString SDK::Plugin::PluginFactory::mDescription = "Description of my plugin";
+QString SDK::Plugin::PluginFactory::mAuthor = "Author Name";
+QString SDK::Plugin::PluginFactory::mVersion = "1.0";
 ```
 
 ### 2. Plugin Implementation
 
 ```cpp
+// PluginImpl.h
 class MyPlugin : public SDK::Plugin::IPlugin {
 public:
-    MyPlugin(const QString &instancePath) : m_instancePath(instancePath) {}
+    MyPlugin(const QString &instancePath);
 
-    bool initialize(SDK::Plugin::IKernel *kernel) override {
-        m_kernel = kernel;
-        m_log = kernel->getLog("MyPlugin");
-        return true;
-    }
-
-    bool start() override {
-        LOG(m_log, LogLevel::Normal, "MyPlugin started");
-        return true;
-    }
-
-    bool stop() override {
-        LOG(m_log, LogLevel::Normal, "MyPlugin stopped");
-        return true;
-    }
-
-private:
-    QString m_instancePath;
-    SDK::Plugin::IKernel *m_kernel;
-    ILog *m_log;
+    // IPlugin interface implementation
+    QString getPluginName() const override;
+    QVariantMap getConfiguration() const override;
+    void setConfiguration(const QVariantMap &config) override;
+    QString getConfigurationName() const override;
+    bool saveConfiguration() override;
+    bool isReady() const override;
+    bool initialize(SDK::Plugin::IKernel *kernel) override;
+    bool start() override;
+    bool stop() override;
 };
-```
 
-### 3. Qt Plugin Metadata (plugin.json)
+// PluginImpl.cpp
+namespace {
 
-```json
-{
-  "IID": "SDK.Plugin.PluginFactory",
-  "version": "1.0",
-  "name": "MyPlugin",
-  "description": "My plugin description",
-  "author": "Author Name"
+// Anonymous namespace for internal linkage
+SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *factory, const QString &instancePath) {
+    return new MyPlugin(instancePath);
 }
+
+QVector<SDK::Plugin::SPluginParameter> EnumParameters() {
+    return QVector<SDK::Plugin::SPluginParameter>() << SDK::Plugin::SPluginParameter(
+        SDK::Plugin::Parameters::Debug, SDK::Plugin::SPluginParameter::Bool, false,
+        QT_TRANSLATE_NOOP("MyPluginParameters", "#debug_mode"),
+        QT_TRANSLATE_NOOP("MyPluginParameters", "#debug_mode_help"), false);
+}
+
+} // namespace
+
+// Register plugin with the system
+REGISTER_PLUGIN_WITH_PARAMETERS(
+    SDK::Plugin::makePath(SDK::PaymentProcessor::Application,
+                          SDK::PaymentProcessor::CComponents::SomeCategory,
+                          "MyPlugin"),
+    &CreatePlugin, &EnumParameters);
+
+MyPlugin::MyPlugin(const QString &instancePath) : m_instancePath(instancePath) {
+    // Constructor implementation
+}
+
+// Implement IPlugin methods...
 ```
 
-### 4. CMake Configuration
+### 3. CMake Configuration
 
 ```cmake
 include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
 
 set(MY_PLUGIN_SOURCES
     src/MyPluginFactory.cpp
-    src/MyPlugin.cpp
+    src/MyPluginFactory.h
+    src/MyPluginImpl.cpp
+    src/MyPluginImpl.h
+    # No JSON file needed
 )
 
 ek_add_plugin(my_plugin
     FOLDER "plugins/CategoryName"
     SOURCES ${MY_PLUGIN_SOURCES}
     QT_MODULES Core  # Add required Qt modules
+    DEPENDS PluginsSDK ek_common
 )
 ```
+
+## Plugin Registration Flow
+
+1. **Static Registration**: `REGISTER_PLUGIN_WITH_PARAMETERS` macro registers the plugin during DLL loading
+2. **Qt Plugin Loading**: `Q_PLUGIN_METADATA(IID)` makes the DLL discoverable as a Qt plugin
+3. **Factory Instantiation**: Qt creates the factory instance when the plugin is loaded
+4. **Plugin Creation**: Factory's `createPlugin()` method instantiates plugin implementation
+5. **Metadata Access**: Factory methods return values from C++ static member variables
+
+## Key Design Principles
+
+- **No JSON Files**: Metadata defined in C++ static variables for compile-time safety
+- **Anonymous Namespace**: Plugin creation functions have internal linkage to avoid conflicts
+- **Factory Pattern**: Clean separation between Qt plugin interface and business logic
+- **Registration Macro**: Automatic plugin discovery and registration
+- **Testable**: PluginTestBase enables isolated unit testing
 
 ## Plugin Testing Framework
 
@@ -439,6 +467,7 @@ void MyPluginTest::testPluginCreation() {
 Each plugin must have a README.md in its root directory with:
 
 - Plugin purpose and functionality
+- **Main class instantiation details** (which file/class gets instantiated when plugin loads)
 - Configuration options
 - Usage examples
 - Dependencies and requirements

@@ -12,6 +12,6 @@
 #include "WebEngineBackend.h"
 #include "WebEngineBackendFactory.h"
 
-SDK::Plugin::IPlugin *WebEngineBackendFactory::createPlugin(const QString &instancePath) {
+SDK::Plugin::IPlugin *WebEngineBackendFactory::createPlugin(const QString &instancePath, const QString &configPath) {
     return new WebEngineBackend(this, instancePath);
 }

@@ -27,6 +27,7 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [x] Refactor QMLBackend plugin: merge `PluginFactoryDefinition._` into `QMLBackendFactory._`, update CMake to explicit sources, add unit tests
 - [x] Refactor NativeBackend plugin: merge `PluginFactoryDefinition._` into `NativeBackendFactory._`, update CMake to explicit sources, add unit tests
 - [x] Refactor WebEngineBackend plugin: merge `PluginFactoryDefinition._` into `WebEngineBackendFactory._`, update CMake to explicit sources, add unit tests
+- [x] Update TemplatePlugin to use C++ static metadata instead of JSON files
 
 ## Notes
 
