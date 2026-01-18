@@ -1,7 +1,7 @@
 /* @file Базовый класс для сценариев. */
 
-// Project
-#include "Scenario.h"
+// System
+#include <ScenarioEngine/Scenario.h>
 
 namespace GUI {
 
