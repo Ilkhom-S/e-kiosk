@@ -5,8 +5,6 @@ include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
 set(SCREENMAKER_SOURCES
     src/ScreenMakerFactory.cpp
     src/ScreenMakerFactory.h
-    src/PluginLibraryDefinition.h
-    src/PluginFactoryDefinition.cpp
     src/MainScenario.cpp
     src/MainScenario.h
     src/ScenarioPlugin.h
