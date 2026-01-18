@@ -122,6 +122,137 @@ For types that belong to the QtCore module (examples: `QString`, `QByteArray`, `
 
 This makes module ownership explicit and eases future Qt6 porting.
 
+## Header Organization and Public-Private Separation
+
+### Standard C++ Project Structure
+
+EKiosk follows the industry-standard C++ project structure for clear public API boundaries:
+
+**Folder Layout:**
+
+```
+include/ModuleName/
+  Header.h           ← PUBLIC HEADER (full interface definition)
+
+src/modules/ModuleName/
+  src/
+    Header.h         ← DEPRECATED redirect (for compatibility only)
+    Header.cpp       ← IMPLEMENTATION (methods only, no class definition)
+```
+
+**Key Rules:**
+
+1. **Public headers** contain the full class/interface definition and live in `include/`
+2. **Private implementation** contains only method bodies and lives in `src/modules/`
+3. **All includes** use the public path: `#include <ModuleName/Header.h>`
+4. **Never use relative paths** like `#include "../../modules/..."`
+
+### Example: Scenario Module
+
+**Public Interface** - `include/ScenarioEngine/Scenario.h`
+
+```cpp
+/* @file Базовый класс для сценариев. */
+#pragma once
+
+namespace GUI {
+    class Scenario : public QObject, protected ILogable {
+        Q_OBJECT
+      public:
+        Scenario(const QString &aName, ILog *aLog = 0);
+        virtual ~Scenario();
+        virtual void start(const QVariantMap &aContext) = 0;
+        // ... full interface definition ...
+    };
+}
+```
+
+**Implementation** - `src/modules/ScenarioEngine/src/Scenario.cpp`
+
+```cpp
+/* @file Базовый класс для сценариев. */
+
+// ALWAYS include the PUBLIC header
+#include <ScenarioEngine/Scenario.h>
+
+namespace GUI {
+    Scenario::Scenario(const QString &aName, ILog *aLog)
+        : mName(aName), mDefaultTimeout(0) {
+        // implementation ...
+    }
+    // ... method implementations only ...
+}
+```
+
+**Compatibility Redirect** - `src/modules/ScenarioEngine/src/Scenario.h`
+
+```cpp
+/* @file DEPRECATED - See include/ScenarioEngine/Scenario.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <ScenarioEngine/Scenario.h>.
+*/
+
+#pragma once
+#include <ScenarioEngine/Scenario.h>
+```
+
+### Header Migration Checklist
+
+When refactoring a module from private headers to public headers:
+
+1. **✅ Create/update public header** in `include/ModuleName/Header.h`
+   - Full class definition
+   - All public methods and signals/slots
+   - Proper file header comment: `/* @file [Russian description]. */`
+   - Use `#pragma once` for header guard
+
+2. **✅ Implement in source file** - `src/modules/ModuleName/src/Header.cpp`
+   - `#include <ModuleName/Header.h>` (use PUBLIC path, not local)
+   - Only method implementations, no class definition
+   - Same file header comment
+
+3. **✅ Convert private header** - `src/modules/ModuleName/src/Header.h`
+   - **KEEP IT** for backward compatibility
+   - Replace entire content with:
+     ```cpp
+     /* @file DEPRECATED - See include/ModuleName/Header.h instead. */
+     #pragma once
+     #include <ModuleName/Header.h>
+     ```
+   - Add migration note explaining the change
+
+4. **✅ Update all includes** in the module:
+   - Change: `#include "Header.h"` → `#include <ModuleName/Header.h>`
+   - Change: `#include "../../src/modules/ModuleName/src/Header.h"` → `#include <ModuleName/Header.h>`
+   - Never leave relative paths
+
+5. **✅ Verify compilation**
+   - Build the module and tests
+   - Ensure the redirect header works for any legacy code
+
+### Why Keep the Redirect Header?
+
+**Benefits of keeping deprecated private header as a redirect:**
+
+- ✅ **Backward compatible**: Old code that includes `src/Scenario.h` still works
+- ✅ **Safe migration**: Gradual transition, not breaking change
+- ✅ **Clear intent**: Redirect file explicitly marks path as deprecated
+- ✅ **Single source of truth**: All includes ultimately point to public header
+
+**Example of soft migration:**
+
+```cpp
+// Old code still compiles:
+#include "Scenario.h"  // Redirects to public header through chain
+
+// New code uses public path directly:
+#include <ScenarioEngine/Scenario.h>  // Preferred
+
+// Both work, both reference the same class definition
+```
+
 ## Qt-Specific Guidelines
 
 - **Qt5/Qt6 Compatibility:**
