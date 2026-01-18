@@ -12,6 +12,8 @@
 #include "WebEngineBackend.h"
 #include "WebEngineBackendFactory.h"
 
-SDK::Plugin::IPlugin *WebEngineBackendFactory::createPlugin(const QString &instancePath, const QString &configPath) {
-    return new WebEngineBackend(this, instancePath);
-}
+QString SDK::Plugin::PluginFactory::mModuleName = "webengine_backend";
+QString SDK::Plugin::PluginFactory::mName = "WebEngineBackend";
+QString SDK::Plugin::PluginFactory::mDescription = "WebEngine based graphics backend for HTML widgets";
+QString SDK::Plugin::PluginFactory::mAuthor = "Humo";
+QString SDK::Plugin::PluginFactory::mVersion = "1.0";

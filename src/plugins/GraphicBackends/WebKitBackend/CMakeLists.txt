@@ -17,7 +17,6 @@ set(WEBKITBACKEND_SOURCES
     src/WebGraphicsItem.h
     src/WebPageLogger.cpp
     src/WebPageLogger.h
-    src/webkit_backend.json
 )
 
 # WebKit is only available in Qt 5.0-5.5 (deprecated in 5.5, removed in 5.6)

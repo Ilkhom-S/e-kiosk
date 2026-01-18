@@ -14,6 +14,6 @@
 /// Фабрика плагина WebEngineBackend.
 class WebEngineBackendFactory : public SDK::Plugin::PluginFactory {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "SDK.Plugin.PluginFactory" FILE "webengine_backend.json")
+    Q_PLUGIN_METADATA(IID "SDK.Plugin.PluginFactory")
     Q_INTERFACES(SDK::Plugin::IPluginFactory)
 };

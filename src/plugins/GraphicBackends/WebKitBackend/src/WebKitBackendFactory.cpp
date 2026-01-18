@@ -12,6 +12,9 @@
 #include "WebKitBackend.h"
 #include "WebKitBackendFactory.h"
 
-SDK::Plugin::IPlugin *WebKitBackendFactory::createPlugin(const QString &instancePath) {
-    return new WebKitBackend(this, instancePath);
-}
+QString SDK::Plugin::PluginFactory::mName = "Webkit graphics backend";
+QString SDK::Plugin::PluginFactory::mDescription =
+    "Webkit based graphics backend for html widgets (with webkit plugins support)";
+QString SDK::Plugin::PluginFactory::mAuthor = "Humo";
+QString SDK::Plugin::PluginFactory::mVersion = "1.0";
+QString SDK::Plugin::PluginFactory::mModuleName = "webkit_backend";

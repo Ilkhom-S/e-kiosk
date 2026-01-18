@@ -17,7 +17,6 @@ set(WEBENGINEBACKEND_SOURCES
     src/WebGraphicsItem.h
     src/WebPageLogger.cpp
     src/WebPageLogger.h
-    src/webengine_backend.json
 )
 
 # Find WebEngine components (version-agnostic)
