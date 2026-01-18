@@ -79,9 +79,36 @@ Tests cover:
 
 The plugin consists of:
 
-- **NativeBackendFactory**: Qt plugin factory implementing `IPluginFactory`
-- **NativeBackend**: Main graphics engine implementing `IGraphicsEngine`
+- **NativeBackend**: Main graphics engine implementing `IGraphicsEngine` and containing plugin registration
+- **NativeBackendFactory**: Plugin factory base class with static metadata
 - **Registration**: Static registration with the plugin system via `REGISTER_PLUGIN_WITH_PARAMETERS`
+
+## File Structure
+
+```text
+NativeBackend/
+├── CMakeLists.txt           # Build configuration
+├── README.md               # This file
+└── src/
+    ├── NativeBackend.cpp       # Main plugin entry point - graphics backend implementation
+    ├── NativeBackend.h         # Main plugin header
+    ├── NativeBackendFactory.cpp # Plugin metadata and factory base class
+    └── NativeBackendFactory.h  # Plugin factory header
+```
+
+**Main Entry Point**: `NativeBackend.cpp` contains the `REGISTER_PLUGIN_WITH_PARAMETERS` macro and `CreatePlugin` function that registers the plugin with the EKiosk system.
+
+**Metadata**: `NativeBackendFactory.cpp` defines the static metadata (name, description, version, author) used by the plugin system.
+
+## Migration Notes
+
+This plugin has been migrated to follow the new EKiosk plugin architecture:
+
+- **Qt5/Qt6 Compatibility**: Updated to support both Qt versions
+- **Service Integration**: Now properly integrates with EKiosk services
+- **Plugin Architecture**: Follows standard IPluginFactory/IPlugin pattern
+- **Code Standards**: Updated to follow EKiosk coding standards with Russian comments
+- **Registration Refactor**: Main entry point moved to `NativeBackend.cpp` with `REGISTER_PLUGIN_WITH_PARAMETERS` macro, metadata centralized in `NativeBackendFactory.cpp`
 
 ## Platform Support
 
@@ -89,4 +116,3 @@ The plugin consists of:
 - ✅ Windows 10+ (Qt 6.8+)
 - ✅ Linux (Qt 6.8+)
 - ✅ macOS (planned)
-
