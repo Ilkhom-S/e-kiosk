@@ -18,8 +18,8 @@ The QMLBackend plugin provides Qt QML and Qt Quick-based graphics rendering capa
 
 ### Core Components
 
-- **QMLBackendFactory**: Plugin factory implementing `IPluginFactory`
-- **QMLBackend**: Main plugin class implementing `IPlugin` and `IGraphicsBackend`
+- **QMLBackend**: Main plugin class implementing `IPlugin`, `IGraphicsBackend`, and containing the plugin registration
+- **QMLBackendFactory**: Plugin factory base class with static metadata
 - **QMLGraphicsItem**: QML-based graphics item wrapper
 - **Md5ValidatorQmlItem**: QML item for MD5 validation
 
@@ -69,12 +69,16 @@ ek_add_plugin(qml_backend
 
 ## Testing
 
-Comprehensive test suite using mock kernel infrastructure:
+Run plugin tests:
 
 ```bash
-# Build and run tests
-cmake --build build/msvc --target qml_backend_test
-./build/msvc/tests/plugins/QMLBackend/Debug/qml_backend_test.exe
+ctest -R qml_backend_test
+```
+
+Or run all plugin tests:
+
+```bash
+ctest -R qml
 ```
 
 Tests cover:
@@ -111,15 +115,19 @@ QVariant result = scriptCore->executePaymentScript(paymentData);
 QMLBackend/
 ├── CMakeLists.txt           # Build configuration
 ├── README.md               # This file
-├── src/
-│   ├── QMLBackendFactory.h/.cpp    # Plugin factory
-│   ├── QMLBackend.h/.cpp          # Main plugin implementation
-│   ├── QMLGraphicsItem.h/.cpp     # QML graphics wrapper
-│   ├── Md5ValidatorQmlItem.h      # MD5 validation component
-│   └── qml_backend.json           # Qt plugin metadata
-└── tests/
-    └── qml_backend_test.cpp       # Test suite
+└── src/
+    ├── QMLBackend.cpp          # Main plugin entry point - graphics backend implementation
+    ├── QMLBackend.h            # Main plugin header
+    ├── QMLBackendFactory.cpp   # Plugin metadata and factory base class
+    ├── QMLBackendFactory.h     # Plugin factory header
+    ├── QMLGraphicsItem.cpp     # QML graphics wrapper
+    ├── QMLGraphicsItem.h       # QML graphics header
+    └── Md5ValidatorQmlItem.h   # MD5 validation component
 ```
+
+**Main Entry Point**: `QMLBackend.cpp` contains the `REGISTER_PLUGIN_WITH_PARAMETERS` macro and `CreatePlugin` function that registers the plugin with the EKiosk system.
+
+**Metadata**: `QMLBackendFactory.cpp` defines the static metadata (name, description, version, author) used by the plugin system.
 
 ## Troubleshooting
 
@@ -130,12 +138,22 @@ QMLBackend/
    - Check Qt QML installation
 
 2. **Plugin Loading Failure**
-   - Verify Qt plugin metadata (`qml_backend.json`)
+   - Verify plugin registration in `QMLBackend.cpp`
    - Check plugin directory in build output
 
 3. **Script Execution Errors**
    - Validate QML syntax
    - Ensure payment processor integration
+
+## Migration Notes
+
+This plugin has been migrated to follow the new EKiosk plugin architecture:
+
+- **Qt5/Qt6 Compatibility**: Updated to support both Qt versions
+- **Service Integration**: Now properly integrates with EKiosk services
+- **Plugin Architecture**: Follows standard IPluginFactory/IPlugin pattern
+- **Code Standards**: Updated to follow EKiosk coding standards with Russian comments
+- **Registration Refactor**: Main entry point moved to `QMLBackend.cpp` with `REGISTER_PLUGIN_WITH_PARAMETERS` macro, metadata centralized in `QMLBackendFactory.cpp`
 
 ## Development Notes
 

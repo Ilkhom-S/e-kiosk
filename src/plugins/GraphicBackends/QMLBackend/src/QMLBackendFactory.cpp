@@ -16,19 +16,3 @@ QString SDK::Plugin::PluginFactory::mDescription = "QML based graphics backend f
 QString SDK::Plugin::PluginFactory::mAuthor = "Humo";
 QString SDK::Plugin::PluginFactory::mVersion = "1.0";
 QString SDK::Plugin::PluginFactory::mModuleName = "qml_backend";
-
-QMLBackendFactory::QMLBackendFactory() {
-    qDebug() << "QMLBackendFactory created";
-}
-
-QMLBackendFactory::~QMLBackendFactory() {
-    qDebug() << "QMLBackendFactory destroyed";
-}
-
-QString QMLBackendFactory::getName() const {
-    return SDK::Plugin::PluginFactory::mName;
-}
-
-QString QMLBackendFactory::getDescription() const {
-    return SDK::Plugin::PluginFactory::mDescription;
-}
