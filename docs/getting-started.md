@@ -4,11 +4,19 @@ Welcome to the EKiosk project! This guide will help you set up your development 
 
 ## Prerequisites
 
-- Qt 5.15.x (or later) with Qt Widgets, SerialPort, WebSockets, etc.
-- CMake 3.16+
-- Ninja or MSVC (Windows) or GCC/Clang (Linux)
-- Git
-- Recommended: Visual Studio Code or Qt Creator
+- **Qt 5.15.x (or later)** with Qt Widgets, SerialPort, WebSockets, etc.  
+   [Download Qt](https://www.qt.io/download) and install the required modules for your platform.
+- **CMake 3.16+**  
+   [Download CMake](https://cmake.org/download/)
+- **vcpkg** (required for dependency management; the project will not build without it)  
+   [Install vcpkg](https://github.com/microsoft/vcpkg#quick-start)
+- **Ninja** or **MSVC** (Windows) or **GCC/Clang** (Linux)  
+   [Ninja](https://ninja-build.org/), [MSVC](https://visualstudio.microsoft.com/), [GCC](https://gcc.gnu.org/), [Clang](https://clang.llvm.org/)
+- **Git**  
+   [Download Git](https://git-scm.com/downloads)
+- Recommended: Visual Studio Code ([VS Code](https://code.visualstudio.com/)) or Qt Creator ([Qt Creator](https://www.qt.io/product/development-tools))
+
+**Note:** All Boost libraries are pinned to version 1.90.0 in vcpkg.json. Do not change Boost versions unless you update all dependencies and documentation.
 
 ## Quick Start
 

@@ -39,6 +39,10 @@ clang-format -i <file1> <file2> ...
 - **Always use the EKiosk CMake helpers** (`ek_add_application`, `ek_add_library`, `ek_add_plugin`, `ek_add_test`, etc.) for all new and refactored targets. This ensures consistency, maintainability, and DRY principles across the project.
 - See [cmake/README.md](../cmake/README.md) for usage and examples.
 
+## Third-Party Library Versioning
+
+- All Boost dependencies are pinned to version 1.90.0 in vcpkg.json. Do not change Boost versions without updating all dependencies and documentation.
+
 ## Documentation
 
 - Update or create relevant docs for any new features, refactors, or breaking changes.

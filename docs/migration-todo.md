@@ -17,7 +17,8 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [x] Implement FR (Fiscal Register) deprecation Phase 1 - exclude from build system
 - [ ] Update CMake to build each app and link shared code
       Notes:
-- `SingleApplication` is now vendored as a git submodule under `thirdparty/SingleApplication` to avoid pulling Qt6 via vcpkg. Use `git submodule update --init --recursive` after cloning.- [x] Mirror src/ structure in tests/ (Connection and NetworkTaskManager done)
+- `SingleApplication` is now vendored as a git submodule under `thirdparty/SingleApplication` to avoid pulling Qt6 via vcpkg. Use `git submodule update --init --recursive` after cloning.
+- [x] Mirror src/ structure in tests/ (Connection and NetworkTaskManager done)
 - [ ] Update documentation for each migration step
 - [ ] Review and clean up thirdparty/ dependencies
 - [ ] Add CI for modular builds and tests
@@ -30,6 +31,11 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [x] Update TemplatePlugin to use C++ static metadata instead of JSON files
 - [x] Complete Migrator3000 scenario plugin modernization: remove Qt plugin dependencies, add PPSDK and QtScript/QtQml dependencies, fix AUTOMOC processing
   - Note: Migrator3000 is now deprecated and will be removed in a future release
+
+    ## Version Pinning
+    - All Boost dependencies are pinned to version 1.90.0 in vcpkg.json for reproducible builds. Update this note and vcpkg.json if the version changes.
+
+- [x] ScenarioEngine Qt5/Qt6 scripting migration: JSScenario and module now support both QtScript (Qt5) and QJSEngine (Qt6). All JS scripting logic is centralized and compatible. See docs/qt5-qt6-scripting-migration.md for details.
 
 ## Notes
 

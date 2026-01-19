@@ -2,15 +2,15 @@
   "name": "ekiosk",
   "version": "1.0.0",
   "dependencies": [
-    "boost-algorithm",
-    "boost-bind",
-    "boost-foreach",
-    "boost-function",
-    "boost-lexical-cast",
-    "boost-multi-index",
-    "boost-optional",
-    "boost-preprocessor",
-    "boost-property-tree",
-    "boost-stacktrace"
+    { "name": "boost-algorithm", "version>=": "1.90.0" },
+    { "name": "boost-bind", "version>=": "1.90.0" },
+    { "name": "boost-foreach", "version>=": "1.90.0" },
+    { "name": "boost-function", "version>=": "1.90.0" },
+    { "name": "boost-lexical-cast", "version>=": "1.90.0" },
+    { "name": "boost-multi-index", "version>=": "1.90.0" },
+    { "name": "boost-optional", "version>=": "1.90.0" },
+    { "name": "boost-preprocessor", "version>=": "1.90.0" },
+    { "name": "boost-property-tree", "version>=": "1.90.0" },
+    { "name": "boost-stacktrace", "version>=": "1.90.0" }
   ]
 }
