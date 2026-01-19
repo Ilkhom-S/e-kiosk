@@ -1,4 +1,4 @@
 /* @file Константы печати. */
 
 // System
-#include "../../apps/kiosk/src/Services/PrintConstants.h"
+#include "../../apps/EKiosk/src/Services/PrintConstants.h"

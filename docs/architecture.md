@@ -48,7 +48,7 @@ EKiosk features a comprehensive plugin system based on Qt plugins with custom fa
 
 ### Applications in `apps/`
 
-- `kiosk`: Main kiosk application with full service integration
+- `EKiosk`: Main EKiosk application with full service integration
 - `Updater`: Automatic software update manager
 - `UpdaterSplashScreen`: Update splash screen display
 - `WatchService`: Windows service for system monitoring
@@ -123,7 +123,7 @@ public:
 ```text
 ekiosk/
 ├── apps/                    # Executable applications
-│   ├── kiosk/              # Main kiosk application
+│   ├── EKiosk/              # Main EKiosk application
 │   │   ├── src/            # Application-specific code
 │   │   └── CMakeLists.txt  # Application build config
 │   ├── Updater/            # Update manager

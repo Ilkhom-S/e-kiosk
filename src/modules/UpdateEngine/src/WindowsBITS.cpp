@@ -51,9 +51,9 @@ namespace CBITS {
     }
 
     //---------------------------------------------------------------------------
-    bool CopyManager::setNotify(const QString &aApplicationPath, const QString &aParamaters) {
+    bool CopyManager::setNotify(const QString &aApplicationPath, const QString &aParameters) {
         mNotifyApplication = aApplicationPath;
-        mNotifyParameters = aParamaters;
+        mNotifyParameters = aParameters;
         return true;
     }
 

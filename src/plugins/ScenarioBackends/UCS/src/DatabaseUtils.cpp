@@ -1,6 +1,6 @@
 /* @file Реализация утилиты доступа к БД для процессинга UCS. */
 
-// Modules
+// System
 #include <DatabaseProxy/IDatabaseProxy.h>
 #include <DatabaseProxy/IDatabaseQuery.h>
 
