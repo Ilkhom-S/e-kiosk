@@ -10,22 +10,21 @@
 
 //----------------------------------------------------------------------------
 /// Вспомогательный экран, закрывающий рабочий стол. Предоставляет доступ к сервисному меню.
-class SplashScreen : public QWidget
-{
-	Q_OBJECT
+class SplashScreen : public QWidget {
+    Q_OBJECT
 
-public:
-	/// Конструктор.
-	SplashScreen(QWidget* aParent = 0);
+  public:
+    /// Конструктор.
+    SplashScreen(QWidget *aParent = 0);
 
-	/// Деструктор.
-	virtual ~SplashScreen();
+    /// Деструктор.
+    virtual ~SplashScreen();
 
-	/// Сворачивает окно вместо его закрытия.
-	virtual void closeEvent(QCloseEvent* aEvent);
+    /// Сворачивает окно вместо его закрытия.
+    virtual void closeEvent(QCloseEvent *aEvent);
 
-private:
-	Ui::SplashScreenClass ui;
+  private:
+    Ui::SplashScreenClass ui;
 };
 
 //----------------------------------------------------------------------------

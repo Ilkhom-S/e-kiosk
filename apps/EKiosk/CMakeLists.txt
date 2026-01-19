@@ -14,7 +14,7 @@ file(GLOB_RECURSE UI_FILES src/*.ui)
 set(RESOURCE_FILES ${CMAKE_SOURCE_DIR}/ekiosk.qrc)
 
 # Application target with Qt modules and resources
-ek_add_application(EKiosk
+ek_add_application(client
     FOLDER "apps"
     SOURCES ${SOURCES} ${HEADERS} ${UI_FILES} ${RESOURCE_FILES}
     QT_MODULES Core Widgets Sql PrintSupport Network Multimedia Xml SerialPort WebSockets WebEngineWidgets

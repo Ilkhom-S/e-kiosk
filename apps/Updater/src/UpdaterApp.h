@@ -8,7 +8,7 @@
 #include <Common/QtHeadersEnd.h>
 
 // Modules
-#include <Common/Application.h>
+#include <Common/BasicApplication.h>
 #include <Common/SafeApplication.h>
 
 // System
@@ -20,7 +20,7 @@
 #include "SplashScreen.h"
 
 namespace CUpdaterApp {
-    /// таймаут выхода с ошибкой, если не дождались закрытия EKiosk.exe
+    /// таймаут выхода с ошибкой, если не дождались закрытия client.exe
     const int ErrorExitTimeout = 15 * 60 * 1000;
 
     /// Глобальный таймаут скачивания обновлений
