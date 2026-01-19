@@ -176,8 +176,13 @@
 #include <QtNetwork/QSslKey>
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QTcpSocket>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QtQml/QJSEngine>
+#include <QtQml/QJSValue>
+#else
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValue>
+#endif
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlQuery>

@@ -1,4 +1,30 @@
 {
+  // Exclude build output, third-party, and vcpkg folders from search and IntelliSense
+  "files.exclude": {
+    "**/build/": true,
+    "**/thirdparty/": true,
+    "**/vcpkg_installed/": true
+  },
+  "search.exclude": {
+    "**/build/": true,
+    "**/thirdparty/": true,
+    "**/vcpkg_installed/": true
+  },
+  // Exclude the same folders from C++ extension's indexing
+  "C_Cpp.default.exclude": [
+    "**/build/*",
+    "**/thirdparty/*",
+    "**/vcpkg_installed/*"
+  ],
+  // Use compile_commands.json for accurate IntelliSense
+  "C_Cpp.default.compileCommands": "${workspaceFolder}/build/win-msvc-qt5-x64/compile_commands.json",
+  // Use CMake Tools as configuration provider if installed
+  // Optional: speed up file watching
+  "files.watcherExclude": {
+    "**/build/": true,
+    "**/thirdparty/": true,
+    "**/vcpkg_installed/": true
+  },
   "emeraldwalk.runonsave": {
     "commands": [
       {

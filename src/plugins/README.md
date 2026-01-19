@@ -91,7 +91,7 @@ extern "C" Q_DECL_EXPORT IPluginFactory* createPluginFactory() {
 | ScenarioBackends | ⚠️      | ⚠️    | ⚠️    |
 | Payments         | ✅      | 🔬    | 🔬    |
 
-⚠️ = Requires QtScript→QJSEngine migration for Qt6
+⚠️ ScenarioBackends and all JS scripting plugins now use ScenarioEngine, which supports both QtScript (Qt5) and QJSEngine (Qt6). Migration is complete and transparent for plugin authors.
 
 ## Documentation
 

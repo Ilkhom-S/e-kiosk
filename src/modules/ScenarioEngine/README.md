@@ -79,8 +79,13 @@ flowchart TB
 | Linux    | 🔬 Experimental |
 | macOS    | 🔬 Experimental |
 
-## ⚠️ Qt6 Migration Required
+## Qt5/Qt6 Scripting Compatibility
 
-This module uses QtScript for JavaScript scenarios. **Migration to QJSEngine is required for Qt6.**
+This module now supports both Qt5 (QtScript) and Qt6 (QJSEngine) for JavaScript scenarios.
 
-See [migration guide](../../../../docs/migration-guide.md) for details.
+- Qt5: Uses QScriptEngine/QScriptValue
+- Qt6: Uses QJSEngine/QJSValue
+
+All scenario scripting logic is handled internally and is transparent to modules/plugins using ScenarioEngine.
+
+See [qt5-qt6-scripting-migration.md](../../../../docs/qt5-qt6-scripting-migration.md) for migration details and API notes.

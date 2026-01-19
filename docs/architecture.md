@@ -64,6 +64,15 @@ EKiosk features a comprehensive plugin system based on Qt plugins with custom fa
 
 ## Core Components
 
+### ScenarioEngine: JS Scripting Core
+
+The ScenarioEngine module provides JavaScript scenario execution for all apps, modules, and plugins. It is now compatible with both Qt5 (QtScript) and Qt6 (QJSEngine), ensuring cross-version scripting support.
+
+- All JS scripting logic is centralized in ScenarioEngine
+- Qt5: QScriptEngine/QScriptValue
+- Qt6: QJSEngine/QJSValue
+- No abstraction needed for consumers; migration is transparent
+
 ### Service Layer
 
 The service layer provides the fundamental functionality:

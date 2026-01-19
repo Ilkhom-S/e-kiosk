@@ -151,7 +151,7 @@
         "CMAKE_PREFIX_PATH": "$env{QT5_X64_PATH}"
       },
       "displayName": "Win: Qt5 x64 MSVC",
-      "generator": "Visual Studio 16 2019",
+      "generator": "Visual Studio 17 2022",
       "inherits": [
         "base"
       ],
@@ -181,7 +181,7 @@
         "CMAKE_PREFIX_PATH": "$env{QT5_X86_PATH}"
       },
       "displayName": "Win: Qt5 x86 MSVC",
-      "generator": "Visual Studio 16 2019",
+      "generator": "Visual Studio 17 2022",
       "inherits": [
         "base"
       ],
@@ -226,11 +226,11 @@
       "name": "linux-x86"
     },
     {
-      "hidden": true,
-      "name": "Qt",
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": "$env{QTDIR}"
       },
+      "hidden": true,
+      "name": "Qt",
       "vendor": {
         "qt-project.org/Qt": {
           "checksum": "wVa86FgEkvdCTVp1/nxvrkaemJc="
@@ -238,10 +238,10 @@
       }
     }
   ],
-  "version": 3,
   "vendor": {
     "qt-project.org/Presets": {
       "checksum": "4ldaiQCh2do+8ZJfH4d9En17fUU="
     }
-  }
+  },
+  "version": 3
 }

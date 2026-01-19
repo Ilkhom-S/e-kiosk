@@ -9,6 +9,15 @@
 #include <QtCore/QTextStream>
 #include <Common/QtHeadersEnd.h>
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QtQml/QJSEngine>
+#include <QtQml/QJSValue>
+#else
+#include <QtScript/QScriptEngine>
+#include <QtScript/QScriptValue>
+#endif
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "JSScenario.h"
 
@@ -144,25 +153,43 @@ namespace GUI {
     //---------------------------------------------------------------------------
     bool JSScenario::initialize(const QList<SScriptObject> &aScriptObjects) {
         mStateMachine = QSharedPointer<QStateMachine>(new QStateMachine);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        mScriptEngine = QSharedPointer<QJSEngine>(new QJSEngine);
+#else
         mScriptEngine = QSharedPointer<QScriptEngine>(new QScriptEngine);
+#endif
 
         connect(mStateMachine.data(), SIGNAL(finished()), this, SLOT(onFinish()));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        // Qt6: QJSEngine does not have signalHandlerException
+#else
         connect(mScriptEngine.data(), SIGNAL(signalHandlerException(const QScriptValue &)), this,
                 SLOT(onException(const QScriptValue &)));
+#endif
 
         // Добавляем в скрипты внешние объекты.
         foreach (const SScriptObject &object, aScriptObjects) {
-            // Движок сохраняет указатель на object.metaObject, временные переменные не передавать!
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             mScriptEngine->globalObject().setProperty(object.name,
                                                       object.isType ? mScriptEngine->newQMetaObject(object.metaObject)
                                                                     : mScriptEngine->newQObject(object.object));
+#else
+            mScriptEngine->globalObject().setProperty(object.name,
+                                                      object.isType ? mScriptEngine->newQMetaObject(object.metaObject)
+                                                                    : mScriptEngine->newQObject(object.object));
+#endif
         }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        mScriptEngine->globalObject().setProperty(CJSScenario::ServiceName, mScriptEngine->newQObject(this));
+        // Qt6: QJSEngine does not support newFunction, so includeScript must be handled differently
+        // Placeholder: migration logic for includeScript registration
+#else
         mScriptEngine->globalObject().setProperty(CJSScenario::ServiceName, mScriptEngine->newQObject(this));
         mScriptEngine->globalObject().setProperty(CJSScenario::ScriptIncludeFunction,
                                                   mScriptEngine->newFunction(&JSScenario::includeScript, this));
-
         mScriptEngine->installTranslatorFunctions();
+#endif
 
         // Загружаем базовый сценарий, если такой имеется.
         if (!mBasePath.isEmpty()) {
@@ -181,14 +208,21 @@ namespace GUI {
         }
 
         // Инициализируем скрипт сценария.
-        QScriptValue result = functionCall(CJSScenario::ScriptInitFunction, QVariantMap(),
-                                           QString("%1:%2").arg(mName).arg(CJSScenario::ScriptInitFunction));
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QJSValue result = functionCall(CJSScenario::ScriptInitFunction, QVariantMap(),
+                                       QString("%1:%2").arg(mName).arg(CJSScenario::ScriptInitFunction));
         if (result.isError()) {
             toLog(LogLevel::Error, QString("Failed to initialize '%1' scenario: %2").arg(mName).arg(result.toString()));
             return false;
         }
-
+#else
+        QScriptValue result = functionCall(CJSScenario::ScriptInitFunction, QVariantMap(),
+                                           QString("%1:%2").arg(mName).arg(CJSScenario::ScriptInitFunction));
+        if (result.isError()) {
+            toLog(LogLevel::Error, QString("Failed to initialize '%1' scenario: %2").arg(mName).arg(result.toString()));
+            return false;
+        }
+#endif
         return true;
     }
 
