@@ -14,7 +14,7 @@
 #include <Common/ILog.h>
 
 // ThirdParty
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 // System
 #include <WatchServiceClient/Constants.h>

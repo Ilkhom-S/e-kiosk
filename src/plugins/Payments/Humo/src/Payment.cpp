@@ -20,7 +20,6 @@
 #include <SDK/Plugins/IExternalInterface.h>
 
 // ThirdParty
-#include <boost/bind.hpp>
 #include <boost/bind/bind.hpp>
 
 // Project

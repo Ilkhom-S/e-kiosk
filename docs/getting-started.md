@@ -67,12 +67,12 @@ cmake --build build/<your-preset>
 - Launch the desired app from `apps/` (e.g., `apps/kiosk/`).
 - Use your IDE's debugger or run the executable directly.
 
-
 ## vcpkg Caching & Repeated Installs
 
 When using vcpkg in manifest mode (with vcpkg.json), CMake will check dependencies on every configure. Normally, vcpkg restores packages from its local cache (vcpkg_installed/ and your user archives directory) and only installs missing or outdated packages.
 
 **If you see vcpkg installing packages every time:**
+
 - Check that you are not deleting the build/ or vcpkg_installed/ folders between builds unless a full clean is needed.
 - Avoid unnecessary changes to vcpkg.json or vcpkg-lock.json, as these trigger reinstalls.
 - Use the same triplet (e.g., x64-windows) and toolchain for consistent caching.
