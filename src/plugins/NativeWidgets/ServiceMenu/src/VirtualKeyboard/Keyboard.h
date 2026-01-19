@@ -11,7 +11,7 @@
 #include <SDK/Plugins/IPlugin.h>
 #include <SDK/GUI/IGraphicsItem.h>
 
-class KeyboardWindow;
+#include "KeyboardWindow.h"
 
 //--------------------------------------------------------------------------
 class Keyboard : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem {
