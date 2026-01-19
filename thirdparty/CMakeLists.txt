@@ -130,13 +130,19 @@ if(EXISTS "${THIRD_PARTY_DIR}/zint")
     set(ZINT_SHARED OFF CACHE BOOL "Disable shared library" FORCE)
     set(ZINT_STATIC ON CACHE BOOL "Enable static library" FORCE)
     set(ZINT_FRONTEND OFF CACHE BOOL "Disable frontend" FORCE)
-    # Disable Qt frontend when building as a thirdparty dependency to avoid adding GUI targets
-    # This keeps IDE/project outlines clean; enable explicitly in a standalone zint build if needed.
     set(ZINT_USE_QT ON CACHE BOOL "Enable Qt support" FORCE)
-    set(ZINT_QT6 OFF CACHE BOOL "Use Qt5" FORCE)
     set(ZINT_USE_PNG OFF CACHE BOOL "Disable PNG support" FORCE)
     set(ZINT_USE_GS1SE OFF CACHE BOOL "Disable GS1 Syntax Engine" FORCE)
     set(ZINT_UNINSTALL OFF CACHE BOOL "Disable uninstall" FORCE)
+
+    # Detect Qt version and set ZINT_QT6 accordingly
+    if(DEFINED Qt6Core_VERSION_MAJOR OR (DEFINED QT_VERSION_MAJOR AND QT_VERSION_MAJOR GREATER_EQUAL 6))
+        set(ZINT_QT6 ON CACHE BOOL "Use Qt6" FORCE)
+        message(STATUS "[thirdparty] Zint will use Qt6")
+    else()
+        set(ZINT_QT6 OFF CACHE BOOL "Use Qt5" FORCE)
+        message(STATUS "[thirdparty] Zint will use Qt5")
+    endif()
 
     # Add the zint subdirectory
     add_subdirectory(zint)
