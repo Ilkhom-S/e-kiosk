@@ -50,7 +50,9 @@
         "CMAKE_PREFIX_PATH": "$env{QT6_X64_PATH}"
       },
       "displayName": "Win: Qt6 x64 Ninja",
-      "inherits": ["base"],
+      "inherits": [
+        "base"
+      ],
       "name": "win-qt6-x64"
     },
     {
@@ -62,7 +64,9 @@
         "CMAKE_PREFIX_PATH": "$env{QT5_X64_PATH}"
       },
       "displayName": "Win: Qt5 x64 Ninja",
-      "inherits": ["base"],
+      "inherits": [
+        "base"
+      ],
       "name": "win-qt5-x64"
     },
     {
@@ -74,7 +78,9 @@
         "CMAKE_PREFIX_PATH": "$env{QT6_X86_PATH}"
       },
       "displayName": "Win: Qt6 x86 Ninja",
-      "inherits": ["base"],
+      "inherits": [
+        "base"
+      ],
       "name": "win-qt6-x86"
     },
     {
@@ -86,7 +92,9 @@
         "CMAKE_PREFIX_PATH": "$env{QT5_X86_PATH}"
       },
       "displayName": "Win: Qt5 x86 Ninja",
-      "inherits": ["base"],
+      "inherits": [
+        "base"
+      ],
       "name": "win-qt5-x86"
     },
     {
@@ -99,7 +107,9 @@
       "environment": {
         "PATH": "$env{MINGW_BIN_PATH};$penv{PATH}"
       },
-      "inherits": ["base"],
+      "inherits": [
+        "base"
+      ],
       "name": "win-mingw-x64"
     },
     {
@@ -112,7 +122,9 @@
         "type": "equals"
       },
       "displayName": "Linux: Qt6 x64",
-      "inherits": ["base"],
+      "inherits": [
+        "base"
+      ],
       "name": "linux-x64"
     },
     {
@@ -125,7 +137,9 @@
       },
       "displayName": "Win: Qt6 x64 MSVC",
       "generator": "Visual Studio 17 2022",
-      "inherits": ["base"],
+      "inherits": [
+        "base"
+      ],
       "name": "win-msvc-qt6-x64"
     },
     {
@@ -138,7 +152,9 @@
       },
       "displayName": "Win: Qt5 x64 MSVC",
       "generator": "Visual Studio 16 2019",
-      "inherits": ["base"],
+      "inherits": [
+        "base"
+      ],
       "name": "win-msvc-qt5-x64"
     },
     {
@@ -151,7 +167,9 @@
       },
       "displayName": "Win: Qt6 x86 MSVC",
       "generator": "Visual Studio 17 2022",
-      "inherits": ["base"],
+      "inherits": [
+        "base"
+      ],
       "name": "win-msvc-qt6-x86"
     },
     {
@@ -164,7 +182,9 @@
       },
       "displayName": "Win: Qt5 x86 MSVC",
       "generator": "Visual Studio 16 2019",
-      "inherits": ["base"],
+      "inherits": [
+        "base"
+      ],
       "name": "win-msvc-qt5-x86"
     },
     {
@@ -181,7 +201,9 @@
       "environment": {
         "PATH": "$env{MINGW_BIN_PATH};$penv{PATH}"
       },
-      "inherits": ["base"],
+      "inherits": [
+        "base"
+      ],
       "name": "win-mingw-x86"
     },
     {
@@ -198,9 +220,28 @@
         "type": "equals"
       },
       "displayName": "Linux: Qt6 x86",
-      "inherits": ["base"],
+      "inherits": [
+        "base"
+      ],
       "name": "linux-x86"
+    },
+    {
+      "hidden": true,
+      "name": "Qt",
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{QTDIR}"
+      },
+      "vendor": {
+        "qt-project.org/Qt": {
+          "checksum": "wVa86FgEkvdCTVp1/nxvrkaemJc="
+        }
+      }
     }
   ],
-  "version": 3
+  "version": 3,
+  "vendor": {
+    "qt-project.org/Presets": {
+      "checksum": "4ldaiQCh2do+8ZJfH4d9En17fUU="
+    }
+  }
 }

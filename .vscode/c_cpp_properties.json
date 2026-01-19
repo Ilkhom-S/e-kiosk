@@ -6,7 +6,7 @@
         "${workspaceFolder}/include",
         "${workspaceFolder}/src",
         "${workspaceFolder}/thirdparty",
-        "D:/Qt/5.15.2/msvc2019_64/include",
+        "c:/Qt/5.15.2/msvc2019_64/include",
         "${workspaceFolder}/**"
       ],
       "defines": ["_DEBUG", "UNICODE", "_UNICODE"],

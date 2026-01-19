@@ -1,0 +1,25 @@
+{
+  "OutputFoldersPerTargetSystem": {
+    "Local Machine": [
+      "build\\win-qt6-x64",
+      "build\\win-qt5-x64",
+      "build\\win-qt6-x86",
+      "build\\win-qt5-x86",
+      "build\\win-mingw-x64",
+      "build\\win-msvc-qt6-x64",
+      "build\\win-msvc-qt5-x64",
+      "build\\win-msvc-qt6-x86",
+      "build\\win-msvc-qt5-x86",
+      "build\\win-mingw-x86",
+      "build\\my-win-qt5-x64"
+    ]
+  },
+  "ExpandedNodes": [
+    "",
+    "\\docs",
+    "\\thirdparty\\libusb\\tests",
+    "\\thirdparty\\libusb\\tests\\webusb-test-shim"
+  ],
+  "SelectedNode": "\\docs\\architecture.md",
+  "PreviewInSolutionExplorer": false
+}
