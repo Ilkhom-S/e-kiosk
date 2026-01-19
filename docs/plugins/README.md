@@ -416,7 +416,7 @@ The following plugins are installed by default with EKiosk:
 
 ### Business Logic
 
-- **Migrator3000**: Database migration utilities
+- **Migrator3000** [DEPRECATED]: Database migration utilities
 - **ScreenMaker**: Screen creation and management
 - **UCS**: UCS scenario backend
 - **Uniteller**: Uniteller payment scenario backend
