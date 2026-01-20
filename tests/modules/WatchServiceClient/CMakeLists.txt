@@ -4,7 +4,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test Core REQUIRED)
 include(${CMAKE_SOURCE_DIR}/cmake/EKTesting.cmake)
 
 ek_add_test(TestWatchServiceClient
-    FOLDER "tests/WatchServiceClient"
+    FOLDER "tests/modules/WatchServiceClient"
     SOURCES TestWatchServiceClient.cpp
     QT_MODULES Test Core
     DEPENDS WatchServiceClient ek_common

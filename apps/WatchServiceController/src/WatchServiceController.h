@@ -16,57 +16,51 @@
 #include <Common/ILog.h>
 
 //----------------------------------------------------------------------------
-class WatchServiceController : public QObject
-{
-	Q_OBJECT
+class WatchServiceController : public QObject {
+    Q_OBJECT
 
-	// Последняя команда выполненная пользователем
-	enum LastCommand
-	{
-		Unknown,
-		Start,
-		Stop
-	};
+    // Последняя команда выполненная пользователем
+    enum LastCommand { Unknown, Start, Stop };
 
-public:
-	WatchServiceController();
-	~WatchServiceController();
+  public:
+    WatchServiceController();
+    ~WatchServiceController();
 
-private:
-	void onTrayIconContextMenu();
+  private:
+    void onTrayIconContextMenu();
 
-	ILog* getLog();
+    ILog *getLog();
 
-private slots:
-	// Попытка соединения со сторожевым сервисом.
-	void onCheck();
+  private slots:
+    // Попытка соединения со сторожевым сервисом.
+    void onCheck();
 
-	// Закрыто соединение со сторожевым сервисом.
-	void onDisconnected();
+    // Закрыто соединение со сторожевым сервисом.
+    void onDisconnected();
 
-	// Получение команды на закрытие
-	void onCloseCommandReceived();
+    // Получение команды на закрытие
+    void onCloseCommandReceived();
 
-	void onTrayIconActivated(QSystemTrayIcon::ActivationReason aReason);
+    void onTrayIconActivated(QSystemTrayIcon::ActivationReason aReason);
 
-	void onStartServiceClicked(const QString& aArguments);
-	void onStopServiceClicked();
-	void onCloseIconClicked();
+    void onStartServiceClicked(const QString &aArguments);
+    void onStopServiceClicked();
+    void onCloseIconClicked();
 
-private:
-	QSharedPointer<IWatchServiceClient> mClient;
+  private:
+    QSharedPointer<IWatchServiceClient> mClient;
 
-	LastCommand mLastCommand;
+    LastCommand mLastCommand;
 
-	QTimer mTimer;
+    QTimer mTimer;
 
-	QSystemTrayIcon mIcon;
-	QMenu mMenu;
+    QSystemTrayIcon mIcon;
+    QMenu mMenu;
 
-	QSignalMapper* mSignalMapper;
-	QList<QAction*> mStartServiceActions;
-	QAction* mStopServiceAction;
-	QAction* mCloseTrayIconAction;
+    QSignalMapper *mSignalMapper;
+    QList<QAction *> mStartServiceActions;
+    QAction *mStopServiceAction;
+    QAction *mCloseTrayIconAction;
 };
 
 //----------------------------------------------------------------------------

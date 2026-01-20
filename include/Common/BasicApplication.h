@@ -5,6 +5,8 @@
 //--------------------------------------------------------------------------------
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
 #include <QtCore/QProcess>
 #include <QtCore/QScopedPointer>
 #include <QtCore/QSettings>

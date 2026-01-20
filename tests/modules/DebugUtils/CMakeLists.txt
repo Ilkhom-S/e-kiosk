@@ -7,7 +7,7 @@ message(STATUS "Configuring DebugUtils module tests")
 
 # Main DebugUtils tests
 ek_add_test(TestDebugUtils
-    FOLDER "tests/DebugUtils"
+    FOLDER "tests/modules/DebugUtils"
     SOURCES TestDebugUtils.cpp
     QT_MODULES Test Core
     DEPENDS DebugUtils
@@ -16,7 +16,7 @@ ek_add_test(TestDebugUtils
 
 # Stack trace performance tests
 ek_add_test(TestDebugUtilsPerformance
-    FOLDER "tests/DebugUtils"
+    FOLDER "tests/modules/DebugUtils"
     SOURCES TestDebugUtilsPerformance.cpp
     QT_MODULES Test Core
     DEPENDS DebugUtils
@@ -25,7 +25,7 @@ ek_add_test(TestDebugUtilsPerformance
 
 # Cross-platform compatibility tests
 ek_add_test(TestDebugUtilsCrossPlatform
-    FOLDER "tests/DebugUtils"
+    FOLDER "tests/modules/DebugUtils"
     SOURCES TestDebugUtilsCrossPlatform.cpp
     QT_MODULES Test Core
     DEPENDS DebugUtils

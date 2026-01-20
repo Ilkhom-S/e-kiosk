@@ -13,24 +13,20 @@ file(GLOB WSC_RC_FILES
     src/*.rc
 )
 
-# Use EK_INCLUDES_DIR when available, fall back to legacy TC_INCLUDES_DIR if present
 set(WSC_VERSION_RC ${CMAKE_SOURCE_DIR}/include/Common/CoreVersion.rc)
 
+
+# App includes sources directly
 ek_add_application(tray
     FOLDER "apps"
     SOURCES
     ${WSC_SOURCES}
+    src/main.cpp
     ${WSC_RESOURCES}
     ${WSC_RC_FILES}
     ${WSC_VERSION_RC}
     QT_MODULES Widgets
-    DEPENDS
-    App
-    Log
-    SysUtils
-    DebugUtils
-    WatchServiceClient
-    MessageQueue
+    DEPENDS BasicApplication WatchServiceClient
 )
 
 # Optional single-instance support via project SingleApplication wrapper (EK::SingleApplication)

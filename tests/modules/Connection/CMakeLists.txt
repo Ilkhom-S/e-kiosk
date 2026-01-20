@@ -8,7 +8,7 @@ message(STATUS "Configuring Connection module tests")
 # RAS API tests
 file(GLOB RASAPI_SOURCES rasapi/*.cpp rasapi/*.h)
 ek_add_test(TestRasApi
-    FOLDER "tests/Connection"
+    FOLDER "tests/modules/Connection"
     SOURCES ${RASAPI_SOURCES}
     QT_MODULES Test Core
     DEPENDS Connection

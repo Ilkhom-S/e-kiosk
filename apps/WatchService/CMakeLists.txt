@@ -42,8 +42,6 @@ if(WIN32)
     target_link_libraries(guard PRIVATE Advapi32 User32 Winspool)
 endif()
 
-# Note: Depends on QtSingleApplication, qBreakpad from thirdparty
-
 # Link SingleApplication for single-instance app support (Qt5/Qt6 compatible)
 # Uses itay-grudev/SingleApplication: https://github.com/itay-grudev/SingleApplication
 if(TARGET SingleApplication::SingleApplication)

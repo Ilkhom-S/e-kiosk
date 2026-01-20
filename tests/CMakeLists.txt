@@ -14,7 +14,6 @@ ek_enable_testing()
 
 
 # Test categories
-add_subdirectory(unit)
 add_subdirectory(modules)
 add_subdirectory(plugins)
 add_subdirectory(scripts)

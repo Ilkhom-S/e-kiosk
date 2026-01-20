@@ -101,7 +101,10 @@ BasicApplication::BasicApplication(const QString &aName, const QString &aVersion
     // Allow secondary instances so helper/test processes can run and report
     // state. The main application still exits early if not primary (see
     // apps/kiosk/main.cpp).
-    m_singleApp.reset(new SingleApplication(aArgumentCount, aArguments, true)); // true = allow secondary instances
+    // Skip in test mode to avoid conflicts with test execution
+    if (!m_testMode) {
+        m_singleApp.reset(new SingleApplication(aArgumentCount, aArguments, true)); // true = allow secondary instances
+    }
 
     // Выводим стандартный заголовок в лог
     if (m_log) {

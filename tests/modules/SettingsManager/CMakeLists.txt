@@ -4,7 +4,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test Core REQUIRED)
 include(${CMAKE_SOURCE_DIR}/cmake/EKTesting.cmake)
 
 ek_add_test(TestSettingsManager
-    FOLDER "tests/SettingsManager"
+    FOLDER "tests/modules/SettingsManager"
     SOURCES TestSettingsManager.cpp
     QT_MODULES Test Core
     DEPENDS SettingsManager ek_common

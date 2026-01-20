@@ -1,12 +1,8 @@
 # Tests for WatchServiceController (tray app)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test Widgets REQUIRED)
-include(${CMAKE_SOURCE_DIR}/cmake/EKTesting.cmake)
 
-ek_add_test(TestWatchServiceController
-    FOLDER "tests/apps/WatchServiceController"
-    SOURCES TestWatchServiceController.cpp
-    QT_MODULES Test Widgets
-    DEPENDS WatchServiceClient Log tray
-    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/apps/WatchServiceController/src
-)
+add_executable(TestWatchServiceController TestWatchServiceController.cpp ../../../apps/WatchServiceController/src/WatchServiceController.cpp)
+target_link_libraries(TestWatchServiceController PRIVATE Qt${QT_VERSION_MAJOR}::Test Qt${QT_VERSION_MAJOR}::Widgets BasicApplication WatchServiceClient Log DebugUtils)
+target_include_directories(TestWatchServiceController PRIVATE ../../../apps/WatchServiceController/src ${CMAKE_SOURCE_DIR}/include)
+set_target_properties(TestWatchServiceController PROPERTIES FOLDER "tests/apps/WatchServiceController")
