@@ -43,7 +43,6 @@ For permanent setup, add them to your system environment variables or include th
    ```
 
    Note: You can override the project's public include directory (useful when using a separate header tree or during porting) by setting the `EK_INCLUDES_DIR` environment variable or passing `-DEK_INCLUDES_DIR` to CMake. Examples:
-
    - PowerShell (temporary for the session):
 
      ```powershell
@@ -58,6 +57,11 @@ For permanent setup, add them to your system environment variables or include th
      ```
 
    You can also override the translations installation directory by setting the `EK_TRANSLATIONS_DIR` environment variable. This controls where translation files (.qm) are installed relative to CMAKE_INSTALL_PREFIX. Default is `bin/locale`.
+
+   Additional environment variables for installation paths:
+   - `EK_BIN_DIR`: Override executable installation directory (default: `${CMAKE_INSTALL_BINDIR}`)
+   - `EK_LIB_DIR`: Override library installation directory (default: `${CMAKE_INSTALL_LIBDIR}`)
+   - `EK_PLUGIN_DIR`: Override plugin installation directory (default: `${CMAKE_INSTALL_LIBDIR}/plugins`)
 
 3. Build the project:
 

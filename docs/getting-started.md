@@ -20,12 +20,15 @@ Welcome to the EKiosk project! This guide will help you set up your development 
 
 ## Environment Variables
 
-You can set the following environment variables to customize installation paths (similar to TerminalClient's TC_* variables):
+You can set the following environment variables to customize installation paths (similar to TerminalClient's TC\_\* variables):
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `EK_INCLUDES_DIR` | `${CMAKE_SOURCE_DIR}/include` | Path to public include directory |
-| `EK_TRANSLATIONS_DIR` | `bin/locale` | Installation directory for translation files (.qm) relative to CMAKE_INSTALL_PREFIX |
+| Variable              | Default                       | Description                                                                         |
+| --------------------- | ----------------------------- | ----------------------------------------------------------------------------------- |
+| `EK_INCLUDES_DIR`     | `${CMAKE_SOURCE_DIR}/include` | Path to public include directory                                                    |
+| `EK_BIN_DIR`          | `${CMAKE_INSTALL_BINDIR}`    | Installation directory for executables relative to CMAKE_INSTALL_PREFIX            |
+| `EK_LIB_DIR`          | `${CMAKE_INSTALL_LIBDIR}`    | Installation directory for libraries relative to CMAKE_INSTALL_PREFIX              |
+| `EK_PLUGIN_DIR`       | `${CMAKE_INSTALL_LIBDIR}/plugins` | Installation directory for plugins relative to CMAKE_INSTALL_PREFIX            |
+| `EK_TRANSLATIONS_DIR` | `bin/locale`                  | Installation directory for translation files (.qm) relative to CMAKE_INSTALL_PREFIX |
 
 ## Quick Start
 

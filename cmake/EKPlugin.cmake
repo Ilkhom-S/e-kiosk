@@ -6,9 +6,15 @@ function(ek_add_plugin TARGET_NAME)
     set(multiValueArgs SOURCES QT_MODULES DEPENDS INCLUDE_DIRS COMPILE_DEFINITIONS LIBRARIES)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+    # Allow overriding the default plugin install directory via EK_PLUGIN_DIR environment variable
     if(NOT ARG_INSTALL_DIR)
-        set(ARG_INSTALL_DIR "plugins")
+        if(DEFINED ENV{EK_PLUGIN_DIR})
+            set(ARG_INSTALL_DIR $ENV{EK_PLUGIN_DIR})
+        else()
+            set(ARG_INSTALL_DIR "plugins")
+        endif()
     endif()
+    
     add_library(${TARGET_NAME} SHARED ${ARG_SOURCES})
     # Ensure Qt auto-generation (moc/uic/rcc) runs for plugin targets that use Qt
     set_target_properties(${TARGET_NAME} PROPERTIES

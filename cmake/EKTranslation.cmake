@@ -80,7 +80,7 @@ function(ek_add_translations TARGET_NAME)
         else()
             set(_translations_install_dir bin/locale)
         endif()
-        
+
         install(FILES ${_qm_files}
             DESTINATION ${_translations_install_dir}
             COMPONENT translations
