@@ -32,10 +32,10 @@ namespace Humo {
         return _Build + " MSVC-2017";
 #elif (_MSC_VER == 1920)
         return _Build + " MSVC-2019";
-#elif (_MSC_VER == 1930)
+#elif (_MSC_VER >= 1930)
         return _Build + " MSVC-2022";
 #else
-        return _Build + " MSVC-unknown";
+        return _Build + " MSVC-" + QString::number(_MSC_VER);
 #endif
 #elif defined(__clang__)
         return _Build + " Clang-" + QString::number(__clang_major__) + "." + QString::number(__clang_minor__) + "." +

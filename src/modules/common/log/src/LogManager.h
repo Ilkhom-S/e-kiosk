@@ -20,7 +20,7 @@ class LogManager {
     LogManager();
     virtual ~LogManager();
 
-    /// Создать или получить инстанс объекта логгирования
+    /// Создать или получить экземпляр объекта логгирования
     virtual ILog *getLog(const QString &aName, LogType::Enum aType);
 
     /// Закрыть все журнальные файлы, например при переходе времени на следующие

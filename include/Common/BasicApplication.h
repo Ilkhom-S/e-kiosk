@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 //--------------------------------------------------------------------------------
 // Qt
 #include <Common/QtHeadersBegin.h>
@@ -27,7 +29,7 @@ class BasicApplication {
     /// Конструктор инициализирует имя и версию приложения и принимает
     /// аргументы командной строки (для распознавания `test` режимов и пр.)
     explicit BasicApplication(const QString &aName = QString(), const QString &aVersion = QString(),
-                              int aArgumentCount = 0, char **aArguments = nullptr);
+                              int aArgumentCount = 0, char **aArguments = nullptr, bool aUseSingleApp = true);
     virtual ~BasicApplication();
 
     /// Возвращает имя приложения.
@@ -57,7 +59,7 @@ class BasicApplication {
 
     /// Runtime helpers
     bool isTestMode() const;
-    bool isPrimaryInstance() const;
+    virtual bool isPrimaryInstance() const;
     bool startDetachedProcess(const QString &program, const QStringList &args = QStringList());
 
   protected:
@@ -80,6 +82,7 @@ class BasicApplication {
 
     // Runtime state
     bool m_testMode = false;
+    bool m_useSingleApp = true;
 
     // Singleton instance pointer
     static BasicApplication *s_instance;
@@ -97,14 +100,29 @@ template <class T> class BasicQtApplication : public BasicApplication {
     virtual ~BasicQtApplication() override {
     }
 
+    /// Возвращает true, если это первичный экземпляр приложения.
+    virtual bool isPrimaryInstance() const override {
+        if (std::is_same<T, SingleApplication>::value) {
+            return static_cast<const SingleApplication &>(mQtApplication).isPrimary();
+        } else {
+            return BasicApplication::isPrimaryInstance();
+        }
+    }
+
     /// Запускает цикл обработки событий.
-    int exec();
+    int exec() {
+        return mQtApplication.exec();
+    }
 
     /// Возвращает аргументы командной строки.
-    QStringList getArguments() const;
+    QStringList getArguments() const {
+        return mQtApplication.arguments();
+    }
 
     /// Возвращает экземпляр Qt приложения.
-    TApplication &getQtApplication();
+    TApplication &getQtApplication() {
+        return mQtApplication;
+    }
 
   private:
     TApplication mQtApplication;
@@ -117,7 +135,8 @@ template <class T> class BasicQtApplication : public BasicApplication {
 template <typename T>
 BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &aVersion, int &aArgumentCount,
                                           char **aArguments)
-    : BasicApplication(aName, aVersion, aArgumentCount, aArguments), mQtApplication(aArgumentCount, aArguments) {
+    : BasicApplication(aName, aVersion, aArgumentCount, aArguments, !std::is_same<T, SingleApplication>::value),
+      mQtApplication(aArgumentCount, aArguments) {
     mQtApplication.setApplicationName(aName);
     mQtApplication.setApplicationVersion(aVersion);
 
@@ -135,19 +154,4 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &a
             getLog()->write(LogLevel::Warning, QString("Failed to load translation %1.").arg(translation));
         }
     }
-}
-
-//---------------------------------------------------------------------------
-template <typename T> int BasicQtApplication<T>::exec() {
-    return mQtApplication.exec();
-}
-
-//---------------------------------------------------------------------------
-template <typename T> QStringList BasicQtApplication<T>::getArguments() const {
-    return mQtApplication.arguments();
-}
-
-//---------------------------------------------------------------------------
-template <typename T> T &BasicQtApplication<T>::getQtApplication() {
-    return mQtApplication;
 }

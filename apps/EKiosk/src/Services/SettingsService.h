@@ -61,7 +61,7 @@ class SettingsService : public SDK::PaymentProcessor::IService, public SDK::Paym
     /// Возвращает список адаптеров.
     QList<SDK::PaymentProcessor::ISettingsAdapter *> enumerateAdapters() const;
 
-    /// Получить инстанс сервиса.
+    /// Получить экземпляр сервиса.
     static SettingsService *instance(IApplication *aApplication);
 
   private:

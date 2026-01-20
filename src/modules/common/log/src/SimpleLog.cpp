@@ -233,35 +233,36 @@ void SimpleLog::safeWrite(LogLevel::Enum aLevel, const QString &aMessage) {
 
     QString formattedMessage = QTime::currentTime().toString("hh:mm:ss.zzz ");
 
-    formattedMessage += QString("T:%1 ").arg((quint64)QThread::currentThreadId(), 16, 16, QLatin1Char('0'));
+    auto threadId = reinterpret_cast<quint64>(QThread::currentThreadId());
+    formattedMessage += QString("T:%1 ").arg(threadId, 8, 16, QLatin1Char('0'));
 
     switch (aLevel) {
         case LogLevel::Normal:
-            formattedMessage += "[I]";
+            formattedMessage += "[I] ";
             break;
 
         case LogLevel::Warning:
-            formattedMessage += "[W]";
+            formattedMessage += "[W] ";
             break;
 
         case LogLevel::Error:
-            formattedMessage += "[E]";
+            formattedMessage += "[E] ";
             break;
 
         case LogLevel::Fatal:
-            formattedMessage += "[F]";
+            formattedMessage += "C] "; // Critical instead of Fatal
             break;
 
         case LogLevel::Debug:
-            formattedMessage += "[D]";
+            formattedMessage += "[D] ";
             break;
 
         case LogLevel::Trace:
-            formattedMessage += "[T]";
+            formattedMessage += "[T] ";
             break;
 
         default:
-            formattedMessage += "[U]";
+            formattedMessage += "[U] ";
             break;
     }
 

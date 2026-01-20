@@ -44,8 +44,10 @@ LONG WINAPI ExceptionFilter(EXCEPTION_POINTERS *aException) {
 }
 #endif
 
-BasicApplication::BasicApplication(const QString &aName, const QString &aVersion, int aArgumentCount, char **aArguments)
-    : m_name(aName), m_version(aVersion), m_argumentCount(aArgumentCount), m_arguments(aArguments) {
+BasicApplication::BasicApplication(const QString &aName, const QString &aVersion, int aArgumentCount, char **aArguments,
+                                   bool aUseSingleApp)
+    : m_name(aName), m_version(aVersion), m_argumentCount(aArgumentCount), m_arguments(aArguments),
+      m_useSingleApp(aUseSingleApp) {
     // Parse provided argv for quick checks (e.g., 'test')
     QStringList args;
     for (int i = 0; i < aArgumentCount; ++i) {
@@ -102,7 +104,7 @@ BasicApplication::BasicApplication(const QString &aName, const QString &aVersion
     // state. The main application still exits early if not primary (see
     // apps/kiosk/main.cpp).
     // Skip in test mode to avoid conflicts with test execution
-    if (!m_testMode) {
+    if (!m_testMode && m_useSingleApp) {
         m_singleApp.reset(new SingleApplication(aArgumentCount, aArguments, true)); // true = allow secondary instances
     }
 

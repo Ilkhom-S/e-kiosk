@@ -26,7 +26,7 @@ ek_add_application(tray
     ${WSC_RC_FILES}
     ${WSC_VERSION_RC}
     QT_MODULES Widgets
-    DEPENDS BasicApplication WatchServiceClient
+    DEPENDS BasicApplication WatchServiceClient MessageQueue SysUtils DebugUtils
 )
 
 # Optional single-instance support via project SingleApplication wrapper (EK::SingleApplication)
