@@ -42,8 +42,17 @@ file(GLOB TS_FILES src/locale/*.ts)
 if(TS_FILES)
     ek_add_translations(WatchServiceControllerTranslations
         SOURCES ${TS_FILES}
+        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        INSTALL
     )
-    if(TARGET WatchServiceControllerTranslations)
-        add_dependencies(tray WatchServiceControllerTranslations)
+    if(TARGET WatchServiceControllerTranslations_translations)
+        add_dependencies(tray WatchServiceControllerTranslations_translations)
+        # Copy translation files to executable directory for debugging
+        add_custom_command(TARGET tray POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_BINARY_DIR}/locale
+            $<TARGET_FILE_DIR:tray>/locale
+            COMMENT "Copying translation files to executable directory"
+        )
     endif()
 endif()

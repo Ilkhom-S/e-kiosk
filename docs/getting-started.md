@@ -18,6 +18,15 @@ Welcome to the EKiosk project! This guide will help you set up your development 
 
 **Note:** All Boost libraries are pinned to version 1.90.0 in vcpkg.json. Do not change Boost versions unless you update all dependencies and documentation.
 
+## Environment Variables
+
+You can set the following environment variables to customize installation paths (similar to TerminalClient's TC_* variables):
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `EK_INCLUDES_DIR` | `${CMAKE_SOURCE_DIR}/include` | Path to public include directory |
+| `EK_TRANSLATIONS_DIR` | `bin/locale` | Installation directory for translation files (.qm) relative to CMAKE_INSTALL_PREFIX |
+
 ## Quick Start
 
 1. **Clone the repository:**

@@ -21,6 +21,15 @@
 int main(int aArgc, char *aArgv[]) {
     BasicQtApplication<SingleApplication> application("WatchServiceController", Humo::getVersion(), aArgc, aArgv);
 
+    // Load translations
+    QTranslator translator;
+    QString locale = QLocale::system().name();
+    QString qmFile = QString("WatchServiceController_%1.qm").arg(locale);
+    QString qmPath = QDir(QApplication::applicationDirPath()).absoluteFilePath("locale/" + qmFile);
+    if (translator.load(qmPath)) {
+        QApplication::installTranslator(&translator);
+    }
+
     if (!application.isPrimaryInstance()) {
         // notify running instance and exit
         application.getQtApplication().sendMessage("Instance!!!");

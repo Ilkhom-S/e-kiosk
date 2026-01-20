@@ -57,6 +57,8 @@ For permanent setup, add them to your system environment variables or include th
      cmake -DEK_INCLUDES_DIR=/path/to/includes --preset <your-preset>
      ```
 
+   You can also override the translations installation directory by setting the `EK_TRANSLATIONS_DIR` environment variable. This controls where translation files (.qm) are installed relative to CMAKE_INSTALL_PREFIX. Default is `bin/locale`.
+
 3. Build the project:
 
    ```sh

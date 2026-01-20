@@ -4,13 +4,18 @@ option(EK_ENABLE_TRANSLATIONS "Enable building translations (Qt LinguistTools or
 
 function(ek_add_translations TARGET_NAME)
     set(options INSTALL)
-    set(oneValueArgs OUTPUT_DIR TS_DIR)
+    set(oneValueArgs OUTPUT_DIR TS_DIR INSTALL_DIR)
     set(multiValueArgs SOURCES)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if(NOT EK_ENABLE_TRANSLATIONS)
         message(STATUS "Translation support explicitly disabled via EK_ENABLE_TRANSLATIONS=OFF")
         return()
+    endif()
+
+    # Set default output directory if not specified
+    if(NOT ARG_OUTPUT_DIR)
+        set(ARG_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale)
     endif()
 
     # First try to use CMake's Qt package detection for LinguistTools
@@ -62,5 +67,23 @@ function(ek_add_translations TARGET_NAME)
     add_custom_target(${TARGET_NAME}_translations ALL DEPENDS ${_qm_files})
     if(TARGET ${TARGET_NAME})
         add_dependencies(${TARGET_NAME} ${TARGET_NAME}_translations)
+    endif()
+
+    # Install translations if requested
+    if(ARG_INSTALL)
+        # Allow overriding the translations install directory via EK_TRANSLATIONS_DIR environment variable
+        # Final fallback is bin/locale relative to CMAKE_INSTALL_PREFIX
+        if(DEFINED ENV{EK_TRANSLATIONS_DIR})
+            set(_translations_install_dir $ENV{EK_TRANSLATIONS_DIR})
+        elseif(ARG_INSTALL_DIR)
+            set(_translations_install_dir ${ARG_INSTALL_DIR})
+        else()
+            set(_translations_install_dir bin/locale)
+        endif()
+        
+        install(FILES ${_qm_files}
+            DESTINATION ${_translations_install_dir}
+            COMPONENT translations
+        )
     endif()
 endfunction()
