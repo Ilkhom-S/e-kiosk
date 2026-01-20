@@ -9,11 +9,16 @@ file(GLOB_RECURSE UPDATER_UI_FILES src/*.ui)
 file(GLOB UPDATER_RESOURCES src/*.qrc)
 file(GLOB UPDATER_RC_FILES src/*.rc)
 
-set(UPDATER_VERSION_RC ${EK_INCLUDES_DIR}/Common/CoreVersion.rc)
+set(UPDATER_VERSION_RC ${CMAKE_SOURCE_DIR}/include/Common/CoreVersion.rc)
 
 # XmlPatterns is deprecated in Qt6
 if(QT_VERSION_MAJOR EQUAL 5)
-    set(UPDATER_QT_MODULES Core Gui Widgets XmlPatterns)
+    find_package(Qt5 COMPONENTS XmlPatterns QUIET)
+    if(TARGET Qt5::XmlPatterns)
+        set(UPDATER_QT_MODULES Core Gui Widgets XmlPatterns)
+    else()
+        set(UPDATER_QT_MODULES Core Gui Widgets)
+    endif()
 else()
     set(UPDATER_QT_MODULES Core Gui Widgets)
 endif()
@@ -60,5 +65,8 @@ if(TS_FILES)
     ek_add_translations(UpdaterTranslations
         SOURCES ${TS_FILES}
     )
-    add_dependencies(updater UpdaterTranslations)
+    # Only add dependency if target was created
+    if(TARGET UpdaterTranslations)
+        add_dependencies(updater UpdaterTranslations)
+    endif()
 endif()

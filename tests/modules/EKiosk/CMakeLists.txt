@@ -1,8 +1,8 @@
 # Tests for apps/EKiosk module
 message(STATUS "Configuring EKiosk module tests")
 
-add_executable(TestBaseApplication TestBaseApplication.cpp)
-set_target_properties(TestBaseApplication PROPERTIES FOLDER "tests/EKiosk")
+# TestBaseApplication is defined in tests/unit to avoid duplicate targets.
+# If a module-specific build is required, rename the target here to avoid conflicts.
 
 add_executable(TestPrinterConversion TestPrinterConversion.cpp)
 set_target_properties(TestPrinterConversion PROPERTIES FOLDER "tests/EKiosk")
