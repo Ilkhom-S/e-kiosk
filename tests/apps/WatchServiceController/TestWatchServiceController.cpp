@@ -8,7 +8,7 @@
 #include <Common/QtHeadersEnd.h>
 
 // System
-#include <WatchServiceController/WatchServiceController.h>
+#include "../../../apps/WatchServiceController/src/WatchServiceController.h"
 
 class TestWatchServiceController : public QObject {
     Q_OBJECT

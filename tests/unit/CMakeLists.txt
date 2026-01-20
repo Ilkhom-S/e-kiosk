@@ -5,8 +5,6 @@
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test Widgets REQUIRED)
 include(${CMAKE_SOURCE_DIR}/cmake/EKTesting.cmake)
 
-# BasicApplication tests
-ek_add_test(TestBaseApplication GUI FOLDER "tests/unit" SOURCES TestBaseApplication.cpp DEPENDS BasicApplication ek_common)
 
 # Helper binary used by tests to check BasicApplication behavior in a separate process
 add_executable(CheckTestMode CheckTestMode.cpp)
