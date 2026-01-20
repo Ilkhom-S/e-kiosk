@@ -14,7 +14,7 @@ function(ek_add_plugin TARGET_NAME)
             set(ARG_INSTALL_DIR "plugins")
         endif()
     endif()
-    
+
     add_library(${TARGET_NAME} SHARED ${ARG_SOURCES})
     # Ensure Qt auto-generation (moc/uic/rcc) runs for plugin targets that use Qt
     set_target_properties(${TARGET_NAME} PROPERTIES

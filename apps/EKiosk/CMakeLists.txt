@@ -18,7 +18,6 @@ ek_add_application(client
     FOLDER "apps"
     SOURCES ${SOURCES} ${HEADERS} ${UI_FILES} ${RESOURCE_FILES}
     QT_MODULES Core Widgets Sql PrintSupport Network Multimedia Xml SerialPort WebSockets WebEngineWidgets
-    INCLUDE_DIRS src
     LIBRARIES
     BasicApplication
     $<$<PLATFORM_ID:Windows>:rasapi32;winspool;psapi;user32;Advapi32>

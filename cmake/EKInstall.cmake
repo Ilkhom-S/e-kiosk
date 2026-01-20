@@ -9,7 +9,7 @@ function(ek_install_application TARGET_NAME)
     else()
         set(_bin_dir ${CMAKE_INSTALL_BINDIR})
     endif()
-    
+
     install(TARGETS ${TARGET_NAME}
         RUNTIME DESTINATION ${_bin_dir}
         COMPONENT applications
@@ -23,7 +23,7 @@ function(ek_install_library TARGET_NAME)
     else()
         set(_lib_dir ${CMAKE_INSTALL_LIBDIR})
     endif()
-    
+
     install(TARGETS ${TARGET_NAME}
         ARCHIVE DESTINATION ${_lib_dir}
         LIBRARY DESTINATION ${_lib_dir}
@@ -38,7 +38,7 @@ function(ek_install_plugin TARGET_NAME)
     else()
         set(_plugin_dir ${CMAKE_INSTALL_LIBDIR}/plugins)
     endif()
-    
+
     install(TARGETS ${TARGET_NAME}
         LIBRARY DESTINATION ${_plugin_dir}
         RUNTIME DESTINATION ${_plugin_dir}
