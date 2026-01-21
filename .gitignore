@@ -22,7 +22,6 @@ build-*/
 debug/
 release/
 *.qm
-*.ts
 *.qmlc
 *.jsc
 
@@ -133,8 +132,10 @@ env/
 .pytest_cache/
 
 # Build directories
+!scripts/**
 build/
 !scripts/**
+!apps/WatchServiceController/src/locale/*.ts
 bin/
 obj/
 out/
