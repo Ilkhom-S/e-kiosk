@@ -144,6 +144,4 @@ Do not change the .clang-format file without team consensus.
 
 ## Troubleshooting
 
-- Ensure Qt DLLs are in your PATH or next to the executable.
-- For MSVC, use the correct preset matching your Qt build.
-- See [getting-started.md](getting-started.md) for more help.
+- **VS Code debugging:** If you use VS Code to debug Qt applications, set the `QT_BIN_PATH` environment variable to your Qt `bin` directory (e.g. `D:/Qt/5.15.2/msvc2019_64/bin`) before launching VS Code. This allows the debugger to find the required Qt DLLs automatically, without hardcoding paths in `.vscode/launch.json`. See [docs/vs-code-debug-qt-path.md](vs-code-debug-qt-path.md) for details.
