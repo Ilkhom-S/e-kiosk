@@ -14,11 +14,18 @@
 #include <Common/ExitCodes.h>
 #include <Common/Version.h>
 
+// System
+#include <DebugUtils/DebugUtils.h>
+
 // Project
 #include "WatchServiceController.h"
 #include <singleapplication.h>
 
 int main(int aArgc, char *aArgv[]) {
+
+    // Enable crash diagnostics and stack trace logging
+    SetUnhandledExceptionsHandler(nullptr);
+
     BasicQtApplication<SingleApplication> application("WatchServiceController", Humo::getVersion(), aArgc, aArgv);
 
     // Load translations
