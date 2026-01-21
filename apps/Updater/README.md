@@ -63,15 +63,33 @@ MaxBackups=3
 
 ```mermaid
 flowchart TB
-    Check["Check"] -->|"GET /api/version"| Compare["Compare"]
-    Compare -->|"Current vs Available"| Download
-    Download["Download"] -->|"GET /packages/update.zip"| Verify
-    Verify["Verify"] -->|"Check signature"| Backup
-    Backup["Backup"] -->|"Save current version"| Extract
-    Extract["Extract"] -->|"Unzip to temp"| Apply
-    Apply["Apply"] -->|"Replace files"| Restart
-    Restart["Restart"] -->|"Launch updated app"| Done((Done))
+        Check["Check"] -->|"GET /api/version"| Compare["Compare"]
+        Compare -->|"Current vs Available"| Download
+        Download["Download"] -->|"GET /packages/update.zip"| Verify
+        Verify["Verify"] -->|"Check signature"| Backup
+        Backup["Backup"] -->|"Save current version"| Deploy
+        Deploy["Deploy"] -->|"Extract/copy to app dir (overwrite)"| Restart
+        Restart["Restart"] -->|"Launch updated app"| Done((Done))
 ```
+
+## Update Mechanism Details
+
+After downloading and verifying update packages, the Updater applies updates as follows:
+
+- **ZIP package components:**
+  - The archive is unpacked directly into the application directory (or target destination).
+  - All files in the archive are extracted and **overwrite existing files** in the destination (unless the "skip existing" flag is set).
+  - There is **no per-file comparison** after extraction; the contents of the archive replace the corresponding files.
+
+- **File set (Folder) components:**
+  - Each file is copied from the temporary folder to the destination directory.
+  - If a file already exists, it is removed and replaced with the new one (unless "skip existing" is set).
+
+- **Optional files/components** are skipped if not present or empty.
+
+- After deployment, any post-action scripts or executables are run from the temporary folder if specified.
+
+**Summary:** The Updater does not compare files after extraction. It always overwrites destination files with those from the update package, ensuring the application directory matches the update contents.
 
 ## Key Files
 
