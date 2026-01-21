@@ -135,7 +135,6 @@ env/
 !scripts/**
 build/
 !scripts/**
-!apps/WatchServiceController/src/locale/*.ts
 bin/
 obj/
 out/
