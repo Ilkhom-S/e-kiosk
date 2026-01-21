@@ -1,24 +1,11 @@
 
 
+
 # Include EKiosk version configuration logic
 include(scripts/build/cmake/EKVersionConfig.cmake)
 
-# Custom command to (re)generate version files at build time
-
-
 # Generate version files during configure step (so they always exist for IDEs and build)
-execute_process(
-    COMMAND ${CMAKE_COMMAND} -DEK_VERSION=$ENV{EK_VERSION} -P ${CMAKE_SOURCE_DIR}/scripts/build/cmake/RunEKVersionConfig.cmake
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    RESULT_VARIABLE _vergen_result
-    OUTPUT_VARIABLE _vergen_out
-    ERROR_VARIABLE _vergen_err
-)
-if(NOT _vergen_result EQUAL 0)
-    message(FATAL_ERROR "Failed to generate version files: ${_vergen_err}")
-else()
-    message(STATUS "Version files generated: ${_vergen_out}")
-endif()
+ek_configure_version()
 
 cmake_minimum_required(VERSION 3.16)
 

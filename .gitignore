@@ -134,6 +134,7 @@ env/
 
 # Build directories
 build/
+!scripts/**
 bin/
 obj/
 out/
