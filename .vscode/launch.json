@@ -5,11 +5,15 @@
       "name": "Debug EKiosk",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/win-msvc-qt5-x64/apps/EKiosk/Debug/client.exe",
+      "program": "${env:EK_BIN_DIR}/client.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [
+        {
+          "name": "EK_BIN_DIR",
+          "value": "${workspaceFolder}/build/win-msvc-qt5-x64/bin"
+        },
         {
           "name": "PATH",
           "value": "${env:QT_BIN_PATH};${workspaceFolder}/vcpkg_installed/x64-windows/bin;${env:PATH}"
@@ -22,11 +26,15 @@
       "name": "Debug Tray (WatchServiceController)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/win-msvc-qt5-x64/apps/WatchServiceController/Debug/trayd.exe",
+      "program": "${env:EK_BIN_DIR}/trayd.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [
+        {
+          "name": "EK_BIN_DIR",
+          "value": "${workspaceFolder}/build/win-msvc-qt5-x64/bin"
+        },
         {
           "name": "PATH",
           "value": "${env:QT_BIN_PATH};${workspaceFolder}/vcpkg_installed/x64-windows/bin;${env:PATH}"
@@ -39,11 +47,15 @@
       "name": "Run EKiosk",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/win-msvc-qt5-x64/apps/EKiosk/Debug/client.exe",
+      "program": "${env:EK_BIN_DIR}/client.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [
+        {
+          "name": "EK_BIN_DIR",
+          "value": "${workspaceFolder}/build/win-msvc-qt5-x64/bin"
+        },
         {
           "name": "PATH",
           "value": "${env:QT_BIN_PATH};${workspaceFolder}/vcpkg_installed/x64-windows/bin;${env:PATH}"
