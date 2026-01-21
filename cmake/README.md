@@ -12,6 +12,7 @@ This directory contains CMake helper modules for the EKiosk project. These modul
 - **EKPackaging.cmake**: Add packaging rules (CPack, NSIS, etc.).
 - **EKTranslation.cmake**: Manage Qt translation files (.ts, .qm).
 - **EKStaticAnalysis.cmake**: Integrate static analysis tools (cppcheck, clang-tidy).
+- **EKIniTemplate.cmake**: Generate .ini files from templates with CMake variable substitution (for app/module configuration).
 
 ---
 
@@ -28,6 +29,7 @@ include(cmake/EKInstall.cmake)
 include(cmake/EKPackaging.cmake)
 include(cmake/EKTranslation.cmake)
 include(cmake/EKStaticAnalysis.cmake)
+include(cmake/EKIniTemplate.cmake)
 ```
 
 ---
@@ -168,6 +170,57 @@ ek_enable_static_analysis(kiosk CPPCHECK CLANG_TIDY)
 **Why:**
 
 - Enforces code standards, catches bugs early
+
+---
+
+### EKIniTemplate.cmake
+
+**Purpose:** Generate .ini files from templates with CMake variable substitution (for app/module configuration).
+
+**How it works:**
+
+- Provides the `ek_generate_ini_template` macro for generating ini/config files from a template at build time.
+- Substitutes CMake variables (e.g. `@WORKING_DIRECTORY@`) in the template with values provided in the macro call.
+- Ensures all ini files are generated with up-to-date, build-specific values (e.g. working directory, output paths).
+
+**Usage:**
+
+1. **Include the helper in your root `CMakeLists.txt`:**
+
+   ```cmake
+   include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
+   ```
+
+2. **Prepare a template ini file:**
+
+   Example (`tray.ini.in`):
+
+   ```ini
+   [common]
+   working_directory = @WORKING_DIRECTORY@
+   ```
+
+3. **Call the macro in your app/module `CMakeLists.txt`:**
+
+   ```cmake
+   set(WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+   ek_generate_ini_template(tray "${CMAKE_SOURCE_DIR}/runtimes/common/data/tray.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+   ```
+
+   - The first argument is the output ini name (without extension).
+   - The second is the path to the template.
+   - The third is the output directory.
+   - All following arguments are pairs: `VAR value` (these become `@VAR@` in the template).
+
+**Result:**
+
+- The generated ini file will be at `${CMAKE_BINARY_DIR}/apps/WatchServiceController/tray.ini` with all variables substituted.
+
+**Best practices:**
+
+- Document all template variables in the ini template (in Russian, per project policy).
+- Use this macro for all app/module ini/configuration files to ensure consistency and up-to-date values.
+- See `runtimes/common/data/tray.ini.in` for a full example.
 
 ---
 

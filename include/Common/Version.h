@@ -13,7 +13,7 @@ namespace Humo {
     /// Короткая версия приложения.
     const QString ShortVersion = "3.0.0";
     /// Сборка.
-    const QString _Build = "202601131240";
+    const QString _Build = "20260121123640";
     /// Название приложения.
     const QString Application = "EKiosk";
 

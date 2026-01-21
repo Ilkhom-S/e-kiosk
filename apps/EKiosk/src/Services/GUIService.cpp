@@ -8,25 +8,23 @@
 
 // SDK
 #include <SDK/GUI/IGraphicsBackend.h>
-#include <SDK/PaymentProcessor/Core/IEventService.h>
 #include <SDK/PaymentProcessor/Core/Event.h>
 #include <SDK/PaymentProcessor/Core/EventTypes.h>
+#include <SDK/PaymentProcessor/Core/IEventService.h>
 #include <SDK/PaymentProcessor/Payment/Step.h>
 #include <SDK/PaymentProcessor/Scripting/Core.h>
 
+// System
+#include "Services/EventService.h"
+#include "Services/FirmwareUploadScenario.h"
+#include "Services/GUIService.h"
+#include "Services/IdleScenario.h"
+#include "Services/PluginService.h"
+#include "Services/ServiceNames.h"
+#include "Services/TerminalService.h"
 #include <SysUtils/ISysUtils.h>
-
-// Project
 #include "System/IApplication.h"
 #include "System/SettingsConstants.h"
-
-#include "Services/ServiceNames.h"
-#include "Services/PluginService.h"
-#include "Services/TerminalService.h"
-#include "Services/GUIService.h"
-#include "Services/EventService.h"
-#include "Services/IdleScenario.h"
-#include "Services/FirmwareUploadScenario.h"
 
 namespace PPSDK = SDK::PaymentProcessor;
 
@@ -140,7 +138,7 @@ bool GUIService::initialize() {
     toLog(LogLevel::Debug, QString("%1, %2, %3").arg(display).arg(mWidth).arg(mHeight));
 
     // Установка чувствительности для события mouse drag
-    qApp->setStartDragDistance(mConfig.value("interface/sensivity", CGUIService::StartDragDistance).toInt());
+    qApp->setStartDragDistance(mConfig.value("interface/sensitivity", CGUIService::StartDragDistance).toInt());
 
     bool showCursor = mConfig.value("interface/show_mouse_cursor", false).toBool();
     bool showDebugInfo = mConfig.value("interface/show_debug_info", false).toBool();

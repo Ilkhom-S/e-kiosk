@@ -28,6 +28,7 @@ set(AD_VERSION_RC ${CMAKE_SOURCE_DIR}/include/Common/CoreVersion.rc)
 # Add explicit header used by qbs (IAdSource) so IDEs and build systems see it
 list(APPEND AD_SOURCES ${CMAKE_SOURCE_DIR}/include/SDK/GUI/IAdSource.h)
 
+
 ek_add_plugin(ad
     FOLDER "plugins/BusinessLogic"
     SOURCES ${AD_SOURCES} ${AD_VERSION_RC}

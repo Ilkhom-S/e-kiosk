@@ -63,6 +63,12 @@ bool SettingsManager::isEqual(const SettingsManager &aManager) const {
 }
 
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+// Загружает настройки из списка источников (файлов).
+// ВАЖНО: Если один и тот же ключ встречается в нескольких файлах (например, system.ini и user.ini),
+// то значения из файлов, загруженных позже, будут добавлены в дерево свойств последними и могут переопределять
+// предыдущие при чтении. Таким образом, пользовательские настройки (user.ini) могут переопределять системные
+// (system.ini), если порядок загрузки соблюдён. Это обеспечивает гибкую иерархию конфигурации.
 bool SettingsManager::loadSettings(const QList<SSettingsSource> &aSettingSources) {
     foreach (const SSettingsSource &source, aSettingSources) {
         QElapsedTimer elapsed;
@@ -100,7 +106,9 @@ bool SettingsManager::loadSettings(const QList<SSettingsSource> &aSettingSources
         BOOST_FOREACH (TPtree::value_type &value, newBranch) {
             workingSource.fieldNames.append(QString::fromStdString(value.first));
 
-            // Вставляем настроки в общую ветку.
+            // Вставляем настройки в общую ветку.
+            // Если ключ уже существует, новое значение будет добавлено последним и может переопределить старое при
+            // чтении.
             TPtree &tree = branch.push_back(std::make_pair(value.first, TPtree()))->second;
             tree.swap(value.second);
         }

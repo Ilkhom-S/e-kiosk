@@ -30,3 +30,7 @@ ek_add_application(updatersplash
 if(WIN32)
     target_link_libraries(updatersplash PRIVATE User32)
 endif()
+
+# Генерация updatersplash.ini для всех конфигураций
+include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
+ek_generate_ini_for_all_configs(updatersplash "${CMAKE_SOURCE_DIR}/runtimes/common/data/updatersplash.ini.in")

@@ -70,3 +70,7 @@ if(TS_FILES)
         add_dependencies(updater UpdaterTranslations)
     endif()
 endif()
+
+# Генерация updater.ini для всех конфигураций
+include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
+ek_generate_ini_for_all_configs(updater "${CMAKE_SOURCE_DIR}/runtimes/common/data/updater.ini.in")

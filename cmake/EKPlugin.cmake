@@ -6,6 +6,7 @@ function(ek_add_plugin TARGET_NAME)
     set(multiValueArgs SOURCES QT_MODULES DEPENDS INCLUDE_DIRS COMPILE_DEFINITIONS LIBRARIES)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+
     # Allow overriding the default plugin install directory via EK_PLUGIN_DIR environment variable
     if(NOT ARG_INSTALL_DIR)
         if(DEFINED ENV{EK_PLUGIN_DIR})
@@ -14,6 +15,20 @@ function(ek_add_plugin TARGET_NAME)
             set(ARG_INSTALL_DIR "plugins")
         endif()
     endif()
+
+    # Set plugin build output directory from EK_PLUGIN_DIR if set, else use bin/plugins
+    if(DEFINED ENV{EK_PLUGIN_DIR})
+        set(_plugin_output_dir "$ENV{EK_PLUGIN_DIR}")
+    else()
+        set(_plugin_output_dir "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugins")
+    endif()
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${_plugin_output_dir}")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${_plugin_output_dir}")
+    foreach(_cfg IN ITEMS Debug Release RelWithDebInfo MinSizeRel)
+        string(TOUPPER "${_cfg}" _CFG_UPPER)
+        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${_CFG_UPPER} "${_plugin_output_dir}")
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${_CFG_UPPER} "${_plugin_output_dir}")
+    endforeach()
 
     add_library(${TARGET_NAME} SHARED ${ARG_SOURCES})
     # Ensure Qt auto-generation (moc/uic/rcc) runs for plugin targets that use Qt

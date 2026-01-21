@@ -60,3 +60,7 @@ if(TS_FILES)
         add_dependencies(guard WatchServiceTranslations)
     endif()
 endif()
+
+# Генерация guard.ini для всех конфигураций
+include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
+ek_generate_ini_for_all_configs(guard "${CMAKE_SOURCE_DIR}/runtimes/common/data/guard.ini.in")

@@ -48,30 +48,36 @@ bool SettingsService::initialize() {
 
     mSettingsManager->setLog(mApplication->getLog());
 
+    //---------------------------------------------------------------------------
     // Регистрируем все конфиги.
+    // ВАЖНО: Порядок файлов определяет приоритет настроек.
+    // Файлы, добавленные позже (например, user.ini), могут переопределять значения из файлов, добавленных раньше
+    // (например, system.ini). Это позволяет реализовать систему глобальных (system.ini) и пользовательских (user.ini)
+    // настроек с возможностью переопределения. Например, если ключ присутствует и в system.ini, и в user.ini, будет
+    // использоваться значение из user.ini. Такой подход обеспечивает гибкость и удобство конфигурирования.
     QList<SSettingsSource> settingsSources;
-    settingsSources << SSettingsSource(ISysUtils::rmBOM(mApplication->getWorkingDirectory() + "/data/system.ini"),
-                                       AdapterNames::TerminalAdapter, true)
-                    << SSettingsSource("terminal.ini", AdapterNames::TerminalAdapter, false)
-                    << SSettingsSource("keys.xml", AdapterNames::TerminalAdapter, false)
-                    << SSettingsSource("config.xml", AdapterNames::TerminalAdapter, true)
+    settingsSources
+        << SSettingsSource(ISysUtils::rmBOM(mApplication->getWorkingDirectory() + "/data/system.ini"),
+                           AdapterNames::TerminalAdapter, true)
+        << SSettingsSource("terminal.ini", AdapterNames::TerminalAdapter, false)
+        << SSettingsSource("keys.xml", AdapterNames::TerminalAdapter, false)
+        << SSettingsSource("config.xml", AdapterNames::TerminalAdapter, true)
 
-                    << SSettingsSource("commissions.xml", AdapterNames::DealerAdapter, true)
-                    << SSettingsSource("commissions.local.xml", AdapterNames::DealerAdapter, true)
+        << SSettingsSource("commissions.xml", AdapterNames::DealerAdapter, true)
+        << SSettingsSource("commissions.local.xml", AdapterNames::DealerAdapter, true)
 
-                    << SSettingsSource("config.xml", AdapterNames::DealerAdapter, true)
-                    << SSettingsSource("customers.xml", AdapterNames::DealerAdapter, true)
-                    << SSettingsSource("groups.xml", AdapterNames::DealerAdapter, true)
+        << SSettingsSource("config.xml", AdapterNames::DealerAdapter, true)
+        << SSettingsSource("customers.xml", AdapterNames::DealerAdapter, true)
+        << SSettingsSource("groups.xml", AdapterNames::DealerAdapter, true)
 
-                    << SSettingsSource("user.ini", AdapterNames::UserAdapter, true)
+        // user.ini должен идти после system.ini, чтобы пользовательские настройки могли переопределять системные.
+        << SSettingsSource("user.ini", AdapterNames::UserAdapter, true)
 
-                    << SSettingsSource("numcapacity.xml", AdapterNames::Directory, true)
-                    << SSettingsSource(mApplication->getWorkingDirectory() + "/data/directory.xml",
-                                       AdapterNames::Directory, true)
-                    << SSettingsSource("config.xml", AdapterNames::Extensions, true)
-
-                    // Временный конфиг #38560
-                    << SSettingsSource("extensions.xml", AdapterNames::Extensions, true);
+        << SSettingsSource("numcapacity.xml", AdapterNames::Directory, true)
+        << SSettingsSource(mApplication->getWorkingDirectory() + "/data/directory.xml", AdapterNames::Directory, true)
+        << SSettingsSource("config.xml", AdapterNames::Extensions, true)
+        /* Временный конфиг #38560 */
+        << SSettingsSource("extensions.xml", AdapterNames::Extensions, true);
 
     // Загрузка всех operators.xml
     foreach (auto file, QDir(mApplication->getUserDataPath())

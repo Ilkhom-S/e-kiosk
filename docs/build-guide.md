@@ -145,3 +145,27 @@ Do not change the .clang-format file without team consensus.
 ## Troubleshooting
 
 - **VS Code debugging:** If you use VS Code to debug Qt applications, set the `QT_BIN_PATH` environment variable to your Qt `bin` directory (e.g. `D:/Qt/5.15.2/msvc2019_64/bin`) before launching VS Code. This allows the debugger to find the required Qt DLLs automatically, without hardcoding paths in `.vscode/launch.json`. See [docs/vs-code-debug-qt-path.md](vs-code-debug-qt-path.md) for details.
+
+### INI Template Generation (ek_generate_ini_template)
+
+For all application and module configuration files (.ini), EKiosk uses a CMake macro to generate ini files from templates with build-time variable substitution. This ensures all config files are up-to-date and documented in Russian.
+
+**How to use:**
+
+1. Prepare a template ini file (e.g. `tray.ini.in`) with CMake variables like `@WORKING_DIRECTORY@`.
+2. In your app/module `CMakeLists.txt`, call:
+
+```cmake
+set(WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+ek_generate_ini_template(tray "${CMAKE_SOURCE_DIR}/runtimes/common/data/tray.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+```
+
+- The first argument is the output ini name (no extension).
+- The second is the template path.
+- The third is the output directory.
+- All following arguments are pairs: `VAR value` (these become `@VAR@` in the template).
+
+**Result:** The generated ini file will be in the build output directory, with all variables replaced by their build-time values.
+
+- Always document all variables in the template in Russian.
+- See `cmake/README.md` for full details and examples.

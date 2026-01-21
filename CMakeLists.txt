@@ -1,4 +1,25 @@
 
+
+# Include EKiosk version configuration logic
+include(scripts/build/cmake/EKVersionConfig.cmake)
+
+# Custom command to (re)generate version files at build time
+
+
+# Generate version files during configure step (so they always exist for IDEs and build)
+execute_process(
+    COMMAND ${CMAKE_COMMAND} -DEK_VERSION=$ENV{EK_VERSION} -P ${CMAKE_SOURCE_DIR}/scripts/build/cmake/RunEKVersionConfig.cmake
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    RESULT_VARIABLE _vergen_result
+    OUTPUT_VARIABLE _vergen_out
+    ERROR_VARIABLE _vergen_err
+)
+if(NOT _vergen_result EQUAL 0)
+    message(FATAL_ERROR "Failed to generate version files: ${_vergen_err}")
+else()
+    message(STATUS "Version files generated: ${_vergen_out}")
+endif()
+
 cmake_minimum_required(VERSION 3.16)
 
 # When supported, prefer the modern behavior for Boost package lookup and
@@ -17,6 +38,17 @@ elseif(NOT DEFINED EK_INCLUDES_DIR)
     set(EK_INCLUDES_DIR ${CMAKE_SOURCE_DIR}/include CACHE PATH "Path to public include dir")
 endif()
 message(STATUS "Using EK includes dir: ${EK_INCLUDES_DIR}")
+
+# Set build output directory for all configs from EK_BIN_DIR if set, else use default
+if(DEFINED ENV{EK_BIN_DIR})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$ENV{EK_BIN_DIR}")
+else()
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+endif()
+foreach(_cfg IN ITEMS Debug Release RelWithDebInfo MinSizeRel)
+    string(TOUPPER "${_cfg}" _CFG_UPPER)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${_CFG_UPPER} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+endforeach()
 
 # Global Qt detection for all modules/apps/tests
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
@@ -39,11 +71,15 @@ endif()
 # Testing and coverage configuration
 include(${CMAKE_SOURCE_DIR}/cmake/EKTestingSetup.cmake)
 
+# INI template generation helper (ek_generate_ini_template)
+include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
+
 # FR (Fiscal Register) support - deprecated, disabled by default
 option(EKIOSK_ENABLE_FR "Enable FR (Fiscal Register) support" OFF)
 if(NOT EKIOSK_ENABLE_FR)
     message(STATUS "FR (Fiscal Register) support is disabled (deprecated)")
 endif()
+
 
 # Create an INTERFACE target `ek_common` that exports the common include dir
 add_library(ek_common INTERFACE)

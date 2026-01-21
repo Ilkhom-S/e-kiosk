@@ -39,7 +39,7 @@ You can set the following environment variables to customize installation paths 
    cd ekiosk
 ```
 
-If the project uses third-party libraries as submodules, initialise them:
+If the project uses third-party libraries as submodules, initializes them:
 
 ```bash
 git submodule update --init --recursive
