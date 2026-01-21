@@ -1,14 +1,14 @@
 {
   // Exclude build output, third-party, and vcpkg folders from search and IntelliSense
   "files.exclude": {
-    "**/build/": true,
-    "**/thirdparty/": true,
-    "**/vcpkg_installed/": true
+    "build/": true,
+    "thirdparty/": true,
+    "vcpkg_installed/": true
   },
   "search.exclude": {
-    "**/build/": true,
-    "**/thirdparty/": true,
-    "**/vcpkg_installed/": true
+    "build/": true,
+    "thirdparty/": true,
+    "vcpkg_installed/": true
   },
   // Exclude the same folders from C++ extension's indexing
   "C_Cpp.default.exclude": [
