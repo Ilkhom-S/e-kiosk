@@ -470,7 +470,7 @@ void UpdaterApp::stopErrorTimer() {
 
 //---------------------------------------------------------------------------
 void UpdaterApp::onFailStopClient() {
-    getLog()->write(LogLevel::Error, "Fail stop PaymentProcessor.");
+    getLog()->write(LogLevel::Error, "Fail stop EKiosk.");
 
     mWatchServiceClient->startModule(CWatchService::Modules::PaymentProcessor);
 
