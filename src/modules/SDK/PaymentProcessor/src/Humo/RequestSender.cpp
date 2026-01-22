@@ -1,8 +1,12 @@
 /* @file Класс для обмена сообщениями по http. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QtCore/QStringConverter>
+#include <QtCore/QStringEncoder>
+#include <QtCore/QStringDecoder>
+#else
 #include <QtCore/QTextCodec>
+#endif
 #include <Common/QtHeadersEnd.h>
 
 // Modules
@@ -235,26 +239,36 @@ namespace SDK {
 
             //---------------------------------------------------------------------------
             bool RequestSender::defaultRequestEncoder(const QString &aRequest, QByteArray &aEncodedRequest) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                QStringEncoder encoder(QStringConverter::System, QStringConverter::Flag::Default);
+                aEncodedRequest = encoder.encode(aRequest);
+                return encoder.hasError() == false;
+#else
                 QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
                 if (!codec) {
                     return false;
                 }
 
                 aEncodedRequest = codec->fromUnicode(aRequest);
-
                 return true;
+#endif
             }
 
             //---------------------------------------------------------------------------
             bool RequestSender::defaultResponseDecoder(const QByteArray &aResponse, QString &aDecodedResponse) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                QStringDecoder decoder(QStringConverter::System, QStringConverter::Flag::Default);
+                aDecodedResponse = decoder.decode(aResponse);
+                return decoder.hasError() == false;
+#else
                 QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
                 if (!codec) {
                     return false;
                 }
 
                 aDecodedResponse = codec->toUnicode(aResponse);
-
                 return true;
+#endif
             }
 
             //---------------------------------------------------------------------------
