@@ -19,22 +19,27 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         bool SecurityFilter::haveFilter(const QString &aParameterName) const {
-            QRegExp regExp = getMask(aParameterName);
+            QRegularExpression regExp = getMask(aParameterName);
 
-            return !regExp.isEmpty() && regExp.isValid();
+            return !regExp.pattern().isEmpty() && regExp.isValid();
         }
 
         //------------------------------------------------------------------------------
         QString SecurityFilter::apply(const QString &aParameterName, const QString &aValue) const {
-            QRegExp regExp = getMask(aParameterName);
+            QRegularExpression regExp = getMask(aParameterName);
 
-            if (!regExp.isEmpty() && regExp.isValid()) {
-                if (regExp.match(aValue).capturedStart() > -1) {
+            if (!regExp.pattern().isEmpty() && regExp.isValid()) {
+                QRegularExpressionMatch match = regExp.match(aValue);
+                if (match.hasMatch()) {
                     QString value = aValue;
 
-                    for (int i = 1; i < regExp.capturedTexts().size(); i++) {
-                        int capSize = regExp.cap(i).size();
-                        value.replace(regExp.pos(i), capSize, QString("*").repeated(capSize));
+                    QStringList capturedTexts = match.capturedTexts();
+                    for (int i = 1; i < capturedTexts.size(); i++) {
+                        QString captured = capturedTexts[i];
+                        if (!captured.isEmpty()) {
+                            int pos = match.capturedStart(i);
+                            value.replace(pos, captured.size(), QString("*").repeated(captured.size()));
+                        }
                     }
 
                     return value;
@@ -47,7 +52,7 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        QRegExp SecurityFilter::getMask(const QString &aParameterName) const {
+        QRegularExpression SecurityFilter::getMask(const QString &aParameterName) const {
             foreach (auto field, mProvider.fields) {
                 if (aParameterName.contains(field.id, Qt::CaseInsensitive)) {
                     auto subsystem = field.security.contains(mSubsustem) ? mSubsustem : SProviderField::Default;
@@ -55,7 +60,6 @@ namespace SDK {
 
                     if (!regExp.isEmpty()) {
                         QRegularExpression rx(regExp);
-                        // ////////rx.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
                         if (rx.isValid()) {
                             return rx;
@@ -66,7 +70,7 @@ namespace SDK {
                 }
             }
 
-            return QRegExp();
+            return QRegularExpression();
         }
 
         //------------------------------------------------------------------------------
