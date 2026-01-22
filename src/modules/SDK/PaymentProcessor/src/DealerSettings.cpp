@@ -266,7 +266,7 @@ namespace SDK {
                 aItemList << item;
             }
 
-            qStableSort(
+            std::stable_sort(
                 aItemList.begin(), aItemList.end(),
                 [](const SProviderField::SEnumItem &a, const SProviderField::SEnumItem &b) { return a.sort < b.sort; });
         }
@@ -308,7 +308,7 @@ namespace SDK {
                     }
 
                     QString ttList = value.second.get<QString>("tt_list", QString());
-                    foreach (auto cid, ttList.split(",", QString::SkipEmptyParts)) {
+                    foreach (auto cid, ttList.split(",", Qt::SkipEmptyParts)) {
                         aProvider.ttList.insert(cid.trimmed().toLongLong());
                     }
 
@@ -473,8 +473,8 @@ namespace SDK {
                         aProvider.fields << field;
                     }
 
-                    qStableSort(aProvider.fields.begin(), aProvider.fields.end(),
-                                [](const SProviderField &a, const SProviderField &b) { return a.sort < b.sort; });
+                    std::stable_sort(aProvider.fields.begin(), aProvider.fields.end(),
+                                     [](const SProviderField &a, const SProviderField &b) { return a.sort < b.sort; });
 
                     // Типы и параметры чеков
                     BOOST_FOREACH (const auto &receiptIt, value.second.get_child("receipts", emptyTree)) {
@@ -691,7 +691,7 @@ namespace SDK {
 
         //---------------------------------------------------------------------------
         QStringList DealerSettings::getProviderProcessingTypes() {
-            return mProvidersProcessingIndex.keys().toSet().toList();
+            return QStringList(mProvidersProcessingIndex.keys().begin(), mProvidersProcessingIndex.keys().end());
         }
 
         //---------------------------------------------------------------------------
