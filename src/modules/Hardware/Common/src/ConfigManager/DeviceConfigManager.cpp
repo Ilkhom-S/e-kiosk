@@ -9,7 +9,7 @@
 #include "DeviceConfigManager.h"
 
 //--------------------------------------------------------------------------------
-DeviceConfigManager::DeviceConfigManager() : mConfigurationGuard(QReadWriteLock::Recursive), mCodec(nullptr) {
+DeviceConfigManager::DeviceConfigManager() : mConfigurationGuard(QReadWriteLock::Recursive) {
 }
 
 //--------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ void DeviceConfigManager::setConfigParameter(const QString &aName, const QVarian
 //--------------------------------------------------------------------------------
 void DeviceConfigManager::setLConfigParameter(const QString &aName, const QByteArray &aData) {
     QByteArray data = ProtocolUtils::clean(aData.simplified());
-    QString value = mCodec ? mCodec->toUnicode(data) : data;
+    QString value = QString::fromUtf8(data);
 
     setConfigParameter(aName, value);
 }

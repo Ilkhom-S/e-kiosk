@@ -6,7 +6,6 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QVariantMap>
 #include <QtCore/QReadWriteLock>
-#include <QtCore/QTextCodec>
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
@@ -43,8 +42,7 @@ class DeviceConfigManager {
     /// Сторож параметров.
     mutable QReadWriteLock mConfigurationGuard;
 
-    /// Кодек.
-    QTextCodec *mCodec;
+    /// Кодек не нужен в Qt6 - используем UTF-8 напрямую.
 };
 
 //--------------------------------------------------------------------------------
