@@ -1,33 +1,19 @@
-/* @file Сценарий на основе javascript. */
+/* @file Сценарий на основе javascript (Qt5 версия с QtScript). */
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtGlobal>
-#include <Common/QtHeadersEnd.h>
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-#include <QtStateMachine/QAbstractTransition>
-#include <QtStateMachine/QFinalState>
-#else
 #include <QtCore/QAbstractTransition>
-#include <QtCore/QFinalState>
-#endif
 #include <QtCore/QFile>
+#include <QtCore/QFinalState>
 #include <QtCore/QStringList>
 #include <QtCore/QTextStream>
-#include <Common/QtHeadersEnd.h>
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-#include <QtQml/QJSEngine>
-#include <QtQml/QJSValue>
-#else
+#include <QtGlobal>
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValue>
-#endif
 #include <Common/QtHeadersEnd.h>
 
 // Project
-#include "JSScenario.h"
+#include "JSScenario5.h"
 
 namespace GUI {
 
@@ -145,14 +131,8 @@ namespace GUI {
             mContext.remove(key);
         }
 
-        // Объединяем контексты: в Qt6 метод unite() был удален, используем insert()
-        // Qt5: unite() - объединяет карты, перезаписывая существующие ключи
-        // Qt6: insert() - аналогичная функциональность после удаления unite()
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        mContext.insert(aContext);
-#else
+        // Объединяем контексты
         mContext.unite(aContext);
-#endif
 
         mIsPaused = false;
 
@@ -168,43 +148,23 @@ namespace GUI {
     //---------------------------------------------------------------------------
     bool JSScenario::initialize(const QList<SScriptObject> &aScriptObjects) {
         mStateMachine = QSharedPointer<QStateMachine>(new QStateMachine);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        mScriptEngine = QSharedPointer<QJSEngine>(new QJSEngine);
-#else
         mScriptEngine = QSharedPointer<QScriptEngine>(new QScriptEngine);
-#endif
 
         connect(mStateMachine.data(), SIGNAL(finished()), this, SLOT(onFinish()));
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        // Qt6: QJSEngine does not have signalHandlerException
-#else
         connect(mScriptEngine.data(), SIGNAL(signalHandlerException(const QScriptValue &)), this,
                 SLOT(onException(const QScriptValue &)));
-#endif
 
         // Добавляем в скрипты внешние объекты.
         foreach (const SScriptObject &object, aScriptObjects) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             mScriptEngine->globalObject().setProperty(object.name,
                                                       object.isType ? mScriptEngine->newQMetaObject(object.metaObject)
                                                                     : mScriptEngine->newQObject(object.object));
-#else
-            mScriptEngine->globalObject().setProperty(object.name,
-                                                      object.isType ? mScriptEngine->newQMetaObject(object.metaObject)
-                                                                    : mScriptEngine->newQObject(object.object));
-#endif
         }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        mScriptEngine->globalObject().setProperty(CJSScenario::ServiceName, mScriptEngine->newQObject(this));
-        // Qt6: QJSEngine does not support newFunction, so includeScript must be handled differently
-        // Placeholder: migration logic for includeScript registration
-#else
         mScriptEngine->globalObject().setProperty(CJSScenario::ServiceName, mScriptEngine->newQObject(this));
         mScriptEngine->globalObject().setProperty(CJSScenario::ScriptIncludeFunction,
                                                   mScriptEngine->newFunction(&JSScenario::includeScript, this));
         mScriptEngine->installTranslatorFunctions();
-#endif
 
         // Загружаем базовый сценарий, если такой имеется.
         if (!mBasePath.isEmpty()) {
@@ -223,21 +183,13 @@ namespace GUI {
         }
 
         // Инициализируем скрипт сценария.
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        QJSValue result = functionCall(CJSScenario::ScriptInitFunction, QVariantMap(),
-                                       QString("%1:%2").arg(mName).arg(CJSScenario::ScriptInitFunction));
-        if (result.isError()) {
-            toLog(LogLevel::Error, QString("Failed to initialize '%1' scenario: %2").arg(mName).arg(result.toString()));
-            return false;
-        }
-#else
         QScriptValue result = functionCall(CJSScenario::ScriptInitFunction, QVariantMap(),
                                            QString("%1:%2").arg(mName).arg(CJSScenario::ScriptInitFunction));
         if (result.isError()) {
             toLog(LogLevel::Error, QString("Failed to initialize '%1' scenario: %2").arg(mName).arg(result.toString()));
             return false;
         }
-#endif
+
         return true;
     }
 
