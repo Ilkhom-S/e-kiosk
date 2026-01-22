@@ -2,7 +2,7 @@
   // Exclude build output, third-party, and vcpkg folders from search and IntelliSense
   "files.exclude": {
     "build/": true,
-    "thirdparty/": true,
+    "thirdparty/": false,
     "vcpkg_installed/": true
   },
   "search.exclude": {
@@ -29,7 +29,7 @@
     "commands": [
       {
         "match": "\\.(cpp|cc|cxx|h|hpp)$",
-        "cmd": "python ./.scripts/include_reflow.py --apply \"${file}\""
+        "cmd": "python3 ./.scripts/include_reflow.py --apply \"${file}\""
       }
     ]
   },
@@ -290,9 +290,6 @@
   "C_Cpp.default.cppStandard": "c++14",
   "C_Cpp.default.cStandard": "c11",
   "C_Cpp.default.intelliSenseMode": "windows-msvc-x64",
-  "clang-format.executable": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\Llvm\\bin\\clang-format.exe",
-  "clang-tidy.executable": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\Llvm\\bin\\clang-tidy.exe",
-  "C_Cpp.clang_format_path": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\Llvm\\bin\\clang-format.exe",
   "C_Cpp.codeAnalysis.clangTidy.enabled": true,
   "C_Cpp.codeAnalysis.clangTidy.path": "clang-tidy",
   "C_Cpp.formatting": "clangFormat",
