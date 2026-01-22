@@ -6,6 +6,7 @@
 #include <QtCore/QFuture>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
+#include <QtCore/QRandomGenerator>
 #include <QtCore/QUrl>
 #include <Common/QtHeadersEnd.h>
 
@@ -175,8 +176,8 @@ namespace SDK {
                     return;
                 }
 
-                mResponseWatcher.setFuture(QtConcurrent::run(
-                    this, &SDK::PaymentProcessor::Scripting::NetworkService::postRequest, aUrl, aParameters));
+                mResponseWatcher.setFuture(
+                    QtConcurrent::run([this, aUrl, aParameters]() mutable { return postRequest(aUrl, aParameters); }));
             }
 
             //------------------------------------------------------------------------------
@@ -262,9 +263,9 @@ namespace SDK {
 
                 Request *request = new Request(params);
 
-                mResponseSendReceiptWatcher.setFuture(
-                    QtConcurrent::run(this, &SDK::PaymentProcessor::Scripting::NetworkService::sendRequestInternal,
-                                      request, terminalSettings->getReceiptMailURL()));
+                QString receiptUrl = terminalSettings->getReceiptMailURL();
+                mResponseSendReceiptWatcher.setFuture(QtConcurrent::run(
+                    [this, request, receiptUrl]() { return sendRequestInternal(request, receiptUrl); }));
             }
 
             //------------------------------------------------------------------------------
@@ -280,9 +281,10 @@ namespace SDK {
                 aRequestParameters.insert(CRequest::SD, mSD);
                 aRequestParameters.insert(CRequest::AP, mAP);
                 aRequestParameters.insert(CRequest::OP, mOP);
-                aRequestParameters.insert(CRequest::SESSION,
-                                          QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz") +
-                                              QString("%1").arg(qrand() % 1000, 3, 10, QChar('0')));
+                aRequestParameters.insert(
+                    CRequest::SESSION,
+                    QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz") +
+                        QString("%1").arg(QRandomGenerator::global()->bounded(1000), 3, 10, QChar('0')));
 
                 Request request(aRequestParameters);
 

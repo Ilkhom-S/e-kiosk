@@ -38,7 +38,7 @@ namespace SDK {
                     // эта проверка должна вызываться крайне редко, т.к. в случае не ответа принтера подвешивает
                     // интерфейс
                     if (mCheckSynchronizer.futures().size() == 0 || mCheckSynchronizer.futures().last().isFinished())
-                        mCheckSynchronizer.addFuture(QtConcurrent::run(this, &PrinterService::privateCheckPrinter));
+                        mCheckSynchronizer.addFuture(QtConcurrent::run([this]() { privateCheckPrinter(); }));
 
                     return true;
                 } else {
