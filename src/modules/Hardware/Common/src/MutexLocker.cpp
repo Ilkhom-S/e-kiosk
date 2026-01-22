@@ -4,7 +4,7 @@
 #include "MutexLocker.h"
 
 MutexLocker::TMatchedThreads MutexLocker::mMatchedThreads;
-QMutex MutexLocker::mResourceMutex(QMutex::Recursive);
+QRecursiveMutex MutexLocker::mResourceMutex;
 MutexLocker::TThreadsLocked MutexLocker::mThreadsLocked;
 
 //--------------------------------------------------------------------------------

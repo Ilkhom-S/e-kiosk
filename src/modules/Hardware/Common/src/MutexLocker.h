@@ -5,6 +5,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QMutex>
+#include <QtCore/QRecursiveMutex>
 #include <QtCore/QThread>
 #include <QtCore/QMap>
 #include <QtCore/QPair>
@@ -37,7 +38,7 @@ class MutexLocker {
     static TThreadsLocked mThreadsLocked;
 
     // Мьютекс для защиты ресурсов.
-    static QMutex mResourceMutex;
+    static QRecursiveMutex mResourceMutex;
 };
 
 //--------------------------------------------------------------------------------
