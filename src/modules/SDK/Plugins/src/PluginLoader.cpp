@@ -214,10 +214,10 @@ namespace SDK {
 
                             if (translations.count()) {
                                 QString translation = translations.entryInfoList().first().absoluteFilePath();
-                                QScopedPointer<QTranslator> translator(new QTranslator(qApp));
+                                std::unique_ptr<QTranslator> translator(new QTranslator(qApp));
 
                                 if (translator->load(translation)) {
-                                    qApp->installTranslator(translator.take());
+                                    qApp->installTranslator(translator.release());
 
                                     mKernel->getLog()->write(LogLevel::Normal, QString("Translation %1 for %2 loaded.")
                                                                                    .arg(translation)
