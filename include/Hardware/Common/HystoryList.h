@@ -11,6 +11,11 @@
 //--------------------------------------------------------------------------------
 template <class T> class HistoryList : public QList<T> {
   public:
+    using QList<T>::size;
+    using QList<T>::value;
+    using QList<T>::removeFirst;
+    using QList<T>::isEmpty;
+
     HistoryList() : mSize(0), mLevel(0) {
     }
 

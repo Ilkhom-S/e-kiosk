@@ -91,6 +91,8 @@ template <class T1, class T2> class CStaticSpecification : public CSpecification
 // Класс для хранения произвольных описателей данных в виде битовой маски
 template <class T> class CBitmapDescription : public CDescription<T> {
   public:
+    using CDescription<T>::data;
+
     virtual QString getValues(T aValue) {
         QStringList result;
 
