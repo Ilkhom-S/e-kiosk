@@ -97,7 +97,23 @@ namespace GUI {
 
     //---------------------------------------------------------------------------
     JSScenario::~JSScenario() {
-        // TODO: Cleanup Qt6 resources
+        // Stop timers and cleanup resources
+        if (mTimeoutTimer.isActive()) {
+            mTimeoutTimer.stop();
+        }
+
+        // Clear state machine
+        if (mStateMachine) {
+            mStateMachine->stop();
+            mStateMachine->clear();
+        }
+
+        // Clear states
+        mStates.clear();
+        mTransitions.clear();
+        mHooks.clear();
+
+        // Script engine will be automatically cleaned up by QSharedPointer
     }
 
     //---------------------------------------------------------------------------
@@ -420,7 +436,6 @@ namespace GUI {
 
     //---------------------------------------------------------------------------
     void JSScenario::onException(const QJSValue &aException) {
-        // TODO: Implement exception handling
         if (aException.isError()) {
             toLog(LogLevel::Error, QString("QML Script error: %1").arg(aException.toString()));
         }
@@ -457,13 +472,20 @@ namespace GUI {
 
     //---------------------------------------------------------------------------
     QJSValue JSScenario::includeScript(void *aContext, QJSEngine *aEngine, void *aScenario) {
-        // TODO: Implement script inclusion
-        return QJSValue();
+        JSScenario *self = static_cast<JSScenario *>(aScenario);
+
+        // For Qt6 QJSEngine, we implement a simpler include mechanism
+        // We expect the first argument to be the file path to include
+        // Note: Qt6 QJSEngine doesn't have the same context management as Qt5 QScriptEngine
+
+        // This is a placeholder implementation for Qt6
+        // A full implementation would require more complex JavaScript context management
+        toLog(LogLevel::Warning, QString("includeScript called but not fully implemented in Qt6 QJSEngine"));
+        return QJSValue(false);
     }
 
     //---------------------------------------------------------------------------
     bool JSScenario::loadScript(QJSEngine *aScriptEngine, const QString &aScenarioName, const QString &aScriptPath) {
-        // TODO: Implement script loading with QML QJSEngine
         QFile scriptFile(aScriptPath);
         if (!scriptFile.open(QIODevice::ReadOnly)) {
             toLog(LogLevel::Error, QString("Cannot open script file: %1").arg(aScriptPath));
@@ -485,7 +507,6 @@ namespace GUI {
 
     //---------------------------------------------------------------------------
     QVariantMap JSScenario::getContext() const {
-        // TODO: Implement context retrieval
         return mContext;
     }
 
