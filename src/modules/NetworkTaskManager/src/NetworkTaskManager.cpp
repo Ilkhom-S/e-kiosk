@@ -3,6 +3,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QResource>
 #include <QtCore/QStringList>
 #include <QtNetwork/QHostInfo>
@@ -244,8 +245,9 @@ void NetworkTaskManager::onTaskReadyRead() {
                                 // http://tools.ietf.org/html/rfc2616#section-14.16
                                 QRegularExpression rx("(\\d+)\\-\\d+/\\d+");
 
-                                if (rx.match(contentRange).capturedStart() > 0) {
-                                    qint64 pos = // TODO: // TODO: // TODO: // TODO: rx.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1).toLongLong();
+                                auto match = rx.match(contentRange);
+                                if (match.hasMatch()) {
+                                    qint64 pos = match.captured(1).toLongLong();
 
                                     if (!task->getDataStream()->seek(pos)) {
                                         toLog(LogLevel::Error, QString("Content-Range: %1. Error seek "
