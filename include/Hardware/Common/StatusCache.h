@@ -13,9 +13,9 @@ typedef QSet<int> TStatusCodes;
 
 template <class T> class StatusCache : public QMap<T, TStatusCodes> {
   public:
-    using QMap::contains;
-    using QMap::isEmpty;
-    using QMap::size;
+    using QMap<T, TStatusCodes>::contains;
+    using QMap<T, TStatusCodes>::isEmpty;
+    using QMap<T, TStatusCodes>::size;
 
     const StatusCache<T> operator-(const StatusCache<T> &aStatusCache) {
         StatusCache<T> result(*this);
@@ -38,8 +38,8 @@ template <class T> class StatusCache : public QMap<T, TStatusCodes> {
     }
 
     bool contains(int aStatusCode) const {
-        foreach (const TStatusCodes &statusCodes, values()) {
-            if (statusCodes.contains(aStatusCode)) {
+        for (auto it = this->begin(); it != this->end(); ++it) {
+            if (it.value().contains(aStatusCode)) {
                 return true;
             }
         }

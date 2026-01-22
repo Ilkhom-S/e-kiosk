@@ -70,6 +70,8 @@ template <class T> class CDescription : public CSpecification<T, QString> {
 // временем их создания.
 template <class T1, class T2> class CStaticSpecification : public CSpecification<T1, T2> {
   public:
+    using CSpecification<T1, T2>::mBuffer;
+
     CStaticSpecification() {
         mBuffer = process(T1(), T2(), true);
     }
@@ -116,6 +118,8 @@ template <class T> class CBitmapDescription : public CDescription<T> {
 // заполнением данных
 template <class T1, class T2> class CSSpecification : public CSpecification<T1, T2> {
   public:
+    using CSpecification<T1, T2>::mBuffer;
+
     CSSpecification() {
         mBuffer = addData(T1(), T2(), true);
     }
