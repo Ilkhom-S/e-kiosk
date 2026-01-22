@@ -69,6 +69,18 @@
   ```
 
 - **Complex Logic Comments in CPP Files:** In implementation files, if logic is complex or a developer may not understand, place Russian comments explaining what's happening, e.g., "// Планируем перезагрузку ЕК по истечении рекламы."
+- **Conditional Compilation Comments:** When using `#if QT_VERSION`, `#ifdef`, or other preprocessor conditionals (especially for Qt version differences), always add Russian comments above explaining why the conditional is needed and what each branch does. Reference sources if applicable. Example:
+
+  ```cpp
+  // Объединяем контексты: в Qt6 метод unite() был удален, используем insert()
+  // Qt5: unite() - объединяет карты, перезаписывая существующие ключи
+  // Qt6: insert() - аналогичная функциональность после удаления unite()
+  #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+      mContext.insert(aContext);
+  #else
+      mContext.unite(aContext);
+  #endif
+  ```
 
 - **Interface Separators:** If a class implements more than one interface or has multiple sections, separate them with `//--------------------------------------------------------------------------------` or use `#pragma region` and `#pragma endregion` for better organization.
 

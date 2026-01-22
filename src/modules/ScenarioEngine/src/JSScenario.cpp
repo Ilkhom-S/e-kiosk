@@ -2,9 +2,17 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QtGlobal>
+#include <Common/QtHeadersEnd.h>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QtStateMachine/QAbstractTransition>
+#include <QtStateMachine/QFinalState>
+#else
 #include <QtCore/QAbstractTransition>
-#include <QtCore/QFile>
 #include <QtCore/QFinalState>
+#endif
+#include <QtCore/QFile>
 #include <QtCore/QStringList>
 #include <QtCore/QTextStream>
 #include <Common/QtHeadersEnd.h>
@@ -137,7 +145,14 @@ namespace GUI {
             mContext.remove(key);
         }
 
+        // Объединяем контексты: в Qt6 метод unite() был удален, используем insert()
+        // Qt5: unite() - объединяет карты, перезаписывая существующие ключи
+        // Qt6: insert() - аналогичная функциональность после удаления unite()
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        mContext.insert(aContext);
+#else
         mContext.unite(aContext);
+#endif
 
         mIsPaused = false;
 
