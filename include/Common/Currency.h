@@ -77,3 +77,12 @@ inline uint qHash(const Currency::Nominal &aValue) {
 }
 
 //--------------------------------------------------------------------------------
+namespace std {
+    template <> struct hash<Currency::Nominal> {
+        size_t operator()(const Currency::Nominal &aValue) const noexcept {
+            return std::hash<Currency::Nominal::RawType>()(aValue.rawValue());
+        }
+    };
+} // namespace std
+
+//--------------------------------------------------------------------------------
