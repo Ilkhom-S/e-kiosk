@@ -91,6 +91,8 @@ namespace SDK {
                                          QString("Configuration file %1 found, loading.").arg(file.absoluteFilePath()));
 
                 QSettings config(file.absoluteFilePath(), QSettings::IniFormat);
+                // В Qt6 метод setIniCodec() удален, UTF-8 используется по умолчанию
+                // В Qt5 необходимо явно установить кодировку UTF-8
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                 config.setIniCodec("utf-8");
 #endif
@@ -494,6 +496,8 @@ namespace SDK {
                                        CPluginFactory::ConfigurationDirectory + QDir::separator() + mModuleName +
                                        ".ini";
                     QSettings config(QDir::toNativeSeparators(QDir::cleanPath(fileName)), QSettings::IniFormat);
+                    // В Qt6 метод setIniCodec() удален, UTF-8 используется по умолчанию
+                    // В Qt5 необходимо явно установить кодировку UTF-8
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                     config.setIniCodec("utf-8");
 #endif

@@ -58,6 +58,8 @@ AdService::AdService(IApplication *aApplication)
         IApplication::toAbsolutePath(mApplication->getSettings().value(CSettings::UserDataPath).toString());
     mSettings = new QSettings(ISysUtils::rmBOM(userPath + QDir::separator() + CAdService::SettingsName),
                               QSettings::IniFormat, this);
+    // В Qt6 метод setIniCodec() удален, UTF-8 используется по умолчанию
+    // В Qt5 необходимо явно установить кодировку UTF-8
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mSettings->setIniCodec("utf-8");
 #endif
