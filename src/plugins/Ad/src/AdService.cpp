@@ -58,7 +58,9 @@ AdService::AdService(IApplication *aApplication)
         IApplication::toAbsolutePath(mApplication->getSettings().value(CSettings::UserDataPath).toString());
     mSettings = new QSettings(ISysUtils::rmBOM(userPath + QDir::separator() + CAdService::SettingsName),
                               QSettings::IniFormat, this);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mSettings->setIniCodec("utf-8");
+#endif
 }
 
 //---------------------------------------------------------------------------
