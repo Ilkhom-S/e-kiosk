@@ -8,6 +8,12 @@
 #include <QtCore/QString>
 #include <Common/QtHeadersEnd.h>
 
+// STL
+#include <algorithm>
+
+// Qt
+#include <QtCore/QSet>
+
 // SDK
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Core/ISettingsService.h>
@@ -31,7 +37,7 @@ namespace SDK {
                     result << i.toString();
                 }
 
-                qSort(result);
+                std::sort(result.begin(), result.end());
 
                 return result.join(";");
             }
@@ -108,13 +114,17 @@ namespace SDK {
                 }
 
                 QString getDisabledNotes() const {
-                    return seq2Str2(mTerminalSettings->getCurrencySettings().notes.toSet().subtract(
-                        mTerminalSettings->getCommonSettings().enabledParNotesList));
+                    QSet<Currency::Nominal> allNotes(mTerminalSettings->getCurrencySettings().notes.begin(),
+                                                     mTerminalSettings->getCurrencySettings().notes.end());
+                    return seq2Str2(
+                        allNotes.subtract(mTerminalSettings->getCommonSettings().enabledParNotesList).values());
                 }
 
                 QString getDisabledCoins() const {
-                    return seq2Str2(mTerminalSettings->getCurrencySettings().coins.toSet().subtract(
-                        mTerminalSettings->getCommonSettings().enabledParCoinsList));
+                    QSet<Currency::Nominal> allCoins(mTerminalSettings->getCurrencySettings().coins.begin(),
+                                                     mTerminalSettings->getCurrencySettings().coins.end());
+                    return seq2Str2(
+                        allCoins.subtract(mTerminalSettings->getCommonSettings().enabledParCoinsList).values());
                 }
 
                 QString getInterfacePath() const {
