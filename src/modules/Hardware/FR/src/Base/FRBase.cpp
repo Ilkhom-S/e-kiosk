@@ -1416,7 +1416,7 @@ template <class T> void FRBase<T>::addPhone(const QString &aField, const QVarian
 template <class T> void FRBase<T>::addMail(const QString &aField, const QVariant &aData) {
     QString mail = aData.toString().simplified();
 
-    if (mail.contains(QRegExp("^[^@]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-\\.]+$"))) {
+    if (mail.contains(QRegularExpression("^[^@]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-\\.]+$"))) {
         setConfigParameter(aField, mail);
     }
 }

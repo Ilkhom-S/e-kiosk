@@ -34,12 +34,12 @@ bool ATGSMModem::getOperator(QString &aOperator) {
     processCommand(AT::Commands::CopsMode);
 
     QByteArray answer;
-    QRegExp regExp("\".+\"");
+    QRegularExpression regExp("\".+\"");
     bool result = false;
 
-    if (processCommand(AT::Commands::COPS, answer) && regExp.indexIn(answer) != -1) {
+    if (processCommand(AT::Commands::COPS, answer) && regExp.match(answer).capturedStart() != -1) {
         // Парсим имя оператора.
-        aOperator = regExp.cap(0).remove("\"");
+        aOperator = // TODO: // TODO: // TODO: // TODO: regExp.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).remove("\"");
 
         toLog(LogLevel::Normal, QString("Operator name: %1.").arg(aOperator));
         result = true;
@@ -83,7 +83,7 @@ void ATGSMModem::setDeviceName(const QByteArray &aFullName) {
         if (parseFieldInternal(aFullName, "Model", value)) {
             mDeviceName += " " + value;
         }
-    } else if (mDeviceName.contains(QRegExp("MF\\d{3}", Qt::CaseInsensitive)) ||
+    } else if (mDeviceName.contains(QRegularExpression("MF\\d{3}", Qt::CaseInsensitive)) ||
                mDeviceName.contains("ZTE", Qt::CaseInsensitive)) {
         mGsmDialect = AT::EModemDialect::ZTE;
 
@@ -172,10 +172,10 @@ void ATGSMModem::getSIMData(const QByteArray &aCommand) {
     processCommand(aCommand, answer);
 
     CATGSMModem::SSIMRequestInfo SIMRequestInfo = CATGSMModem::SIMRequestInfo[aCommand];
-    QRegExp regExp(SIMRequestInfo.regexpData);
+    QRegularExpression regExp(SIMRequestInfo.regexpData);
 
-    if (regExp.indexIn(answer) != -1) {
-        QString result = regExp.cap(0);
+    if (regExp.match(answer).capturedStart() != -1) {
+        QString result = // TODO: // TODO: // TODO: // TODO: regExp.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0);
 
         if (SIMRequestInfo.swapCharPair) {
             for (int i = 0; i < result.size(); i += 2) {
@@ -191,10 +191,10 @@ void ATGSMModem::getSIMData(const QByteArray &aCommand) {
 
 //--------------------------------------------------------------------------------
 bool ATGSMModem::parseFieldInternal(const QByteArray &aBuffer, const QString &aFieldName, QString &aValue) {
-    QRegExp rx(aFieldName + "[:\\s]+([^\\n\\r]+)", Qt::CaseInsensitive);
+    QRegularExpression rx(aFieldName + "[:\\s]+([^\\n\\r]+)", Qt::CaseInsensitive);
 
-    if (rx.indexIn(QString::fromLatin1(aBuffer).trimmed()) != -1) {
-        aValue = rx.cap(1).trimmed();
+    if (rx.match(QString::fromLatin1(aBuffer).capturedStart().trimmed()) != -1) {
+        aValue = // TODO: // TODO: // TODO: // TODO: rx.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1).trimmed();
 
         return true;
     }
@@ -205,16 +205,16 @@ bool ATGSMModem::parseFieldInternal(const QByteArray &aBuffer, const QString &aF
 //--------------------------------------------------------------------------------
 bool ATGSMModem::getSimCOMCellList(QString &aValue) {
     QByteArray answer;
-    QRegExp regExp("(\\d+),(\\d+),\"([\\d\\w]+)\",\"([\\d\\w]+)\"");
+    QRegularExpression regExp("(\\d+),(\\d+),\"([\\d\\w]+)\",\"([\\d\\w]+)\"");
     QByteArray CGREG = AT::Commands::SimCom::CGREG;
 
     if (!processCommand(CGREG + "=2", CATGSMModem::Timeouts::CellInfo) ||
-        !processCommand(CGREG + "?", answer, CATGSMModem::Timeouts::CellInfo) || (regExp.indexIn(answer) == -1)) {
+        !processCommand(CGREG + "?", answer, CATGSMModem::Timeouts::CellInfo) || (regExp.match(answer).capturedStart() == -1)) {
         return false;
     }
 
-    QStringList info = QStringList() << "" << "" << QString::number(regExp.cap(4).toInt(0, 16))
-                                     << QString::number(regExp.cap(3).toInt(0, 16)) << "" << "";
+    QStringList info = QStringList() << "" << "" << QString::number(// TODO: // TODO: // TODO: // TODO: regExp.cap(4) needs manual migration to match.captured(4) needs manual migration to match.captured(4) needs manual migration to match.captured(4) needs manual migration to match.captured(4).toInt(0, 16))
+                                     << QString::number(// TODO: // TODO: // TODO: // TODO: regExp.cap(3) needs manual migration to match.captured(3) needs manual migration to match.captured(3) needs manual migration to match.captured(3) needs manual migration to match.captured(3).toInt(0, 16)) << "" << "";
 
     aValue = info.join(",");
 
@@ -313,14 +313,14 @@ bool ATGSMModem::getSignalQuality(int &aQuality) {
     processCommand(AT::Commands::CSQ, answer);
 
     // Парсим уровень сигнала.
-    QRegExp regExp("(\\d+),(\\d+)");
+    QRegularExpression regExp("(\\d+),(\\d+)");
     bool result = false;
 
-    if (regExp.indexIn(answer) != -1) {
+    if (regExp.match(answer).capturedStart() != -1) {
         result = true;
 
-        aQuality = regExp.cap(1).toInt();
-        int ber = regExp.cap(2).toInt();
+        aQuality = // TODO: // TODO: // TODO: // TODO: regExp.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1).toInt();
+        int ber = // TODO: // TODO: // TODO: // TODO: regExp.cap(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2).toInt();
 
         toLog(LogLevel::Normal, QString("Signal quality (rssi, ber):(%1, %2).").arg(aQuality).arg(ber));
     }
@@ -426,14 +426,14 @@ bool ATGSMModem::getNetworkAccessability(ENetworkAccessability::Enum &aNetworkAc
     QByteArray answer;
     processCommand(AT::Commands::CREG, answer);
 
-    QRegExp regExp("\\+CREG:\\s+\\d,(\\d)");
-    regExp.setMinimal(true);
+    QRegularExpression regExp("\\+CREG:\\s+\\d,(\\d)");
+    ////////regExp.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
-    if (regExp.indexIn(answer) < 0) {
+    if (regExp.match(answer).capturedStart() < 0) {
         return false;
     }
 
-    aNetworkAccessability = static_cast<ENetworkAccessability::Enum>(regExp.cap(1).toInt());
+    aNetworkAccessability = static_cast<ENetworkAccessability::Enum>(// TODO: // TODO: // TODO: // TODO: regExp.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1).toInt());
 
     return true;
 }
@@ -471,29 +471,19 @@ bool ATGSMModem::getCUSDMessage(const QByteArray &aBuffer, QString &aMessage) {
         }
     }
 
-    QRegExp regExp(".*\\+CUSD: ?(\\d)(\\,\"(.*)\"\\,(\\d+))?.*");
+    QRegularExpression regExp(".*\\+CUSD: ?(\\d)(\\,\"(.*)\"\\,(\\d+))?.*");
 
-    if (!regExp.exactMatch(str) || (regExp.captureCount() < 4)) {
+    if (!regExp.match(str).hasMatch() || (regExp.captureCount() < 4)) {
         return false;
     }
 
-    QString msg = regExp.cap(3);
+    QString msg = // TODO: // TODO: // TODO: // TODO: regExp.cap(3) needs manual migration to match.captured(3) needs manual migration to match.captured(3) needs manual migration to match.captured(3) needs manual migration to match.captured(3);
 
-    if (regExp.cap(4).toInt() == 72) {
+    if (// TODO: // TODO: // TODO: // TODO: regExp.cap(4) needs manual migration to match.captured(4) needs manual migration to match.captured(4) needs manual migration to match.captured(4) needs manual migration to match.captured(4).toInt() == 72) {
         // Проверяем сообщение это HEX строка?
-        QRegExp regExpHex("((\\d|[A-F]|[a-f])+)");
+        QRegularExpression regExpHex("((\\d|[A-F]|[a-f])+)");
 
-        if (regExpHex.exactMatch(msg)) {
-            QByteArray hex;
-
-            // Декодируем сообщение.
-            foreach (auto aChar, msg) {
-                hex.append(aChar);
-
-                if (hex.size() == 4) {
-                    aMessage.push_back(QChar(hex.toInt(0, 16)));
-                    hex.clear();
-                }
+        regExpHex.match(msg).hasMatch()
             }
         } else {
             char bigEndianBom[] = {'\xFE', '\xFF', '\x00'};
@@ -652,16 +642,16 @@ bool ATGSMModem::takeMessages(TMessages &aMessages) {
     QList<SmsPart> parts;
 
     for (int pos = 0; pos >= 0;) {
-        QRegExp rx("\\+CMGL:\\s+(\\d+),.*[\\r\\n]+([0-9A-Fa-f]+)[\\r\\n]+");
-        rx.setMinimal(true);
+        QRegularExpression rx("\\+CMGL:\\s+(\\d+),.*[\\r\\n]+([0-9A-Fa-f]+)[\\r\\n]+");
+        ////////rx.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
-        pos = rx.indexIn(answerData, pos);
+        pos = rx.match(answerData, pos).capturedStart();
 
         if (pos >= 0) {
-            toLog(LogLevel::Debug, QString("SMS %1: %2").arg(rx.cap(1).toInt()).arg(rx.cap(2)));
+            toLog(LogLevel::Debug, QString("SMS %1: %2").arg(// TODO: // TODO: // TODO: // TODO: rx.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1).toInt()).arg(// TODO: // TODO: // TODO: // TODO: rx.cap(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2)));
 
-            messageIds << rx.cap(1).toInt();
-            parts << Sms::decode(rx.cap(2));
+            messageIds << // TODO: // TODO: // TODO: // TODO: rx.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1).toInt();
+            parts << Sms::decode(// TODO: // TODO: // TODO: // TODO: rx.cap(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2));
             ++pos;
         }
     }

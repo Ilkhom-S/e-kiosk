@@ -4,7 +4,7 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QFile>
 #include <QtCore/QMutexLocker>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QScopedPointer>
 #include <QtCore/QStringList>
 #include <Common/QtHeadersEnd.h>
@@ -98,8 +98,8 @@ bool DatabaseUtils::updateDatabase(const QString &aSqlScriptName) {
     QString resSQL = ftemp.readAll();
 
     // Удалим комментарии ("-- some comment") и ("/* many \n comment */").
-    QRegExp rx("(\\/\\*.*\\*\\/|\\-\\-.*\\n)");
-    rx.setMinimal(true);
+    QRegularExpression rx("(\\/\\*.*\\*\\/|\\-\\-.*\\n)");
+    ////////rx.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
     resSQL.replace(rx, "");
 
     // Удалим перевод строк с сохранением возможности писать ("CREATE\nTABLE")

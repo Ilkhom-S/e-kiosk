@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
 
@@ -828,13 +828,13 @@ AsyncSerialPort::TData AsyncSerialPort::getSystemData(bool aForce) {
         };
 
         data.clear();
-        QRegExp regExp("COM[0-9]+");
+        QRegularExpression regExp("COM[0-9]+");
 
         for (auto it = deviceProperties.begin(); it != deviceProperties.end(); ++it) {
             int index = -1;
 
             do {
-                index = regExp.indexIn(it.key(), ++index);
+                index = regExp.match(it.key().capturedStart(), ++index);
 
                 if (index != -1) {
                     EPortTypes::Enum portType =

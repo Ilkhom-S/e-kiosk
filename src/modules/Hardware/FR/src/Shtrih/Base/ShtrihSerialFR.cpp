@@ -131,13 +131,13 @@ void ShtrihSerialFR::parseDeviceData(const QByteArray &aData) {
         QString EKLZData =
             totalData.join(" ").replace(QRegExp("[\r\n\t]+"), " ").replace(QRegExp(" +"), " ").toUpper().simplified();
 
-        QRegExp regexp(QString::fromWCharArray(L"([A-Я ]+)([^A-Я]+)"));
+        QRegularExpression regexp(QString::fromWCharArray(L"([A-Я ]+)([^A-Я]+)"));
         typedef QPair<QString, QString> TEKLZItem;
         typedef QList<TEKLZItem> TEKLZData;
         TEKLZData totalEKLZData;
         int offset = 0;
 
-        while (regexp.indexIn(EKLZData, offset) != -1) {
+        while (regexp.match(EKLZData, offset).capturedStart() != -1) {
             QStringList itemData = regexp.capturedTexts();
             totalEKLZData << TEKLZItem(itemData[1].simplified(), itemData[2].simplified());
             offset += itemData[0].size();

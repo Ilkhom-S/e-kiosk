@@ -26,9 +26,9 @@ bool IntelHex::parseRecord(const QString &aRecord, SRecordData &aData, QString &
     }
 
     QString record = aRecord.mid(1);
-    QRegExp regExp("^[0-9a-fA-F]+$");
+    QRegularExpression regExp("^[0-9a-fA-F]+$");
 
-    if (regExp.indexIn(record) == -1) {
+    if (regExp.match(record).capturedStart() == -1) {
         aErrorDescription = "Invalid character(s)";
         return false;
     }

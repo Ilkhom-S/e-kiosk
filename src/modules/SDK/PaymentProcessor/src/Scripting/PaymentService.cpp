@@ -85,14 +85,14 @@ namespace SDK {
                 limits << mProvider.limits.min << mProvider.limits.max << mProvider.limits.externalMin
                        << mProvider.limits.externalMax;
 
-                QRegExp rx("\\{(.+)\\}");
+                QRegularExpression rx("\\{(.+)\\}");
 
                 QStringList limits2;
                 foreach (QString l, limits) {
                     int pos = 0;
 
-                    while ((pos = rx.indexIn(l, pos)) != -1) {
-                        limits2 << rx.cap(1);
+                    while ((pos = rx.match(l, pos).capturedStart()) != -1) {
+                        limits2 << // TODO: // TODO: // TODO: // TODO: rx.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1);
                         pos += rx.matchedLength();
                     }
                 }
@@ -530,13 +530,13 @@ namespace SDK {
                 auto fields = provider.processor.requests.value(aRequestName).requestFields;
                 foreach (auto field, fields) {
                     if (field.name == aParamName) {
-                        QRegExp macroPattern("\\{(.+)\\}");
-                        macroPattern.setMinimal(true);
+                        QRegularExpression macroPattern("\\{(.+)\\}");
+                        ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
                         QString result = field.value;
 
-                        if (macroPattern.indexIn(result) != -1) {
-                            result.replace(macroPattern.cap(0), macroPattern.cap(1));
+                        if (macroPattern.match(result).capturedStart() != -1) {
+                            result.replace(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), // TODO: // TODO: // TODO: // TODO: macroPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1));
                         }
 
                         return result;

@@ -288,15 +288,15 @@ bool PaymentBase::getLimits(double &aMinAmount, double &aMaxAmount) {
     QString minLimit = limits.min;
     QString maxLimit = limits.max;
 
-    QRegExp macroPattern("\\{(.+)\\}");
-    macroPattern.setMinimal(true);
+    QRegularExpression macroPattern("\\{(.+)\\}");
+    ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
-    while (macroPattern.indexIn(minLimit) != -1) {
-        minLimit.replace(macroPattern.cap(0), getParameter(macroPattern.cap(1)).value.toString());
+    while (macroPattern.match(minLimit).capturedStart() != -1) {
+        minLimit.replace(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), getParameter(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1)).value.toString());
     }
 
-    while (macroPattern.indexIn(maxLimit) != -1) {
-        maxLimit.replace(macroPattern.cap(0), getParameter(macroPattern.cap(1)).value.toString());
+    while (macroPattern.match(maxLimit).capturedStart() != -1) {
+        maxLimit.replace(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), getParameter(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1)).value.toString());
     }
 
     QJSEngine myEngine;

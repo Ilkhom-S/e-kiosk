@@ -473,9 +473,9 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
                             break;
                         }
 
-                        QRegExp regExp("^[0-9]+$");
+                        QRegularExpression regExp("^[0-9]+$");
 
-                        if (regExp.indexIn(part) == -1) {
+                        if (regExp.match(part).capturedStart() == -1) {
                             toLog(
                                 LogLevel::Error,
                                 mDeviceName +
@@ -488,9 +488,9 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
                         break;
                     }
                     case CAFPFR::EAnswerTypes::Double: {
-                        QRegExp regExp("^[0-9\\.]+$");
+                        QRegularExpression regExp("^[0-9\\.]+$");
 
-                        if (!part.isEmpty() && (regExp.indexIn(part) == -1)) {
+                        if (!part.isEmpty() && (regExp.match(part).capturedStart() == -1)) {
                             toLog(LogLevel::Error,
                                   mDeviceName + QString(": Failed to parse double of answer part [%1] = %2")
                                                     .arg(i)

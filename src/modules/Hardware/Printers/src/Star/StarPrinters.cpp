@@ -215,12 +215,12 @@ bool StarPrinter::isConnected() {
 
     QByteArray answer;
     QString regExpData = QString("([A-Z0-9]+)[V|$]e?r?(%1*\\.?%1+)?").arg("[0-9]");
-    QRegExp regExp(regExpData);
+    QRegularExpression regExp(regExpData);
 
     bool loading = !isAutoDetecting();
 
     if (!mIOPort->write(CSTAR::Commands::GetModelData) || !readIdentificationAnswer(answer) ||
-        (regExp.indexIn(answer) == -1)) {
+        (regExp.match(answer).capturedStart() == -1)) {
         QString modelName = getConfigParameter(CHardwareSDK::ModelName).toString();
         bool result = loading && models.contains(modelName);
 

@@ -333,7 +333,7 @@ void CCNetCashAcceptorBase::processDeviceData(QByteArray &aAnswer) {
         assetNumberBuffer = aAnswer.mid(aAnswer.indexOf(serialNumber) + serialNumber.size());
     } else if (mDeviceName.startsWith(CCCNet::Cashcode)) {
         QString firmware = answerData.last();
-        int index = firmware.indexOf(QRegExp("\\d+"));
+        int index = firmware.indexOf(QRegularExpression("\\d+"));
         mFirmware = firmware.mid(index, 4).replace(QRegExp("\\D"), "0").toInt();
     }
 

@@ -7,7 +7,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // Project
@@ -75,7 +75,7 @@ namespace CCCTalk {
         }
 
         QString vendor = VendorData.getName(vendorID);
-        QString modelId = QString(aModelID).remove(QRegExp("[ \\-]+")).toLatin1();
+        QString modelId = QString(aModelID).remove(QRegularExpression("[ \\-]+"), "").toLatin1();
         // TModelData modelData = ModelData[vendorID];
 
         for (TModelDataIt it = data().begin(); it != data().end(); ++it) {

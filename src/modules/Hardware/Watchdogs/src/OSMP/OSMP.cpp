@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // Project
@@ -43,9 +43,9 @@ bool OSMP::isConnected() {
     }
 
     answer = ProtocolUtils::clean(answer);
-    QRegExp regExp("WDT.*v([0-9\\.]+)");
+    QRegularExpression regExp("WDT.*v([0-9\\.]+)");
 
-    if ((regExp.indexIn(answer) == -1) || (regExp.capturedTexts()[1] != mData[EOSMPCommandId::IdentificationData])) {
+    if ((regExp.match(answer).capturedStart() == -1) || (regExp.capturedTexts()[1] != mData[EOSMPCommandId::IdentificationData])) {
         return false;
     }
 

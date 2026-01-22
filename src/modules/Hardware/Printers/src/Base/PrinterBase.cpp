@@ -171,8 +171,8 @@ void PrinterBase<T>::makeLexemeReceipt(const QStringList &aReceipt, Tags::TLexem
 //--------------------------------------------------------------------------------
 template <class T> QStringList PrinterBase<T>::simplifyReceipt(const QStringList &aReceipt) {
     QStringList result(aReceipt);
-    QRegExp regExpEmptyLine("^[ \\n\\r\\t]+$");
-    QRegExp regExpFreeSpace("[ \\n\\r\\t]+$");
+    QRegularExpression regExpEmptyLine("^[ \\n\\r\\t]+$");
+    QRegularExpression regExpFreeSpace("[ \\n\\r\\t]+$");
 
     for (int i = 0; i < result.size(); ++i) {
         QStringList lines = result[i].split(Tags::BR).replaceInStrings(regExpEmptyLine, "");

@@ -12,7 +12,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QScopedPointer>
 #include <QtCore/QSettings>
 #include <QtCore/QUrlQuery>
@@ -81,11 +81,12 @@ Updater::Updater(const QString &aConfigURL, const QString &aUpdateURL, const QSt
 //---------------------------------------------------------------------------
 void Updater::setProxy(const QString &aProxy) {
     if (!aProxy.isEmpty()) {
-        QRegExp pattern("(.+):(.*):(.*):(.*):(.+)");
+        QRegularExpression pattern("(.+):(.*):(.*):(.*):(.+)");
+        auto match = pattern.match(aProxy);
 
-        if (pattern.exactMatch(aProxy)) {
-            QNetworkProxy proxy(static_cast<QNetworkProxy::ProxyType>(pattern.cap(5).toInt()), pattern.cap(1),
-                                pattern.cap(2).toUShort(), pattern.cap(3), pattern.cap(4));
+        if (match.hasMatch()) {
+            QNetworkProxy proxy(static_cast<QNetworkProxy::ProxyType>(match.captured(5).toInt()), match.captured(1),
+                                match.captured(2).toUShort(), match.captured(3), match.captured(4));
 
             mNetworkTaskManager.setProxy(proxy);
         } else {
@@ -202,12 +203,13 @@ void Updater::saveUpdateConfiguration() {
 //---------------------------------------------------------------------------
 QStringList Updater::getSavedConfigurations() {
     QDir dir(mWorkingDir + CUpdater::UpdaterConfigurationDir);
-    QRegExp rx(QString(CUpdater::UpdaterConfiguration).arg("(.*)\\.xml"));
+    QRegularExpression rx(QString(CUpdater::UpdaterConfiguration).arg("(.*)\\.xml"));
     QStringList revisions;
 
     foreach (auto cfg, dir.entryList(QStringList(QString(CUpdater::UpdaterConfiguration).arg("*.xml")))) {
-        if (rx.exactMatch(cfg)) {
-            revisions << rx.cap(1);
+        auto match = rx.match(cfg);
+        if (match.hasMatch()) {
+            revisions << match.captured(1);
         }
     }
 
@@ -238,7 +240,7 @@ TFileList Updater::getWorkingDirStructure() const throw(Exception) {
 //---------------------------------------------------------------------------
 void Updater::addExceptionDirs(const QStringList &aDirs) {
     foreach (auto dir, aDirs) {
-        mExceptionDirs.push_back(QString("/") + QString(dir).remove(QRegExp("^/+|/+$")));
+        mExceptionDirs.push_back(QString("/") + QString(dir).remove(QRegularExpression("^/+|/+$"), ""));
     }
 }
 
@@ -263,12 +265,12 @@ TFileList Updater::getWorkingDirStructure(const QString &aDir) const throw(Excep
 
 #if QT_VERSION >= 0x050000
                 list.insert(File(
-                    filePath.remove(QRegExp("^/+")),
+                    filePath.remove(QRegularExpression("^/+"), ""),
                     QString::fromLatin1(QCryptographicHash::hash(file.readAll(), QCryptographicHash::Sha256).toHex()),
                     "", fileInfo.size()));
 #else
                 list.insert(File(
-                    filePath.remove(QRegExp("^/+")),
+                    filePath.remove(QRegularExpression("^/+"), ""),
                     QString::fromLatin1(CCryptographicHash::hash(file.readAll(), CCryptographicHash::Sha256).toHex()),
                     "", fileInfo.size()));
 #endif
@@ -1091,7 +1093,7 @@ CUpdaterErrors::Enum Updater::loadComponents(const QByteArray &aContent, Updater
     // Все компоненты из файла
     Updater::TComponentList allComponents;
 
-    QRegExp leadingSlash("^[\\\\/]");
+    QRegularExpression leadingSlash("^[\\\\/]");
 
     // Получаем список компонент.
     for (QDomNode node = application.firstChild(); !node.isNull(); node = node.nextSibling()) {
@@ -1114,13 +1116,14 @@ CUpdaterErrors::Enum Updater::loadComponents(const QByteArray &aContent, Updater
                 auto record = node.toElement();
 
                 if (record.tagName() == "file") {
-                    files.insert(File(record.attribute("path").remove(leadingSlash), record.attribute("hash_sha256"),
-                                      record.attribute("url"), record.attribute("size").toInt()));
+                    files.insert(File(record.attribute("path").remove(leadingSlash, ""),
+                                      record.attribute("hash_sha256"), record.attribute("url"),
+                                      record.attribute("size").toInt()));
                     continue;
                 }
 
                 if (record.tagName() == "post-action") {
-                    auto name = record.attribute("path").remove(leadingSlash);
+                    auto name = record.attribute("path").remove(leadingSlash, "");
                     // auto url = record.attribute("url");
 
                     actions.append(name);

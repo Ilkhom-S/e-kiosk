@@ -83,8 +83,8 @@ namespace Ucs {
                     continue;
                 }
 
-                QRegExp rx("\"(.*)\"");
-                return rx.indexIn(line) != -1 ? rx.capturedTexts().last().rightJustified(10, '0').right(10)
+                QRegularExpression rx("\"(.*)\"");
+                return rx.match(line).capturedStart() != -1 ? rx.capturedTexts().last().rightJustified(10, '0').right(10)
                                               : QString().fill('0', 10);
             }
         }

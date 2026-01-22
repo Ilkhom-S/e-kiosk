@@ -3,7 +3,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QFile>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QTextStream>
 #include <Common/QtHeadersEnd.h>
 
@@ -136,12 +136,12 @@ ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromStrings(QStringList a
     ProtocolUtils::TBufferList result;
 
     aDataList.removeAll("");
-    QRegExp regex(CProtocolUtils::LogRexExp);
+    QRegularExpression regex(CProtocolUtils::LogRexExp);
 
     for (int i = 0; i < aDataList.size(); ++i) {
         QString rawLine = aDataList[i];
 
-        if (regex.indexIn(aDataList[i]) && (regex.capturedTexts()[1].size() > 4)) {
+        if (regex.match(aDataList[i]).capturedStart() && (regex.capturedTexts()[1].size() > 4)) {
             QString lineData = regex.capturedTexts()[1];
             result << ProtocolUtils::getBufferFromString(lineData);
         }

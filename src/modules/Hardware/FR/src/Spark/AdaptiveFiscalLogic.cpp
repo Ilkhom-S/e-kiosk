@@ -6,7 +6,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QByteArray>
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
@@ -28,18 +28,18 @@ AdaptiveFiscalLogic::AdaptiveFiscalLogic(const QVariantMap &aConfiguration) : mC
 
 //--------------------------------------------------------------------------------
 void AdaptiveFiscalLogic::removeDelimeter(QStringList &aBuffer, ETextPosition::Enum aPosition) {
-    QRegExp regExp("^[ \t_-]*$");
+    QRegularExpression regExp("^[ \t_-]*$");
 
     if (((aPosition == ETextPosition::Bound) || (aPosition == ETextPosition::Up)) &&
-        (regExp.indexIn(aBuffer.first()) != -1))
+        (regExp.match(aBuffer.first().capturedStart()) != -1))
         aBuffer.removeFirst();
     if (((aPosition == ETextPosition::Bound) || (aPosition == ETextPosition::Down)) &&
-        (regExp.indexIn(aBuffer.last()) != -1))
+        (regExp.match(aBuffer.last().capturedStart()) != -1))
         aBuffer.removeLast();
 
     if (aPosition == ETextPosition::AllOver) {
         for (int i = 0; i < aBuffer.size(); ++i) {
-            if (regExp.indexIn(aBuffer[i]) != -1) {
+            if (regExp.match(aBuffer[i]).capturedStart() != -1) {
                 aBuffer.removeAt(i--);
             }
         }

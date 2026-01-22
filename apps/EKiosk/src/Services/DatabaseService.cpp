@@ -87,7 +87,7 @@ bool DatabaseService::initialize() {
             // Проверка на ошибку полностью испорченного формата базы
             integrityFailed =
                 !mDatabase->checkIntegrity(errorsList) ||
-                errorsList.filter(QRegExp("*malformed*", Qt::CaseInsensitive, QRegExp::Wildcard)).size() ||
+                errorsList.filter(QRegularExpression("*malformed*", Qt::CaseInsensitive, QRegExp::Wildcard)).size() ||
                 !mDbUtils->initialize();
 
             if (integrityFailed) {

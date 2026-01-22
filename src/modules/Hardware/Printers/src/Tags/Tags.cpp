@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // Project
@@ -62,13 +62,13 @@ void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagL
     aTagLexemes.clear();
     QString source = aSource + Tags::None;
 
-    QRegExp regExp(Tags::regExpData);
-    regExp.setMinimal(true);
+    QRegularExpression regExp(Tags::regExpData);
+    ////////regExp.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
     int begin = 0;
 
     while (begin != -1) {
-        begin = regExp.indexIn(source, begin);
+        begin = regExp.match(source, begin).capturedStart();
         Tags::TTypes tags;
         QString lexeme;
 

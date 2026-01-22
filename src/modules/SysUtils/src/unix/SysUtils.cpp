@@ -1,15 +1,51 @@
 
-// Includes (move to top, Qt wrapped)
+
+#if defined(__APPLE__)
+#include <AvailabilityMacros.h>
+#include <TargetConditionals.h>
+#include <mach/mach.h>
+#include <mach/task.h>
+#include <mach/task_info.h>
+#include <mach/mach_init.h>
+#include <mach/mach_port.h>
+#include <mach/message.h>
+#include <mach/vm_map.h>
+#include <mach/error.h>
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#include <unistd.h> // getpid, sysconf
+#include <string.h> // strerror
+// Fallback definitions if not present
+#ifndef TASK_BASIC_INFO
+#define TASK_BASIC_INFO 20
+#endif
+#ifndef TASK_BASIC_INFO_COUNT
+#define TASK_BASIC_INFO_COUNT (sizeof(struct task_basic_info) / sizeof(natural_t))
+#endif
+#ifndef KERN_SUCCESS
+#define KERN_SUCCESS 0
+#endif
+#ifndef KERN_FAILURE
+#define KERN_FAILURE 5
+#endif
+#ifndef CTL_HW
+#define CTL_HW 6
+#endif
+#ifndef HW_MEMSIZE
+#define HW_MEMSIZE 24
+#endif
+#endif
+
+#if defined(__linux__)
+#include <unistd.h> // getpid, sysconf
+#include <string.h> // strerror
+#include <sys/types.h>
+#include <sys/sysinfo.h>
+#endif
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QByteArray>
-#include <QDebug>
-#include <QFile>
-#include <QFileInfo>
-#include <QString>
-#include <QSysInfo>
-#include <QTextStream>
+#include <QtCore/QThread>
 #include <QtCore/QByteArray>
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
@@ -21,6 +57,12 @@
 #include <QtCore/QTextStream>
 #include <Common/QtHeadersEnd.h>
 
+#if defined(__linux__)
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/sysinfo.h>
+#endif
+
 // System
 #include <SysUtils/ISysUtils.h>
 #include <SysUtils/ISysUtils.h>
@@ -30,10 +72,7 @@
 QString ISysUtils::getOSVersionInfo() {
     struct utsname uts;
     if (uname(&uts) == 0) {
-        return QString("%1 %2 (%3)")
-            .arg(uts.sysname)
-            .arg(uts.release)
-            .arg(uts.machine);
+        return QString("%1 %2 (%3)").arg(uts.sysname).arg(uts.release).arg(uts.machine);
     } else {
         return QSysInfo::prettyProductName();
     }
@@ -60,14 +99,10 @@ QString ISysUtils::rmBOM(const QString &aFile) {
     return aFile;
 }
 
-
 //---------------------------------------------------------------------------
 // Перезагрузка системы (Linux: reboot syscall, macOS: shutdown command)
 int ISysUtils::systemReboot() {
 #if defined(__linux__)
-    // Try to use the reboot syscall (requires root)
-    #include <unistd.h>
-    #include <sys/reboot.h>
     sync();
     int ret = reboot(RB_AUTOBOOT);
     return ret;
@@ -76,20 +111,20 @@ int ISysUtils::systemReboot() {
     int ret = system("sudo shutdown -r now");
     return ret;
 #else
+#include <mach/vm_map.h>
     // Fallback for other Unix
     int ret = system("sudo shutdown -r now");
     return ret;
 #endif
 }
 
-
 //---------------------------------------------------------------------------
 // Выключение системы (Linux: reboot syscall with poweroff, macOS: shutdown command)
 int ISysUtils::systemShutdown() {
 #if defined(__linux__)
-    // Try to use the reboot syscall with RB_POWER_OFF (requires root)
-    #include <unistd.h>
-    #include <sys/reboot.h>
+// Try to use the reboot syscall with RB_POWER_OFF (requires root)
+#include <unistd.h>
+#include <sys/reboot.h>
     sync();
     int ret = reboot(RB_POWER_OFF);
     return ret;
@@ -118,7 +153,9 @@ void ISysUtils::disableScreenSaver() {
     int ret1 = system("xset s off");
     int ret2 = system("xset -dpms");
     int ret3 = system("xset s noblank");
-    Q_UNUSED(ret1); Q_UNUSED(ret2); Q_UNUSED(ret3);
+    Q_UNUSED(ret1);
+    Q_UNUSED(ret2);
+    Q_UNUSED(ret3);
 #else
     qWarning() << "disableScreenSaver() not implemented for this Unix platform";
 #endif
@@ -144,7 +181,9 @@ void ISysUtils::displayOn(bool aOn) {
         int ret2 = system("xset s reset");
         // Try to move mouse with xdotool if available
         int ret3 = system("xdotool mousemove_relative 1 0; xdotool mousemove_relative -- -1 0");
-        Q_UNUSED(ret1); Q_UNUSED(ret2); Q_UNUSED(ret3);
+        Q_UNUSED(ret1);
+        Q_UNUSED(ret2);
+        Q_UNUSED(ret3);
     } else {
         // Turn display off
         int ret = system("xset dpms force off");
@@ -179,12 +218,12 @@ void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false) {
     // Format: date MMDDhhmmYYYY.SS
     QDateTime dt = aDateTime.toLocalTime();
     QString cmd = QString("sudo date %1%2%3%4%5.%6")
-        .arg(dt.date().month(), 2, 10, QChar('0'))
-        .arg(dt.date().day(), 2, 10, QChar('0'))
-        .arg(dt.time().hour(), 2, 10, QChar('0'))
-        .arg(dt.time().minute(), 2, 10, QChar('0'))
-        .arg(dt.date().year())
-        .arg(dt.time().second(), 2, 10, QChar('0'));
+                      .arg(dt.date().month(), 2, 10, QChar('0'))
+                      .arg(dt.date().day(), 2, 10, QChar('0'))
+                      .arg(dt.time().hour(), 2, 10, QChar('0'))
+                      .arg(dt.time().minute(), 2, 10, QChar('0'))
+                      .arg(dt.date().year())
+                      .arg(dt.time().second(), 2, 10, QChar('0'));
     int ret = system(cmd.toUtf8().constData());
     if (ret != 0) {
         throw std::runtime_error("Failed to set system time (date command, Linux)");
@@ -192,13 +231,14 @@ void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false) {
 #elif defined(__APPLE__)
     // macOS: systemsetup -setusingnetworktime off; systemsetup -setdate; systemsetup -settime
     QDateTime dt = aDateTime.toLocalTime();
-    QString dateCmd = QString("sudo systemsetup -setusingnetworktime off && sudo systemsetup -setdate %1/%2/%3 && sudo systemsetup -settime %4:%5:%6")
-        .arg(dt.date().month(), 2, 10, QChar('0'))
-        .arg(dt.date().day(), 2, 10, QChar('0'))
-        .arg(dt.date().year())
-        .arg(dt.time().hour(), 2, 10, QChar('0'))
-        .arg(dt.time().minute(), 2, 10, QChar('0'))
-        .arg(dt.time().second(), 2, 10, QChar('0'));
+    QString dateCmd = QString("sudo systemsetup -setusingnetworktime off && sudo systemsetup -setdate %1/%2/%3 && sudo "
+                              "systemsetup -settime %4:%5:%6")
+                          .arg(dt.date().month(), 2, 10, QChar('0'))
+                          .arg(dt.date().day(), 2, 10, QChar('0'))
+                          .arg(dt.date().year())
+                          .arg(dt.time().hour(), 2, 10, QChar('0'))
+                          .arg(dt.time().minute(), 2, 10, QChar('0'))
+                          .arg(dt.time().second(), 2, 10, QChar('0'));
     int ret = system(dateCmd.toUtf8().constData());
     if (ret != 0) {
         throw std::runtime_error("Failed to set system time (systemsetup, macOS)");
@@ -253,7 +293,7 @@ bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *a
         QList<QByteArray> parts = line.split(' ');
         if (parts.size() >= 2) {
             long pageSize = sysconf(_SC_PAGESIZE);
-            aMemoryInfo.total = 0; // Not available from statm
+            aMemoryInfo.total = 0;     // Not available from statm
             aMemoryInfo.totalUsed = 0; // Not available from statm
             aMemoryInfo.processUsed = parts[1].toLongLong() * pageSize;
             return true;

@@ -693,7 +693,7 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
         case ModemProtocolCommands::GetSimNumber: {
             QString responseString(aAnswer);
 
-            m_getBalanceRegExp.indexIn(responseString);
+            m_getBalanceRegExp.match(responseString).capturedStart();
             nowSimNumber = m_getBalanceRegExp.cap();
 
             int indexFirstQuote = responseString.indexOf("+CUSD: 0,\"");
@@ -710,7 +710,7 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
             if (nowSimNumber.trimmed() == "") {
                 responseString = decodeGSM7bit(parsedResponse);
 
-                m_getBalanceRegExp.indexIn(responseString);
+                m_getBalanceRegExp.match(responseString).capturedStart();
                 nowSimNumber = m_getBalanceRegExp.cap();
             }
 
@@ -718,7 +718,7 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
             if (nowSimNumber.trimmed() == "") {
                 responseString = decodeUcs2(parsedResponse);
 
-                m_getBalanceRegExp.indexIn(responseString);
+                m_getBalanceRegExp.match(responseString).capturedStart();
                 nowSimNumber = m_getBalanceRegExp.cap();
             }
         } break;
@@ -728,7 +728,7 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
 
             QString responseString(aAnswer);
 
-            m_getBalanceRegExp.indexIn(responseString, this->position);
+            m_getBalanceRegExp.match(responseString, this->position).capturedStart();
             nowSimBalance = m_getBalanceRegExp.cap(this->position);
 
             int indexFirstQuote = responseString.indexOf("+CUSD: 0,\"");
@@ -745,7 +745,7 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
             if (nowSimBalance.trimmed() == "") {
                 responseString = decodeGSM7bit(parsedResponse);
 
-                m_getBalanceRegExp.indexIn(responseString, this->position);
+                m_getBalanceRegExp.match(responseString, this->position).capturedStart();
                 nowSimBalance = m_getBalanceRegExp.cap(this->position);
             }
 
@@ -754,7 +754,7 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
                 responseString = decodeUcs2(parsedResponse);
                 //                        responseString = "Tavozun: -6.10 TJS. 0.75
                 //                        TJS/ruz";
-                m_getBalanceRegExp.indexIn(responseString, this->position);
+                m_getBalanceRegExp.match(responseString, this->position).capturedStart();
                 nowSimBalance = m_getBalanceRegExp.cap(this->position);
             }
         } break;

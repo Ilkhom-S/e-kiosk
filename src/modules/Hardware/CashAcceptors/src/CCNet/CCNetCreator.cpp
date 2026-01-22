@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
 
@@ -41,9 +41,9 @@ QString CCNetCreator::parseDeviceData(const QByteArray &aData, const QString &aP
         data.replace(ch, ASCII::STX);
     }
 
-    QRegExp regExp(aPattern);
+    QRegularExpression regExp(aPattern);
 
-    if (regExp.indexIn(data.simplified().toLower()) != -1) {
+    if (regExp.match(data.simplified().capturedStart().toLower()) != -1) {
         QStringList result = regExp.capturedTexts();
 
         if (result.size() > 1) {

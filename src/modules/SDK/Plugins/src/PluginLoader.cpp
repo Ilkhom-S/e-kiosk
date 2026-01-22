@@ -37,7 +37,7 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        QStringList PluginLoader::getPluginList(const QRegExp &aFilter) const {
+        QStringList PluginLoader::getPluginList(const QRegularExpression &aFilter) const {
             QMutexLocker lock(&mAccessMutex);
 
             getPluginPathList(aFilter);
@@ -46,7 +46,7 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        QStringList PluginLoader::getPluginPathList(const QRegExp &aFilter) const {
+        QStringList PluginLoader::getPluginPathList(const QRegularExpression &aFilter) const {
             QMutexLocker lock(&mAccessMutex);
 
             QStringList result;

@@ -950,18 +950,18 @@ bool FFEngine::checkINN(const QString &aINN, int aType) const {
 
 //--------------------------------------------------------------------------------
 QString FFEngine::filterPhone(const QString &aData) const {
-    if (!aData.contains(QRegExp("[0-9]+"))) {
+    if (!aData.contains(QRegularExpression("[0-9]+"))) {
         return "";
     }
 
-    QString result = revert(aData).remove(QRegExp("\\n\\r\\t")).remove(QRegExp("^[^0-9]+"));
-    int index = 1 + result.lastIndexOf(QRegExp("[0-9]+"));
+    QString result = revert(aData).remove(QRegularExpression("\\n\\r\\t"), "").remove(QRegularExpression("^[^0-9]+"), "");
+    int index = 1 + result.lastIndexOf(QRegularExpression("[0-9]+"));
     int last = 1 + result.indexOf(QRegExp("[\\+\\(]"), index);
     result = revert(result.left(last ? last : index));
 
     if (result.startsWith("(")) {
         result.prepend("+7");
-    } else if (!result.indexOf(QRegExp("8[^0-9]"))) {
+    } else if (!result.indexOf(QRegularExpression("8[^0-9]"))) {
         result.replace(0, 1, "+7");
     }
 
@@ -975,7 +975,7 @@ QString FFEngine::filterPhone(const QString &aData) const {
             int index3 = data.lastIndexOf(ASCII::Space);
 
             if (index3 < index) {
-                index3 = data.lastIndexOf(QRegExp("[0-9]"));
+                index3 = data.lastIndexOf(QRegularExpression("[0-9]"));
             }
 
             if ((index3 < index2) && (index3 > index)) {
@@ -984,8 +984,8 @@ QString FFEngine::filterPhone(const QString &aData) const {
         }
     }
 
-    index = result.indexOf(QRegExp(QString::fromUtf8("[a-zA-Zа-яА-Я\\.\\,\\;\\+]+")), 1);
-    result = result.left(index).remove(QRegExp("[^0-9\\+]+"));
+    index = result.indexOf(QRegularExpression(QString::fromUtf8("[a-zA-Zа-яА-Я\\.\\,\\;\\+]+")), 1);
+    result = result.left(index).remove(QRegularExpression("[^0-9\\+]+"), "");
 
     if (result.size() == 10) {
         result.prepend("+7");

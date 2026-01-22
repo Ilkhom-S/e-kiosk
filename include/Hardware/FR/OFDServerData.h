@@ -5,7 +5,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QStringList>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // Modules
@@ -16,10 +16,10 @@
 
 //--------------------------------------------------------------------------------
 namespace CHardware {
-    const QRegExp regExps[] = {
-        QRegExp("^[0-9a-z\\-\\_\\.]+\\.(ru|com|net)$"),
-        QRegExp("^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$"),
-        QRegExp("^[0-9]{4,5}$"),
+    const QRegularExpression regExps[] = {
+        QRegularExpression("^[0-9a-z\\-\\_\\.]+\\.(ru|com|net)$"),
+        QRegularExpression("^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$"),
+        QRegularExpression("^[0-9]{4,5}$"),
     };
 
     template <int aIndex> struct SData {
@@ -30,7 +30,7 @@ namespace CHardware {
         }
         SData(const QString &aValue) {
             value = aValue.toLower();
-            valid = regExps[aIndex].indexIn(value) != -1;
+            valid = regExps[aIndex].match(value).capturedStart() != -1;
 
             if (valid && aIndex) {
                 QStringList data = value.split(ASCII::Dot);

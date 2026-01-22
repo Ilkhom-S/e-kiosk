@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QSettings>
 #include <Common/QtHeadersEnd.h>
 
@@ -16,13 +16,13 @@ QStringList SystemDeviceUtils::enumerateCOMPorts() {
     int bufferSize = QueryDosDevice(NULL, &buffer[0], USHRT_MAX);
 
     QStringList data =
-        QString::fromWCharArray(buffer, bufferSize).split(QChar(ASCII::NUL)).filter(QRegExp("COM[0-9]+"));
-    QRegExp regExp("[^0-9a-zA-Z](COM[0-9]+)[^a-zA-Z]");
+        QString::fromWCharArray(buffer, bufferSize).split(QChar(ASCII::NUL)).filter(QRegularExpression("COM[0-9]+"));
+    QRegularExpression regExp("[^0-9a-zA-Z](COM[0-9]+)[^a-zA-Z]");
     QStringList result;
 
     foreach (auto port, data) {
-        if (regExp.indexIn(" " + port + " ") != -1) {
-            result << regExp.cap(0).simplified();
+        if (regExp.match(" " + port + " ").capturedStart() != -1) {
+            result << // TODO: // TODO: // TODO: // TODO: regExp.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).simplified();
         }
     }
 
@@ -76,10 +76,10 @@ QString SystemDeviceUtils::getRelevantPortName(const QString &aPortName, const Q
         return QString("%2%1%2").arg(getScreenedData(aData.simplified().toLower())).arg("[^a-z0-9]+");
     };
     QString pathPropertyData = getPropertyData(aPortName);
-    QRegExp pathPropertyRegex = QRegExp(getRegexData(aPortName));
+    QRegularExpression pathPropertyRegex = QRegularExpression(getRegexData(aPortName));
 
     auto it = std::find_if(aPortNames.begin(), aPortNames.end(), [&](const QString &portName) -> bool {
-        return !portName.isEmpty() && (pathPropertyData.contains(QRegExp(getRegexData(portName))) ||
+        return !portName.isEmpty() && (pathPropertyData.contains(QRegularExpression(getRegexData(portName))) ||
                                        getPropertyData(portName).contains(pathPropertyRegex));
     });
 
@@ -242,10 +242,10 @@ bool SystemDeviceUtils::enumerateSystemDevices(const QUuid &aUuid, TWinDevicePro
             QString path = QString::fromWCharArray(detailedData->DevicePath);
             aDeviceProperties[pathProperty].path = path;
 
-            QRegExp regexp("vid_([0-9a-fA-F]+)");
+            QRegularExpression regexp("vid_([0-9a-fA-F]+)");
             bool parseOK;
 
-            if (regexp.indexIn(path) != -1) {
+            if (regexp.match(path).capturedStart() != -1) {
                 QString data = regexp.capturedTexts()[1];
                 qint32 value = data.toInt(&parseOK, 16);
 
@@ -256,7 +256,7 @@ bool SystemDeviceUtils::enumerateSystemDevices(const QUuid &aUuid, TWinDevicePro
 
             regexp = QRegExp("pid_([0-9a-fA-F]+)");
 
-            if (regexp.indexIn(path) != -1) {
+            if (regexp.match(path).capturedStart() != -1) {
                 QString data = regexp.capturedTexts()[1];
                 qint32 value = data.toInt(&parseOK, 16);
 

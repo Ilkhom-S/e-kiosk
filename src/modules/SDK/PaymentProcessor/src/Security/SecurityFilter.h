@@ -4,7 +4,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
@@ -29,7 +29,7 @@ namespace SDK {
 
           private:
             /// Получить актуальный regexp для маскирования
-            QRegExp getMask(const QString &aParameterName) const;
+            QRegularExpression getMask(const QString &aParameterName) const;
 
           private:
             const SProvider &mProvider;

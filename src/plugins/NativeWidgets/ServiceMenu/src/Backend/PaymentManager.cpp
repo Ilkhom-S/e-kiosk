@@ -345,7 +345,7 @@ bool PaymentManager::printEncashment(int aIndex /*= -1*/) {
     result = (mPrinterService->printReport(PPSDK::CReceiptType::Encashment, fields) != 0);
 
     // Если есть устройство диспенсер
-    if (!mCore->getDeviceService()->getConfigurations().filter(QRegExp(DSDK::CComponents::Dispenser)).isEmpty()) {
+    if (!mCore->getDeviceService()->getConfigurations().filter(QRegularExpression(DSDK::CComponents::Dispenser)).isEmpty()) {
         mPrinterService->printReceipt(PPSDK::CReceiptType::DispenserEncashment, fields,
                                       PPSDK::CReceiptType::DispenserEncashment, DSDK::EPrintingModes::None, true);
     }
@@ -365,7 +365,7 @@ bool PaymentManager::printBalance() const {
     bool result = (mPrinterService->printReport(PPSDK::CReceiptType::Balance, fields) != 0);
 
     // Если есть устройство диспенсер
-    if (!mCore->getDeviceService()->getConfigurations().filter(QRegExp(DSDK::CComponents::Dispenser)).isEmpty()) {
+    if (!mCore->getDeviceService()->getConfigurations().filter(QRegularExpression(DSDK::CComponents::Dispenser)).isEmpty()) {
         mPrinterService->printReceipt(PPSDK::CReceiptType::DispenserBalance, fields,
                                       PPSDK::CReceiptType::DispenserBalance, DSDK::EPrintingModes::None, true);
     }

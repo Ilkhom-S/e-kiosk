@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // Modules
@@ -149,11 +149,11 @@ DSDK::SPaymentData PrintFiscalCommand::getPaymentData(const QVariantMap &aParame
 	//       Отключено по жалобе дилеров 1 sms = 2руб в счете от ОФД
 	//       #60325 
 	QVariantMap upperKeyParameters = toUpperCaseKeys(aParameters);
-	QRegExp phoneRegexp("^9\\d{9}$");
+	QRegularExpression phoneRegexp("^9\\d{9}$");
 
 	foreach (auto fieldName, QStringList() << "100" << "PHONE" << "CONTACT" << "101" << "102" << "103" << "104")
 	{
-		if (upperKeyParameters.contains(fieldName) && phoneRegexp.exactMatch(upperKeyParameters.value(fieldName).toString()))
+		if (upperKeyParameters.contains(fieldName) && phoneRegexp.match(upperKeyParameters.value(fieldName).hasMatch().toString()))
 		{
 			result.fiscalParameters[CHardwareSDK::FR::UserPhone] = "7" + upperKeyParameters.value(fieldName).toString();
 			break;

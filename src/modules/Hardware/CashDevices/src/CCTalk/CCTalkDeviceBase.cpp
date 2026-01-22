@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // Project
@@ -210,9 +210,9 @@ template <class T> void CCTalkDeviceBase<T>::processDeviceData() {
 //--------------------------------------------------------------------------------
 template <class T> double CCTalkDeviceBase<T>::parseFWVersion(const QByteArray &aAnswer) {
     double result = 0;
-    QRegExp regex("\\d+\\.\\d+");
+    QRegularExpression regex("\\d+\\.\\d+");
 
-    if (regex.indexIn(aAnswer) != -1) {
+    if (regex.match(aAnswer).capturedStart() != -1) {
         result = regex.capturedTexts()[0].toDouble();
     }
 

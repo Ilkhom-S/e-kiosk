@@ -314,12 +314,12 @@ bool PrimOnlineFRBase::getFiscalFields(quint32 aFDNumber, TFiscalPaymentData &aF
         return false;
     }
 
-    QRegExp regExp(CPrimOnlineFR::RegExpTLVData);
+    QRegularExpression regExp(CPrimOnlineFR::RegExpTLVData);
 
     for (int i = 5; i < answer.size(); ++i) {
         QString TLVData = mCodec->toUnicode(answer[i]);
 
-        if (regExp.indexIn(TLVData) == -1) {
+        if (regExp.match(TLVData).capturedStart() == -1) {
             toLog(LogLevel::Error,
                   mDeviceName +
                       QString(": Failed to parse TLV data %1 (%2)").arg(TLVData).arg(answer[i].toHex().data()));

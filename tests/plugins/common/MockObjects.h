@@ -121,17 +121,17 @@ class MockPluginLoader : public SDK::Plugin::IPluginLoader {
         return 1; // Simulate success
     }
 
-    virtual QStringList getPluginList(const QRegExp &aFilter) const override {
+    virtual QStringList getPluginList(const QRegularExpression &aFilter) const override {
         QStringList result;
         foreach (QString plugin, mRegisteredPlugins) {
-            if (aFilter.isEmpty() || aFilter.indexIn(plugin) != -1) {
+            if (aFilter.isEmpty() || aFilter.match(plugin).capturedStart() != -1) {
                 result.append(plugin);
             }
         }
         return result;
     }
 
-    virtual QStringList getPluginPathList(const QRegExp &aFilter) const override {
+    virtual QStringList getPluginPathList(const QRegularExpression &aFilter) const override {
         return getPluginList(aFilter); // Simplified
     }
 

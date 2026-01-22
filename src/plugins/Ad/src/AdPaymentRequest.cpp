@@ -3,7 +3,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QCryptographicHash>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QTextCodec>
 #include <Common/QtHeadersEnd.h>
 
@@ -47,11 +47,11 @@ AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, const QString &aName) : 
                  mPayment->getProviderSettings().processor.requests[step.toUpper()].requestFields) {
             QString value = field.value;
 
-            QRegExp macroPattern("\\{(.+)\\}");
-            macroPattern.setMinimal(true);
+            QRegularExpression macroPattern("\\{(.+)\\}");
+            ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
-            while (macroPattern.indexIn(value) != -1) {
-                value.replace(macroPattern.cap(0), mPayment->getParameter(macroPattern.cap(1)).value.toString());
+            while (macroPattern.match(value).capturedStart() != -1) {
+                value.replace(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), mPayment->getParameter(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1)).value.toString());
             }
 
             if (field.crypted) {

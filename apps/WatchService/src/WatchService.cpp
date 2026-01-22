@@ -282,11 +282,11 @@ void WatchService::loadConfiguration()
 	{
 		foreach (const QString& arg, QCoreApplication::arguments())
 		{
-			QRegExp re("-(\\w+)_options=(.+)");
+			QRegularExpression re("-(\\w+)_options=(.+)");
 
-			if (re.indexIn(arg) != -1)
+			if (re.match(arg).capturedStart() != -1)
 			{
-				moduleOptions[re.cap(1)] = re.cap(2);
+				moduleOptions[// TODO: // TODO: // TODO: // TODO: re.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1)] = // TODO: // TODO: // TODO: // TODO: re.cap(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2);
 			}
 		}
 	}

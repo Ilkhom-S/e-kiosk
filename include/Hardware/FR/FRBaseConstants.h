@@ -4,7 +4,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // STL
@@ -157,13 +157,13 @@ namespace CFR {
             qulonglong result = data.toULongLong(&OK, aBase);
 
             return OK ? QString("%1").arg(result, aSize, 10, QChar(ASCII::Zero)) : "";
-        } else if (QRegExp("^[0-9]+$").indexIn(data) == -1) {
+        } else if (QRegularExpression("^[0-9]+$").match(data).capturedStart() == -1) {
             return "";
         } else if (data.size() <= aSize) {
             return data.rightJustified(aSize, QChar(ASCII::Zero));
         }
 
-        index = data.indexOf(QRegExp("[1-9]"));
+        index = data.indexOf(QRegularExpression("[1-9]"));
 
         return data.mid(index);
     }

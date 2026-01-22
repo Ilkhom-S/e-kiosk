@@ -66,9 +66,9 @@ bool SwecoinPrinter::isConnected() {
     }
 
     answer = answer.mid(2);
-    QRegExp regExp(".*MODEL:([^;]+);.*");
+    QRegularExpression regExp(".*MODEL:([^;]+);.*");
 
-    if (regExp.indexIn(answer) != -1) {
+    if (regExp.match(answer).capturedStart() != -1) {
         mDeviceName = regExp.capturedTexts()[1].simplified();
     }
 

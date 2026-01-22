@@ -242,10 +242,10 @@ void NetworkTaskManager::onTaskReadyRead() {
                                 // Если запрашивали кусок данных, позиционируем на
                                 // начало передаваемого диапазона
                                 // http://tools.ietf.org/html/rfc2616#section-14.16
-                                QRegExp rx("(\\d+)\\-\\d+/\\d+");
+                                QRegularExpression rx("(\\d+)\\-\\d+/\\d+");
 
-                                if (rx.indexIn(contentRange) > 0) {
-                                    qint64 pos = rx.cap(1).toLongLong();
+                                if (rx.match(contentRange).capturedStart() > 0) {
+                                    qint64 pos = // TODO: // TODO: // TODO: // TODO: rx.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1).toLongLong();
 
                                     if (!task->getDataStream()->seek(pos)) {
                                         toLog(LogLevel::Error, QString("Content-Range: %1. Error seek "

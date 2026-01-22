@@ -3,7 +3,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QDateTime>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // Modules
@@ -307,10 +307,10 @@ void NetworkService::updateModemParameters() {
 
             // Выполняем USSD-запрос и извлекаем из него строку с информацией о балансе.
             if (modemDevice->processUSSD(connectionTemplate.balanceNumber, reply)) {
-                QRegExp regExp(connectionTemplate.regExp);
+                QRegularExpression regExp(connectionTemplate.regExp);
 
-                if (regExp.indexIn(reply) != -1) {
-                    mBalance = regExp.cap(0);
+                if (regExp.match(reply).capturedStart() != -1) {
+                    mBalance = // TODO: // TODO: // TODO: // TODO: regExp.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0);
                     mDatabaseUtils->setDeviceParam(mDeviceService->getDeviceConfigName(modemDevice),
                                                    PP::CDatabaseConstants::Parameters::BalanceLevel, mBalance.get());
                 } else {

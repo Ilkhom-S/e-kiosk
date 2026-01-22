@@ -7,7 +7,7 @@
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QMutexLocker>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // SDK

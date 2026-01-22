@@ -155,9 +155,9 @@ bool ID003CashAcceptor::isConnected() {
     CID003::ProtocolData::CIdentification identificationData;
 
     foreach (const QString &regExpData, identificationData.data().values()) {
-        QRegExp regExp(regExpData);
+        QRegularExpression regExp(regExpData);
 
-        if (regExp.indexIn(answer) != -1) {
+        if (regExp.match(answer).capturedStart() != -1) {
             QString alias = identificationData.key(regExpData);
 
             if (alias != CID003::ProtocolData::Alias::ID003) {

@@ -317,7 +317,7 @@ namespace SmsTextIndex {
 } // namespace SmsTextIndex
 
 #include <QtCore/QDebug>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 
 //--------------------------------------------------------------------------------
 /// Класс протокола ATProtocol.

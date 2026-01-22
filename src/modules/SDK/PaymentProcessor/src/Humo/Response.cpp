@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QStringList>
 #include <Common/QtHeadersEnd.h>
 
@@ -17,13 +17,13 @@ namespace SDK {
             Response::Response(const Request &aRequest, const QString &aResponseString)
                 : mResponseString(aResponseString), mError(ELocalError::NetworkError), mResult(EServerResult::Empty),
                   mRequest(aRequest) {
-                QRegExp regexp("^(\\w+)=(.*)$");
-                regexp.setMinimal(true);
+                QRegularExpression regexp("^(\\w+)=(.*)$");
+                ////////regexp.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
                 foreach (auto line, mResponseString.split("\r\n")) {
-                    if (regexp.indexIn(line) != -1) {
+                    if (regexp.match(line).capturedStart() != -1) {
                         if (regexp.captureCount() > 1) {
-                            addParameter(regexp.cap(1), regexp.cap(2));
+                            addParameter(// TODO: // TODO: // TODO: // TODO: regexp.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1), // TODO: // TODO: // TODO: // TODO: regexp.cap(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2));
                         }
                     }
                 }

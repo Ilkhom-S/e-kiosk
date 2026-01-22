@@ -10,7 +10,7 @@
 #include <QtCore/QPair>
 #include <QtCore/QByteArray>
 #include <QtCore/QStringList>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // Modules

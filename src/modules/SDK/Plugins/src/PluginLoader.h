@@ -8,7 +8,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QSet>
 #include <QtCore/QList>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QPluginLoader>
 #include <QtCore/QMutex>
@@ -35,10 +35,10 @@ namespace SDK {
             virtual int addDirectory(const QString &aDirectory);
 
             /// Возвращает список доступных плагинов.
-            virtual QStringList getPluginList(const QRegExp &aFilter) const;
+            virtual QStringList getPluginList(const QRegularExpression &aFilter) const;
 
             /// Возвращает список путей загруженных плагинов.
-            virtual QStringList getPluginPathList(const QRegExp &aFilter) const;
+            virtual QStringList getPluginPathList(const QRegularExpression &aFilter) const;
 
             /// Создаёт плагин по заданному пути.
             virtual IPlugin *createPlugin(const QString &aInstancePath, const QString &aConfigPath = "");

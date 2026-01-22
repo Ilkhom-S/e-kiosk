@@ -295,10 +295,10 @@ bool SparkFR::isConnected() {
     }
 
     QString answerData = mCodec->toUnicode(answer);
-    QRegExp regExp(CSparkFR::Models::RegExpData);
+    QRegularExpression regExp(CSparkFR::Models::RegExpData);
     CSparkFR::Models::SData data;
 
-    if (regExp.indexIn(answerData) != -1) {
+    if (regExp.match(answerData).capturedStart() != -1) {
         QStringList capturedData = regExp.capturedTexts();
         data = CSparkFR::Models::Data[capturedData[1].toInt()];
     }
@@ -815,9 +815,9 @@ void SparkFR::processDeviceData() {
 
     if (processCommand(CSparkFR::Commands::GetFWVersion, &answer)) {
         QString answerData = mCodec->toUnicode(answer);
-        QRegExp regExp(CSparkFR::Models::RegExpData);
+        QRegularExpression regExp(CSparkFR::Models::RegExpData);
 
-        if (regExp.indexIn(answerData) != -1) {
+        if (regExp.match(answerData).capturedStart() != -1) {
             QStringList capturedData = regExp.capturedTexts();
             setDeviceParameter(CDeviceData::Firmware, QString("%1").arg(capturedData[2].toDouble(), 0, 'f', 2));
         }

@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // Project
@@ -114,7 +114,7 @@ bool ATModemBase::setInitString(const QString &aInitString) {
         return false;
     }
 
-    QRegExp regExp("^AT");
+    QRegularExpression regExp("^AT");
     QString initString = QString(aInitString).remove(regExp);
 
     enableLocalEcho(false);

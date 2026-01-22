@@ -13,7 +13,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QUuid>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QSettings>
 #include <Common/QtHeadersEnd.h>
 

@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QBuffer>
 #include <QtGui/QMatrix>
 #include <QtGui/QFontDatabase>
@@ -105,7 +105,7 @@ bool SystemPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
     }
 
     for (int i = 0; i < receipt.size(); ++i) {
-        int index = receipt[i].indexOf(QRegExp("[^ ]"));
+        int index = receipt[i].indexOf(QRegularExpression("[^ ]"));
         receipt[i] = receipt[i].replace(0, index, QString("&nbsp;").repeated(index)).replace(QRegExp(" +$"), "");
     }
 

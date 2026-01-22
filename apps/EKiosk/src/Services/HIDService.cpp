@@ -65,7 +65,7 @@ void HIDService::updateHardwareConfiguration() {
     PPSDK::TerminalSettings *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
 
     foreach (const QString &configurationName,
-             settings->getDeviceList().filter(QRegExp(SDK::Driver::CComponents::Scanner))) {
+             settings->getDeviceList().filter(QRegularExpression(SDK::Driver::CComponents::Scanner))) {
         SDK::Driver::IHID *device = dynamic_cast<SDK::Driver::IHID *>(mDeviceService->acquireDevice(configurationName));
 
         if (device) {
@@ -83,7 +83,7 @@ void HIDService::updateHardwareConfiguration() {
 
     // Добавляем картридеры
     foreach (const QString &configurationName,
-             settings->getDeviceList().filter(QRegExp(SDK::Driver::CComponents::CardReader))) {
+             settings->getDeviceList().filter(QRegularExpression(SDK::Driver::CComponents::CardReader))) {
         SDK::Driver::ICardReader *device =
             dynamic_cast<SDK::Driver::ICardReader *>(mDeviceService->acquireDevice(configurationName));
 
@@ -165,7 +165,7 @@ bool HIDService::setEnable(bool aEnable, const QString &aDevice) {
         PPSDK::TerminalSettings *settings =
             SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
 
-        foreach (const QString &configurationName, settings->getDeviceList().filter(QRegExp(aDevice))) {
+        foreach (const QString &configurationName, settings->getDeviceList().filter(QRegularExpression(aDevice))) {
             SDK::Driver::IHID *device =
                 dynamic_cast<SDK::Driver::IHID *>(mDeviceService->acquireDevice(configurationName));
 

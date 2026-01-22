@@ -17,7 +17,7 @@
 Component::Component(const QString &aId, const QString &aVersion, const TFileList &aFiles, const QStringList &aActions,
                      const QString &aURL)
     : mPostActions(aActions), mURL(aURL), mId(aId), mVersion(aVersion), mSkipExisting(false), mOptional(false) {
-    QRegExp removeFirstSlash("^/+");
+    QRegularExpression removeFirstSlash("^/+");
 
     // Удяляем слэши в начали пути.
     foreach (auto file, aFiles) {

@@ -11,7 +11,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QUuid>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QSettings>
 #include <Common/QtHeadersEnd.h>
 
@@ -210,9 +210,9 @@ bool OPOSMStarTUPK::updateParameters() {
 
     QString deviceDescription = STRING_CALL_OPOS(DeviceDescription);
     QString regExpData = QString("%1\\.%1\\.%1").arg("[0-9]+");
-    QRegExp regExp = QRegExp(regExpData);
+    QRegularExpression regExp = QRegularExpression(regExpData);
 
-    if (regExp.indexIn(deviceDescription) != -1) {
+    if (regExp.match(deviceDescription).capturedStart() != -1) {
         QStringList firmware = regExp.capturedTexts();
         mFWVersion = firmware[0].remove(".").toInt();
     }

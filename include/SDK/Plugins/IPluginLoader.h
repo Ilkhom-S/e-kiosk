@@ -9,7 +9,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QStringList>
 #include <Common/QtHeadersEnd.h>
 
@@ -29,10 +29,10 @@ namespace SDK {
             virtual int addDirectory(const QString &aDirectory) = 0;
 
             /// Возвращает список доступных плагинов.
-            virtual QStringList getPluginList(const QRegExp &aFilter) const = 0;
+            virtual QStringList getPluginList(const QRegularExpression &aFilter) const = 0;
 
             /// Возвращает список полных путей для загруженных плагинов.
-            virtual QStringList getPluginPathList(const QRegExp &aFilter) const = 0;
+            virtual QStringList getPluginPathList(const QRegularExpression &aFilter) const = 0;
 
             /// Создаёт плагин по заданному пути.
             virtual IPlugin *createPlugin(const QString &aInstancePath, const QString &aConfigPath = "") = 0;

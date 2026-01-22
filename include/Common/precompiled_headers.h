@@ -62,7 +62,7 @@
 #include <QtCore/QReadLocker>
 #include <QtCore/QReadWriteLock>
 #include <QtCore/QRect>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QResource>
 #include <QtCore/QScopedPointer>
 #include <QtCore/QSet>

@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegExp>
+#include <QtCore/QRegularExpression>
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFuture>
 #include <QtCore/QMutexLocker>
@@ -541,25 +541,24 @@ QString PrintingService::convertImage2base64(const QString &aString) {
 
     for (int extLen = 3; extLen <= 4; extLen++) {
         // \[img\s*\].*((?:[\w]\:|\\)?((\\|/)?[a-z_\-\s0-9\.]+)+\.[a-z]{3,4})
-        QRegExp imgPattern = QRegExp(
-            QString("\\[img\\s*\\].*((?:[\\w]\\:|\\\\)?((\\\\|/)?[a-z_\\-\\s0-9\\.]+)+\\.[a-z]{%1})").arg(extLen),
+        QRegularExpression imgPattern = QRegularExpression(QString("\\[img\\s*\\].*((?:[\\w]\\:|\\\\)?((\\\\|/)?[a-z_\\-\\s0-9\\.]+)+\\.[a-z]{%1})").arg(extLen),
             Qt::CaseInsensitive);
 
-        imgPattern.setMinimal(true);
+        ////////imgPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
         int offset = 0;
-        while ((offset = imgPattern.indexIn(result, offset)) != -1) {
+        while ((offset = imgPattern.match(result, offset).capturedStart()) != -1) {
             QString img = "<image>";
 
-            QFile file(imgPattern.cap(1));
+            QFile file(// TODO: // TODO: // TODO: // TODO: imgPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1));
             if (file.open(QIODevice::ReadOnly)) {
                 img = QString::fromLatin1(file.readAll().toBase64());
             } else {
                 toLog(LogLevel::Error,
-                      QString("Error load image '%1': %2").arg(imgPattern.cap(1)).arg(file.errorString()));
+                      QString("Error load image '%1': %2").arg(// TODO: // TODO: // TODO: // TODO: imgPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1)).arg(file.errorString()));
             }
 
-            result.replace(imgPattern.pos(1), imgPattern.cap(1).length(), img);
+            result.replace(imgPattern.pos(1), // TODO: // TODO: // TODO: // TODO: imgPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1).length(), img);
             offset = imgPattern.pos(1) + img.size();
         }
     }
@@ -610,13 +609,13 @@ QString PrintingService::generateQR(const QString &aString) {
         return "";
     };
 
-    QRegExp qrPattern("\\[qr(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/qr\\]",
+    QRegularExpression qrPattern("\\[qr(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/qr\\]",
                       Qt::CaseInsensitive);
 
-    qrPattern.setMinimal(true);
+    ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
     int offset = 0;
-    while ((offset = qrPattern.indexIn(result, offset)) != -1) {
+    while ((offset = qrPattern.match(result, offset).capturedStart()) != -1) {
         int size = 200;
         int left_margin = 0;
 
@@ -628,12 +627,12 @@ QString PrintingService::generateQR(const QString &aString) {
             }
         }
 
-        QString content = qrPattern.cap(7);
+        QString content = // TODO: // TODO: // TODO: // TODO: qrPattern.cap(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7);
         QString qrImage = generateQRCode(content, size, left_margin);
 
         QString img = qrImage.isEmpty() ? "<qr-code>" : QString("[img]%1[/img]").arg(qrImage);
 
-        result.replace(offset, qrPattern.cap(0).length(), img);
+        result.replace(offset, // TODO: // TODO: // TODO: // TODO: qrPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), img);
         offset += img.size();
     }
 
@@ -682,13 +681,13 @@ QString PrintingService::generatePDF417(const QString &aString) {
         return "";
     };
 
-    QRegExp qrPattern("\\[pdf417(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/pdf417\\]",
+    QRegularExpression qrPattern("\\[pdf417(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/pdf417\\]",
                       Qt::CaseInsensitive);
 
-    qrPattern.setMinimal(true);
+    ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
     int offset = 0;
-    while ((offset = qrPattern.indexIn(result, offset)) != -1) {
+    while ((offset = qrPattern.match(result, offset).capturedStart()) != -1) {
         int size = 200;
         int left_margin = 0;
 
@@ -700,12 +699,12 @@ QString PrintingService::generatePDF417(const QString &aString) {
             }
         }
 
-        QString content = qrPattern.cap(7);
+        QString content = // TODO: // TODO: // TODO: // TODO: qrPattern.cap(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7);
         QString qrImage = generatePDFCode(content, size, left_margin);
 
         QString img = qrImage.isEmpty() ? "<pdf417-code>" : QString("[img]%1[/img]").arg(qrImage);
 
-        result.replace(offset, qrPattern.cap(0).length(), img);
+        result.replace(offset, // TODO: // TODO: // TODO: // TODO: qrPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), img);
         offset += img.size();
     }
 
@@ -754,13 +753,13 @@ QString PrintingService::generate1D(const QString &aString) {
         return "";
     };
 
-    QRegExp qrPattern("\\[1d(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/1d\\]",
+    QRegularExpression qrPattern("\\[1d(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/1d\\]",
                       Qt::CaseInsensitive);
 
-    qrPattern.setMinimal(true);
+    ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
     int offset = 0;
-    while ((offset = qrPattern.indexIn(result, offset)) != -1) {
+    while ((offset = qrPattern.match(result, offset).capturedStart()) != -1) {
         int size = 200;
         int left_margin = 0;
 
@@ -772,12 +771,12 @@ QString PrintingService::generate1D(const QString &aString) {
             }
         }
 
-        QString content = qrPattern.cap(7);
+        QString content = // TODO: // TODO: // TODO: // TODO: qrPattern.cap(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7);
         QString qrImage = generatePDFCode(content, size, left_margin);
 
         QString img = qrImage.isEmpty() ? "<pdf417-code>" : QString("[img]%1[/img]").arg(qrImage);
 
-        result.replace(offset, qrPattern.cap(0).length(), img);
+        result.replace(offset, // TODO: // TODO: // TODO: // TODO: qrPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), img);
         offset += img.size();
     }
 
@@ -816,13 +815,13 @@ QString PrintingService::generateLine(const QString &aString) {
         return QString();
     };
 
-    QRegExp qrPattern("\\[hr(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/hr\\]",
+    QRegularExpression qrPattern("\\[hr(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/hr\\]",
                       Qt::CaseInsensitive);
 
-    qrPattern.setMinimal(true);
+    ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
     int offset = 0;
-    while ((offset = qrPattern.indexIn(result, offset)) != -1) {
+    while ((offset = qrPattern.match(result, offset).capturedStart()) != -1) {
         int size = 220;
         int height = 1;
         int dense = 0;
@@ -841,7 +840,7 @@ QString PrintingService::generateLine(const QString &aString) {
 
         QString img = qrImage.isEmpty() ? "<hr-code>" : QString("[img]%1[/img]").arg(qrImage);
 
-        result.replace(offset, qrPattern.cap(0).length(), img);
+        result.replace(offset, // TODO: // TODO: // TODO: // TODO: qrPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), img);
         offset += img.size();
     }
 
@@ -886,18 +885,18 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
 
     // Для каждого тега в шаблоне чека, заменяем его значением из параметров.
     for (auto it = aReceipt.begin(); it != aReceipt.end(); ++it) {
-        QRegExp tagPattern("%(.*)%", Qt::CaseInsensitive);
+        QRegularExpression tagPattern("%(.*)%", Qt::CaseInsensitive);
 
-        tagPattern.setMinimal(true);
+        ////////tagPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
         int offset = 0;
 
-        while ((offset = tagPattern.indexIn(*it, offset)) != -1) {
-            QString tag = tagPattern.cap(1);
+        while ((offset = tagPattern.match(*it, offset).capturedStart()) != -1) {
+            QString tag = // TODO: // TODO: // TODO: // TODO: tagPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1);
 
             // %% заменяем на %
             if (tag.isEmpty()) {
-                it->replace(offset, tagPattern.cap(0).length(), "%");
+                it->replace(offset, // TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), "%");
                 offset += 1;
                 continue;
             }
@@ -926,7 +925,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                     QString masked = isMasked ? maskedString(userParameter.value().toString(), isMasked)
                                               : filter.apply(userParameter.key(), userParameter.value().toString());
 
-                    it->replace(offset, tagPattern.cap(0).length(), masked);
+                    it->replace(offset, // TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), masked);
                     offset += masked.length();
                 }
 
@@ -940,7 +939,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                 QString masked = isMasked ? maskedString(staticParameter.value(), isMasked)
                                           : filter.apply(staticParameter.key(), staticParameter.value());
 
-                it->replace(offset, tagPattern.cap(0).length(), masked);
+                it->replace(offset, // TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), masked);
                 offset += masked.length();
 
                 continue;
@@ -949,12 +948,12 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
             // Название или значение поля оператора?
             QString targetParameter;
 
-            QRegExp operatorFieldPattern("FIELD_(.+)", Qt::CaseInsensitive);
+            QRegularExpression operatorFieldPattern("FIELD_(.+)", Qt::CaseInsensitive);
 
-            operatorFieldPattern.setMinimal(true);
+            ////////operatorFieldPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
-            if (operatorFieldPattern.indexIn(tag) != -1) {
-                targetParameter = operatorFieldPattern.cap(1);
+            if (operatorFieldPattern.match(tag).capturedStart() != -1) {
+                targetParameter = // TODO: // TODO: // TODO: // TODO: operatorFieldPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1);
 
                 if (!filter.haveFilter(targetParameter)) {
                     targetParameter += CPrintingService::DislayPostfix;
@@ -962,8 +961,8 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
             } else {
                 operatorFieldPattern.setPattern("RAWFIELD_(.+)");
 
-                if (operatorFieldPattern.indexIn(tag) != -1) {
-                    targetParameter = operatorFieldPattern.cap(1);
+                if (operatorFieldPattern.match(tag).capturedStart() != -1) {
+                    targetParameter = // TODO: // TODO: // TODO: // TODO: operatorFieldPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1);
                 }
             }
 
@@ -976,7 +975,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                     QString masked = isMasked ? maskedString(aParameters[targetParameter].toString(), isMasked)
                                               : filter.apply(targetParameter, aParameters[targetParameter].toString());
 
-                    it->replace(offset, tagPattern.cap(0).length(), masked);
+                    it->replace(offset, // TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), masked);
                     offset += masked.length();
 
                     continue;
@@ -1025,18 +1024,18 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
 
                         QString replaceString = QString("%1: %2").arg(field.title).arg(masked);
 
-                        it->replace(offset, tagPattern.cap(0).size(), replaceString);
+                        it->replace(offset, // TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).size(), replaceString);
                         offset = replaceString.length();
 
                         ++operatorFieldIndex;
                     }
                 } else {
-                    it->replace(tagPattern.cap(0), QString());
+                    it->replace(// TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), QString());
                 }
             }
 
             // Оставляем поле пустым.
-            it->replace(tagPattern.cap(0), QString());
+            it->replace(// TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), QString());
         }
 
         // Предзагружаем содержимое тегов [IMG]
@@ -1190,7 +1189,7 @@ QString replaceTags(QString aMessage) {
     aMessage.remove(QRegExp("\\[(b|dw|dh)\\]", Qt::CaseInsensitive));
     aMessage.remove(QRegExp("\\[/(b|dw|dh)\\]", Qt::CaseInsensitive));
 
-    aMessage.remove(QRegExp("\\[img.?\\].*\\[/img\\]"));
+    aMessage.remove(QRegularExpression("\\[img.?\\].*\\[/img\\]"), "");
 
     return aMessage;
 }
@@ -1306,7 +1305,7 @@ void PrintingService::updateHardwareConfiguration() {
                              .arg(DSDK::CComponents::Printer)
                              .arg(DSDK::CComponents::DocumentPrinter)
                              .arg(DSDK::CComponents::FiscalRegistrator);
-    QStringList printerNames = settings->getDeviceList().filter(QRegExp(regExpData));
+    QStringList printerNames = settings->getDeviceList().filter(QRegularExpression(regExpData));
 
     auto commonSettings = settings->getCommonSettings();
 

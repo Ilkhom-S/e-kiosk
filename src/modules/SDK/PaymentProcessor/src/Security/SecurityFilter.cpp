@@ -29,7 +29,7 @@ namespace SDK {
             QRegExp regExp = getMask(aParameterName);
 
             if (!regExp.isEmpty() && regExp.isValid()) {
-                if (regExp.indexIn(aValue) > -1) {
+                if (regExp.match(aValue).capturedStart() > -1) {
                     QString value = aValue;
 
                     for (int i = 1; i < regExp.capturedTexts().size(); i++) {
@@ -54,8 +54,8 @@ namespace SDK {
                     QString regExp = field.security.value(subsystem, QString());
 
                     if (!regExp.isEmpty()) {
-                        QRegExp rx(regExp);
-                        // rx.setMinimal(true);
+                        QRegularExpression rx(regExp);
+                        // ////////rx.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
                         if (rx.isValid()) {
                             return rx;
