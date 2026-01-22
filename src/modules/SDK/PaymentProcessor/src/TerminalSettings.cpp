@@ -39,9 +39,8 @@ namespace SDK {
 
         //---------------------------------------------------------------------------
         void TerminalSettings::initialize() {
-            foreach (
-                auto error,
-                mProperties.get("config.terminal.critical_errors", QString()).split(",", QString::SkipEmptyParts)) {
+            foreach (auto error,
+                     mProperties.get("config.terminal.critical_errors", QString()).split(",", Qt::SkipEmptyParts)) {
                 bool ok = false;
                 int errorId = error.toInt(&ok);
 
@@ -207,13 +206,17 @@ namespace SDK {
             settings.restLimit = mProperties.get<int>("config.terminal.block_by_rest", 0);
 
             settings.cleanupItems =
-                mProperties.get<QString>("system.user_cleanup.remove", "").split(",", QString::SkipEmptyParts);
-            settings.cleanupItems.replaceInStrings(QRegExp("^\\s+|\\s+$"), QString());
+                mProperties.get<QString>("system.user_cleanup.remove", "").split(",", Qt::SkipEmptyParts);
+            for (QString &item : settings.cleanupItems) {
+                item = item.trimmed();
+            }
             settings.cleanupItems.removeAll("");
 
             settings.cleanupExclude =
-                mProperties.get<QString>("system.user_cleanup.exclude", "").split(",", QString::SkipEmptyParts);
-            settings.cleanupExclude.replaceInStrings(QRegExp("^\\s+|\\s+$"), QString());
+                mProperties.get<QString>("system.user_cleanup.exclude", "").split(",", Qt::SkipEmptyParts);
+            for (QString &item : settings.cleanupExclude) {
+                item = item.trimmed();
+            }
             settings.cleanupExclude.removeAll("");
 
             return settings;
@@ -447,7 +450,7 @@ namespace SDK {
 
                 // Парсим список активированных купюр.
                 foreach (const QString &str, mProperties.get("config.hardware.validator_settings.notes", QString())
-                                                 .split(",", QString::SkipEmptyParts)) {
+                                                 .split(",", Qt::SkipEmptyParts)) {
                     auto nominal = Currency::Nominal(str.toDouble());
 
                     if (nominal >= settings.minPar) {
@@ -461,7 +464,7 @@ namespace SDK {
 
                 // Парсим список активированных монет.
                 foreach (auto str, mProperties.get("config.hardware.validator_settings.coins", QString())
-                                       .split(",", QString::SkipEmptyParts)) {
+                                       .split(",", Qt::SkipEmptyParts)) {
                     auto nominal = Currency::Nominal(str.toDouble());
                     settings.minPar = qMin(nominal, settings.minPar);
                     settings.enabledParCoinsList << nominal;
@@ -469,7 +472,7 @@ namespace SDK {
 
                 // Парсим список активированных купюр.
                 foreach (auto str, mProperties.get("config.hardware.validator_settings.notes", QString())
-                                       .split(",", QString::SkipEmptyParts)) {
+                                       .split(",", Qt::SkipEmptyParts)) {
                     auto nominal = Currency::Nominal(str.toInt());
                     settings.minPar = qMin(nominal, settings.minPar);
                     settings.enabledParNotesList.insert(nominal);
@@ -532,9 +535,9 @@ namespace SDK {
             passwords.phone = mProperties.get("config.service_menu.phone", QString());
             passwords.operatorId = mProperties.get("config.service_menu.operator", -1);
 
-            std::tr1::array<QString, 4> passwordTypes = {CServiceMenuPasswords::Service, CServiceMenuPasswords::Screen,
-                                                         CServiceMenuPasswords::Collection,
-                                                         CServiceMenuPasswords::Technician};
+            std::array<QString, 4> passwordTypes = {CServiceMenuPasswords::Service, CServiceMenuPasswords::Screen,
+                                                    CServiceMenuPasswords::Collection,
+                                                    CServiceMenuPasswords::Technician};
 
             for (size_t i = 0; i < passwordTypes.size(); i++) {
                 try {
