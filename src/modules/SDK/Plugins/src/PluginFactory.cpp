@@ -91,8 +91,9 @@ namespace SDK {
                                          QString("Configuration file %1 found, loading.").arg(file.absoluteFilePath()));
 
                 QSettings config(file.absoluteFilePath(), QSettings::IniFormat);
-
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                 config.setIniCodec("utf-8");
+#endif
 
                 foreach (QString group, config.childGroups()) {
                     QVariantMap parameters;
@@ -423,7 +424,8 @@ namespace SDK {
             if (aPathFilter.isEmpty()) {
                 return mCreatedPlugins.values();
             } else {
-                return QStringList(mCreatedPlugins.values()).filter(QRegExp(QString("^%1").arg(aPathFilter)));
+                QRegularExpression regex(QString("^%1").arg(QRegularExpression::escape(aPathFilter)));
+                return QStringList(mCreatedPlugins.values()).filter(regex);
             }
         }
 
@@ -433,7 +435,8 @@ namespace SDK {
             if (aPathFilter.isEmpty()) {
                 return mPersistentConfigurations.keys();
             } else {
-                return QStringList(mPersistentConfigurations.keys()).filter(QRegExp(QString("^%1").arg(aPathFilter)));
+                QRegularExpression regex(QString("^%1").arg(QRegularExpression::escape(aPathFilter)));
+                return QStringList(mPersistentConfigurations.keys()).filter(regex);
             }
         }
 
@@ -491,8 +494,9 @@ namespace SDK {
                                        CPluginFactory::ConfigurationDirectory + QDir::separator() + mModuleName +
                                        ".ini";
                     QSettings config(QDir::toNativeSeparators(QDir::cleanPath(fileName)), QSettings::IniFormat);
-
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                     config.setIniCodec("utf-8");
+#endif
 
                     result = config.isWritable();
 
