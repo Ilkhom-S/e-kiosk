@@ -1,10 +1,13 @@
 # DebugUtils module
 
-# Platform-specific source files
+# Cross-platform source files using Boost.Stacktrace
+set(DEBUGUTILS_SOURCES
+    src/DebugUtils.cpp
+)
+
+# Platform-specific headers (kept for compatibility)
 if(WIN32)
-    # Use Boost.Stacktrace implementation instead of old Windows DbgHelp
-    set(DEBUGUTILS_SOURCES
-        src/DebugUtils.cpp
+    list(APPEND DEBUGUTILS_SOURCES
         src/StackWalker.h # Keep for compatibility but not used
         src/QStackWalker.h # Keep for compatibility but not used
     )

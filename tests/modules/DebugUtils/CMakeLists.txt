@@ -31,3 +31,10 @@ ek_add_test(TestDebugUtilsCrossPlatform
     DEPENDS DebugUtils
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
 )
+
+# Add _GNU_SOURCE for Boost.Stacktrace on Unix-like systems
+if(UNIX AND NOT APPLE)
+    target_compile_definitions(TestDebugUtilsCrossPlatform PRIVATE _GNU_SOURCE)
+elseif(APPLE)
+    target_compile_definitions(TestDebugUtilsCrossPlatform PRIVATE _GNU_SOURCE)
+endif()
