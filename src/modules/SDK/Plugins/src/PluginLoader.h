@@ -11,7 +11,7 @@
 #include <QtCore/QRegularExpression>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QPluginLoader>
-#include <QtCore/QMutex>
+#include <QtCore/QRecursiveMutex>
 #include <Common/QtHeadersEnd.h>
 
 // Plugin SDK
@@ -83,7 +83,7 @@ namespace SDK {
             TPluginMapPtr mCreatedPluginsPtr;
 
             /// Синхронизация создания/удаления плагина.
-            mutable QMutex mAccessMutex;
+            mutable QRecursiveMutex mAccessMutex;
         };
 
     } // namespace Plugin

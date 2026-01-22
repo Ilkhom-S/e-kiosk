@@ -4,6 +4,7 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDirIterator>
+#include <QtCore/QRecursiveMutex>
 #include <QtCore/QTranslator>
 #include <Common/QtHeadersEnd.h>
 
@@ -21,14 +22,7 @@ namespace SDK {
     namespace Plugin {
 
         //------------------------------------------------------------------------------
-        PluginLoader::PluginLoader(IKernel *aKernel)
-            : mKernel(aKernel),
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-              mAccessMutex(true) // true = recursive mutex in Qt6
-#else
-              mAccessMutex(QMutex::Recursive)
-#endif
-        {
+        PluginLoader::PluginLoader(IKernel *aKernel) : mKernel(aKernel) {
         }
 
         //------------------------------------------------------------------------------
