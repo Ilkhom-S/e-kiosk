@@ -9,7 +9,6 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QDateTime>
 #include <QtCore/QScopedPointer>
-#include <QtCore/QTextCodec>
 #include <Common/QtHeadersEnd.h>
 
 #pragma push_macro("foreach")
@@ -91,9 +90,10 @@ namespace SDK {
                 foreach (QString l, limits) {
                     int pos = 0;
 
-                    while ((pos = rx.match(l, pos).capturedStart()) != -1) {
-                        limits2 << // TODO: // TODO: // TODO: // TODO: rx.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1);
-                        pos += rx.matchedLength();
+                    QRegularExpressionMatch match = rx.match(l, pos);
+                    while ((pos = match.capturedStart()) != -1) {
+                        limits2 << match.captured(1);
+                        pos += match.capturedLength();
                     }
                 }
 
@@ -104,7 +104,9 @@ namespace SDK {
                     responseFields << f.name;
                 }
 
-                return limits2.toSet().intersect(responseFields.toSet()).isEmpty()
+                QSet<QString> limitsSet(limits2.begin(), limits2.end());
+                QSet<QString> responseFieldsSet(responseFields.begin(), responseFields.end());
+                return limitsSet.intersect(responseFieldsSet).isEmpty()
                            ? true
                            : (mProvider.processor.showAddInfo ? true : mProvider.processor.skipCheck == false);
             }
@@ -162,10 +164,10 @@ namespace SDK {
                         aItemList << item;
                     }
 
-                    qStableSort(aItemList.begin(), aItemList.end(),
-                                [](const SProviderField::SEnumItem &a, const SProviderField::SEnumItem &b) {
-                                    return a.sort < b.sort;
-                                });
+                    std::stable_sort(aItemList.begin(), aItemList.end(),
+                                     [](const SProviderField::SEnumItem &a, const SProviderField::SEnumItem &b) {
+                                         return a.sort < b.sort;
+                                     });
                 };
 
                 BOOST_FOREACH (const auto &fieldIt, ptFields.get_child("add_fields", emptyTree)) {
@@ -531,12 +533,14 @@ namespace SDK {
                 foreach (auto field, fields) {
                     if (field.name == aParamName) {
                         QRegularExpression macroPattern("\\{(.+)\\}");
-                        ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
+                        ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
+                        /// compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
                         QString result = field.value;
 
-                        if (macroPattern.match(result).capturedStart() != -1) {
-                            result.replace(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), // TODO: // TODO: // TODO: // TODO: macroPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1));
+                        QRegularExpressionMatch match = macroPattern.match(result);
+                        if (match.hasMatch()) {
+                            result.replace(match.capturedStart(0), match.capturedLength(0), match.captured(1));
                         }
 
                         return result;
@@ -748,8 +752,7 @@ namespace SDK {
             //------------------------------------------------------------------------------
             void PaymentService::stepBack() {
                 if (currentStep() != "0") {
-                    QStringList history =
-                        getParameter(CMultistage::History).toString().split(";", QString::SkipEmptyParts);
+                    QStringList history = getParameter(CMultistage::History).toString().split(";", Qt::SkipEmptyParts);
                     if (!history.isEmpty()) {
                         setParameter(CMultistage::Step, history.takeLast());
                         setParameter(CMultistage::History, history.join(";"));

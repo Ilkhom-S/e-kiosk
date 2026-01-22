@@ -187,7 +187,7 @@ namespace SDK {
             QVariantMap getFields() const {
                 auto fields = parameters;
 
-                fields.unite(balance.getFields());
+                fields.insert(balance.getFields());
 
                 fields["ENCASHMENT_END_DATE"] = date.toString("dd.MM.yyyy hh:mm:ss");
                 fields["ENCASHMENT_NUMBER"] = id;
