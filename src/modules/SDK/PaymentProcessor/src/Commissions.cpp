@@ -9,6 +9,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QStringList>
 #include <Common/QtHeadersEnd.h>
 
@@ -230,7 +231,7 @@ namespace SDK {
         }
 
         //----------------------------------------------------------------------------
-        CommissionList CommissionList::fromSettings(const TPtree &aSettings) throw(std::runtime_error) {
+        CommissionList CommissionList::fromSettings(const TPtree &aSettings) noexcept(false) {
             CommissionList list;
 
             std::pair<TPtree::const_assoc_iterator, TPtree::const_assoc_iterator> searchBounds =
@@ -363,7 +364,10 @@ namespace SDK {
         CommissionByDayList CommissionByDayList::fromSettings(const TPtree &aSettings) {
             CommissionByDayList list;
 
-            QStringList days = aSettings.get<QString>("<xmlattr>.id").split(QRegExp("\\s*,\\s*"));
+            QStringList days = aSettings.get<QString>("<xmlattr>.id").split(",", Qt::SkipEmptyParts);
+            for (QString &day : days) {
+                day = day.trimmed();
+            }
 
             foreach (const QString &day, days) {
                 int temp = day.toInt();
@@ -488,7 +492,7 @@ namespace SDK {
                 }
             }
 
-            qSort(result.begin(), result.end(), &Commissions::SComplexCommissions::sortByMinLimit);
+            std::sort(result.begin(), result.end(), &Commissions::SComplexCommissions::sortByMinLimit);
 
             return result;
         }
