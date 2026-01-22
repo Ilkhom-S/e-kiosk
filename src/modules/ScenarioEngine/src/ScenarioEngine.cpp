@@ -1,5 +1,8 @@
 /* @file Движок сценариев. */
 
+// STL
+#include <algorithm>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QDirIterator>
@@ -49,7 +52,11 @@ namespace GUI {
             dirEntry.next();
 
             QSettings file(dirEntry.fileInfo().absoluteFilePath(), QSettings::IniFormat);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            // Qt6: QSettings uses UTF-8 by default, no need to set codec
+#else
             file.setIniCodec("UTF-8");
+#endif
 
             // не путаем с другими файлами
             if (file.childGroups().contains(CScenarioEngine::ScenarioGroup)) {
@@ -87,7 +94,11 @@ namespace GUI {
 
         mScenarios.insert(aScenario->getName(),
                           SScenarioDescriptor(aScenario->getName(), aScenario->getName(), QString(), aScenario));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        mScenarioStorage.insert(aScenario->getName(), QSharedPointer<Scenario>(aScenario));
+#else
         mScenarioStorage.insertMulti(aScenario->getName(), QSharedPointer<Scenario>(aScenario));
+#endif
 
         toLog(LogLevel::Normal, QString("Added scenario: %1.").arg(aScenario->getName()));
     }
@@ -142,12 +153,21 @@ namespace GUI {
 
             // В стеке уже есть такой запущенный сценарий или
             // Сценарий еще не создан
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            if (!sc->instance ||
+                std::find(mScenarioStack.begin(), mScenarioStack.end(), sc->instance) != mScenarioStack.end()) {
+#else
             if (!sc->instance ||
                 qFind(mScenarioStack.begin(), mScenarioStack.end(), sc->instance) != mScenarioStack.end()) {
+#endif
                 // Запускаем новый экземпляр сценария.
                 scenario = new JSScenario(sc->name, sc->path, sc->basePath, getLog());
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                mScenarioStorage.insert(aScenario, QSharedPointer<Scenario>(scenario));
+#else
                 mScenarioStorage.insertMulti(aScenario, QSharedPointer<Scenario>(scenario));
+#endif
 
                 if (scenario->initialize(mScriptObjects)) {
                     connect(scenario, SIGNAL(finished(const QVariantMap &)), SLOT(finished(const QVariantMap &)),

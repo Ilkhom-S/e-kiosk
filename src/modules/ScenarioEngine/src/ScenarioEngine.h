@@ -46,11 +46,11 @@ namespace GUI {
             QString basePath;
             Scenario *instance;
 
-            SScenarioDescriptor::SScenarioDescriptor() : instance(nullptr) {
+            SScenarioDescriptor() : instance(nullptr) {
             }
 
-            SScenarioDescriptor::SScenarioDescriptor(const QString &aName, const QString &aPath,
-                                                     const QString &aBasePath, Scenario *aInstance = nullptr)
+            SScenarioDescriptor(const QString &aName, const QString &aPath, const QString &aBasePath,
+                                Scenario *aInstance = nullptr)
                 : name(aName), path(aPath), basePath(aBasePath), instance(aInstance) {
             }
         };
