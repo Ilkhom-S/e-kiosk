@@ -163,7 +163,11 @@ namespace SDK {
             mDirectories << aDirectory;
 
             QStringList fileNameFilter;
+#ifdef Q_OS_WIN
             fileNameFilter << "*.dll";
+#else
+            fileNameFilter << "*.so";
+#endif
 
             QDirIterator dirEntry(aDirectory, fileNameFilter, QDir::Files, QDirIterator::Subdirectories);
 
@@ -172,10 +176,19 @@ namespace SDK {
                 dirEntry.next();
 
 #ifdef Q_OS_WIN
-                // Путь для неявной загрузки сторонних dll, которые лежат не в корне дистрибутива
+                // Windows: Set DLL search path for dependent libraries
                 SetDllDirectoryW(dirEntry.fileInfo().absolutePath().toStdWString().data());
 #else
-#error Handling path for implicit dll loading is not implemented for this platform!
+                // Unix/Linux/macOS: Add plugin directory to library search path
+                // Note: On Unix systems, Qt plugin loading is more robust and usually
+                // doesn't require explicit path manipulation for dependent libraries
+                QString pluginDir = dirEntry.fileInfo().absolutePath();
+                QString currentLdPath = qgetenv("LD_LIBRARY_PATH");
+
+                if (!currentLdPath.contains(pluginDir)) {
+                    QString newLdPath = pluginDir + ":" + currentLdPath;
+                    qputenv("LD_LIBRARY_PATH", newLdPath.toUtf8());
+                }
 #endif
 
                 QSharedPointer<QPluginLoader> library(new QPluginLoader(dirEntry.filePath()));
@@ -219,7 +232,7 @@ namespace SDK {
                                 if (mPlugins.contains(path)) {
                                     mKernel->getLog()->write(
                                         LogLevel::Warning,
-                                        QString("Plugin %1 is already registred in %2, ignoring this one...")
+                                        QString("Plugin %1 is already registered in %2, ignoring this one...")
                                             .arg(path)
                                             .arg(mPlugins[path]->getName()));
                                 } else {
@@ -246,10 +259,11 @@ namespace SDK {
             }
 
 #ifdef Q_OS_WIN
-            // Сбрасываем локальные пути для неявной загрузки сторонних dll, которые лежат не в корне дистрибутива
+            // Windows: Reset DLL search path
             SetDllDirectory(0);
 #else
-#error Handling path for implicit dll loading is not implemented for this platform!
+            // Unix/Linux/macOS: LD_LIBRARY_PATH modification persists for the process
+            // No explicit reset needed as it's an environment variable
 #endif
 
             return mPlugins.count();
