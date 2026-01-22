@@ -47,7 +47,7 @@ ConnectionBase::ConnectionBase(const QString &aName, NetworkTaskManager *aNetwor
 }
 
 //--------------------------------------------------------------------------------
-void ConnectionBase::open(bool aWatch) throw(...) {
+void ConnectionBase::open(bool aWatch) noexcept(false) {
     toLog(LogLevel::Normal, QString("*").repeated(40));
     toLog(LogLevel::Normal, QString("Connection:     %1").arg(getName()));
     toLog(LogLevel::Normal, QString("Type:           %1").arg(EConnectionTypes::getConnectionTypeName(getType())));
@@ -82,7 +82,7 @@ void ConnectionBase::open(bool aWatch) throw(...) {
 }
 
 //--------------------------------------------------------------------------------
-void ConnectionBase::close() throw(...) {
+void ConnectionBase::close() noexcept(false) {
     toLog(LogLevel::Debug, "Check timer STOP.");
     mCheckTimer.stop();
 
@@ -104,7 +104,7 @@ void ConnectionBase::setCheckPeriod(int aMinutes) {
 }
 
 //--------------------------------------------------------------------------------
-bool ConnectionBase::isConnected(bool aUseCache) throw(...) {
+bool ConnectionBase::isConnected(bool aUseCache) noexcept(false) {
     if (!aUseCache) {
         mConnected = doIsConnected();
     }
@@ -113,7 +113,7 @@ bool ConnectionBase::isConnected(bool aUseCache) throw(...) {
 }
 
 //--------------------------------------------------------------------------------
-bool ConnectionBase::checkConnection(const IConnection::CheckUrl &aHost) throw(...) {
+bool ConnectionBase::checkConnection(const IConnection::CheckUrl &aHost) noexcept(false) {
     QList<CheckUrl> hosts;
 
     if (aHost.first.isValid() && !aHost.first.isEmpty()) {
