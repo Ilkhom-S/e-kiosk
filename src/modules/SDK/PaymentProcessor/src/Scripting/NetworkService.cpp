@@ -133,16 +133,16 @@ namespace SDK {
                         mCurrentTask = 0;
                     }
 
-                    QScopedPointer<NetworkTask> task(new NetworkTask());
+                    std::unique_ptr<NetworkTask> task(new NetworkTask());
 
                     task->setUrl(aUrl);
                     task->setType(NetworkTask::Post);
                     task->setDataStream(new MemoryDataStream());
                     task->getDataStream()->write(aData.toUtf8());
 
-                    connect(task.data(), SIGNAL(onComplete()), SLOT(taskComplete()));
+                    connect(task.get(), SIGNAL(onComplete()), SLOT(taskComplete()));
 
-                    mTaskManager->addTask(mCurrentTask = task.take());
+                    mTaskManager->addTask(mCurrentTask = task.release());
 
                     return true;
                 }
@@ -184,21 +184,21 @@ namespace SDK {
             Response *NetworkService::sendRequestInternal(Request *aRequest, const QString &aUrl) {
                 PPSDK::Humo::RequestSender::ESendError error;
 
-                QScopedPointer<SDK::PaymentProcessor::Humo::Response> response(
+                std::unique_ptr<SDK::PaymentProcessor::Humo::Response> response(
                     mRequestSender->post(aUrl, *aRequest, PPSDK::Humo::RequestSender::Solid, error));
 
                 delete aRequest;
                 aRequest = nullptr;
 
-                if (response.isNull()) {
+                if (response == nullptr) {
                     return nullptr;
                 }
 
-                if (!dynamic_cast<Response *>(response.data())) {
+                if (!dynamic_cast<Response *>(response.get())) {
                     return nullptr;
                 }
 
-                return dynamic_cast<Response *>(response.take());
+                return dynamic_cast<Response *>(response.release());
             }
 
             //------------------------------------------------------------------------------
@@ -223,7 +223,7 @@ namespace SDK {
                     if (doc.isObject()) {
                         QVariantMap root = doc.object().toVariantMap();
                         QVariant v = root.value("payment");
-                        if (v.type() == QVariant::Map) {
+                        if (v.metaType().id() == QMetaType::QVariantMap) {
                             payment = v.toMap();
                         }
                     }
@@ -295,15 +295,16 @@ namespace SDK {
 
             //------------------------------------------------------------------------------
             void NetworkService::onResponseFinished() {
-                QScopedPointer<SDK::PaymentProcessor::Humo::Response> response(mResponseWatcher.result());
-                emit requestCompleted(response.isNull() ? QVariantMap()
-                                                        : dynamic_cast<Response *>(response.take())->getParameters());
+                std::unique_ptr<SDK::PaymentProcessor::Humo::Response> response(mResponseWatcher.result());
+                emit requestCompleted(response == nullptr
+                                          ? QVariantMap()
+                                          : dynamic_cast<Response *>(response.release())->getParameters());
             }
 
             //------------------------------------------------------------------------------
             void NetworkService::onResponseSendReceiptFinished() {
-                QScopedPointer<SDK::PaymentProcessor::Humo::Response> response(mResponseSendReceiptWatcher.result());
-                emit sendReceiptComplete(!response.isNull() && response->isOk());
+                std::unique_ptr<SDK::PaymentProcessor::Humo::Response> response(mResponseSendReceiptWatcher.result());
+                emit sendReceiptComplete(response != nullptr && response->isOk());
             }
 
             //------------------------------------------------------------------------------

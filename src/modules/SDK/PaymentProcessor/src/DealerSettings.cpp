@@ -213,6 +213,10 @@ namespace SDK {
 
                         return false;
                     }
+
+                    default:
+                        // Handle other token types that we're not explicitly processing
+                        break;
                 }
             }
 
