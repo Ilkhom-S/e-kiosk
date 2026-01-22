@@ -7,7 +7,13 @@ include(scripts/build/cmake/EKVersionConfig.cmake)
 # Generate version files during configure step (so they always exist for IDEs and build)
 ek_configure_version()
 
+
 cmake_minimum_required(VERSION 3.16)
+
+# Ensure SingleApplication include path is available globally on non-Windows platforms
+if(NOT WIN32)
+    include_directories(${CMAKE_SOURCE_DIR}/thirdparty/SingleApplication)
+endif()
 
 # When supported, prefer the modern behavior for Boost package lookup and
 # avoid the developer warning about the removed FindBoost module.

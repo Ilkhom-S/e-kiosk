@@ -4,7 +4,10 @@
     {
       "label": "Include Reflow (current file)",
       "type": "shell",
-      "command": "python ./.scripts/include_reflow.py --apply \"${file}\"",
+      "command": "python3 ./.scripts/include_reflow.py --apply \"${file}\"",
+      "windows": {
+        "command": "python ./.scripts/include_reflow.py --apply \"${file}\""
+      },
       "problemMatcher": [],
       "group": "none",
       "presentation": {
@@ -14,7 +17,10 @@
     {
       "label": "Include Reflow (all tracked)",
       "type": "shell",
-      "command": "python ./.scripts/include_reflow.py --apply $(git ls-files '*.cpp' '*.cc' '*.cxx' '*.h' '*.hpp')",
+      "command": "python3 ./.scripts/include_reflow.py --apply $(git ls-files '*.cpp' '*.cc' '*.cxx' '*.h' '*.hpp')",
+      "windows": {
+        "command": "python ./.scripts/include_reflow.py --apply $(git ls-files '*.cpp' '*.cc' '*.cxx' '*.h' '*.hpp')"
+      },
       "problemMatcher": [],
       "group": "none",
       "presentation": {

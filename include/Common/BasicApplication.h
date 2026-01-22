@@ -7,6 +7,8 @@
 //--------------------------------------------------------------------------------
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <singleapplication.h>
+#include <Common/ILog.h>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QProcess>

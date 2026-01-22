@@ -50,7 +50,7 @@ class ISysUtils {
     static void runScreenSaver();
 
     /// Установить локальное время системы
-    static void setSystemTime(QDateTime aDateTime) throw(...);
+    static void setSystemTime(QDateTime aDateTime) noexcept(false);
 
     /// Suspends the execution of the current thread until the time-out interval
     /// elapses.

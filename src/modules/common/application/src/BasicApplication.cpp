@@ -63,7 +63,9 @@ BasicApplication::BasicApplication(const QString &aName, const QString &aVersion
     QString settingsFilePath =
         QDir::toNativeSeparators(info.absolutePath() + QDir::separator() + info.completeBaseName() + ".ini");
     m_settings.reset(new QSettings(ISysUtils::rmBOM(settingsFilePath), QSettings::IniFormat));
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) && defined(Q_OS_WIN)
     m_settings->setIniCodec("UTF-8");
+    #endif
 
     // Устанавливаем рабочий каталог
     m_workingDirectory = info.absolutePath();

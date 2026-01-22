@@ -17,8 +17,14 @@ if(EXISTS "${THIRD_PARTY_DIR}/SingleApplication")
     set(QAPPLICATION_CLASS QApplication CACHE STRING "Qt application base class" FORCE)
     set(SINGLEAPPLICATION_INSTALL OFF CACHE BOOL "Disable install" FORCE)
 
+
     # Add the SingleApplication subdirectory
     add_subdirectory(SingleApplication)
+
+    # Ensure include path is propagated to all consumers
+    if(TARGET SingleApplication)
+        target_include_directories(SingleApplication PUBLIC "${THIRD_PARTY_DIR}/SingleApplication")
+    endif()
 
     # Provide clean alias target
     if(NOT TARGET EK::SingleApplication)

@@ -11,7 +11,11 @@
 #include <windows.h>
 typedef LPTOP_LEVEL_EXCEPTION_FILTER TExceptionHandler;
 #else
+#if defined(Q_OS_WIN)
 #error The type TExceptionHandler is not defined for the current platform.
+#elif defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+typedef void (*TExceptionHandler)(int);
+#endif
 #endif
 
 //---------------------------------------------------------------------------

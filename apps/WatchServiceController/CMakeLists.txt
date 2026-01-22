@@ -1,6 +1,7 @@
 # WatchServiceController (tray) application - refactored to EKiosk CMake helpers
 
 
+include_directories(${CMAKE_SOURCE_DIR}/thirdparty/SingleApplication)
 # Генерация ini-файлов для всех конфигураций через хелпер
 ek_generate_ini_for_all_configs(tray "${CMAKE_SOURCE_DIR}/runtimes/common/data/tray.ini.in")
 

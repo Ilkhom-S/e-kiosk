@@ -111,7 +111,12 @@ void SimpleLog::write(LogLevel::Enum aLevel, const QString &aMessage, const QByt
 
 //---------------------------------------------------------------------------
 bool SimpleLog::init() {
-    static QMutex fileListMutex(QMutex::Recursive);
+    // Qt5/Qt6 compatibility for static mutex
+    #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        static QRecursiveMutex fileListMutex;
+    #else
+        static QMutex fileListMutex(QMutex::Recursive);
+    #endif
     static QMap<QString, DestinationFilePtr> fileList;
 
     bool needWriteHeader = false;

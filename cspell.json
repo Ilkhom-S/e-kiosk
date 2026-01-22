@@ -5,7 +5,8 @@
     "**/build/**",
     "**/vcpkg_installed/**",
     "**/thirdparty/**",
-    "**/CMakeLists.txt"
+    "**/CMakeLists.txt",
+    "**/*.ui"
   ],
   "words": [
     "Dhhmm",
