@@ -15,7 +15,7 @@
 //--------------------------------------------------------------------------------
 bool DeviceUtils::isComplexFirmwareOld(const QString &aFirmware, const QString &aActualFirmware) {
     QStringList actualFirmwareData = QString(aActualFirmware).split(ASCII::Dot);
-    QStringList devicefirmwareData = QString(aFirmware).replace(QRegExp("[^0-9\\.]+"), "").split(ASCII::Dot);
+    QStringList devicefirmwareData = QString(aFirmware).replace(QRegularExpression("[^0-9\\.]+"), "").split(ASCII::Dot);
 
     for (int i = 0; i < actualFirmwareData.size(); ++i) {
         if (i == devicefirmwareData.size()) {

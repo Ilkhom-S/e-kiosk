@@ -4,7 +4,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QTime>
+#include <QtCore/QElapsedTimer>
 #include <Common/QtHeadersEnd.h>
 
 // Project
@@ -20,11 +20,11 @@ SafePerformerThread::SafePerformerThread(ILog *aLog) : mLog(aLog) {
 void SafePerformerThread::onTask(const STaskData &aData) {
     LOG(mLog, LogLevel::Debug, "Task started");
 
-    QTime timer;
+    QElapsedTimer timer;
     timer.start();
 
     bool result = aData.task();
-    int performingTime = timer.elapsed();
+    qint64 performingTime = timer.elapsed();
 
     if (performingTime < aData.timeout) {
         LOG(mLog, LogLevel::Debug, QString("Task was performed for %1 ms").arg(performingTime));
