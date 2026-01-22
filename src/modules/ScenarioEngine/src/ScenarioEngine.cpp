@@ -9,8 +9,11 @@
 #include <QtCore/QSettings>
 #include <Common/QtHeadersEnd.h>
 
-// Project
-#include "JSScenario.h"
+#if QT_VERSION_MAJOR >= 6
+#include "JSScenario6.h"
+#else
+#include "JSScenario5.h"
+#endif
 #include "ScenarioEngine.h"
 
 namespace GUI {

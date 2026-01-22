@@ -153,14 +153,15 @@ if(EXISTS "${THIRD_PARTY_DIR}/zint")
     # Add the zint subdirectory
     add_subdirectory(zint)
 
-    # Provide clean alias targets
-    if(NOT TARGET EK::QZint)
+    # Provide clean alias targets - only if targets exist
+    if(TARGET QZint AND NOT TARGET EK::QZint)
         add_library(EK::QZint ALIAS QZint)
     endif()
 
-    if(NOT TARGET EK::zint)
+    if(TARGET zint-static AND NOT TARGET EK::zint)
         add_library(EK::zint ALIAS zint-static)
     endif()
+
     if(TARGET QZint)
         set_target_properties(QZint PROPERTIES FOLDER "thirdparty/zint")
     endif()
@@ -168,7 +169,12 @@ if(EXISTS "${THIRD_PARTY_DIR}/zint")
         set_target_properties(zint-static PROPERTIES FOLDER "thirdparty/zint")
     endif()
 
-    message(STATUS "[thirdparty] Zint configured as EK::QZint and EK::zint")
+    # Only report success if targets were created
+    if(TARGET QZint AND TARGET zint-static)
+        message(STATUS "[thirdparty] Zint configured as EK::QZint and EK::zint")
+    else()
+        message(WARNING "[thirdparty] Zint configuration incomplete - targets not created")
+    endif()
 else()
     message(WARNING "Zint submodule not found")
 endif()
@@ -229,5 +235,15 @@ endfunction()
 # Place known thirdparty targets under thirdparty/<name>
 ek_set_folder_for_target(EK::LibUSB "thirdparty/LibUSB")
 
+# Collect available targets
+set(AVAILABLE_TARGETS "EK::SingleApplication, EK::SmsMessage, EK::qntp, EK::libipriv, EK::LibUSB")
+if(TARGET EK::QZint)
+    string(APPEND AVAILABLE_TARGETS ", EK::QZint")
+endif()
+if(TARGET EK::zint)
+    string(APPEND AVAILABLE_TARGETS ", EK::zint")
+endif()
+string(APPEND AVAILABLE_TARGETS ", EK::DelayImpHlp")
+
 message(STATUS "[thirdparty] Thirdparty configuration complete")
-message(STATUS "[thirdparty] Available targets: EK::SingleApplication, EK::SmsMessage, EK::qntp, EK::libipriv, EK::LibUSB, EK::QZint, EK::zint, EK::DelayImpHlp")
+message(STATUS "[thirdparty] Available targets: ${AVAILABLE_TARGETS}")

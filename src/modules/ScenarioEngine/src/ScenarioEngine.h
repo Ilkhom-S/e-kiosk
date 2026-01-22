@@ -15,7 +15,7 @@
 // Модули
 #include <Common/ILogable.h>
 
-#include "Scenario.h"
+#include <ScenarioEngine/Scenario.h>
 
 namespace GUI {
 

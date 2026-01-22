@@ -105,7 +105,8 @@ namespace GUI {
         // Clear state machine
         if (mStateMachine) {
             mStateMachine->stop();
-            mStateMachine->clear();
+            // Note: QStateMachine doesn't have clear() method in Qt6
+            // States are managed individually
         }
 
         // Clear states
@@ -480,7 +481,8 @@ namespace GUI {
 
         // This is a placeholder implementation for Qt6
         // A full implementation would require more complex JavaScript context management
-        toLog(LogLevel::Warning, QString("includeScript called but not fully implemented in Qt6 QJSEngine"));
+        // Note: Cannot use toLog() here as this is a static method
+        qWarning() << "includeScript called but not fully implemented in Qt6 QJSEngine";
         return QJSValue(false);
     }
 
