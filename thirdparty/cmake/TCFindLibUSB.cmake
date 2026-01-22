@@ -46,7 +46,7 @@ if(NOT TARGET EK::LibUSB)
         ${CMAKE_CURRENT_LIST_DIR}/../libusb/libusb
     )
 
-    # Add config.h include for Windows and macOS
+    # Add config.h include for Windows, macOS, and Linux
     if(WIN32)
         target_include_directories(libusb_static
             PUBLIC
@@ -64,6 +64,15 @@ if(NOT TARGET EK::LibUSB)
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../libusb/Xcode>
             PRIVATE
             ${CMAKE_CURRENT_LIST_DIR}/../libusb/Xcode
+        )
+    elseif(UNIX AND NOT APPLE)
+        target_include_directories(libusb_static
+            PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../libusb/android>
+            INTERFACE
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../libusb/android>
+            PRIVATE
+            ${CMAKE_CURRENT_LIST_DIR}/../libusb/android
         )
     endif()
 
