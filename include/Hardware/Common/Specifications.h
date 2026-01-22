@@ -50,6 +50,9 @@ template <class T1, class T2> class CSpecification {
 // Класс для хранения произвольных описателей данных
 template <class T> class CDescription : public CSpecification<T, QString> {
   public:
+    using CSpecification<T, QString>::mBuffer;
+    using CSpecification<T, QString>::mDefaultValue;
+
     void append(const T &aKey, const char *aParameter) {
         mBuffer.insert(aKey, QString::fromUtf8(aParameter));
     }
