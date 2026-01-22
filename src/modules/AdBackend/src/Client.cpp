@@ -79,6 +79,9 @@ namespace Ad {
 
         mSettings = QSharedPointer<QSettings>(
             new QSettings(ISysUtils::rmBOM(mContentPath + QDir::separator() + Ad::SettingsName), QSettings::IniFormat));
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        mSettings->setIniCodec("utf-8");
+#endif
         mSettings->moveToThread(&mThread);
 
         mServerUrl = mSettings->value(Settings::Url).toUrl();
