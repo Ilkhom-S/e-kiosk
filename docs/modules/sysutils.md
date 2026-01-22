@@ -2,7 +2,7 @@
 
 ## Purpose
 
-SysUtils encapsulates Windows-specific system utilities such as printer management, privilege elevation, process enumeration and cryptographic helpers.
+SysUtils encapsulates cross-platform system utilities such as printer management, privilege elevation, process enumeration, and cryptographic helpers for Windows, Linux, and macOS.
 
 ---
 
@@ -22,7 +22,7 @@ QVariantMap info = sysUtils->getPrinterInfo("PrinterName");
 
 - Printer status and management
 - Process enumeration
-- Privilege elevation helpers
+- Privilege elevation helpers (where supported)
 - Cryptographic and certificate utilities
 - BOM removal helper utilities
 
@@ -30,17 +30,17 @@ QVariantMap info = sysUtils->getPrinterInfo("PrinterName");
 
 ## Platform support
 
-| Platform | Status           | Notes                                           |
-| -------- | ---------------- | ----------------------------------------------- |
-| Windows  | ✅ Full          | Relies on WinAPI (Advapi32, Wintrust, Winspool) |
-| Linux    | ❌ Not supported | Windows-specific APIs used                      |
-| macOS    | ❌ Not supported | Windows-specific APIs used                      |
+| Platform | Status  | Notes                                                              |
+| -------- | ------- | ------------------------------------------------------------------ |
+| Windows  | ✅ Full | Relies on WinAPI (Advapi32, Wintrust, Winspool)                    |
+| Linux    | ✅ Full | Uses POSIX, CUPS, OpenSSL, and standard Linux APIs                 |
+| macOS    | ✅ Full | Uses POSIX, CUPS, OpenSSL, and macOS-specific APIs where necessary |
 
 ---
 
 ## Configuration
 
-No global configuration; APIs are used directly. Note: SysUtils expects UNICODE builds on Windows.
+No global configuration; APIs are used directly. On Windows, SysUtils expects UNICODE builds. On Linux/macOS, ensure CUPS and OpenSSL are available for full feature support.
 
 ---
 
@@ -58,7 +58,12 @@ No global configuration; APIs are used directly. Note: SysUtils expects UNICODE 
 Link the module and required system libraries in CMake:
 
 ```cmake
-target_link_libraries(MyApp PRIVATE SysUtils Advapi32 Winspool)
+# Windows
+if(WIN32)
+    target_link_libraries(MyApp PRIVATE SysUtils Advapi32 Winspool)
+else()
+    target_link_libraries(MyApp PRIVATE SysUtils)
+endif()
 ```
 
 ---
@@ -71,4 +76,4 @@ Unit tests covering SysUtils live in `tests/unit/` and can be run with `ctest -R
 
 ## Further reading
 
-- Implementation & layout: `src/modules/SysUtils/README.md` (platform notes and contributor guidance)"
+- Implementation & layout: `src/modules/SysUtils/README.md` (platform notes and contributor guidance)

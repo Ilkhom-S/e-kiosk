@@ -1,6 +1,6 @@
 # SysUtils
 
-This folder contains the implementation of system utilities (Windows-specific).
+This folder contains the implementation of system utilities for all supported platforms (Windows, Linux, macOS).
 
 - Canonical docs: `../../docs/modules/sysutils.md`
 
@@ -10,18 +10,26 @@ This folder contains the implementation of system utilities (Windows-specific).
 src/modules/SysUtils/
 ├── CMakeLists.txt                    # Build configuration
 ├── src/
-│   └── windows/
-│       ├── CryptSysUtils.cpp         # Cryptographic utilities
-│       ├── PrinterSysUtils.cpp       # Printer management
-│       ├── PrivilegeElevator.cpp     # Privilege elevation
-│       └── SysUtils.cpp              # General system utilities
+│   ├── windows/
+│   │   ├── CryptSysUtils.cpp         # Windows: Cryptographic utilities
+│   │   ├── PrinterSysUtils.cpp       # Windows: Printer management
+│   │   ├── PrivilegeElevator.cpp     # Windows: Privilege elevation
+│   │   └── SysUtils.cpp              # Windows: General system utilities
+│   └── unix/
+│       ├── CryptSysUtils.cpp         # Linux/macOS: Cryptographic utilities
+│       ├── PrinterSysUtils.cpp       # Linux/macOS: Printer management
+│       └── SysUtils.cpp              # Linux/macOS: General system utilities
 └── include/
     └── SysUtils/
         ├── ISysUtils.h               # Public interface
-        └── windows/                  # Platform headers
+        ├── windows/                  # Windows platform headers
+        │   ├── CryptSysUtils.h
+        │   ├── PrinterSysUtils.h
+        │   ├── PrivilegeElevator.h
+        │   └── SysUtils.h
+        └── unix/                     # Linux/macOS platform headers
             ├── CryptSysUtils.h
             ├── PrinterSysUtils.h
-            ├── PrivilegeElevator.h
             └── SysUtils.h
 ```
 
@@ -29,3 +37,4 @@ src/modules/SysUtils/
 
 - Keep high-level usage and examples in `docs/modules/sysutils.md`.
 - Use this README for platform notes, build hints, and implementation specifics.
+- The module is fully cross-platform; see CMakeLists.txt for platform-specific build logic.
