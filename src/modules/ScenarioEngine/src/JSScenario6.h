@@ -4,6 +4,7 @@
 
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QSignalMapper>
+#include <QtCore/QTimer>
 #include <QtStateMachine/QStateMachine>
 #include <QtCore/QSharedPointer>
 #include <QtQml/QJSEngine>
@@ -82,6 +83,9 @@ namespace GUI {
         /// Загрузка скрипта.
         bool loadScript(QJSEngine *aScriptEngine, const QString &aScenarioName, const QString &aScriptPath);
 
+        /// Установка таймаута для состояния.
+        void setStateTimeout(int aSeconds);
+
         /// Контекст.
         QVariantMap getContext() const;
 
@@ -110,6 +114,8 @@ namespace GUI {
         QJSValue mTimeoutHandler;                 /// Обработчик таймаута.
         QMultiMap<QString, QString> mTransitions; /// Список возможных переходов для состояния.
         bool mIsPaused;                           /// Флаг для пропуска переходов в сценариях "на паузе"
+        int mDefaultTimeout;                      /// Таймаут по умолчанию.
+        QTimer mTimeoutTimer;                     /// Таймер для таймаутов состояний.
 
         QList<Scenario::SExternalStateHook> mHooks;
     };
