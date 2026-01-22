@@ -33,7 +33,7 @@ namespace SDK {
 
           private:
             const SProvider &mProvider;
-            SProviderField::SecuritySubsystem mSubsustem;
+            SProviderField::SecuritySubsystem mSubsystem;
 
             Q_DISABLE_COPY(SecurityFilter)
         };
