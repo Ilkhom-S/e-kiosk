@@ -2,10 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QAbstractTransition>
-#include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <QtCore/QFinalState>
 #include <QtCore/QTextStream>
 #include <QtQml/QJSEngine>
 #include <QtQml/QJSValue>

@@ -10,7 +10,7 @@
 #include <QtScript/QScriptValue>
 #include <Common/QtHeadersEnd.h>
 
-#include "Scenario.h"
+#include <ScenarioEngine/Scenario.h>
 
 namespace GUI {
 
