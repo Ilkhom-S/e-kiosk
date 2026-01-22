@@ -4,7 +4,11 @@
 
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QSignalMapper>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QtStateMachine/QStateMachine>
+#else
 #include <QtCore/QStateMachine>
+#endif
 #include <QtCore/QSharedPointer>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QtQml/QJSEngine>
