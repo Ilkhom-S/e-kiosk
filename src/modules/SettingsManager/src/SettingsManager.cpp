@@ -312,7 +312,9 @@ void SettingsManager::writeXMLNode(QXmlStreamWriter &aWriter, const TPtree &aNod
 //---------------------------------------------------------------------------
 bool SettingsManager::readINI(const QString &aFileName, TPtree &aTree) {
     QSettings iniFile(aFileName, QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     iniFile.setIniCodec("UTF-8");
+#endif
 
     foreach (QString key, iniFile.allKeys()) {
         QString transformedKey(key);
@@ -321,8 +323,10 @@ bool SettingsManager::readINI(const QString &aFileName, TPtree &aTree) {
         transformedKey.prepend(QFileInfo(aFileName).completeBaseName() + ".");
         transformedKey.replace('/', '.');
 
-        switch (iniFile.value(key).type()) {
-            case QVariant::StringList:
+        // Use typeId() which is available in both Qt5.15+ and Qt6
+        // QMetaType::QStringList is available in both versions
+        switch (iniFile.value(key).typeId()) {
+            case QMetaType::QStringList:
                 aTree.add(transformedKey.toStdString(), iniFile.value(key).toStringList().join(","));
                 break;
 
@@ -338,7 +342,9 @@ bool SettingsManager::readINI(const QString &aFileName, TPtree &aTree) {
 //---------------------------------------------------------------------------
 bool SettingsManager::writeINI(const QString &aFileName, const TPtree &aTree) {
     QSettings iniFile(aFileName, QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     iniFile.setIniCodec("UTF-8");
+#endif
     iniFile.clear();
 
     static const TPtree emptyTree;
