@@ -1,5 +1,10 @@
 /* @file Класс для обмена сообщениями по http. */
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtGlobal>
+#include <Common/QtHeadersEnd.h>
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QtCore/QStringConverter>
 #include <QtCore/QStringEncoder>
