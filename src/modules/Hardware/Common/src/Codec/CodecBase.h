@@ -4,7 +4,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QTextCodec>
+#include <QtCore/QStringConverter>
 #include <QtCore/QReadWriteLock>
 #include <Common/QtHeadersEnd.h>
 
@@ -57,7 +57,7 @@ class CharacterData : public CSpecification<char, SCharData> {
 };
 
 //---------------------------------------------------------------------------
-class CodecBase : public QTextCodec {
+class CodecBase {
   public:
     CodecBase();
 
@@ -71,10 +71,10 @@ class CodecBase : public QTextCodec {
     virtual int mibEnum() const;
 
     /// Конвертировать массив байтов в юникодовую строку.
-    virtual QString convertToUnicode(const char *aBuffer, int aLength, ConverterState *aState) const;
+    virtual QString convertToUnicode(const char *aBuffer, int aLength) const;
 
     /// Конвертировать юникодовую строку в массив байтов.
-    virtual QByteArray convertFromUnicode(const QChar *aBuffer, int aLength, ConverterState *aState) const;
+    virtual QByteArray convertFromUnicode(const QChar *aBuffer, int aLength) const;
 
   protected:
     /// Имя кодека.

@@ -32,7 +32,7 @@ int CodecBase::mibEnum() const {
 }
 
 //---------------------------------------------------------------------------
-QString CodecBase::convertToUnicode(const char *aBuffer, int aLength, ConverterState * /*aState*/) const {
+QString CodecBase::convertToUnicode(const char *aBuffer, int aLength) const {
     QReadLocker lock(&mDataGuard);
 
     QByteArray buffer = QByteArray::fromRawData(aBuffer, aLength);
@@ -70,7 +70,7 @@ QString CodecBase::convertToUnicode(const char *aBuffer, int aLength, ConverterS
 }
 
 //---------------------------------------------------------------------------
-QByteArray CodecBase::convertFromUnicode(const QChar *aBuffer, int aLength, ConverterState * /*aState*/) const {
+QByteArray CodecBase::convertFromUnicode(const QChar *aBuffer, int aLength) const {
     QReadLocker lock(&mDataGuard);
 
     QByteArray result;
