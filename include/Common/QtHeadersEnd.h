@@ -14,28 +14,27 @@
 /*
       Note for Linux/macOS/Clang/GCC users:
       ------------------------------------------------------------
-      You may see a warning like:
-            'pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]'
-      This is harmless and occurs if QtHeadersBegin.h did not push diagnostics, or if the compiler does not support the pragma.
-      It does not affect compilation or runtime. Safe to ignore.
+      The pragma diagnostic pop warnings are now properly handled by only popping
+      when diagnostics were actually pushed in QtHeadersBegin.h.
       On Windows/MSVC, warning suppression works as intended.
 */
 
+// Only pop diagnostics if they were actually pushed in QtHeadersBegin.h
 #if defined(_MSC_VER)
 #pragma warning(pop)
 #undef HUMO_SUPPRESS_QT_WARNINGS
-#elif defined(__clang__)
-#pragma clang diagnostic pop
-#elif defined(__GNUC__)
-#pragma GCC diagnostic pop
 #endif
-#pragma once
 
-// Restore warning state after including Qt headers
-#if defined(_MSC_VER)
-#pragma warning(pop)
-#elif defined(__clang__)
+#if defined(QT_HEADERS_DIAGNOSTICS_PUSHED_CLANG)
 #pragma clang diagnostic pop
-#elif defined(__GNUC__)
-#pragma GCC diagnostic pop
+#undef QT_HEADERS_DIAGNOSTICS_PUSHED_CLANG
 #endif
+
+#if defined(QT_HEADERS_DIAGNOSTICS_PUSHED_GCC)
+#pragma GCC diagnostic pop
+#undef QT_HEADERS_DIAGNOSTICS_PUSHED_GCC
+#endif
+
+// Clean up tracking macros
+#undef QT_HEADERS_DIAGNOSTICS_PUSHED_MSVC
+#undef QT_HEADERS_DIAGNOSTICS_PUSHED

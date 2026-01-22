@@ -15,6 +15,11 @@
  by defining `HUMO_SUPPRESS_QT_WARNINGS` while the Qt headers are included.
 */
 
+// Track whether we actually pushed diagnostics for proper cleanup
+#ifndef QT_HEADERS_DIAGNOSTICS_PUSHED
+#define QT_HEADERS_DIAGNOSTICS_PUSHED
+#endif
+
 #if defined(_MSC_VER)
 
 #ifdef HUMO_SUPPRESS_QT_WARNINGS
@@ -22,6 +27,7 @@
 #endif
 
 #define HUMO_SUPPRESS_QT_WARNINGS
+#define QT_HEADERS_DIAGNOSTICS_PUSHED_MSVC
 
 #pragma warning(push)
 
@@ -46,9 +52,11 @@
 #pragma warning(disable : 4125) // decimal digit terminates octal escape sequence
 
 #elif defined(__clang__)
+#define QT_HEADERS_DIAGNOSTICS_PUSHED_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #elif defined(__GNUC__)
+#define QT_HEADERS_DIAGNOSTICS_PUSHED_GCC
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
