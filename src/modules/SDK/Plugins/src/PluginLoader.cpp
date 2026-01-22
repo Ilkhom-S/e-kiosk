@@ -21,7 +21,14 @@ namespace SDK {
     namespace Plugin {
 
         //------------------------------------------------------------------------------
-        PluginLoader::PluginLoader(IKernel *aKernel) : mKernel(aKernel), mAccessMutex(QMutex::Recursive) {
+        PluginLoader::PluginLoader(IKernel *aKernel)
+            : mKernel(aKernel),
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+              mAccessMutex(true) // true = recursive mutex in Qt6
+#else
+              mAccessMutex(QMutex::Recursive)
+#endif
+        {
         }
 
         //------------------------------------------------------------------------------
