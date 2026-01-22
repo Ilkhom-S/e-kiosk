@@ -164,7 +164,7 @@ namespace SDK {
 
                     auto rawParameters = aRequest.getParameters(true);
                     foreach (auto name, rawParameters.keys()) {
-                        signedRequest += "\n" + name + "=" + rawParameters.value(name).toString();
+                        signedRequest += ("\n" + name + "=" + rawParameters.value(name).toString()).toUtf8();
                     }
                 } else if (aSignatureType == Detached) {
                     task->getRequestHeader().insert("X-signature", detachedSignature);

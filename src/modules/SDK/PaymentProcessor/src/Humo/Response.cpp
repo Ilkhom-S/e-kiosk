@@ -18,12 +18,12 @@ namespace SDK {
                 : mResponseString(aResponseString), mError(ELocalError::NetworkError), mResult(EServerResult::Empty),
                   mRequest(aRequest) {
                 QRegularExpression regexp("^(\\w+)=(.*)$");
-                ////////regexp.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
                 foreach (auto line, mResponseString.split("\r\n")) {
-                    if (regexp.match(line).capturedStart() != -1) {
-                        if (regexp.captureCount() > 1) {
-                            addParameter(// TODO: // TODO: // TODO: // TODO: regexp.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1), // TODO: // TODO: // TODO: // TODO: regexp.cap(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2) needs manual migration to match.captured(2));
+                    QRegularExpressionMatch match = regexp.match(line);
+                    if (match.hasMatch()) {
+                        if (match.capturedLength() > 1) {
+                            addParameter(match.captured(1), match.captured(2));
                         }
                     }
                 }
