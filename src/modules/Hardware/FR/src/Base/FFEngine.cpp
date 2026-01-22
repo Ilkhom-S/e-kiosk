@@ -2,13 +2,14 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QtCore/QTimeZone>
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
 
-// Modules
+// System
 #include "Hardware/Common/CodecDescriptions.h"
-#include "Hardware/Common/HardwareConstants.h"
 #include "Hardware/Common/DeviceDataConstants.h"
+#include "Hardware/Common/HardwareConstants.h"
 #include "Hardware/Protocols/Common/ProtocolUtils.h"
 
 // Project
@@ -171,7 +172,8 @@ void FFEngine::parseTLVData(const CFR::STLV &aTLV, TFiscalPaymentData &aFPData) 
         }
         case ETypes::UnixTime: {
             QDateTime dateTime;
-            dateTime.setTimeSpec(Qt::UTC);
+            // QTimeZone::UTC is available in Qt 5.2+, which is the practical minimum
+            dateTime.setTimeZone(QTimeZone::UTC);
             uint seconds = revert(aTLV.data).toHex().toUInt(0, 16);
             dateTime.setTime_t(seconds);
 
@@ -954,7 +956,8 @@ QString FFEngine::filterPhone(const QString &aData) const {
         return "";
     }
 
-    QString result = revert(aData).remove(QRegularExpression("\\n\\r\\t"), "").remove(QRegularExpression("^[^0-9]+"), "");
+    QString result =
+        revert(aData).remove(QRegularExpression("\\n\\r\\t"), "").remove(QRegularExpression("^[^0-9]+"), "");
     int index = 1 + result.lastIndexOf(QRegularExpression("[0-9]+"));
     int last = 1 + result.indexOf(QRegExp("[\\+\\(]"), index);
     result = revert(result.left(last ? last : index));

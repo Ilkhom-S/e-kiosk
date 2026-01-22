@@ -1,8 +1,12 @@
 /* @file Описатель валюты для устройств приема денег. */
 
-#pragma once
+// STL
+#include <algorithm>
 
+// SDK
 #include <SDK/Drivers/CashAcceptor/CurrencyList.h>
+
+// Project
 #include "Par.h"
 
 namespace SDK {
@@ -63,8 +67,8 @@ bool isParListEqual(SDK::Driver::TParList aParList1, SDK::Driver::TParList aParL
         return false;
     }
 
-    qSort(aParList1);
-    qSort(aParList2);
+    std::sort(aParList1.begin(), aParList1.end());
+    std::sort(aParList2.begin(), aParList2.end());
 
     for (int i = 0; i < aParList1.size(); ++i) {
         if (!aParList1[i].isEqual(aParList2[i])) {

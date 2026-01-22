@@ -6,7 +6,7 @@
 #include <Common/QtHeadersEnd.h>
 
 // Project
-#include "hashVerifier.h"
+#include "HashVerifier.h"
 
 Md5Verifier::Md5Verifier(const QString &aMd5) {
     mMD5 = aMd5;

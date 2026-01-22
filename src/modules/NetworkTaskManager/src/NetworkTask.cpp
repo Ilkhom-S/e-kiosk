@@ -3,6 +3,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QMutexLocker>
+#include <QtCore/QTimeZone>
 #include <Common/QtHeadersEnd.h>
 
 // Project
@@ -341,7 +342,8 @@ QDateTime NetworkTask::getServerDate() const {
             .replace("Dec", "12");
 
         date = QDateTime::fromString(dateString, "dd MM yyyy hh:mm:ss");
-        date.setTimeSpec(Qt::UTC);
+        // QTimeZone::UTC is available in Qt 5.2+, which is the practical minimum
+        date.setTimeZone(QTimeZone::UTC);
     }
 
     return date;

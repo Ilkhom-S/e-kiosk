@@ -60,7 +60,8 @@ namespace Ad {
                 foreach (const QString &line, statements) {
                     QString statement = line.simplified();
                     if (!statement.isEmpty()) {
-                        QSqlQuery query = mDatabase.exec(statement);
+                        QSqlQuery query(mDatabase);
+                        query.exec(statement);
                         if (!query.isActive()) {
                             toLog(LogLevel::Error,
                                   QString("Failed to create database: %1").arg(query.lastError().text()));
