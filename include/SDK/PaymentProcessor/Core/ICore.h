@@ -4,6 +4,7 @@
 
 // stl
 #include <exception>
+#include <stdexcept>
 
 // Qt
 #include <Common/QtHeadersBegin.h>
@@ -26,11 +27,11 @@ namespace SDK {
         //------------------------------------------------------------------------------
         /// Этот тип исключений выбрасывается ядром и всеми его дочерними сервисами, если запрошенный сервис
         /// не реализован.
-        class ServiceIsNotImplemented : public std::exception {
+        class ServiceIsNotImplemented : public std::runtime_error {
           public:
             /// Конструктор.
             ServiceIsNotImplemented(const QString &aServiceName)
-                : std::exception(QString("%1 is not implemented").arg(aServiceName).toLatin1()) {
+                : std::runtime_error(QString("%1 is not implemented").arg(aServiceName).toLatin1().constData()) {
             }
         };
 

@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QTextCodec>
+#include <QtCore/QStringDecoder>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
@@ -29,7 +29,7 @@ AdGetChannelsResponse::AdGetChannelsResponse(const PPSDK::Humo::Request &aReques
 
 //------------------------------------------------------------------------------
 QStringList AdGetChannelsResponse::channels() const {
-    return getParameter(Ad::Parameters::Channels).toString().split(",", QString::SkipEmptyParts);
+    return getParameter(Ad::Parameters::Channels).toString().split(",", Qt::SkipEmptyParts);
 }
 
 //------------------------------------------------------------------------------
@@ -48,8 +48,10 @@ QList<Ad::Campaign> AdGetChannelResponse::getCampaigns() const {
     c.md5 = getParameter(Ad::Parameters::MD5).toString();
     c.expired = QDateTime::fromString(getParameter(Ad::Parameters::Expired).toString(), Ad::Parameters::DateTimeFormat);
     c.url = QUrl::fromEncoded(getParameter(Ad::Parameters::Url).toByteArray());
-    c.text = QTextCodec::codecForName("windows-1251")
-                 ->toUnicode(QByteArray::fromBase64(getParameter(Ad::Parameters::Text).toByteArray()));
+    {
+        QStringDecoder decoder("windows-1251");
+        c.text = decoder.decode(QByteArray::fromBase64(getParameter(Ad::Parameters::Text).toByteArray()));
+    }
 
     result << c;
 
@@ -58,8 +60,10 @@ QList<Ad::Campaign> AdGetChannelResponse::getCampaigns() const {
     c.md5 = getParameter(Ad::Parameters::DefaultMD5).toString();
     c.expired = QDateTime(QDate(2999, 12, 31), QTime(23, 59, 59));
     c.url = QUrl::fromEncoded(getParameter(Ad::Parameters::DefaultUrl).toByteArray());
-    c.text = QTextCodec::codecForName("windows-1251")
-                 ->toUnicode(QByteArray::fromBase64(getParameter(Ad::Parameters::DefaultText).toByteArray()));
+    {
+        QStringDecoder decoder("windows-1251");
+        c.text = decoder.decode(QByteArray::fromBase64(getParameter(Ad::Parameters::DefaultText).toByteArray()));
+    }
 
     result << c;
 

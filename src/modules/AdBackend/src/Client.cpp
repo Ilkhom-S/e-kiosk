@@ -79,7 +79,6 @@ namespace Ad {
 
         mSettings = QSharedPointer<QSettings>(
             new QSettings(ISysUtils::rmBOM(mContentPath + QDir::separator() + Ad::SettingsName), QSettings::IniFormat));
-        mSettings->setIniCodec("utf-8");
         mSettings->moveToThread(&mThread);
 
         mServerUrl = mSettings->value(Settings::Url).toUrl();
@@ -147,7 +146,7 @@ namespace Ad {
 
             RequestSender::ESendError error;
 
-            QScopedPointer<Response> response(mHttp->post(aUrl, aRequest, RequestSender::Solid, error));
+            std::unique_ptr<Response> response(mHttp->post(aUrl, aRequest, RequestSender::Solid, error));
 
             if (response) {
                 toLog(LogLevel::Normal, QString("< %1.").arg(response->toLogString()));
@@ -155,7 +154,7 @@ namespace Ad {
                 toLog(LogLevel::Error, QString("Failed to send: %1.").arg(RequestSender::translateError(error)));
             }
 
-            return response.take();
+            return response.release();
         }
 
         return 0;
@@ -182,7 +181,7 @@ namespace Ad {
 
         AdGetChannelsRequest request(mCore);
 
-        QScopedPointer<Response> response(sendRequest(mServerUrl, request));
+        std::unique_ptr<Response> response(sendRequest(mServerUrl, request));
 
         if (!response || !response->isOk()) {
             toLog(LogLevel::Error, QString("Failed to get channels list: (%1) %2")
@@ -191,7 +190,7 @@ namespace Ad {
 
             QTimer::singleShot(CClient::ReinitInterval, this, SLOT(doUpdate()));
         } else {
-            mTypeList = static_cast<AdGetChannelsResponse *>(response.data())->channels();
+            mTypeList = static_cast<AdGetChannelsResponse *>(response.get())->channels();
 
             QTimer::singleShot(0, this, SLOT(updateTypes()));
         }
@@ -202,7 +201,7 @@ namespace Ad {
         foreach (auto channel, mTypeList) {
             AdGetChannelRequest request(mCore, channel);
 
-            QScopedPointer<Response> response(sendRequest(mServerUrl, request));
+            std::unique_ptr<Response> response(sendRequest(mServerUrl, request));
 
             if (!response || !response->isOk()) {
                 toLog(LogLevel::Error, QString("Failed to get channel '%1': (%2) %3")
@@ -213,7 +212,7 @@ namespace Ad {
                 QTimer::singleShot(CClient::ReinitInterval, this, SLOT(updateTypes()));
                 break;
             } else {
-                foreach (auto campaign, static_cast<AdGetChannelResponse *>(response.data())->getCampaigns()) {
+                foreach (auto campaign, static_cast<AdGetChannelResponse *>(response.get())->getCampaigns()) {
                     toLog(LogLevel::Debug, QString("Receive campaign: %1").arg(campaign.toString()));
 
                     mCampaigns.insert(campaign.type, campaign);
@@ -290,7 +289,7 @@ namespace Ad {
             if (!statisticList.isEmpty()) {
                 AdStatisticRequest request(mCore, statisticList);
 
-                QScopedPointer<Response> response(sendRequest(mServerUrl, request));
+                std::unique_ptr<Response> response(sendRequest(mServerUrl, request));
 
                 if (!response || !response->isOk()) {
                     toLog(LogLevel::Error, QString("Failed to sent statistic: (%1) %2")

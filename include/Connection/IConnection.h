@@ -11,7 +11,7 @@
 #include <QtCore/QDateTime>
 #include "Common/QtHeadersEnd.h"
 
-#include <Common\ILog.h>
+#include <Common/ILog.h>
 
 // SDK
 #include <SDK/PaymentProcessor/Connection/ConnectionTypes.h>
@@ -49,16 +49,16 @@ class IConnection : public QObject {
     virtual void setCheckPeriod(int aMinutes) = 0;
 
     /// Проверяет установленно ли подключение.
-    virtual bool isConnected(bool aUseCache = true) throw(...) = 0;
+    virtual bool isConnected(bool aUseCache = true) noexcept(false) = 0;
 
     /// Проверяет соединение с хостом.
-    virtual bool checkConnection(const CheckUrl &aHost = CheckUrl()) throw(...) = 0;
+    virtual bool checkConnection(const CheckUrl &aHost = CheckUrl()) noexcept(false) = 0;
 
     /// Устанавливает соединение.
-    virtual void open(bool aWatch = true) throw(...) = 0;
+    virtual void open(bool aWatch = true) noexcept(false) = 0;
 
     /// Закрывает соединение.
-    virtual void close() throw(...) = 0;
+    virtual void close() noexcept(false) = 0;
 
     /// Устанавливает список хостов для проверки соединения.
     virtual void setCheckHosts(const QList<CheckUrl> &aHosts) = 0;
@@ -72,26 +72,26 @@ class IConnection : public QObject {
 
   public:
     /// Поиск всех установленных в системе модемов.
-    static QStringList getModems() throw(...);
+    static QStringList getModems() noexcept(false);
 
     /// Получить информацию о модеме
-    static QString getModemInfo(const QString &aName) throw(...);
+    static QString getModemInfo(const QString &aName) noexcept(false);
 
     /// Поиск всех установленных в системе сетевых интерфейсов.
-    static QStringList getInterfaces() throw(...);
+    static QStringList getInterfaces() noexcept(false);
 
     /// Список всех соединений в системе.
-    static QStringList getRemoteConnections() throw(...);
+    static QStringList getRemoteConnections() noexcept(false);
 
     /// Список всех локальных соединений в системе.
-    static QStringList getLocalConnections() throw(...);
+    static QStringList getLocalConnections() noexcept(false);
 
     /// Создать dialup соединение
     static void createDialupConnection(const QString &aName, const QString &aPhone, const QString &aLogin,
-                                       const QString &aPassword, const QString &aDevice) throw(...);
+                                       const QString &aPassword, const QString &aDevice) noexcept(false);
 
     /// Удалить dialup соединение
-    static void removeDialupConnection(const QString &aName) throw(...);
+    static void removeDialupConnection(const QString &aName) noexcept(false);
 
   public:
     static ILog *mLog;
