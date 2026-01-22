@@ -3,7 +3,9 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QCryptographicHash>
+#include <QtCore/QRandomGenerator>
 #include <QtCore/QReadLocker>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QWriteLocker>
 #include <QtCore/qmath.h>
 #include <QtQml/QJSEngine>
@@ -289,14 +291,18 @@ bool PaymentBase::getLimits(double &aMinAmount, double &aMaxAmount) {
     QString maxLimit = limits.max;
 
     QRegularExpression macroPattern("\\{(.+)\\}");
-    ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
-    while (macroPattern.match(minLimit).capturedStart() != -1) {
-        minLimit.replace(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), getParameter(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1)).value.toString());
+    QRegularExpressionMatch match;
+    while ((match = macroPattern.match(minLimit)).hasMatch()) {
+        QString paramName = match.captured(1);
+        QString paramValue = getParameter(paramName).value.toString();
+        minLimit.replace(match.captured(0), paramValue);
     }
 
-    while (macroPattern.match(maxLimit).capturedStart() != -1) {
-        maxLimit.replace(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), getParameter(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1)).value.toString());
+    while ((match = macroPattern.match(maxLimit)).hasMatch()) {
+        QString paramName = match.captured(1);
+        QString paramValue = getParameter(paramName).value.toString();
+        maxLimit.replace(match.captured(0), paramValue);
     }
 
     QJSEngine myEngine;
@@ -619,7 +625,7 @@ bool PaymentBase::limitsDependOnParameter(const SParameter &aParameter) {
 //------------------------------------------------------------------------------
 QString PaymentBase::createPaymentSession() const {
     return QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz") +
-           QString("%1").arg(qrand() % 1000, 3, 10, QChar('0'));
+           QString("%1").arg(QRandomGenerator::global()->bounded(1000), 3, 10, QChar('0'));
 }
 
 //------------------------------------------------------------------------------
