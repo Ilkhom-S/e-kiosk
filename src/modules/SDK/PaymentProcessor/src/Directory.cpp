@@ -1,6 +1,7 @@
 /* @file Справочники. */
 
 // STL
+#include <algorithm>
 #include <array>
 
 // SDK
@@ -76,8 +77,8 @@ namespace SDK {
             mOverlappedIDs.squeeze();
             mRanges.squeeze();
             mOverlappedRanges.squeeze();
-            qSort(mRanges);
-            qSort(mOverlappedRanges);
+            std::sort(mRanges.begin(), mRanges.end());
+            std::sort(mOverlappedRanges.begin(), mOverlappedRanges.end());
         }
 
         //---------------------------------------------------------------------------
@@ -117,14 +118,14 @@ namespace SDK {
 
             // Сначала ищем в виртуальных диапазонах
             QVector<SRange>::const_iterator begin =
-                qLowerBound(mOverlappedRanges.begin(), mOverlappedRanges.end(), aNumber);
+                std::lower_bound(mOverlappedRanges.begin(), mOverlappedRanges.end(), aNumber);
             QVector<SRange>::const_iterator end =
-                qUpperBound(mOverlappedRanges.begin(), mOverlappedRanges.end(), aNumber);
+                std::upper_bound(mOverlappedRanges.begin(), mOverlappedRanges.end(), aNumber);
 
             // Если нет в виртуальных, то ищем в обычных
             if (begin == end) {
-                begin = qLowerBound(mRanges.begin(), mRanges.end(), aNumber);
-                end = qUpperBound(mRanges.begin(), mRanges.end(), aNumber);
+                begin = std::lower_bound(mRanges.begin(), mRanges.end(), aNumber);
+                end = std::upper_bound(mRanges.begin(), mRanges.end(), aNumber);
             }
 
             std::copy(begin, end, std::back_inserter(ranges));
