@@ -29,7 +29,7 @@
     "commands": [
       {
         "match": "\\.(cpp|cc|cxx|h|hpp)$",
-        "cmd": "python3 ./.scripts/include_reflow.py --apply \"${file}\""
+        "cmd": "python3 ./.scripts/run_python_cross.py ./.scripts/include_reflow.py --apply \"${file}\""
       }
     ]
   },
