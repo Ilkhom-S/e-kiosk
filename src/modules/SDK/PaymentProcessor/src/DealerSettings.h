@@ -2,11 +2,7 @@
 
 #pragma once
 
-// Boost
-#pragma push_macro("foreach")
-#undef foreach
-#include <boost/noncopyable.hpp>
-#pragma pop_macro("foreach")
+// C++ standard library for non-copyable behavior
 
 // Qt
 #include <Common/QtHeadersBegin.h>
@@ -65,7 +61,7 @@ namespace SDK {
         };
 
         //---------------------------------------------------------------------------
-        class DealerSettings : public ISettingsAdapter, public ILogable, private boost::noncopyable {
+        class DealerSettings : public ISettingsAdapter, public ILogable {
             struct SCustomer {
                 bool blocked;
                 QSet<QString> values;
@@ -89,6 +85,10 @@ namespace SDK {
 
             explicit DealerSettings(TPtree &aProperties);
             virtual ~DealerSettings();
+
+            // Non-copyable
+            DealerSettings(const DealerSettings &) = delete;
+            DealerSettings &operator=(const DealerSettings &) = delete;
 
             /// Валидация загруженных данных.
             virtual bool isValid() const;

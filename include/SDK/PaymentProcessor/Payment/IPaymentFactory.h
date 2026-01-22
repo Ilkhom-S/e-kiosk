@@ -2,8 +2,8 @@
 
 #pragma once
 
-// Boost
-#include <boost/function.hpp>
+// STL
+#include <functional>
 
 // SDK
 #include <SDK/PaymentProcessor/Settings/Provider.h>
@@ -20,7 +20,7 @@ namespace SDK {
         class IPaymentFactory {
           public:
             /// Тип сериализатора.
-            typedef boost::function<bool(SDK::PaymentProcessor::IPayment *)> TSerializer;
+            typedef std::function<bool(SDK::PaymentProcessor::IPayment *)> TSerializer;
 
             /// Инициализирует фабрику.
             virtual bool initialize() = 0;
