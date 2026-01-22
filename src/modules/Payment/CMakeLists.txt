@@ -7,15 +7,9 @@ file(GLOB PAYMENT_SOURCES
 
 
 # QtQml is required for JavaScript evaluation in PaymentBase (QJSEngine)
-if(QT_VERSION_MAJOR EQUAL 5)
-    find_package(Qt5 COMPONENTS Core Qml REQUIRED)
-    set(PAYMENT_QT_MODULES Core Qml)
-    set(PAYMENT_DEPENDS ek_boost)
-elseif(QT_VERSION_MAJOR EQUAL 6)
-    find_package(Qt6 COMPONENTS Core Qml REQUIRED)
-    set(PAYMENT_QT_MODULES Core Qml)
-    set(PAYMENT_DEPENDS boost)
-endif()
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Qml REQUIRED)
+set(PAYMENT_QT_MODULES Core Qml)
+set(PAYMENT_DEPENDS ek_boost)
 
 ek_add_library(PaymentBase
     FOLDER "modules"
@@ -25,5 +19,3 @@ ek_add_library(PaymentBase
     DEPENDS ${PAYMENT_DEPENDS}
     COMPILE_DEFINITIONS _UNICODE UNICODE
 )
-
-# Note: This module depends on boost from thirdparty
