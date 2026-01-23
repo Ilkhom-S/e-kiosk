@@ -2,6 +2,8 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QStringList>
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
@@ -28,7 +30,7 @@ bool Creator::sendPacket(const QByteArray &aData) {
         packet.prepend(ASCII::NUL);
 
         QString loggedRequest = packet.toHex();
-        loggedRequest.replace(QRegExp("(00)+$"), CCreator::NULLogPostfix);
+        loggedRequest.replace(QRegularExpression("(00)+$"), CCreator::NULLogPostfix);
 
         toLog(LogLevel::Debug, "USB >> " + loggedRequest);
 
@@ -108,8 +110,8 @@ void Creator::trimUSBData(QByteArray &aData) {
 bool Creator::receivePacket(QByteArray &aData) {
     QByteArray answer;
 
-    QTime clockTimer;
-    clockTimer.restart();
+    QElapsedTimer clockTimer;
+    clockTimer.start();
 
     int base = 0;
     bool calcBaseOK = true;
@@ -128,7 +130,7 @@ bool Creator::receivePacket(QByteArray &aData) {
             }
         } else {
             QString loggedAnswer = answer.toHex();
-            loggedAnswer.replace(QRegExp("(00)+$"), CCreator::NULLogPostfix);
+            loggedAnswer.replace(QRegularExpression("(00)+$"), CCreator::NULLogPostfix);
             logBuffer << loggedAnswer;
         }
 
@@ -315,8 +317,8 @@ bool Creator::readAnswer(QByteArray &aAnswer) {
     ushort length = 0;
     bool ACK = false;
 
-    QTime clockTimer;
-    clockTimer.restart();
+    QElapsedTimer clockTimer;
+    clockTimer.start();
 
     do {
         answer.clear();
