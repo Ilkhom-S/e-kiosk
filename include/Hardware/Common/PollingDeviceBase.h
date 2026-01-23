@@ -27,7 +27,7 @@ template <class T> class PollingDeviceBase : public DeviceBase<T> {
     virtual bool release();
 
     /// Завершение инициализации.
-    virtual void finaliseInitialization();
+    virtual void finalizeInitialization();
 
     /// Фоновая логика при появлении определенных состояний устройства.
     virtual void postPollingAction(const TStatusCollection &aNewStatusCollection,
@@ -51,7 +51,7 @@ template <class T> class PollingDeviceBase : public DeviceBase<T> {
     /// Запуск/останов поллинга.
     virtual void setPollingActive(bool aActive);
 
-    /// Переинициализация в рамках фоновой логики пост-поллинга.
+    /// Пере инициализация в рамках фоновой логики пост-поллинга.
     virtual void reInitialize();
 
     /// Останавливает функционал поллинга, возвращается в состояние до initialize().

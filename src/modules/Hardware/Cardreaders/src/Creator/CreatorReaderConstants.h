@@ -28,7 +28,7 @@ namespace CCreatorReader {
     namespace Commands {
         const char LockInitialize[] = "\x30\x30";                   /// Инициализация с блокировкой карты.
         const char UnLockInitialize[] = "\x30\x31";                 /// Инициализация с разблокировкой карты.
-        const char GetSerialNumber[] = "\xA2\x30";                  /// Получение серийного нормера.
+        const char GetSerialNumber[] = "\xA2\x30";                  /// Получение серийного номера.
         const char GetStatus[] = "\x31\x30";                        /// Получение статуса.
         const char IdentifyIC[] = "\x50\x30";                       /// Автоидентификация IC-карты.
         const char IdentifyRF[] = "\x50\x31";                       /// Автоидентификация RF-карты.

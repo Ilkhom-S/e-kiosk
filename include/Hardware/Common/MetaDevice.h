@@ -34,7 +34,7 @@ namespace CMetaDevice {
     const char DefaultName[] = "Meta device";
 } // namespace CMetaDevice
 
-/// Данные устройства для логгирования и мониторинга.
+/// Данные устройства для логирования и мониторинга.
 struct SLogData {
     QString plugin; /// ini плагина устройства.
     QString device; /// данные устройства.
@@ -146,7 +146,7 @@ class MetaDevice : public T, public SDK::Driver::IDevice::IDetectingIterator, pu
     /// Удалить параметр устройства.
     void removeDeviceParameter(const QString &aName);
 
-    /// Логгирование параметров устройства.
+    /// Логирование параметров устройства.
     void logDeviceData(const SLogData &aData) const;
 
     /// Из рабочего ли потока происходит вызов.
@@ -161,7 +161,7 @@ class MetaDevice : public T, public SDK::Driver::IDevice::IDetectingIterator, pu
     /// Данные устройства.
     TDeviceData mDeviceData;
 
-    /// Время последнего логгирования.
+    /// Время последнего логирования.
     QDate mLogDate;
 
     /// Итерация авто поиска.

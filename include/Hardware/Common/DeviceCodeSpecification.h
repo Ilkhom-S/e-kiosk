@@ -21,7 +21,7 @@ class IDeviceCodeSpecification {
     virtual void getSpecification(char aAnswerData, TStatusCodes &aStatusCodes) = 0;
 };
 
-/// Структура для описаний состояний купюрника.
+/// Структура для описаний состояний купюроприемника.
 class CommonDeviceCodeSpecification : public IDeviceCodeSpecification, protected DeviceCodeSpecificationBase<char> {
   public:
     /// Получить спецификации девайс-кодов по байт-массиву. байт-массив не должен содержать лишних байтов перед

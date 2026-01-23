@@ -27,7 +27,7 @@ template <class T> class PollingDeviceBase : public DeviceBase<T> {
     virtual bool release();
 
     /// Завершение инициализации.
-    virtual void finaliseInitialization();
+    virtual void finalizeInitialization();
 
     /// Фоновая логика при появлении определенных состояний устройства.
     virtual void postPollingAction(const TStatusCollection &aNewStatusCollection,
@@ -51,7 +51,7 @@ template <class T> class PollingDeviceBase : public DeviceBase<T> {
     /// Запуск/останов поллинга.
     virtual void setPollingActive(bool aActive);
 
-    /// Переинициализация в рамках фоновой логики пост-поллинга.
+    /// Пере инициализация в рамках фоновой логики пост-поллинга.
     virtual void reInitialize();
 
     /// Останавливает функционал поллинга, возвращается в состояние до вызова initialize().
@@ -66,10 +66,10 @@ template <class T> class PollingDeviceBase : public DeviceBase<T> {
     /// Поллинг активирован. QTimer::isActive() не всегда работает корректно.
     bool mPollingActive;
 
-    /// Список задач для выполнения после поллинга, если нет ошибкок.
+    /// Список задач для выполнения после поллинга, если нет ошибок.
     TTaskList mPPTaskList;
 
-    /// Принудительно не ждать первого полла на иницаилизации.
+    /// Принудительно не ждать первого полла на инициализации.
     bool mForceNotWaitFirst;
 };
 
