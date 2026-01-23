@@ -1,10 +1,16 @@
-// System
 /* @file Базовый класс устройств на USB-порту. */
 
 #pragma once
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QMutex>
+#include <QtCore/QRecursiveMutex>
+#include <Common/QtHeadersEnd.h>
+
 #include "Hardware/Common/BaseStatusTypes.h"
 #include "Hardware/Common/USBDeviceModelData.h"
+#include "Hardware/Common/MetaDevice.h"
 #include "Hardware/IOPorts/USBPort.h"
 
 //--------------------------------------------------------------------------------
@@ -22,7 +28,7 @@ template <class T> class USBDeviceBase : public T {
     /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
     virtual bool release();
 
-    /// Переформировывает список параметров для автопоиска и устанавливает 1-й набор параметров из этого списка.
+    /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из этого списка.
     virtual SDK::Driver::IDevice::IDetectingIterator *getDetectingIterator();
 #pragma endregion
 
@@ -65,10 +71,10 @@ template <class T> class USBDeviceBase : public T {
     /// Порт.
     USBPort mUSBPort;
 
-    /// Данные устройств для автопоиска.
+    /// Данные устройств для авто поиска.
     CUSBDevice::PDetectingData mDetectingData;
 
-    /// Учитывать при автопоиске PDO-имена.
+    /// Учитывать при авто поиске PDO-имена.
     bool mPDODetecting;
 
     /// Порт используется.
