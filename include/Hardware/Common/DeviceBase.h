@@ -244,6 +244,9 @@ template <class T> class DeviceBase : public T {
 
     /// Статусы, наличие которых в ответе на статус запускает работу буфера статусов.
     TStatusCodes mReplaceableStatuses;
+
+    /// Имя устройства.
+    QString mDeviceName;
 };
 
 //---------------------------------------------------------------------------

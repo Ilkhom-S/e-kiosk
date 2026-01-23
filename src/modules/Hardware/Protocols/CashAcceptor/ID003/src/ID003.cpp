@@ -1,9 +1,14 @@
 /* @file Протокол ID003. */
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <Common/QtHeadersEnd.h>
+
+// Project
 #include "ID003.h"
 #include "ID003Constants.h"
 
-//--------------------------------------------------------------------------------
 ushort ID003Protocol::calcCRC16(const QByteArray &aData) {
     ushort CRC = 0;
 
@@ -105,7 +110,7 @@ bool ID003Protocol::getAnswer(QByteArray &aAnswerData) {
     QByteArray answer;
     uchar length = 0;
 
-    QTime clockTimer;
+    QElapsedTimer clockTimer;
     clockTimer.restart();
 
     do {

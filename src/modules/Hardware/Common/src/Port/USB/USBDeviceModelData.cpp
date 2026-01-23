@@ -1,12 +1,9 @@
-/* @file Спецификация данных моделей USB-устройств для автопоиска. */
+/* @file Спецификация данных моделей USB-устройств для авто поиска. */
 
-
-// Modules
-#include "Hardware/Common/ASCII.h"
+// System
 #include "Hardware/CardReaders/MifareReaderModelDataTypes.h"
-
-// Project
-#include "USBDeviceModelData.h"
+#include "Hardware/Common/ASCII.h"
+#include <Hardware/Common/USBDeviceModelData.h>
 
 namespace CUSBDevice {
 

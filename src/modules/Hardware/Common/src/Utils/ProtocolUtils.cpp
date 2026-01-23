@@ -10,7 +10,6 @@
 // Project
 #include "ProtocolUtils.h"
 
-// Инстанциирование возможных типов для toHexLog. Добавлять при необходимости.
 template QString ProtocolUtils::toHexLog(char);
 template QString ProtocolUtils::toHexLog(uchar);
 template QString ProtocolUtils::toHexLog(ushort);
@@ -141,8 +140,9 @@ ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromStrings(QStringList a
     for (int i = 0; i < aDataList.size(); ++i) {
         QString rawLine = aDataList[i];
 
-        if (regex.match(aDataList[i]).capturedStart() && (regex.capturedTexts()[1].size() > 4)) {
-            QString lineData = regex.capturedTexts()[1];
+        QRegularExpressionMatch match = regex.match(aDataList[i]);
+        if (match.hasMatch() && (match.capturedTexts()[1].size() > 4)) {
+            QString lineData = match.capturedTexts()[1];
             result << ProtocolUtils::getBufferFromString(lineData);
         }
     }

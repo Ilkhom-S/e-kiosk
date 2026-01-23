@@ -1,6 +1,11 @@
 /* @file Сканер на порту. */
 
-// Modules
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <Common/QtHeadersEnd.h>
+
+// System
 #include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/Common/SerialDeviceBase.h"
 #include "Hardware/Common/USBDeviceBase.h"
@@ -9,7 +14,6 @@
 // Project
 #include "PortScanner.h"
 
-//-------------------------------------------------------------------------------
 template class PortScanner<USBDeviceBase<PortPollingDeviceBase<ProtoHID>>>;
 template class PortScanner<SerialDeviceBase<PortPollingDeviceBase<ProtoHID>>>;
 
@@ -20,7 +24,7 @@ template <class T> PortScanner<T>::PortScanner() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool PortScanner<T>::release() {
-    mIOPort->release();
+    this->mIOPort->release();
 
     return HIDBase<T>::release();
 }
@@ -29,11 +33,11 @@ template <class T> bool PortScanner<T>::release() {
 template <class T> bool PortScanner<T>::getData(QByteArray &aAnswer) {
     QByteArray data;
 
-    QTime clockTimer;
+    QElapsedTimer clockTimer;
     clockTimer.start();
 
     do {
-        if (!mIOPort->read(data, CScanner::CheckingTimeout)) {
+        if (!this->mIOPort->read(data, CScanner::CheckingTimeout)) {
             return false;
         }
 
@@ -42,14 +46,14 @@ template <class T> bool PortScanner<T>::getData(QByteArray &aAnswer) {
         if (!data.isEmpty()) {
             clockTimer.restart();
         }
-    } while (clockTimer.elapsed() < CScanner::PollingInterval);
+    } while (clockTimer.elapsed() < this->mPollingInterval);
 
     return true;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool PortScanner<T>::getStatus(TStatusCodes & /*aStatusCodes*/) {
-    if (!mEnabled) {
+    if (!this->mEnabled) {
         return true;
     }
 
@@ -64,21 +68,21 @@ template <class T> bool PortScanner<T>::getStatus(TStatusCodes & /*aStatusCodes*
     answer.replace(ASCII::LF, "");
 
     if (!answer.isEmpty()) {
-        mIOPort->clear();
+        this->mIOPort->clear();
 
         QByteArray logData = ProtocolUtils::clean(answer);
-        QString log = QString("%1: data received: %2").arg(mDeviceName).arg(logData.data());
+        QString log = QString("%1: data received: %2").arg(this->mDeviceName).arg(logData.data());
 
         if (logData != answer) {
             log += QString(" -> {%1}").arg(answer.toHex().data());
         }
 
-        toLog(LogLevel::Normal, log);
+        this->toLog(LogLevel::Normal, log);
 
         QVariantMap result;
         result[CHardwareSDK::HID::Text] = answer;
 
-        emit data(result);
+        this->data(result);
     }
 
     return true;

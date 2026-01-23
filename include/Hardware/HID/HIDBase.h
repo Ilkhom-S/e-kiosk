@@ -25,6 +25,9 @@ template <class T> class HIDBase : public T {
   protected:
     /// Признак включенности устройства.
     bool mEnabled;
+
+    /// Статус инициализации устройства.
+    ERequestStatus::Enum mInitialized;
 };
 
 //--------------------------------------------------------------------------------

@@ -3,6 +3,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QBuffer>
+#include <QtCore/QElapsedTimer>
 #include <Common/QtHeadersEnd.h>
 
 // Project
@@ -85,7 +86,7 @@ bool Alarm::getAnswer(TAnswer &aAnswer) {
     aAnswer.clear();
     QByteArray answer;
 
-    QTime clockTimer;
+    QElapsedTimer clockTimer;
     clockTimer.restart();
 
     do {

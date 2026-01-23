@@ -12,7 +12,7 @@ namespace CHHP {
     class DetectingData : public CUSBDevice::ProductData {
       public:
         DetectingData() {
-            // TODO: добавить GUID-ы для автопоиска и работы с портом
+            // TODO: добавить GUID-ы для авто поиска и работы с портом
 
             // add(0x0160, "IT5600");
             // add(0x0161, "IT5600 HID Keyboard (PC)");

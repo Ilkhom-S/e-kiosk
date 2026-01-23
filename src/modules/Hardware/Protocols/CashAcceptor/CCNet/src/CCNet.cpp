@@ -3,15 +3,16 @@
 // STL
 #include <cmath>
 
-// SDK
-#include <SDK/Drivers/IOPort/COMParameters.h>
-
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
 #include <QtCore/QStringList>
 #include <Common/QtHeadersEnd.h>
 
-// Modules
+// SDK
+#include <SDK/Drivers/IOPort/COMParameters.h>
+
+// System
 #include "Hardware/Common/ASCII.h"
 
 // Project
@@ -233,7 +234,7 @@ bool CCNetProtocol::readAnswers(TAnswers &aAnswers, int aTimeout) {
     int length = 0;
     int index = 0;
 
-    QTime clockTimer;
+    QElapsedTimer clockTimer;
     clockTimer.restart();
 
     do {

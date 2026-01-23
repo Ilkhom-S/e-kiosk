@@ -3,6 +3,11 @@
 // STL
 #include <cmath>
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "SSP.h"
 #include "SSPConstants.h"
@@ -152,7 +157,7 @@ TResult SSPProtocol::processCommand(const QByteArray &aCommandData, QByteArray &
 bool SSPProtocol::getAnswer(QByteArray &aAnswer, int aTimeout) {
     uchar length = 0;
 
-    QTime clockTimer;
+    QElapsedTimer clockTimer;
     clockTimer.restart();
 
     do {

@@ -3,11 +3,15 @@
 // STL
 #include <numeric>
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "LDogWD.h"
 #include "LDogWDConstants.h"
 
-//--------------------------------------------------------------------------------
 uchar LDogWDProtocol::calcCRC(const QByteArray &aData) {
     int sum = std::accumulate(aData.begin(), aData.end(), 0,
                               [](uchar arg1, uchar arg2) -> uchar { return arg1 + uchar(arg2); });
@@ -130,7 +134,7 @@ TResult LDogWDProtocol::processCommand(const QByteArray &aCommandData, QByteArra
 
 //--------------------------------------------------------------------------------
 bool LDogWDProtocol::read(QByteArray &aAnswer) {
-    QTime clockTimer;
+    QElapsedTimer clockTimer;
     clockTimer.start();
 
     do {

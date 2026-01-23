@@ -3,10 +3,14 @@
 // STL
 #include <algorithm>
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "NPSTalk.h"
 
-//--------------------------------------------------------------------------------
 void NPSTalkProtocol::setAddress(uchar aAddress) {
     mDeviceAddress = aAddress;
 }
@@ -96,7 +100,7 @@ TResult NPSTalkProtocol::processCommand(const QByteArray &aCommanddata, QByteArr
 bool NPSTalkProtocol::getAnswer(QByteArray &aAnswer) {
     aAnswer.clear();
 
-    QTime timer;
+    QElapsedTimer timer;
     timer.restart();
 
     do {

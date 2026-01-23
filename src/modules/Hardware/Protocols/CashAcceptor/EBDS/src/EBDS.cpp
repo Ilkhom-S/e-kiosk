@@ -1,9 +1,14 @@
 /* @file Протокол EBDS. */
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <Common/QtHeadersEnd.h>
+
+// Project
 #include "EBDS.h"
 #include "EBDSConstants.h"
 
-//--------------------------------------------------------------------------------
 EBDSProtocol::EBDSProtocol() : mACK(false) {
 }
 
@@ -98,7 +103,7 @@ const bool EBDSProtocol::getAnswer(QByteArray &aAnswer) {
     QByteArray data;
     uchar length = 0;
 
-    QTime clockTimer;
+    QElapsedTimer clockTimer;
     clockTimer.restart();
 
     do {

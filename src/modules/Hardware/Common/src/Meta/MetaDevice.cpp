@@ -191,7 +191,7 @@ template <class T> void MetaDevice<T>::logDeviceData(const SLogData &aData) cons
 
     QReadLocker lock(&mConfigurationGuard);
 
-    if (mConfiguration[CHardwareSDK::RequiredDevice].value<IDevice *>() && !aData.requiredDevice.isEmpty()) {
+    if (mConfiguration[CHardwareSDK::RequiredDevice].template value<IDevice *>() && !aData.requiredDevice.isEmpty()) {
         toLog(LogLevel::Normal, "Required device data:" + aData.requiredDevice);
     }
 }
@@ -200,7 +200,7 @@ template <class T> void MetaDevice<T>::logDeviceData(const SLogData &aData) cons
 template <class T> SLogData MetaDevice<T>::getDeviceData() const {
     QReadLocker lock(&mConfigurationGuard);
 
-    IDevice *requiredDevice = mConfiguration.value(CHardwareSDK::RequiredDevice).value<IDevice *>();
+    IDevice *requiredDevice = mConfiguration.value(CHardwareSDK::RequiredDevice).template value<IDevice *>();
     SLogData result;
 
     if (requiredDevice) {

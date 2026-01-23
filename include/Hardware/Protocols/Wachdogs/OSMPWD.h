@@ -1,4 +1,25 @@
 /* @file Протокол OSMP Watchdog. */
 
-// System
-#include "../../../src/modules/Hardware/Protocols/Watchdog/OSMP/src/OSMPWD.h"
+#pragma once
+
+#include "Hardware/Common/ProtocolBase.h"
+
+//--------------------------------------------------------------------------------
+/// Класс протокола KKM.
+class OSMPWDProtocol : public ProtocolBase {
+  public:
+    /// Выполнить команду протокола.
+    TResult processCommand(const QByteArray &aCommandData, QByteArray *aUnpackedData = nullptr);
+
+  private:
+    /// Подсчет контрольной суммы пакета данных.
+    const uchar calcCRC(const QByteArray &aData);
+
+    /// Распаковка пришедших из порта данных.
+    bool checkAnswer(const QByteArray &aAnswerData);
+
+    /// Получить пакет данных из порта.
+    bool read(QByteArray &aData);
+};
+
+//--------------------------------------------------------------------------------

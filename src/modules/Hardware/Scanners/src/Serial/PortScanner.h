@@ -23,6 +23,9 @@ template <class T> class PortScanner : public HIDBase<T> {
     virtual bool release();
 
   protected:
+    /// Интервал опроса порта.
+    int mPollingInterval;
+
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 

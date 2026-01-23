@@ -3,6 +3,11 @@
 // STL
 #include <numeric>
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "OSMPWD.h"
 #include "OSMPWDConstants.h"
@@ -97,7 +102,7 @@ TResult OSMPWDProtocol::processCommand(const QByteArray &aCommandData, QByteArra
 bool OSMPWDProtocol::read(QByteArray &aData) {
     aData.clear();
 
-    QTime clockTimer;
+    QElapsedTimer clockTimer;
     clockTimer.start();
 
     do {

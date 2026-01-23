@@ -1,9 +1,14 @@
 /* @file Протокол ФР Штрих. */
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <Common/QtHeadersEnd.h>
+
+// Project
 #include "Puloon.h"
 #include "PuloonConstants.h"
 
-//--------------------------------------------------------------------------------
 uchar Puloon::calcCRC(const QByteArray &aData) const {
     if (!aData.size()) {
         return 0;
@@ -177,7 +182,7 @@ bool Puloon::getAnswer(TAnswerList &aAnswerList, int aTimeout) const {
 
     bool ACKreceived = false;
 
-    QTime clockTimer;
+    QElapsedTimer clockTimer;
     clockTimer.start();
 
     while (clockTimer.elapsed() < aTimeout) {
@@ -201,7 +206,12 @@ bool Puloon::getAnswer(TAnswerList &aAnswerList, int aTimeout) const {
                 }
             }
 
-            aAnswerList.isEmpty() ? aAnswerList.append(answerData) : aAnswerList.last().append(answerData);
+            if (aAnswerList.isEmpty()) {
+                aAnswerList.append(answerData);
+            } else {
+                aAnswerList.last().append(answerData);
+            }
+
             QByteArray lastData = aAnswerList.takeLast();
 
             while (!lastData.isEmpty()) {

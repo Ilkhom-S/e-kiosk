@@ -203,8 +203,8 @@ bool Shtrih::unpackData(const QByteArray &aPacket, const QByteArray &aAnswer,
         if (aAnswer[position++] != CShtrih::Constants::Prefix) {
             toLog(LogLevel::Error,
                   QString("Shtrih: prefix unpacked error, prefix = 0x%1, need = 0x%2")
-                      .arg(QString("%1").arg(aAnswer[position - 1], 2, 16, QChar(ASCII::Zero)).toUpper())
-                      .arg(QString("%1").arg(CShtrih::Constants::Prefix, 2, 16, QChar(ASCII::Zero)).toUpper()));
+                      .arg(QString("%1").arg(uchar(aAnswer[position - 1]), 2, 16, QChar(ASCII::Zero)).toUpper())
+                      .arg(QString("%1").arg(uchar(CShtrih::Constants::Prefix), 2, 16, QChar(ASCII::Zero)).toUpper()));
             return false;
         }
 

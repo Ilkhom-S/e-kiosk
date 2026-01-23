@@ -3,11 +3,15 @@
 // STL
 #include <numeric>
 
-// Proejct
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <Common/QtHeadersEnd.h>
+
+// Project
 #include "V2e.h"
 #include "V2eConstants.h"
 
-//--------------------------------------------------------------------------------
 ushort V2eProtocol::calcCRC(const QByteArray &aData) {
     int sum = std::accumulate(aData.begin(), aData.end(), 0,
                               [&](ushort arg1, char arg2) -> ushort { return arg1 + uchar(arg2); });
@@ -152,7 +156,7 @@ bool V2eProtocol::getAnswer(QByteArray &aAnswer) {
     QByteArray data;
     ushort length = 0;
 
-    QTime clockTimer;
+    QElapsedTimer clockTimer;
     clockTimer.restart();
 
     do {

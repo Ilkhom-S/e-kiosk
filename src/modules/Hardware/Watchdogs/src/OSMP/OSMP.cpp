@@ -43,16 +43,25 @@ bool OSMP::isConnected() {
     }
 
     answer = ProtocolUtils::clean(answer);
-    QRegularExpression regExp("WDT.*v([0-9\\.]+)");
 
-    if ((regExp.match(answer).capturedStart() == -1) || (regExp.capturedTexts()[1] != mData[EOSMPCommandId::IdentificationData])) {
+    // 1. Используем QRegularExpression.
+    // QStringLiteral позволяет избежать лишних аллокаций памяти.
+    QRegularExpression regExp(QStringLiteral("WDT.*v([0-9\\.]+)"));
+
+    // 2. Выполняем сопоставление (match автоматически конвертирует QByteArray в QString)
+    QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
+
+    // 3. Проверяем наличие совпадения через hasMatch()
+    // и сравниваем захваченную группу через captured(1)
+    if (!match.hasMatch() || (match.captured(1) != mData[EOSMPCommandId::IdentificationData])) {
         return false;
     }
 
     if (!mConnected) {
         if (performCommand(COSMP::WrongDeviceCheck, &answer) && !answer.isEmpty()) {
             toLog(LogLevel::Error,
-                  mDeviceName + ": Unknown device trying to impersonate the device based on OSMP protocol.");
+                  mDeviceName +
+                      QStringLiteral(": Unknown device trying to impersonate the device based on OSMP protocol."));
             return false;
         }
 

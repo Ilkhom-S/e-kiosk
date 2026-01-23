@@ -2,6 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
 #include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
@@ -135,7 +136,7 @@ bool ATModemBase::enableLocalEcho(bool aEnable) {
 
 //--------------------------------------------------------------------------------
 QByteArray ATModemBase::makeCommand(const QString &aCommand) {
-    return QByteArray("AT").append(aCommand).append(ASCII::CR);
+    return QByteArray("AT").append(aCommand.toLatin1()).append(ASCII::CR);
 }
 
 //--------------------------------------------------------------------------------
@@ -155,7 +156,7 @@ bool ATModemBase::processCommand(const QByteArray &aCommand, QByteArray &aAnswer
 
     bool result = false;
 
-    QTime commandTimer;
+    QElapsedTimer commandTimer;
     commandTimer.start();
 
     do {

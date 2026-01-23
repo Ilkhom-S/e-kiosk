@@ -3,12 +3,17 @@
 // STL
 #include <numeric>
 
-// Modules
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <Common/QtHeadersEnd.h>
+
+// System
 #include "Hardware/Common/HardwareConstants.h"
-#include "ccTalkConstants.h"
 
 // Project
 #include "ccTalk.h"
+#include "ccTalkConstants.h"
 
 using namespace SDK::Driver;
 
@@ -204,7 +209,7 @@ bool CCTalkCAProtocol::getAnswer(QByteArray &aAnswer, const QByteArray &aCommand
 
     QByteArray data;
     int length = -1;
-    QTime timer;
+    QElapsedTimer timer;
     timer.start();
 
     do {
