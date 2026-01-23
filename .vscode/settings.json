@@ -10,6 +10,17 @@
     "thirdparty/": true,
     "vcpkg_installed/": true
   },
+  "openInExternalApp.openMapper": [
+    {
+      "extensionName": "qml",
+      "apps": [
+        {
+          "title": "Qt Design Studio",
+          "openCommand": "/Applications/QtDesignStudio.app"
+        }
+      ]
+    }
+  ],
   // Exclude the same folders from C++ extension's indexing
   "C_Cpp.default.exclude": [
     "**/build/*",

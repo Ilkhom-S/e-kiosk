@@ -1,6 +1,5 @@
 /* @file Данные ФН. */
 
-#pragma once
 
 #include "FSSerialData.h"
 

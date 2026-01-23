@@ -2,14 +2,17 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QtCore/QRegularExpression>
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
 
-// Project
+// System
 #include "Hardware/CashAcceptors/CashAcceptorData.h"
+
+// Project
+#include "CurrencySpecification.h"
 #include "ID003CashAcceptor.h"
 #include "ID003CashAcceptorConstants.h"
-#include "CurrencySpecification.h"
 #include "ID003ModelData.h"
 
 using namespace SDK::Driver;
@@ -156,15 +159,16 @@ bool ID003CashAcceptor::isConnected() {
 
     foreach (const QString &regExpData, identificationData.data().values()) {
         QRegularExpression regExp(regExpData);
+        QRegularExpressionMatch match = regExp.match(answer);
 
-        if (regExp.match(answer).capturedStart() != -1) {
+        if (match.capturedStart() != -1) {
             QString alias = identificationData.key(regExpData);
 
             if (alias != CID003::ProtocolData::Alias::ID003) {
                 setDeviceParameter(CDeviceData::CashAcceptors::Alias, alias);
             }
 
-            QStringList modelParameters = regExp.capturedTexts();
+            QStringList modelParameters = match.capturedTexts();
 
             char modelCode = modelParameters[0][0].toLatin1();
             QString countryCode = modelParameters[2];

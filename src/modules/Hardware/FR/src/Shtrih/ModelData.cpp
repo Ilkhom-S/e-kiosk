@@ -1,6 +1,5 @@
 /* @file Параметры моделей ФР Штрих. */
 
-#pragma once
 
 #include "ModelData.h"
 

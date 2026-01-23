@@ -1,6 +1,5 @@
 /* @file Данные моделей устройств на протоколе ID003. */
 
-#pragma once
 
 #include "ID003ModelData.h"
 

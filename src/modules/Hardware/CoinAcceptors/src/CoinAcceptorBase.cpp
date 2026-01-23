@@ -1,6 +1,5 @@
 /* @file Базовый класс монетоприемников. */
 
-#pragma once
 
 #include "CoinAcceptorBase.h"
 

@@ -1,6 +1,5 @@
 /* @file Помощник по конфигурации. */
 
-#pragma once
 
 // Modules
 #include "Hardware/Protocols/Common/ProtocolUtils.h"

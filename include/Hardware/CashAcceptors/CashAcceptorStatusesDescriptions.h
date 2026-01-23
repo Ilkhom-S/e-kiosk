@@ -29,7 +29,7 @@ namespace BillAcceptorStatusCode {
     ADD_CA_STATUS_DATA(OperationError, aStatusCode, OperationError, Warning, "Operation error - " #aStatusCode, "")
 #define ADD_CA_WARNING(aStatusCode, aTranslation) ADD_CA_TYPE(aStatusCode, Warning, Warning, aTranslation)
 #define ADD_CA_SENSOR_ERROR(aStatusCode, aTranslation)                                                                 \
-    ADD_CA_STATUS_DATA(SensorError, aStatusCode, Error, Error, "Faulted " #aStatusCode##" sensor", aTranslation)
+    ADD_CA_STATUS_DATA(SensorError, aStatusCode, Error, Error, "Faulted " #aStatusCode " sensor", aTranslation)
 #define ADD_CA_ERROR(aStatusCode, aTranslation) ADD_CA_TYPE(aStatusCode, Error, Error, aTranslation)
 #define ADD_CA_MECHANIC_FAILURE(aStatusCode, aTranslation)                                                             \
     ADD_CA_TYPE(aStatusCode, MechanicFailure, Error, aTranslation)

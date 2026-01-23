@@ -1,6 +1,5 @@
 /* @file ФР PayOnline-01-FA на протоколе Штрих. */
 
-#pragma once
 
 #include "PayOnline.h"
 

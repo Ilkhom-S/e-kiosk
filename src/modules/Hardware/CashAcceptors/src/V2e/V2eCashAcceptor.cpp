@@ -16,22 +16,22 @@ using namespace SDK::Driver::IOPort::COM;
 //---------------------------------------------------------------------------
 V2eCashAcceptor::V2eCashAcceptor() {
     // параметры порта
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
-    mPortParameters[EParameters::Parity].append(EParity::Even);
+    this->mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
+    this->mPortParameters[EParameters::Parity].append(EParity::Even);
 
-    mPortParameters[EParameters::DTR].clear();
-    mPortParameters[EParameters::DTR].append(EDTRControl::Enable);
+    this->mPortParameters[EParameters::DTR].clear();
+    this->mPortParameters[EParameters::DTR].append(EDTRControl::Enable);
 
     // данные устройства
-    mDeviceName = "V2e cash acceptor";
-    mEscrowPosition = 3;
-    mParInStacked = true;
-    mMaxBadAnswers = 7;
-    mResetOnIdentification = true;
-    mPollingIntervalEnabled = CV2e::PollingIntervals::Enabled;
+    this->mDeviceName = "V2e cash acceptor";
+    this->mEscrowPosition = 3;
+    this->mParInStacked = true;
+    this->mMaxBadAnswers = 7;
+    this->mResetOnIdentification = true;
+    this->mPollingIntervalEnabled = CV2e::PollingIntervals::Enabled;
 
     // параметры протокола
-    mDeviceCodeSpecification = PDeviceCodeSpecification(new CV2e::DeviceCodeSpecification);
+    this->mDeviceCodeSpecification = PDeviceCodeSpecification(new CV2e::DeviceCodeSpecification);
 }
 
 //--------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ QStringList V2eCashAcceptor::getModelList() {
         result << aData.name;
     }
 
-    return result.toList();
+    return QList<QString>(result.begin(), result.end());
 }
 
 //---------------------------------------------------------------------------------
@@ -59,8 +59,8 @@ bool V2eCashAcceptor::processReset() {
 TResult V2eCashAcceptor::execCommand(const QByteArray &aCommand, const QByteArray &aCommandData, QByteArray *aAnswer) {
     MutexLocker locker(&mExternalMutex);
 
-    mProtocol.setPort(mIOPort);
-    mProtocol.setLog(mLog);
+    this->mProtocol.setPort(mIOPort);
+    this->mProtocol.setLog(mLog);
 
     QByteArray answer;
 
@@ -70,7 +70,7 @@ TResult V2eCashAcceptor::execCommand(const QByteArray &aCommand, const QByteArra
     do {
         if (!correct) {
             toLog(LogLevel::Normal,
-                  mDeviceName + QString(": process status due to IRQ in the answer, iteration #%1").arg(repeat + 1));
+                  this->mDeviceName + QString(": process status due to IRQ in the answer, iteration #%1").arg(repeat + 1));
             TResult result = checkStatus(answer);
 
             if (!result) {
@@ -78,7 +78,7 @@ TResult V2eCashAcceptor::execCommand(const QByteArray &aCommand, const QByteArra
             }
         }
 
-        TResult result = mProtocol.processCommand(aCommand + aCommandData, answer);
+        TResult result = this->mProtocol.processCommand(aCommand + aCommandData, answer);
 
         if (!result) {
             return result;
@@ -88,7 +88,7 @@ TResult V2eCashAcceptor::execCommand(const QByteArray &aCommand, const QByteArra
     } while (!correct && (++repeat < CV2e::MaxRepeat) && (aCommand[0] != CV2e::Commands::Poll));
 
     if (!correct) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to handle IRQ in answer");
+        toLog(LogLevel::Error, this->mDeviceName + ": Failed to handle IRQ in answer");
         return CommandResult::Transport;
     }
 
@@ -101,12 +101,12 @@ TResult V2eCashAcceptor::execCommand(const QByteArray &aCommand, const QByteArra
 
 //--------------------------------------------------------------------------------
 bool V2eCashAcceptor::isConnected() {
-    mResetOnIdentification = false;
+    this->mResetOnIdentification = false;
 
     if (waitForBusy(true)) {
         waitForBusy(false);
     } else {
-        mResetOnIdentification = true;
+        this->mResetOnIdentification = true;
 
         if (!processCommand(CV2e::Commands::Reset)) {
             return false;
@@ -120,7 +120,7 @@ bool V2eCashAcceptor::isConnected() {
     }
 
     if (answer.isEmpty() && isAutoDetecting()) {
-        toLog(LogLevel::Error, mDeviceName + ": Unknown device trying to impersonate this device");
+        toLog(LogLevel::Error, this->mDeviceName + ": Unknown device trying to impersonate this device");
         return false;
     }
 
@@ -133,8 +133,8 @@ bool V2eCashAcceptor::isConnected() {
     setDeviceParameter(CDeviceData::CashAcceptors::Database, logDBVersion);
 
     SBaseModelData data = CV2e::ModelData().getData(answer.mid(4, 2));
-    mVerified = data.verified;
-    mDeviceName = data.name;
+    this->mVerified = data.verified;
+    this->mDeviceName = data.name;
 
     return true;
 }
@@ -142,31 +142,31 @@ bool V2eCashAcceptor::isConnected() {
 //--------------------------------------------------------------------------------
 bool V2eCashAcceptor::setDefaultParameters() {
     if (!waitForBusy(false) || (waitForBusy(true) && !waitForBusy(false))) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to wait not busy status from the cash acceptor.");
+        toLog(LogLevel::Error, this->mDeviceName + ": Failed to wait not busy status from the cash acceptor.");
         return false;
     }
 
     // устанавливаем режим связи с устройством
     if (!processCommand(CV2e::Commands::SetCommMode, QByteArray(1, CV2e::CommunicationMode))) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to set communication mode");
+        toLog(LogLevel::Error, this->mDeviceName + ": Failed to set communication mode");
         return false;
     }
 
     // разрешаем принимать все номиналы во всех направлениях
     if (!processCommand(CV2e::Commands::SetOrientation, QByteArray(1, CV2e::AllNoteDirections))) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to set nominals directions");
+        toLog(LogLevel::Error, this->mDeviceName + ": Failed to set nominals directions");
         return false;
     }
 
     // Inhibit mode нам не нужен
     if (!processCommand(CV2e::Commands::Uninhibit)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to exit from Inhibit mode");
+        toLog(LogLevel::Error, this->mDeviceName + ": Failed to exit from Inhibit mode");
         return false;
     }
 
     // сохраняем настройки
     if (!processCommand(CV2e::Commands::ChangeDefault)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to save settings");
+        toLog(LogLevel::Error, this->mDeviceName + ": Failed to save settings");
         return false;
     }
 
@@ -177,7 +177,7 @@ bool V2eCashAcceptor::setDefaultParameters() {
 
 //---------------------------------------------------------------------------
 bool V2eCashAcceptor::stack() {
-    if (!checkConnectionAbility() || (mInitialized != ERequestStatus::Success) || mCheckDisable) {
+    if (!checkConnectionAbility() || (mInitialized != ERequestStatus::Success) || this->mCheckDisable) {
         return false;
     }
 
@@ -195,16 +195,16 @@ bool V2eCashAcceptor::reject() {
 
 //---------------------------------------------------------------------------
 bool V2eCashAcceptor::enableMoneyAcceptingMode(bool aEnabled) {
-    CCashAcceptor::TStatuses lastStatuses = mStatusHistory.lastValue().statuses;
+    CCashAcceptor::TStatuses lastStatuses = this->mStatusHistory.lastValue().statuses;
 
     if (aEnabled && !lastStatuses.isEmpty(ECashAcceptorStatus::Inhibit) && !processCommand(CV2e::Commands::Uninhibit)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to exit from Inhibit mode");
+        toLog(LogLevel::Error, this->mDeviceName + ": Failed to exit from Inhibit mode");
         return false;
     }
 
     QByteArray commandData(8, ASCII::NUL);
 
-    for (auto it = mEscrowParTable.data().begin(); it != mEscrowParTable.data().end(); ++it) {
+    for (auto it = this->mEscrowParTable.data().begin(); it != this->mEscrowParTable.data().end(); ++it) {
         if (aEnabled && it->enabled && !it->inhibit) {
             int id = it.key() - 1;
             int index = id / 8;
@@ -213,7 +213,7 @@ bool V2eCashAcceptor::enableMoneyAcceptingMode(bool aEnabled) {
     }
 
     if (!processCommand(CV2e::Commands::SetBillEnables, commandData)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to set nominals availability.");
+        toLog(LogLevel::Error, this->mDeviceName + ": Failed to set nominals availability.");
         return false;
     }
 
@@ -225,7 +225,7 @@ bool V2eCashAcceptor::loadParTable() {
     QByteArray answer;
 
     if (!processCommand(CV2e::Commands::GetParTable, QByteArray(1, CV2e::ProtocolID), &answer)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to get par table");
+        toLog(LogLevel::Error, this->mDeviceName + ": Failed to get par table");
         return false;
     }
 
@@ -238,7 +238,7 @@ bool V2eCashAcceptor::loadParTable() {
 
         MutexLocker locker(&mResourceMutex);
 
-        mEscrowParTable.data().insert(uchar(parData[0]), SPar(nominal, currency));
+        this->mEscrowParTable.data().insert(uchar(parData[0]), SPar(nominal, currency));
     }
 
     return true;
@@ -266,12 +266,12 @@ void V2eCashAcceptor::cleanSpecificStatusCodes(TStatusCodes &aStatusCodes) {
 //--------------------------------------------------------------------------------
 bool V2eCashAcceptor::waitForBusy(bool aBusy) {
     CV2e::DeviceCodeSpecification *specification =
-        mDeviceCodeSpecification.dynamicCast<CV2e::DeviceCodeSpecification>().data();
+        this->mDeviceCodeSpecification.dynamicCast<CV2e::DeviceCodeSpecification>().data();
     auto isBusy = [&]() -> bool {
-        return !mDeviceCodeBuffers.isEmpty() && std::find_if(mDeviceCodeBuffers.begin(), mDeviceCodeBuffers.end(),
+        return !mDeviceCodeBuffers.isEmpty() && std::find_if(mDeviceCodeBuffers.begin(), this->mDeviceCodeBuffers.end(),
                                                              [&](const QByteArray &aBuffer) -> bool {
                                                                  return specification->isBusy(aBuffer) == aBusy;
-                                                             }) != mDeviceCodeBuffers.end();
+                                                             }) != this->mDeviceCodeBuffers.end();
     };
 
     auto poll = [&]() -> bool {
@@ -280,7 +280,7 @@ bool V2eCashAcceptor::waitForBusy(bool aBusy) {
     };
     int timeout = aBusy ? CV2e::Timeouts::ReliableNonBusy : CV2e::Timeouts::Busy;
 
-    return PollingExpector().wait<bool>(poll, isBusy, mPollingIntervalEnabled, timeout);
+    return PollingExpector().wait<bool>(poll, isBusy, this->mPollingIntervalEnabled, timeout);
 }
 
 //--------------------------------------------------------------------------------

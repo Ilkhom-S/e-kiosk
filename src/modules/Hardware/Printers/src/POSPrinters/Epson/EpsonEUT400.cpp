@@ -1,6 +1,5 @@
 /* @file Принтеры семейства Epson EU-T400. */
 
-#pragma once
 
 #include "EpsonEUT400.h"
 #include "EpsonConstants.h"

@@ -1,17 +1,14 @@
 /* @file Класс для выполнения функционала без зависаний. */
 
-#pragma once
-
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QElapsedTimer>
 #include <Common/QtHeadersEnd.h>
 
-// Project
+// System
 #include "Hardware/Common/MutexLocker.h"
-#include "SafePerformer.h"
+#include "Hardware/Common/SafePerformer.h"
 
-//--------------------------------------------------------------------------------
 SafePerformerThread::SafePerformerThread(ILog *aLog) : mLog(aLog) {
     moveToThread(this);
 }

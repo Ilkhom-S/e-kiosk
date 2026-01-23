@@ -1,6 +1,5 @@
 /* @file Дефолтное HID-устройство на COM-порту. */
 
-#pragma once
 
 #include "SerialScanner.h"
 

@@ -144,6 +144,10 @@ namespace CCCTalk {
                     case EAnswerType::Date:
                         aSize = 2;
                         break;
+                    case EAnswerType::ASCII:
+                    case EAnswerType::Data:
+                        // Size is provided as parameter for these types
+                        break;
                 }
 
                 mBuffer.insert(aCommand, SData(aType, aDescription, aSize));

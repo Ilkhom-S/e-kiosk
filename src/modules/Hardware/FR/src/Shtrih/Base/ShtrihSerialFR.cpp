@@ -1,6 +1,5 @@
 /* @file ФР семейства Штрих на COM-порту. */
 
-#pragma once
 
 #include "ShtrihSerialFR.h"
 #include "ShtrihFRBaseConstants.h"

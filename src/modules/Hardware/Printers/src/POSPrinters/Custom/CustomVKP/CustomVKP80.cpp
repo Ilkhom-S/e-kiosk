@@ -1,6 +1,5 @@
 /* @file Принтер Custom VKP-80. */
 
-#pragma once
 
 #include "CustomVKP80.h"
 

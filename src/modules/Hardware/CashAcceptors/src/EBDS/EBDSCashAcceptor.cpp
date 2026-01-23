@@ -40,7 +40,7 @@ QStringList EBDSCashAcceptor::getModelList() {
         result << aData.name;
     }
 
-    return result.toList();
+    return QList<QString>(result.begin(), result.end());
 }
 
 //---------------------------------------------------------------------------------

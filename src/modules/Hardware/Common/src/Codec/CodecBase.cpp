@@ -1,6 +1,5 @@
 /* @file Базовый кодек для создания кастомных кодеков. */
 
-#pragma once
 
 // Qt
 #include <Common/QtHeadersBegin.h>

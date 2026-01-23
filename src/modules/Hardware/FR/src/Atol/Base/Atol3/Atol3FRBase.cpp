@@ -1,6 +1,5 @@
 /* @file Базовый ФР на протоколе АТОЛ3. */
 
-#pragma once
 
 #include "Atol3FRBase.h"
 #include "Atol3FRBaseConstants.h"

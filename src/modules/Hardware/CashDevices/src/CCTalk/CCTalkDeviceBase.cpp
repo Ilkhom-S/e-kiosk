@@ -13,10 +13,10 @@ using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------
 template <class T>
-CCTalkDeviceBase<T>::CCTalkDeviceBase() : mEventIndex(0), mFWVersion(0), mAddress(CCCTalk::Address::Unknown) {
+CCTalkDeviceBase<T>::CCTalkDeviceBase() : this->mEventIndex(0), this->mFWVersion(0), this->mAddress(CCCTalk::Address::Unknown) {
     // данные устройства
-    mDeviceName = CCCTalk::DefaultDeviceName;
-    mProtocolTypes = getProtocolTypes();
+    this->mDeviceName = CCCTalk::DefaultDeviceName;
+    this->mProtocolTypes = getProtocolTypes();
 }
 
 //---------------------------------------------------------------------------
@@ -28,7 +28,7 @@ template <class T> QStringList CCTalkDeviceBase<T>::getProtocolTypes() {
 template <class T> QDate CCTalkDeviceBase<T>::parseDate(const QByteArray &aData) {
     ushort data = qToBigEndian(aData.toHex().toUShort(0, 16));
 
-    return QDate(int((data >> 9) & 0x3F) + mBaseYear, int((data >> 5) & 0x0F), int((data >> 0) & 0x1F));
+    return QDate(int((data >> 9) & 0x3F) + this->mBaseYear, int((data >> 5) & 0x0F), int((data >> 0) & 0x1F));
 }
 
 //--------------------------------------------------------------------------------
@@ -41,24 +41,24 @@ TResult CCTalkDeviceBase<T>::execCommand(const QByteArray &aCommand, const QByte
     CCCTalk::Command::SData commandData = CCCTalk::Command::Description[command];
 
     if (mModelData.unsupported.contains(command)) {
-        toLog(LogLevel::Warning, mDeviceName + ": does not support command " + commandData.description);
+        toLog(LogLevel::Warning, this->mDeviceName + ": does not support command " + commandData.description);
         return CommandResult::Driver;
     }
 
-    mProtocol.setLog(mLog);
-    mProtocol.setPort(mIOPort);
-    mProtocol.setAddress(mAddress);
+    this->mProtocol.setLog(mLog);
+    this->mProtocol.setPort(mIOPort);
+    this->mProtocol.setAddress(mAddress);
 
     if (!isAutoDetecting()) {
         QString protocolType = getConfigParameter(CHardware::ProtocolType).toString();
-        mProtocol.setType(protocolType);
+        this->mProtocol.setType(protocolType);
     }
 
     QByteArray answer;
-    TResult result = mProtocol.processCommand(aCommand + aCommandData, answer);
+    TResult result = this->mProtocol.processCommand(aCommand + aCommandData, answer);
 
     if (!result) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to " + commandData.description);
+        toLog(LogLevel::Error, this->mDeviceName + ": Failed to " + commandData.description);
         return result;
     }
 
@@ -66,7 +66,7 @@ TResult CCTalkDeviceBase<T>::execCommand(const QByteArray &aCommand, const QByte
 
     if ((commandData.type == CCCTalk::Command::EAnswerType::ACK) && !ack) {
         toLog(LogLevel::Error,
-              mDeviceName + QString(": Failed to check answer = {%1}, need ack").arg(commandData.size));
+              this->mDeviceName + QString(": Failed to check answer = {%1}, need ack").arg(commandData.size));
 
         return CommandResult::Answer;
     }
@@ -74,7 +74,7 @@ TResult CCTalkDeviceBase<T>::execCommand(const QByteArray &aCommand, const QByte
     if (((commandData.type == CCCTalk::Command::EAnswerType::Data) ||
          (commandData.type == CCCTalk::Command::EAnswerType::Date)) &&
         (commandData.size >= answer.size())) {
-        toLog(LogLevel::Error, mDeviceName + QString(": Failed to check answer size = %1, need minimum = %2")
+        toLog(LogLevel::Error, this->mDeviceName + QString(": Failed to check answer size = %1, need minimum = %2")
                                                  .arg(answer.size())
                                                  .arg(commandData.size));
         return CommandResult::Answer;
@@ -93,8 +93,8 @@ template <class T> bool CCTalkDeviceBase<T>::isConnected() {
         return checkConnection();
     }
 
-    foreach (auto protocolType, mProtocolTypes) {
-        mProtocol.setType(protocolType);
+    foreach (auto protocolType, this->mProtocolTypes) {
+        this->mProtocol.setType(protocolType);
         setConfigParameter(CHardware::ProtocolType, protocolType);
 
         if (checkConnection()) {
@@ -119,7 +119,7 @@ template <class T> bool CCTalkDeviceBase<T>::checkConnection() {
 
         if (!answerData.contains(data)) {
             toLog(LogLevel::Error,
-                  mDeviceName + QString(": wrong device type = %1, need like %2").arg(answer.data()).arg(data));
+                  this->mDeviceName + QString(": wrong device type = %1, need like %2").arg(answer.data()).arg(data));
             return false;
         }
     }
@@ -145,13 +145,13 @@ template <class T> bool CCTalkDeviceBase<T>::checkConnection() {
     }
 
     if (!mAllModelData) {
-        toLog(LogLevel::Error, mDeviceName + ": No model data");
+        toLog(LogLevel::Error, this->mDeviceName + ": No model data");
         return false;
     }
 
-    mDeviceName = mAllModelData->getData(vendorID, productCode, mModelData);
-    mVerified = mModelData.verified;
-    mModelCompatibility = mModels.contains(mDeviceName);
+    this->mDeviceName = this->mAllModelData->getData(vendorID, productCode, this->mModelData);
+    this->mVerified = this->mModelData.verified;
+    this->mModelCompatibility = this->mModels.contains(mDeviceName);
 
     return true;
 }
@@ -185,16 +185,16 @@ template <class T> void CCTalkDeviceBase<T>::processDeviceData() {
         double FWVersion = parseFWVersion(answer);
 
         if (FWVersion) {
-            mFWVersion = FWVersion;
+            this->mFWVersion = FWVersion;
 
             if (answer.simplified().toDouble() != FWVersion) {
-                setDeviceParameter(CDeviceData::Version, mFWVersion, CDeviceData::Firmware);
+                setDeviceParameter(CDeviceData::Version, this->mFWVersion, CDeviceData::Firmware);
             }
         }
     }
 
     if (processCommand(CCCTalk::Command::BaseYear, &answer)) {
-        mBaseYear = answer.toInt();
+        this->mBaseYear = answer.toInt();
     }
 
     if (processCommand(CCCTalk::Command::CreationDate, &answer)) {

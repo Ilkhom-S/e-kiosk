@@ -1,6 +1,5 @@
 /* @file Парсинг Intel-HEX файлов прошивок. */
 
-#pragma once
 
 // Modules
 #include "Hardware/Protocols/Common/ProtocolUtils.h"

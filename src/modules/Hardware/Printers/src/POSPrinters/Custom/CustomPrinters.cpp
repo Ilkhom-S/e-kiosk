@@ -1,6 +1,5 @@
 /* @file Принтеры Custom. */
 
-#pragma once
 
 // Qt
 #include <Common/QtHeadersBegin.h>

@@ -1,6 +1,5 @@
 /* @file Принтер Citizen PPU-700. */
 
-#pragma once
 
 #include "CitizenPPU700.h"
 

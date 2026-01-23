@@ -1,7 +1,5 @@
 /* @file Данные моделей устройств на протоколе ccTalk. */
 
-#pragma once
-
 // STL
 #include <algorithm>
 
@@ -10,11 +8,12 @@
 #include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
-// Project
-#include "CCTalkModelData.h"
+// System
 #include "Hardware/CashDevices/CCTalkDeviceConstants.h"
 
-//--------------------------------------------------------------------------------
+// Project
+#include "CCTalkModelData.h"
+
 namespace CCCTalk {
     CVendorData::CVendorData() {
         add("AES", "Aardvark Embedded Solutions Ltd", "AES");
@@ -75,7 +74,7 @@ namespace CCCTalk {
         }
 
         QString vendor = VendorData.getName(vendorID);
-        QString modelId = QString(aModelID).remove(QRegularExpression("[ \\-]+"), "").toLatin1();
+        QString modelId = QString(aModelID).remove(QRegularExpression("[ \\-]+")).toLatin1();
         // TModelData modelData = ModelData[vendorID];
 
         for (TModelDataIt it = data().begin(); it != data().end(); ++it) {

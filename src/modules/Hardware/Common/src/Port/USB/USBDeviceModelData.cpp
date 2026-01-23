@@ -1,6 +1,5 @@
 /* @file Спецификация данных моделей USB-устройств для автопоиска. */
 
-#pragma once
 
 // Modules
 #include "Hardware/Common/ASCII.h"

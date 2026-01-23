@@ -1,6 +1,5 @@
 /* @file Базовый ФР Pay на протоколе Штрих. */
 
-#pragma once
 
 #include "PayFRBase.h"
 

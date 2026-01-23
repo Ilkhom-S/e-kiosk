@@ -28,10 +28,10 @@ template <class T> inline QStringList getModels() {
     QSet<QString> result;
 
     foreach (SBaseModelData aData, T().data().values()) {
-        result << aData.modelName;
+        result << aData.name;
     }
 
-    return result.toList();
+    return QList<QString>(result.begin(), result.end());
 }
 
 //--------------------------------------------------------------------------------

@@ -37,11 +37,11 @@ const char UnknownDeviceCodeDescription[] = "unknown device code";
 template <class T> class DeviceCodeSpecificationBase : public CSpecification<T, SDeviceCodeSpecification> {
   public:
     DeviceCodeSpecificationBase() {
-        setDefault(SDeviceCodeSpecification(0, UnknownDeviceCodeDescription));
+        this->setDefault(SDeviceCodeSpecification(0, UnknownDeviceCodeDescription));
     }
 
     void appendStatus(T aCode, int aStatusCode, const QString &aDescription = "") {
-        append(aCode, SDeviceCodeSpecification(aStatusCode, aDescription));
+        this->append(aCode, SDeviceCodeSpecification(aStatusCode, aDescription));
     }
 };
 

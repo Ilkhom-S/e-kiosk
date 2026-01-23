@@ -6,8 +6,10 @@
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
 
-// Project
+// System
 #include "Hardware/CashAcceptors/CashAcceptorData.h"
+
+// Project
 #include "SSPCashAcceptor.h"
 #include "SSPCashAcceptorConstants.h"
 #include "SSPModelData.h"
@@ -253,7 +255,7 @@ bool SSPCashAcceptor::enableMoneyAcceptingMode(bool aEnabled) {
 //---------------------------------------------------------------------------
 bool SSPCashAcceptor::applyParTable() {
     QList<int> indexes = mEscrowParTable.data().keys();
-    qSort(indexes);
+    std::sort(indexes.begin(), indexes.end());
     int channels = qCeil(indexes.last() / 8.0);
 
     if ((mDeviceName == CSSP::Models::NV200) || (mDeviceName == CSSP::Models::NV200Spectral)) {

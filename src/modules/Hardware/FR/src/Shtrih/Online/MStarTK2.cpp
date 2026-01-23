@@ -1,6 +1,5 @@
 /* @file ФР Multisoft MStar-TK2 на протоколе Штрих. */
 
-#pragma once
 
 #include "MStarTK2.h"
 

@@ -1,6 +1,5 @@
 /* @file Онлайн ФР Сенсис Казначей на протоколе АТОЛ. */
 
-#pragma once
 
 #include "Paymaster.h"
 

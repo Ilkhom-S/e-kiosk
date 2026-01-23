@@ -298,7 +298,7 @@ namespace LibUSBUtils {
                                        &usb_2_0_extension)) {
                     result.insert(DeviceUSBData::BOS::Capability, "USB 2.0");
                     result.insert(DeviceUSBData::BOS::Capability2_0::Attributes,
-                                  toHexLog(usb_2_0_extension->bmAttributes));
+                                  toHexLog(usb_2_0_extension->this->mAttributes));
 
                     libusb_free_usb_2_0_extension_descriptor(usb_2_0_extension);
                 }
@@ -309,7 +309,7 @@ namespace LibUSBUtils {
                                        BOS->dev_capability[0], &deviceCapability)) {
                     result.insert(DeviceUSBData::BOS::Capability, "USB 3.0");
                     result.insert(DeviceUSBData::BOS::Capability3_0::Attributes,
-                                  toHexLog(deviceCapability->bmAttributes));
+                                  toHexLog(deviceCapability->this->mAttributes));
                     result.insert(DeviceUSBData::BOS::Capability3_0::SpeedSupported,
                                   CLibUSBUtils::SpeedDescriptions[deviceCapability->wSpeedSupported]);
                     result.insert(DeviceUSBData::BOS::Capability3_0::FunctionalitySupport,
@@ -342,7 +342,7 @@ namespace LibUSBUtils {
                 configData.insert(ConfigData::InterfaceAmount, config->bNumInterfaces);
                 configData.insert(ConfigData::Index, config->iConfiguration);
                 configData.insert(ConfigData::Value, toHexLog(config->bConfigurationValue));
-                configData.insert(ConfigData::Attributes, toHexLog(config->bmAttributes));
+                configData.insert(ConfigData::Attributes, toHexLog(config->this->mAttributes));
                 configData.insert(ConfigData::MaxPower, config->MaxPower /* + " mA"*/);
 
                 // TODO: добавить параметры
@@ -430,7 +430,7 @@ namespace LibUSBUtils {
             libusb_endpoint_descriptor endpoint = aInterface.endpoint[i];
             QVariantMap endpointData;
 
-            uint8_t attributes = endpoint.bmAttributes;
+            uint8_t attributes = endpoint.this->mAttributes;
             endpointData.insert(EndpointData::TransferType, CLibUSBUtils::TransferTypeDescriptions[attributes]);
 
             libusb_transfer_type transferType = CLibUSBUtils::transferType(attributes);
@@ -441,7 +441,7 @@ namespace LibUSBUtils {
             }
 
             endpointData.insert(EndpointData::Address, toHexLog(endpoint.bEndpointAddress));
-            endpointData.insert(EndpointData::Attributes, toHexLog(endpoint.bmAttributes));
+            endpointData.insert(EndpointData::Attributes, toHexLog(endpoint.this->mAttributes));
             endpointData.insert(EndpointData::MaxPacketSize, endpoint.wMaxPacketSize);
             endpointData.insert(EndpointData::PollingInterval, endpoint.bInterval);
             endpointData.insert(EndpointData::SyncRefreshRate, endpoint.bRefresh); // только для аудио-устройств
@@ -462,7 +462,7 @@ namespace LibUSBUtils {
             // Bits 2:3 are only used for isochronous endpoints and correspond to \ref libusb_iso_sync_type.
             // Bits 4:5 are also only used for isochronous endpoints and correspond to \ref libusb_iso_usage_type.
             // Bits 6:7 are reserved.
-            uint8_t  bmAttributes;
+            uint8_t  this->mAttributes;
 
             // Extra descriptors. If libusb encounters unknown endpoint descriptors, it will store them here, should you
             wish to parse them. const unsigned char *extra;
@@ -494,7 +494,7 @@ namespace LibUSBUtils {
 
                     QVariantMap companionEPData;
                     companionEPData.insert(CompanionEPData::MaxBurstPacketAmount, epCompanionDescriptor->bMaxBurst);
-                    companionEPData.insert(CompanionEPData::Attributes, toHexLog(epCompanionDescriptor->bmAttributes));
+                    companionEPData.insert(CompanionEPData::Attributes, toHexLog(epCompanionDescriptor->this->mAttributes));
                     companionEPData.insert(CompanionEPData::BytesPerInterval, epCompanionDescriptor->wBytesPerInterval);
 
                     result << companionEPData;
@@ -503,7 +503,7 @@ namespace LibUSBUtils {
                     /*
                     // In bulk EP: bits 4:0 represents the maximum number of streams the EP supports.
                     // In isochronous EP: bits 1:0 represents the Mult - a zero based value that determines the maximum
-                    number of packets within a service interval uint8_t  bmAttributes;
+                    number of packets within a service interval uint8_t  this->mAttributes;
                     */
                 }
 

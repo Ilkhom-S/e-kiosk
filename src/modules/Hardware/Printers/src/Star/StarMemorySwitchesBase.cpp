@@ -1,6 +1,5 @@
 /* @file Движок мем-свичей принтеров STAR. */
 
-#pragma once
 
 // STL
 #include <cmath>

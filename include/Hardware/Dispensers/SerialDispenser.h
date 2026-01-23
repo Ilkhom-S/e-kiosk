@@ -1,4 +1,6 @@
 /* @file Серийный диспенсер. */
+#pragma once
+
 
 // System
 #include "Hardware/Common/PortPollingDeviceBase.h"

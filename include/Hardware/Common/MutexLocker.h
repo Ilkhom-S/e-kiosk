@@ -15,10 +15,20 @@
 class MutexLocker {
     typedef QMap<QThread *, QThread *> TMatchedThreads;
     typedef QPair<QThread *, int> TLocksCounter;
-    typedef QMap<QMutex *, TLocksCounter> TThreadsLocked;
+
+    // Union to store either mutex type
+    union MutexUnion {
+        QMutex *mutex;
+        QRecursiveMutex *recursiveMutex;
+        MutexUnion() : mutex(nullptr) {
+        }
+    };
+
+    typedef QMap<void *, TLocksCounter> TThreadsLocked;
 
   public:
     MutexLocker(QMutex *aMutex);
+    MutexLocker(QRecursiveMutex *aMutex);
     ~MutexLocker();
 
     /// Замапить потока с ограниченной синхронизацией на вызвавший его поток.
@@ -28,8 +38,11 @@ class MutexLocker {
     static void clearMatchedThread(QThread *aOwner);
 
   private:
-    /// Рабочий мьютекс.
-    QMutex *mMutex;
+    /// Рабочий мьютекс (union for both types).
+    MutexUnion mMutexUnion;
+
+    /// Тип мьютекса (true = recursive, false = regular).
+    bool mIsRecursive;
 
     /// Таблица соответствия потока, вызвавшего локер, и замещающего его потока с ограниченной синхронизацией.
     static TMatchedThreads mMatchedThreads;

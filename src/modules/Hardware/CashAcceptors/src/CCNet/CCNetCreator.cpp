@@ -6,7 +6,7 @@
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
 
-// Modules
+// Project
 #include "CCNetCreator.h"
 #include "CCNetCreatorConstants.h"
 
@@ -42,9 +42,10 @@ QString CCNetCreator::parseDeviceData(const QByteArray &aData, const QString &aP
     }
 
     QRegularExpression regExp(aPattern);
+    QRegularExpressionMatch match = regExp.match(data.simplified().toLower());
 
-    if (regExp.match(data.simplified().capturedStart().toLower()) != -1) {
-        QStringList result = regExp.capturedTexts();
+    if (match.hasMatch()) {
+        QStringList result = match.capturedTexts();
 
         if (result.size() > 1) {
             return result[1].toUpper();

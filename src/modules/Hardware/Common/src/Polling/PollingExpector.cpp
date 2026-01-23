@@ -1,9 +1,9 @@
 /* @file Класс-expector для ожидания состояния. */
 
+// System
 #include "Hardware/Common/MutexLocker.h"
-#include "PollingExpector.h"
+#include "Hardware/Common/PollingExpector.h"
 
-// инстанцируем одну из специализаций по умолчанию
 template bool PollingExpector::wait<void>(TVoidMethod aOnPoll, TBoolMethod aCondition, TBoolMethod aErrorCondition,
                                           const SWaitingData &aWaitingData);
 template bool PollingExpector::wait<void>(TVoidMethod aOnPoll, TBoolMethod aCondition, TBoolMethod aErrorCondition,

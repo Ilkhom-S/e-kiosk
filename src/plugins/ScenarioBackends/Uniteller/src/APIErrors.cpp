@@ -1,6 +1,5 @@
 /* Реализация протокола с EFTPOS 3.0 компании Uniteller. */
 
-#pragma once
 
 // Project headers
 #include "API.h"

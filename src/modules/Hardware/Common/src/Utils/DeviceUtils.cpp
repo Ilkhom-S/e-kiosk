@@ -1,6 +1,5 @@
 /* @file Утилиты для логики устройств. */
 
-#pragma once
 
 // Qt
 #include <Common/QtHeadersBegin.h>

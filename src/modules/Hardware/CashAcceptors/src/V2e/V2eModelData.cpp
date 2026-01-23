@@ -1,10 +1,8 @@
 /* @file Данные моделей устройств на протоколе V2e. */
 
-#pragma once
-
+// Project
 #include "V2eModelData.h"
 
-//--------------------------------------------------------------------------------
 CV2e::ModelData::ModelData() {
     add(CV2e::Models::Aurora, TModelKeys() << "VA" << "VE" << "VH" << "VV" << "LA" << "SA", true);
     add(CV2e::Models::Falcon, TModelKeys() << "W", true);
@@ -32,11 +30,11 @@ void CV2e::ModelData::add(const QString &aName, const CV2e::TModelKeys &aModelKe
 
 //--------------------------------------------------------------------------------
 bool operator<(const CV2e::TModelKeys &aKeys1, const CV2e::TModelKeys &aKeys2) {
-    QStringList key1 = aKeys1.toList();
-    qSort(key1);
+    QStringList key1(aKeys1.begin(), aKeys1.end());
+    std::sort(key1.begin(), key1.end());
 
-    QStringList key2 = aKeys2.toList();
-    qSort(key2);
+    QStringList key2(aKeys2.begin(), aKeys2.end());
+    std::sort(key2.begin(), key2.end());
 
     return key1.join("") < key2.join("");
 }

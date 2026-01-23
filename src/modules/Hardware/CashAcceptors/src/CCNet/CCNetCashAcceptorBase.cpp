@@ -70,7 +70,7 @@ QStringList CCNetCashAcceptorBase::getModelList() {
     result -= QSet<QString>() << CCCNet::Models::CashcodeG200 << CCCNet::Models::CashcodeGX
                               << CCCNet::Models::CreatorC100;
 
-    return result.toList();
+    return QList<QString>(result.begin(), result.end());
 }
 
 //---------------------------------------------------------------------------------
@@ -128,7 +128,7 @@ bool CCNetCashAcceptorBase::isNotBusyPowerUp() {
 //---------------------------------------------------------------------------------
 TResult CCNetCashAcceptorBase::execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
                                            QByteArray *aAnswer) {
-    MutexLocker locker(&mExternalMutex);
+    QMutexLocker locker(&mExternalMutex);
 
     mProtocol.setPort(mIOPort);
     mProtocol.setLog(mLog);
@@ -329,12 +329,12 @@ void CCNetCashAcceptorBase::processDeviceData(QByteArray &aAnswer) {
 
     if (mDeviceName == CCCNet::Models::ICTL83) {
         firmwareVersion = answerData[0].right(4);
-        serialNumber = aAnswer.mid(aAnswer.indexOf(ASCII::Dash) + 1, 15).simplified();
-        assetNumberBuffer = aAnswer.mid(aAnswer.indexOf(serialNumber) + serialNumber.size());
+        serialNumber = aAnswer.mid(aAnswer.indexOf(QByteArray(1, ASCII::Dash)) + 1, 15).simplified();
+        assetNumberBuffer = aAnswer.mid(aAnswer.indexOf(serialNumber.toUtf8()) + serialNumber.size());
     } else if (mDeviceName.startsWith(CCCNet::Cashcode)) {
         QString firmware = answerData.last();
         int index = firmware.indexOf(QRegularExpression("\\d+"));
-        mFirmware = firmware.mid(index, 4).replace(QRegExp("\\D"), "0").toInt();
+        mFirmware = firmware.mid(index, 4).replace(QRegularExpression("\\D"), "0").toInt();
     }
 
     qulonglong assetNumber = 0;
@@ -428,7 +428,7 @@ bool CCNetCashAcceptorBase::loadParTable() {
             mCurrencyCode = CurrencyCodes[currency];
         }
 
-        MutexLocker locker(&mResourceMutex);
+        QMutexLocker locker(&mResourceMutex);
 
         mEscrowParTable.data().insert(i, SPar(nominal, currency, deviceType));
     }
