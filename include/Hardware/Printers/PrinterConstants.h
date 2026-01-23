@@ -43,7 +43,7 @@ namespace CPrinters {
     class CAutoCorrection : public CSpecification<QChar, QChar> {
       public:
         /// Конструктор.
-        CAutoCorrection::CAutoCorrection() {
+        CAutoCorrection() {
             add("«", "\"");
             add("»", "\"");
             add("˝", "\"");

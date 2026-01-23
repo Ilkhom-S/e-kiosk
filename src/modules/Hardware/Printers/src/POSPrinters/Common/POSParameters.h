@@ -4,7 +4,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QMutex>
+#include <QtCore/QRecursiveMutex>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
@@ -75,7 +75,7 @@ namespace POSPrinters {
         Q_DISABLE_COPY(ModelData)
 
         static TModelIds mModelIds;
-        QMutex mMutex;
+        QRecursiveMutex mMutex;
     };
 } // namespace POSPrinters
 

@@ -142,6 +142,12 @@ template <class T> class PrinterBase : public T {
     /// Экземляр движка тегов.
     Tags::PEngine mTagEngine;
 
+    /// Спецификация кодов статусов.
+    DeviceStatusCode::PSpecifications mStatusCodesSpecification;
+
+    /// Максимальное количество плохих ответов.
+    int mMaxBadAnswers;
+
     /// Ошибки, при которых возможно выполнение определенных команд.
     typedef QMap<int, TStatusCodes> TUnnecessaryErrors;
     TUnnecessaryErrors mUnnecessaryErrors;

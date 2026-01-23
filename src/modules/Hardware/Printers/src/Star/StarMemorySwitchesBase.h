@@ -148,16 +148,16 @@ namespace CSTAR {
                  const TModels &aModels = TModels()) {
             QVariant value(aValue);
 
-            if (value.type() == QVariant::Bool) {
+            if (value.metaType().id() == QMetaType::Bool) {
                 value = value.toBool() ? CHardwareSDK::Values::Use : CHardwareSDK::Values::NotUse;
             }
 
             QVariantMap configuration;
             configuration.insert(aName, value);
 
-            if (mBuffer[aType].models != aModels) {
+            if (!mBuffer.contains(aType) || mBuffer[aType].models != aModels) {
                 SModelMSWData data = {configuration, aModels};
-                mBuffer.insertMulti(aType, data);
+                mBuffer.insert(aType, data);
             } else {
                 mBuffer[aType].configuration.insert(aName, value);
             }

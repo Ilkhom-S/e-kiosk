@@ -3,12 +3,12 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QMutexLocker>
+#include <QtCore/QRecursiveMutex>
 #include <Common/QtHeadersEnd.h>
 
 // Project
 #include "POSParameters.h"
 
-//--------------------------------------------------------------------------------
 namespace POSPrinters {
 
     SModelData::SModelData() {
@@ -20,7 +20,7 @@ namespace POSPrinters {
     }
 
     //--------------------------------------------------------------------------------
-    ModelData::ModelData() : mMutex(QMutex::Recursive) {
+    ModelData::ModelData() {
     }
 
     //--------------------------------------------------------------------------------

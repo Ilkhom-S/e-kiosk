@@ -4,6 +4,11 @@
 
 #include "Hardware/Common/CodecBase.h"
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QStringDecoder>
+#include <Common/QtHeadersEnd.h>
+
 //---------------------------------------------------------------------------
 class CustomKZTCodec : public CodecBase {
   public:
@@ -11,12 +16,13 @@ class CustomKZTCodec : public CodecBase {
         mName = CHardware::Codepages::CustomKZT;
         mMIB = 3003;
 
-        QTextCodec *codec866 = QTextCodec::codecForName("IBM866");
+        auto encoding = QStringConverter::encodingForName("IBM866");
+        QStringDecoder decoder(encoding.value_or(QStringConverter::Encoding::Latin1));
 
         // TODO
-        if (codec866) {
+        if (decoder.isValid()) {
             for (uchar ch = uchar('\x80'); ch && (ch <= uchar('\xFF')); ++ch) {
-                QString value = codec866->toUnicode(QByteArray(1, ch));
+                QString value = decoder.decode(QByteArray(1, ch));
                 mData.add(ch, value);
             }
 

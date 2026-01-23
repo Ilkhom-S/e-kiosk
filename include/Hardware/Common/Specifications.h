@@ -19,6 +19,9 @@ template <class T1, class T2> class CSpecification {
     const T2 operator[](const T1 &aKey) const {
         return value(aKey);
     }
+    T2 &operator[](const T1 &aKey) {
+        return mBuffer[aKey];
+    }
     T1 key(const T2 &aValue) {
         return mBuffer.key(aValue);
     }

@@ -6,11 +6,11 @@
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
 
-// Modules
-#include "Hardware/Common/SerialDeviceBase.h"
-#include "Hardware/Common/TCPDeviceBase.h"
+// System
 #include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/Common/ProtoDevices.h"
+#include "Hardware/Common/SerialDeviceBase.h"
+#include "Hardware/Common/TCPDeviceBase.h"
 #include "Hardware/Printers/PrinterStatusesDescriptions.h"
 
 // Project
@@ -498,7 +498,7 @@ template <class T> bool PrinterBase<T>::isPossible(bool aOnline, QVariant aComma
 
     TStatusCodes errorCodes = mStatusCollection.value(EWarningLevel::Error);
 
-    if (aCommand.type() == QVariant::Int) {
+    if (aCommand.metaType().id() == QMetaType::Int) {
         errorCodes -= mUnnecessaryErrors[aCommand.toInt()];
     }
 

@@ -3,7 +3,6 @@
 // Project
 #include "PortPrinterBase.h"
 
-//---------------------------------------------------------------------------
 template class PortPrinterBase<PrinterBase<SerialDeviceBase<PortPollingDeviceBase<ProtoPrinter>>>>;
 
 //---------------------------------------------------------------------------
@@ -11,11 +10,11 @@ template <class T> PortPrinterBase<T>::PortPrinterBase() {
     mIOMessageLogging = ELoggingType::ReadWrite;
 
     // кодек
-    mCodec = CodecByName[CHardware::Codepages::CP866];
+    mCodec = CodecByName[CHardware::Codepages::CP866].get();
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void PortPrinterBase<T>::finaliseInitialization() {
+template <class T> void PortPrinterBase<T>::finalizeInitialization() {
     addPortData();
 
     if (mOperatorPresence) {
@@ -27,7 +26,7 @@ template <class T> void PortPrinterBase<T>::finaliseInitialization() {
 
         mIOPort->close();
     } else {
-        T::finaliseInitialization();
+        T::finalizeInitialization();
     }
 }
 
@@ -71,7 +70,7 @@ template <class T> bool PortPrinterBase<T>::getAnswer(QByteArray &aAnswer, int a
 
 //--------------------------------------------------------------------------------
 template <class T> void PortPrinterBase<T>::execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine) {
-    QByteArray data = mCodec->fromUnicode(aTagLexeme.data);
+    QByteArray data = mCodec->encode(aTagLexeme.data);
 
     foreach (const Tags::TTypes types, mTagEngine->groupsTypesByPrefix(aTagLexeme.tags)) {
         QByteArray openTag = mTagEngine->getTag(types, Tags::Direction::Open);

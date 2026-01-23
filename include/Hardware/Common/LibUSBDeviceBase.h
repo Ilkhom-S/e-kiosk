@@ -2,6 +2,10 @@
 
 #pragma once
 
+// libusb
+#include "libusb.h"
+
+// Project
 #include "Hardware/Common/BaseStatusTypes.h"
 #include "Hardware/Common/USBDeviceModelData.h"
 #include "Hardware/IOPorts/LibUSBPort.h"

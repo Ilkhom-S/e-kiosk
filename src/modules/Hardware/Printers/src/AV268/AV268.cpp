@@ -1,5 +1,11 @@
 /* @file Принтер AV-268. */
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <Common/QtHeadersEnd.h>
+
+// Project
 #include "AV268.h"
 #include "AV268Constants.h"
 
@@ -79,7 +85,7 @@ bool AV268::printLine(const QByteArray &aString) {
 
 //--------------------------------------------------------------------------------
 bool AV268::waitBufferClearing() {
-    QTime clockTimer;
+    QElapsedTimer clockTimer;
     clockTimer.start();
 
     do {
