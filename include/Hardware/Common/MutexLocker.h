@@ -38,7 +38,11 @@ class MutexLocker {
     static TThreadsLocked mThreadsLocked;
 
     // Мьютекс для защиты ресурсов.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     static QRecursiveMutex mResourceMutex;
+#else
+    static QMutex mResourceMutex;
+#endif
 };
 
 //--------------------------------------------------------------------------------

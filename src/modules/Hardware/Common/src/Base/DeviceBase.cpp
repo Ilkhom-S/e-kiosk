@@ -40,7 +40,15 @@ template class DeviceBase<ProtoMifareReader>;
 template class DeviceBase<ProtoDeviceBase>;
 
 //--------------------------------------------------------------------------------
-template <class T> DeviceBase<T>::DeviceBase() : mExternalMutex(QMutex::Recursive), mResourceMutex(QMutex::Recursive) {
+template <class T>
+DeviceBase<T>::DeviceBase()
+    :
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+      mExternalMutex(), mResourceMutex()
+#else
+      mExternalMutex(QMutex::Recursive), mResourceMutex(QMutex::Recursive)
+#endif
+{
     moveToThread(&mThread);
 
     mDeviceName = CDevice::DefaultName;

@@ -52,7 +52,7 @@ template <class T> class DeviceBase : public T {
     DeviceBase();
 
 #pragma region SDK::Driver::IDevice interface
-    /// Подключает и инициализует устройство. Обертка для вызова функционала в рабочем потоке.
+    /// Подключает и инициализирует устройство. Обертка для вызова функционала в рабочем потоке.
     virtual void initialize();
 
     /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
@@ -204,10 +204,18 @@ template <class T> class DeviceBase : public T {
     bool mModelCompatibility;
 
     /// Мьютекс для блокировки polling при выполнении внешних операций.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QRecursiveMutex mExternalMutex;
+#else
     QMutex mExternalMutex;
+#endif
 
     /// Мьютекс для блокировки запросов к логическим ресурсам (контейнеры и т.п.).
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    mutable QRecursiveMutex mResourceMutex;
+#else
     mutable QMutex mResourceMutex;
+#endif
 
     /// Экземпляр класса-описателя статусов устройства.
     DeviceStatusCode::PSpecifications mStatusCodesSpecification;
