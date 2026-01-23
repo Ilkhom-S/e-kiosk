@@ -82,6 +82,94 @@
   #endif
   ```
 
+## Cross-Platform and Qt Version Compatibility Requirements
+
+**CRITICAL REQUIREMENT:** All code changes must be compatible with Linux, macOS, and Windows, and support both Qt 5.15+ and Qt 6.x.
+
+### Platform Compatibility
+
+- **Target Platforms:** Linux, macOS, Windows
+- **Platform Detection:** Use standard CMake platform checks:
+  - `if(WIN32)` for Windows-specific code
+  - `if(APPLE)` for macOS-specific code
+  - `if(UNIX AND NOT APPLE)` for Linux-specific code
+- **Platform-Specific Code:** When implementing platform-specific behavior:
+  - Document the rationale clearly with comments
+  - Use appropriate preprocessor guards
+  - Provide fallback behavior for unsupported platforms when possible
+  - Example:
+
+    ```cpp
+    // Windows-specific USB handling
+    #ifdef Q_OS_WIN32
+        // Windows USB implementation
+        mUSBPort = new WindowsUSBPort();
+    #else
+        // Cross-platform fallback or stub
+        mUSBPort = nullptr; // USB not available on this platform
+    #endif
+    ```
+
+### Qt Version Compatibility
+
+- **Supported Qt Versions:** Qt 5.15+ and Qt 6.x
+- **Qt Version Detection:** Use `QT_VERSION` macros for version-specific code:
+
+  ```cpp
+  #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+      // Code for Qt 5.14+ and Qt 6.x (QRecursiveMutex available)
+      mMutex = QRecursiveMutex();
+  #else
+      // Fallback for Qt 5.0-5.13
+      mMutex = QMutex(QMutex::Recursive);
+  #endif
+  ```
+
+- **Qt API Changes:** When APIs change between Qt versions:
+  - Prefer the newer API when available
+  - Provide backward-compatible fallbacks
+  - Document the version requirements clearly
+  - Examples of handled changes:
+    - `QTextCodec` → Custom `CodecBase` class (Qt6 removed QTextCodec)
+    - `QRegExp` → `QRegularExpression` (Qt6 removed QRegExp)
+    - `QTime::restart()` → `QElapsedTimer` (Qt6 removed QTime methods)
+    - `QMutex::Recursive` → `QRecursiveMutex` (Qt6 removed QMutex::Recursive)
+
+### Cross-Platform Qt Guidelines
+
+- **Qt Platform Plugins:** Ensure appropriate platform plugins are available
+- **File Paths:** Use QDir::separator() or "/" for cross-platform paths
+- **Line Endings:** Qt handles line ending conversion automatically
+- **Unicode Support:** All strings use UTF-8 encoding consistently
+- **Threading:** Use Qt's threading classes (QThread, QMutex, etc.) for portability
+
+### Testing Requirements
+
+- **Platform Testing:** Code must be tested on all supported platforms when possible
+- **Qt Version Testing:** Test builds with both Qt 5.15+ and Qt 6.x
+- **Conditional Logic Testing:** Test both branches of conditional compilation
+- **Fallback Behavior:** Verify fallback implementations work correctly
+
+### Documentation Requirements
+
+- **Platform Notes:** Document platform-specific behavior and limitations
+- **Qt Version Notes:** Document minimum Qt version requirements and API differences
+- **Conditional Logic:** Explain all `#ifdef` and `#if QT_VERSION` blocks with comments
+- **Migration Notes:** Document any breaking changes or migration requirements
+
+### Implementation Checklist
+
+Before committing changes:
+
+- [ ] Code builds successfully on Linux, macOS, and Windows
+- [ ] Code compiles with Qt 5.15+ and Qt 6.x
+- [ ] Platform-specific code is properly guarded and documented
+- [ ] Qt version-specific code uses appropriate version checks
+- [ ] Fallback implementations provided for unsupported platforms/features
+- [ ] All conditional compilation is clearly commented
+- [ ] Tests pass on all supported platforms and Qt versions
+- [ ] Documentation updated to reflect platform/Qt version requirements
+
 - **Interface Separators:** If a class implements more than one interface or has multiple sections, separate them with `//--------------------------------------------------------------------------------` or use `#pragma region` and `#pragma endregion` for better organization.
 
 - **Include Order:**
