@@ -69,7 +69,9 @@ template <class T> class USBDeviceBase : public T {
     static QRecursiveMutex mPDODataGuard;
 
     /// Порт.
+#ifdef Q_OS_WIN32
     USBPort mUSBPort;
+#endif
 
     /// Данные устройств для авто поиска.
     CUSBDevice::PDetectingData mDetectingData;
