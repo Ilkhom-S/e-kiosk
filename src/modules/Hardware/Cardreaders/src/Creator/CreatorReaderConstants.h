@@ -81,7 +81,7 @@ namespace CCreatorReader {
         class CICCPUDescriptions : public CDescription<EICCPU::Enum> {
           public:
             CICCPUDescriptions() {
-                setDefault(Unknown);
+                setDefault("Unknown");
 
                 append(EICCPU::Unknown, "Unknown");
                 append(EICCPU::T0, "T=0 CPU");
@@ -96,7 +96,7 @@ namespace CCreatorReader {
         class CICDescriptions : public CDescription<int> {
           public:
             CICDescriptions() {
-                setDefault(Unknown);
+                setDefault("Unknown");
 
                 append(10, "T=0 CPU");
                 append(11, "T=1 CPU");
@@ -121,7 +121,7 @@ namespace CCreatorReader {
         class CRFDescriptions : public CDescription<int> {
           public:
             CRFDescriptions() {
-                setDefault(Unknown);
+                setDefault("Unknown");
 
                 append(10, "Mifare one S50");
                 append(11, "Mifare one S70");
