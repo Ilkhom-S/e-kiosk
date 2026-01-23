@@ -83,10 +83,28 @@ bool CitizenPPU231::getStatus(TStatusCodes &aStatusCodes) {
 
 //--------------------------------------------------------------------------------
 bool CitizenPPU231::printBarcode(const QString &aBarcode) {
+    // 1. В Qt 6 для кодирования текста (fromUnicode) используется QStringEncoder.
+    // Так как mDecoder в 2026 году — это std::shared_ptr<QStringDecoder>,
+    // создаем энкодер с той же кодировкой.
+    QByteArray encodedBarcode;
+
+    if (mDecoder) {
+        // Создаем энкодер на основе имени кодировки декодера (напр. "IBM 866")
+        QStringEncoder encoder(mDecoder->name());
+        // Используем оператор вызова (функтор) для кодирования
+        encodedBarcode = encoder(aBarcode);
+    } else {
+        // Фолбэк на Latin1, если кодек не задан
+        encodedBarcode = aBarcode.toLatin1();
+    }
+
+    // 2. Формируем команду печати штрих-кода.
     QByteArray barcodePrinting = CPOSPrinter::Command::Barcode::Print + CCitizenPPU231::Barcode::CodeSystem128 +
-                                 CCitizenPPU231::Barcode::Code128Spec + mCodec->fromUnicode(aBarcode) +
+                                 CCitizenPPU231::Barcode::Code128Spec + encodedBarcode +
                                  CCitizenPPU231::Barcode::Postfix;
 
+    // 3. Записываем в порт.
+    // Предполагается, что prepareBarcodePrinting() возвращает QByteArray с префиксами.
     return mIOPort->write(prepareBarcodePrinting() + barcodePrinting);
 }
 

@@ -1,10 +1,14 @@
 /* @file Принтеры семейства Epson EU-T400. */
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <Common/QtHeadersEnd.h>
 
-#include "EpsonEUT400.h"
+// Project
 #include "EpsonConstants.h"
+#include "EpsonEUT400.h"
 
-//--------------------------------------------------------------------------------
 EpsonEUT400::EpsonEUT400() {
     using namespace SDK::Driver::IOPort::COM;
 
@@ -144,8 +148,8 @@ bool EpsonEUT400::getMemorySwitch(char aNumber, char &aValue) {
 
     QByteArray answer;
 
-    QTime clockTimer;
-    clockTimer.restart();
+    QElapsedTimer clockTimer;
+    clockTimer.start();
 
     do {
         QByteArray data;

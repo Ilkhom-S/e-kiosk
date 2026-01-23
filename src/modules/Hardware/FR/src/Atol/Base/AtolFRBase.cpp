@@ -171,14 +171,14 @@ bool AtolFRBase::updateParameters() {
 }
 
 //--------------------------------------------------------------------------------
-void AtolFRBase::finaliseInitialization() {
+void AtolFRBase::finalizeInitialization() {
     if (!mCanProcessZBuffer) {
         enterInnerMode(CAtolFR::InnerModes::Register);
     }
 
     exitInnerMode();
 
-    TSerialFRBase::finaliseInitialization();
+    TSerialFRBase::finalizeInitialization();
 }
 
 //--------------------------------------------------------------------------------

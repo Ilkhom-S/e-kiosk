@@ -1,9 +1,15 @@
 /* @file Принтеры Swecoin. */
 
-#include <math.h>
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <QtCore/QRegularExpression>
+#include <Common/QtHeadersEnd.h>
 
-#include "SwecoinTTP20XXBase.h"
+// Project
 #include "SwecoinPrinterData.h"
+#include "SwecoinTTP20XXBase.h"
+#include <math.h>
 
 using namespace SDK::Driver::IOPort::COM;
 using namespace PrinterStatusCode;
@@ -42,8 +48,8 @@ bool SwecoinPrinter::isConnected() {
     }
 
     QByteArray answer;
-    QTime clockTimer;
-    clockTimer.restart();
+    QElapsedTimer clockTimer;
+    clockTimer.start();
     int length = 0;
 
     do {
@@ -53,8 +59,10 @@ bool SwecoinPrinter::isConnected() {
             return false;
         }
 
+        // В Qt 6 при обращении к байтам QByteArray возвращается char,
+        // используем uchar для корректного получения числового значения длины.
         if ((answer.size() > 1) && (answer[0] == ASCII::NUL)) {
-            length = uchar(answer[1]);
+            length = static_cast<unsigned char>(answer[1]);
         }
 
         answer.append(data);
@@ -65,11 +73,20 @@ bool SwecoinPrinter::isConnected() {
         return false;
     }
 
+    // Извлекаем идентификатор модели, пропуская заголовки
     answer = answer.mid(2);
-    QRegularExpression regExp(".*MODEL:([^;]+);.*");
 
-    if (regExp.match(answer).capturedStart() != -1) {
-        mDeviceName = regExp.capturedTexts()[1].simplified();
+    // 1. Используем QRegularExpression. В Qt 6 это значительно быстрее QRegExp.
+    QRegularExpression regExp(QStringLiteral(".*MODEL:([^;]+);.*"));
+
+    // 2. Выполняем сопоставление и получаем объект QRegularExpressionMatch
+    // match() автоматически выполнит конвертацию QByteArray в QString через UTF-8
+    QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
+
+    // 3. Проверяем наличие совпадения через hasMatch()
+    if (match.hasMatch()) {
+        // 4. Извлекаем захваченную группу (индекс 1) и упрощаем строку
+        mDeviceName = match.captured(1).simplified();
     }
 
     return true;
@@ -88,7 +105,7 @@ bool SwecoinPrinter::updateParameters() {
     }
 
     // TODO: установка шрифта, параметров эжектора, межстрочного интервала, ...
-    bool result = mIOPort->write(CSwecoinPrinter::Commands::Initilize);
+    bool result = mIOPort->write(CSwecoinPrinter::Commands::Initialize);
 
     SleepHelper::msleep(CSwecoinPrinter::Pause);
 

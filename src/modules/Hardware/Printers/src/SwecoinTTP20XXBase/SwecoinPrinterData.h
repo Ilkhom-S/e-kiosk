@@ -22,7 +22,7 @@ namespace CSwecoinPrinter {
 
     /// Команды.
     namespace Commands {
-        const char Initilize[] = "\x1B\x40";        /// Инициализация.
+        const char Initialize[] = "\x1B\x40";       /// Инициализация.
         const char SetParameter[] = "\x1B\x26\x50"; /// Часть команды установки параметра.
         const char GetData[] = "\x1B\x05";          /// Часть команды получения данных об устройстве.
         const char GetModelId[] = "\x1B\x05\x63";   /// Получение Id устройства.

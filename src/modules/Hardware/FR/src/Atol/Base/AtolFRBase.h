@@ -39,7 +39,7 @@ class AtolFRBase : public TSerialFRBase {
     virtual bool updateParameters();
 
     /// Завершение инициализации.
-    virtual void finaliseInitialization();
+    virtual void finalizeInitialization();
 
     /// Получить дату и время ФР.
     virtual QDateTime getDateTime();

@@ -73,7 +73,7 @@ template <class T> class FRBase : public T {
     virtual bool isConnected();
 
     /// Завершение инициализации.
-    virtual void finaliseInitialization();
+    virtual void finalizeInitialization();
 
     /// Завершение инициализации для онлайновых ФР.
     void finaliseOnlineInitialization();

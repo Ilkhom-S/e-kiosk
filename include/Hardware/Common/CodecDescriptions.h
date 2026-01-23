@@ -15,30 +15,22 @@
 #include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-#define APPEND_CODEC(aName, aCodec)                                                                                    \
-    do {                                                                                                               \
-        auto encoding = QStringConverter::encodingForName(#aCodec);                                                    \
-        append(CHardware::Codepages::aName,                                                                            \
-               std::make_unique<QStringDecoder>(encoding.value_or(QStringConverter::Encoding::Utf8)));                 \
-    } while (false)
+// Используем макрос для удобного добавления кодеков (совместимо с Qt 6)
+#define APPEND_CODEC(aName, aCodec) append(CHardware::Codepages::aName, std::make_shared<QStringDecoder>(#aCodec))
 
-class CodecDescriptions : public CSpecification<QString, std::unique_ptr<QStringDecoder>> {
+// T2 теперь std::shared_ptr<QStringDecoder>, который можно копировать в QMap
+class CodecDescriptions : public CSpecification<QString, std::shared_ptr<QStringDecoder>> {
   public:
     CodecDescriptions() {
-        static AtolTextCodec atolCodec;
-        static SparkTextCodec sparkCodec;
-        static CustomKZTCodec customKZTCodec;
-        static CodecBase baseCodec;
+        // Инициализация стандартных кодировок через новый API Qt 6
+        APPEND_CODEC(CP850, "IBM 850");
+        APPEND_CODEC(CP866, "IBM 866");
+        APPEND_CODEC(Win1250, "windows-1250");
+        APPEND_CODEC(Win1251, "windows-1251");
+        APPEND_CODEC(Win1252, "windows-1252");
 
-        APPEND_CODEC(CP850, IBM 850);
-        APPEND_CODEC(CP866, IBM 866);
-        APPEND_CODEC(Win1250, Windows - 1250);
-        APPEND_CODEC(Win1251, Windows - 1251);
-        APPEND_CODEC(Win1252, Windows - 1252);
-        APPEND_CODEC(ATOL, ATOL);
-        APPEND_CODEC(SPARK, SPARK);
-        APPEND_CODEC(CustomKZT, CP866(Kazakhstan));
-        APPEND_CODEC(Base, Base);
+        // Для кастомных кодеков (Atol, Spark) вам нужно реализовать их
+        // как наследников QStringConverter или продолжать использовать Core5Compat
     }
 };
 

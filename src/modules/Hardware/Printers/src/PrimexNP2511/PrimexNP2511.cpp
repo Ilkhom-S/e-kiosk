@@ -1,5 +1,6 @@
 /* @file Принтер PrimexNP2511. */
 
+// Project
 #include "PrimexNP2511.h"
 
 using namespace SDK::Driver::IOPort::COM;
@@ -24,7 +25,7 @@ PrimexNP2511::PrimexNP2511() {
     mTagEngine = Tags::PEngine(new CPrimexNP2511::TagEngine());
 
     // кодек
-    mCodec = CodecByName[CHardware::Codepages::Win1251];
+    mDecoder = CodecByName[CHardware::Codepages::Win1251];
 
     // данные устройства
     mDeviceName = "Primex NP-2511";
@@ -59,23 +60,39 @@ bool PrimexNP2511::backFeed(int aCount) {
 //--------------------------------------------------------------------------------
 bool PrimexNP2511::updateParameters() {
     // TODO: вынести выбор кодовой страницы в настройки плагина
-    return mIOPort->write(QByteArray(CPrimexNP2511::Commands::Initilize) + CPrimexNP2511::Commands::SetCyrillicPage);
+    return mIOPort->write(QByteArray(CPrimexNP2511::Commands::Initialize) + CPrimexNP2511::Commands::SetCyrillicPage);
 }
 
 //--------------------------------------------------------------------------------
 bool PrimexNP2511::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
-    // TODO: проверить возможности эжектора и вынести все соответствующие парамтры в настройки плагина
+    // TODO: проверить возможности эжектора и вынести все соответствующие параметры в настройки плагина
     return mIOPort->write(CPrimexNP2511::Commands::ClearDispenser) && backFeed(CPrimexNP2511::BackFeedCount) &&
            mIOPort->write(CPrimexNP2511::Commands::AutoRetract) && SerialPrinterBase::printReceipt(aLexemeReceipt);
 }
 
 //--------------------------------------------------------------------------------
 bool PrimexNP2511::printBarcode(const QString &aBarcode) {
+    // 1. В Qt 6 для кодирования текста в байты (fromUnicode) используется QStringEncoder.
+    // mDecoder в 2026 году — это std::shared_ptr<QStringDecoder>.
+    QByteArray barcodeData;
+
+    if (mDecoder) {
+        // Создаем энкодер с кодировкой текущего декодера
+        QStringEncoder encoder(mDecoder->name());
+        barcodeData = encoder(aBarcode);
+    } else {
+        // Запасной вариант (Latin1), если декодер не задан
+        barcodeData = aBarcode.toLatin1();
+    }
+
+    // 2. Формируем запрос. Используем конструктор QByteArray для цепочки склейки.
+    // ASCII::NUL в конце обязателен для протокола Primex.
     QByteArray request = QByteArray(CPrimexNP2511::Commands::BarCode::SetHRIPosition) +
                          CPrimexNP2511::Commands::BarCode::SetHeight + CPrimexNP2511::Commands::BarCode::SetFont +
                          CPrimexNP2511::PrinterBarCodeFontSize + CPrimexNP2511::Commands::BarCode::SetWidth +
-                         CPrimexNP2511::Commands::BarCode::Print + mCodec->fromUnicode(aBarcode) + ASCII::NUL;
+                         CPrimexNP2511::Commands::BarCode::Print + barcodeData + ASCII::NUL;
 
+    // 3. Записываем данные в порт.
     return mIOPort->write(request);
 }
 

@@ -16,31 +16,49 @@ template <class T1, class T2> class CSpecification {
   public:
     CSpecification(const T2 &aDefault = T2()) : mDefaultValue(aDefault) {
     }
-    const T2 operator[](const T1 &aKey) const {
+
+    // 1. ИСПРАВЛЕНО: Возвращаем константную ссылку
+    const T2 &operator[](const T1 &aKey) const {
         return value(aKey);
     }
+
     T2 &operator[](const T1 &aKey) {
         return mBuffer[aKey];
     }
-    T1 key(const T2 &aValue) {
+
+    T1 key(const T2 &aValue) const {
         return mBuffer.key(aValue);
     }
-    virtual T2 value(const T1 &aKey) const {
-        return mBuffer.value(aKey, mDefaultValue);
+
+    // 2. ИСПРАВЛЕНО: Возвращаем const T2&
+    // Вместо mBuffer.value(), который создает копию, используем find()
+    virtual const T2 &value(const T1 &aKey) const {
+        auto it = mBuffer.find(aKey);
+        if (it != mBuffer.end()) {
+            return it.value();
+        }
+        return mDefaultValue;
     }
+
     void append(const T1 &aKey, const T2 &aParameter) {
         mBuffer.insert(aKey, aParameter);
     }
+
     QMap<T1, T2> &data() {
         return mBuffer;
     }
-    QMap<T1, T2> constData() const {
+
+    // 3. ИСПРАВЛЕНО: Возвращаем ссылку
+    const QMap<T1, T2> &constData() const {
         return mBuffer;
     }
+
     void setDefault(const T2 &aDefaultValue) {
         mDefaultValue = aDefaultValue;
     }
-    T2 getDefault() {
+
+    // 4. ИСПРАВЛЕНО: Возвращаем ссылку
+    const T2 &getDefault() const {
         return mDefaultValue;
     }
 

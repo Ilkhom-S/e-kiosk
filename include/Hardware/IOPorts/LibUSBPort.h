@@ -1,5 +1,4 @@
 /* @file LibUSB-порт. */
 
-#ifdef Q_OS_WIN32
+// System
 #include "../../src/modules/Hardware/IOPorts/src/LibUSB/LibUSBPort.h"
-#endif

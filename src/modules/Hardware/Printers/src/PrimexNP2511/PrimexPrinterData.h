@@ -18,7 +18,7 @@ namespace CPrimexNP2511 {
         const char BackFeed[] = "\x1D\x4A";
         const char BackFeed2[] = "\x1B\x42";
         const char ClearDispenser[] = "\x1D\x65\x05";
-        const char Initilize[] = "\x1B\x40";
+        const char Initialize[] = "\x1B\x40";
         const char SetCyrillicPage[] = "\x1B\x74\x04";
         const char AutoRetract[] = "\x1B\x72\x31\x3A"; // Через 1 минуту засасываем в ретрактор
 

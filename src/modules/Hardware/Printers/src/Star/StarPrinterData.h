@@ -63,7 +63,7 @@ namespace CSTAR {
     //----------------------------------------------------------------------------
     /// Команды.
     namespace Commands {
-        const char Initilize[] = "\x1B\x40";         /// Переинициализация логики.
+        const char Initialize[] = "\x1B\x40";        /// Переинициализация логики.
         const char Reset[] = "\x1B\x06\x18";         /// Сброс (логика + механика).
         const char ASBStatus[] = "\x1B\x06\x01";     /// Статус (ASB).
         const char ETBMark[] = "\x17";               /// Метка (ETB) для ASB статуса.
@@ -75,7 +75,11 @@ namespace CSTAR {
 
         /// Команды работы с мем-свичами
         template <class T> inline QString int2ASCII(T aValue, int aDigits) {
-            return QByteArray(QString("%1").arg(aValue, aDigits, 16, QChar(ASCII::Zero)).toUpper().toLatin1()).toHex();
+            QString hex = QString::number(aValue, 16).toUpper();
+            while (hex.length() < aDigits) {
+                hex.prepend('0');
+            }
+            return hex;
         }
 
         inline QByteArray getMemorySwitch(char aNumber) {

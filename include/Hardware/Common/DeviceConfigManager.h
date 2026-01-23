@@ -7,6 +7,8 @@
 #include <QtCore/QVariantMap>
 #include <QtCore/QReadWriteLock>
 #include <Common/QtHeadersEnd.h>
+// Common
+#include <memory>
 
 //--------------------------------------------------------------------------------
 class DeviceConfigManager {
@@ -42,7 +44,7 @@ class DeviceConfigManager {
     /// Сторож параметров.
     mutable QReadWriteLock mConfigurationGuard;
 
-    /// Кодек не нужен в Qt6 - используем UTF-8 напрямую.
+    std::shared_ptr<QStringDecoder> mDecoder; // Replaces QTextCodec*
 };
 
 //--------------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../../src/modules/Hardware/Printers/src/Base/Port/PortPrinterBase.h"
+#include "Hardware/Printers/PortPrinterBase.h"
 
 //--------------------------------------------------------------------------------
 /// Базовый последовательный принтер.

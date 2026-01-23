@@ -60,9 +60,9 @@ class SerialCitizenPPU700 : public TSerialCitizenPPU700 {
     SerialCitizenPPU700() {
         using namespace SDK::Driver::IOPort::COM;
 
-        mPortParameters.insert(EParameters::BaudRate, POSPrinters::TSerialDevicePortParameter()
-                                                          << EBaudRate::BR38400 << EBaudRate::BR19200
-                                                          << EBaudRate::BR4800 << EBaudRate::BR9600);
+        this->mPortParameters.insert(EParameters::BaudRate, POSPrinters::TSerialDevicePortParameter()
+                                                                << EBaudRate::BR38400 << EBaudRate::BR19200
+                                                                << EBaudRate::BR4800 << EBaudRate::BR9600);
     }
 };
 
@@ -72,8 +72,8 @@ template <class T> class CitizenPPU700II : public CitizenPPU700<T> {
 
   public:
     CitizenPPU700II() {
-        mDeviceName = "Citizen PPU-700II";
-        mOptionMSW = true;
+        this->mDeviceName = "Citizen PPU-700II";
+        this->mOptionMSW = true;
     }
 };
 
@@ -81,7 +81,7 @@ template <class T> class CitizenPPU700II : public CitizenPPU700<T> {
 class LibUSBCitizenPPU700II : public CitizenPPU700II<TLibUSBPrinterBase> {
   public:
     LibUSBCitizenPPU700II() {
-        mDetectingData->set(CUSBVendors::Citizen1, mDeviceName, 0x201e);
+        this->mDetectingData->set(CUSBVendors::Citizen1, this->mDeviceName, 0x201e);
     }
 };
 

@@ -1,70 +1,74 @@
 /* @file Принтер Citizen PPU-700. */
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <Common/QtHeadersEnd.h>
 
+// Project
 #include "CitizenPPU700.h"
 
-//--------------------------------------------------------------------------------
 template class SerialPOSPrinter<CitizenPPU700<TSerialPrinterBase>>;
 template class SerialPOSPrinter<CitizenPPU700II<TSerialPrinterBase>>;
 
 //--------------------------------------------------------------------------------
 template <class T> CitizenPPU700<T>::CitizenPPU700() {
     // статусы ошибок
-    mParameters.errors.clear();
+    this->mParameters.errors.clear();
 
-    mParameters.errors[1][1].insert('\x08', DeviceStatusCode::Error::Unknown);
+    this->mParameters.errors[1][1].insert('\x08', DeviceStatusCode::Error::Unknown);
 
-    mParameters.errors[2][1].insert('\x04', DeviceStatusCode::Error::CoverIsOpened);
-    mParameters.errors[2][1].insert('\x20', PrinterStatusCode::Error::PaperEnd);
-    mParameters.errors[2][1].insert('\x40', DeviceStatusCode::Error::Unknown);
+    this->mParameters.errors[2][1].insert('\x04', DeviceStatusCode::Error::CoverIsOpened);
+    this->mParameters.errors[2][1].insert('\x20', PrinterStatusCode::Error::PaperEnd);
+    this->mParameters.errors[2][1].insert('\x40', DeviceStatusCode::Error::Unknown);
 
-    mParameters.errors[3][1].insert('\x04', PrinterStatusCode::Error::Presenter);
-    mParameters.errors[3][1].insert('\x08', PrinterStatusCode::Error::Cutter);
-    mParameters.errors[3][1].insert('\x60', DeviceStatusCode::Error::Unknown);
+    this->mParameters.errors[3][1].insert('\x04', PrinterStatusCode::Error::Presenter);
+    this->mParameters.errors[3][1].insert('\x08', PrinterStatusCode::Error::Cutter);
+    this->mParameters.errors[3][1].insert('\x60', DeviceStatusCode::Error::Unknown);
 
-    mParameters.errors[4][1].insert('\x0C', PrinterStatusCode::Warning::PaperNearEnd);
-    mParameters.errors[4][1].insert('\x20', PrinterStatusCode::Error::PaperEnd);
-    mParameters.errors[4][1].insert('\x40', PrinterStatusCode::OK::PaperInPresenter);
+    this->mParameters.errors[4][1].insert('\x0C', PrinterStatusCode::Warning::PaperNearEnd);
+    this->mParameters.errors[4][1].insert('\x20', PrinterStatusCode::Error::PaperEnd);
+    this->mParameters.errors[4][1].insert('\x40', PrinterStatusCode::OK::PaperInPresenter);
 
-    mParameters.errors[5][1].insert('\x04', DeviceStatusCode::Error::CoverIsOpened);
-    mParameters.errors[5][1].insert('\x08', PrinterStatusCode::Error::Temperature);
-    mParameters.errors[5][1].insert('\x60', DeviceStatusCode::Error::PowerSupply);
+    this->mParameters.errors[5][1].insert('\x04', DeviceStatusCode::Error::CoverIsOpened);
+    this->mParameters.errors[5][1].insert('\x08', PrinterStatusCode::Error::Temperature);
+    this->mParameters.errors[5][1].insert('\x60', DeviceStatusCode::Error::PowerSupply);
 
-    mParameters.errors[6][1].insert('\x0C', DeviceStatusCode::Error::MemoryStorage);
-    mParameters.errors[6][1].insert('\x20', PrinterStatusCode::Error::Presenter);
-    mParameters.errors[6][1].insert('\x40', DeviceStatusCode::Error::Electronic);
+    this->mParameters.errors[6][1].insert('\x0C', DeviceStatusCode::Error::MemoryStorage);
+    this->mParameters.errors[6][1].insert('\x20', PrinterStatusCode::Error::Presenter);
+    this->mParameters.errors[6][1].insert('\x40', DeviceStatusCode::Error::Electronic);
 
     // параметры моделей
-    mDeviceName = "Citizen PPU-700";
-    mModelID = '\x75';
-    setConfigParameter(CHardware::Printer::FeedingAmount, 4);
+    this->mDeviceName = "Citizen PPU-700";
+    this->mModelID = '\x75';
+    this->setConfigParameter(CHardware::Printer::FeedingAmount, 4);
 
     // модели
-    mModelData.data().clear();
-    mModelData.add(mModelID, true, mDeviceName);
-    mMaxBadAnswers = 4;
-    mOptionMSW = false;
+    this->mModelData.data().clear();
+    this->mModelData.add(this->mModelID, true, this->mDeviceName);
+    this->mMaxBadAnswers = 4;
+    this->mOptionMSW = false;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool CitizenPPU700<T>::isConnected() {
-    if (!CitizenBase<EjectorPOS>::isConnected()) {
+    if (!this->isConnected()) {
         return false;
     }
 
-    if (mModelCompatibility) {
+    if (this->mModelCompatibility) {
         QByteArray answer;
 
-        if (!mIOPort->write(CCitizenPPU700::Command::GetMemorySwitch5) ||
-            !mIOPort->read(answer, CCitizenPPU700::MemorySwitches::ReadingTimeout,
-                           CCitizenPPU700::MemorySwitches::AnswerSize)) {
+        if (!this->mIOPort->write(CCitizenPPU700::Command::GetMemorySwitch5) ||
+            !this->mIOPort->read(answer, CCitizenPPU700::MemorySwitches::ReadingTimeout,
+                                 CCitizenPPU700::MemorySwitches::AnswerSize)) {
             return false;
         }
 
-        toLog(LogLevel::Normal, QString("%1: << {%2}").arg(mDeviceName).arg(answer.toHex().data()));
+        this->toLog(LogLevel::Normal, QString("%1: << {%2}").arg(this->mDeviceName).arg(answer.toHex().data()));
 
-        mModelCompatibility = mOptionMSW == !answer.isEmpty();
-        mDeviceName = answer.isEmpty() ? "Citizen PPU-700" : "Citizen PPU-700II";
+        this->mModelCompatibility = this->mOptionMSW == !answer.isEmpty();
+        this->mDeviceName = answer.isEmpty() ? "Citizen PPU-700" : "Citizen PPU-700II";
     }
 
     return true;
@@ -72,17 +76,17 @@ template <class T> bool CitizenPPU700<T>::isConnected() {
 
 //--------------------------------------------------------------------------------
 template <class T> void CitizenPPU700<T>::processDeviceData() {
-    EjectorPOS::processDeviceData();
+    this->processDeviceData();
     QByteArray answer;
 
-    if (mIOPort->write(CCitizenPPU700::Command::GetFirmware) &&
-        getNULStoppedAnswer(answer, CPOSPrinter::Timeouts::Info)) {
-        setDeviceParameter(CDeviceData::Firmware, answer);
+    if (this->mIOPort->write(CCitizenPPU700::Command::GetFirmware) &&
+        this->getNULStoppedAnswer(answer, CPOSPrinter::Timeouts::Info)) {
+        this->setDeviceParameter(CDeviceData::Firmware, answer);
     }
 
-    if (mIOPort->write(CCitizenPPU700::Command::GetSerialNumber) &&
-        getNULStoppedAnswer(answer, CPOSPrinter::Timeouts::Info)) {
-        setDeviceParameter(CDeviceData::SerialNumber, answer);
+    if (this->mIOPort->write(CCitizenPPU700::Command::GetSerialNumber) &&
+        this->getNULStoppedAnswer(answer, CPOSPrinter::Timeouts::Info)) {
+        this->setDeviceParameter(CDeviceData::SerialNumber, answer);
     }
 }
 
@@ -90,34 +94,34 @@ template <class T> void CitizenPPU700<T>::processDeviceData() {
 template <class T> bool CitizenPPU700<T>::getNULStoppedAnswer(QByteArray &aAnswer, int aTimeout) const {
     QVariantMap configuration;
     configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::Write));
-    mIOPort->setDeviceConfiguration(configuration);
+    this->mIOPort->setDeviceConfiguration(configuration);
 
     aAnswer.clear();
 
-    QTime timer;
+    QElapsedTimer timer;
     timer.start();
 
     do {
         QByteArray data;
 
-        if (!mIOPort->read(data, 10)) {
+        if (!this->mIOPort->read(data, 10)) {
             return false;
         }
 
         aAnswer.append(data);
     } while (!aAnswer.endsWith(ASCII::NUL) && (timer.elapsed() < aTimeout));
 
-    toLog(aAnswer.isEmpty() ? LogLevel::Warning : LogLevel::Normal,
-          QString("%1: << {%2}").arg(mDeviceName).arg(aAnswer.toHex().data()));
+    this->toLog(aAnswer.isEmpty() ? LogLevel::Warning : LogLevel::Normal,
+                QString("%1: << {%2}").arg(this->mDeviceName).arg(aAnswer.toHex().data()));
 
     return true;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void CitizenPPU700<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
-    EjectorPOS::setDeviceConfiguration(aConfiguration);
+    this->setDeviceConfiguration(aConfiguration);
 
-    int lineSpacing = getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
+    int lineSpacing = this->getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
 
     int feeding = 4;
     if (lineSpacing >= 202)
@@ -129,7 +133,7 @@ template <class T> void CitizenPPU700<T>::setDeviceConfiguration(const QVariantM
     else if (lineSpacing >= 52)
         feeding = 3;
 
-    setConfigParameter(CHardware::Printer::FeedingAmount, feeding);
+    this->setConfigParameter(CHardware::Printer::FeedingAmount, feeding);
 }
 
 //--------------------------------------------------------------------------------

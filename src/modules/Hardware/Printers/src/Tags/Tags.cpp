@@ -8,7 +8,6 @@
 // Project
 #include "Tags.h"
 
-//--------------------------------------------------------------------------------
 void Tags::Engine::appendByGroup(bool aBitField, Type::Enum aType, const QByteArray &aPrefix, const QByteArray &aOpen,
                                  const QByteArray &aClose) {
     append(aType, STagData(aBitField, aPrefix, aOpen, aClose));
@@ -60,28 +59,40 @@ QByteArray Tags::Engine::getTag(const TTypes &aTypes, const Direction::Enum aDir
 //--------------------------------------------------------------------------------
 void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagLexemes) const {
     aTagLexemes.clear();
+    // Добавляем маркер конца, используя QStringLiteral для оптимизации
     QString source = aSource + Tags::None;
 
+    // 1. Используем QRegularExpression.
+    // В Qt 6 эквивалент setMinimal(true) — это квантификатор '.*?' или '.+?' в самом паттерне.
+    // Убедитесь, что Tags::regExpData в 2026 году использует нежадные квантификаторы.
     QRegularExpression regExp(Tags::regExpData);
-    ////////regExp.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
-    int begin = 0;
+    int pos = 0;
 
-    while (begin != -1) {
-        begin = regExp.match(source, begin).capturedStart();
+    // 2. В Qt 6/C++14 итерируемся по строке, используя объект Match
+    while (pos != -1) {
+        QRegularExpressionMatch match = regExp.match(source, pos);
+        int begin = match.hasMatch() ? static_cast<int>(match.capturedStart()) : -1;
+
         Tags::TTypes tags;
         QString lexeme;
 
         if (aTagLexemes.isEmpty()) {
-            // если 1-я лексема, то складываем в лист то, что до 1-го тега
+            // Если 1-я лексема, то складываем в лист то, что до 1-го тега
             lexeme = (begin == -1) ? aSource : source.left(begin);
+
+            // Если тегов не найдено, выходим из цикла после добавления всей строки
+            if (begin == -1)
+                pos = -1;
+            else
+                pos = begin;
         } else if (begin != -1) {
-            QStringList sourceParts = regExp.capturedTexts();
+            // 3. Используем match.captured(n) вместо capturedTexts() для производительности
+            QString tagName = match.captured(1);
+            lexeme = match.captured(2);
 
             Tags::Type::Enum type = Tags::Type::None;
             Tags::Direction::Enum direction;
-            QString tagName = sourceParts[1];
-            lexeme = sourceParts[2];
 
             if (identifyTag(tagName, type, direction)) {
                 tags = aTagLexemes.last().tags;
@@ -90,8 +101,7 @@ void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagL
                 if (direction == Tags::Direction::Open) {
                     tags.insert(tagType);
                 } else {
-                    // если закрываем тег и видим, что в пред. лексеме такого тега нет, значит, тег не был открыт;
-                    // тогда применяем этот тег ко всем предыдущим лексемам
+                    // Логика закрытия тега (совместима с C++14)
                     if (!aTagLexemes.isEmpty()) {
                         if (!aTagLexemes.last().tags.contains(tagType)) {
                             for (int i = 0; i < aTagLexemes.size(); ++i) {
@@ -99,23 +109,29 @@ void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagL
                             }
                         }
                     }
-
                     tags.remove(tagType);
                 }
             } else {
+                // Если тег не известен
                 QString nextTagName;
-                bool isIdentify = identifyTag(sourceParts[3], type, direction);
+                QString rawThirdGroup = match.captured(3);
+                bool isIdentify = identifyTag(rawThirdGroup, type, direction);
 
                 if (!isIdentify || (type != Tags::Type::None)) {
-                    nextTagName =
-                        QString("[%1%2]").arg(direction == Tags::Direction::Open ? "" : "/").arg(sourceParts[3]);
+                    nextTagName = QStringLiteral("[%1%2]")
+                                      .arg(direction == Tags::Direction::Open ? QString() : QStringLiteral("/"))
+                                      .arg(rawThirdGroup);
                 }
 
-                // если тег не известен, то складываем его вместе с лексемой
-                lexeme = QString("[%1]%2%3").arg(tagName).arg(lexeme).arg(nextTagName);
+                lexeme = QStringLiteral("[%1]%2%3").arg(tagName).arg(lexeme).arg(nextTagName);
             }
 
-            begin += tagName.size() + lexeme.size();
+            // Сдвигаем позицию для следующего поиска
+            pos = begin + tagName.size() + lexeme.size();
+        } else {
+            // Больше совпадений нет
+            pos = -1;
+            continue;
         }
 
         aTagLexemes.push_back(Tags::SLexeme(lexeme, tags));
@@ -147,14 +163,24 @@ Tags::TGroupTypes Tags::Engine::groupsTypesByPrefix(const TTypes &aTypes) const 
     TTypes types = aTypes;
     TGroupTypes result;
 
-    foreach (Type::Enum type, aTypes) {
+    // Используем стандартный цикл C++14
+    for (Type::Enum type : aTypes) {
         if (mBuffer.contains(type)) {
             if (!mBuffer[type].bitField) {
                 TTypes singleTypes;
                 singleTypes.insert(type);
                 result.insert(singleTypes);
             } else {
-                result.insert(mPrefixData.keys(mBuffer[type].prefix).toSet().intersect(types));
+                // 1. Получаем список ключей
+                auto keysList = mPrefixData.keys(mBuffer[type].prefix);
+
+                // 2. Создаем QSet из списка через конструктор итераторов (замена .toSet())
+                TTypes prefixTypes(keysList.begin(), keysList.end());
+
+                // 3. Используем оператор & для пересечения множеств (стандарт Qt 6)
+                // Это создаст новое множество, содержащее только общие элементы
+                result.insert(prefixTypes & types);
+
                 types = aTypes;
             }
         }

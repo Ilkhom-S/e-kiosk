@@ -1,7 +1,8 @@
 /* @file Принтер Gebe. */
 
-#include "GeBe.h"
+// Project
 #include "GeBEData.h"
+#include "GeBe.h"
 
 using namespace SDK::Driver::IOPort::COM;
 using namespace PrinterStatusCode;
@@ -33,7 +34,7 @@ GeBe::GeBe() {
     mTagEngine = Tags::PEngine(new CGeBE::TagEngine());
 
     // кодек
-    mCodec = CodecByName[CHardware::Codepages::Win1251];
+    mDecoder = CodecByName[CHardware::Codepages::Win1251];
 
     // данные устройства
     setConfigParameter(CHardware::Printer::FeedingAmount, 4);
@@ -42,7 +43,7 @@ GeBe::GeBe() {
 
 //--------------------------------------------------------------------------------
 bool GeBe::updateParameters() {
-    return mIOPort->write(QByteArray(CGeBE::Commands::Initilize) + CGeBE::Commands::SetFont);
+    return mIOPort->write(QByteArray(CGeBE::Commands::Initialize) + CGeBE::Commands::SetFont);
 }
 
 //--------------------------------------------------------------------------------

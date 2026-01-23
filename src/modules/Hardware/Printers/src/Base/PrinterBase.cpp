@@ -2,6 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QtAlgorithms>
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
@@ -26,39 +27,39 @@ template class PrinterBase<SerialDeviceBase<PortPollingDeviceBase<ProtoPrinter>>
 //---------------------------------------------------------------------------
 template <class T> PrinterBase<T>::PrinterBase() {
     // теги по умолчанию
-    mTagEngine = Tags::PEngine(new Tags::Engine());
+    this->mTagEngine = Tags::PEngine(new Tags::Engine());
 
     // описания для кодов статусов
-    mStatusCodesSpecification = DeviceStatusCode::PSpecifications(new CSpecifications());
-    mMaxBadAnswers = 2;
+    this->mStatusCodesSpecification = DeviceStatusCode::PSpecifications(new CSpecifications());
+    this->mMaxBadAnswers = 2;
 
     // восстановимые ошибки
-    QMap<int, SStatusCodeSpecification> &statusCodesData = mStatusCodesSpecification->data();
+    QMap<int, SStatusCodeSpecification> &statusCodesData = this->mStatusCodesSpecification->data();
 
     for (auto it = statusCodesData.begin(); it != statusCodesData.end(); ++it) {
         if (it->warningLevel == EWarningLevel::Warning) {
-            mRecoverableErrors.insert(it.key());
+            this->mRecoverableErrors.insert(it.key());
         }
     }
 
     // настройки устройства
-    mPollingInterval = 5 * 1000;
-    mLineSize = 0;
-    mLineFeed = true;
-    mPaperInPresenter = QDateTime::currentDateTime();
-    mActualStringCount = 0;
-    mPrintingMode = EPrintingModes::None;
-    mClearingDispenserTurnOff = false;
+    this->mPollingInterval = 5 * 1000;
+    this->mLineSize = 0;
+    this->mLineFeed = true;
+    this->mPaperInPresenter = QDateTime::currentDateTime();
+    this->mActualStringCount = 0;
+    this->mPrintingMode = EPrintingModes::None;
+    this->mClearingDispenserTurnOff = false;
 
     // настройки для плагинов
-    setConfigParameter(CHardware::Printer::NeedSeparating, true);
-    setConfigParameter(CHardware::Printer::PresenterEnable, false);
-    setConfigParameter(CHardware::Printer::RetractorEnable, false);
-    setConfigParameter(CHardware::Printer::FeedingAmount, 0);
-    setConfigParameter(CHardware::Printer::NeedCutting, true);
+    this->setConfigParameter(CHardware::Printer::NeedSeparating, true);
+    this->setConfigParameter(CHardware::Printer::PresenterEnable, false);
+    this->setConfigParameter(CHardware::Printer::RetractorEnable, false);
+    this->setConfigParameter(CHardware::Printer::FeedingAmount, 0);
+    this->setConfigParameter(CHardware::Printer::NeedCutting, true);
 
-    mExcessStatusCollection[EWarningLevel::OK].insert(PrinterStatusCode::OK::PaperInPresenter);
-    mExcessStatusCollection[EWarningLevel::OK].insert(PrinterStatusCode::OK::MotorMotion);
+    this->mExcessStatusCollection[EWarningLevel::OK].insert(PrinterStatusCode::OK::PaperInPresenter);
+    this->mExcessStatusCollection[EWarningLevel::OK].insert(PrinterStatusCode::OK::MotorMotion);
 }
 
 //--------------------------------------------------------------------------------
@@ -66,80 +67,81 @@ template <class T> void PrinterBase<T>::setDeviceConfiguration(const QVariantMap
     T::setDeviceConfiguration(aConfiguration);
 
     if (aConfiguration.contains(CHardwareSDK::Printer::PrintingMode)) {
-        mPrintingMode = EPrintingModes::Enum(aConfiguration[CHardwareSDK::Printer::PrintingMode].toInt());
+        this->mPrintingMode = EPrintingModes::Enum(aConfiguration[CHardwareSDK::Printer::PrintingMode].toInt());
 
-        if (mPrintingMode == EPrintingModes::Glue) {
-            mClearingDispenserTurnOff = true;
+        if (this->mPrintingMode == EPrintingModes::Glue) {
+            this->mClearingDispenserTurnOff = true;
         }
     }
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void PrinterBase<T>::finaliseInitialization() {
-    if (containsConfigParameter(CHardwareSDK::Printer::LineSize)) {
-        setDeviceParameter(CHardwareSDK::Printer::LineSize, getConfigParameter(CHardwareSDK::Printer::LineSize));
+template <class T> void PrinterBase<T>::finalizeInitialization() {
+    if (this->containsConfigParameter(CHardwareSDK::Printer::LineSize)) {
+        this->setDeviceParameter(CHardwareSDK::Printer::LineSize,
+                                 this->getConfigParameter(CHardwareSDK::Printer::LineSize));
     }
 
-    T::finaliseInitialization();
+    T::finalizeInitialization();
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool PrinterBase<T>::isConnected() {
     TStatusCodes statusCodes;
 
-    return getStatus(statusCodes) && !statusCodes.contains(DeviceStatusCode::Error::NotAvailable);
+    return this->getStatus(statusCodes) && !statusCodes.contains(DeviceStatusCode::Error::NotAvailable);
 }
 
 //---------------------------------------------------------------------------
 template <class T> bool PrinterBase<T>::processNonReentrant(TBoolMethod aCommand) {
-    MutexLocker externalLocker(&mExternalMutex);
+    MutexLocker externalLocker(&this->mExternalMutex);
 
-    stopPolling(true);
+    this->stopPolling(true);
 
     {
-        MutexLocker resourceLocker(&mResourceMutex);
+        MutexLocker resourceLocker(&this->mResourceMutex);
 
-        if (!checkConnectionAbility() || !PrinterBase<T>::isConnected()) {
-            if (mOperatorPresence) {
-                processStatusCodes(TStatusCodes() << DeviceStatusCode::Error::NotAvailable);
+        if (!this->checkConnectionAbility() || !PrinterBase<T>::isConnected()) {
+            if (this->mOperatorPresence) {
+                this->processStatusCodes(TStatusCodes() << DeviceStatusCode::Error::NotAvailable);
             }
 
-            startPolling(true);
+            this->startPolling(true);
 
             return false;
         }
     }
 
-    if (mStatusCollection.contains(OK::PaperInPresenter)) {
-        clearDispenser(CHardware::Printer::Settings::PreviousReceipt);
+    if (this->mStatusCollection.contains(OK::PaperInPresenter)) {
+        this->clearDispenser(CHardware::Printer::Settings::PreviousReceipt);
     }
 
     bool result = aCommand();
 
-    mForceStatusBufferEnabled = mForceStatusBufferEnabled || canForceStatusBufferEnable();
-    simplePoll();
-    mForceStatusBufferEnabled = false;
+    this->mForceStatusBufferEnabled = this->mForceStatusBufferEnabled || this->canForceStatusBufferEnable();
+    this->simplePoll();
+    this->mForceStatusBufferEnabled = false;
 
-    if (getConfigParameter(CHardware::Printer::PresenterEnable).toBool() ||
-        getConfigParameter(CHardware::Printer::RetractorEnable).toBool()) {
-        mPaperInPresenter = QDateTime::currentDateTime();
+    if (this->getConfigParameter(CHardware::Printer::PresenterEnable).toBool() ||
+        this->getConfigParameter(CHardware::Printer::RetractorEnable).toBool()) {
+        this->mPaperInPresenter = QDateTime::currentDateTime();
     }
 
-    startPolling(true);
+    this->startPolling(true);
 
     return result;
 }
 
 //---------------------------------------------------------------------------
 template <class T> bool PrinterBase<T>::print(const QStringList &aReceipt) {
-    if (!isPrintingNeed(aReceipt)) {
+    if (!this->isPrintingNeed(aReceipt)) {
         return true;
     }
 
-    QStringList receipt = simplifyReceipt(aReceipt);
+    QStringList receipt = this->simplifyReceipt(aReceipt);
 
-    if (!processNonReentrant(std::bind(&PrinterBase<T>::processReceipt, this, std::ref(receipt), true))) {
-        toLog(LogLevel::Error, "Printing completed unsuccessfully.");
+    if (!this->processNonReentrant(std::bind(&PrinterBase<T>::processReceipt, this, std::ref(receipt), true))) {
+        this->toLog(LogLevel::Error, "Printing completed unsuccessfully.");
         return false;
     }
 
@@ -151,17 +153,17 @@ template <class T>
 void PrinterBase<T>::makeLexemeReceipt(const QStringList &aReceipt, Tags::TLexemeReceipt &aLexemeReceipt) {
     QStringList receipt(aReceipt);
 
-    if (getConfigParameter(CHardware::Printer::NeedSeparating).toBool()) {
-        separate(receipt);
+    if (this->getConfigParameter(CHardware::Printer::NeedSeparating).toBool()) {
+        this->separate(receipt);
     }
 
     foreach (auto line, receipt) {
         Tags::TLexemesBuffer tagLexemes;
-        mTagEngine->splitForLexemes(line, tagLexemes);
+        this->mTagEngine->splitForLexemes(line, tagLexemes);
 
         if (!tagLexemes.isEmpty()) {
             Tags::TLexemesCollection lexemesCollection;
-            adjustToLineSize(tagLexemes, lexemesCollection);
+            this->adjustToLineSize(tagLexemes, lexemesCollection);
 
             aLexemeReceipt << lexemesCollection;
         }
@@ -171,33 +173,51 @@ void PrinterBase<T>::makeLexemeReceipt(const QStringList &aReceipt, Tags::TLexem
 //--------------------------------------------------------------------------------
 template <class T> QStringList PrinterBase<T>::simplifyReceipt(const QStringList &aReceipt) {
     QStringList result(aReceipt);
-    QRegularExpression regExpEmptyLine("^[ \\n\\r\\t]+$");
-    QRegularExpression regExpFreeSpace("[ \\n\\r\\t]+$");
+
+    // 1. Используем QRegularExpression. QStringLiteral предотвращает лишние аллокации.
+    QRegularExpression regExpEmptyLine(QStringLiteral("^[ \\n\\r\\t]+$"));
+    QRegularExpression regExpFreeSpace(QStringLiteral("[ \\n\\r\\t]+$"));
 
     for (int i = 0; i < result.size(); ++i) {
-        QStringList lines = result[i].split(Tags::BR).replaceInStrings(regExpEmptyLine, "");
-        lines.removeAll("");
+        // В Qt 6 split() по умолчанию возвращает QStringList.
+        // Используем Qt::KeepEmptyParts для сохранения структуры.
+        QStringList lines = result[i].split(Tags::BR, Qt::KeepEmptyParts);
 
-        if (!lines.size()) {
-            lines << "";
+        // В Qt 6 метод replaceInStrings(QRegExp, ...) удален.
+        // Используем явный цикл для обработки каждой строки.
+        for (QString &line : lines) {
+            if (regExpEmptyLine.match(line).hasMatch()) {
+                line.clear();
+            }
+        }
+        lines.removeAll(QString());
+
+        if (lines.isEmpty()) {
+            lines << QString();
         }
 
         result.removeAt(i--);
 
-        for (int j = 0; j < lines.size(); ++j) {
-            int index = lines[j].indexOf(regExpFreeSpace);
-            result.insert(++i, lines[j].left(index));
+        for (const QString &line : lines) {
+            // Находим начало хвостовых пробелов через QRegularExpressionMatch
+            QRegularExpressionMatch match = regExpFreeSpace.match(line);
+            int index = match.hasMatch() ? static_cast<int>(match.capturedStart()) : line.length();
+
+            result.insert(++i, line.left(index));
         }
     }
 
     for (int i = 0; i < result.size(); ++i) {
-        result[i] = result[i].replace(ASCII::TAB, ASCII::Space);
+        result[i].replace(ASCII::TAB, ASCII::Space);
 
-        for (auto it = CPrinters::AutoCorrection.data().begin(); it != CPrinters::AutoCorrection.data().end(); ++it) {
-            result[i] = result[i].replace(it.key(), it.value());
+        // Работа с картой автокоррекции
+        const auto &correctionData = CPrinters::AutoCorrection.constData();
+        for (auto it = correctionData.begin(); it != correctionData.end(); ++it) {
+            result[i].replace(it.key(), it.value());
         }
     }
 
+    // Удаление пустых строк
     for (int i = 0; i < result.size(); ++i) {
         if (result[i].simplified().isEmpty()) {
             result.removeAt(i--);
@@ -210,14 +230,14 @@ template <class T> QStringList PrinterBase<T>::simplifyReceipt(const QStringList
 //--------------------------------------------------------------------------------
 template <class T> bool PrinterBase<T>::isPrintingNeed(const QStringList &aReceipt) {
     if (aReceipt.isEmpty()) {
-        toLog(LogLevel::Normal, mDeviceName + ": receipt is empty");
+        this->toLog(LogLevel::Normal, this->mDeviceName + ": receipt is empty");
         return false;
     }
 
-    QStringList receipt = simplifyReceipt(aReceipt);
+    QStringList receipt = this->simplifyReceipt(aReceipt);
 
     if (receipt.isEmpty()) {
-        toLog(LogLevel::Normal, mDeviceName + ": simplified receipt is empty");
+        this->toLog(LogLevel::Normal, this->mDeviceName + ": simplified receipt is empty");
         return false;
     }
 
@@ -226,29 +246,29 @@ template <class T> bool PrinterBase<T>::isPrintingNeed(const QStringList &aRecei
 
 //--------------------------------------------------------------------------------
 template <class T> bool PrinterBase<T>::processReceipt(const QStringList &aReceipt, bool aProcessing) {
-    if (!isPrintingNeed(aReceipt)) {
+    if (!this->isPrintingNeed(aReceipt)) {
         return true;
     }
 
-    toLog(LogLevel::Normal, "Printing receipt:\n" + aReceipt.join("\n"));
+    this->toLog(LogLevel::Normal, "Printing receipt:\n" + aReceipt.join("\n"));
 
     Tags::TLexemeReceipt lexemeReceipt;
-    QStringList receipt = simplifyReceipt(aReceipt);
-    makeLexemeReceipt(receipt, lexemeReceipt);
+    QStringList receipt = this->simplifyReceipt(aReceipt);
+    this->makeLexemeReceipt(receipt, lexemeReceipt);
 
-    bool printing = printReceipt(lexemeReceipt);
+    bool printing = this->printReceipt(lexemeReceipt);
 
-    if (mPrintingMode == EPrintingModes::Glue) {
+    if (this->mPrintingMode == EPrintingModes::Glue) {
         return printing;
     }
 
-    bool processing = (printing && !aProcessing) || receiptProcessing();
+    bool processing = (printing && !aProcessing) || this->receiptProcessing();
 
-    if (printing && aProcessing && (mPrintingMode == EPrintingModes::Continuous)) {
-        if (getConfigParameter(CHardware::Printer::PresenterEnable).toBool()) {
-            push();
-        } else if (getConfigParameter(CHardware::Printer::RetractorEnable).toBool()) {
-            retract();
+    if (printing && aProcessing && (this->mPrintingMode == EPrintingModes::Continuous)) {
+        if (this->getConfigParameter(CHardware::Printer::PresenterEnable).toBool()) {
+            this->push();
+        } else if (this->getConfigParameter(CHardware::Printer::RetractorEnable).toBool()) {
+            this->retract();
         }
     }
 
@@ -268,38 +288,38 @@ template <class T> bool PrinterBase<T>::printReceipt(const Tags::TLexemeReceipt 
 
                 if (!specialTags.isEmpty()) {
                     if (!line.isNull()) {
-                        if (!printLine(line)) {
+                        if (!this->printLine(line)) {
                             result = false;
                         }
 
                         line.clear();
                     }
 
-                    if (!execSpecialTag(lexeme)) {
+                    if (!this->execSpecialTag(lexeme)) {
                         result = false;
                     }
                 } else {
-                    execTags(lexeme, line);
+                    this->execTags(lexeme, line);
                 }
             }
 
-            mLineTags.clear();
+            this->mLineTags.clear();
 
             foreach (auto lexeme, lexemes) {
-                mLineTags += lexeme.tags;
+                this->mLineTags += lexeme.tags;
             }
 
-            bool containsDH =
-                mLineTags.contains(Tags::Type::DoubleHeight) && mTagEngine->contains(Tags::Type::DoubleHeight);
-            mActualStringCount += containsDH ? 2 : 1;
+            bool containsDH = this->mLineTags.contains(Tags::Type::DoubleHeight) &&
+                              this->mTagEngine->contains(Tags::Type::DoubleHeight);
+            this->mActualStringCount += containsDH ? 2 : 1;
 
-            if (!printLine(line)) {
-                if (!isDeviceReady(true)) {
-                    toLog(LogLevel::Error, mDeviceName + ": Printer is not ready for printing to continue");
+            if (!this->printLine(line)) {
+                if (!this->isDeviceReady(true)) {
+                    this->toLog(LogLevel::Error, this->mDeviceName + ": Printer is not ready for printing to continue");
                     return false;
                 }
 
-                result = printLine(line);
+                result = this->printLine(line);
             }
         }
     }
@@ -309,31 +329,32 @@ template <class T> bool PrinterBase<T>::printReceipt(const Tags::TLexemeReceipt 
 
 //--------------------------------------------------------------------------------
 template <class T> bool PrinterBase<T>::receiptProcessing() {
-    bool needCutting = getConfigParameter(CHardware::Printer::NeedCutting).toBool();
-    bool needPresenting = !getConfigParameter(CHardware::Printer::Commands::Presentation).toByteArray().isEmpty() &&
-                          (getConfigParameter(CHardware::Printer::Settings::Loop) == CHardwareSDK::Values::Use) &&
-                          getConfigParameter(CHardware::Printer::Settings::PresentationLength).toInt();
+    bool needCutting = this->getConfigParameter(CHardware::Printer::NeedCutting).toBool();
+    bool needPresenting =
+        !this->getConfigParameter(CHardware::Printer::Commands::Presentation).toByteArray().isEmpty() &&
+        (this->getConfigParameter(CHardware::Printer::Settings::Loop) == CHardwareSDK::Values::Use) &&
+        this->getConfigParameter(CHardware::Printer::Settings::PresentationLength).toInt();
 
-    bool feeding = feed();
-    bool cutting = !needCutting || cut();
-    bool presenting = !needPresenting || present();
+    bool feeding = this->feed();
+    bool cutting = !needCutting || this->cut();
+    bool presenting = !needPresenting || this->present();
 
     return feeding && cutting && presenting;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool PrinterBase<T>::feed() {
-    int amount = getConfigParameter(CHardware::Printer::FeedingAmount).toInt();
+    int amount = this->getConfigParameter(CHardware::Printer::FeedingAmount).toInt();
     bool result = true;
 
     for (int i = 0; i < amount; ++i) {
-        if (!printLine(" ")) {
+        if (!this->printLine(" ")) {
             result = false;
         }
     }
 
     if (!result) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to feed paper");
+        this->toLog(LogLevel::Error, this->mDeviceName + ": Failed to feed paper");
         return false;
     }
 
@@ -343,7 +364,7 @@ template <class T> bool PrinterBase<T>::feed() {
 //--------------------------------------------------------------------------------
 template <class T>
 void PrinterBase<T>::adjustToLineSize(Tags::TLexemesBuffer &aTagLexemes, Tags::TLexemesCollection &aLexemesCollection) {
-    if (!mLineSize) {
+    if (!this->mLineSize) {
         aLexemesCollection.append(aTagLexemes);
 
         return;
@@ -359,7 +380,7 @@ void PrinterBase<T>::adjustToLineSize(Tags::TLexemesBuffer &aTagLexemes, Tags::T
             int size = aTagLexemes[i].data.toInt(&OK);
 
             if (!OK) {
-                size = mLineSize ? mLineSize : CPrinters::DefaultHRSize;
+                size = this->mLineSize ? this->mLineSize : CPrinters::DefaultHRSize;
             }
 
             aTagLexemes[i].data = QString("-").repeated(size);
@@ -376,12 +397,12 @@ void PrinterBase<T>::adjustToLineSize(Tags::TLexemesBuffer &aTagLexemes, Tags::T
         }
 
         int factor = 1 + int(aTagLexemes[i].tags.contains(Tags::Type::DoubleWidth) &&
-                             mTagEngine->data().keys().contains(Tags::Type::DoubleWidth));
+                             this->mTagEngine->data().keys().contains(Tags::Type::DoubleWidth));
         linesize += aTagLexemes[i].data.size() * factor;
         aLexemesCollection[index].append(aTagLexemes[i]);
 
         do {
-            rest = qCeil(double(linesize - mLineSize) / factor);
+            rest = qCeil(double(linesize - this->mLineSize) / factor);
 
             if (rest > 0) {
                 if (aLexemesCollection.size() == ++index) {
@@ -402,9 +423,9 @@ void PrinterBase<T>::adjustToLineSize(Tags::TLexemesBuffer &aTagLexemes, Tags::T
 template <class T> void PrinterBase<T>::execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine) {
     QString data = aTagLexeme.data;
 
-    foreach (const Tags::TTypes types, mTagEngine->groupsTypesByPrefix(aTagLexeme.tags)) {
-        QByteArray openTag = mTagEngine->getTag(types, Tags::Direction::Open);
-        QByteArray closeTag = mTagEngine->getTag(types, Tags::Direction::Close);
+    foreach (const Tags::TTypes types, this->mTagEngine->groupsTypesByPrefix(aTagLexeme.tags)) {
+        QByteArray openTag = this->mTagEngine->getTag(types, Tags::Direction::Open);
+        QByteArray closeTag = this->mTagEngine->getTag(types, Tags::Direction::Close);
         data = openTag + data + closeTag;
     }
 
@@ -426,10 +447,10 @@ template <class T> bool PrinterBase<T>::execSpecialTag(const Tags::SLexeme &aTag
             }
 
             image = image.convertToFormat(QImage::Format_Mono);
-            printImage(image, aTagLexeme.tags);
+            this->printImage(image, aTagLexeme.tags);
         }
     } else if (aTagLexeme.tags.contains(Tags::Type::BarCode)) {
-        return printBarcode(aTagLexeme.data);
+        return this->printBarcode(aTagLexeme.data);
     }
 
     return true;
@@ -465,41 +486,41 @@ template <class T> void PrinterBase<T>::separate(QStringList &aReceipt) const {
 
 //--------------------------------------------------------------------------------
 template <class T> bool PrinterBase<T>::canCheckReady(bool aOnline) {
-    bool notConnected = !mConnected && (!mOperatorPresence || !aOnline);
+    bool notConnected = !this->mConnected && (!this->mOperatorPresence || !aOnline);
 
-    return (mInitialized != ERequestStatus::InProcess) && !notConnected;
+    return (this->mInitialized != ERequestStatus::InProcess) && !notConnected;
 }
 
 //---------------------------------------------------------------------------
 template <class T> bool PrinterBase<T>::isDeviceReady(bool aOnline) {
-    return canCheckReady(aOnline) && isPossible(aOnline);
+    return this->canCheckReady(aOnline) && this->isPossible(aOnline);
 }
 
 //---------------------------------------------------------------------------
 template <class T> bool PrinterBase<T>::isPossible(bool aOnline, QVariant aCommand) {
-    if (mConnected && (mInitialized == ERequestStatus::Fail)) {
-        MutexLocker locker(&mResourceMutex);
+    if (this->mConnected && (this->mInitialized == ERequestStatus::Fail)) {
+        MutexLocker locker(&this->mResourceMutex);
 
-        if (mUnnecessaryErrors[aCommand.toInt()].isEmpty()) {
+        if (this->mUnnecessaryErrors[aCommand.toInt()].isEmpty()) {
             return false;
         }
     }
 
     if (aOnline) {
-        if (!checkConnectionAbility()) {
+        if (!this->checkConnectionAbility()) {
             return false;
         }
 
         TStatusCodes statusCodes;
-        mOperatorPresence ? onPoll() : doPoll(statusCodes);
+        this->mOperatorPresence ? this->onPoll() : this->doPoll(statusCodes);
     }
 
-    MutexLocker locker(&mResourceMutex);
+    MutexLocker locker(&this->mResourceMutex);
 
-    TStatusCodes errorCodes = mStatusCollection.value(EWarningLevel::Error);
+    TStatusCodes errorCodes = this->mStatusCollection.value(EWarningLevel::Error);
 
     if (aCommand.metaType().id() == QMetaType::Int) {
-        errorCodes -= mUnnecessaryErrors[aCommand.toInt()];
+        errorCodes -= this->mUnnecessaryErrors[aCommand.toInt()];
     }
 
     return errorCodes.isEmpty();
@@ -509,17 +530,17 @@ template <class T> bool PrinterBase<T>::isPossible(bool aOnline, QVariant aComma
 template <class T> void PrinterBase<T>::cleanStatusCodes(TStatusCodes &aStatusCodes) {
     if (aStatusCodes.contains(Error::PrinterFRNotAvailable)) {
         TStatusCodes availableErrors =
-            mStatusCodesSpecification.dynamicCast<PrinterStatusCode::CSpecifications>()->getAvailableErrors();
+            this->mStatusCodesSpecification.dynamicCast<PrinterStatusCode::CSpecifications>()->getAvailableErrors();
         aStatusCodes -= availableErrors;
     }
 
-    if (containsConfigParameter(CHardware::Printer::Settings::PaperJamSensor) &&
-        (getConfigParameter(CHardware::Printer::Settings::PaperJamSensor) == CHardwareSDK::Values::NotUse)) {
+    if (this->containsConfigParameter(CHardware::Printer::Settings::PaperJamSensor) &&
+        (this->getConfigParameter(CHardware::Printer::Settings::PaperJamSensor) == CHardwareSDK::Values::NotUse)) {
         aStatusCodes.remove(Error::PaperJam);
     }
 
-    if (containsConfigParameter(CHardware::Printer::Settings::RemotePaperSensor) &&
-        (getConfigParameter(CHardware::Printer::Settings::RemotePaperSensor) == CHardwareSDK::Values::NotUse)) {
+    if (this->containsConfigParameter(CHardware::Printer::Settings::RemotePaperSensor) &&
+        (this->getConfigParameter(CHardware::Printer::Settings::RemotePaperSensor) == CHardwareSDK::Values::NotUse)) {
         aStatusCodes.remove(Warning::PaperNearEnd);
     }
 
@@ -527,8 +548,8 @@ template <class T> void PrinterBase<T>::cleanStatusCodes(TStatusCodes &aStatusCo
         aStatusCodes.insert(DeviceStatusCode::OK::OK);
     }
 
-    if (getConfigParameter(CHardwareSDK::Printer::OFDNotSentError, false).toBool()) {
-        bool error = getConfigParameter(CHardwareSDK::Printer::BlockTerminalOnError, true).toBool();
+    if (this->getConfigParameter(CHardwareSDK::Printer::OFDNotSentError, false).toBool()) {
+        bool error = this->getConfigParameter(CHardwareSDK::Printer::BlockTerminalOnError, true).toBool();
         aStatusCodes.insert(error ? Error::OFDNotSent : Warning::OFDNotSent);
     }
 
@@ -546,28 +567,28 @@ template <class T> void PrinterBase<T>::cleanStatusCodes(TStatusCodes &aStatusCo
 
 //--------------------------------------------------------------------------------
 template <class T> bool PrinterBase<T>::clearDispenser(const QString &aCondition) {
-    if (mClearingDispenserTurnOff) {
-        mClearingDispenserTurnOff = mPrintingMode == EPrintingModes::Glue;
+    if (this->mClearingDispenserTurnOff) {
+        this->mClearingDispenserTurnOff = this->mPrintingMode == EPrintingModes::Glue;
 
         return true;
     }
 
-    bool presenterEnable = getConfigParameter(CHardware::Printer::PresenterEnable).toBool();
-    bool retractorEnable = getConfigParameter(CHardware::Printer::RetractorEnable).toBool();
+    bool presenterEnable = this->getConfigParameter(CHardware::Printer::PresenterEnable).toBool();
+    bool retractorEnable = this->getConfigParameter(CHardware::Printer::RetractorEnable).toBool();
 
-    if (!containsConfigParameter(aCondition) && (presenterEnable || retractorEnable)) {
-        toLog(LogLevel::Warning, mDeviceName + ": Unknown condition for clearing dispenser: " + aCondition);
+    if (!this->containsConfigParameter(aCondition) && (presenterEnable || retractorEnable)) {
+        this->toLog(LogLevel::Warning, this->mDeviceName + ": Unknown condition for clearing dispenser: " + aCondition);
         return true;
     }
 
-    if (getConfigParameter(aCondition) == CHardware::Printer::Values::Retract) {
-        if (retractorEnable && !retract()) {
-            toLog(LogLevel::Error, mDeviceName + ": Failed to retract the document");
+    if (this->getConfigParameter(aCondition) == CHardware::Printer::Values::Retract) {
+        if (retractorEnable && !this->retract()) {
+            this->toLog(LogLevel::Error, this->mDeviceName + ": Failed to retract the document");
             return false;
         }
-    } else if (getConfigParameter(aCondition) == CHardware::Printer::Values::Push) {
-        if (presenterEnable && !push()) {
-            toLog(LogLevel::Error, mDeviceName + ": Failed to push the document");
+    } else if (this->getConfigParameter(aCondition) == CHardware::Printer::Values::Push) {
+        if (presenterEnable && !this->push()) {
+            this->toLog(LogLevel::Error, this->mDeviceName + ": Failed to push the document");
             return false;
         }
     }
@@ -581,15 +602,15 @@ void PrinterBase<T>::postPollingAction(const TStatusCollection &aNewStatusCollec
                                        const TStatusCollection &aOldStatusCollection) {
     if (aNewStatusCollection.contains(OK::PaperInPresenter)) {
         QDateTime current = QDateTime::currentDateTime();
-        int timeout = getConfigParameter(CHardware::Printer::Settings::LeftReceiptTimeout).toInt();
+        int timeout = this->getConfigParameter(CHardware::Printer::Settings::LeftReceiptTimeout).toInt();
 
-        if ((mPaperInPresenter.secsTo(current) > timeout) &&
-            !clearDispenser(CHardware::Printer::Settings::NotTakenReceipt)) {
-            mPaperInPresenter =
-                current.addMSecs((CPrinters::ClearingPresenterRepeatTimeout - timeout) * 1000 - mPollingInterval);
+        if ((this->mPaperInPresenter.secsTo(current) > timeout) &&
+            !this->clearDispenser(CHardware::Printer::Settings::NotTakenReceipt)) {
+            this->mPaperInPresenter =
+                current.addMSecs((CPrinters::ClearingPresenterRepeatTimeout - timeout) * 1000 - this->mPollingInterval);
         }
     } else {
-        mPaperInPresenter = QDateTime::currentDateTime();
+        this->mPaperInPresenter = QDateTime::currentDateTime();
     }
 
     T::postPollingAction(aNewStatusCollection, aOldStatusCollection);

@@ -1,58 +1,57 @@
 /* @file Принтеры Custom. */
 
-
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/qmath.h>
+#include <QtCore/QElapsedTimer>
+#include <QtCore/QtMath>
 #include <Common/QtHeadersEnd.h>
 
 // Project
 #include "CustomPrinters.h"
 
-//--------------------------------------------------------------------------------
 template class CustomPrinter<TSerialPrinterBase>;
 
 //--------------------------------------------------------------------------------
 template <class T> CustomPrinter<T>::CustomPrinter() {
-    mParameters = POSPrinters::CommonParameters;
+    this->mParameters = POSPrinters::CommonParameters;
 
     // статусы ошибок
-    mParameters.errors.clear();
+    this->mParameters.errors.clear();
 
-    mParameters.errors[20][3].insert('\x01', PrinterStatusCode::Error::PaperEnd);
-    mParameters.errors[20][3].insert('\x04', PrinterStatusCode::Warning::PaperNearEnd);
-    mParameters.errors[20][3].insert('\x20', PrinterStatusCode::OK::PaperInPresenter);
-    // mParameters.errors[20][3].insert('\x40', PrinterStatusCode::Warning::PaperEndVirtual);
+    this->mParameters.errors[20][3].insert('\x01', PrinterStatusCode::Error::PaperEnd);
+    this->mParameters.errors[20][3].insert('\x04', PrinterStatusCode::Warning::PaperNearEnd);
+    this->mParameters.errors[20][3].insert('\x20', PrinterStatusCode::OK::PaperInPresenter);
+    // this->mParameters.errors[20][3].insert('\x40', PrinterStatusCode::Warning::PaperEndVirtual);
 
-    mParameters.errors[20][4].insert('\x01', PrinterStatusCode::Error::PrintingHead);
-    mParameters.errors[20][4].insert('\x02', DeviceStatusCode::Error::CoverIsOpened);
+    this->mParameters.errors[20][4].insert('\x01', PrinterStatusCode::Error::PrintingHead);
+    this->mParameters.errors[20][4].insert('\x02', DeviceStatusCode::Error::CoverIsOpened);
 
-    mParameters.errors[20][5].insert('\x01', PrinterStatusCode::Error::Temperature);
-    mParameters.errors[20][5].insert('\x04', PrinterStatusCode::Error::Port);
-    mParameters.errors[20][5].insert('\x08', DeviceStatusCode::Error::PowerSupply);
-    mParameters.errors[20][5].insert('\x40', PrinterStatusCode::Error::PaperJam);
+    this->mParameters.errors[20][5].insert('\x01', PrinterStatusCode::Error::Temperature);
+    this->mParameters.errors[20][5].insert('\x04', PrinterStatusCode::Error::Port);
+    this->mParameters.errors[20][5].insert('\x08', DeviceStatusCode::Error::PowerSupply);
+    this->mParameters.errors[20][5].insert('\x40', PrinterStatusCode::Error::PaperJam);
 
-    mParameters.errors[20][6].insert('\x01', PrinterStatusCode::Error::Cutter);
-    mParameters.errors[20][6].insert('\x4C', DeviceStatusCode::Error::MemoryStorage);
+    this->mParameters.errors[20][6].insert('\x01', PrinterStatusCode::Error::Cutter);
+    this->mParameters.errors[20][6].insert('\x4C', DeviceStatusCode::Error::MemoryStorage);
 
     // теги
-    mParameters.tagEngine.appendSingle(Tags::Type::Italic, "\x1B\x34", "\x01");
-    mParameters.tagEngine.appendCommon(Tags::Type::DoubleWidth, "\x1B\x21", "\x20");
-    mParameters.tagEngine.appendCommon(Tags::Type::DoubleHeight, "\x1B\x21", "\x10");
+    this->mParameters.tagEngine.appendSingle(Tags::Type::Italic, "\x1B\x34", "\x01");
+    this->mParameters.tagEngine.appendCommon(Tags::Type::DoubleWidth, "\x1B\x21", "\x20");
+    this->mParameters.tagEngine.appendCommon(Tags::Type::DoubleHeight, "\x1B\x21", "\x10");
 
     // параметры моделей
-    mDeviceName = "Custom Printer";
-    mModelID = '\x93';
-    mPrintingStringTimeout = 50;
+    this->mDeviceName = "Custom Printer";
+    this->mModelID = '\x93';
+    this->mPrintingStringTimeout = 50;
 
     // модели
-    mModelData.data().clear();
-    mModelData.add('\x93', false, CCustomPrinter::Models::TG2480);
-    mModelData.add('\xA7', false, CCustomPrinter::Models::TG2460H);
-    mModelData.add('\xAC', false, CCustomPrinter::Models::TL80);
-    mModelData.add('\xAD', false, CCustomPrinter::Models::TL60);
+    this->mModelData.data().clear();
+    this->mModelData.add('\x93', false, CCustomPrinter::Models::TG2480);
+    this->mModelData.add('\xA7', false, CCustomPrinter::Models::TG2460H);
+    this->mModelData.add('\xAC', false, CCustomPrinter::Models::TL80);
+    this->mModelData.add('\xAD', false, CCustomPrinter::Models::TL60);
 
-    setConfigParameter(CHardware::Printer::FeedingAmount, 1);
+    this->setConfigParameter(CHardware::Printer::FeedingAmount, 1);
 }
 
 //--------------------------------------------------------------------------------
@@ -63,12 +62,12 @@ template <class T> QStringList CustomPrinter<T>::getModelList() {
 
 //--------------------------------------------------------------------------------
 template <class T> void CustomPrinter<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
-    POSPrinter::setDeviceConfiguration(aConfiguration);
+    this->setDeviceConfiguration(aConfiguration);
 
-    int lineSpacing = getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
+    int lineSpacing = this->getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
     int feeding = (lineSpacing >= 60) ? 0 : 1;
 
-    setConfigParameter(CHardware::Printer::FeedingAmount, feeding);
+    this->setConfigParameter(CHardware::Printer::FeedingAmount, feeding);
 }
 
 //--------------------------------------------------------------------------------
@@ -79,14 +78,15 @@ template <class T> bool CustomPrinter<T>::printImageDefault(const QImage &aImage
     int widthInBytes = qCeil(width / 8.0);
 
     if (width > CCustomPrinter::MaxImageWidth) {
-        toLog(LogLevel::Warning,
-              mDeviceName +
-                  QString(": Image width > %1, so it cannot be printing properly").arg(CCustomPrinter::MaxImageWidth));
+        this->toLog(
+            LogLevel::Warning,
+            this->mDeviceName +
+                QString(": Image width > %1, so it cannot be printing properly").arg(CCustomPrinter::MaxImageWidth));
         return false;
     }
 
-    if (!mIOPort->write(CPOSPrinter::Command::SetLineSpacing(0))) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to set null line spacing for printing the image");
+    if (!this->mIOPort->write(CPOSPrinter::Command::SetLineSpacing(0))) {
+        this->toLog(LogLevel::Error, this->mDeviceName + ": Failed to set null line spacing for printing the image");
         return false;
     }
 
@@ -123,85 +123,96 @@ template <class T> bool CustomPrinter<T>::printImageDefault(const QImage &aImage
             request.append(data);
         }
 
-        if (!mIOPort->write(request + ASCII::LF)) {
+        if (!this->mIOPort->write(request + ASCII::LF)) {
             result = false;
 
             break;
         }
     }
 
-    int lineSpacing = getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
+    int lineSpacing = this->getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
 
-    if (!mIOPort->write(CPOSPrinter::Command::SetLineSpacing(lineSpacing))) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to set line spacing after printing the image");
+    if (!this->mIOPort->write(CPOSPrinter::Command::SetLineSpacing(lineSpacing))) {
+        this->toLog(LogLevel::Error, this->mDeviceName + ": Failed to set line spacing after printing the image");
     }
 
     return result;
 }
 
 //--------------------------------------------------------------------------------
+
 template <class T> bool CustomPrinter<T>::printImage(const QImage &aImage, const Tags::TTypes &aTags) {
     int width = aImage.width();
 
     if (width > CCustomPrinter::GAM::MaxImageWidth) {
-        toLog(LogLevel::Warning, mDeviceName + QString(": Image width > %1, so it cannot be printing properly")
-                                                   .arg(CCustomPrinter::GAM::MaxImageWidth));
+        this->toLog(LogLevel::Warning,
+                    this->mDeviceName + QStringLiteral(": Image width > %1, so it cannot be printing properly")
+                                            .arg(CCustomPrinter::GAM::MaxImageWidth));
         return false;
     }
 
-    QByteArray initializeGAM = QByteArray() + CCustomPrinter::GAM::Commands::SetPageLength +
-                               CCustomPrinter::GAM::Commands::SetResolution204 +
-                               CCustomPrinter::GAM::Commands::SetNoCompression;
+    // Использование QStringLiteral и QByteArray::append для чистоты кода
+    QByteArray initializeGAM;
+    initializeGAM.append(CCustomPrinter::GAM::Commands::SetPageLength);
+    initializeGAM.append(CCustomPrinter::GAM::Commands::SetResolution204);
+    initializeGAM.append(CCustomPrinter::GAM::Commands::SetNoCompression);
 
     int leftMargin = qFloor((CCustomPrinter::GAM::MaxImageWidth - width) / 2.0);
 
     if (aTags.contains(Tags::Type::Center) && (leftMargin > 0)) {
-        initializeGAM += CCustomPrinter::GAM::Commands::SetLeftMargin;
-        initializeGAM.insert(initializeGAM.size() - 1, QString::number(leftMargin));
+        // Формируем команду отступа: вставляем значение перед последним байтом-разделителем
+        QByteArray marginValue = QByteArray::number(leftMargin);
+        initializeGAM.insert(initializeGAM.size() - 1, marginValue);
+        initializeGAM.prepend(CCustomPrinter::GAM::Commands::SetLeftMargin);
     }
 
-    int sizeTotal = initializeGAM.size();
-    QDateTime startDT = QDateTime::currentDateTime();
+    // В Qt 6 для замера интервалов используем QElapsedTimer (точнее и быстрее)
+    QElapsedTimer timer;
+    timer.start();
 
-    if (!mIOPort->write(initializeGAM)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to initialize GAM");
+    if (!this->mIOPort->write(initializeGAM)) {
+        this->toLog(LogLevel::Error, this->mDeviceName + QStringLiteral(": Failed to initialize GAM"));
         return false;
     }
 
-    int widthInBytes = qCeil(aImage.width() / 8.0);
+    int widthInBytes = qCeil(width / 8.0);
 
     for (int i = 0; i < aImage.height(); ++i) {
-        QByteArray data((const char *)aImage.scanLine(i), widthInBytes);
-        QByteArray command = CCustomPrinter::GAM::Commands::SendData + data;
-        command.insert(3, QString::number(data.size()));
+        // Qt 6: scanLine возвращает uchar*, приводим к const char* для QByteArray
+        QByteArray data(reinterpret_cast<const char *>(aImage.scanLine(i)), widthInBytes);
 
-        sizeTotal += command.size();
+        QByteArray command = CCustomPrinter::GAM::Commands::SendData;
+        command.append(data);
 
-        if (!mIOPort->write(command)) {
-            toLog(LogLevel::Error, mDeviceName + ": Failed to send image data");
+        // Вставляем длину данных в команду (индекс 3 согласно протоколу GAM)
+        command.insert(3, QByteArray::number(data.size()));
+
+        if (!this->mIOPort->write(command)) {
+            this->toLog(LogLevel::Error, this->mDeviceName + QStringLiteral(": Failed to send image data"));
             return false;
         }
     }
 
-    sizeTotal += QByteArray(CCustomPrinter::GAM::Commands::PrintImage).size();
-
-    if (!mIOPort->write(CCustomPrinter::GAM::Commands::PrintImage)) {
-        toLog(LogLevel::Error, mDeviceName + ": Failed to set resolution 204 dpi");
+    if (!this->mIOPort->write(CCustomPrinter::GAM::Commands::PrintImage)) {
+        this->toLog(LogLevel::Error, this->mDeviceName + QStringLiteral(": Failed to set resolution 204 dpi"));
         return false;
     }
 
     SDK::Driver::TPortParameters portParameters;
-    mIOPort->getParameters(portParameters);
+    this->mIOPort->getParameters(portParameters);
     qint64 pause = CCustomPrinter::GAM::getImagePause(aImage, portParameters);
 
-    qint64 elapsed = startDT.msecsTo(QDateTime::currentDateTime());
-    toLog(LogLevel::Normal,
-          mDeviceName +
-              QString(": Pause after printing image = %1 - %2 = %3 (ms)").arg(pause).arg(elapsed).arg(pause - elapsed));
+    // Расчет оставшейся паузы
+    qint64 elapsed = timer.elapsed();
+    this->toLog(LogLevel::Normal, this->mDeviceName + QStringLiteral(": Pause after printing image = %1 - %2 = %3 (ms)")
+                                                          .arg(pause)
+                                                          .arg(elapsed)
+                                                          .arg(pause - elapsed));
+
     pause -= elapsed;
 
     if (pause > 0) {
-        SleepHelper::msleep(int(pause));
+        SleepHelper::msleep(static_cast<int>(pause));
     }
 
     return true;

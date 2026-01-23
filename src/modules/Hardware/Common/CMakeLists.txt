@@ -80,3 +80,7 @@ else()
         endif()
     endif()
 endif()
+
+# Ensure EK::LibUSB target is available for this library
+include(${CMAKE_SOURCE_DIR}/thirdparty/cmake/TCFindLibUSB.cmake)
+target_link_libraries(HardwareCommon PRIVATE EK::LibUSB)

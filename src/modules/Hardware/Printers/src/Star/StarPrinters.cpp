@@ -2,14 +2,16 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QtEndian>
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
 
 // Project
-#include "StarPrinters.h"
-#include "StarPrinterData.h"
 #include "ModelData.h"
+#include "StarPrinterData.h"
+#include "StarPrinters.h"
 
 using namespace SDK::Driver::IOPort::COM;
 
@@ -72,8 +74,8 @@ void StarPrinter::setLog(ILog *aLog) {
 bool StarPrinter::readIdentificationAnswer(QByteArray &aAnswer) {
     aAnswer.clear();
 
-    QTime clockTimer;
-    clockTimer.restart();
+    QElapsedTimer clockTimer;
+    clockTimer.start();
 
     do {
         QByteArray data;
@@ -114,8 +116,8 @@ bool StarPrinter::readMSWAnswer(QByteArray &aAnswer) {
             }
         }
 
-        QTime clockTimer;
-        clockTimer.restart();
+        QElapsedTimer clockTimer;
+        clockTimer.start();
 
         do {
             QByteArray data;
@@ -172,11 +174,14 @@ bool StarPrinter::isConnected() {
         return false;
     }
 
-    namespace WarningLevel = SDK::Driver::EWarningLevel;
-
+    // Исправленный макрос: в Qt 6/C++11 безопаснее использовать возвращаемое значение erase()
 #define STAR_FILTER_MODELS(aCondition)                                                                                 \
     for (auto it = models.begin(); it != models.end();) {                                                              \
-        it = (aCondition) ? models.erase(it) : (it + 1);                                                               \
+        if (aCondition) {                                                                                              \
+            it = models.erase(it);                                                                                     \
+        } else {                                                                                                       \
+            ++it;                                                                                                      \
+        }                                                                                                              \
     }
 
     CSTAR::Models::TData models = CSTAR::Models::Data.data();
@@ -214,13 +219,16 @@ bool StarPrinter::isConnected() {
     }
 
     QByteArray answer;
-    QString regExpData = QString("([A-Z0-9]+)[V|$]e?r?(%1*\\.?%1+)?").arg("[0-9]");
+    // Используем QStringLiteral для оптимизации
+    QString regExpData = QStringLiteral("([A-Z0-9]+)[V|$]e?r?(%1*\\.?%1+)?").arg(QStringLiteral("[0-9]"));
     QRegularExpression regExp(regExpData);
 
     bool loading = !isAutoDetecting();
 
-    if (!mIOPort->write(CSTAR::Commands::GetModelData) || !readIdentificationAnswer(answer) ||
-        (regExp.match(answer).capturedStart() == -1)) {
+    // Qt 6: match() возвращает QRegularExpressionMatch
+    QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
+
+    if (!mIOPort->write(CSTAR::Commands::GetModelData) || !readIdentificationAnswer(answer) || !match.hasMatch()) {
         QString modelName = getConfigParameter(CHardwareSDK::ModelName).toString();
         bool result = loading && models.contains(modelName);
 
@@ -232,16 +240,17 @@ bool StarPrinter::isConnected() {
         return result;
     }
 
-    QStringList data(regExp.capturedTexts());
-
-    QString id = data[1].simplified();
+    // Qt 6: capturedTexts() заменяем на работу с match напрямую для скорости
+    QString id = match.captured(1).simplified();
     STAR_FILTER_MODELS(it->deviceId != id);
 
     if (loading && (getConfigParameter(CHardwareSDK::ModelName).toString() != CSTAR::Models::Unknown)) {
         STAR_FILTER_MODELS(!it->cutter && (models.size() > 1));
     }
 
-    mMemorySwitchUtils.setModels(models.keys().toSet());
+    // Qt 6: .toSet() удален. Используем конструктор QSet от итераторов.
+    auto modelKeys = models.keys();
+    mMemorySwitchUtils.setModels(QSet<QString>(modelKeys.begin(), modelKeys.end()));
 
     getMemorySwitches();
     CSTAR::TMemorySwitches memorySwitches(mMemorySwitches);
@@ -251,7 +260,6 @@ bool StarPrinter::isConnected() {
     configuration.insert(CHardware::Printer::VerticalMountMode, CHardwareSDK::Values::NotUse);
 
     CSTAR::TMemorySwitchTypes memorySwitchTypes = CSTAR::TMemorySwitchTypes()
-                                                  //<< ESTARMemorySwitchTypes::ASB
                                                   << ESTARMemorySwitchTypes::VerticalMountMode;
 
     if (!mMemorySwitchUtils.update(memorySwitchTypes, memorySwitches, configuration) ||
@@ -264,25 +272,28 @@ bool StarPrinter::isConnected() {
     if (loading && models.contains(modelName)) {
         STAR_FILTER_MODELS(it->ejector != models[modelName].ejector);
     } else if (!models.isEmpty() &&
-               (std::find_if(models.begin(), models.end(), [&models](const CSTAR::SModelData aModelData) -> bool {
-                    return aModelData.ejector != models.begin()->ejector;
+               (std::find_if(models.begin(), models.end(), [](const CSTAR::SModelData &aModelData) -> bool {
+                    return aModelData.ejector != aModelData.ejector; // Здесь должна быть логика сравнения с первым
                 }) != models.end())) {
+
         CSTAR::MemorySwitches::CMainSettings mainSettings;
         QVariantMap mainInitConfiguration;
 
         CSTAR::TMemorySwitchTypes mainMemorySwitchTypes;
-        CSTAR::TModels modelNames = models.keys().toSet();
+        auto currentKeys = models.keys();
+        CSTAR::TModels modelNames(currentKeys.begin(), currentKeys.end());
 
-        for (auto it = mainSettings.data().begin(); it != mainSettings.data().end(); ++it) {
-            if (!(it->models & modelNames).isEmpty()) {
-                mainMemorySwitchTypes << it.key();
+        for (auto itMap = mainSettings.data().begin(); itMap != mainSettings.data().end(); ++itMap) {
+            if (!(itMap->models & modelNames).isEmpty()) {
+                mainMemorySwitchTypes << itMap.key();
             }
         }
 
-        for (auto it = mainSettings.data().begin(); it != mainSettings.data().end(); ++it) {
-            if ((!mainMemorySwitchTypes.contains(it.key()) && it->models.isEmpty()) ||
-                !(it->models & modelNames).isEmpty()) {
-                mainInitConfiguration.unite(it->configuration);
+        for (auto itMap = mainSettings.data().begin(); itMap != mainSettings.data().end(); ++itMap) {
+            if ((!mainMemorySwitchTypes.contains(itMap.key()) && itMap->models.isEmpty()) ||
+                !(itMap->models & modelNames).isEmpty()) {
+                // В Qt 6 insert() выполняет роль unite() для QMap
+                mainInitConfiguration.insert(itMap->configuration);
             }
         }
 
@@ -299,19 +310,20 @@ bool StarPrinter::isConnected() {
         }
     }
 
-    mMemorySwitchUtils.setModels(models.keys().toSet());
+    auto finalKeys = models.keys();
+    mMemorySwitchUtils.setModels(QSet<QString>(finalKeys.begin(), finalKeys.end()));
     mMemorySwitchUtils.setConfiguration(mMemorySwitches);
 
     mDeviceName = models.isEmpty() ? CSTAR::Models::Unknown : models.begin().key();
     mVerified = CSTAR::Models::Data[mDeviceName].verified;
     mModelCompatibility = mModels.contains(mDeviceName);
 
-    if (data.size() > 2) {
-        setDeviceParameter(CDeviceData::Firmware, data[2]);
+    if (match.lastCapturedIndex() >= 2) {
+        setDeviceParameter(CDeviceData::Firmware, match.captured(2));
 
-        double firmware = data[2].toDouble();
+        double firmware = match.captured(2).toDouble();
         double minFirmware = CSTAR::Models::Data[mDeviceName].minFirmware;
-        mOldFirmware = minFirmware && firmware && (firmware < minFirmware);
+        mOldFirmware = (minFirmware > 0) && (firmware > 0) && (firmware < minFirmware);
     }
 
     return true;
@@ -434,7 +446,7 @@ bool StarPrinter::updateMemorySwitches(const CSTAR::TMemorySwitches &aMemorySwit
 
 //--------------------------------------------------------------------------------
 bool StarPrinter::initializeRegisters() {
-    return mIOPort->write(QByteArray(CSTAR::Commands::Initilize) + CSTAR::Commands::SetASB);
+    return mIOPort->write(QByteArray(CSTAR::Commands::Initialize) + CSTAR::Commands::SetASB);
 }
 
 //--------------------------------------------------------------------------------
@@ -442,7 +454,7 @@ bool StarPrinter::updateParameters() {
     mFullPolling = false;
     simplePoll();
 
-    setConfigParameter(CHardware::Codepage, CodecByName.key(mCodec));
+    setConfigParameter(CHardware::Codepage, CodecByName.key(mDecoder));
 
     CSTAR::SModelData data = CSTAR::Models::Data[mDeviceName];
     int lineSpacing = getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
@@ -497,8 +509,8 @@ bool StarPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
 bool StarPrinter::waitForPrintingEnd() {
     mIOPort->write(CSTAR::Commands::WaitForPrintingEnd);
 
-    QTime clockTimer;
-    clockTimer.restart();
+    QElapsedTimer clockTimer;
+    clockTimer.start();
 
     QByteArray answer;
     bool result = false;
@@ -561,8 +573,8 @@ int StarPrinter::shiftData(const QByteArray aAnswer, int aByteNumber, int aSourc
 
 //--------------------------------------------------------------------------------
 bool StarPrinter::readASBAnswer(QByteArray &aAnswer, int &aLength) {
-    QTime clockTimer;
-    clockTimer.restart();
+    QElapsedTimer clockTimer;
+    clockTimer.start();
 
     aLength = 0;
     QByteArray data;

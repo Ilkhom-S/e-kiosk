@@ -1,6 +1,5 @@
 /* @file Движок мем-свичей принтеров STAR. */
 
-
 // STL
 #include <cmath>
 
@@ -9,7 +8,7 @@
 #include <QtCore/QSet>
 #include <Common/QtHeadersEnd.h>
 
-// Modules
+// System
 #include "Hardware/Common/ASCII.h"
 
 // Project
@@ -85,23 +84,36 @@ bool BaseMemorySwitchUtils::hasValidData(ESTARMemorySwitchTypes::Enum aParameter
                                          const TMemorySwitches &aMemorySwitches) {
     SMSWParameter data = getMSWParameter(aParameterType);
 
+    // 1. Проверка границ массива. Используем .size() и .number
     if (aMemorySwitches.size() <= data.number) {
-        toLog(LogLevel::Error, QString("No memory switch %1 for parameter %2").arg(data.number).arg(data.description));
+        toLog(LogLevel::Error,
+              QStringLiteral("No memory switch %1 for parameter %2").arg(data.number).arg(data.description));
         return false;
     }
 
     int number = data.number;
 
+    // 2. Проверка валидности номера параметра
     if (number == -1) {
-        toLog(LogLevel::Error, QString("Failed to get data for unknown parameter type %1, no data for model(s): %2")
-                                   .arg(aParameterType)
-                                   .arg(static_cast<QStringList>(mModels.toList()).join(", ")));
+        // В Qt 6 рекомендуется использовать контейнер напрямую или явную конвертацию.
+        // static_cast к QStringList заменяем на более современный подход.
+        QStringList modelsList;
+        for (const auto &model : mModels) {
+            modelsList << model;
+        }
+
+        toLog(LogLevel::Error,
+              QStringLiteral("Failed to get data for unknown parameter type %1, no data for model(s): %2")
+                  .arg(static_cast<int>(aParameterType)) // Явное приведение Enum к int для .arg()
+                  .arg(modelsList.join(QStringLiteral(", "))));
+
         return false;
     }
 
+    // 3. Проверка флага валидности в структуре
     if (!aMemorySwitches[number].valid) {
         toLog(LogLevel::Error,
-              QString("Memory switch %1 for parameter %2 is not valid").arg(data.number).arg(data.description));
+              QStringLiteral("Memory switch %1 for parameter %2 is not valid").arg(data.number).arg(data.description));
         return false;
     }
 
@@ -112,13 +124,26 @@ bool BaseMemorySwitchUtils::hasValidData(ESTARMemorySwitchTypes::Enum aParameter
 bool BaseMemorySwitchUtils::hasConfigKeys(ESTARMemorySwitchTypes::Enum aParameterType,
                                           const QVariantMap &aConfiguration) {
     SMSWParameter data = getMSWParameter(aParameterType);
-    QSet<QString> missingKeys = data.dataTypes.toSet() - aConfiguration.keys().toSet();
+
+    // 1. В Qt 6 метод toSet() удален. Используем конструктор QSet от итераторов.
+    const QList<QString> configKeysList = aConfiguration.keys();
+    QSet<QString> configKeys(configKeysList.begin(), configKeysList.end());
+
+    // 2. Аналогично заменяем data.dataTypes.toSet()
+    QSet<QString> missingKeys(data.dataTypes.begin(), data.dataTypes.end());
+
+    // 3. Выполняем вычитание множеств (оператор '-' в Qt 6 удален)
+    missingKeys.subtract(configKeys);
 
     if (!missingKeys.isEmpty()) {
+        // 4. Вместо missingKeys.toList() используем конструктор QStringList от итераторов
+        QStringList missingList(missingKeys.begin(), missingKeys.end());
+
         toLog(LogLevel::Error,
-              QString("No values in the configuration for %1 due to absence of the next parameter(s): %2")
+              QStringLiteral("No values in the configuration for %1 due to absence of the next parameter(s): %2")
                   .arg(data.description)
-                  .arg(static_cast<QStringList>(missingKeys.toList()).join(", ")));
+                  .arg(missingList.join(QStringLiteral(", "))));
+
         return false;
     }
 
@@ -136,34 +161,49 @@ bool BaseMemorySwitchUtils::getParameterValue(ESTARMemorySwitchTypes::Enum aPara
         QString configValue = aConfiguration[parameterKeys[i]].toString();
         aValue << configValue;
 
+        // В Qt 6 QSet работает быстрее, но требует явного наполнения.
         QSet<QString> possibleParameterValues;
-        std::for_each(data.parameters.begin(), data.parameters.end(),
-                      [&](const QStringList &aValueList) { possibleParameterValues << aValueList[i]; });
+        for (const QStringList &valueList : data.parameters) {
+            if (i < valueList.size()) {
+                possibleParameterValues.insert(valueList[i]);
+            }
+        }
 
         if (!possibleParameterValues.contains(configValue)) {
+            // Конвертируем QSet в QStringList вручную для совместимости с Qt 6
+            QStringList valuesList;
+            valuesList.reserve(possibleParameterValues.size());
+            for (const QString &val : possibleParameterValues) {
+                valuesList << val;
+            }
+
             toLog(
                 LogLevel::Error,
-                QString(
+                QStringLiteral(
                     "Unknown value \"%1\" of parameter %2 from temporary configuration, it is need smth from list: %3")
                     .arg(configValue)
                     .arg(data.description)
-                    .arg(static_cast<QStringList>(possibleParameterValues.toList()).join(", ")));
+                    .arg(valuesList.join(QStringLiteral(", "))));
             result = false;
         }
     }
 
     if (!result) {
         aValue.clear();
-
         return false;
-    } else if (!data.parameters.values().contains(aValue)) {
-        QString log;
+    }
 
+    // В Qt 6 QMap::values() возвращает QList. Проверяем наличие списка aValue в списке списков.
+    if (!data.parameters.values().contains(aValue)) {
+        QString log;
         for (int i = 0; i < aValue.size(); ++i) {
-            log += QString("%1%2 = %3").arg(log.isEmpty() ? "" : "; ").arg(data.dataTypes[i]).arg(aValue[i]);
+            log += QStringLiteral("%1%2 = %3")
+                       .arg(log.isEmpty() ? QString() : QStringLiteral("; "))
+                       .arg(data.dataTypes[i])
+                       .arg(aValue[i]);
         }
 
-        toLog(LogLevel::Error, QString("No required parameter list \"%1\" for parameter %2 in the configuration")
+        toLog(LogLevel::Error, QStringLiteral("No required parameter list \"%1\" for parameter %2 in the configuration")
                                    .arg(log)
                                    .arg(data.description));
 
@@ -270,12 +310,23 @@ bool BaseMemorySwitchUtils::setConfiguration(const TMemorySwitches &aMemorySwitc
 void BaseMemorySwitchUtils::add(ESTARMemorySwitchTypes::Enum aParameterType, int aNumber, int aIndex,
                                 const QStringList &aDataTypes, const TMSWParameters &aParameters,
                                 const QString &aDescription, const TModels &models) {
-    int bitAmount = aParameters.begin().key().size();
-    QString description =
-        QString("\"%1\" (MSW %2: %3-%4)").arg(aDescription).arg(aNumber).arg(aIndex).arg(aIndex + bitAmount);
+    // Проверка на пустой контейнер перед обращением к итератору
+    if (aParameters.isEmpty()) {
+        return;
+    }
 
-    mData.insertMulti(aParameterType,
-                      SMSWParameter(aNumber, aIndex, bitAmount, aDataTypes, aParameters, description, models));
+    // Определяем количество бит на основе размера ключа первого элемента
+    int bitAmount = aParameters.begin().key().size();
+
+    // Оптимизируем формирование строки описания через QStringLiteral
+    QString description =
+        QStringLiteral("\"%1\" (MSW %2: %3-%4)").arg(aDescription).arg(aNumber).arg(aIndex).arg(aIndex + bitAmount);
+
+    // В Qt 6 QMap::insertMulti удален.
+    // mData должна быть объявлена как QMultiMap<ESTARMemorySwitchTypes::Enum, SMSWParameter>.
+    // Используем метод insert(), который в QMultiMap работает как добавление еще одного значения.
+    mData.insert(aParameterType,
+                 SMSWParameter(aNumber, aIndex, bitAmount, aDataTypes, aParameters, description, models));
 }
 
 //--------------------------------------------------------------------------------

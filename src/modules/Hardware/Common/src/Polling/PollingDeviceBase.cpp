@@ -45,7 +45,7 @@ template <class T> bool PollingDeviceBase<T>::release() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void PollingDeviceBase<T>::finaliseInitialization() {
+template <class T> void PollingDeviceBase<T>::finalizeInitialization() {
     if (!mConnected) {
         processStatusCodes(TStatusCodes() << DeviceStatusCode::Error::NotAvailable);
     }

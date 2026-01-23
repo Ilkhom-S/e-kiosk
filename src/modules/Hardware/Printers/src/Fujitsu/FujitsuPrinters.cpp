@@ -1,8 +1,8 @@
 /* @file Принтер Fujitsu на контроллере Trentino FTP-609. */
 
 // Project
-#include "FujitsuPrinters.h"
 #include "FujitsuPrinterData.h"
+#include "FujitsuPrinters.h"
 
 using namespace SDK::Driver::IOPort::COM;
 using namespace PrinterStatusCode;
@@ -25,7 +25,7 @@ FujitsuPrinter::FujitsuPrinter() {
     mTagEngine = Tags::PEngine(new CFujitsu::TagEngine());
 
     // кодек
-    mCodec = CodecByName[CHardware::Codepages::Win1251];
+    mDecoder = CodecByName[CHardware::Codepages::Win1251];
 
     // данные устройства
     setConfigParameter(CHardware::Printer::FeedingAmount, 4);

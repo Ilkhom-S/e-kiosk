@@ -2,6 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
 
@@ -266,13 +267,13 @@ template <class T> bool ShtrihFRBase<T>::getZReportQuantity() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool ShtrihFRBase<T>::waitForChangeZReportMode() {
-    QTime clockTimer;
+    QElapsedTimer clockTimer;
     clockTimer.start();
 
     TStatusCodes errorStatusCodes = getErrorFRStatusCodes();
 
     do {
-        QTime clock = QTime::currentTime();
+        QDateTime clock = QDateTime::currentDateTime();
 
         // 3.1. запрашиваем статус
         TStatusCodes statusCodes;
@@ -308,7 +309,7 @@ template <class T> bool ShtrihFRBase<T>::waitForChangeZReportMode() {
             }
 
             // спим до периода опроса
-            int sleepTime = CShtrihFR::Interval::ReportPoll - abs(clock.msecsTo(QTime::currentTime()));
+            int sleepTime = CShtrihFR::Interval::ReportPoll - abs(clock.time().msecsTo(QTime::currentTime()));
 
             if (sleepTime > 0) {
                 SleepHelper::msleep(sleepTime);

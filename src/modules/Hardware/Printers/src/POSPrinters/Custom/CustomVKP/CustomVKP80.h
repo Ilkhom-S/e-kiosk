@@ -36,7 +36,7 @@ template <class T> class CustomVKP80 : public EjectorPOS<T> {
 class LibUSBCustomVKP80 : public CustomVKP80<TLibUSBPrinterBase> {
   public:
     LibUSBCustomVKP80() {
-        mDetectingData->set(CUSBVendors::Custom, mDeviceName, 0x015d);
+        this->mDetectingData->set(CUSBVendors::Custom, this->mDeviceName, 0x015d);
     }
 };
 

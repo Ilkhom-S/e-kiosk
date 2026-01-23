@@ -1,24 +1,25 @@
 /* @file Базовый фискальный регистратор. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QSettings>
-#include <Common/QtHeadersEnd.h>
-
 // STL
 #include <numeric>
 
-// Modules
-#include "PaymentProcessor/PrintConstants.h"
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
+#include <QtCore/QSettings>
+#include <Common/QtHeadersEnd.h>
+
+// System
 #include "Hardware/Common/ConfigCleaner.h"
 #include "Hardware/Common/WorkingThreadProxy.h"
+#include "Hardware/FR/FRStatusCodes.h"
+#include "Hardware/FR/FSSerialData.h"
+#include "Hardware/FR/OFDServerData.h"
 #include "Hardware/Protocols/Common/ProtocolUtils.h"
+#include "PaymentProcessor/PrintConstants.h"
 
 // Project
 #include "FRBase.h"
-#include "Hardware/FR/FRStatusCodes.h"
-#include "Hardware/FR/OFDServerData.h"
-#include "Hardware/FR/FSSerialData.h"
 
 using namespace SDK::Driver;
 using namespace ProtocolUtils;
@@ -267,7 +268,7 @@ template <class T> void FRBase<T>::finaliseOnlineInitialization() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void FRBase<T>::finaliseInitialization() {
+template <class T> void FRBase<T>::finalizeInitialization() {
     setDeviceParameter(CDeviceData::FR::OnlineMode, mIsOnline);
 
     if (mConnected) {
@@ -278,7 +279,7 @@ template <class T> void FRBase<T>::finaliseInitialization() {
         setDeviceParameter(CDeviceData::FR::CanProcessZBuffer, mCanProcessZBuffer ? "true" : "false");
 
         if (mIsOnline) {
-            finaliseOnlineInitialization();
+            finalizeOnlineInitialization();
         }
 
         QStringList taxes;
@@ -292,7 +293,7 @@ template <class T> void FRBase<T>::finaliseInitialization() {
         setDeviceParameter(CDeviceData::FR::Taxes, taxes.join(", "));
     }
 
-    T::finaliseInitialization();
+    T::finalizeInitialization();
 
     QVariantMap configData = mFFEngine.getConfigParameter(CHardware::ConfigData).toMap();
     configData.insert(CHardwareSDK::FR::DealerVAT, getConfigParameter(CHardwareSDK::FR::DealerVAT));
@@ -309,7 +310,7 @@ template <class T> void FRBase<T>::initializeZReportByTimer() {
     QTime OT = QTime::fromString(configOpeningTime, CFR::TimeLogFormat);
 
     QTime ZT = getConfigParameter(CHardwareSDK::FR::ZReportTime).toTime();
-    QTime CT = QTime::currentTime();
+    QTime CT = QDateTime::currentDateTime().time();
     QString logZReport;
 
     if (ZT.isValid()) {
@@ -363,7 +364,7 @@ template <class T> void FRBase<T>::checkZReportByTimer() {
         return;
     }
 
-    QTime current = QTime::currentTime();
+    QTime current = QDateTime::currentDateTime().time();
     int delta = current.msecsTo(ZReportTime);
 
     if (delta < 0) {
@@ -1079,7 +1080,7 @@ template <class T> bool FRBase<T>::openFRSession() {
         return true;
     }
 
-    QTime currentTime = QTime::currentTime();
+    QTime currentTime = QDateTime::currentDateTime().time();
 
     if (!openSession()) {
         return false;
