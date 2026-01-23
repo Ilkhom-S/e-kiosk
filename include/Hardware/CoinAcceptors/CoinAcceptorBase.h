@@ -1,4 +1,4 @@
 /* @file Базовый монетоприемник. */
 
 // System
-#include "../../../modules/Hardware/CoinAcceptors/src/CoinAcceptorBase.h"
+#include "../../../src/modules/Hardware/CoinAcceptors/src/CoinAcceptorBase.h"

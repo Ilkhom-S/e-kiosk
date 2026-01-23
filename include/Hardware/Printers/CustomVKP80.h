@@ -1,4 +1,4 @@
 /* @file Принтер Custom VKP80. */
 
 // System
-#include "../../../modules/Hardware/Printers/src/POSPrinters/Custom/CustomVKP/CustomVKP80.h"
+#include "../../../src/modules/Hardware/Printers/src/POSPrinters/Custom/CustomVKP/CustomVKP80.h"
