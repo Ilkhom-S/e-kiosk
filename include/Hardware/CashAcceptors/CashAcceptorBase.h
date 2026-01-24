@@ -15,6 +15,9 @@
 #include "CurrencyErrors.h"
 #include "CashAcceptorStatusData.h"
 
+typedef QList<int> TStatusCodesHistory;
+typedef QList<TStatusCodesHistory> TStatusCodesHistoryList;
+
 //--------------------------------------------------------------------------------
 namespace CCashAcceptor {
     typedef StatusCache<SDK::Driver::ECashAcceptorStatus::Enum> TStatuses;
@@ -38,11 +41,11 @@ namespace CCashAcceptor {
             return !operator==(aStatusSpecification);
         }
     };
+
+    /// История актуальных отправленных статусов.
+    typedef HistoryList<SStatusSpecification> TStatusHistory;
 } // namespace CCashAcceptor
 
-//--------------------------------------------------------------------------------
-typedef QList<int> TStatusCodesHistory;
-typedef QList<TStatusCodesHistory> TStatusCodesHistoryList;
 typedef QList<SDK::Driver::SPar> TPars;
 
 //--------------------------------------------------------------------------------
