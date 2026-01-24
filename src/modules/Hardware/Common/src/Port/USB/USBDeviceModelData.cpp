@@ -17,7 +17,7 @@ namespace CUSBDevice {
     template <class T> QStringList ProductDataBase<T>::getModelList(const QString &aVendor) {
         QStringList result;
 
-        foreach (const T &data, mBuffer) {
+        foreach (const T &data, this->mBuffer) {
             result << aVendor + " " + data.model;
         }
 
