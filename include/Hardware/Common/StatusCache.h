@@ -30,7 +30,7 @@ template <class T> class StatusCache : public QMap<T, TStatusCodes> {
     }
 
     int size(T key) const {
-        return contains(key) ? value(key).size() : 0;
+        return contains(key) ? this->value(key).size() : 0;
     }
 
     int isEmpty(T key) const {
