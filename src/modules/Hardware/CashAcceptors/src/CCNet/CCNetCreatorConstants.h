@@ -15,7 +15,7 @@ namespace CCCNetCreator {
 
     /// Команды
     namespace Commands {
-        /// Обновление прошивки. A1..A3 - это вроде как команды купюрника
+        /// Обновление прошивки. A1..A3 - это вроде как команды купюроприёмника
         namespace UpdatingFirmware {
             const char SetBaudRate[] = "\xA0";
             const char WriteHead[] = "\xA1";

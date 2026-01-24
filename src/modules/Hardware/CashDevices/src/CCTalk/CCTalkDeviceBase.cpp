@@ -13,9 +13,7 @@ using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------
 template <class T>
-CCTalkDeviceBase<T>::CCTalkDeviceBase()
-    : this->mEventIndex(0),
-this->mFWVersion(0), this->mAddress(CCCTalk::Address::Unknown) {
+CCTalkDeviceBase<T>::CCTalkDeviceBase() : mEventIndex(0), mFWVersion(0), mAddress(CCCTalk::Address::Unknown) {
     // данные устройства
     this->mDeviceName = CCCTalk::DefaultDeviceName;
     this->mProtocolTypes = getProtocolTypes();

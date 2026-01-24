@@ -221,7 +221,7 @@ bool CCTalk::execCommand(int cmdType, QByteArray &cmdResponse, QByteArray data) 
 
             switch (cmdType) {
 
-                // перезагрузка купюрника
+                // перезагрузка купюроприёмника
                 case AcceptorCommands::Reset:
                     cmdRequest = makeCustomRequest(CCTalkConstruct::ApReset, 0);
                     break;

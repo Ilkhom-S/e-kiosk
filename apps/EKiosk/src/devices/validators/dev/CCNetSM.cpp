@@ -917,7 +917,7 @@ int CCNetSm::readPollInfo(QByteArray byte) {
             break;
 
         case CCNetConstruct::States::Initialize:
-            this->sendStatusTo(VStatus::Success::Ok, QString("Идет инициализация купюрника.(13)"));
+            this->sendStatusTo(VStatus::Success::Ok, QString("Идет инициализация купюроприёмника.(13)"));
             this->setBoolingDlgState(false);
             return 0;
             break;

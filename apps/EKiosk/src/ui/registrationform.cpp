@@ -628,7 +628,7 @@ void RegistrationForm::modemSave() {
 }
 
 // void RegistrationForm::closeValidator() {
-//     //Закрываем порт купюрника
+//     //Закрываем порт купюроприёмника
 //     validator->closeThis();
 //     validator->terminate();
 //     validator->wait();

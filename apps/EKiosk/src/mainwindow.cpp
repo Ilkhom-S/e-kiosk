@@ -2456,7 +2456,7 @@ void MainWindow::devicesInitialization() {
             lockerTimer->start(5000);
         }
 
-        // Запускаем таймер проверки состояния купюрника
+        // Запускаем таймер проверки состояния купюроприёмника
         if (!statusValidatorTimer->isActive() && !validatorFirmwareMode) {
             statusValidatorTimer->start(500);
         }
@@ -2793,7 +2793,7 @@ void MainWindow::toSendMonitoringStatus() {
     // Статус принтера
     sData.printer.allState = printerStatusList();
 
-    // Статус купюрника
+    // Статус купюроприёмника
     sData.validator.state = QString::number(config.validatorData.state);
 
     // Статус монетоприемника
@@ -3541,7 +3541,7 @@ void MainWindow::lockUnlockCenter(Lock::Data state, bool lock) {
         switch (state) {
             case Lock::ErrorValidator: {
                 // Тут проверям сначала включена ли опция отправки смс по ошибке
-                // купюрника, кроме открытия купюриника, и разблочена ли система
+                // купюроприёмника, кроме открытия купюриника, и разблочена ли система
                 if (config.smsErrValidator && !lockList[state].lock) {
                     if (config.validatorData.state == VStatus::Errors::BadStackerPosition) {
                         smsSend = true;
@@ -4503,7 +4503,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 }
 
 void MainWindow::closeApp() {
-    // Закрываем порт купюрника
+    // Закрываем порт купюроприёмника
     clsValidator->closeThis();
     clsValidator->terminate();
     clsValidator->wait();

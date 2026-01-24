@@ -101,7 +101,7 @@ template <class T> class CashAcceptorBase : public T {
     /// Получение последних статусов.
     CCashAcceptor::TStatuses getLastStatuses(int aLevel = 1) const;
 
-    /// Получение признака возможности отключения купюрника.
+    /// Получение признака возможности отключения купюроприёмника.
     bool canDisable() const;
 
     /// Включен на прием купюр?

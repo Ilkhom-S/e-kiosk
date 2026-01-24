@@ -113,7 +113,7 @@ struct Config {
     TerminalParams terminalData;
     // Пораметры модема
     ModemParams modemData;
-    // Параметры купюрника
+    // Параметры купюроприёмника
     ValidatorParams validatorData;
     // Параметры монетоприемника
     CoinAcceptorParams coinAcceptorData;
@@ -187,7 +187,7 @@ struct Config {
     int counterCountCheck = 0;
     // Номер для отправки смс
     QString smsSendNumber;
-    // Отправка смс при ошибке купюрника
+    // Отправка смс при ошибке купюроприёмника
     bool smsErrValidator = false;
     // Отправка смс при ошибке принтера
     bool smsErrPrinter = false;

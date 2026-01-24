@@ -197,7 +197,7 @@ template <class T> bool CashAcceptorBase<T>::isAvailable() {
 
 //---------------------------------------------------------------------------
 template <class T> bool CashAcceptorBase<T>::canReturning(bool aOnline) {
-    if (mDeviceType != CHardware::Types::BillAcceptor) {
+    if (this->mDeviceType != CHardware::Types::BillAcceptor) {
         return false;
     }
 

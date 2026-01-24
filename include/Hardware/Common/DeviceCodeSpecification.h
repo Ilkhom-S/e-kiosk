@@ -72,7 +72,7 @@ class CommonDeviceCodeSpecification : public IDeviceCodeSpecification, protected
     char mExtraCode;
 };
 
-/// Структура для описаний состояний купюрника.
+/// Структура для описаний состояний купюроприёмника.
 class BitmapDeviceCodeSpecification : public IDeviceCodeSpecification, protected DeviceCodeSpecificationBase<int> {
   public:
     /// Получить спецификации девайс-кодов по байт-массиву. байт-массив не должен содержать лишних байтов перед

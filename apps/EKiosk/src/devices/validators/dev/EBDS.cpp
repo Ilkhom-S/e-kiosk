@@ -171,7 +171,7 @@ bool EBDS::execCommand(int cmdType, QByteArray &cmdResponse) {
 
             switch (cmdType) {
 
-                // перезагрузка купюрника
+                // перезагрузка купюроприёмника
                 case ValidatorCommands::Reset:
                     cmdRequest = this->makeCustomRequest(EBDSConstruct::Commands::Reset);
                     this->toLogingValidator(0, cmdRequest, "Reset");
