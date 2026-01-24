@@ -34,10 +34,10 @@ template <class T> PortCashAcceptor<T>::PortCashAcceptor() {
     this->mForceWaitResetCompleting = false;
 
     // описания для кодов статусов
-    setConfigParameter(CHardware::CashAcceptor::DisablingTimeout, 0);
-    setConfigParameter(CHardware::CashAcceptor::StackedFilter, false);
+    this->setConfigParameter(CHardware::CashAcceptor::DisablingTimeout, 0);
+    this->setConfigParameter(CHardware::CashAcceptor::StackedFilter, false);
 
-    setConfigParameter(CHardware::CashAcceptor::InitializeTimeout, CCashAcceptor::Timeout::ExitInitialize);
+    this->setConfigParameter(CHardware::CashAcceptor::InitializeTimeout, CCashAcceptor::Timeout::ExitInitialize);
 
     // Устанавливаем начальные параметры.
     setInitialData();
@@ -50,8 +50,8 @@ template <class T> void PortCashAcceptor<T>::setInitialData() {
     this->mReady = false;
 
     // инициализация состояний
-    setConfigParameter(CHardware::CashAcceptor::ProcessEnabling, false);
-    setConfigParameter(CHardware::CashAcceptor::ProcessDisabling, false);
+    this->setConfigParameter(CHardware::CashAcceptor::ProcessEnabling, false);
+    this->setConfigParameter(CHardware::CashAcceptor::ProcessDisabling, false);
 }
 
 //--------------------------------------------------------------------------------
@@ -101,19 +101,29 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
     TDeviceCodeSpecifications deviceCodeSpecifications;
     QByteArray parData;
 
-    foreach (auto answerData, statusData) {
-        QSet<QString> lastData(deviceCodeSpecifications.keys().begin(), deviceCodeSpecifications.keys().end());
+    // 1. Заменяем внешний foreach на стандартный цикл
+    for (const auto &answerData : statusData) {
+        // Получаем ключи спецификаций. В Qt 6 .keys() возвращает QList.
+        auto initialKeys = deviceCodeSpecifications.keys();
+        QSet<QString> lastData(initialKeys.begin(), initialKeys.end());
+
         this->mDeviceCodeSpecification->getSpecification(answerData, deviceCodeSpecifications);
-        QSet<QString> newData(deviceCodeSpecifications.keys().begin(), deviceCodeSpecifications.keys().end()) -
-            lastData;
+
+        auto updatedKeys = deviceCodeSpecifications.keys();
+        QSet<QString> newData(updatedKeys.begin(), updatedKeys.end());
+
+        // 2. В Qt 6 оператор '-' для QSet удален. Используем subtract().
+        newData.subtract(lastData);
 
         this->mDeviceCodeBuffers << answerData;
 
-        foreach (auto data, newData) {
-            // данные о валюте
+        // 3. Заменяем внутренний foreach на стандартный цикл
+        for (const auto &data : newData) {
+            // Обращаемся к спецификации. Используем this-> для зависимых имен если нужно.
             int statusCode = deviceCodeSpecifications[data].statusCode;
-            bool escrow = statusCode == BillAcceptorStatusCode::BillOperation::Escrow;
-            bool stacked = statusCode == BillAcceptorStatusCode::BillOperation::Stacked;
+
+            bool escrow = (statusCode == BillAcceptorStatusCode::BillOperation::Escrow);
+            bool stacked = (statusCode == BillAcceptorStatusCode::BillOperation::Stacked);
 
             if (escrow || (stacked && this->mParInStacked)) {
                 parData = answerData;
@@ -129,7 +139,7 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
         defaultDescriptionLog << specification.description;
         EWarningLevel::Enum warningLevel =
             this->mStatusCodesSpecification->value(specification.statusCode).warningLevel;
-        logLevel = qMin(logLevel, getLogLevel(warningLevel));
+        logLevel = qMin(logLevel, this->getLogLevel(warningLevel));
     }
 
     if (defaultDescriptionLog.isEmpty()) {
@@ -146,7 +156,7 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
                  it != deviceCodeSpecifications.end(); ++it) {
                 if (!it->description.isEmpty()) {
                     SStatusCodeSpecification statusCodeData = this->mStatusCodesSpecification->value(it->statusCode);
-                    logLevel = getLogLevel(statusCodeData.warningLevel);
+                    logLevel = this->getLogLevel(statusCodeData.warningLevel);
 
                     QString codeLog;
 
@@ -172,7 +182,7 @@ template <class T> bool PortCashAcceptor<T>::getStatus(TStatusCodes &aStatusCode
     }
 
     if (!setLastPar(parData) && escrow) {
-        reject();
+        this->reject();
 
         aStatusCodes.remove(BillAcceptorStatusCode::BillOperation::Escrow);
         aStatusCodes.insert(BillAcceptorStatusCode::Normal::Enabled);
@@ -186,15 +196,16 @@ template <class T> bool PortCashAcceptor<T>::setLastPar(const QByteArray &aAnswe
     QString log = this->mDeviceName + ": Failed to set last par due to ";
 
     if ((mEscrowPosition < 0) || (mEscrowPosition >= aAnswer.size())) {
-        toLog(LogLevel::Error,
-              log + QString("wrong escrow position = %1 (answer size = %2)").arg(mEscrowPosition).arg(aAnswer.size()));
+        this->toLog(
+            LogLevel::Error,
+            log + QString("wrong escrow position = %1 (answer size = %2)").arg(mEscrowPosition).arg(aAnswer.size()));
         return false;
     }
 
     int escrowKey = uchar(aAnswer[mEscrowPosition]);
 
-    if (!mEscrowParTable.data().contains(escrowKey)) {
-        toLog(LogLevel::Error, log + "wrong escrow key = " + ProtocolUtils::toHexLog<uchar>(uchar(escrowKey)));
+    if (!this->mEscrowParTable.data().contains(escrowKey)) {
+        this->toLog(LogLevel::Error, log + "wrong escrow key = " + ProtocolUtils::toHexLog<uchar>(uchar(escrowKey)));
         return false;
     }
 
@@ -202,22 +213,22 @@ template <class T> bool PortCashAcceptor<T>::setLastPar(const QByteArray &aAnswe
     SPar par = this->mEscrowPars[0];
 
     if (!par.nominal) {
-        toLog(LogLevel::Error, log + "nominal == 0");
+        this->toLog(LogLevel::Error, log + "nominal == 0");
         return false;
     }
 
     if (!CurrencyCodes.data().values().contains(par.currencyId)) {
-        toLog(LogLevel::Error, log + "unknown currency, id = " + QString::number(par.currencyId));
+        this->toLog(LogLevel::Error, log + "unknown currency, id = " + QString::number(par.currencyId));
         return false;
     }
 
     if (!par.enabled) {
-        toLog(LogLevel::Error, log + "par isn`t enabled");
+        this->toLog(LogLevel::Error, log + "par isn`t enabled");
         return false;
     }
 
     if (par.inhibit) {
-        toLog(LogLevel::Error, log + "par is inhibit");
+        this->toLog(LogLevel::Error, log + "par is inhibit");
         return false;
     }
 
@@ -231,14 +242,14 @@ template <class T> void PortCashAcceptor<T>::restoreStatuses() {
     toLog(LogLevel::Normal,
           this->mDeviceName +
               QString(", restoreStatuses: post polling action is %1enabled, checking disable state is %2enabled")
-                  .arg(mPostPollingAction ? "" : "not ")
-                  .arg(mCheckDisable ? "" : "not "));
+                  .arg(this->mPostPollingAction ? "" : "not ")
+                  .arg(this->mCheckDisable ? "" : "not "));
 
     auto canRestore = [&]() -> bool { return !mCheckDisable && this->mPostPollingAction; };
     TStatusHistory statusHistory;
 
-    if (mPollingActive && waitCondition(canRestore, CPortCashAcceptor::RestoreStatusesWaiting) &&
-        !mStatusHistory.isEmpty()) {
+    if (this->mPollingActive && waitCondition(canRestore, CPortCashAcceptor::RestoreStatusesWaiting) &&
+        !this->mStatusHistory.isEmpty()) {
         EWarningLevel::Enum warningLevel = this->mStatusHistory.lastValue().warningLevel;
 
         for (auto it = this->mStatusHistory.begin() + this->mStatusHistory.getLevel(); it < this->mStatusHistory.end();

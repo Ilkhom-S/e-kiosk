@@ -41,22 +41,22 @@ template class DeviceBase<ProtoDeviceBase>;
 
 //--------------------------------------------------------------------------------
 template <class T> DeviceBase<T>::DeviceBase() : mExternalMutex(), mResourceMutex() {
-    moveToThread(&mThread);
+    this->moveToThread(&this->mThread);
 
-    mDeviceName = CDevice::DefaultName;
-    mBadAnswerCounter = 0;
-    mMaxBadAnswers = 0;
-    mPostPollingAction = true, mVerified = true;
-    mModelCompatibility = true;
-    mLastWarningLevel = static_cast<EWarningLevel::Enum>(-1);
-    mConnected = false;
-    mInitialized = ERequestStatus::Fail;
-    mVersion = Humo::getVersion();
-    mOldFirmware = false;
-    mInitializeRepeatCount = 1;
-    mAutoDetectable = true;
-    mNeedReboot = false;
-    mForceStatusBufferEnabled = false;
+    this->mDeviceName = CDevice::DefaultName;
+    this->mBadAnswerCounter = 0;
+    this->mMaxBadAnswers = 0;
+    this->mPostPollingAction = true, this->mVerified = true;
+    this->mModelCompatibility = true;
+    this->mLastWarningLevel = static_cast<EWarningLevel::Enum>(-1);
+    this->mConnected = false;
+    this->mInitialized = ERequestStatus::Fail;
+    this->mVersion = Humo::getVersion();
+    this->mOldFirmware = false;
+    this->mInitializeRepeatCount = 1;
+    this->mAutoDetectable = true;
+    this->mNeedReboot = false;
+    this->mForceStatusBufferEnabled = false;
 
     mStatusCodesSpecification = DeviceStatusCode::PSpecifications(new DeviceStatusCode::CSpecifications());
 

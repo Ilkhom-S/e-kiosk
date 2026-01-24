@@ -70,7 +70,8 @@ TResult V2eCashAcceptor::execCommand(const QByteArray &aCommand, const QByteArra
     do {
         if (!correct) {
             toLog(LogLevel::Normal,
-                  this->mDeviceName + QString(": process status due to IRQ in the answer, iteration #%1").arg(repeat + 1));
+                  this->mDeviceName +
+                      QString(": process status due to IRQ in the answer, iteration #%1").arg(repeat + 1));
             TResult result = checkStatus(answer);
 
             if (!result) {
@@ -159,7 +160,7 @@ bool V2eCashAcceptor::setDefaultParameters() {
     }
 
     // Inhibit mode нам не нужен
-    if (!processCommand(CV2e::Commands::Uninhibit)) {
+    if (!processCommand(CV2e::Commands::Uninhibited)) {
         toLog(LogLevel::Error, this->mDeviceName + ": Failed to exit from Inhibit mode");
         return false;
     }
@@ -197,7 +198,8 @@ bool V2eCashAcceptor::reject() {
 bool V2eCashAcceptor::enableMoneyAcceptingMode(bool aEnabled) {
     CCashAcceptor::TStatuses lastStatuses = this->mStatusHistory.lastValue().statuses;
 
-    if (aEnabled && !lastStatuses.isEmpty(ECashAcceptorStatus::Inhibit) && !processCommand(CV2e::Commands::Uninhibit)) {
+    if (aEnabled && !lastStatuses.isEmpty(ECashAcceptorStatus::Inhibit) &&
+        !processCommand(CV2e::Commands::Uninhibited)) {
         toLog(LogLevel::Error, this->mDeviceName + ": Failed to exit from Inhibit mode");
         return false;
     }

@@ -64,7 +64,7 @@ namespace CV2e {
         const char SetCommMode = '\x40';    /// Установить режим (polling/interrupt) и доступность эскроу.
         const char SetOrientation = '\x43'; /// Установить ориентацию купюры.
         const char Retransmit = '\x77';     /// Переспросить ответ.
-        const char Uninhibit = '\xF1';      /// Попытаться выйти из Inhibit-а.
+        const char Uninhibited = '\xF1';    /// Попытаться выйти из Inhibit-а.
         const char ChangeDefault = '\xF3';  /// Сохранить настройки для Power-up-а.
     } // namespace Commands
 
