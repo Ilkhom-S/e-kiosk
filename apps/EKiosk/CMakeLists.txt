@@ -32,6 +32,25 @@ ek_add_application(client
     LIBRARIES
     BasicApplication
     EK::QZint
+    PPSDK
+    GUISDK
+    PluginsSDK
+    DriversSDK
+    GraphicsEngine
+    ScenarioEngine
+    SettingsManager
+    DatabaseProxy
+    NetworkTaskManager
+    Connection
+    CryptEngine
+    DeviceManager
+    PaymentBase
+    WatchServiceClient
+    UpdateEngine
+    MessageQueue
+    Packer
+    AdBackend
+    SysUtils
     $<$<PLATFORM_ID:Windows>:rasapi32;winspool;psapi;user32;Advapi32>
 )
 

@@ -273,7 +273,7 @@ void *GUIService::getInterface(const QString &aInterface) {
     } else if (aInterface == PPSDK::Scripting::CProxyNames::Core) {
         object = mScriptingCore;
     } else if (mBackendScenarioObjects.contains(aInterface)) {
-        object = mBackendScenarioObjects.value(aInterface).data();
+        object = mBackendScenarioObjects.value(aInterface).toStrongRef().data();
     }
 
     return object;
@@ -579,7 +579,9 @@ SDK::GUI::IAdSource *GUIService::getAdSource() const {
 //------------------------------------------------------------------------
 QObject *GUIService::getBackendObject(const QString &aName) const {
     QString fullName = CGUIService::BackedObjectPrefix + aName;
-    return mBackendScenarioObjects.keys().contains(fullName) ? mBackendScenarioObjects.value(fullName).data() : nullptr;
+    return mBackendScenarioObjects.keys().contains(fullName)
+               ? mBackendScenarioObjects.value(fullName).toStrongRef().data()
+               : nullptr;
 }
 
 //------------------------------------------------------------------------

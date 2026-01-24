@@ -401,7 +401,7 @@ void ClassPrinter::winPrint(QString text) {
 
         // Устанавливаем параметры
         printer.setPageSize(QPageSize(QSizeF(width, height), QPageSize::Millimeter));
-        printer.setPageMargins(QMarginsF(left, top, right, bottom), QPageSize::Millimeter);
+        printer.setPageMargins(QMarginsF(left, top, right, bottom), QPageLayout::Millimeter);
 
         QFont font("Tahoma", this->WpFont, QFont::Normal);
 

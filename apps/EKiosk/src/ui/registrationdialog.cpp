@@ -26,19 +26,22 @@ RegistrationDialog::RegistrationDialog(QWidget *parent) : QDialog(parent), ui(ne
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     // Номер терминала
-    QRegExpValidator *NumTrmReg = new QRegExpValidator(QRegExp("[1-9][0-9]{4,5}"), ui->editNumTrmReg);
+    QRegularExpressionValidator *NumTrmReg =
+        new QRegularExpressionValidator(QRegularExpression("[1-9][0-9]{4,5}"), ui->editNumTrmReg);
     ui->editNumTrmReg->setValidator(NumTrmReg);
 
     // Логин пользователя
-    QRegExpValidator *loginRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editLoginReg);
+    QRegularExpressionValidator *loginRegValidator =
+        new QRegularExpressionValidator(QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->editLoginReg);
     ui->editLoginReg->setValidator(loginRegValidator);
 
     // Пароль пользователя
-    QRegExpValidator *passRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editPasswordReg);
+    QRegularExpressionValidator *passRegValidator =
+        new QRegularExpressionValidator(QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->editPasswordReg);
     ui->editPasswordReg->setValidator(passRegValidator);
 
-    QRegExpValidator *confPassRegValidator =
-        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editPasswordReg);
+    QRegularExpressionValidator *confPassRegValidator =
+        new QRegularExpressionValidator(QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->editPasswordReg);
     ui->editConfirmPasswordReg->setValidator(confPassRegValidator);
 
     // Секретный номер
@@ -47,17 +50,17 @@ RegistrationDialog::RegistrationDialog(QWidget *parent) : QDialog(parent), ui(ne
     // ui->editSecretNumReg->setValidator(secretNumValidator);
 
     // Логин пользователя
-    QRegExpValidator *secLoginRegValidator =
-        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretLoginReg);
+    QRegularExpressionValidator *secLoginRegValidator =
+        new QRegularExpressionValidator(QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretLoginReg);
     ui->editSecretLoginReg->setValidator(secLoginRegValidator);
 
     // Пароль пользователя
-    QRegExpValidator *secPassRegValidator =
-        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretPasswordReg);
+    QRegularExpressionValidator *secPassRegValidator =
+        new QRegularExpressionValidator(QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretPasswordReg);
     ui->editSecretPasswordReg->setValidator(secPassRegValidator);
 
-    QRegExpValidator *secConfPassRegValidator =
-        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretConfirmPasswordReg);
+    QRegularExpressionValidator *secConfPassRegValidator = new QRegularExpressionValidator(
+        QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->editSecretConfirmPasswordReg);
     ui->editSecretConfirmPasswordReg->setValidator(secConfPassRegValidator);
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

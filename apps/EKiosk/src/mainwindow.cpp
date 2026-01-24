@@ -1020,7 +1020,7 @@ void MainWindow::connectionCheck() {
     // Делаем проверку соединения
     // В начале надо проверить соединение с сервером
     toLog(LoggerLevel::Info, "CONNECTION", "Начинаем проверять соединение с сервером");
-    connObject->checkConnection(Connection::TypePing::Request);
+    connObject->checkConnection(TypePing::Request);
 }
 
 bool MainWindow::checkUserInBase() {
@@ -1199,6 +1199,7 @@ void MainWindow::createDialUpConnection(QVariantMap data) {
     QString text = "";
     bool success = false;
 
+#ifdef Q_OS_WIN
     switch (status) {
         case ErrorDialup::rErrorCreateDialupCon:
             text = "Ошибка при создании соединения";
@@ -1211,6 +1212,10 @@ void MainWindow::createDialUpConnection(QVariantMap data) {
             success = true;
             break;
     }
+#else
+    text = "Соединение успешно создана";
+    success = true;
+#endif
 
     if (adminDialog->isVisible()) {
         adminDialog->showMsgDialog(title, text);
@@ -1398,7 +1403,7 @@ void MainWindow::openAdminDialog() {
                              nonCollectPay +
                              "</li>"
                              "<li>Количество купюр мимо      - " +
-                             moneyOutCount + " на сумму - " + moneyOutSum +
+                             QString::number(moneyOutCount) + " на сумму - " + QString::number(moneyOutSum) +
                              "</li>"
                              "</ul>");
 
@@ -1605,7 +1610,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
                                      nonCollectPay +
                                      "</li>"
                                      "<li>Количество купюр мимо      - " +
-                                     moneyOutCount + " на сумму - " + moneyOutSum +
+                                     QString::number(moneyOutCount) + " на сумму - " + QString::number(moneyOutSum) +
                                      "</li>"
                                      "</ul>");
 
@@ -2894,7 +2899,7 @@ void MainWindow::openValidatorBox() {
                              QString::number(count_new) +
                              "</li>"
                              "<li>Количество купюр мимо      - " +
-                             moneyOutCount + " на сумму - " + moneyOutSum +
+                             QString::number(moneyOutCount) + " на сумму - " + QString::number(moneyOutSum) +
                              "</li>"
                              "</ul>");
 
@@ -4422,7 +4427,7 @@ QStringList MainWindow::getWinPrinterNames() {
     if (EnumPrintersW(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, NULL, 2, (LPBYTE)printerInfos, size, &size,
                       &numPrinters)) {
         for (uint i = 0; i < numPrinters; i++) {
-            printerName = QString::fromUtf16(reinterpret_cast<const char16_t*>(printerInfos[i].pPrinterName));
+            printerName = QString::fromUtf16(reinterpret_cast<const char16_t *>(printerInfos[i].pPrinterName));
             printerNames.append(printerName);
         }
         printerNames.sort();

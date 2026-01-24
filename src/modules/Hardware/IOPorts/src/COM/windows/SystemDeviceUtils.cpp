@@ -21,7 +21,9 @@ QStringList SystemDeviceUtils::enumerateCOMPorts() {
 
     foreach (auto port, data) {
         if (regExp.match(" " + port + " ").capturedStart() != -1) {
-            result << // TODO: // TODO: // TODO: // TODO: regExp.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).simplified();
+            result << // TODO: // TODO: // TODO: // TODO: regExp.cap(0) needs manual migration to match.captured(0)
+                      // needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs
+                      // manual migration to match.captured(0).simplified();
         }
     }
 
@@ -185,7 +187,7 @@ QString SystemDeviceUtils::getRegKeyValue(HKEY key, LPCTSTR aProperty) {
     QString value;
 
     if (RegQueryValueEx(key, aProperty, NULL, NULL, buffer, &size) == ERROR_SUCCESS) {
-        value = QString::fromUtf16(reinterpret_cast<const char16_t*>(buffer));
+        value = QString::fromUtf16(reinterpret_cast<const char16_t *>(buffer));
     }
 
     delete[] buffer;

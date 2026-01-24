@@ -57,22 +57,24 @@ RegistrationForm::RegistrationForm(QWidget *parent) : QDialog(parent), ui(new Ui
     connect(ui->radioDialUpConnection, SIGNAL(toggled(bool)), SLOT(showDialUpParams(bool)));
     connect(ui->listWidgetConnectionList, SIGNAL(currentTextChanged(QString)), SLOT(connectionSelect(QString)));
 
-    QRegExpValidator *loginRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{4,15}"), ui->editLoginReg);
+    QRegularExpressionValidator *loginRegValidator =
+        new QRegularExpressionValidator(QRegularExpression("[\\S\\w\\W\\d\\D]{4,15}"), ui->editLoginReg);
     ui->editLoginReg->setValidator(loginRegValidator);
 
-    QRegExpValidator *passRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{4,15}"), ui->editOtpReg);
+    QRegularExpressionValidator *passRegValidator =
+        new QRegularExpressionValidator(QRegularExpression("[\\S\\w\\W\\d\\D]{4,15}"), ui->editOtpReg);
     ui->editOtpReg->setValidator(passRegValidator);
 
-    QRegExpValidator *secretLoginValidator =
-        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,15}"), ui->editSecretLoginReg);
+    QRegularExpressionValidator *secretLoginValidator =
+        new QRegularExpressionValidator(QRegularExpression("[\\S\\w\\W\\d\\D]{1,15}"), ui->editSecretLoginReg);
     ui->editSecretLoginReg->setValidator(secretLoginValidator);
 
-    QRegExpValidator *secretPassValidator =
-        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,15}"), ui->editSecretPasswordReg);
+    QRegularExpressionValidator *secretPassValidator =
+        new QRegularExpressionValidator(QRegularExpression("[\\S\\w\\W\\d\\D]{1,15}"), ui->editSecretPasswordReg);
     ui->editSecretPasswordReg->setValidator(secretPassValidator);
 
-    QRegExpValidator *secretPassConfirmValidator =
-        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,15}"), ui->editSecretPasswordConfirmReg);
+    QRegularExpressionValidator *secretPassConfirmValidator = new QRegularExpressionValidator(
+        QRegularExpression("[\\S\\w\\W\\d\\D]{1,15}"), ui->editSecretPasswordConfirmReg);
     ui->editSecretPasswordConfirmReg->setValidator(secretPassConfirmValidator);
 
     connect(ui->editLoginReg, SIGNAL(textChanged(QString)), SLOT(checkAuthInput(QString)));

@@ -27,8 +27,8 @@ class keyPud : public QWidget {
     //    QWidget *lastFocusedWidget;
     QSignalMapper signalMapper;
 
-    QMap<QString, QChar> ScharMap;
-    QMap<QString, QChar> BcharMap;
+    QMap<QString, QString> ScharMap;
+    QMap<QString, QString> BcharMap;
     QMap<QString, QString> DoublecharMap;
 
     bool shiftKEY;
