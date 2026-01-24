@@ -41,7 +41,7 @@ namespace CDevice {
         if (this->mThread.isRunning()) {                                                                               \
             QMetaObject::invokeMethod(this, #aFunction, Qt::QueuedConnection);                                         \
         } else {                                                                                                       \
-            connect(&this->mThread, SIGNAL(started()), this, SLOT(aFunction()), Qt::UniqueConnection);                 \
+            this->connect(&this->mThread, SIGNAL(started()), this, SLOT(aFunction()), Qt::UniqueConnection);           \
             this->mThread.start();                                                                                     \
         }                                                                                                              \
         return;                                                                                                        \
