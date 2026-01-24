@@ -1,14 +1,18 @@
 /* @file Базовый класс устройств на USB-порту. */
 
+// STL
+#include <algorithm>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QWriteLocker>
 #include <QtCore/QReadLocker>
+#include <QtCore/QSet>
+#include <QtCore/QWriteLocker>
 #include <Common/QtHeadersEnd.h>
 
-// Modules
-#include "Hardware/Common/PortPollingDeviceBase.h"
+// System
 #include "Hardware/CardReaders/ProtoMifareReader.h"
+#include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/HID/ProtoHID.h"
 
 // Project
@@ -17,63 +21,75 @@
 using namespace SDK::Driver;
 
 //-------------------------------------------------------------------------------
+// Макрос для инстанцирования USB устройств с учетом совместимости Qt5/Qt6
+// Объединяем мьютексы: в Qt6 QMutex::Recursive удален, используем QRecursiveMutex
+// Qt5: QMutex::Recursive - рекурсивный мьютекс для потокобезопасности
+// Qt6: QRecursiveMutex - аналогичная функциональность после удаления QMutex::Recursive
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#define INSTANCE_USB_DEVICE(aClass)                                                                                    \
+    template class aClass;                                                                                             \
+    aClass::TPDOData aClass::mPDOData;                                                                                 \
+    QRecursiveMutex aClass::mPDODataGuard;
+#else
 #define INSTANCE_USB_DEVICE(aClass)                                                                                    \
     template class aClass;                                                                                             \
     aClass::TPDOData aClass::mPDOData;                                                                                 \
     QMutex aClass::mPDODataGuard(QMutex::Recursive);
+#endif
 
 INSTANCE_USB_DEVICE(USBDeviceBase<PortPollingDeviceBase<ProtoMifareReader>>)
 INSTANCE_USB_DEVICE(USBDeviceBase<PortPollingDeviceBase<ProtoHID>>)
 
 //--------------------------------------------------------------------------------
 template <class T> USBDeviceBase<T>::USBDeviceBase() : mPDODetecting(false), mPortUsing(true) {
-    mIOPort = &mUSBPort;
+    this->mIOPort = &this->mUSBPort;
 
-    mDetectingData = CUSBDevice::PDetectingData(new CUSBDevice::DetectingData());
-    mReplaceableStatuses << DeviceStatusCode::Error::PowerSupply;
+    this->mDetectingData = CUSBDevice::PDetectingData(new CUSBDevice::DetectingData());
+    this->mReplaceableStatuses << DeviceStatusCode::Error::PowerSupply;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> USBDeviceBase<T>::~USBDeviceBase() {
-    resetPDOName();
+    this->resetPDOName();
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool USBDeviceBase<T>::release() {
     bool result = T::release();
-    resetPDOName();
+    this->resetPDOName();
 
     return result;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void USBDeviceBase<T>::initialize() {
-    START_IN_WORKING_THREAD(initialize)
+    // В шаблонах передаем полный адрес метода
+    START_IN_WORKING_THREAD(&USBDeviceBase<T>::initialize)
 
-    initializeUSBPort();
-    setFreePDOName();
+    this->initializeUSBPort();
+    this->setFreePDOName();
 
     T::initialize();
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool USBDeviceBase<T>::setFreePDOName() {
-    MutexLocker lock(&mPDODataGuard);
+    MutexLocker lock(&this->mPDODataGuard);
 
-    auto it = std::find_if(mPDOData.begin(), mPDOData.end(), [&](bool aFree) -> bool { return aFree; });
+    auto it = std::find_if(mPDOData.begin(), mPDOData.end(), [](bool aFree) { return aFree; });
 
     if (it == mPDOData.end()) {
         return false;
     }
 
-    return setPDOName(it.key());
+    return this->setPDOName(it.key());
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void USBDeviceBase<T>::resetPDOName() {
-    MutexLocker lock(&mPDODataGuard);
+    MutexLocker lock(&this->mPDODataGuard);
 
-    QString PDOName = mIOPort->getDeviceConfiguration()[CHardwareSDK::SystemName].toString();
+    QString PDOName = this->mIOPort->getDeviceConfiguration()[CHardwareSDK::SystemName].toString();
 
     if (mPDOData.contains(PDOName)) {
         mPDOData[PDOName] = true;
@@ -82,58 +98,71 @@ template <class T> void USBDeviceBase<T>::resetPDOName() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool USBDeviceBase<T>::setPDOName(const QString &aPDOName) {
-    SWinDeviceProperties properties = mUSBPort.getDevicesProperties(false, true)[aPDOName];
+    SWinDeviceProperties properties = this->mUSBPort.getDevicesProperties(false, true)[aPDOName];
     QString logVID = ProtocolUtils::toHexLog(properties.VID);
     QString logPID = ProtocolUtils::toHexLog(properties.PID);
 
-    if (!mDetectingData->data().contains(properties.VID)) {
-        toLog(LogLevel::Normal,
-              QString("%1: Failed to set PDO name due to no such VID %2").arg(mDeviceName).arg(logVID));
+    if (!this->mDetectingData->data().contains(properties.VID)) {
+        this->toLog(
+            LogLevel::Normal,
+            QStringLiteral("%1: Failed to set PDO name due to no such VID %2").arg(this->mDeviceName).arg(logVID));
         return false;
     }
 
-    QMap<quint16, CUSBDevice::SProductData> &PIDData = mDetectingData->value(properties.VID).data();
+    auto &PIDData = this->mDetectingData->value(properties.VID).data();
 
     if (!PIDData.contains(properties.PID)) {
-        toLog(LogLevel::Normal, QString("%1: Failed to set PDO name due to no such PID %2 for VID %3")
-                                    .arg(mDeviceName)
-                                    .arg(logPID)
-                                    .arg(logVID));
+        this->toLog(LogLevel::Normal, QStringLiteral("%1: Failed to set PDO name due to no such PID %2 for VID %3")
+                                          .arg(this->mDeviceName)
+                                          .arg(logPID)
+                                          .arg(logVID));
         return false;
     }
 
     CUSBDevice::SProductData data = PIDData[properties.PID];
-    mDeviceName = data.model;
-    mVerified = data.verified;
+    this->mDeviceName = data.model;
+    this->mVerified = data.verified;
 
     mPDOData[aPDOName] = false;
 
     QVariantMap configuration;
     configuration.insert(CHardwareSDK::SystemName, aPDOName);
-    toLog(LogLevel::Normal,
-          QString("%1: Set USB PDO name %2, VID %3, PID %4").arg(mDeviceName).arg(aPDOName).arg(logVID).arg(logPID));
+    this->toLog(LogLevel::Normal, QStringLiteral("%1: Set USB PDO name %2, VID %3, PID %4")
+                                      .arg(this->mDeviceName)
+                                      .arg(aPDOName)
+                                      .arg(logVID)
+                                      .arg(logPID));
 
-    mIOPort->setDeviceConfiguration(configuration);
+    this->mIOPort->setDeviceConfiguration(configuration);
 
     return true;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void USBDeviceBase<T>::initializeUSBPort() {
-    mUSBPort.initialize();
-    TWinDeviceProperties devicesProperties = mUSBPort.getDevicesProperties(true, mPDODetecting);
+    this->mUSBPort.initialize();
+    TWinDeviceProperties devicesProperties = this->mUSBPort.getDevicesProperties(true, mPDODetecting);
 
-    MutexLocker lock(&mPDODataGuard);
+    MutexLocker lock(&this->mPDODataGuard);
 
-    QSet<QString> deletedPDONames = mPDOData.keys().toSet() - devicesProperties.keys().toSet();
+    // Qt 6: замена .toSet() и оператора '-'
+    auto mDataKeys = mPDOData.keys();
+    QSet<QString> deletedPDONames(mDataKeys.begin(), mDataKeys.end());
 
-    foreach (const QString &aPDOName, deletedPDONames) {
+    auto devKeys = devicesProperties.keys();
+    QSet<QString> existingNames(devKeys.begin(), devKeys.end());
+
+    deletedPDONames.subtract(existingNames);
+
+    for (const QString &aPDOName : deletedPDONames) {
         mPDOData.remove(aPDOName);
     }
 
     for (auto it = devicesProperties.begin(); it != devicesProperties.end(); ++it) {
-        for (auto jt = mDetectingData->data().begin(); jt != mDetectingData->data().end(); ++jt) {
-            for (auto kt = jt.value().data().begin(); kt != jt.value().data().end(); ++kt) {
+        auto &detectData = this->mDetectingData->data();
+        for (auto jt = detectData.begin(); jt != detectData.end(); ++jt) {
+            auto &productData = jt.value().data();
+            for (auto kt = productData.begin(); kt != productData.end(); ++kt) {
                 if (!mPDOData.contains(it.key()) && (it->VID == jt.key()) && (it->PID == kt.key())) {
                     mPDOData.insert(it.key(), true);
                 }
@@ -145,29 +174,29 @@ template <class T> void USBDeviceBase<T>::initializeUSBPort() {
 //--------------------------------------------------------------------------------
 template <class T> bool USBDeviceBase<T>::checkConnectionAbility() {
     return !mPortUsing ||
-           checkError(
-               IOPortStatusCode::Error::Busy, [&]() -> bool { return mIOPort->open(); }, "device cannot open port");
+           this->checkError(
+               IOPortStatusCode::Error::Busy, [&]() { return this->mIOPort->open(); }, "device cannot open port");
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool USBDeviceBase<T>::checkPort() {
-    if (mIOPort->isExist()) {
+    if (this->mIOPort->isExist()) {
         return true;
-    } else if (!mIOPort->deviceConnected()) {
+    } else if (!this->mIOPort->deviceConnected()) {
         return false;
     }
 
-    initializeUSBPort();
+    this->initializeUSBPort();
 
-    return setFreePDOName() && checkExistence();
+    return this->setFreePDOName() && this->checkExistence();
 }
 
 //--------------------------------------------------------------------------------
 template <class T>
 void USBDeviceBase<T>::postPollingAction(const TStatusCollection &aNewStatusCollection,
                                          const TStatusCollection &aOldStatusCollection) {
-    if (mIOPort && mPortUsing && aNewStatusCollection.contains(DeviceStatusCode::Error::NotAvailable)) {
-        mIOPort->close();
+    if (this->mIOPort && this->mPortUsing && aNewStatusCollection.contains(DeviceStatusCode::Error::NotAvailable)) {
+        this->mIOPort->close();
     }
 
     T::postPollingAction(aNewStatusCollection, aOldStatusCollection);
@@ -175,37 +204,35 @@ void USBDeviceBase<T>::postPollingAction(const TStatusCollection &aNewStatusColl
 
 //------------------------------------------------------------------------------
 template <class T> IDevice::IDetectingIterator *USBDeviceBase<T>::getDetectingIterator() {
-    initializeUSBPort();
+    this->initializeUSBPort();
 
-    mDetectingPosition = -1;
+    this->mDetectingPosition = -1;
 
     return mPDOData.size() > 0 ? this : nullptr;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool USBDeviceBase<T>::find() {
-    if ((mDetectingPosition < 0) || (mDetectingPosition >= mPDOData.size())) {
+    if ((this->mDetectingPosition < 0) || (this->mDetectingPosition >= mPDOData.size())) {
         return false;
     }
 
     {
-        MutexLocker lock(&mPDODataGuard);
+        MutexLocker lock(&this->mPDODataGuard);
 
-        auto it = mPDOData.begin() + mDetectingPosition;
+        auto it = mPDOData.begin() + this->mDetectingPosition;
 
-        if (!setPDOName(it.key())) {
+        if (!this->setPDOName(it.key())) {
             return false;
         }
     }
 
-    return checkExistence();
+    return this->checkExistence();
 }
 
 //------------------------------------------------------------------------------
 template <class T> bool USBDeviceBase<T>::moveNext() {
-    mDetectingPosition++;
+    this->mDetectingPosition++;
 
-    return (mDetectingPosition >= 0) && (mDetectingPosition < mPDOData.size());
+    return (this->mDetectingPosition >= 0) && (this->mDetectingPosition < mPDOData.size());
 }
-
-//--------------------------------------------------------------------------------
