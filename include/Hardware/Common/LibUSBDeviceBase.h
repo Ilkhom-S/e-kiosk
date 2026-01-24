@@ -63,7 +63,7 @@ template <class T> class LibUSBDeviceBase : public T {
     /// Данные соединений устройств.
     typedef QMap<libusb_device *, bool> TUsageData;
     static TUsageData mUsageData;
-    static QMutex mUsageDataGuard;
+    static QRecursiveMutex mUsageDataGuard;
 
     /// Порт.
     LibUSBPort mLibUSBPort;

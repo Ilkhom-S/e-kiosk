@@ -2,14 +2,14 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QWriteLocker>
 #include <QtCore/QReadLocker>
+#include <QtCore/QWriteLocker>
 #include <Common/QtHeadersEnd.h>
 
-// Modules
+// System
+#include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/Common/ProtoDevices.h"
-#include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/IOPorts/LibUSBUtils.h"
 
 // Project
@@ -18,16 +18,17 @@
 using namespace SDK::Driver;
 
 //-------------------------------------------------------------------------------
+template <>
 LibUSBDeviceBase<PortPollingDeviceBase<ProtoPrinter>>::TUsageData
     LibUSBDeviceBase<PortPollingDeviceBase<ProtoPrinter>>::mUsageData;
-QMutex LibUSBDeviceBase<PortPollingDeviceBase<ProtoPrinter>>::mUsageDataGuard(QMutex::Recursive);
+template <> QRecursiveMutex LibUSBDeviceBase<PortPollingDeviceBase<ProtoPrinter>>::mUsageDataGuard;
 
 //--------------------------------------------------------------------------------
 template <class T> LibUSBDeviceBase<T>::LibUSBDeviceBase() {
-    mIOPort = &mLibUSBPort;
+    this->mIOPort = &mLibUSBPort;
 
     mDetectingData = CUSBDevice::PDetectingData(new CUSBDevice::DetectingData());
-    mReplaceableStatuses << DeviceStatusCode::Error::PowerSupply;
+    this->mReplaceableStatuses << DeviceStatusCode::Error::PowerSupply;
 }
 
 //--------------------------------------------------------------------------------
@@ -84,30 +85,30 @@ template <class T> bool LibUSBDeviceBase<T>::setUsageData(libusb_device *aDevice
     QString logPID = properties.deviceData[CHardwareUSB::PID].toString();
 
     if (!mDetectingData->data().contains(properties.VID)) {
-        toLog(LogLevel::Normal,
-              QString("%1: Failed to set usage data due to no such VID %2").arg(mDeviceName).arg(logVID));
+        this->toLog(LogLevel::Normal,
+                    QString("%1: Failed to set usage data due to no such VID %2").arg(this->mDeviceName).arg(logVID));
         return false;
     }
 
-    QMap<quint16, CUSBDevice::SProductData> &PIDData = mDetectingData->value(properties.VID).data();
+    const QMap<quint16, CUSBDevice::SProductData> &PIDData = mDetectingData->value(properties.VID).constData();
 
     if (!PIDData.contains(properties.PID)) {
-        toLog(LogLevel::Normal, QString("%1: Failed to set usage data due to no such PID %2 for VID %3")
-                                    .arg(mDeviceName)
-                                    .arg(logPID)
-                                    .arg(logVID));
+        this->toLog(LogLevel::Normal, QString("%1: Failed to set usage data due to no such PID %2 for VID %3")
+                                          .arg(this->mDeviceName)
+                                          .arg(logPID)
+                                          .arg(logVID));
         return false;
     }
 
     CUSBDevice::SProductData data = PIDData[properties.PID];
-    mDeviceName = data.model;
-    mVerified = data.verified;
+    this->mDeviceName = data.model;
+    this->mVerified = data.verified;
 
-    toLog(LogLevel::Normal, QString("%1: Set usage data for device with VID %2 and PID %3, %4")
-                                .arg(mDeviceName)
-                                .arg(logVID)
-                                .arg(logPID)
-                                .arg(properties.portData));
+    this->toLog(LogLevel::Normal, QString("%1: Set usage data for device with VID %2 and PID %3, %4")
+                                      .arg(this->mDeviceName)
+                                      .arg(logVID)
+                                      .arg(logPID)
+                                      .arg(properties.portData));
 
     mUsageData[aDevice] = false;
     mLibUSBPort.setDevice(aDevice);
@@ -122,7 +123,9 @@ template <class T> void LibUSBDeviceBase<T>::initializeUSBPort() {
 
     MutexLocker lock(&mUsageDataGuard);
 
-    QSet<libusb_device *> deletedDevices = mUsageData.keys().toSet() - devicesProperties.keys().toSet();
+    QSet<libusb_device *> currentDevices(mUsageData.keys().begin(), mUsageData.keys().end());
+    QSet<libusb_device *> availableDevices(devicesProperties.keys().begin(), devicesProperties.keys().end());
+    QSet<libusb_device *> deletedDevices = currentDevices - availableDevices;
 
     foreach (libusb_device *device, deletedDevices) {
         mUsageData.remove(device);
@@ -141,29 +144,29 @@ template <class T> void LibUSBDeviceBase<T>::initializeUSBPort() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool LibUSBDeviceBase<T>::checkConnectionAbility() {
-    return checkError(
-        IOPortStatusCode::Error::Busy, [&]() -> bool { return mIOPort->open(); }, "device cannot open port");
+    return this->checkError(
+        IOPortStatusCode::Error::Busy, [&]() -> bool { return this->mIOPort->open(); }, "device cannot open port");
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool LibUSBDeviceBase<T>::checkPort() {
-    if (mIOPort->isExist()) {
+    if (this->mIOPort->isExist()) {
         return true;
-    } else if (!mIOPort->deviceConnected()) {
+    } else if (!this->mIOPort->deviceConnected()) {
         return false;
     }
 
     initializeUSBPort();
 
-    return setFreeUsageData() && checkExistence();
+    return setFreeUsageData() && this->checkExistence();
 }
 
 //--------------------------------------------------------------------------------
 template <class T>
 void LibUSBDeviceBase<T>::postPollingAction(const TStatusCollection &aNewStatusCollection,
                                             const TStatusCollection &aOldStatusCollection) {
-    if (mIOPort && aNewStatusCollection.contains(DeviceStatusCode::Error::NotAvailable)) {
-        mIOPort->close();
+    if (this->mIOPort && aNewStatusCollection.contains(DeviceStatusCode::Error::NotAvailable)) {
+        this->mIOPort->close();
     }
 
     T::postPollingAction(aNewStatusCollection, aOldStatusCollection);
@@ -173,35 +176,35 @@ void LibUSBDeviceBase<T>::postPollingAction(const TStatusCollection &aNewStatusC
 template <class T> IDevice::IDetectingIterator *LibUSBDeviceBase<T>::getDetectingIterator() {
     initializeUSBPort();
 
-    mDetectingPosition = -1;
+    this->mDetectingPosition = -1;
 
     return mUsageData.size() > 0 ? this : nullptr;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool LibUSBDeviceBase<T>::find() {
-    if ((mDetectingPosition < 0) || (mDetectingPosition >= mUsageData.size())) {
+    if ((this->mDetectingPosition < 0) || (this->mDetectingPosition >= mUsageData.size())) {
         return false;
     }
 
     {
         MutexLocker lock(&mUsageDataGuard);
 
-        auto it = mUsageData.begin() + mDetectingPosition;
+        auto it = mUsageData.begin() + this->mDetectingPosition;
 
         if (!setUsageData(it.key())) {
             return false;
         }
     }
 
-    return checkExistence();
+    return this->checkExistence();
 }
 
 //------------------------------------------------------------------------------
 template <class T> bool LibUSBDeviceBase<T>::moveNext() {
-    mDetectingPosition++;
+    this->mDetectingPosition++;
 
-    return (mDetectingPosition >= 0) && (mDetectingPosition < mUsageData.size());
+    return (this->mDetectingPosition >= 0) && (this->mDetectingPosition < mUsageData.size());
 }
 
 //--------------------------------------------------------------------------------
