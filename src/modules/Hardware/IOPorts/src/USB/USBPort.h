@@ -12,7 +12,7 @@ namespace CUSBPort {
 
     /// Идентификационные теги устройств на USB-порту.
     namespace DeviceTags {
-        const char ACPI[] = "ACPI";     /// ACPI-устрйоство.
+        const char ACPI[] = "ACPI";     /// ACPI-устройство.
         const char Mouse[] = "Mouse";   /// Mouse.
         const char USBPDO[] = "USBPDO"; /// Physical Device Object (PDO).
     } // namespace DeviceTags
@@ -23,7 +23,7 @@ namespace CUSBPort {
     /// Пустой буфер.
     const TReadingBuffer EmptyBuffer = TReadingBuffer(DefaultMaxReadSize, ASCII::NUL);
 
-    /// GUIDы для автопоиска портов. Класс нужен для использования в static-фунцкии.
+    /// GUIDы для авто поиска портов. Класс нужен для использования в static-фунцкии.
     class Uuids : public TUuids {
       public:
         Uuids() {

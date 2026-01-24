@@ -89,8 +89,8 @@ bool DeviceService::initialize() {
     mDeviceManager = new DeviceManager(pluginManager->getPluginLoader());
     mDeviceManager->setLog(mApplication->getLog());
 
-    // Здесь используем DirectConnction для того, чтобы инициализация устройства при автопоиске
-    // производилась из потока автопоиска и не грузила основной поток.
+    // Здесь используем DirectConnection для того, чтобы инициализация устройства при автопоиске
+    // производилась из потока авто поиска и не грузила основной поток.
     connect(mDeviceManager, SIGNAL(deviceDetected(const QString &, SDK::Driver::IDevice *)), this,
             SLOT(onDeviceDetected(const QString &, SDK::Driver::IDevice *)), Qt::DirectConnection);
 

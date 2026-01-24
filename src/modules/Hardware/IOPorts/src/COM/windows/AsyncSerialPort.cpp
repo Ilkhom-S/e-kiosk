@@ -6,9 +6,9 @@
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
 
-// Modules
-#include "SysUtils/ISysUtils.h"
+// System
 #include "Hardware/Common/SafePerformer.h"
+#include "SysUtils/ISysUtils.h"
 
 // Project
 #include "AsyncSerialPort.h"
@@ -848,7 +848,7 @@ AsyncSerialPort::TData AsyncSerialPort::getSystemData(bool aForce) {
         }
 
         /*
-        // раскомментировать, если для автопоиска порта по GUID-у (ам) будут какие-либо проблемы
+        // раскомментировать, если для авто поиска порта по GUID-у (ам) будут какие-либо проблемы
         foreach(const QString & port, SystemDeviceUtils::enumerateCOMPorts())
         {
                 if (!data.contains(port))

@@ -77,7 +77,7 @@ namespace CAsyncSerialPort {
 
     /// Системные параметры.
     namespace System {
-        /// GUIDы для автопоиска портов. Класс нужен для использования в static-фунцкии.
+        /// GUIDы для авто поиска портов. Класс нужен для использования в static-фунцкии.
         class Uuids : public TUuids {
           public:
             Uuids() {
@@ -250,7 +250,7 @@ class AsyncSerialPort : public IOPortBase {
     /// Системное свойство для формирования пути для открытия порта.
     DWORD mPathProperty;
 
-    /// GUID-ы для автопоиска.
+    /// GUID-ы для авто поиска.
     TUuids mUuids;
 
     /// Получение системных данных о портах (порт -> виртуальность).

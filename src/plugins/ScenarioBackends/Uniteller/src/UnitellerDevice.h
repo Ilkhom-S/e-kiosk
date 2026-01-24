@@ -54,7 +54,7 @@ class UnitellerDevice : public QObject,
 
 #pragma region SDK::Driver::IDevice interface
 
-    /// Переформировывает список параметров для автопоиска и устанавливает 1-й набор параметров из этого списка.
+    /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из этого списка.
     virtual SDK::Driver::IDevice::IDetectingIterator *getDetectingIterator();
 
     /// Подключает и инициализует устройство.

@@ -75,13 +75,13 @@ class DeviceManager : public QObject, public ILogable {
     SDK::Plugin::TParameterList getDriverParameters(const QString &aDriverPath) const;
 
     /// Проверить правильность путей плагинов драйверов. Workaround для обратной совместимости при накате обновления без
-    /// автопоиска драйверов, при изменении путей.
-    // TODO: убрать после реализации автопоиска через мониторинг.
+    /// авто поиска драйверов, при изменении путей.
+    // TODO: убрать после реализации авто поиска через мониторинг.
     void checkInstancePath(QString &aInstancePath);
     void checkITInstancePath(QString &aInstancePath);
 
     /// Попробовать изменить путь плагина драйвера. Workaround для обратной совместимости при накате обновления без
-    /// автопоиска драйверов, при изменении путей.
+    /// авто поиска драйверов, при изменении путей.
     typedef QSet<QString> TNewPaths;
     typedef QMap<QString, TNewPaths> TPaths;
     void changeInstancePath(QString &aInstancePath, const QString &aConfigPath, const TPaths &aPaths);

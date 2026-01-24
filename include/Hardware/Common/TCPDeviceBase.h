@@ -28,7 +28,7 @@ template <class T> class TCPDeviceBase : public T {
 
   protected:
 #pragma region SDK::Driver::IDevice interface
-    /// Переформировывает список параметров для автопоиска и устанавливает 1-й набор параметров из этого списка.
+    /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из этого списка.
     virtual SDK::Driver::IDevice::IDetectingIterator *getDetectingIterator();
 #pragma endregion
 

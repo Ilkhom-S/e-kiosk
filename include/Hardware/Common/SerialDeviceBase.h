@@ -41,7 +41,7 @@ template <class T> class SerialDeviceBase : public T {
     /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
     virtual bool release();
 
-    /// Переформировывает список параметров для автопоиска и устанавливает 1-й набор параметров из этого списка.
+    /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из этого списка.
     virtual SDK::Driver::IDevice::IDetectingIterator *getDetectingIterator();
 #pragma endregion
 

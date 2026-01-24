@@ -68,7 +68,7 @@ template <class T> class LibUSBDeviceBase : public T {
     /// Порт.
     LibUSBPort mLibUSBPort;
 
-    /// Данные устройств для автопоиска.
+    /// Данные устройств для авто поиска.
     CUSBDevice::PDetectingData mDetectingData;
 };
 
