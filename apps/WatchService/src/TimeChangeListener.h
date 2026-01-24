@@ -15,43 +15,44 @@
 #endif
 
 //------------------------------------------------------------------------
-class TimeChangeListener : public QObject
-{
-	Q_OBJECT
+class TimeChangeListener : public QObject {
+    Q_OBJECT
 
-public:
-	TimeChangeListener(QObject* aParent);
-	virtual ~TimeChangeListener();
+  public:
+    TimeChangeListener(QObject *aParent);
+    virtual ~TimeChangeListener();
 
-signals:
-	/// сигнал об изменении времени (смещение в мс. примерное)
-	void timeChanged(qint64 aOffset);
+  signals:
+    /// сигнал об изменении времени (смещение в мс. примерное)
+    void timeChanged(qint64 aOffset);
 
-protected:
-	void timerEvent(QTimerEvent* aEvent);
+  protected:
+    void timerEvent(QTimerEvent *aEvent);
 
-	/// Проверка и попытка примерного вычисления смещения нового времени.
-	QDateTime checkTimeOffset();
+    /// Проверка и попытка примерного вычисления смещения нового времени.
+    QDateTime checkTimeOffset();
 
-protected slots:
-	/// слот для развязывания хука с signal\slot Qt
-	void emitTimeChanged();
+  protected slots:
+    /// слот для развязывания хука с signal\slot Qt
+    void emitTimeChanged();
 
-	/// очистка смещения времени
-	void cleanTimeOffset();
+    /// очистка смещения времени
+    void cleanTimeOffset();
 
 #ifdef Q_OS_WIN
-protected:
-	static LRESULT CALLBACK MsgProc(int aCode, WPARAM aWParam, LPARAM aLParam);
+  protected:
+    static LRESULT CALLBACK MsgProc(int aCode, WPARAM aWParam, LPARAM aLParam);
 
-private:
-	static HHOOK mHook;
-	static QMutex mHookMutex;
+  private:
+    static HHOOK mHook;
 #endif // Q_OS_WIN
 
-private:
-	QDateTime mLastCheckTime;
-	qint64 mTimeOffset;
+  private:
+    static QMutex mHookMutex;
+
+  private:
+    QDateTime mLastCheckTime;
+    qint64 mTimeOffset;
 };
 
 //------------------------------------------------------------------------

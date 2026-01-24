@@ -19,7 +19,7 @@ TokenWizardPage::TokenWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
 
     setLayout(new QHBoxLayout(this));
     layout()->setSpacing(0);
-    layout()->setMargin(0);
+    layout()->setContentsMargins(0, 0, 0, 0);
     layout()->addWidget(mTokenWindow);
 }
 

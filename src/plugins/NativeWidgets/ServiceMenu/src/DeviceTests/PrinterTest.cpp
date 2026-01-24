@@ -29,11 +29,10 @@ QList<QPair<QString, QString>> PrinterTest::getTestNames() const {
 //------------------------------------------------------------------------------
 bool PrinterTest::run(const QString &aName) {
     if (aName == CPrinterTest::PrintTestReceipt) {
-        mTestResult = QtConcurrent::run(mCore->getPrinterService(),
-                                        static_cast<bool (PPSDK::IPrinterService::*)(
-                                            SDK::Driver::IPrinter *, const QString &, const QVariantMap &)>(
-                                            &PPSDK::IPrinterService::printReceiptDirected),
-                                        mPrinter.data(), QString(PPSDK::CReceiptType::Test), QVariantMap());
+        mTestResult = QtConcurrent::run([this]() {
+            return mCore->getPrinterService()->printReceiptDirected(mPrinter.data(), QString(PPSDK::CReceiptType::Test),
+                                                                    QVariantMap());
+        });
     }
 
     return true;

@@ -94,7 +94,7 @@ class TerminalService : public QObject,
 #pragma endregion
 
     /// Получить список устройств с ошибкой.
-    QMap<QString, int> getFaultyDevices(bool aActual = false) const;
+    QMultiMap<QString, int> getFaultyDevices(bool aActual = false) const;
 
     /// Получить WS-клиент.
     IWatchServiceClient *getClient();

@@ -6,7 +6,7 @@
 #include <Common/QtHeadersEnd.h>
 
 // Modules
-#include <Common/Application.h>
+#include <Common/BasicApplication.h>
 
 // SDK
 #include <SDK/Drivers/FR/FiscalFields.h>
@@ -197,7 +197,9 @@ bool PrintFiscalCommand::getFiscalInfo(QVariantMap &aParameters, QStringList &aR
     QStringList parameterNames = fr->getParameterNames();
 
     // Если в параметрах платежа ещё нет информации о фискальном номере
-    bool OK = !parameterNames.toSet().intersect(aParameters.keys().toSet()).isEmpty();
+    bool OK = !QSet<QString>(parameterNames.begin(), parameterNames.end())
+                   .intersect(QSet<QString>(aParameters.keys().begin(), aParameters.keys().end()))
+                   .isEmpty();
     SDK::Driver::SPaymentData fiscalPaymentData;
 
     if (!OK) {
@@ -210,7 +212,7 @@ bool PrintFiscalCommand::getFiscalInfo(QVariantMap &aParameters, QStringList &aR
 
         OK = !fiscalParameters.isEmpty();
 
-        aParameters.unite(fiscalParameters);
+        aParameters.insert(fiscalParameters);
 
         mService->setFiscalNumber(paymentId, fiscalParameters);
     }
@@ -256,7 +258,8 @@ bool PrintPayment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
         KKMSerialNumber = configuration[CHardwareSDK::SerialNumber].toString();
     }
 
-    QVariantMap parameters = QVariantMap(aParameters).unite(getPrintingParameters(aPrinter));
+    QVariantMap parameters = aParameters;
+    parameters.insert(getPrintingParameters(aPrinter));
     QStringList fiscalPart;
 
     bool hasFiscalInfo = getFiscalInfo(parameters, fiscalPart, true);

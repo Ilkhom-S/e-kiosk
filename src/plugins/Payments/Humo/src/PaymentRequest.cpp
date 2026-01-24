@@ -2,19 +2,18 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegularExpression>
 #include <QtCore/QCryptographicHash>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
 #include <SDK/PaymentProcessor/Core/IServiceState.h>
-#include <SDK/PaymentProcessor/Payment/Security.h>
 #include <SDK/PaymentProcessor/Payment/Parameters.h>
+#include <SDK/PaymentProcessor/Payment/Security.h>
 
-// Modules
+// System
 #include <Crypt/ICryptEngine.h>
 
-// Thirdparty
 #if QT_VERSION < 0x050000
 #include <Qt5Port/qt5port.h>
 #endif
@@ -64,13 +63,14 @@ void PaymentRequest::addProviderParameters(const QString &aStep) {
             bool needMask = false;
 
             QRegularExpression macroPattern("\\{(.+)\\}");
-            ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
-            while (macroPattern.match(value).capturedStart() != -1) {
-                auto pp = mPayment->getParameter(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1));
-                value.replace(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), pp.value.toString());
+            QRegularExpressionMatch match = macroPattern.match(value);
+            while (match.capturedStart() != -1) {
+                auto pp = mPayment->getParameter(match.captured(1));
+                value.replace(match.captured(0), pp.value.toString());
 
                 needMask = pp.crypted || needMask;
+                match = macroPattern.match(value);
             }
 
             if (field.crypted) {
@@ -122,12 +122,14 @@ void PaymentRequest::addProviderParameters(const QString &aStep) {
                 QString logValue = field.value;
 
                 QRegularExpression macroPattern("\\{(.+)\\}");
-                ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
+                ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
+                ///compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
                 while (macroPattern.match(logValue).capturedStart() != -1) {
-                    logValue.replace(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0),
-                                     filter.apply(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1),
-                                                  mPayment->getParameter(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1)).value.toString()));
+                    QRegularExpressionMatch match = macroPattern.match(logValue);
+                    logValue.replace(
+                        match.captured(0),
+                        filter.apply(match.captured(1), mPayment->getParameter(match.captured(1)).value.toString()));
                 }
 
                 addParameter(field.name, value, logValue);

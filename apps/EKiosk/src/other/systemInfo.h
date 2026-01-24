@@ -6,7 +6,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QObject>
 #include <QtCore/QProcess>
-#include <QtCore/QTextCodec>
+#include <QtCore/QStringDecoder>
 #include <QtCore/QThread>
 #include <QtCore/QVariantMap>
 #include <Common/QtHeadersEnd.h>
@@ -18,15 +18,10 @@ class SystemInfo : public QThread {
     QVariantMap sysInfo;
 
     void getSystemInfo() {
-        auto isWinXP = QSysInfo::windowsVersion() == QSysInfo::WV_XP;
-
         // "----------------- OS ----------------- ";
-        QVariantMap osInfo = getWmicInfo(
-            QString("os get caption, version, csname, csdversion%1").arg(isWinXP ? "" : ", osarchitecture"));
+        QVariantMap osInfo = getWmicInfo(QString("os get caption, version, csname, csdversion, osarchitecture"));
 
-        if (isWinXP) {
-            osInfo["osarchitecture"] = "x32";
-        }
+        // Removed isWinXP check for Qt 6 compatibility
 
         sysInfo["os"] = osInfo;
 
@@ -89,20 +84,7 @@ class SystemInfo : public QThread {
                                        .toString()
                                        .trimmed();
 
-        if (isWinXP) {
-            QString s = QByteArray::fromHex(diskInfo.value("serialnumber").toString().toLatin1());
-            QString sn = "";
-
-            if (s.length() > 2) {
-                for (int i = 1; i <= s.length(); i++) {
-                    if (i % 2 == 0) {
-                        sn = sn + s.at(i - 1) + s.at(i - 2);
-                    }
-                }
-            }
-
-            diskInfo["serialnumber"] = sn.trimmed();
-        }
+        // Removed isWinXP serial number processing for Qt 6 compatibility
 
         QVariantMap lDiskInfo = getWmicInfo("logicaldisk get caption, size, freespace", true);
 
@@ -150,8 +132,8 @@ class SystemInfo : public QThread {
         while (proc.waitForReadyRead()) {
             while (proc.canReadLine()) {
                 QByteArray output = proc.readAllStandardOutput();
-                auto codec = QTextCodec::codecForName("IBM866");
-                QString data = codec->toUnicode(output);
+                QStringDecoder decoder("IBM866");
+                QString data = decoder(output);
 
                 //            qDebug() << data;
 

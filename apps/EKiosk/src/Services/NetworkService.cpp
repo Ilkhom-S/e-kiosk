@@ -308,9 +308,10 @@ void NetworkService::updateModemParameters() {
             // Выполняем USSD-запрос и извлекаем из него строку с информацией о балансе.
             if (modemDevice->processUSSD(connectionTemplate.balanceNumber, reply)) {
                 QRegularExpression regExp(connectionTemplate.regExp);
+                QRegularExpressionMatch match = regExp.match(reply);
 
-                if (regExp.match(reply).capturedStart() != -1) {
-                    mBalance = // TODO: // TODO: // TODO: // TODO: regExp.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0);
+                if (match.capturedStart() != -1) {
+                    mBalance = match.captured(0);
                     mDatabaseUtils->setDeviceParam(mDeviceService->getDeviceConfigName(modemDevice),
                                                    PP::CDatabaseConstants::Parameters::BalanceLevel, mBalance.get());
                 } else {

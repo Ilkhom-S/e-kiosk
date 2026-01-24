@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QTextCodec>
+#include <QtCore/QStringDecoder>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
@@ -31,26 +31,26 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
 
         if (request->getPayment()->getProviderSettings().processor.requests.contains(request->getName())) {
             auto getFieldCodec =
-                [](const SProvider::SProcessingTraits::SRequest::SResponseField &aField) -> QTextCodec * {
+                [](const SProvider::SProcessingTraits::SRequest::SResponseField &aField) -> QStringDecoder {
                 switch (aField.codepage) {
                     case SProvider::SProcessingTraits::SRequest::SResponseField::Utf8:
-                        return QTextCodec::codecForName("Utf-8");
+                        return QStringDecoder(QStringDecoder::Utf8);
 
                     default:
-                        return QTextCodec::codecForName("Windows-1251");
+                        return QStringDecoder("windows-1251");
                 }
             };
 
             auto convertFieldValue =
                 [&getFieldCodec](const SProvider::SProcessingTraits::SRequest::SResponseField &aField,
                                  const QVariant &aValue) -> QVariant {
+                QStringDecoder decoder = getFieldCodec(aField);
                 switch (aField.encoding) {
                     case SProvider::SProcessingTraits::SRequest::SResponseField::Url:
-                        return getFieldCodec(aField)->toUnicode(
-                            QByteArray::fromPercentEncoding(aValue.toString().toLatin1()));
+                        return QString(decoder.decode(QByteArray::fromPercentEncoding(aValue.toString().toLatin1())));
 
                     case SProvider::SProcessingTraits::SRequest::SResponseField::Base64:
-                        return getFieldCodec(aField)->toUnicode(QByteArray::fromBase64(aValue.toString().toLatin1()));
+                        return QString(decoder.decode(QByteArray::fromBase64(aValue.toString().toLatin1())));
 
                     default:
                         return aValue;

@@ -99,7 +99,7 @@ bool DealerPayment::haveLocalData() {
     }
 
     QString url = getProviderSettings().processor.requests["CHECK"].url;
-    QStringList urlParts = url.split(":", QString::SkipEmptyParts);
+    QStringList urlParts = url.split(":", Qt::SkipEmptyParts);
     if (urlParts.size() < 2 || urlParts[0] != "local_data") {
         return false;
     }

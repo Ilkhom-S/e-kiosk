@@ -167,8 +167,10 @@ template <class T> void DispenserBase<T>::cleanStatusCodes(TStatusCodes &aStatus
         this->checkUnitStatus(aStatusCodes, i);
     }
 
-    TStatusCodes allEmpty = CDispenser::StatusCodes::AllEmpty.mid(0, this->mUnits).toSet();
-    TStatusCodes allNearEmpty = CDispenser::StatusCodes::AllNearEmpty.mid(0, this->mUnits).toSet();
+    TStatusCodes allEmpty = TStatusCodes(CDispenser::StatusCodes::AllEmpty.mid(0, this->mUnits).begin(),
+                                         CDispenser::StatusCodes::AllEmpty.mid(0, this->mUnits).end());
+    TStatusCodes allNearEmpty = TStatusCodes(CDispenser::StatusCodes::AllNearEmpty.mid(0, this->mUnits).begin(),
+                                             CDispenser::StatusCodes::AllNearEmpty.mid(0, this->mUnits).end());
 
     if ((aStatusCodes & allEmpty) == allEmpty) {
         aStatusCodes -= allEmpty + allNearEmpty;

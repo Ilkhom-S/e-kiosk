@@ -1,4 +1,4 @@
 /* @file Менеджер настроек. */
 
 // System
-#include "../modules/SettingsManager/src/SettingsManager.h"
+#include "../../src/modules/SettingsManager/src/SettingsManager.h"

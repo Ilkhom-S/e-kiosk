@@ -1,7 +1,6 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QCoreApplication>
-#include <QtCore/QTextCodec>
 #include <QtCore/QtMath>
 #include <Common/QtHeadersEnd.h>
 
@@ -238,7 +237,7 @@ bool ATProtocol::processCommand(ModemProtocolCommands::Enum aCommand, const QByt
             commandData = aCommandData;
 
             // вытаскиваем из данных регулярное выражение
-            m_getBalanceRegExp = QRegExp(regExpBalance);
+            m_getBalanceRegExp = QRegularExpression(regExpBalance);
 
             // устанавливаем число дополнительных чтений и паузу между чтениями
             addRepeatCount = CATProtocolConstants::GetBalanceAddRepeatCount;
@@ -251,7 +250,7 @@ bool ATProtocol::processCommand(ModemProtocolCommands::Enum aCommand, const QByt
             commandData = aCommandData;
 
             // вытаскиваем из данных регулярное выражение
-            m_getBalanceRegExp = QRegExp(regExpSimNumber);
+            m_getBalanceRegExp = QRegularExpression(regExpSimNumber);
 
             // устанавливаем число дополнительных чтений и паузу между чтениями
             addRepeatCount = CATProtocolConstants::GetSimNumberAddRepeatCount;
@@ -693,8 +692,9 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
         case ModemProtocolCommands::GetSimNumber: {
             QString responseString(aAnswer);
 
-            m_getBalanceRegExp.match(responseString).capturedStart();
-            nowSimNumber = m_getBalanceRegExp.cap();
+            QRegularExpressionMatch match = m_getBalanceRegExp.match(responseString);
+            match.capturedStart();
+            nowSimNumber = match.captured();
 
             int indexFirstQuote = responseString.indexOf("+CUSD: 0,\"");
             int indexSecondQuote = -1;
@@ -710,16 +710,18 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
             if (nowSimNumber.trimmed() == "") {
                 responseString = decodeGSM7bit(parsedResponse);
 
-                m_getBalanceRegExp.match(responseString).capturedStart();
-                nowSimNumber = m_getBalanceRegExp.cap();
+                QRegularExpressionMatch match = m_getBalanceRegExp.match(responseString);
+                match.capturedStart();
+                nowSimNumber = match.captured();
             }
 
             // decodeUcs2
             if (nowSimNumber.trimmed() == "") {
                 responseString = decodeUcs2(parsedResponse);
 
-                m_getBalanceRegExp.match(responseString).capturedStart();
-                nowSimNumber = m_getBalanceRegExp.cap();
+                QRegularExpressionMatch match = m_getBalanceRegExp.match(responseString);
+                match.capturedStart();
+                nowSimNumber = match.captured();
             }
         } break;
 
@@ -728,8 +730,9 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
 
             QString responseString(aAnswer);
 
-            m_getBalanceRegExp.match(responseString, this->position).capturedStart();
-            nowSimBalance = m_getBalanceRegExp.cap(this->position);
+            QRegularExpressionMatch match = m_getBalanceRegExp.match(responseString, this->position);
+            match.capturedStart();
+            nowSimBalance = match.captured();
 
             int indexFirstQuote = responseString.indexOf("+CUSD: 0,\"");
             int indexSecondQuote = -1;
@@ -745,8 +748,9 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
             if (nowSimBalance.trimmed() == "") {
                 responseString = decodeGSM7bit(parsedResponse);
 
-                m_getBalanceRegExp.match(responseString, this->position).capturedStart();
-                nowSimBalance = m_getBalanceRegExp.cap(this->position);
+                QRegularExpressionMatch match = m_getBalanceRegExp.match(responseString, this->position);
+                match.capturedStart();
+                nowSimBalance = match.captured();
             }
 
             // decodeUcs2
@@ -754,8 +758,9 @@ bool ATProtocol::prepareAnswer(ModemProtocolCommands::Enum aCommand, QByteArray 
                 responseString = decodeUcs2(parsedResponse);
                 //                        responseString = "Tavozun: -6.10 TJS. 0.75
                 //                        TJS/ruz";
-                m_getBalanceRegExp.match(responseString, this->position).capturedStart();
-                nowSimBalance = m_getBalanceRegExp.cap(this->position);
+                QRegularExpressionMatch match = m_getBalanceRegExp.match(responseString, this->position);
+                match.capturedStart();
+                nowSimBalance = match.captured();
             }
         } break;
         case ModemProtocolCommands::CmdGetAllSms: {

@@ -46,8 +46,8 @@ MultistagePaymentGetStepResponse::MultistagePaymentGetStepResponse(const Request
         mFields = QString::fromLocal8Bit(QByteArray::fromPercentEncoding(fields.toString().toLatin1())).trimmed();
 
         QDomDocument doc("mydocument");
-
-        mIsOk = mFields.isEmpty() ? true : doc.setContent(mFields);
+        auto result = doc.setContent(mFields);
+        mIsOk = mFields.isEmpty() ? true : (result.error() == QDomDocument::ParseError::NoError);
     }
 }
 

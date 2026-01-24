@@ -379,7 +379,7 @@ void HardwareWindow::setSlotCreationMode(SlotCreationMode aMode) {
 void HardwareWindow::checkDeviceSlot(DeviceSlot *aSlot) {
     emit applyingStarted();
 
-    mApplyingWatcher.setFuture(QtConcurrent::run(this, &HardwareWindow::checkDeviceSlotConcurrent, aSlot));
+    mApplyingWatcher.setFuture(QtConcurrent::run([this, aSlot]() { checkDeviceSlotConcurrent(aSlot); }));
 }
 
 //------------------------------------------------------------------------

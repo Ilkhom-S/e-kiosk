@@ -99,7 +99,7 @@ RemoteService::RemoteService(IApplication *aApplication)
     : ILogable(CRemoteService::LogName), mApplication(aApplication), mDatabase(nullptr), mLastCommand(0),
       mGenerateKeyCommand(0),
       mSettings(aApplication->getWorkingDirectory() + CRemoteService::ConfigFileName, QSettings::IniFormat),
-      mCommandMutex(QMutex::Recursive) {
+      mCommandMutex() {
     // Создаем 5сек таймер отложенной проверки состояния файлов отчета
     mCheckUpdateReportsTimer.setSingleShot(true);
     mCheckUpdateReportsTimer.setInterval(CRemoteService::UpdateReportCheckTimeout);
@@ -125,10 +125,10 @@ bool RemoteService::initialize() {
     connect(PaymentService::instance(mApplication), SIGNAL(paymentCommandComplete(int, EPaymentCommandResult::Enum)),
             SLOT(onPaymentCommandComplete(int, EPaymentCommandResult::Enum)), Qt::QueuedConnection);
 
-    QStringList remotes =
-        PluginService::instance(mApplication)
-            ->getPluginLoader()
-            ->getPluginList(QRegExp(QString("%1\\.%2\\..*").arg(PPSDK::Application, PPSDK::CComponents::RemoteClient)));
+    QStringList remotes = PluginService::instance(mApplication)
+                              ->getPluginLoader()
+                              ->getPluginList(QRegularExpression(
+                                  QString("%1\\.%2\\..*").arg(PPSDK::Application, PPSDK::CComponents::RemoteClient)));
 
     foreach (const QString &path, remotes) {
         SDK::Plugin::IPlugin *plugin = PluginService::instance(mApplication)->getPluginLoader()->createPlugin(path);
@@ -551,7 +551,7 @@ int RemoteService::registerGenerateKeyCommand(const QString &aLogin, const QStri
     if (mGenerateKeyCommand == 0) {
         mGenerateKeyCommand = increaseLastCommandID();
 
-        mGenerateKeyFuture = QtConcurrent::run(std::tr1::bind(doGenerateKeyCommand, this, aLogin, aPassword));
+        mGenerateKeyFuture = QtConcurrent::run(std::bind(doGenerateKeyCommand, this, aLogin, aPassword));
 
         return mGenerateKeyCommand;
     }
@@ -633,7 +633,7 @@ void RemoteService::onCheckQueuedRebootCommands() {
                           ->getDeviceParam(SDK::PaymentProcessor::CDatabaseConstants::Devices::Terminal,
                                            CRemoteService::QueuedRebootCommands)
                           .toString()
-                          .split(CRemoteService::QueuedRebootCommandDelimeter, QString::SkipEmptyParts);
+                          .split(CRemoteService::QueuedRebootCommandDelimeter, Qt::SkipEmptyParts);
 
     foreach (const QString &id, ids) {
         emit commandStatusChanged(id.toInt(), OK, QVariantMap());

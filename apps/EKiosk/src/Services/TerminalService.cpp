@@ -243,7 +243,9 @@ void TerminalService::writeLockStatus(bool aIsLocked) {
         }
 
         // Сбрасываем "плохие" статусы при разблокировке
-        TStatusCodes statuses = mDeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).toSet();
+        TStatusCodes statuses =
+            QSet<int>(mDeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).begin(),
+                      mDeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).end());
 
         foreach (auto status, statuses) {
             if (TerminalStatusCode::Specification[status].warningLevel >= SDK::Driver::EWarningLevel::Warning) {
@@ -355,7 +357,8 @@ QPair<SDK::Driver::EWarningLevel::Enum, QString> TerminalService::getTerminalSta
         }
     }
 
-    TStatusCodes statuses = mDeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).toSet();
+    TStatusCodes statuses = QSet<int>(mDeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).begin(),
+                                      mDeviceErrorFlags.values(PPSDK::CDatabaseConstants::Devices::Terminal).end());
 
     if (statuses.isEmpty()) {
         statuses << DeviceStatusCode::OK::OK;
@@ -397,7 +400,7 @@ void TerminalService::onDeviceStatusChanged(const QString &aConfigName, SDK::Dri
         deviceType == DeviceType::CardReader) {
         if (aLevel == SDK::Driver::EWarningLevel::Error || SDK::Driver::EStatus::Interface == aStatus) {
             // Device has entered error state
-            mDeviceErrorFlags.insertMulti(aConfigName, aStatus);
+            mDeviceErrorFlags.insert(aConfigName, aStatus);
         } else {
             // Device has exited error state
             mDeviceErrorFlags.remove(aConfigName);
@@ -538,7 +541,7 @@ void TerminalService::sendFeedback(const QString &aSenderSubsystem, const QStrin
         sendBody += "PMVer=" + Humo::getVersion().toUtf8().toPercentEncoding() + "&";
 
         auto key = CryptService::instance(mApplication)->getKey(0);
-        sendBody += QString("SD=%1&").arg(key.sd) + QString("AP=%1&").arg(key.ap) + QString("OP=%1&").arg(key.op);
+        sendBody += QString("SD=%1&AP=%2&OP=%3&").arg(key.sd).arg(key.ap).arg(key.op).toUtf8();
 
         sendBody += "Display=AxB&";
         sendBody += "WinVer=" + ISysUtils::getOSVersionInfo().toUtf8().toPercentEncoding() + "&";
@@ -632,7 +635,7 @@ IWatchServiceClient *TerminalService::getClient() {
 }
 
 //---------------------------------------------------------------------------
-QMap<QString, int> TerminalService::getFaultyDevices(bool aActual) const {
+QMultiMap<QString, int> TerminalService::getFaultyDevices(bool aActual) const {
     namespace DeviceType = SDK::Driver::CComponents;
 
     auto result = mDeviceErrorFlags;
@@ -654,7 +657,8 @@ QMap<QString, int> TerminalService::getFaultyDevices(bool aActual) const {
             }
         }
 
-        bool hasValidatorError = cashDeviceNames.toSet() == faultyCashDeviceNames.toSet();
+        bool hasValidatorError = QSet<QString>(cashDeviceNames.begin(), cashDeviceNames.end()) ==
+                                 QSet<QString>(faultyCashDeviceNames.begin(), faultyCashDeviceNames.end());
 
         foreach (const QString &device, result.keys()) {
             QString deviceType = device.section('.', 2, 2);

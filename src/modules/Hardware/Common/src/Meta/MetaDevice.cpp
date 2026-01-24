@@ -38,6 +38,10 @@ template class MetaDevice<IModem>;
 template class MetaDevice<IPrinter>;
 template class MetaDevice<IWatchdog>;
 
+// Explicit instantiations for methods that may not be instantiated by class instantiation
+template MetaDevice<IIOPort>::MetaDevice();
+template bool MetaDevice<IIOPort>::isAutoDetecting() const;
+
 //-------------------------------------------------------------------------------
 template <class T>
 MetaDevice<T>::MetaDevice()

@@ -910,8 +910,8 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
         encashment.balance.processed = query->value(4).toString();
         encashment.report = query->value(5).toString();
 
-        QStringList notes = query->value(6).toString().split("|", QString::SkipEmptyParts);
-        QStringList coins = query->value(7).toString().split("|", QString::SkipEmptyParts);
+        QStringList notes = query->value(6).toString().split("|", Qt::SkipEmptyParts);
+        QStringList coins = query->value(7).toString().split("|", Qt::SkipEmptyParts);
 
         encashment.balance.dispensedNotes = query->value(8).toString();
 

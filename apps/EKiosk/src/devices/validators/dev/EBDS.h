@@ -268,7 +268,7 @@ class EBDS : public BaseValidatorDevices {
     void stackBill();
 
     uchar calcCRC(const QByteArray &aData);
-    bool checkBit(QByteRef bytes, int bit);
+    bool checkBit(char bytes, int bit);
 
   signals:
     void emitNominal(int nominal);

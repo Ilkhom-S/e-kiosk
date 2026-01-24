@@ -30,7 +30,7 @@ QVector<SDK::Plugin::SPluginParameter> EnumParameters()
 }
 
 #error Задай путь!
-REGISTER_PLUGIN("Vendor.Application.Component.PluginName", &CreatePlugin, &EnumParameters);
+REGISTER_PLUGIN("Vendor.Application.Component.PluginName", &CreatePlugin, &EnumParameters, TemplatePlugin);
 
 //------------------------------------------------------------------------------
 Plugin::Plugin(SDK::Plugin::IEnvironment * aEnvironment, const QString & aInstancePath) :

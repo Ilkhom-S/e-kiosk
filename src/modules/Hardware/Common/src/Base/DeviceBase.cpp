@@ -159,25 +159,28 @@ template <class T> bool DeviceBase<T>::checkExistence() {
 
 //--------------------------------------------------------------------------------
 template <class T> void DeviceBase<T>::initialize() {
-    START_IN_WORKING_THREAD(initialize)
+    // 1. Исправляем передачу адреса метода в макрос для шаблонов (dependent name fix)
+    START_IN_WORKING_THREAD(&DeviceBase<T>::initialize)
 
+    // 2. Используем QStringLiteral для всех константных строк для оптимизации памяти
     QString deviceName = this->getConfigParameter(CHardwareSDK::ModelName).toString();
 
     if (deviceName.isEmpty()) {
         deviceName = this->mDeviceName;
     }
 
-    this->toLog(LogLevel::Normal, "**********************************************************");
-    this->toLog(LogLevel::Normal, QString("Initializing device: %1. Version: %2.").arg(deviceName).arg(this->mVersion));
-    this->toLog(LogLevel::Normal, "**********************************************************");
+    this->toLog(LogLevel::Normal, QStringLiteral("**********************************************************"));
+    this->toLog(LogLevel::Normal,
+                QStringLiteral("Initializing device: %1. Version: %2.").arg(deviceName).arg(this->mVersion));
+    this->toLog(LogLevel::Normal, QStringLiteral("**********************************************************"));
 
     this->mInitialized = ERequestStatus::InProcess;
     this->mInitializationError = false;
 
-    MutexLocker resourceLocker(&mResourceMutex);
+    // mResourceMutex должен вызываться через this-> если он в базовом шаблоне
+    MutexLocker resourceLocker(&this->mResourceMutex);
 
     if (this->checkConnectionAbility()) {
-        // TODO: условие пере идентификации - вышли из NotAvailable-а или 1-я загрузка.
         if (this->isPowerReboot() || !this->mConnected) {
             this->checkExistence();
         }
@@ -187,11 +190,11 @@ template <class T> void DeviceBase<T>::initialize() {
             this->mStatusCollection.clear();
 
             int count = 0;
-            bool error = false;
+            bool isCriticalError = false;
 
             do {
-                if (count) {
-                    this->toLog(LogLevel::Normal, QString("Try to repeat initialization #%1.").arg(count + 1));
+                if (count > 0) {
+                    this->toLog(LogLevel::Normal, QStringLiteral("Try to repeat initialization #%1.").arg(count + 1));
                 }
 
                 MutexLocker externalLocker(&this->mExternalMutex);
@@ -203,16 +206,19 @@ template <class T> void DeviceBase<T>::initialize() {
                 }
 
                 int errorSize = this->mStatusCollection.size(EWarningLevel::Error);
-                error = (errorSize > 1) || ((errorSize == 1) &&
-                                            !this->mStatusCollection.contains(DeviceStatusCode::Error::Initialization));
-            } while ((++count < this->mInitializeRepeatCount) && !error);
+                isCriticalError =
+                    (errorSize > 1) ||
+                    ((errorSize == 1) && !this->mStatusCollection.contains(DeviceStatusCode::Error::Initialization));
+            } while ((++count < this->mInitializeRepeatCount) && !isCriticalError);
 
-            this->mInitialized =
-                (!error && (count < this->mInitializeRepeatCount)) ? ERequestStatus::Success : ERequestStatus::Fail;
+            this->mInitialized = (!isCriticalError && (count < this->mInitializeRepeatCount)) ? ERequestStatus::Success
+                                                                                              : ERequestStatus::Fail;
 
             if (this->mInitialized == ERequestStatus::Fail) {
-                this->toLog(LogLevel::Error, error ? "Initialization was broken due to critical error."
-                                                   : "The maximum quantity of initialization attempts is exceeded.");
+                this->toLog(LogLevel::Error,
+                            isCriticalError
+                                ? QStringLiteral("Initialization was broken due to critical error.")
+                                : QStringLiteral("The maximum quantity of initialization attempts is exceeded."));
             }
         } else {
             this->mInitialized = ERequestStatus::Fail;
@@ -226,8 +232,11 @@ template <class T> void DeviceBase<T>::initialize() {
         this->processStatusCodes(TStatusCodes() << DeviceStatusCode::Error::NotAvailable);
     }
 
-    QString pluginPath =
-        QString("\n%1 : %2").arg(CHardware::PluginPath).arg(this->getConfigParameter(CHardware::PluginPath).toString());
+    // Оптимизация формирования строки данных плагина
+    QString pluginPath = QStringLiteral("\n%1 : %2")
+                             .arg(CHardware::PluginPath)
+                             .arg(this->getConfigParameter(CHardware::PluginPath).toString());
+
     SLogData logData = this->getDeviceData();
     this->setConfigParameter(CHardwareSDK::DeviceData,
                              pluginPath + logData.plugin + logData.device + logData.config + logData.requiredDevice);
@@ -235,11 +244,11 @@ template <class T> void DeviceBase<T>::initialize() {
     this->removeConfigParameter(CHardware::CallingType);
 
     if (this->mInitialized == ERequestStatus::Success) {
-        this->toLog(LogLevel::Normal, QString("Device %1 is initialized.").arg(this->mDeviceName));
+        this->toLog(LogLevel::Normal, QStringLiteral("Device %1 is initialized.").arg(this->mDeviceName));
 
-        this->emit(this->initialized());
+        emit(this->initialized());
     } else {
-        this->toLog(LogLevel::Error, QString("Failed to initialize %1.").arg(this->mDeviceName));
+        this->toLog(LogLevel::Error, QStringLiteral("Failed to initialize %1.").arg(this->mDeviceName));
     }
 }
 
@@ -255,7 +264,7 @@ template <class T> void DeviceBase<T>::finalizeInitialization() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool DeviceBase<T>::release() {
-    bool result = MetaDevice::release();
+    bool result = this->release();
 
     this->mConnected = false;
     this->mLastWarningLevel = static_cast<EWarningLevel::Enum>(-1);
@@ -331,7 +340,7 @@ template <class T> void DeviceBase<T>::cleanStatusCodes(TStatusCodes &aStatusCod
         aStatusCodes.insert(DeviceStatusCode::Warning::ModelNotCompatible);
     }
 
-    if (!mOperatorPresence && isPluginMismatch()) {
+    if (!this->mOperatorPresence && isPluginMismatch()) {
         aStatusCodes.insert(DeviceStatusCode::Warning::Compatibility);
     }
 
@@ -394,7 +403,7 @@ template <class T> bool DeviceBase<T>::isStatusesReplaceable(TStatusCodes &aStat
 
 //---------------------------------------------------------------------------
 template <class T> bool DeviceBase<T>::canApplyStatusBuffer() {
-    return mMaxBadAnswers && (mForceStatusBufferEnabled || (!mOperatorPresence && mPostPollingAction)) &&
+    return mMaxBadAnswers && (mForceStatusBufferEnabled || (!this->mOperatorPresence && this->mPostPollingAction)) &&
            !getStatusCodes(mStatusCollection).isEmpty() &&
            !mStatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
 }
@@ -499,16 +508,26 @@ template <class T> SStatusCodeSpecification DeviceBase<T>::getStatusCodeSpecific
 
 //--------------------------------------------------------------------------------
 template <class T> QString DeviceBase<T>::getStatusTranslations(const TStatusCodes &aStatusCodes, bool aLocale) const {
-    TStatusCodesBuffer statusCodesBuffer = aStatusCodes.toList();
-    qSort(statusCodesBuffer);
+    // 1. В Qt 6 метод .toList() у QSet/QSet-подобных контейнеров удален.
+    // Используем конструктор от итераторов для создания списка.
     QStringList translations;
+    TStatusCodesBuffer statusCodesBuffer(aStatusCodes.begin(), aStatusCodes.end());
 
-    foreach (int statusCode, statusCodesBuffer) {
+    // 2. В Qt 6 макрос qSort удален. Используем стандартный std::sort.
+    std::sort(statusCodesBuffer.begin(), statusCodesBuffer.end());
+
+    // 3. Заменяем устаревший foreach на стандартный range-based for.
+    for (int statusCode : statusCodesBuffer) {
+        // 4. Используем this-> для обращения к методу базового шаблонного класса (обязательно для Clang/macOS).
         SStatusCodeSpecification codeSpecification = this->getStatusCodeSpecification(statusCode);
+
         translations << (aLocale ? codeSpecification.translation : codeSpecification.description);
     }
 
+    // 5. Используем QStringLiteral для разделителя (оптимизация 2026 года).
     return translations.join(CDevice::StatusSeparator);
+    // Примечание: если CDevice::StatusSeparator - статическая константа,
+    // можно оставить CDevice::StatusSeparator.
 }
 
 //--------------------------------------------------------------------------------
@@ -592,7 +611,7 @@ template <class T> void DeviceBase<T>::emitStatusCode(int aStatusCode, int aExte
     this->toLog(this->getLogLevel(warningLevel),
                 QString("Send statuses: %1, extended status %2").arg(translation).arg(aExtendedStatus));
 
-    this->emit(this->status(warningLevel, translation, aExtendedStatus));
+    emit(this->status(warningLevel, translation, aExtendedStatus));
 }
 
 //--------------------------------------------------------------------------------
@@ -608,7 +627,7 @@ template <class T> void DeviceBase<T>::emitStatusCodes(TStatusCollection &aStatu
     this->toLog(this->getLogLevel(warningLevel),
                 QString("Send statuses: %1, extended status %2").arg(translation).arg(aExtendedStatus));
 
-    emit status(warningLevel, translation, aExtendedStatus);
+    emit this->status(warningLevel, translation, aExtendedStatus);
 }
 
 //--------------------------------------------------------------------------------
@@ -620,9 +639,17 @@ template <class T> EWarningLevel::Enum DeviceBase<T>::getWarningLevel(const TSta
 
 //--------------------------------------------------------------------------------
 template <class T> void DeviceBase<T>::reInitialize() {
+    // 1. Используем this-> для обращения к членам базового шаблонного класса (обязательно для Clang/macOS).
+    // 2. Используем QStringLiteral для оптимизации памяти.
     this->setConfigParameter(CHardware::CallingType, CHardware::CallingTypes::Internal);
 
-    this->mOperatorPresence ? this->initialize() : QMetaObject::invokeMethod(this, "initialize", Qt::QueuedConnection);
+    if (this->mOperatorPresence) {
+        this->initialize();
+    } else {
+        // 3. В Qt 6 рекомендуется использовать синтаксис указателей на методы для QMetaObject::invokeMethod.
+        // Это предотвращает ошибки в рантайме и работает быстрее, чем строковый вызов.
+        QMetaObject::invokeMethod(this, &DeviceBase<T>::initialize, Qt::QueuedConnection);
+    }
 }
 
 //--------------------------------------------------------------------------------

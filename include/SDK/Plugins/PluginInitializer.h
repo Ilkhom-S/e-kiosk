@@ -1,4 +1,4 @@
 /* @file Инициализатор плагинов. */
 
 // System
-#include "../../../Modules/SDK/Plugins/src/PluginInitializer.h"
+#include "../../../modules/SDK/Plugins/src/PluginInitializer.h"

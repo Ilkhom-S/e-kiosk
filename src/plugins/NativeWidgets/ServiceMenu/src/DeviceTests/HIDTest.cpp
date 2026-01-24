@@ -2,7 +2,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QTextCodec>
+#include <QtCore/QStringDecoder>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
@@ -73,12 +73,13 @@ void HIDTest::onData(const QVariantMap &aDataMap) {
                 break;
 
             case QVariant::ByteArray: {
-                QTextCodec::ConverterState stateUtf8;
-                QString utf8 = QTextCodec::codecForName("UTF-8")->toUnicode(data.toString().toLatin1(),
-                                                                            data.toByteArray().size(), &stateUtf8);
-                value = stateUtf8.invalidChars == 0
-                            ? utf8
-                            : QTextCodec::codecForName("windows-1251")->toUnicode(data.toString().toLatin1());
+                QStringDecoder decoderUtf8(QStringDecoder::Utf8);
+                QString utf8 = decoderUtf8.decode(data.toByteArray());
+                if (decoderUtf8.hasError()) {
+                    QStringDecoder decoderCp1251("windows-1251");
+                    utf8 = decoderCp1251.decode(data.toByteArray());
+                }
+                value = utf8;
             } break;
             default:
                 value = data.toString();

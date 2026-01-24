@@ -3,6 +3,8 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QDir>
+#include <QtCore/QMetaType>
+#include <QtCore/QRegularExpression>
 #include <QtWidgets/QApplication>
 #include <Common/QtHeadersEnd.h>
 
@@ -111,7 +113,6 @@ bool GUIService::initialize() {
 
     auto parseIni = [&](const QString &aIniFile) {
         QSettings settings(ISysUtils::rmBOM(aIniFile), QSettings::IniFormat);
-        settings.setIniCodec("UTF-8");
 
         foreach (auto key, settings.allKeys()) {
             mConfig.insert(key, settings.value(key));
@@ -286,7 +287,7 @@ void GUIService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
             QString signal;
             QVariantMap parameters;
 
-            if (aEvent.getData().type() == QVariant::String) {
+            if (aEvent.getData().typeId() == QMetaType::QString) {
                 signal = aEvent.getData().toString();
             } else {
                 parameters = aEvent.getData().value<QVariantMap>();
@@ -483,7 +484,7 @@ QVariantMap GUIService::getUiSettings(const QString &aSection) const {
 //---------------------------------------------------------------------------
 void GUIService::loadAdSources() {
     QStringList adSources =
-        mPluginService->getPluginLoader()->getPluginList(QRegExp("PaymentProcessor\\.AdSource\\..*"));
+        mPluginService->getPluginLoader()->getPluginList(QRegularExpression("PaymentProcessor\\.AdSource\\..*"));
 
     foreach (const QString &source, adSources) {
         auto plugin = mPluginService->getPluginLoader()->createPlugin(source);
@@ -500,7 +501,7 @@ void GUIService::loadAdSources() {
 //---------------------------------------------------------------------------
 void GUIService::loadNativeScenarios() {
     QStringList scenarios =
-        mPluginService->getPluginLoader()->getPluginList(QRegExp("PaymentProcessor\\.ScenarioFactory\\..*"));
+        mPluginService->getPluginLoader()->getPluginList(QRegularExpression("PaymentProcessor\\.ScenarioFactory\\..*"));
 
     foreach (const QString &scenario, scenarios) {
         auto plugin = mPluginService->getPluginLoader()->createPlugin(scenario);
@@ -523,7 +524,7 @@ void GUIService::loadNativeScenarios() {
 //---------------------------------------------------------------------------
 void GUIService::loadBackends() {
     QStringList backends =
-        mPluginService->getPluginLoader()->getPluginList(QRegExp("PaymentProcessor\\.GraphicsBackend\\..*"));
+        mPluginService->getPluginLoader()->getPluginList(QRegularExpression("PaymentProcessor\\.GraphicsBackend\\..*"));
 
     foreach (const QString &backend, backends) {
         SDK::Plugin::IPlugin *plugin = mPluginService->getPluginLoader()->createPlugin(backend);
@@ -544,7 +545,7 @@ void GUIService::loadBackends() {
 //---------------------------------------------------------------------------
 void GUIService::loadScriptObjects() {
     QStringList scriptObjects =
-        mPluginService->getPluginLoader()->getPluginList(QRegExp("PaymentProcessor\\.ScriptFactory\\..*"));
+        mPluginService->getPluginLoader()->getPluginList(QRegularExpression("PaymentProcessor\\.ScriptFactory\\..*"));
 
     foreach (const QString &scriptPluginName, scriptObjects) {
         auto plugin = mPluginService->getPluginLoader()->createPlugin(scriptPluginName);
@@ -595,11 +596,11 @@ void GUIService::bringToFront() {
         aSettings.beginGroup("topmost");
         foreach (auto const key, aSettings.allKeys()) {
             QVariant v = aSettings.value(key);
-            switch (v.type()) {
-                case QVariant::StringList:
+            switch (v.typeId()) {
+                case QMetaType::QStringList:
                     topmostWindows.append(v.toStringList());
                     break;
-                case QVariant::String:
+                case QMetaType::QString:
                     topmostWindows.push_back(v.toString());
                     break;
             }

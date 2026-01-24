@@ -31,6 +31,12 @@ namespace SDK {
             /// Список плагинов: имя -> конструктор, параметры.
             typedef QMap<QString, QPair<TConstructor, TParameterList>> TPluginList;
 
+            /// Возвращает глобальный список плагинов.
+            static TPluginList &getPluginList() {
+                static TPluginList pluginList;
+                return pluginList;
+            }
+
             /// Конструктор, добавляет плагин в глобальный список, доступный фабрике.
             template <typename ParameterEnumerator>
             PluginInitializer(QString aPath, TConstructor aConstructor, ParameterEnumerator aParameterEnumerator) {
@@ -45,58 +51,55 @@ namespace SDK {
                 return 0;
             }
 
-            /// Функция доступа к статическому списку плагинов.
-            static TPluginList &getPluginList() {
-                static TPluginList pluginList;
-                return pluginList;
+            /// Регистрация плагина в статическом списке.
+            template <typename ParameterEnumerator>
+            static void registerPlugin(QString aPath, TConstructor aConstructor,
+                                       ParameterEnumerator aParameterEnumerator) {
+                getPluginList()[aPath] = qMakePair(aConstructor, aParameterEnumerator());
             }
 
-            static QVector<SPluginParameter> emptyParameterList() {
-                return QVector<SPluginParameter>();
+            /// Пустой список параметров для плагинов без параметров.
+            static TParameterList emptyParameterList() {
+                return TParameterList();
             }
         };
-
-        /// Вспомогательные методы для формирования пути плагина.
-        namespace {
-            QString makePath(const QString &aApplication, const QString &aComponent, const QString &aName) {
-                return QString("%1.%2.%3").arg(aApplication).arg(aComponent).arg(aName);
-            }
-        } // namespace
-
-        namespace {
-            QString makePath(const QString &aApplication, const QString &aComponent, const QString &aName,
-                             const QString &aExtension) {
-                return QString("%1.%2.%3.%4").arg(aApplication).arg(aComponent).arg(aName).arg(aExtension);
-            }
-        } // namespace
-
-/// Макрос для использования в коде плагина, регистрирует плагин без параметров в глобальном списке плагинов.
-#define REGISTER_PLUGIN(aPath, aConstructor)                                                                           \
-    namespace {                                                                                                        \
-        SDK::Plugin::PluginInitializer gPluginInitializer(aPath, aConstructor,                                         \
-                                                          &SDK::Plugin::PluginInitializer::emptyParameterList);        \
-    }
-
-/// Макрос для использования в коде плагина, регистрирует плагин с параметрами в глобальном списке плагинов.
-#define REGISTER_PLUGIN_WITH_PARAMETERS(aPath, aConstructor, aParameterEnumerator)                                     \
-    namespace {                                                                                                        \
-        SDK::Plugin::PluginInitializer gPluginInitializer(aPath, aConstructor, aParameterEnumerator);                  \
-    }
-
-/// Набор макросов для описания нескольких плагинов в одном CPP файле.
-#define BEGIN_REGISTER_PLUGIN SDK::Plugin::PluginInitializer PluginArray[] = {
-#define PLUGIN(aPath, aConstructor)                                                                                    \
-    SDK::Plugin::PluginInitializer(aPath, aConstructor, &SDK::Plugin::PluginInitializer::emptyParameterList),
-
-#define PLUGIN_WITH_PARAMETERS(aPath, aConstructor, aParameterEnumerator)                                              \
-    SDK::Plugin::PluginInitializer(aPath, aConstructor, aParameterEnumerator),
-
-#define END_REGISTER_PLUGIN                                                                                            \
-    }                                                                                                                  \
-    ;
 
         //------------------------------------------------------------------------------
     } // namespace Plugin
 } // namespace SDK
 
 //------------------------------------------------------------------------------
+
+/// Вспомогательные методы для формирования пути плагина.
+inline QString makePath(const QString &aApplication, const QString &aComponent, const QString &aName) {
+    return QString("%1.%2.%3").arg(aApplication).arg(aComponent).arg(aName);
+}
+
+inline QString makePath(const QString &aApplication, const QString &aComponent, const QString &aName,
+                        const QString &aExtension) {
+    return QString("%1.%2.%3.%4").arg(aApplication).arg(aComponent).arg(aName).arg(aExtension);
+}
+
+//------------------------------------------------------------------------------
+
+/// Макросы для регистрации плагинов.
+
+#define REGISTER_PLUGIN(path, constructor, parameters, unique_id)                                                      \
+    static void register_plugin_##unique_id() {                                                                        \
+        static bool registered = false;                                                                                \
+        if (!registered) {                                                                                             \
+            SDK::Plugin::PluginInitializer::registerPlugin(path, constructor, parameters);                             \
+            registered = true;                                                                                         \
+        }                                                                                                              \
+    }                                                                                                                  \
+    static bool dummy_##unique_id = (register_plugin_##unique_id(), true);
+
+#define REGISTER_PLUGIN_WITH_PARAMETERS(path, constructor, parameters, unique_id)                                      \
+    static void register_plugin_##unique_id() {                                                                        \
+        static bool registered = false;                                                                                \
+        if (!registered) {                                                                                             \
+            SDK::Plugin::PluginInitializer::registerPlugin(path, constructor, parameters);                             \
+            registered = true;                                                                                         \
+        }                                                                                                              \
+    }                                                                                                                  \
+    static bool dummy_##unique_id = (register_plugin_##unique_id(), true);

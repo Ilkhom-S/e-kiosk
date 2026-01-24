@@ -135,7 +135,9 @@ class TestDebugUtilsPerformance : public QObject {
         QElapsedTimer timer;
 
         const int iterations = 1000;
+#ifdef Q_OS_WIN
         LPTOP_LEVEL_EXCEPTION_FILTER handlers[iterations];
+#endif
 
         timer.start();
         for (int i = 0; i < iterations; ++i) {

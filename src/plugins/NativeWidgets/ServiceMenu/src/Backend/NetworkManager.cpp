@@ -193,7 +193,7 @@ void NetworkManager::getNetworkInfo(QVariantMap &aResult) const {
         aResult[CServiceTags::ProxyPassword] = proxy.password();
     }
 
-    aResult.unite(dynamic_cast<PPSDK::IService *>(mNetworkService)->getParameters());
+    aResult.insert(dynamic_cast<PPSDK::IService *>(mNetworkService)->getParameters());
 }
 
 //---------------------------------------------------------------------------

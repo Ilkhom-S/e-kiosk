@@ -9,8 +9,8 @@ template class PortPrinterBase<PrinterBase<SerialDeviceBase<PortPollingDeviceBas
 template <class T> PortPrinterBase<T>::PortPrinterBase() {
     this->mIOMessageLogging = ELoggingType::ReadWrite;
 
-    // кодек
-    this->mCodec = CodecByName[CHardware::Codepages::CP866].get();
+    // кодек - удалено для Qt 6 совместимости
+    // this->mCodec = CodecByName[CHardware::Codepages::CP866].get();
 }
 
 //--------------------------------------------------------------------------------

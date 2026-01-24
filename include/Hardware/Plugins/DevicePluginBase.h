@@ -7,26 +7,36 @@
 #include <SDK/Plugins/IPluginFactory.h>
 #include <SDK/Plugins/IPluginLoader.h>
 
+// Hardware SDK
+#include <SDK/Drivers/HardwareConstants.h>
+#include <Hardware/Common/HardwareConstants.h>
+
+// Forward declaration for makeDriverPath
+template <class T> QString makeDriverPath();
+
+#include <Hardware/Plugins/CommonParameters.h>
+
 //------------------------------------------------------------------------------
 template <class T> class DevicePluginBase : public SDK::Plugin::IPlugin, public T {
   public:
     DevicePluginBase(const QString &aPluginName, SDK::Plugin::IEnvironment *aEnvironment, const QString &aInstancePath)
         : mInstanceName(aInstancePath), mEnvironment(aEnvironment) {
         mPluginName = aPluginName + " plugin";
-        setLog(aEnvironment->getLog(""));
+        this->setLog(aEnvironment->getLog(""));
 
         if (mEnvironment) {
             SDK::Plugin::IPluginLoader *pluginLoader = mEnvironment->getPluginLoader();
 
             if (pluginLoader) {
-                QString path = mInstanceName.section(CPlugin::InstancePathSeparator, 0, 0);
+                QString path = mInstanceName.section(SDK::Plugin::CPlugin::InstancePathSeparator, 0, 0);
                 SDK::Plugin::TParameterList parameterList = pluginLoader->getPluginParametersDescription(path);
                 QStringList pluginParameterNames;
                 QStringList requiredResourceNames;
 
                 foreach (const SDK::Plugin::SPluginParameter &parameter, parameterList) {
                     if (parameter.name == CHardwareSDK::RequiredResource) {
-                        path = parameter.defaultValue.toString().section(CPlugin::InstancePathSeparator, 0, 0);
+                        path = parameter.defaultValue.toString().section(SDK::Plugin::CPlugin::InstancePathSeparator, 0,
+                                                                         0);
                         SDK::Plugin::TParameterList rrParameterList =
                             pluginLoader->getPluginParametersDescription(path);
 

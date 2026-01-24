@@ -35,8 +35,8 @@ namespace CLibUSBUtils {
         }
 
       protected:
-        virtual QString value(const uint16_t &aKey) const {
-            return mBuffer.contains(aKey) ? mBuffer.value(aKey, mDefaultValue) : QString("%1 (unknown)").arg(aKey);
+        virtual const QString &value(const uint16_t &aKey) const {
+            return mBuffer.value(aKey, mDefaultValue);
         }
     };
 

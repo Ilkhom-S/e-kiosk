@@ -1,5 +1,10 @@
 /* @file Реализация компоненты для редактирования профилей устройств. */
 
+// Standard
+
+// STL
+#include <algorithm>
+
 // Project
 #include "DeviceSlot.h"
 #include "EditorPane.h"
@@ -202,7 +207,7 @@ void EditorPane::showCurrentParameterValues() {
                         };
 
                         QStringList possibleValues(parameter.possibleValues.keys());
-                        qSort(possibleValues.begin(), possibleValues.end(), intOrderLessThan);
+                        std::sort(possibleValues.begin(), possibleValues.end(), intOrderLessThan);
                         mUi.lwValues->addItems(possibleValues);
 
                         QString title;

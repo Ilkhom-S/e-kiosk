@@ -4,6 +4,7 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QFile>
 #include <QtCore/QMutexLocker>
+#include <QtCore/QRecursiveMutex>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QScopedPointer>
 #include <QtCore/QStringList>
@@ -40,7 +41,7 @@ namespace CDatabaseUtils {
 //---------------------------------------------------------------------------
 DatabaseUtils::DatabaseUtils(IDatabaseProxy &aProxy, IApplication *aApplication)
     : mDatabase(aProxy), mApplication(aApplication), mLog(aApplication->getLog()),
-      mPaymentLog(ILog::getInstance("Payments")), mAccessMutex(QMutex::Recursive) {
+      mPaymentLog(ILog::getInstance("Payments")), mAccessMutex(QRecursiveMutex()) {
 }
 
 //---------------------------------------------------------------------------
@@ -99,7 +100,8 @@ bool DatabaseUtils::updateDatabase(const QString &aSqlScriptName) {
 
     // Удалим комментарии ("-- some comment") и ("/* many \n comment */").
     QRegularExpression rx("(\\/\\*.*\\*\\/|\\-\\-.*\\n)");
-    ////////rx.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
+    ////////rx.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for
+    ///Qt5/6 compatibility // Removed for Qt5/6 compatibility
     resSQL.replace(rx, "");
 
     // Удалим перевод строк с сохранением возможности писать ("CREATE\nTABLE")

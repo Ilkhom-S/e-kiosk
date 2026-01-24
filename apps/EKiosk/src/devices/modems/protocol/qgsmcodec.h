@@ -10,7 +10,7 @@
 */
 
 #include <QtCore/QString>
-#include <QtCore/QTextCodec>
+#include <QtCore5Compat/QTextCodec>
 
 class QGsmCodec : public QTextCodec {
   public:

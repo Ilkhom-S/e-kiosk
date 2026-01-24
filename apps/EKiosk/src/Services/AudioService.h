@@ -6,7 +6,6 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QSharedPointer>
 #include <QtMultimedia/QMediaPlayer>
-#include <QtMultimedia/QMediaPlaylist>
 #include <Common/QtHeadersEnd.h>
 
 // Modules
@@ -67,7 +66,7 @@ class AudioService : public QObject,
 
   private slots:
     /// Изменение состояния проигрывателя музыки
-    void stateChanged(QMediaPlayer::State aState);
+    void stateChanged(QMediaPlayer::PlaybackState aState);
 
   private:
     IApplication *mApplication;

@@ -10,7 +10,7 @@ PinGetCardListResponse::PinGetCardListResponse(const Request &aRequest, const QS
     }
 
     foreach (QString rawCard, getParameter("CARD_LIST").toString().split(":")) {
-        QStringList cardParams = rawCard.split("=", QString::KeepEmptyParts);
+        QStringList cardParams = rawCard.split("=", Qt::KeepEmptyParts);
         if (cardParams.size() < 3) {
             continue;
         }

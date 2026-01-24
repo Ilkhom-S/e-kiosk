@@ -5,20 +5,19 @@
 #include <QtCore/QCoreApplication>
 #include <Common/QtHeadersEnd.h>
 
-// Modules
+// System
 #include "Hardware/CashAcceptors/CashAcceptorBase.h"
 #include "Hardware/Dispensers/DispenserBase.h"
 
 // Project
 #include "VirtualDeviceBase.h"
 
-//-------------------------------------------------------------------------------
 template class VirtualDeviceBase<CashAcceptorBase<DeviceBase<ProtoCashAcceptor>>>;
 template class VirtualDeviceBase<DispenserBase<DeviceBase<ProtoDispenser>>>;
 
 //---------------------------------------------------------------------------------
 template <class T> VirtualDeviceBase<T>::VirtualDeviceBase() {
-    mDeviceName = "Virtual";
+    this->mDeviceName = "Virtual";
 }
 
 //---------------------------------------------------------------------------------
@@ -28,9 +27,9 @@ template <class T> void VirtualDeviceBase<T>::initialize() {
     T::initialize();
 
     // Меняем поток на главный, иначе фильтр событий не будет работать.
-    moveToThread(qApp->thread());
+    this->moveToThread(qApp->thread());
 
-    // Подписываемся на уведобления о событиях от приложения.
+    // Подписываемся на уведомления о событиях от приложения.
     qApp->installEventFilter(this);
 }
 
@@ -51,10 +50,10 @@ template <class T> bool VirtualDeviceBase<T>::getStatus(TStatusCodes &aStatusCod
 //--------------------------------------------------------------------------------
 template <class T> void VirtualDeviceBase<T>::blinkStatusCode(int aStatusCode) {
     mStatusCodes.insert(aStatusCode);
-    onPoll();
+    this->onPoll();
 
     mStatusCodes.remove(aStatusCode);
-    onPoll();
+    this->onPoll();
 }
 
 //--------------------------------------------------------------------------------
@@ -72,7 +71,7 @@ template <class T> bool VirtualDeviceBase<T>::eventFilter(QObject * /*aWatched*/
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(aEvent);
 
         filterKeyEvent(keyEvent->key(), keyEvent->modifiers());
-        onPoll();
+        this->onPoll();
     }
 
     return false;

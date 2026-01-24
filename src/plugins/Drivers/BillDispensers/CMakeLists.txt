@@ -14,7 +14,7 @@ ek_add_plugin(bill_dispensers
     DEPENDS
     HardwareCommon
     CashDispensers
-    CashDevices
+    CashAcceptors
     DriversSDK
     PluginsSDK
     ek_common

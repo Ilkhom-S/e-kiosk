@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     auto logData = QString("EKiosk VERSION - %1\n").arg(ConstData::version);
 
-    toLog(LogLevel::Info, senderName, logData);
+    toLog(LoggerLevel::Info, senderName, logData);
 
     setWindowTitle(versionFull());
 
@@ -181,7 +181,7 @@ void MainWindow::init() {
         bool dialDev = connObject->hasInstalledModems(lstDevDialup);
 
         if (!dialDev) {
-            toLog(LogLevel::Error, "CONNECTION", "На терминале нет установленных модемов...");
+            toLog(LoggerLevel::Error, "CONNECTION", "На терминале нет установленных модемов...");
         }
 
         registrationForm->dialupDevice = lstDevDialup;
@@ -192,7 +192,7 @@ void MainWindow::init() {
     }
 
     // Берем информацию о системе
-    toLog(LogLevel::Info, senderName, "GET SYSINFO START");
+    toLog(LoggerLevel::Info, senderName, "GET SYSINFO START");
 
     systemInfo->start();
 }
@@ -536,7 +536,7 @@ void MainWindow::checkConfigData(bool skipSearchDevice) {
     downManager->setUrlServerIp(IpServerName);
     downManager->settingsPath = settingsPath();
 
-    toLog(LogLevel::Info, senderName, "Поиск устройств...");
+    toLog(LoggerLevel::Info, senderName, "Поиск устройств...");
 
     QString connectionName;
 
@@ -626,7 +626,7 @@ void MainWindow::connectionResult(bool result) {
             collectDaemons->countAllRep = 0;
         }
 
-        toLog(LogLevel::Info, "CONNECTION", "Соединение с сервером активно");
+        toLog(LoggerLevel::Info, "CONNECTION", "Соединение с сервером активно");
 
         // Только при первом запуске
         if (oneGetServices) {
@@ -652,7 +652,7 @@ void MainWindow::connectionResult(bool result) {
     }
 
     // Соединения нет
-    toLog(LogLevel::Error, "CONNECTION", "Нет соединение с сервером.");
+    toLog(LoggerLevel::Error, "CONNECTION", "Нет соединение с сервером.");
 
     if (registrationForm) {
         registrationForm->setConnectionState(false, "Нет соединение с сервером");
@@ -710,7 +710,7 @@ void MainWindow::startToConnection() {
             } break;
         }
 
-        toLog(LogLevel::Warning, "CONNECTION", text);
+        toLog(LoggerLevel::Warning, "CONNECTION", text);
     }
 
     QStringList vrmLst;
@@ -814,7 +814,7 @@ void MainWindow::getServicesError() {
         }
     } else {
         // Отправляем еще раз get services
-        toLog(LogLevel::Info, senderName, QString("Попытка N-%1 на получение конфигурацию.").arg(countGS));
+        toLog(LoggerLevel::Info, senderName, QString("Попытка N-%1 на получение конфигурацию.").arg(countGS));
 
         QTimer::singleShot(10000, this, SLOT(getServicesRequest()));
     }
@@ -843,7 +843,7 @@ bool MainWindow::isModemConnectionUp(QString &connectionName) {
 }
 
 void MainWindow::connectionError() {
-    toLog(LogLevel::Error, "CONNECTION", "Ошибка поднятия соединения с " + config.vpnName);
+    toLog(LoggerLevel::Error, "CONNECTION", "Ошибка поднятия соединения с " + config.vpnName);
 }
 
 void MainWindow::connectionError(QString errNum, QString errComment) {
@@ -865,7 +865,7 @@ void MainWindow::connectionError(QString errNum, QString errComment) {
         adminDialog->setDataToAdmin(AdminCommand::aCmdConnectInfo, data);
     }
 
-    toLog(LogLevel::Error, "CONNECTION", errNum + " (" + errComment + ")");
+    toLog(LoggerLevel::Error, "CONNECTION", errNum + " (" + errComment + ")");
     int errInit = errNum.toInt();
 
     if (registrationForm) {
@@ -884,10 +884,10 @@ void MainWindow::connectionError(QString errNum, QString errComment) {
 
             /// Проверяем счетчик перезагрузок
             int count_reboot = rebootCount();
-            toLog(LogLevel::Info, "MAIN", QString("Количество перезагрузок по ошибке 756 - %1").arg(count_reboot));
+            toLog(LoggerLevel::Info, "MAIN", QString("Количество перезагрузок по ошибке 756 - %1").arg(count_reboot));
 
             if (count_reboot < 3 && count_reboot != 99) {
-                toLog(LogLevel::Info, "MAIN", QString("Даем каманду на перезагрузку по ошибке 756"));
+                toLog(LoggerLevel::Info, "MAIN", QString("Даем каманду на перезагрузку по ошибке 756"));
                 whenRasReboot = true;
 
                 cmdExec = CommandInit::cRebootTerminal;
@@ -921,7 +921,7 @@ void MainWindow::connectionError(QString errNum, QString errComment) {
 
                 countRepEntires = countRepEntires + 1;
 
-                toLog(LogLevel::Info, "CONNECTION",
+                toLog(LoggerLevel::Info, "CONNECTION",
                       QString("Попытка N - %1 на перезагрузку соединения завершена.").arg(countRepEntires));
             }
         } break;
@@ -934,7 +934,7 @@ void MainWindow::rebootModemEntries() {
         // Присваем порт
         watchDogs->setPort(config.WDData.port);
         WDProtocolCommands::Enum protocolCommand = WDProtocolCommands::ResetModem;
-        toLog(LogLevel::Info, "WatchDog", QString("Даем каманду на перезагрузку модема..."));
+        toLog(LoggerLevel::Info, "WatchDog", QString("Даем каманду на перезагрузку модема..."));
         watchDogs->toCommandExec(true, protocolCommand);
     }
 }
@@ -945,7 +945,7 @@ void MainWindow::rebootEntries(int errInit) {
     if (countOtherErrRas >= 3) {
         int countReboot = rebootCount();
         if (countReboot < 3 && countReboot != 99) {
-            toLog(LogLevel::Info, "MAIN", QString("Даем каманду на перезагрузку по ошибке %1").arg(errInit));
+            toLog(LoggerLevel::Info, "MAIN", QString("Даем каманду на перезагрузку по ошибке %1").arg(errInit));
             whenRasReboot = true;
 
             cmdExec = CommandInit::cRebootTerminal;
@@ -961,9 +961,9 @@ void MainWindow::getSystemInfo(QVariantMap data) {
     config.systemInfo = data;
     systemInfoGot = true;
 
-    toLog(LogLevel::Info, senderName, "GET SYSINFO FINISHED");
+    toLog(LoggerLevel::Info, senderName, "GET SYSINFO FINISHED");
     QJsonDocument json = QJsonDocument::fromVariant(config.systemInfo);
-    toLog(LogLevel::Info, senderName, QString(json.toJson(QJsonDocument::Compact)));
+    toLog(LoggerLevel::Info, senderName, QString(json.toJson(QJsonDocument::Compact)));
 }
 
 void MainWindow::connectionState(QString res, QString comment) {
@@ -996,7 +996,7 @@ void MainWindow::connectionUpState() {
 
     connObject->conState = Connection::conStateUp;
 
-    toLog(LogLevel::Info, "CONNECTION", "Соединение с " + config.vpnName + " установлено.");
+    toLog(LoggerLevel::Info, "CONNECTION", "Соединение с " + config.vpnName + " установлено.");
 
     if (adminDialog->isVisible()) {
         QVariantMap data;
@@ -1019,7 +1019,7 @@ void MainWindow::connectionUpState() {
 void MainWindow::connectionCheck() {
     // Делаем проверку соединения
     // В начале надо проверить соединение с сервером
-    toLog(LogLevel::Info, "CONNECTION", "Начинаем проверять соединение с сервером");
+    toLog(LoggerLevel::Info, "CONNECTION", "Начинаем проверять соединение с сервером");
     connObject->checkConnection(Connection::TypePing::Request);
 }
 
@@ -1184,7 +1184,7 @@ void MainWindow::createDialUpConnection(QVariantMap data) {
     pass = data.value("password").toString();
 
     // В начале надо проверить соединение с сервером
-    toLog(LogLevel::Info, "CONNECTION",
+    toLog(LoggerLevel::Info, "CONNECTION",
           "Начинаем создавать Dialup соединение с параметрами:\n" + QString("Наименование устройства: %1\n"
                                                                             "Наименование соединения: %2\n"
                                                                             "Номер дозвона:           %3\n"
@@ -1266,7 +1266,7 @@ void MainWindow::sendAuthRequest(QString login, QString otp) {
 
     authRequest->version = ConstData::version;
 
-    toLog(LogLevel::Info, "AUTH", QString("Отправляется запрос на авторизацию (логин: %1)").arg(login));
+    toLog(LoggerLevel::Info, "AUTH", QString("Отправляется запрос на авторизацию (логин: %1)").arg(login));
 
     auto cid = collectDaemons->firstCollection ? collectDaemons->getCollectionId() : "";
 
@@ -1305,7 +1305,7 @@ void MainWindow::authResponse(QString resultCode, QString login, QString token, 
             adminDialog->authButtonSet(true);
         }
 
-        toLog(LogLevel::Warning, "AUTH", "Сервер недоступен или нет связи");
+        toLog(LoggerLevel::Warning, "AUTH", "Сервер недоступен или нет связи");
     } else {
         message = message.isEmpty() ? "Ошибка авторизации" : message;
         if (adminDialog->isVisible()) {
@@ -1314,7 +1314,7 @@ void MainWindow::authResponse(QString resultCode, QString login, QString token, 
             adminDialog->authButtonSet(true);
         }
 
-        toLog(LogLevel::Error, "AUTH", message);
+        toLog(LoggerLevel::Error, "AUTH", message);
 
         config.terminalData.login = "";
         config.terminalData.token = "000000";
@@ -1497,7 +1497,7 @@ void MainWindow::openAdminDialog() {
     QStringList lstDevDialup;
     bool dialDev = connObject->hasInstalledModems(lstDevDialup);
     if (!dialDev)
-        toLog(LogLevel::Error, "CONNECTION", "На терминале нет установленных модемов...");
+        toLog(LoggerLevel::Error, "CONNECTION", "На терминале нет установленных модемов...");
     adminDialog->dialupDevice = lstDevDialup;
 
     // Параметры модема
@@ -1701,11 +1701,11 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
             if (prtStatus) {
                 auto data = QVariantMap({{"message", printerStatus.at(prtStatus)}});
                 adminDialog->setDataToAdmin(AdminCommand::aCmdInfrmationPanel, data);
-                toLog(LogLevel::Error, "PRINTER", QString("Статус (%1)").arg(vrmLst.at(0)));
+                toLog(LoggerLevel::Error, "PRINTER", QString("Статус (%1)").arg(vrmLst.at(0)));
                 return;
             }
 
-            toLog(LogLevel::Info, "PRINTER", "Принтер активен...");
+            toLog(LoggerLevel::Info, "PRINTER", "Принтер активен...");
 
             // Делаем инкасацию
             QString text = payDaemons->getReceiptInfo("");
@@ -1733,12 +1733,16 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
         } break;
         case AdminCommand::aCmdRestartASO: {
             if (!connObject->restartWindows(true)) {
+#ifdef Q_OS_WIN32
                 proc.startDetached("c:/windows/system32/cmd.exe", QStringList() << "/c" << "shutdown -r -t 0");
+#endif // Q_OS_WIN32
             }
         } break;
         case AdminCommand::aCmdShutDounASO: {
             if (!connObject->restartWindows(false)) {
+#ifdef Q_OS_WIN32
                 proc.startDetached("c:/windows/system32/cmd.exe", QStringList() << "/c" << "shutdown -s -t 0");
+#endif // Q_OS_WIN32
             }
         } break;
         case AdminCommand::aCmdSaveDeviceParam: {
@@ -1784,7 +1788,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
             saveDevice(4, config.WDData.name, watchdogPort, config.WDData.comment, 1);
             saveDevice(5, coinAcceptorName, coinAcceptorPort, config.coinAcceptorData.comment, 1);
 
-            toLog(LogLevel::Info, "MAIN", "Устройства успешно сохранены.");
+            toLog(LoggerLevel::Info, "MAIN", "Устройства успешно сохранены.");
 
             auto msg = QVariantMap({{"message", "Изменения успешно сохранены..."}});
 
@@ -1923,7 +1927,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
 
                         adminDialog->setDataToAdmin(AdminCommand::aCmdSimInfoData, data);
 
-                        toLog(LogLevel::Info, "CONNECTION",
+                        toLog(LoggerLevel::Info, "CONNECTION",
                               "Параметры опроса SIM карты\n\n"
                               "- Провайдер        - " +
                                   config.modemData.provider + "\n- Номер SIM карты  - " + config.modemData.number +
@@ -1955,7 +1959,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
 
             settingsGet();
 
-            toLog(LogLevel::Info, "MAIN", "Параметры соединения успешно сохранены.");
+            toLog(LoggerLevel::Info, "MAIN", "Параметры соединения успешно сохранены.");
 
             auto msg = QVariantMap({{"message", "Изменения успешно сохранены..."}});
             adminDialog->setDataToAdmin(AdminCommand::aCmdConnectInfo, msg);
@@ -1971,7 +1975,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
 
             settingsGet();
 
-            toLog(LogLevel::Info, "MAIN", "Параметры принтера успешно сохранены.");
+            toLog(LoggerLevel::Info, "MAIN", "Параметры принтера успешно сохранены.");
 
             adminDialog->showMsgDialog("Сохранение параметров", "Параметры принтера успешно сохранены.");
         } break;
@@ -1993,7 +1997,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
                 saveLockDuplicateNominal(false);
             }
 
-            toLog(LogLevel::Info, "MAIN", "Настройки успешно сохранены.");
+            toLog(LoggerLevel::Info, "MAIN", "Настройки успешно сохранены.");
 
             adminDialog->showMsgDialog("Сохранение параметров", "Настройки успешно сохранены.");
         } break;
@@ -2011,7 +2015,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
             if (deleteTerminalData()) {
                 sendAuthRequest(login, token);
             } else {
-                toLog(LogLevel::Error, "AUTH", "Ошибка базы данных при удалении данных терминала");
+                toLog(LoggerLevel::Error, "AUTH", "Ошибка базы данных при удалении данных терминала");
 
                 msg = QVariantMap({{"message", "Ошибка базы данных"}});
 
@@ -2032,7 +2036,7 @@ void MainWindow::getCommandFromAdmin(AdminCommand::AdminCmd cmd) {
             checkUserInBase();
 
             // Сообщаем админке
-            toLog(LogLevel::Info, "MAIN", "Данные авторизации для входа в админку успешно сохранены.");
+            toLog(LoggerLevel::Info, "MAIN", "Данные авторизации для входа в админку успешно сохранены.");
 
             adminDialog->showMsgDialog("Сохранение параметров",
                                        "Данные авторизации для входа в админку успешно сохранены.");
@@ -2092,18 +2096,18 @@ void MainWindow::nominalGet(int nominal) {
 
     // qDebug()<<"*******NOMINAL INPUT*******"<< nominal;
 
-    toLog(LogLevel::Info, "VALIDATOR", QString("Вставлена купюра номиналом - %1 сом.").arg(nominal));
+    toLog(LoggerLevel::Info, "VALIDATOR", QString("Вставлена купюра номиналом - %1 сом.").arg(nominal));
 
     if (mainPage->getStepByStepPage() == PageIn::InputSum) {
         mainPage->inputNominal(nominal);
     } else {
-        toLog(LogLevel::Error, "MONEY_OUT",
+        toLog(LoggerLevel::Error, "MONEY_OUT",
               QString("Произошла купюра мимо номиналом %1 на номер %2").arg(nominal).arg(mainPage->originalNumber));
     }
 }
 
 void MainWindow::nominalDuplicateGet(int nominal) {
-    toLog(LogLevel::Warning, "VALIDATOR", QString("Похож на дубликат номиналом %1 смн").arg(nominal));
+    toLog(LoggerLevel::Warning, "VALIDATOR", QString("Похож на дубликат номиналом %1 смн").arg(nominal));
 
     mainPage->loadMainPage();
 
@@ -2118,21 +2122,21 @@ void MainWindow::coinGet(int coin) {
     }
 
     if (coin < 100) {
-        toLog(LogLevel::Info, "COIN_ACCEPTOR", QString("Вставлена монета - %1 дирам").arg(coin));
+        toLog(LoggerLevel::Info, "COIN_ACCEPTOR", QString("Вставлена монета - %1 дирам").arg(coin));
     } else {
-        toLog(LogLevel::Info, "COIN_ACCEPTOR", QString("Вставлена монета - %1 сомони").arg(coin / 100));
+        toLog(LoggerLevel::Info, "COIN_ACCEPTOR", QString("Вставлена монета - %1 сомони").arg(coin / 100));
     }
 
     if (mainPage->getStepByStepPage() == PageIn::InputSum) {
         mainPage->inputNominal(coin, true);
     } else {
-        toLog(LogLevel::Error, "COIN_OUT",
+        toLog(LoggerLevel::Error, "COIN_OUT",
               QString("Произошла монета мимо %1 на номер %2").arg(coin).arg(mainPage->originalNumber));
     }
 }
 
 void MainWindow::coinDuplicateGet(int coin) {
-    toLog(LogLevel::Warning, "COIN_ACCEPTOR", QString("Похож на дубликат монеты %1 дирам").arg(coin));
+    toLog(LoggerLevel::Warning, "COIN_ACCEPTOR", QString("Похож на дубликат монеты %1 дирам").arg(coin));
 
     mainPage->loadMainPage();
 
@@ -2146,7 +2150,7 @@ void MainWindow::incameStatusFromValidator(int sts, QString comment) {
 
     if (sts >= 1 && sts < 30) {
         // Записываем ошибку в лог
-        toLog(LogLevel::Error, "VALIDATOR", comment);
+        toLog(LoggerLevel::Error, "VALIDATOR", comment);
 
         // Есть ошибка в купюроприемнике
         // Если не существует монетоприемник, то блокируем при замятие
@@ -2169,14 +2173,14 @@ void MainWindow::incameStatusFromValidator(int sts, QString comment) {
 
         // Если есть замятие то надо оповестить
         if (sts == VStatus::Errors::ValidatorJammed || sts == VStatus::Errors::StackerJammed) {
-            toLog(LogLevel::Error, "MONEY_JAM",
+            toLog(LoggerLevel::Error, "MONEY_JAM",
                   QString("Произошло замятие купюры предположительно на номер %1").arg(mainPage->originalNumber));
         }
     } else {
 
         // Warnings
         if (sts >= 47 && sts <= 48) {
-            toLog(LogLevel::Warning, "VALIDATOR", comment);
+            toLog(LoggerLevel::Warning, "VALIDATOR", comment);
         }
 
         // Ошибок нет
@@ -2190,7 +2194,7 @@ void MainWindow::incameStatusFromCoinAcceptor(int sts, QString comment) {
     if (sts >= 1 && sts < 35) {
 
         // Записываем ошибку в лог
-        toLog(LogLevel::Error, "COIN ACCEPTOR", comment);
+        toLog(LoggerLevel::Error, "COIN ACCEPTOR", comment);
 
         // Если не существует монетоприемник, то блокировкуем при ошибках валидатора
         if (config.coinAcceptorData.state == CCtalkStatus::Errors::NotAvailable) {
@@ -2254,19 +2258,19 @@ void MainWindow::deviceSearchResult(int device, int result, QString dev_name, QS
                 case SearchDev::start_search: {
                     sDevicesForm->setValidatorSearchText(SearchDev::start_search,
                                                          interfaceText("validator_info_searching"));
-                    toLog(LogLevel::Info, senderName, interfaceText("validator_info_searching"));
+                    toLog(LoggerLevel::Info, senderName, interfaceText("validator_info_searching"));
                 } break;
                 case SearchDev::device_found: {
                     auto inf = interfaceText("validator_info_found")
                                    .replace("[v1]", QString("%1 %2").arg(dev_name, dev_comment))
                                    .replace("[v2]", dev_port);
                     sDevicesForm->setValidatorSearchText(SearchDev::device_found, inf);
-                    toLog(LogLevel::Info, senderName, inf);
+                    toLog(LoggerLevel::Info, senderName, inf);
                 } break;
                 case SearchDev::device_notfound: {
                     sDevicesForm->setValidatorSearchText(SearchDev::device_notfound,
                                                          interfaceText("validator_info_notfound"));
-                    toLog(LogLevel::Error, senderName, interfaceText("validator_info_notfound"));
+                    toLog(LoggerLevel::Error, senderName, interfaceText("validator_info_notfound"));
                 } break;
             }
         } break;
@@ -2275,19 +2279,19 @@ void MainWindow::deviceSearchResult(int device, int result, QString dev_name, QS
                 case SearchDev::start_search: {
                     sDevicesForm->setCoinAcceptorSearchText(SearchDev::start_search,
                                                             interfaceText("coin_acceptor_info_searching"));
-                    toLog(LogLevel::Info, senderName, interfaceText("coin_acceptor_info_searching"));
+                    toLog(LoggerLevel::Info, senderName, interfaceText("coin_acceptor_info_searching"));
                 } break;
                 case SearchDev::device_found: {
                     auto inf = interfaceText("coin_acceptor_info_found")
                                    .replace("[v1]", QString("%1 %2").arg(dev_name, dev_comment))
                                    .replace("[v2]", dev_port);
                     sDevicesForm->setCoinAcceptorSearchText(SearchDev::device_found, inf);
-                    toLog(LogLevel::Info, senderName, inf);
+                    toLog(LoggerLevel::Info, senderName, inf);
                 } break;
                 case SearchDev::device_notfound: {
                     sDevicesForm->setCoinAcceptorSearchText(SearchDev::device_notfound,
                                                             interfaceText("coin_acceptor_info_notfound"));
-                    toLog(LogLevel::Error, senderName, interfaceText("coin_acceptor_info_notfound"));
+                    toLog(LoggerLevel::Error, senderName, interfaceText("coin_acceptor_info_notfound"));
                 } break;
             }
         } break;
@@ -2296,19 +2300,19 @@ void MainWindow::deviceSearchResult(int device, int result, QString dev_name, QS
                 case SearchDev::start_search: {
                     sDevicesForm->setPrinterSearchText(SearchDev::start_search,
                                                        interfaceText("printer_info_searching"));
-                    toLog(LogLevel::Info, senderName, interfaceText("printer_info_searching"));
+                    toLog(LoggerLevel::Info, senderName, interfaceText("printer_info_searching"));
                 } break;
                 case SearchDev::device_found: {
                     auto inf = interfaceText("printer_info_found")
                                    .replace("[v1]", QString("%1 %2").arg(dev_name, dev_comment))
                                    .replace("[v2]", dev_port);
                     sDevicesForm->setPrinterSearchText(SearchDev::device_found, inf);
-                    toLog(LogLevel::Info, senderName, inf);
+                    toLog(LoggerLevel::Info, senderName, inf);
                 } break;
                 case SearchDev::device_notfound: {
                     sDevicesForm->setPrinterSearchText(SearchDev::device_notfound,
                                                        interfaceText("printer_info_notfound"));
-                    toLog(LogLevel::Error, senderName, interfaceText("printer_info_notfound_" + lang));
+                    toLog(LoggerLevel::Error, senderName, interfaceText("printer_info_notfound_" + lang));
                 } break;
             }
         } break;
@@ -2317,18 +2321,18 @@ void MainWindow::deviceSearchResult(int device, int result, QString dev_name, QS
             switch (result) {
                 case SearchDev::start_search: {
                     sDevicesForm->setModemSearchText(SearchDev::start_search, interfaceText("modem_info_searching"));
-                    toLog(LogLevel::Info, senderName, interfaceText("modem_info_searching"));
+                    toLog(LoggerLevel::Info, senderName, interfaceText("modem_info_searching"));
                 } break;
                 case SearchDev::device_found: {
                     auto inf = interfaceText("modem_info_found")
                                    .replace("[v1]", QString("%1 %2").arg(dev_name, dev_comment))
                                    .replace("[v2]", dev_port);
                     sDevicesForm->setModemSearchText(SearchDev::device_found, inf);
-                    toLog(LogLevel::Info, senderName, inf);
+                    toLog(LoggerLevel::Info, senderName, inf);
                 } break;
                 case SearchDev::device_notfound: {
                     sDevicesForm->setModemSearchText(SearchDev::device_notfound, interfaceText("modem_info_notfound"));
-                    toLog(LogLevel::Error, senderName, interfaceText("modem_info_notfound"));
+                    toLog(LoggerLevel::Error, senderName, interfaceText("modem_info_notfound"));
                 } break;
             }
         } break;
@@ -2336,18 +2340,18 @@ void MainWindow::deviceSearchResult(int device, int result, QString dev_name, QS
             switch (result) {
                 case SearchDev::start_search: {
                     sDevicesForm->setWDSearchText(SearchDev::start_search, interfaceText("wd_info_searching"));
-                    toLog(LogLevel::Info, senderName, interfaceText("wd_info_searching"));
+                    toLog(LoggerLevel::Info, senderName, interfaceText("wd_info_searching"));
                 } break;
                 case SearchDev::device_found: {
                     auto inf = interfaceText("wd_info_found")
                                    .replace("[v1]", QString("%1 %2").arg(dev_name, dev_comment))
                                    .replace("[v2]", dev_port);
                     sDevicesForm->setWDSearchText(SearchDev::device_found, inf);
-                    toLog(LogLevel::Info, senderName, inf);
+                    toLog(LoggerLevel::Info, senderName, inf);
                 } break;
                 case SearchDev::device_notfound: {
                     sDevicesForm->setWDSearchText(SearchDev::device_notfound, interfaceText("wd_info_notfound"));
-                    toLog(LogLevel::Error, senderName, interfaceText("wd_info_notfound"));
+                    toLog(LoggerLevel::Error, senderName, interfaceText("wd_info_notfound"));
                 } break;
             }
         } break;
@@ -2363,7 +2367,7 @@ void MainWindow::deviceSearchFinished() {
     toLogingData += "- Баланс сим карты         = " + searchDevices->simBalance + "\n";
     toLogingData += "- Номер сим каты           = " + searchDevices->simNumber + "\n";
 
-    toLog(LogLevel::Info, "MODEM", toLogingData);
+    toLog(LoggerLevel::Info, "MODEM", toLogingData);
 
     config.modemData.rate = searchDevices->signalQuality;
     config.modemData.comment = searchDevices->modemComment.replace("'", "");
@@ -2384,7 +2388,7 @@ void MainWindow::deviceSearchFinished() {
         return;
     }
 
-    toLog(LogLevel::Info, senderName, "Поиск устройств окончен");
+    toLog(LoggerLevel::Info, senderName, "Поиск устройств окончен");
 
     // Вытаскиваем данные об устройствах из базы
     getDeviceFromDB();
@@ -2768,9 +2772,9 @@ void MainWindow::toSendMonitoringStatus() {
         sData.modem.comment = config.modemData.comment;
 
         sData.systemInfo = config.systemInfo;
-        toLog(LogLevel::Info, senderName, "SYSINFO MONITORING");
+        toLog(LoggerLevel::Info, senderName, "SYSINFO MONITORING");
         QJsonDocument json = QJsonDocument::fromVariant(sData.systemInfo);
-        toLog(LogLevel::Info, senderName, QString(json.toJson(QJsonDocument::Compact)));
+        toLog(LoggerLevel::Info, senderName, QString(json.toJson(QJsonDocument::Compact)));
 
         //        if(config.modemData.Name != "")
         //            sData.connection = "0";
@@ -2961,7 +2965,7 @@ void MainWindow::cmdWatchdogDone(bool state, int aCommand) {
             stateNote = "Не удалось перезагрузить модем";
         }
 
-        toLog(LogLevel::Info, "WatchDogs", stateNote);
+        toLog(LoggerLevel::Info, "WatchDogs", stateNote);
 
         if (adminDialog->isVisible()) {
             auto data = QVariantMap({{"message", stateNote}});
@@ -3069,7 +3073,7 @@ void MainWindow::getCommandFromServer(QVariantList cmdList) {
 
     log = QString("Количество поступивших команд с сервера = %1").arg(cmdCount) + log;
 
-    toLog(LogLevel::Info, "MAIN", log);
+    toLog(LoggerLevel::Info, "MAIN", log);
 
     if (!cmdTimer.isActive()) {
         cmdTimer.start();
@@ -3193,13 +3197,13 @@ void MainWindow::commandExecution(CommandInit::Cmd cmd, QVariantMap meta) {
             /// Перезагрузка по ошибке соединения
             if (whenRasReboot) {
                 auto rCount = rebootCount();
-                toLog(LogLevel::Info, "MAIN",
+                toLog(LoggerLevel::Info, "MAIN",
                       QString("Ставим параметр счетчика перезагрузки по ошибке 756 равным - %1").arg(rCount + 1));
                 rebootCountSet(rCount + 1);
                 whenRasReboot = false;
             }
 
-            toLog(LogLevel::Info, "MAIN", "Начинаем перезагружать ASO");
+            toLog(LoggerLevel::Info, "MAIN", "Начинаем перезагружать ASO");
 
             if (trn != "") {
                 commandStatusUpdate(trn, "executed");
@@ -3210,37 +3214,39 @@ void MainWindow::commandExecution(CommandInit::Cmd cmd, QVariantMap meta) {
         } break;
         case CommandInit::cTurnOffTerminal: {
             // Команда на выключение терминала
-            toLog(LogLevel::Info, "MAIN", "Выключение ASO");
+            toLog(LoggerLevel::Info, "MAIN", "Выключение ASO");
 
             if (trn != "") {
                 commandStatusUpdate(trn, "executed");
             }
 
             QProcess proc;
+#ifdef Q_OS_WIN32
             proc.startDetached("c:/windows/system32/cmd.exe", QStringList() << "/c" << "shutdown -s -t 0");
+#endif // Q_OS_WIN32
             return;
         } break;
         case CommandInit::cUpdatePO: {
             // Команда на обновление ПО
-            toLog(LogLevel::Info, "MAIN", "Выполняем команду на получение обновлений...");
+            toLog(LoggerLevel::Info, "MAIN", "Выполняем команду на получение обновлений...");
         } break;
         case CommandInit::cTurnOnAutoApdate:
             // Команда на включение автообновления
-            toLog(LogLevel::Info, "MAIN", "Выполняем команду включения автообновления.");
+            toLog(LoggerLevel::Info, "MAIN", "Выполняем команду включения автообновления.");
             break;
         case CommandInit::cTurnOffAutoApdate:
             // Команда на выключение автообновления
-            toLog(LogLevel::Info, "MAIN", "Выполняем команду выключение автообновления.");
+            toLog(LoggerLevel::Info, "MAIN", "Выполняем команду выключение автообновления.");
             break;
         case CommandInit::cSendLogInfo: {
             // Команда на загрузку лога
-            toLog(LogLevel::Info, "MAIN", QString("Выполняем команду отправки лога за %1 число.").arg(comment));
+            toLog(LoggerLevel::Info, "MAIN", QString("Выполняем команду отправки лога за %1 число.").arg(comment));
 
             sendLogInfo->sendLogInfoToServer(trn, comment);
         } break;
         case CommandInit::cRestartValidator: {
             // Команда на перезагрузку купюроприемника
-            toLog(LogLevel::Info, "MAIN", "Выполняем команду перезагрузка валидатора.");
+            toLog(LoggerLevel::Info, "MAIN", "Выполняем команду перезагрузка валидатора.");
             clsValidator->execCommand(ValidatorCommands::Restart);
         } break;
         case CommandInit::cGetIncashment: {
@@ -3248,7 +3254,7 @@ void MainWindow::commandExecution(CommandInit::Cmd cmd, QVariantMap meta) {
                               ? "Выполняем команду отправки отложенной инкасации."
                               : QString("Выполняем команду отправки отложенной инкасации с cid: %1").arg(comment);
 
-            toLog(LogLevel::Info, "MAIN", log);
+            toLog(LoggerLevel::Info, "MAIN", log);
 
             QString text;
             QString cid = comment;
@@ -3256,14 +3262,14 @@ void MainWindow::commandExecution(CommandInit::Cmd cmd, QVariantMap meta) {
             collectDaemons->getCheckText(text, false, "", cid);
         } break;
         case CommandInit::cSendLogValidator: {
-            toLog(LogLevel::Info, "MAIN",
+            toLog(LoggerLevel::Info, "MAIN",
                   QString("Выполняем команду отправки лога валидатора за %1 число и "
                           "аккаунт %2.")
                       .arg(comment, account));
             sendLogInfo->sendLogValidatorToServer(trn, comment, account);
         } break;
         case CommandInit::cBVFirmwareUpdate: {
-            toLog(LogLevel::Info, "MAIN",
+            toLog(LoggerLevel::Info, "MAIN",
                   QString("Принята команда обновление прошивки купюроприемника на версию %1").arg(comment));
 
             statusValidatorTimer->stop();
@@ -3308,7 +3314,7 @@ void MainWindow::validatorFirmwareResult(QString state) {
 void MainWindow::checkHash(QString hash) {
     if (terminalInfo.value("hash").toString() != hash) {
         // Hash не одинаковый надо качать get_services заново
-        toLog(LogLevel::Info, "MAIN", "Hash GET_SERVICES изменился начинаем запрашивать конфигурацию.");
+        toLog(LoggerLevel::Info, "MAIN", "Hash GET_SERVICES изменился начинаем запрашивать конфигурацию.");
 
         getServicesRequest();
     }
@@ -3328,7 +3334,7 @@ void MainWindow::checkUpdateHash(QString hash, QString path) {
 
     if (check && config.autoUpdateStatus) {
         if (!downManager->bisyNow) {
-            toLog(LogLevel::Info, "MAIN", "Hash Upadte-xml изменился...");
+            toLog(LoggerLevel::Info, "MAIN", "Hash Upadte-xml изменился...");
 
             // Тут надо запустить updater
             actionList[Action::aPoUpdateNow] = true;
@@ -3515,7 +3521,7 @@ void MainWindow::checkLockTerminal() {
 
         // Смотрим есть ли блокировка
         if (pageIn == PageIn::LockTerminal) {
-            toLog(LogLevel::Info, senderName, QString("Разблокируем терминал, нет ошибок."));
+            toLog(LoggerLevel::Info, senderName, QString("Разблокируем терминал, нет ошибок."));
             mainPage->loadHtmlPage(PageIn::Main);
         }
     } else {
@@ -3524,7 +3530,7 @@ void MainWindow::checkLockTerminal() {
         // Смотрим не заблокированы ли мы и заблокировать если находится на странице
         // кроме ввода денег, печати чека
         if (pageIn != PageIn::LockTerminal && pageIn != PageIn::PrintDialog && pageIn != PageIn::InputSum) {
-            toLog(LogLevel::Error, senderName, QString("%1").arg(lockList[lock].comment));
+            toLog(LoggerLevel::Error, senderName, QString("%1").arg(lockList[lock].comment));
             mainPage->lockReason = lockList[lock].comment;
             mainPage->loadHtmlPage(PageIn::LockTerminal);
         }
@@ -3566,7 +3572,7 @@ void MainWindow::lockUnlockCenter(Lock::Data state, bool lock) {
                     }
 
                     if (smsSend) {
-                        toLog(LogLevel::Info, "SMS_CENTER",
+                        toLog(LoggerLevel::Info, "SMS_CENTER",
                               QString("Необходимо отправить СМС по ошибке купюроприемника."));
                     }
                 }
@@ -3577,7 +3583,7 @@ void MainWindow::lockUnlockCenter(Lock::Data state, bool lock) {
                     smsSend = true;
                     textSms = config.terminalData.login + "-" + "Терминал заблокирован из за недостатка средств";
 
-                    toLog(LogLevel::Info, "SMS_CENTER",
+                    toLog(LoggerLevel::Info, "SMS_CENTER",
                           QString("Необходимо отправить СМС по недостатки средств у агента."));
                 }
             } break;
@@ -3586,7 +3592,7 @@ void MainWindow::lockUnlockCenter(Lock::Data state, bool lock) {
                     smsSend = true;
                     textSms = config.terminalData.login + "-" +
                               "Терминал заблокирован по причине в системе 1 и более платежей";
-                    toLog(LogLevel::Info, "SMS_CENTER",
+                    toLog(LoggerLevel::Info, "SMS_CENTER",
                           QString("Необходимо отправить СМС по причине в системе 1 и более "
                                   "платежей."));
                 }
@@ -3595,7 +3601,7 @@ void MainWindow::lockUnlockCenter(Lock::Data state, bool lock) {
                 if (config.smsErrValidator && !lockList[state].lock) {
                     smsSend = true;
                     textSms = config.terminalData.login + "-" + "Терминал заблокирован по статусу Терминал не активен";
-                    toLog(LogLevel::Info, "SMS_CENTER",
+                    toLog(LoggerLevel::Info, "SMS_CENTER",
                           QString("Необходимо отправить СМС по статусу Терминал не активен(11)"));
                 }
             } break;
@@ -3639,7 +3645,7 @@ void MainWindow::getSmsSendStatus(bool state, QStringList lstId) {
 
     if (state) {
         // СМС Успешно отправлено
-        toLog(LogLevel::Info, "SMS_CENTER", "SMS успешно отправлено...");
+        toLog(LoggerLevel::Info, "SMS_CENTER", "SMS успешно отправлено...");
     }
 
     // Ставим параметр что соединения свободно
@@ -3835,7 +3841,7 @@ void MainWindow::createSmsSendTable() {
                         "NUMERIC, sms_state NUMERIC, sms_lock_status NUMERIC);");
 
     if (!createTable.exec(strCreate)) {
-        toLog(LogLevel::Info, "DB_CONNECT", QString("Не удалось создать таблицу terminal_sms..."));
+        toLog(LoggerLevel::Info, "DB_CONNECT", QString("Не удалось создать таблицу terminal_sms..."));
     }
 }
 
@@ -3871,7 +3877,7 @@ void MainWindow::insertSmsContentInf() {
     for (int i = 1; i <= 6; i++) {
         QString vrmQuery = userQuery.arg(i);
         if (!userSql.exec(vrmQuery)) {
-            toLog(LogLevel::Error, "DB_CONNECT", "Ошибка при вставке смс контента...");
+            toLog(LoggerLevel::Error, "DB_CONNECT", "Ошибка при вставке смс контента...");
             return;
         }
     }
@@ -4070,22 +4076,22 @@ bool MainWindow::clearDataBase() {
     QSqlQuery updateSql(db);
 
     if (!updateSql.exec(lstSql1)) {
-        toLog(LogLevel::Error, "DB", QString("==> Error DELETE DATA SQL FROM DATABASE (%1)").arg(lstSql1));
+        toLog(LoggerLevel::Error, "DB", QString("==> Error DELETE DATA SQL FROM DATABASE (%1)").arg(lstSql1));
         return false;
     }
 
     if (!updateSql.exec(lstSql2)) {
-        toLog(LogLevel::Error, "DB", QString("==> Error DELETE DATA SQL FROM DATABASE (%1)").arg(lstSql2));
+        toLog(LoggerLevel::Error, "DB", QString("==> Error DELETE DATA SQL FROM DATABASE (%1)").arg(lstSql2));
         return false;
     }
 
     if (!updateSql.exec(lstSql3)) {
-        toLog(LogLevel::Error, "DB", QString("==> Error DELETE DATA SQL FROM DATABASE (%1)").arg(lstSql3));
+        toLog(LoggerLevel::Error, "DB", QString("==> Error DELETE DATA SQL FROM DATABASE (%1)").arg(lstSql3));
         return false;
     }
 
     if (!updateSql.exec(lstSql4)) {
-        toLog(LogLevel::Error, "DB", QString("==> Error DELETE DATA SQL FROM DATABASE (%1)").arg(lstSql4));
+        toLog(LoggerLevel::Error, "DB", QString("==> Error DELETE DATA SQL FROM DATABASE (%1)").arg(lstSql4));
         return false;
     }
 
@@ -4402,6 +4408,7 @@ qint32 MainWindow::generateEncodeKey() {
     return vrm_strCodeData.toInt();
 }
 
+#ifdef Q_OS_WIN32
 QStringList MainWindow::getWinPrinterNames() {
     QString printerName;
     QStringList printerNames;
@@ -4415,7 +4422,7 @@ QStringList MainWindow::getWinPrinterNames() {
     if (EnumPrintersW(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, NULL, 2, (LPBYTE)printerInfos, size, &size,
                       &numPrinters)) {
         for (uint i = 0; i < numPrinters; i++) {
-            printerName = QString::fromUtf16((const ushort *)printerInfos[i].pPrinterName);
+            printerName = QString::fromUtf16(reinterpret_cast<const char16_t*>(printerInfos[i].pPrinterName));
             printerNames.append(printerName);
         }
         printerNames.sort();
@@ -4426,6 +4433,12 @@ QStringList MainWindow::getWinPrinterNames() {
 
     return printerNames;
 }
+#else
+QStringList MainWindow::getWinPrinterNames() {
+    // Windows printer enumeration not available on this platform
+    return QStringList();
+}
+#endif // Q_OS_WIN32
 
 void MainWindow::loadWebSettings() {
     QSettings settings;

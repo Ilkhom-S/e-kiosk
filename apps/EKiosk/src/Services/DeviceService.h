@@ -178,7 +178,7 @@ class DeviceService : public SDK::PaymentProcessor::IDeviceService, public SDK::
     /// Здесь хранится результат запуска detectа.
     QFutureWatcher<void> mDetectionResult;
 
-    mutable QMutex mAccessMutex;
+    mutable QRecursiveMutex mAccessMutex;
 
     /// Список всех использованных устройств.
     typedef QMap<QString, SDK::Driver::IDevice *> TAcquiredDevices;

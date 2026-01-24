@@ -4,7 +4,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QMutex>
+#include <QtCore/QRecursiveMutex>
 #include <Common/QtHeadersEnd.h>
 
 // Modules
@@ -141,7 +141,7 @@ class DatabaseUtils : public IDatabaseUtils, public IHardwareDatabaseUtils, publ
     IDatabaseProxy &mDatabase;
     ILog *mLog;
     ILog *mPaymentLog;
-    QMutex mAccessMutex;
+    QRecursiveMutex mAccessMutex;
 
   private:
     /// Заполняет отчет инкассации о платежах

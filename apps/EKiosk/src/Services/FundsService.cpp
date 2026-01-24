@@ -1,32 +1,36 @@
 /* @file Сервис для работы с устройствами приема наличных. */
 
+// STL
 #include <numeric>
 
-// PaymentProcessor SDK
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QRegularExpression>
+#include <Common/QtHeadersEnd.h>
+
+// SDK
+#include <SDK/Drivers/Components.h>
+#include <SDK/Drivers/HardwareConstants.h>
+#include <SDK/Drivers/WarningLevel.h>
 #include <SDK/PaymentProcessor/Components.h>
-#include <SDK/PaymentProcessor/Core/IEventService.h>
-#include <SDK/PaymentProcessor/Core/EventTypes.h>
 #include <SDK/PaymentProcessor/Core/Event.h>
+#include <SDK/PaymentProcessor/Core/EventTypes.h>
 #include <SDK/PaymentProcessor/Core/IChargeProvider.h>
+#include <SDK/PaymentProcessor/Core/IEventService.h>
 #include <SDK/PaymentProcessor/Core/ServiceParameters.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
-// Driver SDK
-#include <SDK/Drivers/WarningLevel.h>
-#include <SDK/Drivers/Components.h>
-#include <SDK/Drivers/HardwareConstants.h>
-
-// Проект
-#include "System/IApplication.h"
-#include "Services/FundsService.h"
-#include "Services/ServiceNames.h"
-#include "Services/DeviceService.h"
-#include "Services/DatabaseService.h"
-#include "Services/SettingsService.h"
-#include "Services/PluginService.h"
+// System
 #include "DatabaseUtils/IHardwareDatabaseUtils.h"
 #include "Services/CashAcceptorManager.h"
 #include "Services/CashDispenserManager.h"
+#include "Services/DatabaseService.h"
+#include "Services/DeviceService.h"
+#include "Services/FundsService.h"
+#include "Services/PluginService.h"
+#include "Services/ServiceNames.h"
+#include "Services/SettingsService.h"
+#include "System/IApplication.h"
 
 namespace PPSDK = SDK::PaymentProcessor;
 
@@ -123,8 +127,8 @@ void FundsService::resetParameters(const QSet<QString> &aParameters) {
 QString FundsService::getState() const {
     // Получаем список всех доступных устройств.
     PPSDK::TerminalSettings *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
-    QStringList deviceList = settings->getDeviceList().filter(
-        QRegExp(QString("(%1|%2)").arg(DSDK::CComponents::BillAcceptor).arg(DSDK::CComponents::CoinAcceptor)));
+    QStringList deviceList = settings->getDeviceList().filter(QRegularExpression(
+        QString("(%1|%2)").arg(DSDK::CComponents::BillAcceptor).arg(DSDK::CComponents::CoinAcceptor)));
 
     QStringList result;
 

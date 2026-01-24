@@ -34,9 +34,9 @@ namespace {
 
 } // namespace
 
-REGISTER_PLUGIN(SDK::Plugin::makePath(SDK::PaymentProcessor::Application,
-                                      SDK::PaymentProcessor::CComponents::GraphicsItem, CFirstSetup::PluginName),
-                &CreatePlugin);
+REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application, SDK::PaymentProcessor::CComponents::GraphicsItem,
+                         CFirstSetup::PluginName),
+                &CreatePlugin, &SDK::Plugin::PluginInitializer::emptyParameterList, FirstSetup);
 
 //--------------------------------------------------------------------------
 FirstSetup::FirstSetup(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)

@@ -42,10 +42,9 @@ namespace {
     }
 
     /// Регистрация плагина в фабрике.
-    REGISTER_PLUGIN(SDK::Plugin::makePath(SDK::PaymentProcessor::Application,
-                                          SDK::PaymentProcessor::CComponents::PaymentFactory,
-                                          CPaymentFactory::PluginName),
-                    &CreatePaymentFactory);
+    REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application, SDK::PaymentProcessor::CComponents::PaymentFactory,
+                             CPaymentFactory::PluginName),
+                    &CreatePaymentFactory, &SDK::Plugin::PluginInitializer::emptyParameterList, HumoPaymentFactory);
 } // namespace
 
 //------------------------------------------------------------------------------

@@ -2,6 +2,14 @@
 
 // Driver SDK
 
+// STL
+#include <algorithm>
+
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QSet>
+#include <Common/QtHeadersEnd.h>
+
 // SDK
 #include <SDK/Drivers/HardwareConstants.h>
 
@@ -29,12 +37,13 @@ void IntegratedDrivers::initialize(DeviceManager *aDeviceManager) {
     TModelList modelList = mDeviceManager->getModelList("");
 
     foreach (const QString &path, driverPathList) {
-        QSet<QString> models = modelList[path].toSet();
+        QSet<QString> models = QSet<QString>(modelList[path].begin(), modelList[path].end());
         QString deviceType = getDeviceType(path);
 
         if (!models.isEmpty()) {
             foreach (const QString &checkingPath, driverPathList) {
-                QSet<QString> checkingModels = modelList[checkingPath].toSet();
+                QSet<QString> checkingModels =
+                    QSet<QString>(modelList[checkingPath].begin(), modelList[checkingPath].end());
                 QSet<QString> commonModels = checkingModels & models;
                 QString checkingDeviceType = getDeviceType(checkingPath);
 
@@ -68,7 +77,7 @@ void IntegratedDrivers::initialize(DeviceManager *aDeviceManager) {
         QStringList pathParts = paths.begin()->split(".").mid(0, 3);
         QString pathPart = pathParts.join(".") + ".";
 
-        foreach (const TPaths &localPaths, pathsByModel.values().toSet()) {
+        foreach (const TPaths &localPaths, QSet<TPaths>(pathsByModel.values().begin(), pathsByModel.values().end())) {
             mData.insert(pathPart + QString::number(index++), SData(localPaths, pathsByModel.keys(localPaths)));
         }
     }
@@ -80,7 +89,7 @@ void IntegratedDrivers::checkDriverPath(QString &aDriverPath, const QVariantMap 
         return;
     }
 
-    QStringList paths = mData[aDriverPath].paths.toList();
+    QStringList paths = QList<QString>(mData[aDriverPath].paths.begin(), mData[aDriverPath].paths.end());
 
     for (int i = 0; i < paths.size(); ++i) {
         TParameterList parameters = mDeviceManager->getDriverParameters(paths[i]);
@@ -92,8 +101,8 @@ void IntegratedDrivers::checkDriverPath(QString &aDriverPath, const QVariantMap 
 
             if (parameterIt != parameters.end()) {
                 SPluginParameter &parameter = *parameterIt;
-                QList<QVariant> &possibleValueValues = parameter.possibleValues.values();
-                QList<QString> &possibleValueKeys = parameter.possibleValues.keys();
+                const QList<QVariant> &possibleValueValues = parameter.possibleValues.values();
+                const QList<QString> &possibleValueKeys = parameter.possibleValues.keys();
                 const QVariant &value = jt.value();
 
                 if (!parameter.readOnly && !possibleValueValues.contains(value) &&
@@ -173,7 +182,7 @@ void IntegratedDrivers::filterDriverList(QStringList &aDriverList) const {
         aDriverList << it.key();
     }
 
-    qSort(aDriverList);
+    std::sort(aDriverList.begin(), aDriverList.end());
 }
 
 //------------------------------------------------------------------------------

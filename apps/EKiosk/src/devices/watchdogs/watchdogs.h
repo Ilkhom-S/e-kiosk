@@ -5,7 +5,6 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
-#include <QtCore/QTextCodec>
 #include <QtCore/QTextStream>
 #include <QtCore/QThread>
 #include <QtSerialPort/QSerialPort>

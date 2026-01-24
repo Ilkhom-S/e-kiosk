@@ -90,7 +90,8 @@ QVariantMap PaymentManager::getEncashmentInfo(int aIndex) const {
         auto encashment = mEncashmentList[aIndex];
         auto info = balanceParameters(encashment.balance);
 
-        return info.unite(encashment.getFields());
+        info.insert(encashment.getFields());
+        return info;
     }
 
     return QVariantMap();
@@ -189,8 +190,8 @@ bool PaymentManager::printUnprintedReceiptsRegistry(const QSet<qint64> &aPayment
             .arg(aProvider.name);
     };
 
-    auto payments = aPayments.toList();
-    qSort(payments);
+    auto payments = QList<qint64>(aPayments.begin(), aPayments.end());
+    std::sort(payments.begin(), payments.end());
 
     foreach (qint64 id, payments) {
         QString session, amountAll;
@@ -345,7 +346,10 @@ bool PaymentManager::printEncashment(int aIndex /*= -1*/) {
     result = (mPrinterService->printReport(PPSDK::CReceiptType::Encashment, fields) != 0);
 
     // Если есть устройство диспенсер
-    if (!mCore->getDeviceService()->getConfigurations().filter(QRegularExpression(DSDK::CComponents::Dispenser)).isEmpty()) {
+    if (!mCore->getDeviceService()
+             ->getConfigurations()
+             .filter(QRegularExpression(DSDK::CComponents::Dispenser))
+             .isEmpty()) {
         mPrinterService->printReceipt(PPSDK::CReceiptType::DispenserEncashment, fields,
                                       PPSDK::CReceiptType::DispenserEncashment, DSDK::EPrintingModes::None, true);
     }
@@ -365,7 +369,10 @@ bool PaymentManager::printBalance() const {
     bool result = (mPrinterService->printReport(PPSDK::CReceiptType::Balance, fields) != 0);
 
     // Если есть устройство диспенсер
-    if (!mCore->getDeviceService()->getConfigurations().filter(QRegularExpression(DSDK::CComponents::Dispenser)).isEmpty()) {
+    if (!mCore->getDeviceService()
+             ->getConfigurations()
+             .filter(QRegularExpression(DSDK::CComponents::Dispenser))
+             .isEmpty()) {
         mPrinterService->printReceipt(PPSDK::CReceiptType::DispenserBalance, fields,
                                       PPSDK::CReceiptType::DispenserBalance, DSDK::EPrintingModes::None, true);
     }
@@ -399,7 +406,10 @@ bool PaymentManager::getPaymentsInfo(QVariantMap & /*aPaymentsInfo*/) const {
     QVariantMap result;
 
     foreach (PPSDK::IService *service, mCore->getServices()) {
-        result.unite(service->getParameters());
+        const QVariantMap &params = service->getParameters();
+        for (auto it = params.begin(); it != params.end(); ++it) {
+            result.insert(it.key(), it.value());
+        }
     }
 
     // TODO Заполнить поля

@@ -14,7 +14,7 @@ class QWebEngineView;
 #include <QtCore/QVariant>
 #include <QtCore/QVariantList>
 
-#include <QtMultimedia/QSound>
+#include <QtMultimedia/QSoundEffect>
 #include <QtSql/QSqlDatabase>
 
 namespace Lang {

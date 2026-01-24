@@ -15,7 +15,10 @@ add_subdirectory(modules/MessageQueue)
 add_subdirectory(modules/AdBackend)
 add_subdirectory(modules/KeysUtils)
 add_subdirectory(modules/Payment)
+# Hardware modules (Windows-only for now due to USB dependencies)
+# if(WIN32)
 add_subdirectory(modules/Hardware)
+# endif()
 
 # SDK modules
 add_subdirectory(modules/SDK)

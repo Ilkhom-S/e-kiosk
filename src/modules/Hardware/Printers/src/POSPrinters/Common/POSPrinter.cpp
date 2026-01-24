@@ -21,7 +21,7 @@ POSPrinters::TModelIds POSPrinters::ModelData::mModelIds;
 template class POSPrinter<TSerialPrinterBase>;
 
 //--------------------------------------------------------------------------------
-template <class T> POSPrinter<T>::POSPrinter() : mModelID(0), mPrintingStringTimeout(0) {
+template <class T> POSPrinter<T>::POSPrinter() : T(), mModelID(0), mPrintingStringTimeout(0) {
     // данные устройства
     this->mDeviceName = CPOSPrinter::DefaultName;
     this->setConfigParameter(CHardware::Printer::FeedingAmount, 4);

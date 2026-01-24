@@ -63,7 +63,7 @@ bool CashAcceptorManager::initialize(IPaymentDatabaseUtils *aDatabase) {
 
     auto pluginLoader = PluginService::instance(mApplication)->getPluginLoader();
     QStringList providers = pluginLoader->getPluginList(
-        QRegExp(QString("%1\\.%2\\..*").arg(PPSDK::Application, PPSDK::CComponents::ChargeProvider)));
+        QRegularExpression(QString("%1\\.%2\\..*").arg(PPSDK::Application, PPSDK::CComponents::ChargeProvider)));
 
     foreach (const QString &path, providers) {
         SDK::Plugin::IPlugin *plugin = pluginLoader->createPlugin(path);
@@ -163,15 +163,15 @@ QStringList CashAcceptorManager::getPaymentMethods() {
         result.insert(CCashAcceptor::CashPaymentMethod);
     }
 
-    return result.toList();
+    return QList<QString>(result.begin(), result.end());
 }
 
 //---------------------------------------------------------------------------
 void CashAcceptorManager::updateHardwareConfiguration() {
     // Получаем список всех доступных устройств.
     PPSDK::TerminalSettings *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
-    QStringList deviceList = settings->getDeviceList().filter(
-        QRegExp(QString("(%1|%2)").arg(DSDK::CComponents::BillAcceptor).arg(DSDK::CComponents::CoinAcceptor)));
+    QStringList deviceList = settings->getDeviceList().filter(QRegularExpression(
+        QString("(%1|%2)").arg(DSDK::CComponents::BillAcceptor).arg(DSDK::CComponents::CoinAcceptor)));
 
     mDeviceList.clear();
 

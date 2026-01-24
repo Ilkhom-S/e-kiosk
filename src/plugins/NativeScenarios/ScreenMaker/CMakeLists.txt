@@ -19,4 +19,5 @@ ek_add_plugin(screen_maker_scenario
     ScenarioEngine
     PluginsSDK
     PPSDK
+    NetworkTaskManager
 )

@@ -11,7 +11,7 @@
 #include <Common/QtHeadersEnd.h>
 
 // Modules
-#include <Common/Application.h>
+#include <Common/BasicApplication.h>
 #include <Common/Version.h>
 
 // SDK
@@ -22,8 +22,6 @@
 #include <WatchServiceClient/Constants.h>
 
 // Project
-#include <PhishMeWrapper.h>
-#include "UnhandledException.h"
 #include "UpdaterApp.h"
 #include <singleapplication.h>
 
@@ -58,7 +56,9 @@ namespace Command {
 UpdaterApp::UpdaterApp(int aArgc, char **aArgv)
     : BasicQtApplication<SafeQApplication>(CUpdater::Name, Humo::getVersion(), aArgc, aArgv),
       mState(CUpdaterApp::Download) {
+#ifdef Q_OS_WIN
     CatchUnhandledExceptions();
+#endif
 
     mWatchServiceClient =
         QSharedPointer<IWatchServiceClient>(::createWatchServiceClient(CWatchService::Modules::Updater));
@@ -148,12 +148,12 @@ QString UpdaterApp::getWorkingDirectory() const {
 
 //---------------------------------------------------------------------------
 QStringList configStringList(const QVariant &aValue, const char *aDelimeter = ",") {
-    switch (aValue.type()) {
-        case QVariant::StringList:
+    switch (aValue.typeId()) {
+        case QMetaType::QStringList:
             return aValue.toStringList();
 
         default:
-            return aValue.toString().split(aDelimeter, QString::SkipEmptyParts);
+            return aValue.toString().split(aDelimeter, Qt::SkipEmptyParts);
     }
 }
 
@@ -181,7 +181,7 @@ void UpdaterApp::run() {
     QString app = getArgument(Opt::Application);
     QString cmdId = getArgument(Opt::CommandID);
     QString proxy = getArgument(Opt::Proxy);
-    QStringList components = getArgument(Opt::Components).split(",", QString::SkipEmptyParts);
+    QStringList components = getArgument(Opt::Components).split(",", Qt::SkipEmptyParts);
     QString pointId = getArgument(Opt::PointID);
     QString acceptKeys = getArgument(Opt::AcceptKeys);
     QString md5 = getArgument(Opt::MD5);
@@ -359,6 +359,7 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
                 return CUpdaterApp::ExitCode::UnknownError;
             }
         } else {
+#ifdef Q_OS_WIN
             QString commanLine = QDir::toNativeSeparators(qApp->applicationFilePath());
             QString arguments = QString("--command bits --workdir %1").arg(mUpdater->getWorkingDir());
             QString workDir = QDir::toNativeSeparators(mUpdater->getWorkingDir());
@@ -380,6 +381,7 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
 
                 return CUpdaterApp::ExitCode::UnknownError;
             }
+#endif
         }
 
         return CUpdaterApp::ExitCode::NoError;
@@ -390,7 +392,7 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
 
         // Restart for download w/o bits
         parameters << "--no-bits" << "true";
-
+#ifdef Q_OS_WIN
         QString commanLine = QDir::toNativeSeparators(qApp->applicationFilePath());
         QString arguments = parameters.join(" ");
         QString workDir = QDir::toNativeSeparators(mUpdater->getWorkingDir());
@@ -408,7 +410,7 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
                                                  .arg(commanLine)
                                                  .arg(QString::fromLocal8Bit(ex.what())));
         }
-
+#endif
         return CUpdaterApp::ExitCode::NetworkError;
     }
 

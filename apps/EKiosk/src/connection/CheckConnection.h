@@ -6,7 +6,6 @@
 #include <QtCore/QThread>
 #include <QtCore/QTimer>
 #include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkConfigurationManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
 #include <Common/QtHeadersEnd.h>

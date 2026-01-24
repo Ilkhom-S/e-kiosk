@@ -28,7 +28,7 @@ template class PortDeviceBase<PollingDeviceBase<ProtoHID>>;
 //--------------------------------------------------------------------------------
 template <class T>
 PortDeviceBase<T>::PortDeviceBase() : mIOPort(nullptr), mIOMessageLogging(ELoggingType::None), mControlRemoving(false) {
-    mInitializeRepeatCount = 2;
+    this->mInitializeRepeatCount = 2;
 }
 
 //--------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ template <class T> void PortDeviceBase<T>::addPortData() {
     if (portType == EPortTypes::COMEmulator)
         port = "COM Emulator";
 
-    setDeviceParameter(CDeviceData::Port, port);
+    this->setDeviceParameter(CDeviceData::Port, port);
 }
 
 //--------------------------------------------------------------------------------
@@ -83,7 +83,8 @@ template <class T> void PortDeviceBase<T>::setDeviceConfiguration(const QVariant
 
     if (mIOPort) {
         QVariantMap configuration;
-        TVoidMethod forwardingTask = this->isAutoDetecting() ? TVoidMethod() : std::bind(&DeviceBase::initialize, this);
+        TVoidMethod forwardingTask =
+            this->isAutoDetecting() ? TVoidMethod() : std::bind(&PortDeviceBase::initialize, this);
         configuration.insert(CHardware::Port::OpeningContext, QVariant::fromValue(forwardingTask));
 
         if (aConfiguration.contains(CHardwareSDK::SearchingType)) {
@@ -95,20 +96,18 @@ template <class T> void PortDeviceBase<T>::setDeviceConfiguration(const QVariant
 }
 
 //--------------------------------------------------------------------------------
-template <class T> TResult PortDeviceBase<T>::processCommand(char aCommand, QByteArray *aAnswer = nullptr) {
+template <class T> TResult PortDeviceBase<T>::processCommand(char aCommand, QByteArray *aAnswer) {
+    return processCommand(aCommand, QByteArray(), aAnswer);
+}
+
+//--------------------------------------------------------------------------------
+template <class T> TResult PortDeviceBase<T>::processCommand(const QByteArray &aCommand, QByteArray *aAnswer) {
     return processCommand(aCommand, QByteArray(), aAnswer);
 }
 
 //--------------------------------------------------------------------------------
 template <class T>
-TResult PortDeviceBase<T>::processCommand(const QByteArray &aCommand, QByteArray *aAnswer = nullptr) {
-    return processCommand(aCommand, QByteArray(), aAnswer);
-}
-
-//--------------------------------------------------------------------------------
-template <class T>
-TResult PortDeviceBase<T>::processCommand(char aCommand, const QByteArray &aCommandData,
-                                          QByteArray *aAnswer = nullptr) {
+TResult PortDeviceBase<T>::processCommand(char aCommand, const QByteArray &aCommandData, QByteArray *aAnswer) {
     return processCommand(QByteArray(1, aCommand), aCommandData, aAnswer);
 }
 
@@ -151,7 +150,7 @@ template <class T> bool PortDeviceBase<T>::checkError(int aError, TBoolMethod aC
 
 //--------------------------------------------------------------------------------
 template <class T> bool PortDeviceBase<T>::checkExistence() {
-    MutexLocker locker(&mExternalMutex);
+    MutexLocker locker(&this->mExternalMutex);
 
     if (!this->checkConnectionAbility()) {
         return false;
@@ -252,7 +251,7 @@ template <class T> bool PortDeviceBase<T>::canApplyStatusBuffer() {
 //--------------------------------------------------------------------------------
 template <class T> void PortDeviceBase<T>::doPoll(TStatusCodes &aStatusCodes) {
     {
-        MutexLocker locker(&mExternalMutex);
+        MutexLocker locker(&this->mExternalMutex);
 
         if (this->mLogDate.day() != QDate::currentDate().day()) {
             mIOPort->initialize();
@@ -264,9 +263,10 @@ template <class T> void PortDeviceBase<T>::doPoll(TStatusCodes &aStatusCodes) {
 
 //--------------------------------------------------------------------------------
 template <class T> EWarningLevel::Enum PortDeviceBase<T>::getWarningLevel(const TStatusCollection &aStatusCollection) {
-    TStatusCollection portStatusCollection = this->getStatusCollection(mIOPortStatusCodes, &mIOPortStatusCodesSpecification);
-    EWarningLevel::Enum portWarningLevel = DeviceBase::getWarningLevel(portStatusCollection);
-    EWarningLevel::Enum deviceWarningLevel = DeviceBase::getWarningLevel(aStatusCollection);
+    TStatusCollection portStatusCollection =
+        this->getStatusCollection(mIOPortStatusCodes, &mIOPortStatusCodesSpecification);
+    EWarningLevel::Enum portWarningLevel = this->getWarningLevel(portStatusCollection);
+    EWarningLevel::Enum deviceWarningLevel = this->getWarningLevel(aStatusCollection);
 
     return qMax(deviceWarningLevel, portWarningLevel);
 }

@@ -217,7 +217,7 @@ void PaymentServiceWindow::onUpdatePayments(const QString &aMessage) {
 
     aMessage.isEmpty() ? GUI::MessageBox::wait(tr("#updating_payment_data")) : GUI::MessageBox::wait(aMessage);
 
-    mPaymentTaskWatcher.setFuture(QtConcurrent::run(this, &PaymentServiceWindow::loadPayments));
+    mPaymentTaskWatcher.setFuture(QtConcurrent::run([this]() { loadPayments(); }));
 }
 
 //----------------------------------------------------------------------------
@@ -736,7 +736,7 @@ void PaymentProxyModel::enableProcessedPaymentsFilter() {
 //----------------------------------------------------------------------------
 bool PaymentProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const {
     QAbstractItemModel *sourceModel = this->sourceModel();
-    QRegExp regExp = filterRegExp();
+    QRegularExpression regExp = filterRegularExpression();
 
     QModelIndex providerFieldsIndex = sourceModel->index(sourceRow, PaymentTableModel::ProviderFields, sourceParent);
     QString providerFieldsValue = sourceModel->data(providerFieldsIndex, PaymentTableModel::DataRole).toString();

@@ -5,7 +5,7 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QFile>
 #include <QtCore/QMutexLocker>
-#include <QtCore/QTextCodec>
+#include <QtCore/QStringDecoder>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
@@ -42,10 +42,9 @@ namespace {
     }
 
     /// Регистрация плагина в фабрике.
-    REGISTER_PLUGIN(SDK::Plugin::makePath(SDK::PaymentProcessor::Application,
-                                          SDK::PaymentProcessor::CComponents::PaymentFactory,
-                                          CPaymentFactory::PluginName),
-                    &CreatePaymentFactory);
+    REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application, SDK::PaymentProcessor::CComponents::PaymentFactory,
+                             CPaymentFactory::PluginName),
+                    &CreatePaymentFactory, &SDK::Plugin::PluginInitializer::emptyParameterList, PaymentFactory);
 } // namespace
 
 //---------------------------------------------------------------------------
@@ -103,8 +102,8 @@ PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider
                        .arg(getAdClientInstance(mFactory)->getContent(CPaymentFactory::ContentName))
                        .arg(CPaymentFactory::ContentName));
         if (json.open(QIODevice::ReadOnly)) {
-            provider.fields +=
-                PPSDK::SProvider::json2Fields(QTextCodec::codecForName("UTF-8")->toUnicode(json.readAll()));
+            QStringDecoder decoder("UTF-8");
+            provider.fields += PPSDK::SProvider::json2Fields(decoder(json.readAll()));
         } else {
             // TODO
             //  Поля не прочитали, провайдера не обновили

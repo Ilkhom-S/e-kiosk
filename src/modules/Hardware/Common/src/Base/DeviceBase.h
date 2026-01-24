@@ -35,13 +35,14 @@ namespace CDevice {
 
 //--------------------------------------------------------------------------------
 #define START_IN_WORKING_THREAD(aFunction)                                                                             \
-    if ((!mOperatorPresence || (getConfigParameter(CHardware::CallingType) != CHardware::CallingTypes::Internal)) &&   \
-        !isWorkingThread()) {                                                                                          \
-        if (mThread.isRunning()) {                                                                                     \
+    if ((!this->mOperatorPresence ||                                                                                   \
+         (this->getConfigParameter(CHardware::CallingType) != CHardware::CallingTypes::Internal)) &&                   \
+        !this->isWorkingThread()) {                                                                                    \
+        if (this->mThread.isRunning()) {                                                                               \
             QMetaObject::invokeMethod(this, #aFunction, Qt::QueuedConnection);                                         \
         } else {                                                                                                       \
-            connect(&mThread, SIGNAL(started()), this, SLOT(aFunction()), Qt::UniqueConnection);                       \
-            mThread.start();                                                                                           \
+            this->connect(&this->mThread, SIGNAL(started()), this, SLOT(aFunction()), Qt::UniqueConnection);           \
+            this->mThread.start();                                                                                     \
         }                                                                                                              \
         return;                                                                                                        \
     }

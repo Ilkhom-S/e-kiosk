@@ -1,6 +1,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QDir>
+#include <QtCore/QElapsedTimer>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/qendian.h>
@@ -1317,7 +1318,7 @@ QByteArray CCNetSm::firmwareGet(QString version) {
             if (hexStr.startsWith("0x", Qt::CaseInsensitive)) {
 
                 bool ok;
-                uchar byte = hexStr.midRef(2).toUInt(&ok, 16);
+                uchar byte = hexStr.mid(2).toUInt(&ok, 16);
 
                 if (ok) {
                     data.append(byte);

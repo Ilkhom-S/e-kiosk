@@ -1,10 +1,14 @@
 /* @file Реализация запроса на проверку номера. */
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QRegularExpression>
+#include <Common/QtHeadersEnd.h>
+
 // Project
 #include "Payment.h"
 #include "PaymentCheckRequest.h"
 
-//---------------------------------------------------------------------------
 namespace CPayment {
     const char DefaultMinLimit[] = "200";
 } // namespace CPayment
@@ -29,10 +33,11 @@ PaymentCheckRequest::PaymentCheckRequest(Payment *aPayment, bool aFake)
             // Если получается определить минимальный лимит оператора, используем его.
             // Иначе берём минимульную сумму CPayment::DefaultMinLimit.
             QRegularExpression macroPattern("\\{(.+)\\}");
-            ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
-            while (macroPattern.match(limit).capturedStart() != -1) {
-                limit.replace(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), mPayment->getParameter(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1)).value.toString());
+            QRegularExpressionMatch match = macroPattern.match(limit);
+            while (match.capturedStart() != -1) {
+                limit.replace(match.captured(0), mPayment->getParameter(match.captured(1)).value.toString());
+                match = macroPattern.match(limit);
             }
 
             limit.toDouble(&convertOk);

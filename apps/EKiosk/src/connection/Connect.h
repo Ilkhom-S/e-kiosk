@@ -7,9 +7,25 @@
 
 // Project
 #include "CheckConnection.h"
-#include "RasConnection.h"
 
+#ifdef Q_OS_WIN
+#include "RasConnection.h"
+#endif
+
+#ifdef Q_OS_WIN
 class RasConnection;
+#endif
+
+namespace Connection {
+    enum conSate {
+        conStateUp = 0,
+        conStateDoun = 1,
+        conStateUpping = 2,
+        conStateError = 3,
+        SendingSMS = 4,
+        GetSimData = 5
+    };
+} // namespace Connection
 
 class ConnectionPart : public QObject {
     Q_OBJECT
@@ -37,7 +53,9 @@ class ConnectionPart : public QObject {
     QTimer *daemonTimer;
 
   private:
+#ifdef Q_OS_WIN
     RasConnection *rasConn;
+#endif
     CheckConnection *checkConn;
 
     QString connectionName;

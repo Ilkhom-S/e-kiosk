@@ -255,7 +255,7 @@ class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, pr
     QList<PPSDK::IPaymentFactory *> mFactories;
     QMap<QString, PPSDK::IPaymentFactory *> mFactoryByType;
 
-    QMutex mPaymentLock;
+    QRecursiveMutex mPaymentLock;
 
     /// Активный платёж.
     std::shared_ptr<PPSDK::IPayment> mActivePayment;
@@ -268,7 +268,7 @@ class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, pr
     QThread mPaymentThread;
     QTimer mPaymentTimer;
 
-    QMutex mCommandMutex;
+    QRecursiveMutex mCommandMutex;
 
     /// Порядковый номер команды на изменение/удаление платежа.
     int mCommandIndex;
@@ -283,7 +283,7 @@ class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, pr
     QDateTime mLastBackupDate;
 
     /// ID платежа, проходящего в данный момент обработку в оффлайне.
-    QMutex mOfflinePaymentLock;
+    QRecursiveMutex mOfflinePaymentLock;
     qint64 mOfflinePaymentID;
     std::shared_ptr<PPSDK::IPayment> mOfflinePayment;
 };

@@ -12,7 +12,7 @@
 #include <QtCore/QTimer>
 #include <Common/QtHeadersEnd.h>
 
-enum LogType { Query = 0, Response = 1 };
+enum LoggerMessageType { Query = 0, Response = 1 };
 
 class LoggerValidator : public QThread {
     Q_OBJECT
@@ -53,11 +53,11 @@ class LoggerValidator : public QThread {
 
         QString stateInfo = "";
         switch (state) {
-            case LogType::Query:
+            case LoggerMessageType::Query:
                 stateInfo = "  запрос  ";
                 break;
 
-            case LogType::Response:
+            case LoggerMessageType::Response:
                 stateInfo = "  ответ   ";
                 break;
         }
@@ -114,7 +114,6 @@ class LoggerValidator : public QThread {
             // Переводим в строку список
             QString logLiens = lstLoging.join("\n");
             QTextStream outExp(&fileLogLocal);
-            outExp.setCodec("UTF-8");
             outExp << logLiens << "\n";
 
             fileLogLocal.close();

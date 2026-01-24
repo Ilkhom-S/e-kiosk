@@ -1,5 +1,7 @@
 // Platform
+#ifdef Q_OS_WIN32
 #include <windows.h>
+#endif
 
 // Qt
 #include <Common/QtHeadersBegin.h>
@@ -398,8 +400,8 @@ void ClassPrinter::winPrint(QString text) {
         printer.setPrinterName(winPrinterName);
 
         // Устанавливаем параметры
-        printer.setPaperSize(QSizeF(width, height), QPrinter::Millimeter);
-        printer.setPageMargins(left, top, right, bottom, QPrinter::Millimeter);
+        printer.setPageSize(QPageSize(QSizeF(width, height), QPageSize::Millimeter));
+        printer.setPageMargins(QMarginsF(left, top, right, bottom), QPageSize::Millimeter);
 
         QFont font("Tahoma", this->WpFont, QFont::Normal);
 
@@ -769,6 +771,7 @@ void ClassPrinter::closeThis() {
     }
 }
 
+#ifdef Q_OS_WIN32
 void ClassPrinter::clearListPrinterData(QString name) {
     QString prtNameIn = name;
 
@@ -949,3 +952,4 @@ bool IsPrinterError(HANDLE hPrinter) {
     free(pJobs);
     return false;
 }
+#endif // Q_OS_WIN32

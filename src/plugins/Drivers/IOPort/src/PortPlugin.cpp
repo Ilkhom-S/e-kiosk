@@ -1,12 +1,12 @@
 /* @file Плагин с драйверами портов. */
 
-#include "Hardware/Plugins/CommonParameters.h"
+// System
 #include "Hardware/IOPorts/AsyncSerialPort.h"
-#include "Hardware/IOPorts/USBPort.h"
 #include "Hardware/IOPorts/LibUSBPort.h"
 #include "Hardware/IOPorts/TCPPort.h"
+#include "Hardware/IOPorts/USBPort.h"
+#include "Hardware/Plugins/CommonParameters.h"
 
-//------------------------------------------------------------------------
 namespace PortParameterTranslations {
     static const char *Name = QT_TRANSLATE_NOOP("PortParameters", "PortParameters#name");
 
@@ -35,6 +35,7 @@ template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QStri
 }
 
 //------------------------------------------------------------------------------
+#ifdef Q_OS_WIN32
 template <> IPlugin *CreatePlugin<USBPort>(IEnvironment *aEnvironment, const QString &aInstancePath) {
     return new DevicePluginBase<USBPort>("USB port", aEnvironment, aInstancePath);
 }
@@ -43,6 +44,7 @@ template <> IPlugin *CreatePlugin<USBPort>(IEnvironment *aEnvironment, const QSt
 template <> IPlugin *CreatePlugin<TCPPort>(IEnvironment *aEnvironment, const QString &aInstancePath) {
     return new DevicePluginBase<TCPPort>("TCP port", aEnvironment, aInstancePath);
 }
+#endif
 
 //------------------------------------------------------------------------------
 TParameterList TCPParameters() {
@@ -55,8 +57,7 @@ TParameterList TCPParameters() {
     return TParameterList() << SPluginParameter(CHardwareSDK::Port::TCP::IP, SPluginParameter::Text, false,
                                                 PortPT::TCP::Address, QString(), "192.168.137.015", addressMask)
                             << SPluginParameter(CHardwareSDK::Port::TCP::Number, SPluginParameter::Text, false,
-                                                PortPT::TCP::Number, QString(), "07778", portNumberMask)
-                            << setModifiedKeys(CHardwareSDK::SystemName, CHardwareSDK::Port::TCP::IP);
+                                                PortPT::TCP::Number, QString(), "07778", portNumberMask);
 }
 
 //------------------------------------------------------------------------------
@@ -82,9 +83,11 @@ TParameterList COMParameters() {
 //------------------------------------------------------------------------------
 BEGIN_REGISTER_PLUGIN
 COMMON_DRIVER(AsyncSerialPort, &COMParameters)
+#ifdef Q_OS_WIN32
 COMMON_DRIVER(USBPort, &PluginInitializer::emptyParameterList)
 // COMMON_DRIVER(LibUSBPort, &PluginInitializer::emptyParameterList)
 COMMON_DRIVER(TCPPort, &TCPParameters)
+#endif
 END_REGISTER_PLUGIN
 
 //------------------------------------------------------------------------------

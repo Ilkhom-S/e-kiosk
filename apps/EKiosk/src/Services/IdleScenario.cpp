@@ -1,27 +1,31 @@
 /* @file Сценарий простоя. */
 
 // stl
+
+// STL
 #include <algorithm>
 
-// qt
+// Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QMetaEnum>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
-#include <SDK/Drivers/DeviceTypes.h>
 #include <SDK/Drivers/CashAcceptor/CashAcceptorStatus.h>
-#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
+#include <SDK/Drivers/DeviceTypes.h>
 #include <SDK/PaymentProcessor/Core/DatabaseConstants.h>
+#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
-// Proj
+// System
 #include "System/IApplication.h"
+
+// Project
 #include "EventService.h"
-#include "IdleScenario.h"
-#include "TerminalService.h"
 #include "GUIService.h"
+#include "IdleScenario.h"
 #include "SettingsService.h"
+#include "TerminalService.h"
 
 namespace PPSDK = SDK::PaymentProcessor;
 
@@ -190,7 +194,8 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
                }) == fullDeviceList.end();
     };
 
-    bool hasValidatorError = cashDeviceNames.toSet() == faultyCashDeviceNames.toSet();
+    bool hasValidatorError = QSet<QString>(cashDeviceNames.begin(), cashDeviceNames.end()) ==
+                             QSet<QString>(faultyCashDeviceNames.begin(), faultyCashDeviceNames.end());
 
     auto findFaultyDeviceType = [&faultyDeviceNames](const QString &aDeviceType) -> bool {
         return std::find_if(faultyDeviceNames.begin(), faultyDeviceNames.end(),

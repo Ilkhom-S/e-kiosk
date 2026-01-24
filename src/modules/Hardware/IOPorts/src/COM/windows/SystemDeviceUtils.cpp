@@ -9,7 +9,6 @@
 // Project
 #include "SystemDeviceUtils.h"
 
-//--------------------------------------------------------------------------------
 QStringList SystemDeviceUtils::enumerateCOMPorts() {
     TCHAR buffer[USHRT_MAX];
     memset(buffer, NULL, sizeof(buffer));
@@ -186,7 +185,7 @@ QString SystemDeviceUtils::getRegKeyValue(HKEY key, LPCTSTR aProperty) {
     QString value;
 
     if (RegQueryValueEx(key, aProperty, NULL, NULL, buffer, &size) == ERROR_SUCCESS) {
-        value = QString::fromUtf16((ushort *)(buffer));
+        value = QString::fromUtf16(reinterpret_cast<const char16_t*>(buffer));
     }
 
     delete[] buffer;

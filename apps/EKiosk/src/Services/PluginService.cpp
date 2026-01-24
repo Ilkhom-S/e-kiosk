@@ -59,7 +59,7 @@ bool PluginService::initialize() {
 
 #ifndef _DEBUG
     // Запустим фоновую проверку плагинов на наличие цифровой подписи
-    mPluginVerifierSynchronizer.addFuture(QtConcurrent::run(this, &PluginService::verifyPlugins));
+    mPluginVerifierSynchronizer.addFuture(QtConcurrent::run([this]() { return verifyPlugins(); }));
 #endif
 
     return true;
@@ -82,11 +82,15 @@ bool PluginService::canShutdown() {
 //------------------------------------------------------------------------------
 bool PluginService::shutdown() {
     // Не выгружаем библиотеки на выходе из ПО в процессе перезагрузки системы. #48972
+#ifdef Q_OS_WIN
     if (GetSystemMetrics(SM_SHUTTINGDOWN) == 0) {
+#endif
         toLog(LogLevel::Debug, "Destroy plugins loader...");
 
         delete static_cast<SDK::Plugin::PluginLoader *>(mPluginLoader);
+#ifdef Q_OS_WIN
     }
+#endif
 
     mPluginLoader = nullptr;
 
@@ -127,9 +131,13 @@ QString PluginService::getState() const {
     signedKeys.removeDuplicates();
 
     foreach (QString signerName, signedKeys) {
-        result << QString("Signed by %1 : {%2}")
-                      .arg(signerName)
-                      .arg(QStringList(mSignedPlugins.values(signerName)).join(";"));
+        QStringList pluginsForSigner;
+        for (auto it = mSignedPlugins.constBegin(); it != mSignedPlugins.constEnd(); ++it) {
+            if (it.key() == signerName) {
+                pluginsForSigner << it.value();
+            }
+        }
+        result << QString("Signed by %1 : {%2}").arg(signerName).arg(pluginsForSigner.join(";"));
     }
 
     return result.join(";");

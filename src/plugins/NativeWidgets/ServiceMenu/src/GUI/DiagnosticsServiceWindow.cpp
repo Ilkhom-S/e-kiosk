@@ -122,7 +122,7 @@ void DiagnosticsServiceWindow::updateInfoPanel() {
     QVariantMap result;
 
     foreach (SDK::PaymentProcessor::IService *service, mBackend->getCore()->getServices()) {
-        result.unite(service->getParameters());
+        result.insert(service->getParameters());
     }
 
     lbSimBalance->setText(result[SDK::PaymentProcessor::CServiceParameters::Networking::SimBalance].toString());
@@ -170,8 +170,10 @@ void DiagnosticsServiceWindow::resetParameter(const QString &aParameterName) {
 void DiagnosticsServiceWindow::onClickedTestServer() {
     btnTestServer->setEnabled(false);
     lbNetworkStatus->setText(tr("#connection_checking_status"));
-    mTaskWatcher.setFuture(
-        QtConcurrent::run(mBackend->getNetworkManager(), &NetworkManager::testConnection, QString()));
+    mTaskWatcher.setFuture(QtConcurrent::run([this]() {
+        QString errorMessage;
+        return mBackend->getNetworkManager()->testConnection(errorMessage);
+    }));
 }
 
 //---------------------------------------------------------------------------

@@ -6,7 +6,9 @@
 #include <Common/QtHeadersEnd.h>
 
 // SDK
+#include <SDK/PaymentProcessor/Components.h>
 #include <SDK/Plugins/IPluginEnvironment.h>
+#include <SDK/Plugins/PluginInitializer.h>
 
 // Project
 #include "TemplatePlugin.h"
@@ -225,5 +227,5 @@ namespace {
 
 /// Регистрация плагина в фабрике.
 /// Плагин регистрируется с указанием пути, конструктора и параметров.
-REGISTER_PLUGIN_WITH_PARAMETERS(SDK::Plugin::makePath(SDK::PaymentProcessor::Application, "Template", "TemplatePlugin"),
-                                &CreatePlugin, &EnumParameters);
+REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application, "Template", "TemplatePlugin"),
+                                &CreatePlugin, &EnumParameters, TemplatePlugin);

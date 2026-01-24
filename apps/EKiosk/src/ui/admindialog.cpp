@@ -3,7 +3,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QEvent>
 #include <QtCore/QFile>
-#include <QtCore/QTextCodec>
+#include <QtCore5Compat/QTextCodec>
 #include <QtGui/QCloseEvent>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QScrollBar>

@@ -33,10 +33,10 @@ class Component : public QObject {
     virtual TFileList getFiles() const;
 
     /// Выполнить действие.
-    virtual void applyPostActions(const QString &aWorkingDir) throw(std::exception) = 0;
+    virtual void applyPostActions(const QString &aWorkingDir) noexcept(false) = 0;
 
     /// Произвести установку файлов aFiles в каталог aDestination.
-    virtual void deploy(const TFileList &aFiles, const QString &aDestination) throw(std::exception) = 0;
+    virtual void deploy(const TFileList &aFiles, const QString &aDestination) noexcept(false) = 0;
 
     /// Производит закачку компонента, находящего по aBaseURL во временную папку.
     virtual QList<NetworkTask *> download(const QString &aBaseURL, const TFileList &aExceptions) = 0;

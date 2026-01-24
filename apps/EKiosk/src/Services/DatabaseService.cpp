@@ -3,6 +3,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QFile>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // Modules
@@ -85,10 +86,8 @@ bool DatabaseService::initialize() {
             errorsList.clear();
 
             // Проверка на ошибку полностью испорченного формата базы
-            integrityFailed =
-                !mDatabase->checkIntegrity(errorsList) ||
-                errorsList.filter(QRegularExpression("*malformed*", Qt::CaseInsensitive, QRegExp::Wildcard)).size() ||
-                !mDbUtils->initialize();
+            integrityFailed = !mDatabase->checkIntegrity(errorsList) ||
+                              errorsList.filter(QRegularExpression("*malformed*")).size() || !mDbUtils->initialize();
 
             if (integrityFailed) {
                 LOG(mApplication->getLog(), LogLevel::Error,

@@ -43,7 +43,7 @@ void TokenWindow::initialize(const CCrypt::TokenStatus &aStatus) {
 
 //------------------------------------------------------------------------
 void TokenWindow::doFormat() {
-    mFormatTaskWatcher.setFuture(QtConcurrent::run(mBackend->getKeysManager(), &KeysManager::formatToken));
+    mFormatTaskWatcher.setFuture(QtConcurrent::run([this]() { return mBackend->getKeysManager()->formatToken(); }));
 }
 
 //------------------------------------------------------------------------

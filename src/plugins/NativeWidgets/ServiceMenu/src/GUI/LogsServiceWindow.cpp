@@ -82,9 +82,8 @@ void LogsServiceWindow::onShowLogButtonClicked() {
 
         if (logFile.open(QIODevice::ReadOnly)) {
             QTextStream stream(&logFile);
-            stream.setCodec("utf-8");
 
-            QStringList splitted = stream.readAll().split("\r\n", QString::SkipEmptyParts);
+            QStringList splitted = stream.readAll().split("\r\n", Qt::SkipEmptyParts);
 
             mModel.setStringList(splitted);
             lvLog->scrollToTop();

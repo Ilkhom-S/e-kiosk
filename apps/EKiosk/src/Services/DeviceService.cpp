@@ -69,7 +69,7 @@ bool DeviceService::Status::isMatched(SDK::Driver::EWarningLevel::Enum aLevel) c
 
 //------------------------------------------------------------------------------
 DeviceService::DeviceService(IApplication *aApplication)
-    : mDeviceManager(nullptr), mAccessMutex(QMutex::Recursive), mApplication(aApplication),
+    : mDeviceManager(nullptr), mAccessMutex(QRecursiveMutex()), mApplication(aApplication),
       mLog(aApplication->getLog()), mDatabaseUtils(nullptr) {
     connect(&mDetectionResult, SIGNAL(finished()), this, SLOT(onDetectionFinished()));
 
@@ -177,7 +177,7 @@ DeviceService::~DeviceService() {
 void DeviceService::detect(const QString &aFilter) {
     mAccessMutex.lock();
 
-    mDetectionResult.setFuture(QtConcurrent::run(this, &DeviceService::doDetect, aFilter));
+    mDetectionResult.setFuture(QtConcurrent::run([this, aFilter]() { doDetect(aFilter); }));
 }
 
 //------------------------------------------------------------------------------
@@ -471,7 +471,7 @@ SDK::Plugin::TParameterList DeviceService::getDriverParameters(const QString &aD
 //------------------------------------------------------------------------------
 QStringList DeviceService::getDriverList() const {
     // Выдаем список драйверов всех устройств, кроме портов.
-    QStringList result = mDeviceManager->getDriverList().filter(QRegExp(".+\\.Driver\\.(?!IOPort)"));
+    QStringList result = mDeviceManager->getDriverList().filter(QRegularExpression(".+\\.Driver\\.(?!IOPort)"));
     mIntegratedDrivers.filterDriverList(result);
 
     return result;

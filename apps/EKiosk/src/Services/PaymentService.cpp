@@ -78,8 +78,8 @@ PaymentService *PaymentService::instance(IApplication *aApplication) {
 //---------------------------------------------------------------------------
 PaymentService::PaymentService(IApplication *aApplication)
     : ILogable("Payments"), mApplication(aApplication), mEnabled(false), mDBUtils(nullptr), mCommandIndex(0),
-      mPaymentLock(QMutex::Recursive), mOfflinePaymentID(-1), mOfflinePaymentLock(QMutex::Recursive),
-      mCommandMutex(QMutex::Recursive) {
+      mPaymentLock(QRecursiveMutex()), mOfflinePaymentID(-1), mOfflinePaymentLock(QRecursiveMutex()),
+      mCommandMutex(QRecursiveMutex()) {
     qRegisterMetaType<EPaymentCommandResult::Enum>("EPaymentCommandResult");
 
     mPaymentThread.setObjectName(CPaymentService::ThreadName);
@@ -111,7 +111,7 @@ bool PaymentService::initialize() {
 
     QStringList factories = PluginService::instance(mApplication)
                                 ->getPluginLoader()
-                                ->getPluginList(QRegExp("PaymentProcessor\\.PaymentFactory\\..*"));
+                                ->getPluginList(QRegularExpression("PaymentProcessor\\.PaymentFactory\\..*"));
 
     foreach (const QString &path, factories) {
         SDK::Plugin::IPlugin *plugin = PluginService::instance(mApplication)->getPluginLoader()->createPlugin(path);
@@ -135,7 +135,9 @@ bool PaymentService::initialize() {
     auto dealerSettings = SettingsService::instance(mApplication)->getAdapter<SDK::PaymentProcessor::DealerSettings>();
 
     foreach (const QString &processingType,
-             dealerSettings->getProviderProcessingTypes().toSet().subtract(mFactoryByType.keys().toSet())) {
+             QSet<QString>(dealerSettings->getProviderProcessingTypes().begin(),
+                           dealerSettings->getProviderProcessingTypes().end())
+                 .subtract(QSet<QString>(mFactoryByType.keys().begin(), mFactoryByType.keys().end()))) {
         // И удаляем их
         foreach (qint64 providerId, dealerSettings->getProviders(processingType)) {
             toLog(LogLevel::Error,
@@ -703,7 +705,7 @@ void PaymentService::processPaymentStep(qint64 aPayment, SDK::PaymentProcessor::
         }
     } else {
         mActivePaymentSynchronizer.addFuture(
-            QtConcurrent::run(this, &PaymentService::processPaymentStep, aPayment, aStep, true));
+            QtConcurrent::run([this, aPayment, aStep]() { processPaymentStep(aPayment, aStep, true); }));
     }
 }
 
@@ -1345,10 +1347,9 @@ bool PaymentService::setChangeAmount(double aChange, std::shared_ptr<PPSDK::IPay
         QStringList paramValues(
             aPaymentSource->getParameter(PPSDK::CPayment::Parameters::InitialSession).value.toString());
 
-        foreach (auto param,
-                 aPaymentSource->getParameter(PPSDK::CPayment::Parameters::ProviderFields)
-                     .value.toString()
-                     .split(PPSDK::CPayment::Parameters::ProviderFieldsDelimiter, QString::SkipEmptyParts)) {
+        foreach (auto param, aPaymentSource->getParameter(PPSDK::CPayment::Parameters::ProviderFields)
+                                 .value.toString()
+                                 .split(PPSDK::CPayment::Parameters::ProviderFieldsDelimiter, Qt::SkipEmptyParts)) {
             paramValues << aPaymentSource->getParameter(param).value.toString();
         }
 

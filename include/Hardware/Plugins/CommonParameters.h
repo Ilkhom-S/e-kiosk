@@ -2,6 +2,9 @@
 
 #pragma once
 
+// STL
+#include <algorithm>
+
 // SDK
 #include <SDK/Plugins/PluginParameters.h>
 #include <SDK/Plugins/PluginInitializer.h>
@@ -30,24 +33,24 @@ namespace CommonPluginParameterTranslations {
 namespace CPPT = CommonPluginParameterTranslations;
 namespace DSDKIT = SDK::Driver::CInteractionTypes;
 
+/// Создать путь драйвера.
+template <class T> inline QString makeDriverPath() {
+    QString result = makePath(SDK::Driver::Application, SDK::Driver::CComponents::Driver, T::getDeviceType(),
+                              T::getInteractionType());
+
+    QString series = T::getSeries();
+    QString subSeries = T::getSubSeries();
+
+    if (!series.isEmpty())
+        result += "." + series;
+    if (!subSeries.isEmpty())
+        result += "." + subSeries;
+
+    return result;
+}
+
 namespace SDK {
     namespace Plugin {
-
-        /// Создать путь драйвера.
-        template <class T> inline QString makeDriverPath() {
-            QString result = makePath(SDK::Driver::Application, SDK::Driver::CComponents::Driver, T::getDeviceType(),
-                                      T::getInteractionType());
-
-            QString series = T::getSeries();
-            QString subSeries = T::getSubSeries();
-
-            if (!series.isEmpty())
-                result += "." + series;
-            if (!subSeries.isEmpty())
-                result += "." + subSeries;
-
-            return result;
-        }
 
         //------------------------------------------------------------------------------
         template <class T> inline QStringList sortParameters(QList<T> (*aGetParameters)()) {
@@ -59,7 +62,7 @@ namespace SDK {
             }
 
             result.removeDuplicates();
-            qSort(result);
+            std::sort(result.begin(), result.end());
 
             if (result.isEmpty()) {
                 result << "";
@@ -103,9 +106,39 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        /// Создать список параметров с именем модели.
-        template <class T> inline TParameterList createNamedList(const QStringList &aModels, const QString &aDefault) {
-            return SNamedList<T, T::TIType>().create(aModels, aDefault);
+        /// Модифицированные значения параметров.
+        inline SPluginParameter setModifiedValues(const QString &aParameterValue, const QVariantMap &aPossibleValues) {
+            return SPluginParameter(CPlugin::ModifiedValues, SPluginParameter::Set, false, aParameterValue, QString(),
+                                    QString(), aPossibleValues, true);
+        }
+
+        //------------------------------------------------------------------------------
+        /// Модифицированные значения параметров.
+        inline SPluginParameter setModifiedValues(const QString &aParameterValue, const QString &aValueFrom,
+                                                  const QString &aValueTo) {
+            QVariantMap possibleValues;
+            possibleValues.insert(aValueFrom, aValueTo);
+
+            return SPluginParameter(CPlugin::ModifiedValues, SPluginParameter::Set, false, aParameterValue, QString(),
+                                    QString(), possibleValues, true);
+        }
+
+        //------------------------------------------------------------------------------
+        /// Приоритет при автопоиске.
+        inline SPluginParameter setNormalPriority() {
+            QVariantMap possibleValues;
+            possibleValues.insert(CHardwareSDK::DetectingPriority, SDK::Driver::EDetectingPriority::Normal);
+
+            return SPluginParameter(CHardwareSDK::DetectingPriority, SPluginParameter::Text, false, QString(),
+                                    QString(), SDK::Driver::EDetectingPriority::Normal, possibleValues, true);
+        }
+
+        //------------------------------------------------------------------------------
+        /// Множественный тип атвопоиска устройства.
+        inline SPluginParameter setMultipleExistence() {
+            return SPluginParameter(CHardwareSDK::Existence, false, QString(), QString(),
+                                    CHardwareSDK::ExistenceTypes::Multiple,
+                                    QStringList() << CHardwareSDK::ExistenceTypes::Multiple, true);
         }
 
         //------------------------------------------------------------------------------
@@ -155,7 +188,7 @@ namespace SDK {
         template <class T1> struct SNamedList<T1, DSDKIT::ItLibUSB> {
             TParameterList create(const QStringList &aModels, const QString &aDefault) {
                 return modifyValue(createSimpleNamedList<T1>(aModels, aDefault), CHardwareSDK::InteractionType,
-                                   CInteractionTypes::USB, CInteractionTypes::LibUSB)
+                                   SDK::Driver::CInteractionTypes::USB, SDK::Driver::CInteractionTypes::LibUSB)
                        << setMultipleExistence();
             }
         };
@@ -185,6 +218,12 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         /// Создать список параметров с именем модели.
+        template <class T> inline TParameterList createNamedList(const QStringList &aModels, const QString &aDefault) {
+            return SNamedList<T, typename T::TIType>().create(aModels, aDefault);
+        }
+
+        //------------------------------------------------------------------------------
+        /// Создать список параметров с именем модели.
         template <class T> inline TParameterList createNamedList(const QString &aModel, const QString &aDefault) {
             return createNamedList<T>(QStringList() << aModel, aDefault);
         }
@@ -203,50 +242,6 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        /// Приоритет при автопоиске.
-        inline SPluginParameter setNormalPriority() {
-            QVariantMap possibleValues;
-            possibleValues.insert(CHardwareSDK::DetectingPriority, SDK::Driver::EDetectingPriority::Normal);
-
-            return SPluginParameter(CHardwareSDK::DetectingPriority, SPluginParameter::Text, false, QString(),
-                                    QString(), SDK::Driver::EDetectingPriority::Normal, possibleValues, true);
-        }
-
-        //------------------------------------------------------------------------------
-        /// Модифицированные имена ключей.
-        inline SPluginParameter setModifiedKeys(const QString &aOldParameterName, const QString &aNewParameterName) {
-            QVariantMap modifiedKeys;
-            modifiedKeys.insert(aOldParameterName, aNewParameterName);
-
-            return SPluginParameter(CPlugin::ModifiedKeys, SPluginParameter::Set, false, QString(), QString(),
-                                    QString(), modifiedKeys, true);
-        }
-
-        //------------------------------------------------------------------------------
-        /// Модифицированные значения параметров.
-        inline SPluginParameter setModifiedValues(const QString &aParameterValue, const QVariantMap &aPossibleValues) {
-            return SPluginParameter(CPlugin::ModifiedValues, SPluginParameter::Set, false, aParameterValue, QString(),
-                                    QString(), aPossibleValues, true);
-        }
-
-        //------------------------------------------------------------------------------
-        /// Модифицированные значения параметров.
-        inline SPluginParameter setModifiedValues(const QString &aParameterValue, const QString &aValueFrom,
-                                                  const QString &aValueTo) {
-            QVariantMap possibleValues;
-            possibleValues.insert(aValueFrom, aValueTo);
-
-            return SPluginParameter(CPlugin::ModifiedValues, SPluginParameter::Set, false, aParameterValue, QString(),
-                                    QString(), possibleValues, true);
-        }
-
-        //------------------------------------------------------------------------------
-        /// Множественный тип атвопоиска устройства.
-        inline SPluginParameter setMultipleExistence() {
-            return SPluginParameter(CHardwareSDK::Existence, false, QString(), QString(),
-                                    CHardwareSDK::ExistenceTypes::Multiple,
-                                    QStringList() << CHardwareSDK::ExistenceTypes::Multiple, true);
-        }
 
         //------------------------------------------------------------------------------
         // Тип протокола.
@@ -263,16 +258,19 @@ namespace SDK {
 
 #define REGISTER_DRIVER(aPluginName, aClassName, aParameters)                                                          \
     CREATE_PLUGIN(aPluginName, aClassName)                                                                             \
-    REGISTER_PLUGIN_WITH_PARAMETERS(makeDriverPath<aClassName>(), &CreatePlugin_##aClassName, aParameters)
+    REGISTER_PLUGIN_WITH_PARAMETERS(makeDriverPath<aClassName>(), &CreatePlugin_##aClassName, aParameters, aClassName)
 
 #define REGISTER_DRIVER_WITH_PARAMETERS(aClassName, aConstructor, aParameters)                                         \
-    REGISTER_PLUGIN_WITH_PARAMETERS(makeDriverPath<aClassName>(), aConstructor, aParameters)
+    REGISTER_PLUGIN_WITH_PARAMETERS(makeDriverPath<aClassName>(), aConstructor, aParameters, aClassName)
 
 #define COMMON_DRIVER_WITH_PARAMETERS(aClassName, aConstructor, aParameters)                                           \
-    PLUGIN_WITH_PARAMETERS(makeDriverPath<aClassName>(), aConstructor, aParameters)
+    REGISTER_PLUGIN_WITH_PARAMETERS(makeDriverPath<aClassName>(), aConstructor, aParameters, aClassName)
 #define COMMON_DRIVER(aClassName, aParameters)                                                                         \
     COMMON_DRIVER_WITH_PARAMETERS(aClassName, &CreatePlugin<aClassName>, aParameters)
 #define SIMPLE_COMMON_DRIVER(aClassName, aParameters) COMMON_DRIVER(aClassName, &aParameters<aClassName>)
+
+#define BEGIN_REGISTER_PLUGIN
+#define END_REGISTER_PLUGIN
 
     } // namespace Plugin
 } // namespace SDK

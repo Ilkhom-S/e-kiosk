@@ -52,10 +52,9 @@ static SDK::Plugin::TParameterList EnumerateParameters() {
                                                                           true, QVariantMap(), true);
 }
 
-REGISTER_PLUGIN_WITH_PARAMETERS(SDK::Plugin::makePath(SDK::PaymentProcessor::Application,
-                                                      SDK::PaymentProcessor::CComponents::GraphicsItem,
-                                                      CServiceMenu::PluginName),
-                                &CreatePlugin, &EnumerateParameters);
+REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
+                                         SDK::PaymentProcessor::CComponents::GraphicsItem, CServiceMenu::PluginName),
+                                &CreatePlugin, &EnumerateParameters, ServiceMenu);
 
 //--------------------------------------------------------------------------
 ServiceMenu::ServiceMenu(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)

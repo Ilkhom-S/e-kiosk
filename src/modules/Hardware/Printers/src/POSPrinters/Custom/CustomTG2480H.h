@@ -10,29 +10,29 @@ template <class T> class CustomTG2480H : public CustomPrinter<T> {
 
   public:
     CustomTG2480H() {
-        mParameters.errors[20][4].insert('\x08', PrinterStatusCode::OK::MotorMotion);
-        mParameters.errors[20][5].insert('\x02', PrinterStatusCode::Error::Presenter);
+        this->mParameters.errors[20][4].insert('\x08', PrinterStatusCode::OK::MotorMotion);
+        this->mParameters.errors[20][5].insert('\x02', PrinterStatusCode::Error::Presenter);
 
-        mDeviceName = CCustomPrinter::Models::TG2480H;
-        mModelID = '\xA8';
+        this->mDeviceName = CCustomPrinter::Models::TG2480H;
+        this->mModelID = '\xA8';
 
-        mModelData.data().clear();
-        mModelData.add(mModelID, true, CCustomPrinter::Models::TG2480H);
-        setConfigParameter(CHardwareSDK::Printer::LineSize, 44);
+        this->mModelData.data().clear();
+        this->mModelData.add(this->mModelID, true, CCustomPrinter::Models::TG2480H);
+        this->setConfigParameter(CHardwareSDK::Printer::LineSize, 44);
     }
 
   protected:
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes) {
-        if (!CustomPrinter::getStatus(aStatusCodes)) {
+        if (!T::getStatus(aStatusCodes)) {
             return false;
         }
 
         if (aStatusCodes.contains(PrinterStatusCode::Error::Presenter)) {
             aStatusCodes.remove(PrinterStatusCode::Error::Presenter);
 
-            cut();
-            cut();
+            this->cut();
+            this->cut();
         }
 
         return true;
@@ -43,8 +43,8 @@ template <class T> class CustomTG2480H : public CustomPrinter<T> {
 class LibUSBCustomTG2480H : public CustomTG2480H<TLibUSBPrinterBase> {
   public:
     LibUSBCustomTG2480H() {
-        mDetectingData->set(CUSBVendors::Custom, mDeviceName, 0x01a8);
-        setConfigParameter(CHardwareSDK::Printer::LineSize, 44);
+        this->mDetectingData->set(CUSBVendors::Custom, this->mDeviceName, 0x01a8);
+        this->setConfigParameter(CHardwareSDK::Printer::LineSize, 44);
     }
 };
 

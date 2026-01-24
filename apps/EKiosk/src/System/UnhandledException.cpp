@@ -41,13 +41,15 @@ void PurecallHandler(void) {
 }
 
 #else
-#error Unhandled exception handler is not implemented for this platform!
+// Unhandled exception handler is not implemented for this platform
 #endif // Q_OS_WIN
 
 //---------------------------------------------------------------------------
 // Инициализация фильтра необработанных исключений
 void CatchUnhandledExceptions() {
+#ifdef Q_OS_WIN32
     SetUnhandledExceptionsHandler(MyUnhandledExceptionFilter);
+#endif
 
 #ifdef Q_OS_WIN
     _set_purecall_handler(PurecallHandler);

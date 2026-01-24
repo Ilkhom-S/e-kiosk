@@ -73,7 +73,7 @@ void CashDispenserManager::updateHardwareConfiguration() {
 
     // Получаем список всех доступных устройств.
     QStringList deviceList =
-        settings->getDeviceList().filter(QRegExp(QString("(%1)").arg(DSDK::CComponents::Dispenser)));
+        settings->getDeviceList().filter(QRegularExpression(QString("(%1)").arg(DSDK::CComponents::Dispenser)));
 
     foreach (const QString &configurationName, deviceList) {
         DSDK::IDispenser *device = dynamic_cast<DSDK::IDispenser *>(mDeviceService->acquireDevice(configurationName));
@@ -201,7 +201,7 @@ void CashDispenserManager::onUnitsDefined() {
     if (dispenser) {
         dispensers << dispenser;
     } else {
-        dispensers = mDispensers.keys().toSet();
+        dispensers = QSet<DSDK::IDispenser *>(mDispensers.keys().begin(), mDispensers.keys().end());
     }
 
     /// Проверяем и обновляем список доступных купюр
@@ -317,7 +317,7 @@ void CashDispenserManager::loadCashList() {
         QString configPath = *it;
         QString cashUnitData =
             mDatabase->getDeviceParam(configPath, PPSDK::CDatabaseConstants::Parameters::CashUnits).toString();
-        QStringList cashUnits = cashUnitData.split(";", QString::SkipEmptyParts);
+        QStringList cashUnits = cashUnitData.split(";", Qt::SkipEmptyParts);
 
         for (int i = 0; i < cashUnits.size(); ++i) {
             QStringList unit = cashUnits[i].split(":");
@@ -346,8 +346,8 @@ bool CashDispenserManager::getItemData(SDK::PaymentProcessor::TPaymentAmount aAm
     int nominal = *std::max_element(nominals.begin(), nominals.end());
 
     if (nominal > aAmount) {
-        qSort(nominals);
-        QList<int>::iterator it = qLowerBound(nominals.begin(), nominals.end(), aAmount);
+        std::sort(nominals.begin(), nominals.end());
+        QList<int>::iterator it = std::lower_bound(nominals.begin(), nominals.end(), aAmount);
 
         nominal = *it;
 

@@ -2,24 +2,22 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QString>
 #include <QtCore/QGenericArgument>
 #include <QtCore/QMetaObject>
+#include <QtCore/QRegularExpression>
+#include <QtCore/QString>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
 #include <SDK/PaymentProcessor/Components.h>
 
-// Модули
+// System
 #include <Crypt/ICryptEngine.h>
-
-// Проект
 #include "DatabaseUtils/IPaymentDatabaseUtils.h"
-
-#include "Services/ServiceNames.h"
 #include "Services/HookService.h"
-#include "Services/PluginService.h"
 #include "Services/PaymentService.h"
+#include "Services/PluginService.h"
+#include "Services/ServiceNames.h"
 
 namespace PPSDK = SDK::PaymentProcessor;
 
@@ -38,10 +36,10 @@ HookService::~HookService() {
 
 //---------------------------------------------------------------------------
 bool HookService::initialize() {
-    QStringList hookers =
-        PluginService::instance(mApplication)
-            ->getPluginLoader()
-            ->getPluginList(QRegExp(QString("%1\\.%2\\..*").arg(PPSDK::Application, PPSDK::CComponents::Hook)));
+    QStringList hookers = PluginService::instance(mApplication)
+                              ->getPluginLoader()
+                              ->getPluginList(QRegularExpression(
+                                  QString("%1\\.%2\\..*").arg(PPSDK::Application, PPSDK::CComponents::Hook)));
 
     foreach (const QString &path, hookers) {
         SDK::Plugin::IPlugin *plugin = PluginService::instance(mApplication)->getPluginLoader()->createPlugin(path);

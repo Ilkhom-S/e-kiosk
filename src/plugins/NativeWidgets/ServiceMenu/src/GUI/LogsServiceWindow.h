@@ -6,6 +6,7 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QFutureWatcher>
 #include <QtCore/QStringListModel>
+#include <QtGui/QKeyEvent>
 #include "ui_LogsServiceWindow.h"
 #include <Common/QtHeadersEnd.h>
 
@@ -36,7 +37,7 @@ class LogFileModel : public QStringListModel {
                 case Qt::EditRole:
                     return mList.at(row);
 
-                case Qt::TextColorRole: {
+                case Qt::ForegroundRole: {
                     const QString &line = mList.at(row);
 
                     if (line.size() > 14) {

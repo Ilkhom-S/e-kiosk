@@ -1,32 +1,34 @@
 /* @file Инициализация и получение сервисов. */
 
 // Boost
-#include <boost/cast.hpp>
 
 // SDK
 #include <SDK/PaymentProcessor/Components.h>
 #include <SDK/PaymentProcessor/Core/EventTypes.h>
 
-// Project
-#include "System/IApplication.h"
-#include "Services/ServiceNames.h"
-#include "Services/EventService.h"
-#include "Services/PrintingService.h"
-#include "Services/FundsService.h"
-#include "Services/HIDService.h"
-#include "Services/DeviceService.h"
+// ThirdParty
+#include <boost/cast.hpp>
+
+// System
 #include "Services/CryptService.h"
 #include "Services/DatabaseService.h"
-#include "Services/PluginService.h"
-#include "Services/SettingsService.h"
+#include "Services/DeviceService.h"
+#include "Services/EventService.h"
+#include "Services/FundsService.h"
+#include "Services/GUIService.h"
+#include "Services/HIDService.h"
+#include "Services/HookService.h"
 #include "Services/NetworkService.h"
 #include "Services/PaymentService.h"
-#include "Services/GUIService.h"
-#include "Services/TerminalService.h"
+#include "Services/PluginService.h"
+#include "Services/PrintingService.h"
 #include "Services/RemoteService.h"
-#include "Services/HookService.h"
 #include "Services/SchedulerService.h"
 #include "Services/ServiceController.h"
+#include "Services/ServiceNames.h"
+#include "Services/SettingsService.h"
+#include "Services/TerminalService.h"
+#include "System/IApplication.h"
 
 namespace PP = SDK::PaymentProcessor;
 
@@ -174,8 +176,8 @@ bool ServiceController::initializeServices() {
 //---------------------------------------------------------------------------
 void ServiceController::initializeCoreItems() {
     auto pluginLoader = PluginService::instance(mApplication)->getPluginLoader();
-    QStringList corePlugins =
-        pluginLoader->getPluginList(QRegExp(QString("PaymentProcessor\\.%1\\..*").arg(PPSDK::CComponents::CoreItem)));
+    QStringList corePlugins = pluginLoader->getPluginList(
+        QRegularExpression(QString("PaymentProcessor\\.%1\\..*").arg(PPSDK::CComponents::CoreItem)));
 
     foreach (const QString &pluginName, corePlugins) {
         LOG(mApplication->getLog(), LogLevel::Normal, QString("Create core item: %1.").arg(pluginName));
@@ -375,7 +377,8 @@ void ServiceController::dumpFailureReport() {
 
 //---------------------------------------------------------------------------
 QSet<SDK::PaymentProcessor::IService *> ServiceController::getServices() const {
-    return mRegisteredServices.values().toSet();
+    return QSet<SDK::PaymentProcessor::IService *>(mRegisteredServices.values().begin(),
+                                                   mRegisteredServices.values().end());
 }
 
 //---------------------------------------------------------------------------

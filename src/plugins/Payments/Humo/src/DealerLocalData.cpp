@@ -7,7 +7,6 @@
 // Project
 #include "DealerLocalData.h"
 
-//------------------------------------------------------------------------------
 DealerLocalData::DealerLocalData() {
 }
 
@@ -22,7 +21,7 @@ bool DealerLocalData::loadInfo(const QString &aFileName) {
     }
 
     QTextStream in(&file);
-    in.setCodec("UTF-8");
+    // Qt 6: setCodec removed, UTF-8 is handled automatically
     if (!in.atEnd()) {
         foreach (auto column, in.readLine().trimmed().split(";")) {
             QStringList columnHeader = column.split("=");
@@ -69,7 +68,11 @@ bool DealerLocalData::findNumber(const QString &aFirstColumnValue, QMap<QString,
     bool headerSkipped = false;
 
     QTextStream in(&file);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     in.setCodec("UTF-8");
+#else
+    in.setEncoding(QStringConverter::Utf8);
+#endif
     while (!in.atEnd()) {
         if (!headerSkipped) {
             headerSkipped = true;

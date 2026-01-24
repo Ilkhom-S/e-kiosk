@@ -24,7 +24,7 @@ UnmanagedWizardPage::UnmanagedWizardPage(ServiceMenuBackend *aBackend, QWidget *
     mConnectionWindow->setParent(this);
     setLayout(new QHBoxLayout(this));
     layout()->setSpacing(0);
-    layout()->setMargin(0);
+    layout()->setContentsMargins(0, 0, 0, 0);
     layout()->addWidget(mConnectionWindow);
 
     connect(mConnectionWindow, SIGNAL(testConnection(QNetworkProxy)), SLOT(onTestConnection(QNetworkProxy)));
@@ -126,8 +126,10 @@ void UnmanagedWizardPage::onTestConnection(QNetworkProxy aProxy) {
 
     GUI::MessageBox::wait(tr("#testing_connection"));
 
-    mTaskWatcher.setFuture(
-        QtConcurrent::run(mBackend->getNetworkManager(), &NetworkManager::testConnection, QString()));
+    mTaskWatcher.setFuture(QtConcurrent::run([this]() {
+        QString errorMessage;
+        return mBackend->getNetworkManager()->testConnection(errorMessage);
+    }));
 }
 
 //---------------------------------------------------------------------------

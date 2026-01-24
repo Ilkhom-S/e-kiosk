@@ -15,9 +15,17 @@ add_subdirectory(Printers)
 file(GLOB_RECURSE CARDREADERS_SOURCES
     Cardreaders/src/*.cpp
     Cardreaders/src/*.h
-    Cardreaders/Protocols/Creator/src/*.cpp
-    Cardreaders/Protocols/Creator/src/*.h
 )
+# Exclude Creator directory (Windows-only USB devices)
+list(FILTER CARDREADERS_SOURCES EXCLUDE REGEX ".*/Creator/.*")
+if(WIN32)
+    # Creator protocol is Windows-only (uses USB)
+    file(GLOB_RECURSE CREATOR_SOURCES
+        Cardreaders/src/Creator/*.cpp
+        Cardreaders/src/Creator/*.h
+    )
+    list(APPEND CARDREADERS_SOURCES ${CREATOR_SOURCES})
+endif()
 # Exclude IDTech folder due to buggy SDK - find alternative later
 list(FILTER CARDREADERS_SOURCES EXCLUDE REGEX ".*/IDTech/.*")
 set(CARDREADERS_HEADERS
@@ -179,17 +187,19 @@ ek_add_library(HardwareProtocols
 
 # HardwareScanners
 # For now excluding ACR120, OPOS scanners. Need to find real devices to test on.
-file(GLOB_RECURSE HARDWARESCANNERS_SOURCES
-    Scanners/src/Serial/*.cpp
-    Scanners/src/Serial/*.h
-)
-set(HARDWARESCANNERS_HEADERS
-    ${CMAKE_SOURCE_DIR}/include/Hardware/HID/HIDBase.h
-)
-ek_add_library(HardwareScanners
-    FOLDER "modules/Hardware"
-    SOURCES ${HARDWARESCANNERS_SOURCES} ${HARDWARESCANNERS_HEADERS}
-    QT_MODULES Core
-    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
-    COMPILE_DEFINITIONS _UNICODE UNICODE
-)
+if(WIN32)
+    file(GLOB_RECURSE HARDWARESCANNERS_SOURCES
+        Scanners/src/Serial/*.cpp
+        Scanners/src/Serial/*.h
+    )
+    set(HARDWARESCANNERS_HEADERS
+        ${CMAKE_SOURCE_DIR}/include/Hardware/HID/HIDBase.h
+    )
+    ek_add_library(HardwareScanners
+        FOLDER "modules/Hardware"
+        SOURCES ${HARDWARESCANNERS_SOURCES} ${HARDWARESCANNERS_HEADERS}
+        QT_MODULES Core
+        INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
+        COMPILE_DEFINITIONS _UNICODE UNICODE
+    )
+endif()

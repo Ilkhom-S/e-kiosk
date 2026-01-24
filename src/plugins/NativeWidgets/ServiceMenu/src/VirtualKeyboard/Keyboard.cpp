@@ -31,9 +31,9 @@ namespace {
 
 } // namespace
 
-REGISTER_PLUGIN(SDK::Plugin::makePath(SDK::PaymentProcessor::Application,
-                                      SDK::PaymentProcessor::CComponents::GraphicsItem, CKeyboard::PluginName),
-                &CreatePlugin);
+REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application, SDK::PaymentProcessor::CComponents::GraphicsItem,
+                         CKeyboard::PluginName),
+                &CreatePlugin, &SDK::Plugin::PluginInitializer::emptyParameterList, VirtualKeyboard);
 
 //--------------------------------------------------------------------------
 Keyboard::Keyboard(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)

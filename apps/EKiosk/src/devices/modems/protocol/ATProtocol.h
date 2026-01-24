@@ -4,6 +4,7 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
 #include <QtCore/QObject>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QString>
 #include <QtCore/QThread>
 #include <QtSerialPort/QSerialPort>
@@ -357,7 +358,7 @@ class ATProtocol : public QThread {
     bool nowSimPresent;
     // protected:
     /// Маска для разбора выражения баланса
-    QRegExp m_getBalanceRegExp;
+    QRegularExpression m_getBalanceRegExp;
     /// Выполнить команду протокола
     ///
     /// Параметры:

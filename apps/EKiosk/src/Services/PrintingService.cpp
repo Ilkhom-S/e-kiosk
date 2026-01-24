@@ -11,7 +11,7 @@
 #include <QtCore/QBuffer>
 #include <QtQml/QJSEngine>
 #include <QtQml/QJSValue>
-#include <QtCore/QTextCodec>
+#include <QtCore/QStringDecoder>
 #include <QtXML/QDomDocument>
 #include <QtCore/QXmlStreamWriter>
 #include <Common/QtHeadersEnd.h>
@@ -219,7 +219,7 @@ int PrintingService::printReceipt(const QString &aReceiptType, const QVariantMap
         }
     }
 
-    toLog(LogLevel::Error, QString("Failed to print receipt. Missing receipt template : %1.").arg(aReceiptTemplate));
+    toLog(LoggerLevel::Error, QString("Failed to print receipt. Missing receipt template : %1.").arg(aReceiptTemplate));
 
     QMetaObject::invokeMethod(this, "printEmptyReceipt", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(bool, true));
 
@@ -238,7 +238,7 @@ bool PrintingService::printReceiptDirected(DSDK::IPrinter *aPrinter, const QStri
 
     // Извлекаем шаблон для чека нужного типа.
     if (!mCachedReceipts.contains(aReceiptTemplate.toLower())) {
-        toLog(LogLevel::Error, QString("Missing receipt template : %1.").arg(aReceiptTemplate));
+        toLog(LoggerLevel::Error, QString("Missing receipt template : %1.").arg(aReceiptTemplate));
         return false;
     }
 
@@ -279,7 +279,7 @@ int PrintingService::performPrint(PrintCommand *aCommand, const QVariantMap &aPa
         auto makeResult = [&](bool result, const QString &aLog) -> bool {
             if (aCommand)
                 delete aCommand;
-            toLog(result ? LogLevel::Normal : LogLevel::Error, aLog);
+            toLog(result ? LoggerLevel::Normal : LoggerLevel::Error, aLog);
             emit receiptPrinted(aJobIndex, !result);
             return result;
         };
@@ -371,7 +371,7 @@ void PrintingService::giveBackPrinter(DSDK::IPrinter *aPrinter) {
 //---------------------------------------------------------------------------
 DSDK::IPrinter *PrintingService::takePrinter(const QString &aReceiptType, bool aCheckOnline) {
     if (mPrinterDevices.empty()) {
-        toLog(LogLevel::Error, "Printers are not found in current configuration.");
+        toLog(LoggerLevel::Error, "Printers are not found in current configuration.");
         return 0;
     }
 
@@ -400,7 +400,7 @@ DSDK::IPrinter *PrintingService::takePrinter(const QString &aReceiptType, bool a
     delete printCommand;
 
     if (printers.isEmpty()) {
-        toLog(LogLevel::Error, QString("No any available printer for type %1 with %2 checking.")
+        toLog(LoggerLevel::Error, QString("No any available printer for type %1 with %2 checking.")
                                    .arg(aReceiptType)
                                    .arg(aCheckOnline ? "online" : "offline"));
         return nullptr;
@@ -466,7 +466,7 @@ bool PrintingService::loadTags() {
     PPSDK::SKeySettings key0 = terminalSettings->getKeys().value(0);
 
     if (key0.ap.isEmpty()) {
-        toLog(LogLevel::Error, "Failed to retrieve terminal number from configs.");
+        toLog(LoggerLevel::Error, "Failed to retrieve terminal number from configs.");
         return false;
     } else {
         mStaticParameters.insert(CPrintConstants::TermNumber, key0.ap);
@@ -503,7 +503,7 @@ bool PrintingService::loadTags() {
         mStaticParameters.insert(CPrintConstants::Currency, terminalSettings->getCurrencySettings().name);
     } else {
         toLog(
-            LogLevel::Warning,
+            LoggerLevel::Warning,
             "Failed to retrieve currency settings from configs. Tag <CURRENCY> will be printed empty on all receipts!");
         return false;
     }
@@ -514,7 +514,7 @@ bool PrintingService::loadTags() {
 //---------------------------------------------------------------------------
 QStringList PrintingService::getReceipt(const QString &aReceiptTemplate, const QVariantMap &aParameters) {
     if (!mCachedReceipts.contains(aReceiptTemplate.toLower())) {
-        toLog(LogLevel::Error, QString("Missing receipt template %1.").arg(aReceiptTemplate));
+        toLog(LoggerLevel::Error, QString("Missing receipt template %1.").arg(aReceiptTemplate));
     }
 
     QStringList receipt = mCachedReceipts.value(aReceiptTemplate.toLower());
@@ -541,25 +541,28 @@ QString PrintingService::convertImage2base64(const QString &aString) {
 
     for (int extLen = 3; extLen <= 4; extLen++) {
         // \[img\s*\].*((?:[\w]\:|\\)?((\\|/)?[a-z_\-\s0-9\.]+)+\.[a-z]{3,4})
-        QRegularExpression imgPattern = QRegularExpression(QString("\\[img\\s*\\].*((?:[\\w]\\:|\\\\)?((\\\\|/)?[a-z_\\-\\s0-9\\.]+)+\\.[a-z]{%1})").arg(extLen),
-            Qt::CaseInsensitive);
+        QRegularExpression imgPattern = QRegularExpression(
+            QString("\\[img\\s*\\].*((?:[\\w]\\:|\\\\)?((\\\\|/)?[a-z_\\-\\s0-9\\.]+)+\\.[a-z]{%1})").arg(extLen),
+            QRegularExpression::CaseInsensitiveOption);
 
-        ////////imgPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
+        ////////imgPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility //
+        ///Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
         int offset = 0;
-        while ((offset = imgPattern.match(result, offset).capturedStart()) != -1) {
+        QRegularExpressionMatch match;
+        while ((match = imgPattern.match(result, offset)).hasMatch()) {
             QString img = "<image>";
 
-            QFile file(// TODO: // TODO: // TODO: // TODO: imgPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1));
+            QFile file(match.captured(1));
             if (file.open(QIODevice::ReadOnly)) {
                 img = QString::fromLatin1(file.readAll().toBase64());
             } else {
-                toLog(LogLevel::Error,
-                      QString("Error load image '%1': %2").arg(// TODO: // TODO: // TODO: // TODO: imgPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1)).arg(file.errorString()));
+                toLog(LoggerLevel::Error,
+                      QString("Error load image '%1': %2").arg(match.captured(1)).arg(file.errorString()));
             }
 
-            result.replace(imgPattern.pos(1), // TODO: // TODO: // TODO: // TODO: imgPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1).length(), img);
-            offset = imgPattern.pos(1) + img.size();
+            result.replace(match.capturedStart(1), match.captured(1).length(), img);
+            offset = match.capturedStart(1) + img.size();
         }
     }
 
@@ -596,7 +599,7 @@ QString PrintingService::generateQR(const QString &aString) {
         }
 
         if (zint.hasErrors()) {
-            toLog(LogLevel::Error, QString("Failed render QR code: %1.").arg(zint.lastError()));
+            toLog(LoggerLevel::Error, QString("Failed render QR code: %1.").arg(zint.lastError()));
         } else {
             QBuffer buffer;
             if (buffer.open(QIODevice::WriteOnly)) {
@@ -609,30 +612,34 @@ QString PrintingService::generateQR(const QString &aString) {
         return "";
     };
 
-    QRegularExpression qrPattern("\\[qr(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/qr\\]",
-                      Qt::CaseInsensitive);
+    QRegularExpression qrPattern(
+        "\\[qr(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/qr\\]",
+        QRegularExpression::CaseInsensitiveOption);
 
-    ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
+    ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed
+    ///for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
     int offset = 0;
-    while ((offset = qrPattern.match(result, offset).capturedStart()) != -1) {
+    QRegularExpressionMatch match;
+    while ((match = qrPattern.match(result, offset)).hasMatch()) {
+        offset = match.capturedStart();
         int size = 200;
         int left_margin = 0;
 
         for (int i = 2; i < 6; i += 3) {
-            if (qrPattern.cap(i).toLower() == "size") {
-                size = qrPattern.cap(i + 1).toInt() ? qrPattern.cap(i + 1).toInt() : size;
-            } else if (qrPattern.cap(i).toLower() == "left_margin") {
-                left_margin = qrPattern.cap(i + 1).toInt() ? qrPattern.cap(i + 1).toInt() : left_margin;
+            if (match.captured(i).toLower() == "size") {
+                size = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : size;
+            } else if (match.captured(i).toLower() == "left_margin") {
+                left_margin = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : left_margin;
             }
         }
 
-        QString content = // TODO: // TODO: // TODO: // TODO: qrPattern.cap(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7);
+        QString content = match.captured(7);
         QString qrImage = generateQRCode(content, size, left_margin);
 
         QString img = qrImage.isEmpty() ? "<qr-code>" : QString("[img]%1[/img]").arg(qrImage);
 
-        result.replace(offset, // TODO: // TODO: // TODO: // TODO: qrPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), img);
+        result.replace(offset, match.captured(0).length(), img);
         offset += img.size();
     }
 
@@ -668,7 +675,7 @@ QString PrintingService::generatePDF417(const QString &aString) {
         painter.end();
 
         if (zint.hasErrors()) {
-            toLog(LogLevel::Error, QString("Failed render PDF-417 code: %1.").arg(zint.lastError()));
+            toLog(LoggerLevel::Error, QString("Failed render PDF-417 code: %1.").arg(zint.lastError()));
         } else {
             QBuffer buffer;
             if (buffer.open(QIODevice::WriteOnly)) {
@@ -681,30 +688,33 @@ QString PrintingService::generatePDF417(const QString &aString) {
         return "";
     };
 
-    QRegularExpression qrPattern("\\[pdf417(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/pdf417\\]",
-                      Qt::CaseInsensitive);
+    QRegularExpression qrPattern(
+        "\\[pdf417(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/pdf417\\]",
+        QRegularExpression::CaseInsensitiveOption);
 
-    ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
+    ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed
+    ///for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
     int offset = 0;
-    while ((offset = qrPattern.match(result, offset).capturedStart()) != -1) {
+    QRegularExpressionMatch match;
+    while ((match = qrPattern.match(result, offset)).hasMatch()) {
         int size = 200;
         int left_margin = 0;
 
         for (int i = 2; i < 6; i += 3) {
-            if (qrPattern.cap(i).toLower() == "size") {
-                size = qrPattern.cap(i + 1).toInt() ? qrPattern.cap(i + 1).toInt() : size;
-            } else if (qrPattern.cap(i).toLower() == "left_margin") {
-                left_margin = qrPattern.cap(i + 1).toInt() ? qrPattern.cap(i + 1).toInt() : left_margin;
+            if (match.captured(i).toLower() == "size") {
+                size = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : size;
+            } else if (match.captured(i).toLower() == "left_margin") {
+                left_margin = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : left_margin;
             }
         }
 
-        QString content = // TODO: // TODO: // TODO: // TODO: qrPattern.cap(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7);
+        QString content = match.captured(7);
         QString qrImage = generatePDFCode(content, size, left_margin);
 
         QString img = qrImage.isEmpty() ? "<pdf417-code>" : QString("[img]%1[/img]").arg(qrImage);
 
-        result.replace(offset, // TODO: // TODO: // TODO: // TODO: qrPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), img);
+        result.replace(offset, match.captured(0).length(), img);
         offset += img.size();
     }
 
@@ -740,7 +750,7 @@ QString PrintingService::generate1D(const QString &aString) {
         painter.end();
 
         if (zint.hasErrors()) {
-            toLog(LogLevel::Error, QString("Failed render PDF-417 code: %1.").arg(zint.lastError()));
+            toLog(LoggerLevel::Error, QString("Failed render PDF-417 code: %1.").arg(zint.lastError()));
         } else {
             QBuffer buffer;
             if (buffer.open(QIODevice::WriteOnly)) {
@@ -753,30 +763,33 @@ QString PrintingService::generate1D(const QString &aString) {
         return "";
     };
 
-    QRegularExpression qrPattern("\\[1d(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/1d\\]",
-                      Qt::CaseInsensitive);
+    QRegularExpression qrPattern(
+        "\\[1d(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/1d\\]",
+        QRegularExpression::CaseInsensitiveOption);
 
-    ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
+    ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed
+    ///for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
     int offset = 0;
-    while ((offset = qrPattern.match(result, offset).capturedStart()) != -1) {
+    QRegularExpressionMatch match;
+    while ((match = qrPattern.match(result, offset)).hasMatch()) {
         int size = 200;
         int left_margin = 0;
 
         for (int i = 2; i < 6; i += 3) {
-            if (qrPattern.cap(i).toLower() == "size") {
-                size = qrPattern.cap(i + 1).toInt() ? qrPattern.cap(i + 1).toInt() : size;
-            } else if (qrPattern.cap(i).toLower() == "left_margin") {
-                left_margin = qrPattern.cap(i + 1).toInt() ? qrPattern.cap(i + 1).toInt() : left_margin;
+            if (match.captured(i).toLower() == "size") {
+                size = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : size;
+            } else if (match.captured(i).toLower() == "left_margin") {
+                left_margin = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : left_margin;
             }
         }
 
-        QString content = // TODO: // TODO: // TODO: // TODO: qrPattern.cap(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7) needs manual migration to match.captured(7);
+        QString content = match.captured(7);
         QString qrImage = generatePDFCode(content, size, left_margin);
 
         QString img = qrImage.isEmpty() ? "<pdf417-code>" : QString("[img]%1[/img]").arg(qrImage);
 
-        result.replace(offset, // TODO: // TODO: // TODO: // TODO: qrPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), img);
+        result.replace(offset, match.captured(0).length(), img);
         offset += img.size();
     }
 
@@ -815,24 +828,27 @@ QString PrintingService::generateLine(const QString &aString) {
         return QString();
     };
 
-    QRegularExpression qrPattern("\\[hr(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/hr\\]",
-                      Qt::CaseInsensitive);
+    QRegularExpression qrPattern(
+        "\\[hr(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?(\\s*(\\w+)\\s*=\\s*(\\d+)\\s*)?\\](.*)\\[/hr\\]",
+        QRegularExpression::CaseInsensitiveOption);
 
-    ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
+    ////////qrPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed
+    ///for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
     int offset = 0;
-    while ((offset = qrPattern.match(result, offset).capturedStart()) != -1) {
+    QRegularExpressionMatch match;
+    while ((match = qrPattern.match(result, offset)).hasMatch()) {
         int size = 220;
         int height = 1;
         int dense = 0;
 
         for (int i = 2; i < 6; i += 3) {
-            if (qrPattern.cap(i).toLower() == "size") {
-                size = qrPattern.cap(i + 1).toInt() ? qrPattern.cap(i + 1).toInt() : size;
-            } else if (qrPattern.cap(i).toLower() == "height") {
-                height = qrPattern.cap(i + 1).toInt() ? qrPattern.cap(i + 1).toInt() : height;
-            } else if (qrPattern.cap(i).toLower() == "ds") {
-                dense = qrPattern.cap(i + 1).toInt() ? qrPattern.cap(i + 1).toInt() : dense;
+            if (match.captured(i).toLower() == "size") {
+                size = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : size;
+            } else if (match.captured(i).toLower() == "height") {
+                height = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : height;
+            } else if (match.captured(i).toLower() == "ds") {
+                dense = match.captured(i + 1).toInt() ? match.captured(i + 1).toInt() : dense;
             }
         }
 
@@ -840,7 +856,7 @@ QString PrintingService::generateLine(const QString &aString) {
 
         QString img = qrImage.isEmpty() ? "<hr-code>" : QString("[img]%1[/img]").arg(qrImage);
 
-        result.replace(offset, // TODO: // TODO: // TODO: // TODO: qrPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), img);
+        result.replace(offset, match.captured(0).length(), img);
         offset += img.size();
     }
 
@@ -871,8 +887,8 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
     PPSDK::SProvider mnpProvider =
         SettingsService::instance(mApplication)
             ->getAdapter<PPSDK::DealerSettings>()
-            ->getMNPProvider(providerId, aParameters.value(PPSDK::CPayment::Parameters::MNPGetewayIn, 0).toLongLong(),
-                             aParameters.value(PPSDK::CPayment::Parameters::MNPGetewayOut, 0).toLongLong());
+            ->getMNPProvider(providerId, aParameters.value(PPSDK::CPayment::Parameters::MNPGatewayIn, 0).toLongLong(),
+                             aParameters.value(PPSDK::CPayment::Parameters::MNPGatewayOut, 0).toLongLong());
 
     if (!mnpProvider.isNull()) {
         userParameters[CPrintConstants::OpBrand] = mnpProvider.name;
@@ -885,18 +901,19 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
 
     // Для каждого тега в шаблоне чека, заменяем его значением из параметров.
     for (auto it = aReceipt.begin(); it != aReceipt.end(); ++it) {
-        QRegularExpression tagPattern("%(.*)%", Qt::CaseInsensitive);
+        QRegularExpression tagPattern("%(.*)%", QRegularExpression::CaseInsensitiveOption);
 
-        ////////tagPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
+        ////////tagPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility //
+        ///Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
         int offset = 0;
-
-        while ((offset = tagPattern.match(*it, offset).capturedStart()) != -1) {
-            QString tag = // TODO: // TODO: // TODO: // TODO: tagPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1);
+        QRegularExpressionMatch match;
+        while ((match = tagPattern.match(*it, offset)).hasMatch()) {
+            QString tag = match.captured(1);
 
             // %% заменяем на %
             if (tag.isEmpty()) {
-                it->replace(offset, // TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), "%");
+                it->replace(offset, match.captured(0).length(), "%");
                 offset += 1;
                 continue;
             }
@@ -925,7 +942,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                     QString masked = isMasked ? maskedString(userParameter.value().toString(), isMasked)
                                               : filter.apply(userParameter.key(), userParameter.value().toString());
 
-                    it->replace(offset, // TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), masked);
+                    it->replace(offset, match.captured(0).length(), masked);
                     offset += masked.length();
                 }
 
@@ -939,7 +956,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                 QString masked = isMasked ? maskedString(staticParameter.value(), isMasked)
                                           : filter.apply(staticParameter.key(), staticParameter.value());
 
-                it->replace(offset, // TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), masked);
+                it->replace(offset, match.captured(0).length(), masked);
                 offset += masked.length();
 
                 continue;
@@ -948,12 +965,13 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
             // Название или значение поля оператора?
             QString targetParameter;
 
-            QRegularExpression operatorFieldPattern("FIELD_(.+)", Qt::CaseInsensitive);
+            QRegularExpression operatorFieldPattern("FIELD_(.+)", QRegularExpression::CaseInsensitiveOption);
 
-            ////////operatorFieldPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
+            ////////operatorFieldPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
+            ///compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
             if (operatorFieldPattern.match(tag).capturedStart() != -1) {
-                targetParameter = // TODO: // TODO: // TODO: // TODO: operatorFieldPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1);
+                targetParameter = operatorFieldPattern.match(tag).captured(1);
 
                 if (!filter.haveFilter(targetParameter)) {
                     targetParameter += CPrintingService::DislayPostfix;
@@ -962,20 +980,20 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
                 operatorFieldPattern.setPattern("RAWFIELD_(.+)");
 
                 if (operatorFieldPattern.match(tag).capturedStart() != -1) {
-                    targetParameter = // TODO: // TODO: // TODO: // TODO: operatorFieldPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1);
+                    targetParameter = operatorFieldPattern.match(tag).captured(1);
                 }
             }
 
             if (!targetParameter.isEmpty()) {
                 if (!aParameters.contains(targetParameter)) {
-                    toLog(LogLevel::Error,
+                    toLog(LoggerLevel::Error,
                           QString("Operator parameter %1 required in receipt but missing in parameters list.")
                               .arg(targetParameter));
                 } else {
                     QString masked = isMasked ? maskedString(aParameters[targetParameter].toString(), isMasked)
                                               : filter.apply(targetParameter, aParameters[targetParameter].toString());
 
-                    it->replace(offset, // TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).length(), masked);
+                    it->replace(offset, match.captured(0).length(), masked);
                     offset += masked.length();
 
                     continue;
@@ -985,7 +1003,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
             // Тег OPERATOR_FIELD
             if (tag == "OPERATOR_FIELD") {
                 if (provider.isNull()) {
-                    toLog(LogLevel::Error,
+                    toLog(LoggerLevel::Error,
                           QString("Failed to expand operator field. Provider id %1 is not valid.").arg(providerId));
                 }
 
@@ -1024,18 +1042,18 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
 
                         QString replaceString = QString("%1: %2").arg(field.title).arg(masked);
 
-                        it->replace(offset, // TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0).size(), replaceString);
+                        it->replace(offset, match.captured(0).length(), replaceString);
                         offset = replaceString.length();
 
                         ++operatorFieldIndex;
                     }
                 } else {
-                    it->replace(// TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), QString());
+                    it->replace(match.captured(0), QString());
                 }
             }
 
             // Оставляем поле пустым.
-            it->replace(// TODO: // TODO: // TODO: // TODO: tagPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), QString());
+            it->replace(match.captured(0), QString());
         }
 
         // Предзагружаем содержимое тегов [IMG]
@@ -1057,13 +1075,13 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
         if (it->contains(CPrintingService::ConditionTag)) {
             QStringList l = it->split(CPrintingService::ConditionTag);
 
-            toLog(LogLevel::Debug, QString("Evaluate receipt condition %1").arg(l.join(";")));
+            toLog(LoggerLevel::Debug, QString("Evaluate receipt condition %1").arg(l.join(";")));
 
             if (QJSEngine().evaluate(l.first()).toBool()) {
-                toLog(LogLevel::Debug, QString("Evaluate receipt result %1").arg(l.last()));
+                toLog(LoggerLevel::Debug, QString("Evaluate receipt result %1").arg(l.last()));
                 result.append(l.last());
             } else {
-                toLog(LogLevel::Debug, QString("Evaluate condition nothing for %1").arg(l.last()));
+                toLog(LoggerLevel::Debug, QString("Evaluate condition nothing for %1").arg(l.last()));
             }
 
             continue;
@@ -1080,7 +1098,7 @@ void PrintingService::expandTags(QStringList &aReceipt, const QVariantMap &aPara
 //---------------------------------------------------------------------------
 bool PrintingService::loadReceiptTemplate(const QFileInfo &aFileInfo) {
     if (aFileInfo.suffix().compare("xml", Qt::CaseInsensitive)) {
-        toLog(LogLevel::Error, QString("Bad receipt template file extension : %1").arg(aFileInfo.fileName()));
+        toLog(LoggerLevel::Error, QString("Bad receipt template file extension : %1").arg(aFileInfo.fileName()));
         return false;
     }
 
@@ -1088,7 +1106,7 @@ bool PrintingService::loadReceiptTemplate(const QFileInfo &aFileInfo) {
     QFile file(aFileInfo.filePath());
 
     if (!file.open(QIODevice::ReadOnly)) {
-        toLog(LogLevel::Error, QString("Failed to open file %1").arg(aFileInfo.filePath()));
+        toLog(LoggerLevel::Error, QString("Failed to open file %1").arg(aFileInfo.filePath()));
         return false;
     }
 
@@ -1112,7 +1130,7 @@ bool PrintingService::loadReceiptTemplate(const QFileInfo &aFileInfo) {
     }
 
     if (receiptContents.isEmpty()) {
-        toLog(LogLevel::Error, QString("Bad receipt template '%1': parse xml error").arg(aFileInfo.fileName()));
+        toLog(LoggerLevel::Error, QString("Bad receipt template '%1': parse xml error").arg(aFileInfo.fileName()));
         return false;
     }
 
@@ -1151,7 +1169,7 @@ void PrintingService::saveReceiptContent(const QString &aReceiptName, const QStr
 
     if (!path.exists()) {
         if (!QDir().mkpath(path.path())) {
-            toLog(LogLevel::Error, "Failed to create printed receipts folder.");
+            toLog(LoggerLevel::Error, "Failed to create printed receipts folder.");
             return;
         }
     }
@@ -1164,7 +1182,7 @@ void PrintingService::saveReceiptContent(const QString &aReceiptName, const QStr
         file.write(aContents.join("\r\n").toUtf8());
         file.close();
     } else {
-        toLog(LogLevel::Error, QString("Failed to open file %1 for receipt.").arg(fileName));
+        toLog(LoggerLevel::Error, QString("Failed to open file %1 for receipt.").arg(fileName));
     }
 }
 
@@ -1186,10 +1204,10 @@ void PrintingService::saveReceipt(const QVariantMap &aParameters, const QString 
 //---------------------------------------------------------------------------
 QString replaceTags(QString aMessage) {
     aMessage.replace("[br]", "\n", Qt::CaseInsensitive);
-    aMessage.remove(QRegExp("\\[(b|dw|dh)\\]", Qt::CaseInsensitive));
-    aMessage.remove(QRegExp("\\[/(b|dw|dh)\\]", Qt::CaseInsensitive));
+    aMessage.remove(QRegularExpression("\\[(b|dw|dh)\\]", QRegularExpression::CaseInsensitiveOption));
+    aMessage.remove(QRegularExpression("\\[/(b|dw|dh)\\]", QRegularExpression::CaseInsensitiveOption));
 
-    aMessage.remove(QRegularExpression("\\[img.?\\].*\\[/img\\]"), "");
+    aMessage.remove(QRegularExpression("\\[img.?\\].*\\[/img\\]"));
 
     return aMessage;
 }
@@ -1202,7 +1220,7 @@ QString PrintingService::loadReceipt(qint64 aPaymentId) {
     QDir path(mApplication->getWorkingDirectory() + "/receipts/" + suffix);
 
     if (!path.exists()) {
-        toLog(LogLevel::Error, "Failed to find printed receipts folder.");
+        toLog(LoggerLevel::Error, "Failed to find printed receipts folder.");
         return QString();
     }
 
@@ -1253,7 +1271,7 @@ void PrintingService::onFRSessionClosed(const QVariantMap &aParameters) {
 
     if (!path.exists()) {
         if (!QDir().mkpath(path.path())) {
-            toLog(LogLevel::Error, "Failed to create printed reports folder.");
+            toLog(LoggerLevel::Error, "Failed to create printed reports folder.");
             return;
         }
     }
@@ -1321,7 +1339,7 @@ void PrintingService::updateHardwareConfiguration() {
         DSDK::IPrinter *device = dynamic_cast<DSDK::IPrinter *>(mDeviceService->acquireDevice(printerName));
 
         if (!device) {
-            toLog(LogLevel::Error, QString("Failed to acquire device %1 .").arg(printerName));
+            toLog(LoggerLevel::Error, QString("Failed to acquire device %1 .").arg(printerName));
             continue;
         }
 
@@ -1350,7 +1368,7 @@ void PrintingService::updateHardwareConfiguration() {
                               SLOT(onFRSessionClosed(const QVariantMap &)));
 
             if (autoZReportTime.isValid() && !autoZReportTime.isNull()) {
-                toLog(LogLevel::Normal,
+                toLog(LoggerLevel::Normal,
                       QString("Setup auto z-report time: %1.").arg(autoZReportTime.toString("hh:mm:ss")));
 
                 dealerSettings.insert(CHardwareSDK::FR::ZReportTime, autoZReportTime);
@@ -1360,7 +1378,7 @@ void PrintingService::updateHardwareConfiguration() {
         device->setDeviceConfiguration(dealerSettings);
     }
 
-    mAvailablePrinters = mPrinterDevices.toSet();
+    mAvailablePrinters = QSet<SDK::Driver::IPrinter *>(mPrinterDevices.begin(), mPrinterDevices.end());
 }
 
 //---------------------------------------------------------------------------
@@ -1373,7 +1391,7 @@ void PrintingService::createFiscalRegister() {
     PPSDK::ExtensionsSettings *extSettings =
         SettingsService::instance(mApplication)->getAdapter<PPSDK::ExtensionsSettings>();
     SDK::Plugin::IPluginLoader *pluginLoader = PluginService::instance(mApplication)->getPluginLoader();
-    QStringList frPlugins = pluginLoader->getPluginList(QRegExp(PPSDK::CComponents::FiscalRegister));
+    QStringList frPlugins = pluginLoader->getPluginList(QRegularExpression(PPSDK::CComponents::FiscalRegister));
 
     foreach (auto fr, frPlugins) {
         auto plugin = pluginLoader->createPlugin(fr);
@@ -1385,7 +1403,7 @@ void PrintingService::createFiscalRegister() {
         PPSDK::IFiscalRegister *frPlugin = dynamic_cast<PPSDK::IFiscalRegister *>(plugin);
 
         if (!frPlugin) {
-            toLog(LogLevel::Error, QString("FR %1 not have IFiscalRegister interface.").arg(fr));
+            toLog(LoggerLevel::Error, QString("FR %1 not have IFiscalRegister interface.").arg(fr));
             pluginLoader->destroyPlugin(plugin);
             continue;
         }
@@ -1393,7 +1411,7 @@ void PrintingService::createFiscalRegister() {
         auto parameters = extSettings->getSettings(plugin->getPluginName());
 
         if (parameters.isEmpty()) {
-            toLog(LogLevel::Warning, QString("FR %1 not have extensions settings. Skip it. (check config.xml).")
+            toLog(LoggerLevel::Warning, QString("FR %1 not have extensions settings. Skip it. (check config.xml).")
                                          .arg(plugin->getPluginName()));
             pluginLoader->destroyPlugin(plugin);
             continue;
@@ -1404,14 +1422,14 @@ void PrintingService::createFiscalRegister() {
         if (!frPlugin->initialize(parameters)) {
             frPlugin->unsubscribe(PPSDK::IFiscalRegister::OFDNotSentSignal, this);
 
-            toLog(LogLevel::Warning, QString("FR %1 error initialize. Skip it.").arg(plugin->getPluginName()));
+            toLog(LoggerLevel::Warning, QString("FR %1 error initialize. Skip it.").arg(plugin->getPluginName()));
             pluginLoader->destroyPlugin(plugin);
             continue;
         }
 
         mFiscalRegister = frPlugin;
 
-        toLog(LogLevel::Normal, QString("FR %1 loaded successful.").arg(plugin->getPluginName()));
+        toLog(LoggerLevel::Normal, QString("FR %1 loaded successful.").arg(plugin->getPluginName()));
 
         break;
     }
@@ -1431,7 +1449,7 @@ void PrintingService::setFiscalNumber(qint64 aPaymentId, const QVariantMap &aPar
     }
 
     if (!PaymentService::instance(mApplication)->updatePaymentFields(aPaymentId, parameters)) {
-        toLog(LogLevel::Error, QString("Payment %1: Error update fiscal parameters.").arg(aPaymentId));
+        toLog(LoggerLevel::Error, QString("Payment %1: Error update fiscal parameters.").arg(aPaymentId));
     }
 }
 

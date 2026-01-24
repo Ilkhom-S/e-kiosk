@@ -121,6 +121,9 @@ class AsyncSerialPort : public IOPortBase {
 
     /// Открыт?
     virtual bool opened();
+
+    /// Порт существует?
+    virtual bool isExist();
 #pragma endregion
 
     /// Изменить таймаут выполнения зависоноопасной операции
@@ -145,6 +148,7 @@ class AsyncSerialPort : public IOPortBase {
         virtual bool write(const QByteArray &aData) = 0;
         virtual bool deviceConnected() = 0;
         virtual bool opened() = 0;
+        virtual bool isExist() = 0;
         virtual void changePerformingTimeout(const QString &aContext, int aTimeout, int aPerformingTime) = 0;
     };
 

@@ -124,7 +124,7 @@ class MockPluginLoader : public SDK::Plugin::IPluginLoader {
     virtual QStringList getPluginList(const QRegularExpression &aFilter) const override {
         QStringList result;
         foreach (QString plugin, mRegisteredPlugins) {
-            if (aFilter.isEmpty() || aFilter.match(plugin).capturedStart() != -1) {
+            if (aFilter.pattern().isEmpty() || aFilter.match(plugin).capturedStart() != -1) {
                 result.append(plugin);
             }
         }

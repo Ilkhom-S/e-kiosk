@@ -81,7 +81,7 @@ namespace CLibUSB {
       public:
         /// Добавить.
         void add(T aKey, const QString &aDescription) {
-            append(T(aKey << aIndex), aDescription);
+            this->append(T(aKey << aIndex), aDescription);
         }
 
         /// Оператор [].

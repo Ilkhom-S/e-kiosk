@@ -12,7 +12,9 @@
 #include <QtCore/QTimer>
 #include <Common/QtHeadersEnd.h>
 
-enum LogLevel { Info = 0, Warning = 1, Error = 2 };
+namespace LoggerLevel {
+    enum Enum { Info = 0, Warning = 1, Error = 2 };
+} // namespace LoggerLevel
 
 class Logger : public QThread {
     Q_OBJECT
@@ -43,15 +45,15 @@ class Logger : public QThread {
         QString stateInfo = "";
 
         switch (state) {
-            case LogLevel::Info:
+            case LoggerLevel::Info:
                 stateInfo = "INFO:    ";
                 break;
 
-            case LogLevel::Warning:
+            case LoggerLevel::Warning:
                 stateInfo = "WARNING: ";
                 break;
 
-            case LogLevel::Error:
+            case LoggerLevel::Error:
                 stateInfo = "ERROR:   ";
                 break;
         }

@@ -2,6 +2,7 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
+#include <QtCore/QElapsedTimer>
 #include <Common/QtHeadersEnd.h>
 
 // Project

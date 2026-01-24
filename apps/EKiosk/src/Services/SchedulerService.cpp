@@ -1,31 +1,27 @@
 /* @file Менеджер запуcка задач по раcпиcанию. */
 
+// STL
+#include <random>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QString>
-#include <QtCore/QSet>
 #include <QtCore/QDir>
+#include <QtCore/QMetaType>
+#include <QtCore/QSet>
+#include <QtCore/QString>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
-#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 #include <SDK/PaymentProcessor/Core/ISettingsService.h>
+#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
-// Модули
+// System
+#include <Services/SchedulerService.h>
+#include <Services/ServiceCommon.h>
+#include <Services/ServiceNames.h>
 #include <SysUtils/ISysUtils.h>
 #include <System/IApplication.h>
 #include <System/SettingsConstants.h>
-#include <Services/ServiceNames.h>
-#include <Services/ServiceCommon.h>
-
-// Проект
-#include <Services/SchedulerService.h>
-#include "SchedulerTasks/LogArchiver.h"
-#include "SchedulerTasks/LogRotate.h"
-#include "SchedulerTasks/RunUpdater.h"
-#include "SchedulerTasks/TimeSync.h"
-#include "SchedulerTasks/OnOffDisplay.h"
-#include "SchedulerTasks/UpdateRemoteContent.h"
 
 namespace PPSDK = SDK::PaymentProcessor;
 
@@ -76,13 +72,6 @@ SchedulerService::SchedulerService(IApplication *aApplication)
 
     moveToThread(&mThread);
 
-    registerTaskType<LogArchiver>("LogArchiver");
-    registerTaskType<LogRotate>("LogRotate");
-    registerTaskType<RunUpdater>("RunUpdater");
-    registerTaskType<TimeSync>("TimeSync");
-    registerTaskType<OnOffDisplay>("OnOffDisplay");
-    registerTaskType<UpdateRemoteContent>("UpdateRemoteContent");
-
     // для запуcка таймеров вcех заданий
     connect(&mThread, SIGNAL(started()), this, SLOT(scheduleAll()));
 }
@@ -123,8 +112,12 @@ bool SchedulerService::initialize() {
 
     toLog(LogLevel::Normal, "Scheduler service initialized.");
 
-    QTime time(QTime::currentTime());
-    qsrand(unsigned(time.hour() + time.minute() + time.second() + time.msec()));
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, RAND_MAX);
+    // Seed with time-based value for reproducibility in this context
+    QTime currentTime = QTime::currentTime();
+    gen.seed(unsigned(currentTime.hour() + currentTime.minute() + currentTime.second() + currentTime.msec()));
 
     return true;
 }
@@ -180,7 +173,7 @@ SchedulerService::Item::Item(const QString &aName, const QSettings &aSettings, c
     mType = aSettings.value(CScheduler::Config::Type).toString();
 
     QVariant params = aSettings.value(CScheduler::Config::Params);
-    mParams = params.type() == QVariant::StringList ? params.toStringList().join(",") : params.toString();
+    mParams = params.typeId() == QMetaType::QStringList ? params.toStringList().join(",") : params.toString();
 
     mPeriod = aSettings.value(CScheduler::Config::Period, "0").toInt();
     mTriggeredOnStart = aSettings.value(CScheduler::Config::TriggeredOnStart, "false")
@@ -292,7 +285,7 @@ QTimer *SchedulerService::Item::createTimer() {
 
     if (timer && mTimeThreshold > 0) {
         // добавляем рандомное время для запуска задачи
-        timer->setInterval(timer->interval() + (qrand() * mTimeThreshold / RAND_MAX) * 1000);
+        timer->setInterval(timer->interval() + (rand() * mTimeThreshold / RAND_MAX) * 1000);
     }
 
     return timer;
@@ -485,7 +478,7 @@ void SchedulerService::setupDisplayOnOff() {
 
     QString energySave = terminalSettings->energySave();
 
-    if (energySave.split(";", QString::SkipEmptyParts).size() >= 2) {
+    if (energySave.split(";", Qt::SkipEmptyParts).size() >= 2) {
         toLog(LogLevel::Normal, QString("Enabled energy saving: %1.").arg(energySave));
 
         QSettings settings;

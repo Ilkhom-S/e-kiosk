@@ -3,6 +3,7 @@
 #include <QtCore/QBitArray>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
+#include <QtCore/QElapsedTimer>
 #include <QtMath>
 #include <Common/QtHeadersEnd.h>
 
@@ -227,7 +228,7 @@ bool EBDS::execCommand(int cmdType, QByteArray &cmdResponse) {
             TResult result = processCommand(cmdRequest, answer, needAnswer);
 
             if (result == CommandResult::OK) {
-                if (answer.count() == 0) {
+                if (answer.size() == 0) {
                     emit emitLog(2, "VALIDATOR", "Empty answer");
                     return false;
                 }
@@ -536,8 +537,8 @@ int EBDS::getNominal(QByteArray respData) {
 }
 
 int EBDS::readPollInfo(QByteArray byte) {
-    QByteRef byte0 = byte[0];
-    QByteRef byte1 = byte[1];
+    char byte0 = byte[0];
+    char byte1 = byte[1];
 
     if (checkBit(byte0, EBDSConstruct::State_0::Stacked)) {
 
@@ -619,7 +620,7 @@ int EBDS::readPollInfo(QByteArray byte) {
         return 0;
     }
 
-    QByteRef byte2 = byte[2];
+    char byte2 = byte[2];
 
     if (checkBit(byte2, EBDSConstruct::State_2::PowerUp)) {
         this->sendStatusTo(VStatus::Success::Ok, QString("Идет питание на Купюроприемник.(11)"));
@@ -639,7 +640,7 @@ int EBDS::readPollInfo(QByteArray byte) {
         return 0;
     }
 
-    QByteRef byte3 = byte[3];
+    char byte3 = byte[3];
 
     if (checkBit(byte3, EBDSConstruct::State_3::NoPushMode)) {
         this->sendStatusTo(VStatus::Warning::NoPushMode, QString("NoPush Mode"));
@@ -662,7 +663,7 @@ int EBDS::readPollInfo(QByteArray byte) {
     return 0;
 }
 
-bool EBDS::checkBit(QByteRef bytes, int bit) {
+bool EBDS::checkBit(char bytes, int bit) {
     if (bit < 0 || bit > 7) {
         return false;
     }

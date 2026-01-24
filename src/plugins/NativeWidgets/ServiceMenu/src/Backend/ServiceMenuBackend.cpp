@@ -224,8 +224,10 @@ void ServiceMenuBackend::printDispenserDiffState() {
             toLog(QString("Diff: %1").arg(afterUnit.amount() - beforeUnit.amount()));
         }
 
-        QtConcurrent::run(mCore->getPrinterService(), &PPSDK::IPrinterService::printReceipt, QString(""), parameters,
-                          QString("dispenser_diff"), DSDK::EPrintingModes::None, true);
+        QtConcurrent::run([=]() {
+            mCore->getPrinterService()->printReceipt(QString(""), parameters, QString("dispenser_diff"),
+                                                     DSDK::EPrintingModes::None, true);
+        });
     } else {
         toLog("Dispenser cash units state are not changed.");
     }
@@ -300,8 +302,8 @@ bool ServiceMenuBackend::isAuthorizationEnabled() const {
 
 //------------------------------------------------------------------------
 QList<QWidget *> ServiceMenuBackend::getExternalWidgets(bool aReset) {
-    QStringList plugins =
-        mFactory->getPluginLoader()->getPluginList(QRegExp("PaymentProcessor\\.GraphicsItem\\..*\\ServiceMenuWidget"));
+    QStringList plugins = mFactory->getPluginLoader()->getPluginList(
+        QRegularExpression("PaymentProcessor\\.GraphicsItem\\..*\\ServiceMenuWidget"));
 
     if (mWidgetPluginList.isEmpty()) {
         foreach (const QString &widget, plugins) {

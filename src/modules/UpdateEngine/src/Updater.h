@@ -108,7 +108,7 @@ class Updater : public QObject {
     void downloadComponents(const TComponentList &aComponents);
 
     /// Сканирует рабочий каталог и возвращает список файлов и контрольных сумм.
-    TFileList getWorkingDirStructure() const throw(std::exception);
+    TFileList getWorkingDirStructure() const noexcept(false);
 
     /// Удаляет пустые папки.
     int removeEmptyFolders(const QString &aDir);
@@ -124,14 +124,14 @@ class Updater : public QObject {
 
   public:
     /// Возвращает список файлов в каталоге aPath.
-    TFileList getWorkingDirStructure(const QString &aPath) const throw(std::exception);
+    TFileList getWorkingDirStructure(const QString &aPath) const noexcept(false);
 
     /// Удаляет список файлов.
-    void deleteFiles(const TFileList &aFiles, bool aIgnoreError = false) throw(std::exception);
+    void deleteFiles(const TFileList &aFiles, bool aIgnoreError = false) noexcept(false);
 
     /// Делает копирование файловой структуры (папки + каталоги).
     void copyFiles(const QString &aSrcDir, const QString &aDstDir, const TFileList &aFiles,
-                   bool aIgnoreError = false) throw(std::exception);
+                   bool aIgnoreError = false) noexcept(false);
 
   signals:
     /// Сигнал прогресса загрузки.

@@ -1,14 +1,14 @@
 /* @file Базовый класс устройств на COM-порту. */
 
-// Modules
+// System
+#include "Hardware/CashAcceptors/ProtoCashAcceptor.h"
 #include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/Common/ProtoDevices.h"
 #include "Hardware/Dispensers/ProtoDispenser.h"
-#include "Hardware/CashAcceptors/ProtoCashAcceptor.h"
-#include "Hardware/Watchdogs/ProtoWatchdog.h"
 #include "Hardware/FR/ProtoFR.h"
 #include "Hardware/HID/ProtoHID.h"
 #include "Hardware/IOPorts/IOPortStatusCodes.h"
+#include "Hardware/Watchdogs/ProtoWatchdog.h"
 
 // Project
 #include "SerialDeviceBase.h"
@@ -42,36 +42,47 @@ template <class T> QStringList SerialDeviceBase<T>::getOptionalPortSettings() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool SerialDeviceBase<T>::release() {
-    removeConfigParameter(CHardwareSDK::RequiredDevice);
+    this->removeConfigParameter(CHardwareSDK::RequiredDevice);
 
     return T::release();
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool SerialDeviceBase<T>::checkConnectionAbility() {
-    if (!checkError(IOPortStatusCode::Error::NotSet, [&]() -> bool { return mIOPort; }, "IO port is not set")) {
+    // Prefixing with 'this->' resolves the dependent base class error
+    if (!this->checkError(
+            IOPortStatusCode::Error::NotSet, [this]() { return this->mIOPort != nullptr; }, "IO port is not set")) {
         return false;
     }
 
-    setConfigParameter(CHardwareSDK::RequiredDevice, QVariant::fromValue(dynamic_cast<IDevice *>(mIOPort)));
+    // Qt 5.15/6 compatible cast
+    IDevice *deviceInterface = dynamic_cast<IDevice *>(this->mIOPort);
+    if (!deviceInterface) {
+        deviceInterface = dynamic_cast<IDevice *>(this->mIOPort);
+    }
 
-    QString systemName = mIOPort->getDeviceConfiguration()[CHardwareSDK::SystemName].toString();
+    this->setConfigParameter(CHardwareSDK::RequiredDevice, QVariant::fromValue(deviceInterface));
 
-    return checkError(
+    // QVariant::toString() is safe across Qt 5 and 6
+    const QString systemName = this->mIOPort->getDeviceConfiguration().value(CHardwareSDK::SystemName).toString();
+
+    // Combined checks for existence and opening
+    return this->checkError(
                IOPortStatusCode::Error::NotConnected,
-               [&]() -> bool { return mIOPort->isExist() || mIOPort->deviceConnected(); },
+               [this]() { return this->mIOPort->isExist() || this->mIOPort->deviceConnected(); },
                "IO port is not connected") &&
-           checkError(
-               IOPortStatusCode::Error::NotConfigured, [&]() -> bool { return !systemName.isEmpty(); },
-               "IO port is not set correctly") &&
-           checkError(
-               IOPortStatusCode::Error::Busy, [&]() -> bool { return mIOPort->open(); }, "device cannot open port");
+           this->checkError(
+               IOPortStatusCode::Error::NotConfigured,
+               // Using lambda capture compatible with C++14
+               [systemName]() { return !systemName.isEmpty(); }, "IO port is not set correctly") &&
+           this->checkError(
+               IOPortStatusCode::Error::Busy, [this]() { return this->mIOPort->open(); }, "device cannot open port");
 }
 
 #define MAKE_SERIAL_PORT_PARAMETER(aParameters, aType)                                                                 \
-    TSerialDevicePortParameter aParameters = mPortParameters[EParameters::aType];                                      \
+    TSerialDevicePortParameter aParameters = this->mPortParameters[EParameters::aType];                                \
     if (aParameters.isEmpty()) {                                                                                       \
-        toLog(LogLevel::Error, mDeviceName + QString(": %1 are empty").arg(#aParameters));                             \
+        this->toLog(LogLevel::Error, this->mDeviceName + QString(": %1 are empty").arg(#aParameters));                 \
         return false;                                                                                                  \
     }                                                                                                                  \
     if (!optionalPortSettingsEnable && optionalPortSettings.contains(CHardware::Port::COM::aType))                     \
@@ -79,8 +90,8 @@ template <class T> bool SerialDeviceBase<T>::checkConnectionAbility() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool SerialDeviceBase<T>::makeSearchingList() {
-    QStringList optionalPortSettings = getConfigParameter(CHardwareSDK::OptionalPortSettings).toStringList();
-    bool optionalPortSettingsEnable = getConfigParameter(CHardwareSDK::OptionalPortSettingsEnable).toBool();
+    QStringList optionalPortSettings = this->getConfigParameter(CHardwareSDK::OptionalPortSettings).toStringList();
+    bool optionalPortSettingsEnable = this->getConfigParameter(CHardwareSDK::OptionalPortSettingsEnable).toBool();
 
     MAKE_SERIAL_PORT_PARAMETER(baudRates, BaudRate);
     MAKE_SERIAL_PORT_PARAMETER(parities, Parity);
@@ -106,44 +117,44 @@ template <class T> bool SerialDeviceBase<T>::makeSearchingList() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool SerialDeviceBase<T>::checkExistence() {
-    if (containsConfigParameter(CHardwareSDK::SearchingType)) {
+    if (this->containsConfigParameter(CHardwareSDK::SearchingType)) {
         QVariantMap configuration;
-        configuration.insert(CHardwareSDK::SearchingType, getConfigParameter(CHardwareSDK::SearchingType));
-        mIOPort->setDeviceConfiguration(configuration);
+        configuration.insert(CHardwareSDK::SearchingType, this->getConfigParameter(CHardwareSDK::SearchingType));
+        this->mIOPort->setDeviceConfiguration(configuration);
     }
 
-    mIOPort->initialize();
+    this->mIOPort->initialize();
 
-    MutexLocker locker(&mExternalMutex);
+    MutexLocker locker(&this->mExternalMutex);
 
-    if (!checkConnectionAbility()) {
+    if (!this->checkConnectionAbility()) {
         return false;
     }
 
     QVariantMap configuration;
-    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(mIOMessageLogging));
-    configuration.insert(CHardware::Port::DeviceModelName, mDeviceName);
-    mIOPort->setDeviceConfiguration(configuration);
+    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(this->mIOMessageLogging));
+    configuration.insert(CHardware::Port::DeviceModelName, this->mDeviceName);
+    this->mIOPort->setDeviceConfiguration(configuration);
 
     TPortParameters portParameters;
-    mIOPort->getParameters(portParameters);
+    this->mIOPort->getParameters(portParameters);
     TPortParameters mainPortParameters = portParameters;
 
     // TODO: убрать, когда будет реализован соответствующий функционал в ПП
-    setConfigParameter(CHardwareSDK::OptionalPortSettingsEnable, true);
+    this->setConfigParameter(CHardwareSDK::OptionalPortSettingsEnable, true);
 
-    if (!getConfigParameter(CHardwareSDK::OptionalPortSettingsEnable).toBool()) {
+    if (!this->getConfigParameter(CHardwareSDK::OptionalPortSettingsEnable).toBool()) {
         QStringList optionalPortSettings = getOptionalPortSettings();
 
         auto check = [&](const QString &aConfigParameter, int aPortParameter) {
-            if (!mPortParameters[aPortParameter].contains(portParameters[aPortParameter]) &&
+            if (!this->mPortParameters[aPortParameter].contains(portParameters[aPortParameter]) &&
                 optionalPortSettings.contains(aConfigParameter)) {
-                toLog(LogLevel::Normal,
-                      QString("Change %1: %2 -> %3")
-                          .arg(EParameters::EnumToString(aPortParameter))
-                          .arg(parameterDescription(aPortParameter, portParameters[aPortParameter]))
-                          .arg(parameterDescription(aPortParameter, mPortParameters[aPortParameter][0])));
-                portParameters[aPortParameter] = mPortParameters[aPortParameter][0];
+                this->toLog(LogLevel::Normal,
+                            QString("Change %1: %2 -> %3")
+                                .arg(EParameters::EnumToString(aPortParameter))
+                                .arg(parameterDescription(aPortParameter, portParameters[aPortParameter]))
+                                .arg(parameterDescription(aPortParameter, this->mPortParameters[aPortParameter][0])));
+                portParameters[aPortParameter] = this->mPortParameters[aPortParameter][0];
             }
         };
 
@@ -155,16 +166,16 @@ template <class T> bool SerialDeviceBase<T>::checkExistence() {
     }
 
     if (mainPortParameters != portParameters) {
-        if (!mIOPort->setParameters(portParameters)) {
+        if (!this->mIOPort->setParameters(portParameters)) {
             portParameters = mainPortParameters;
-        } else if (!T::checkExistence()) {
-            if (mConnected) {
+        } else if (!this->checkExistence()) {
+            if (this->mConnected) {
                 return false;
             }
 
             portParameters = mainPortParameters;
 
-            if (!mIOPort->setParameters(portParameters)) {
+            if (!this->mIOPort->setParameters(portParameters)) {
                 return false;
             }
         }
@@ -177,17 +188,18 @@ template <class T> bool SerialDeviceBase<T>::checkExistence() {
         };
 
         if (!portParameters.isEmpty()) {
-            toLog(LogLevel::Normal, QString("Port %1 with %2, %3, %4, %5, %6")
-                                        .arg(mIOPort->getName())
-                                        .arg(portLog(EParameters::BaudRate))
-                                        .arg(portLog(EParameters::Parity))
-                                        .arg(portLog(EParameters::RTS))
-                                        .arg(portLog(EParameters::DTR))
-                                        .arg(portLog(EParameters::ByteSize)));
+            this->toLog(LogLevel::Normal, QString("Port %1 with %2, %3, %4, %5, %6")
+                                              .arg(this->mIOPort->getName())
+                                              .arg(portLog(EParameters::BaudRate))
+                                              .arg(portLog(EParameters::Parity))
+                                              .arg(portLog(EParameters::RTS))
+                                              .arg(portLog(EParameters::DTR))
+                                              .arg(portLog(EParameters::ByteSize)));
 
             QStringList logData;
 
-            for (auto parameters = mPortParameters.begin(); parameters != mPortParameters.end(); ++parameters) {
+            for (auto parameters = this->mPortParameters.begin(); parameters != this->mPortParameters.end();
+                 ++parameters) {
                 int parameterKey = parameters.key();
                 int portValue = portParameters[parameters.key()];
 
@@ -199,23 +211,24 @@ template <class T> bool SerialDeviceBase<T>::checkExistence() {
             }
 
             if (!logData.isEmpty()) {
-                toLog(LogLevel::Warning,
-                      QString("%1: Port parameter(s) are inadvisable: %2").arg(mDeviceName).arg(logData.join(", ")));
-                mIOPortStatusCodes.insert(IOPortStatusCode::Warning::MismatchParameters);
+                this->toLog(LogLevel::Warning, QString("%1: Port parameter(s) are inadvisable: %2")
+                                                   .arg(this->mDeviceName)
+                                                   .arg(logData.join(", ")));
+                this->mIOPortStatusCodes.insert(IOPortStatusCode::Warning::MismatchParameters);
             } else {
-                mIOPortStatusCodes.remove(IOPortStatusCode::Warning::MismatchParameters);
+                this->mIOPortStatusCodes.remove(IOPortStatusCode::Warning::MismatchParameters);
             }
         }
 
-        if (!T::checkExistence()) {
+        if (!this->checkExistence()) {
             return false;
         }
     }
 
-    if (mIOPort) {
+    if (this->mIOPort) {
         QVariantMap portConfiguration;
-        portConfiguration.insert(CHardware::Port::DeviceModelName, mDeviceName);
-        mIOPort->setDeviceConfiguration(portConfiguration);
+        portConfiguration.insert(CHardware::Port::DeviceModelName, this->mDeviceName);
+        this->mIOPort->setDeviceConfiguration(portConfiguration);
     }
 
     return true;
@@ -223,14 +236,14 @@ template <class T> bool SerialDeviceBase<T>::checkExistence() {
 
 //--------------------------------------------------------------------------------
 template <class T> IDevice::IDetectingIterator *SerialDeviceBase<T>::getDetectingIterator() {
-    if (!mAutoDetectable) {
+    if (!this->mAutoDetectable) {
         return nullptr;
     }
 
-    mSearchingPortParameters.clear();
-    makeSearchingList();
+    this->mSearchingPortParameters.clear();
+    this->makeSearchingList();
 
-    mNextParameterIterator = mSearchingPortParameters.begin();
+    this->mNextParameterIterator = this->mSearchingPortParameters.begin();
 
     return this;
 }
@@ -238,49 +251,49 @@ template <class T> IDevice::IDetectingIterator *SerialDeviceBase<T>::getDetectin
 //--------------------------------------------------------------------------------
 template <class T> bool SerialDeviceBase<T>::find() {
     TPortParameters portParameters;
-    portParameters.insert(EParameters::BaudRate, mCurrentParameter.baudRate);
-    portParameters.insert(EParameters::Parity, mCurrentParameter.parity);
-    portParameters.insert(EParameters::RTS, mCurrentParameter.RTS);
-    portParameters.insert(EParameters::DTR, mCurrentParameter.DTR);
-    portParameters.insert(EParameters::ByteSize, mCurrentParameter.byteSize);
+    portParameters.insert(EParameters::BaudRate, this->mCurrentParameter.baudRate);
+    portParameters.insert(EParameters::Parity, this->mCurrentParameter.parity);
+    portParameters.insert(EParameters::RTS, this->mCurrentParameter.RTS);
+    portParameters.insert(EParameters::DTR, this->mCurrentParameter.DTR);
+    portParameters.insert(EParameters::ByteSize, this->mCurrentParameter.byteSize);
 
-    if (!mIOPort->setParameters(portParameters)) {
-        toLog(LogLevel::Error,
-              mDeviceName + ": Failed to set port parameters, unable to perform current action therefore");
-        mIOPortStatusCodes.insert(IOPortStatusCode::Error::Busy);
+    if (!this->mIOPort->setParameters(portParameters)) {
+        this->toLog(LogLevel::Error,
+                    this->mDeviceName + ": Failed to set port parameters, unable to perform current action therefore");
+        this->mIOPortStatusCodes.insert(IOPortStatusCode::Error::Busy);
 
         return false;
     }
 
-    return T::find();
+    return this->find();
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool SerialDeviceBase<T>::moveNext() {
-    if (mNextParameterIterator >= mSearchingPortParameters.end()) {
+    if (this->mNextParameterIterator >= this->mSearchingPortParameters.end()) {
         return false;
     }
 
-    mCurrentParameter = *mNextParameterIterator;
-    mNextParameterIterator++;
+    this->mCurrentParameter = *this->mNextParameterIterator;
+    this->mNextParameterIterator++;
 
     return true;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool SerialDeviceBase<T>::processStatus(TStatusCodes &aStatusCodes) {
-    TStatusCodes statusCodes = mIOPortStatusCodes;
-    bool result = checkConnectionAbility();
-    mPortStatusChanged = statusCodes != mIOPortStatusCodes;
+    TStatusCodes statusCodes = this->mIOPortStatusCodes;
+    bool result = this->checkConnectionAbility();
+    this->mPortStatusChanged = statusCodes != this->mIOPortStatusCodes;
 
     if (!result) {
         return false;
     }
 
-    if (!getStatus(aStatusCodes) || aStatusCodes.contains(DeviceStatusCode::Error::NotAvailable)) {
-        TStatusCodes otherStatusCodes = mIOPortStatusCodes;
-        checkConnectionAbility();
-        mPortStatusChanged = mPortStatusChanged || (otherStatusCodes != mIOPortStatusCodes);
+    if (!this->getStatus(aStatusCodes) || aStatusCodes.contains(DeviceStatusCode::Error::NotAvailable)) {
+        TStatusCodes otherStatusCodes = this->mIOPortStatusCodes;
+        this->checkConnectionAbility();
+        this->mPortStatusChanged = this->mPortStatusChanged || (otherStatusCodes != this->mIOPortStatusCodes);
 
         return false;
     }
@@ -290,7 +303,7 @@ template <class T> bool SerialDeviceBase<T>::processStatus(TStatusCodes &aStatus
 
 //--------------------------------------------------------------------------------
 template <class T> bool SerialDeviceBase<T>::environmentChanged() {
-    return mPortStatusChanged;
+    return this->mPortStatusChanged;
 }
 
 //--------------------------------------------------------------------------------

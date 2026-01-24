@@ -38,7 +38,7 @@ AudioService::~AudioService() {
 //---------------------------------------------------------------------------
 bool AudioService::initialize() {
     mPlayer = QSharedPointer<QMediaPlayer>(new QMediaPlayer());
-    connect(mPlayer.data(), SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(stateChanged(QMediaPlayer::State)));
+    connect(mPlayer.data(), &QMediaPlayer::playbackStateChanged, this, &AudioService::stateChanged);
 
     return true;
 }
@@ -82,11 +82,11 @@ void AudioService::play(const QString &aFileName) {
     QString filePath = mInterfacePath + "/" + aFileName;
 
     if (QFile::exists(filePath)) {
-        if (mPlayer->state() != QMediaPlayer::StoppedState) {
+        if (mPlayer->playbackState() != QMediaPlayer::StoppedState) {
             stop();
         }
 
-        mPlayer->setMedia(QUrl::fromLocalFile(filePath));
+        mPlayer->setSource(QUrl::fromLocalFile(filePath));
         mPlayer->play();
     } else {
         stop();
@@ -103,7 +103,7 @@ void AudioService::stop() {
 }
 
 //---------------------------------------------------------------------------
-void AudioService::stateChanged(QMediaPlayer::State aState) {
+void AudioService::stateChanged(QMediaPlayer::PlaybackState aState) {
     if (aState == QMediaPlayer::StoppedState) {
     }
 }

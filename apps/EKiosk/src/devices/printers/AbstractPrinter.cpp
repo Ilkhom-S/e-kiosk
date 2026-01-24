@@ -1,6 +1,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QDebug>
+#include <QtCore5Compat/QTextCodec>
 #include <Common/QtHeadersEnd.h>
 
 // Project

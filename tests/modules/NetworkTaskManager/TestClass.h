@@ -13,7 +13,7 @@
 class NetworkTask;
 
 //------------------------------------------------------------------------
-const QUrl TestUrl = "http://httpbin.org/range/1024";
+const QUrl TestUrl = QUrl(QString("http://httpbin.org/range/1024"));
 const QString TestFile = "test.bin";
 
 //------------------------------------------------------------------------

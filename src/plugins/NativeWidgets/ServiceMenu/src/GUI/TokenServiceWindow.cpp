@@ -32,7 +32,7 @@ TokenServiceWindow::TokenServiceWindow(ServiceMenuBackend *aBackend, QWidget *aP
     mWindow->setParent(this);
     wContainer->setLayout(new QHBoxLayout);
     wContainer->layout()->setSpacing(0);
-    wContainer->layout()->setMargin(0);
+    wContainer->layout()->setContentsMargins(0, 0, 0, 0);
     wContainer->layout()->addWidget(mWindow);
 }
 

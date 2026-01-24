@@ -47,9 +47,9 @@ namespace {
     }
 } // namespace
 
-REGISTER_PLUGIN(SDK::Plugin::makePath(SDK::PaymentProcessor::Application, PPSDK::CComponents::ScenarioFactory,
-                                      CScenarioPlugin::PluginName),
-                &CreatePlugin);
+REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application, PPSDK::CComponents::ScenarioFactory,
+                         CScenarioPlugin::PluginName),
+                &CreatePlugin, &SDK::Plugin::PluginInitializer::emptyParameterList, Migrator3000MainScenario);
 
 namespace Migrator3000 {
 
@@ -316,7 +316,7 @@ namespace Migrator3000 {
         // fix standalone flag
         {
             QSettings ini("client.ini", QSettings::IniFormat);
-            ini.setIniCodec("UTF-8");
+            // Qt 6 uses UTF-8 by default, no need to set codec
             ini.setValue("common/standalone", false);
 
             if (ini.status() != QSettings::NoError) {

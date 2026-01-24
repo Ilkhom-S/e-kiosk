@@ -35,9 +35,8 @@ namespace {
     }
 
     /// Регистрация плагина в фабрике.
-    REGISTER_PLUGIN(SDK::Plugin::makePath(PPSDK::Application, PPSDK::CComponents::RemoteClient,
-                                          CAdRemotePlugin::PluginName),
-                    &CreateAdSourcePlugin);
+    REGISTER_PLUGIN(makePath(PPSDK::Application, PPSDK::CComponents::RemoteClient, CAdRemotePlugin::PluginName),
+                    &CreateAdSourcePlugin, &SDK::Plugin::PluginInitializer::emptyParameterList, AdRemotePlugin);
 } // namespace
 
 //------------------------------------------------------------------------

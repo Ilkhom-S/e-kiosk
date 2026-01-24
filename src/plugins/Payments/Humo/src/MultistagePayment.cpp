@@ -1,5 +1,8 @@
 /* @file Многошаговый платёж через процессинг Хумо. */
 
+// STL
+#include <algorithm>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtXml/QDomDocument>
@@ -145,7 +148,7 @@ bool MultistagePayment::isFinalStep() const {
 QStringList MultistagePayment::getHistory() {
     PPSDK::IPayment::SParameter history = getParameter(CMultistage::History);
     if (history.value.isValid()) {
-        return history.value.toString().split(";", QString::SkipEmptyParts);
+        return history.value.toString().split(";", Qt::SkipEmptyParts);
     }
 
     return QStringList();
@@ -182,10 +185,10 @@ void loadProviderEnumItems(PPSDK::SProviderField::TEnumItems &aItemList, QDomNod
         itemElement = itemElement.nextSiblingElement("item");
     }
 
-    qStableSort(aItemList.begin(), aItemList.end(),
-                [](const PPSDK::SProviderField::SEnumItem &a, const PPSDK::SProviderField::SEnumItem &b) {
-                    return a.sort < b.sort;
-                });
+    std::stable_sort(aItemList.begin(), aItemList.end(),
+                     [](const PPSDK::SProviderField::SEnumItem &a, const PPSDK::SProviderField::SEnumItem &b) {
+                         return a.sort < b.sort;
+                     });
 }
 
 //---------------------------------------------------------------------------
@@ -238,8 +241,9 @@ SDK::PaymentProcessor::TProviderFields MultistagePayment::parseFieldsXml(const Q
             resultFields << field;
         }
 
-        qStableSort(resultFields.begin(), resultFields.end(),
-                    [](const PPSDK::SProviderField &a, const PPSDK::SProviderField &b) { return a.sort < b.sort; });
+        std::stable_sort(
+            resultFields.begin(), resultFields.end(),
+            [](const PPSDK::SProviderField &a, const PPSDK::SProviderField &b) { return a.sort < b.sort; });
     }
 
     return resultFields;

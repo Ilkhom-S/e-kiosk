@@ -6,7 +6,11 @@
 #include <QtQml/QQmlComponent>
 #include <QtQml/QQmlContext>
 #include <QtQuick/QQuickItem>
+#include <Common/QtHeadersEnd.h>
+
+#ifndef Q_OS_MACOS
 #include <QtWebEngine/QtWebEngine>
+#endif
 #include <Common/QtHeadersEnd.h>
 
 // Modules
@@ -44,10 +48,9 @@ namespace {
 } // namespace
 
 /// Регистрация плагина в фабрике.
-REGISTER_PLUGIN_WITH_PARAMETERS(SDK::Plugin::makePath(SDK::PaymentProcessor::Application,
-                                                      SDK::PaymentProcessor::CComponents::GraphicsBackend,
-                                                      CQMLBackend::PluginName),
-                                &CreatePlugin, &EnumParameters);
+REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
+                                         SDK::PaymentProcessor::CComponents::GraphicsBackend, CQMLBackend::PluginName),
+                                &CreatePlugin, &EnumParameters, QMLBackend);
 
 //------------------------------------------------------------------------------
 QMLBackend::QMLBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
@@ -55,7 +58,9 @@ QMLBackend::QMLBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInst
     mInstancePath = aInstancePath;
     mEngine = 0;
 
+#ifndef Q_OS_MACOS
     QtWebEngine::initialize();
+#endif
 
     // Регистрируем типы событий.
     qmlRegisterUncreatableType<SDK::PaymentProcessor::EEventType>(

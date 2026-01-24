@@ -36,6 +36,7 @@
 
 // PP
 #include "DatabaseUtils/IHardwareDatabaseUtils.h"
+#include "PrintingCommands.h"
 
 class IApplication;
 class IPayment;

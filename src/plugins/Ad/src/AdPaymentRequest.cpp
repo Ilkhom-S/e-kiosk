@@ -4,7 +4,7 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QRegularExpression>
-#include <QtCore/QTextCodec>
+#include <QtCore/QStringEncoder>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
@@ -32,11 +32,13 @@ AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, const QString &aName) : 
 
     foreach (QString field, aPayment->getParameter(PPSDK::CPayment::Parameters::ProviderFields)
                                 .value.toString()
-                                .split(PPSDK::CPayment::Parameters::ProviderFieldsDelimiter, QString::SkipEmptyParts)) {
+                                .split(PPSDK::CPayment::Parameters::ProviderFieldsDelimiter, Qt::SkipEmptyParts)) {
         data << QString("%1=%2").arg(field).arg(aPayment->getParameter(field).value.toString());
     }
 
-    addParameter("DATA", QTextCodec::codecForName("windows-1251")->fromUnicode(data.join("\r\n")).toBase64());
+    QStringEncoder encoder("windows-1251");
+    QByteArray encodedData = encoder(data.join("\r\n"));
+    addParameter("DATA", encodedData.toBase64());
 
     QString step = "PAYMENT";
 
@@ -48,10 +50,13 @@ AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, const QString &aName) : 
             QString value = field.value;
 
             QRegularExpression macroPattern("\\{(.+)\\}");
-            ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
-            while (macroPattern.match(value).capturedStart() != -1) {
-                value.replace(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs manual migration to match.captured(0), mPayment->getParameter(// TODO: // TODO: // TODO: // TODO: macroPattern.cap(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1) needs manual migration to match.captured(1)).value.toString());
+            QRegularExpressionMatch match = macroPattern.match(value);
+            while (match.capturedStart() != -1) {
+                QString macro = match.captured(0);
+                QString paramName = match.captured(1);
+                value.replace(macro, mPayment->getParameter(paramName).value.toString());
+                match = macroPattern.match(value);
             }
 
             if (field.crypted) {

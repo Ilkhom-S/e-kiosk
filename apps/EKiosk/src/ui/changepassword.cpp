@@ -2,7 +2,7 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QPointer>
 #include <QtGui/QKeyEvent>
-#include <QtGui/QRegExpValidator>
+#include <QtGui/QRegularExpressionValidator>
 #include <QtWidgets/QMessageBox>
 #include <Common/QtHeadersEnd.h>
 
@@ -13,14 +13,16 @@
 ChangePassword::ChangePassword(QWidget *parent) : QDialog(parent), ui(new Ui::ChangePassword) {
     ui->setupUi(this);
 
-    QRegExpValidator *secLoginRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->newLogin);
+    QRegularExpressionValidator *secLoginRegValidator =
+        new QRegularExpressionValidator(QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->newLogin);
     ui->newLogin->setValidator(secLoginRegValidator);
 
-    QRegExpValidator *secPassRegValidator = new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->newPassword);
+    QRegularExpressionValidator *secPassRegValidator =
+        new QRegularExpressionValidator(QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->newPassword);
     ui->newPassword->setValidator(secPassRegValidator);
 
-    QRegExpValidator *secRepeatPassRegValidator =
-        new QRegExpValidator(QRegExp("[\\S\\w\\W\\d\\D]{1,30}"), ui->RepeatPass);
+    QRegularExpressionValidator *secRepeatPassRegValidator =
+        new QRegularExpressionValidator(QRegularExpression("[\\S\\w\\W\\d\\D]{1,30}"), ui->RepeatPass);
     ui->RepeatPass->setValidator(secRepeatPassRegValidator);
 
     KeyPud = new keyPud(this);

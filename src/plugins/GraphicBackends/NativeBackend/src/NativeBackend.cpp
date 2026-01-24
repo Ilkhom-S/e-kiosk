@@ -1,5 +1,10 @@
 /* @file Реализация плагина. */
 
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QRegularExpression>
+#include <Common/QtHeadersEnd.h>
+
 // SDK
 #include <SDK/GUI/IGraphicsEngine.h>
 #include <SDK/PaymentProcessor/Components.h>
@@ -36,10 +41,10 @@ namespace {
 } // namespace
 
 /// Регистрация плагина в фабрике.
-REGISTER_PLUGIN_WITH_PARAMETERS(SDK::Plugin::makePath(SDK::PaymentProcessor::Application,
-                                                      SDK::PaymentProcessor::CComponents::GraphicsBackend,
-                                                      CNativeBackend::PluginName),
-                                &CreatePlugin, &EnumParameters);
+REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
+                                         SDK::PaymentProcessor::CComponents::GraphicsBackend,
+                                         CNativeBackend::PluginName),
+                                &CreatePlugin, &EnumParameters, NativeBackend);
 
 //------------------------------------------------------------------------------
 NativeBackend::NativeBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
@@ -121,7 +126,8 @@ QString NativeBackend::getType() const {
 //------------------------------------------------------------------------------
 QList<SDK::GUI::GraphicsItemInfo> NativeBackend::getItemList() {
     if (mItemList.isEmpty()) {
-        QStringList items = mFactory->getPluginLoader()->getPluginList(QRegExp("PaymentProcessor\\.GraphicsItem\\..*"));
+        QStringList items =
+            mFactory->getPluginLoader()->getPluginList(QRegularExpression("PaymentProcessor\\.GraphicsItem\\..*"));
 
         foreach (const QString &item, items) {
             SDK::GUI::GraphicsItemInfo itemInfo;

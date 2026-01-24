@@ -16,6 +16,14 @@ ek_add_library(PPSDK
     COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 
+# Add ICore interface header for AUTOMOC processing (contains Q_OBJECT)
+if(EXISTS "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Core/ICore.h")
+    target_sources(PPSDK PRIVATE "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Core/ICore.h")
+else()
+    # Fall back to include path in source tree during development
+    target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/Core/ICore.h")
+endif()
+
 # Ensure automoc picks up Q_OBJECT in public headers (IRemoteClient lives in ${EK_INCLUDES_DIR})
 # Add the public header to target sources so CMake's AUTOMOC processes it.
 # Use a full path constructed from EK_INCLUDES_DIR to be explicit about location.

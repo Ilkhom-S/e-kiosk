@@ -20,37 +20,37 @@ template <class T> CitizenCBM1000II<T>::CitizenCBM1000II() {
     using namespace SDK::Driver::IOPort::COM;
 
     // статусы ошибок
-    mParameters.errors.clear();
+    this->mParameters.errors.clear();
 
-    mParameters.errors[1][1].insert('\x08', DeviceStatusCode::Error::Unknown);
+    this->mParameters.errors[1][1].insert('\x08', DeviceStatusCode::Error::Unknown);
 
-    mParameters.errors[2][1].insert('\x04', DeviceStatusCode::Error::CoverIsOpened);
-    mParameters.errors[2][1].insert('\x20', PrinterStatusCode::Error::PaperEnd);
-    mParameters.errors[2][1].insert('\x40', DeviceStatusCode::Error::Unknown);
+    this->mParameters.errors[2][1].insert('\x04', DeviceStatusCode::Error::CoverIsOpened);
+    this->mParameters.errors[2][1].insert('\x20', PrinterStatusCode::Error::PaperEnd);
+    this->mParameters.errors[2][1].insert('\x40', DeviceStatusCode::Error::Unknown);
 
-    mParameters.errors[3][1].insert('\x08', PrinterStatusCode::Error::Cutter);
-    mParameters.errors[3][1].insert('\x60', DeviceStatusCode::Error::Unknown);
+    this->mParameters.errors[3][1].insert('\x08', PrinterStatusCode::Error::Cutter);
+    this->mParameters.errors[3][1].insert('\x60', DeviceStatusCode::Error::Unknown);
 
-    mParameters.errors[4][1].insert('\x0C', PrinterStatusCode::Warning::PaperNearEnd);
-    mParameters.errors[4][1].insert('\x60', PrinterStatusCode::Error::PaperEnd);
+    this->mParameters.errors[4][1].insert('\x0C', PrinterStatusCode::Warning::PaperNearEnd);
+    this->mParameters.errors[4][1].insert('\x60', PrinterStatusCode::Error::PaperEnd);
 
     // параметры моделей
-    mDeviceName = "Citizen CBM-1000II";
-    mModelID = '\x30';
-    setConfigParameter(CHardware::Printer::FeedingAmount, 3);
+    this->mDeviceName = "Citizen CBM-1000II";
+    this->mModelID = '\x30';
+    this->setConfigParameter(CHardware::Printer::FeedingAmount, 3);
 
     // модели
-    mModelData.data().clear();
-    mModelData.add(mModelID, true, mDeviceName);
+    this->mModelData.data().clear();
+    this->mModelData.add(this->mModelID, true, this->mDeviceName);
 
-    setConfigParameter(CHardware::Printer::FeedingAmount, 5);
+    this->setConfigParameter(CHardware::Printer::FeedingAmount, 5);
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void CitizenCBM1000II<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
-    POSPrinter::setDeviceConfiguration(aConfiguration);
+    POSPrinter<T>::setDeviceConfiguration(aConfiguration);
 
-    int lineSpacing = getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
+    int lineSpacing = this->getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
 
     int feeding = 5;
     if (lineSpacing >= 75)
@@ -60,7 +60,7 @@ template <class T> void CitizenCBM1000II<T>::setDeviceConfiguration(const QVaria
     else if (lineSpacing >= 45)
         feeding = 4;
 
-    setConfigParameter(CHardware::Printer::FeedingAmount, feeding);
+    this->setConfigParameter(CHardware::Printer::FeedingAmount, feeding);
 }
 
 //--------------------------------------------------------------------------------

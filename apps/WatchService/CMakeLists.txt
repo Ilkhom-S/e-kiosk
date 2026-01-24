@@ -5,6 +5,11 @@ file(GLOB WATCHSERVICE_SOURCES
     src/*.h
 )
 
+if(NOT WIN32)
+    list(REMOVE_ITEM WATCHSERVICE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/CpuSpeed.cpp)
+    list(REMOVE_ITEM WATCHSERVICE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/win_processenumerator.cpp)
+endif()
+
 file(GLOB WATCHSERVICE_UI_FILES
     src/*.ui
 )

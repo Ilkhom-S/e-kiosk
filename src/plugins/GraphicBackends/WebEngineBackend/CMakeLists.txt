@@ -22,11 +22,18 @@ set(WEBENGINEBACKEND_SOURCES
 # Find WebEngine components (version-agnostic)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS WebEngineWidgets QUIET)
 if(Qt${QT_VERSION_MAJOR}WebEngineWidgets_FOUND)
-    set(WEBENGINE_QT_MODULES Widgets WebEngineWidgets)
-    add_compile_definitions(USE_WEBENGINE)
+    # Additional check: try to find the header
+    find_file(QT_WEBENGINE_HEADER QtWebEngineWidgets/QWebEnginePage PATHS ${Qt${QT_VERSION_MAJOR}_INCLUDE_DIRS} NO_DEFAULT_PATH)
+    if(QT_WEBENGINE_HEADER)
+        set(WEBENGINE_QT_MODULES Widgets WebEngineWidgets)
+        add_compile_definitions(USE_WEBENGINE)
+    else()
+        message(STATUS "Qt WebEngine header not found, skipping WebEngineBackend build")
+        return()
+    endif()
 else()
-    message(WARNING "WebEngine not found for WebEngineBackend in Qt${QT_VERSION_MAJOR}")
-    set(WEBENGINE_QT_MODULES Widgets)
+    message(STATUS "WebEngine not found for WebEngineBackend in Qt${QT_VERSION_MAJOR}, skipping build")
+    return()
 endif()
 
 ek_add_plugin(webengine_backend

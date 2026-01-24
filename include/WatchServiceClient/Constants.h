@@ -75,6 +75,8 @@ namespace CWatchService {
         const QString Updater = "updater";
         /// Контроллер сторожевого сервиса.
         const QString WatchServiceController = "tray";
+        /// Платёжный процессор.
+        const QString PaymentProcessor = "payment_processor";
     } // namespace Modules
 
     namespace Fields {

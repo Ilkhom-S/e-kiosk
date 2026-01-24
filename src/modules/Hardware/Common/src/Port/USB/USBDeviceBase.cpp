@@ -13,10 +13,12 @@
 // System
 #include "Hardware/CardReaders/ProtoMifareReader.h"
 #include "Hardware/Common/PortPollingDeviceBase.h"
+#include <Hardware/Common/USBDeviceBase.h>
 #include "Hardware/HID/ProtoHID.h"
 
-// Project
-#include "USBDeviceBase.h"
+#ifdef Q_OS_WIN32
+#include "Hardware/IOPorts/COM/windows/SystemDeviceUtils.h"
+#endif
 
 using namespace SDK::Driver;
 
@@ -98,7 +100,7 @@ template <class T> void USBDeviceBase<T>::resetPDOName() {
 
 //--------------------------------------------------------------------------------
 template <class T> bool USBDeviceBase<T>::setPDOName(const QString &aPDOName) {
-    SWinDeviceProperties properties = this->mUSBPort.getDevicesProperties(false, true)[aPDOName];
+    auto properties = mUSBPort.getDevicesProperties(false, true)[aPDOName];
     QString logVID = ProtocolUtils::toHexLog(properties.VID);
     QString logPID = ProtocolUtils::toHexLog(properties.PID);
 
@@ -140,8 +142,8 @@ template <class T> bool USBDeviceBase<T>::setPDOName(const QString &aPDOName) {
 
 //--------------------------------------------------------------------------------
 template <class T> void USBDeviceBase<T>::initializeUSBPort() {
-    this->mUSBPort.initialize();
-    TWinDeviceProperties devicesProperties = this->mUSBPort.getDevicesProperties(true, mPDODetecting);
+    this->initialize();
+    auto devicesProperties = mUSBPort.getDevicesProperties(true, this->mPDODetecting);
 
     MutexLocker lock(&this->mPDODataGuard);
 

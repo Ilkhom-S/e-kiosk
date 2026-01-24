@@ -2,22 +2,20 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QTextCodec>
+#include <QtCore/QStringDecoder>
 #include <Common/QtHeadersEnd.h>
 
-// PaymentProcessor SDK
-#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
-
-// Driver SDK
+// SDK
 #include <SDK/Drivers/Components.h>
 #include <SDK/Drivers/ICardReader.h>
+#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
-// Project
-#include "System/IApplication.h"
+// System
+#include "Services/DeviceService.h"
 #include "Services/HIDService.h"
 #include "Services/ServiceNames.h"
-#include "Services/DeviceService.h"
 #include "Services/SettingsService.h"
+#include "System/IApplication.h"
 
 namespace PPSDK = SDK::PaymentProcessor;
 
@@ -198,12 +196,13 @@ bool HIDService::setEnable(bool aEnable, const QString &aDevice) {
 //------------------------------------------------------------------------------
 QString HIDService::valueToString(const QVariant &aData) {
     if (aData.type() == QVariant::ByteArray) {
-        QTextCodec::ConverterState stateUtf8;
-        QString utf8 = QTextCodec::codecForName("UTF-8")->toUnicode(aData.toString().toLatin1(),
-                                                                    aData.toByteArray().size(), &stateUtf8);
-        return stateUtf8.invalidChars == 0
-                   ? utf8
-                   : QTextCodec::codecForName("windows-1251")->toUnicode(aData.toString().toLatin1());
+        QStringDecoder decoderUtf8(QStringDecoder::Utf8);
+        QString utf8 = decoderUtf8(aData.toByteArray());
+        if (decoderUtf8.hasError()) {
+            QStringDecoder decoderCp1251("windows-1251");
+            return decoderCp1251(aData.toByteArray());
+        }
+        return utf8;
     }
 
     return aData.toString();

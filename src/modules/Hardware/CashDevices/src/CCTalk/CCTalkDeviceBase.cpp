@@ -41,7 +41,7 @@ TResult CCTalkDeviceBase<T>::execCommand(const QByteArray &aCommand, const QByte
     CCCTalk::Command::SData commandData = CCCTalk::Command::Description[command];
 
     if (mModelData.unsupported.contains(command)) {
-        toLog(LogLevel::Warning, this->mDeviceName + ": does not support command " + commandData.description);
+        this->toLog(LogLevel::Warning, this->mDeviceName + ": does not support command " + commandData.description);
         return CommandResult::Driver;
     }
 
@@ -58,15 +58,15 @@ TResult CCTalkDeviceBase<T>::execCommand(const QByteArray &aCommand, const QByte
     TResult result = this->mProtocol.processCommand(aCommand + aCommandData, answer);
 
     if (!result) {
-        toLog(LogLevel::Error, this->mDeviceName + ": Failed to " + commandData.description);
+        this->toLog(LogLevel::Error, this->mDeviceName + ": Failed to " + commandData.description);
         return result;
     }
 
     bool ack = (answer.size() >= 1) && (answer == QByteArray(answer.size(), CCCTalk::ACK));
 
     if ((commandData.type == CCCTalk::Command::EAnswerType::ACK) && !ack) {
-        toLog(LogLevel::Error,
-              this->mDeviceName + QString(": Failed to check answer = {%1}, need ack").arg(commandData.size));
+        this->toLog(LogLevel::Error,
+                    this->mDeviceName + QString(": Failed to check answer = {%1}, need ack").arg(commandData.size));
 
         return CommandResult::Answer;
     }
@@ -74,9 +74,10 @@ TResult CCTalkDeviceBase<T>::execCommand(const QByteArray &aCommand, const QByte
     if (((commandData.type == CCCTalk::Command::EAnswerType::Data) ||
          (commandData.type == CCCTalk::Command::EAnswerType::Date)) &&
         (commandData.size >= answer.size())) {
-        toLog(LogLevel::Error, this->mDeviceName + QString(": Failed to check answer size = %1, need minimum = %2")
-                                                       .arg(answer.size())
-                                                       .arg(commandData.size));
+        this->toLog(LogLevel::Error,
+                    this->mDeviceName + QString(": Failed to check answer size = %1, need minimum = %2")
+                                            .arg(answer.size())
+                                            .arg(commandData.size));
         return CommandResult::Answer;
     }
 
@@ -95,7 +96,7 @@ template <class T> bool CCTalkDeviceBase<T>::isConnected() {
 
     foreach (auto protocolType, this->mProtocolTypes) {
         this->mProtocol.setType(protocolType);
-        setConfigParameter(CHardware::ProtocolType, protocolType);
+        this->setConfigParameter(CHardware::ProtocolType, protocolType);
 
         if (checkConnection()) {
             return true;
@@ -117,8 +118,9 @@ template <class T> bool CCTalkDeviceBase<T>::checkConnection() {
         QString answerData = ProtocolUtils::clean(answer).replace(ASCII::Space, "").toLower();
         QString data = CCCTalk::DeviceTypeIds[this->mAddress];
         if (!answerData.contains(data)) {
-            toLog(LogLevel::Error,
-                  this->mDeviceName + QString(": wrong device type = %1, need like %2").arg(answer.data()).arg(data));
+            this->toLog(LogLevel::Error,
+                        this->mDeviceName +
+                            QString(": wrong device type = %1, need like %2").arg(answer.data()).arg(data));
             return false;
         }
     }
@@ -144,7 +146,7 @@ template <class T> bool CCTalkDeviceBase<T>::checkConnection() {
     }
 
     if (!mAllModelData) {
-        toLog(LogLevel::Error, this->mDeviceName + ": No model data");
+        this->toLog(LogLevel::Error, this->mDeviceName + ": No model data");
         return false;
     }
 
@@ -187,7 +189,7 @@ template <class T> void CCTalkDeviceBase<T>::processDeviceData() {
             this->mFWVersion = FWVersion;
 
             if (answer.simplified().toDouble() != FWVersion) {
-                setDeviceParameter(CDeviceData::Version, this->mFWVersion, CDeviceData::Firmware);
+                this->setDeviceParameter(CDeviceData::Version, this->mFWVersion, CDeviceData::Firmware);
             }
         }
     }

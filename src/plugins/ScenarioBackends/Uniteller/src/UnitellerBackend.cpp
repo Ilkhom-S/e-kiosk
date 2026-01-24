@@ -3,21 +3,20 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
-#include <QtCore/QFile>
 #include <QtCore/QDir>
+#include <QtCore/QFile>
 #include <QtCore/QPair>
 #include <QtCore/QSettings>
 #include <Common/QtHeadersEnd.h>
 
-// PP SDK
+// SDK
+#include <SDK/GUI/IGraphicsHost.h>
 #include <SDK/PaymentProcessor/Core/IGUIService.h>
-// #include <SDK/PaymentProcessor/Components.h>
 #include <SDK/PaymentProcessor/Core/IPrinterService.h>
 #include <SDK/PaymentProcessor/Scripting/Core.h>
 #include <SDK/PaymentProcessor/Scripting/PrinterService.h>
-#include <SDK/GUI/IGraphicsHost.h>
 
-// Проект
+// Project
 #include "API.h"
 #include "UnitellerBackend.h"
 
@@ -31,7 +30,7 @@ namespace {
 /// Регистрация плагина в фабрике.
 REGISTER_PLUGIN(SDK::Plugin::makePath(SDK::PaymentProcessor::Application, PPSDK::CComponents::ScriptFactory,
                                       CUnitellerBackend::PluginName),
-                &CreatePlugin);
+                &CreatePlugin, &SDK::Plugin::PluginInitializer::emptyParameterList, UnitellerBackend);
 
 namespace CUnitellerBackend {
     //---------------------------------------------------------------------------

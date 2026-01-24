@@ -61,17 +61,17 @@ bool CCTalkAcceptorBase<T>::parseCurrencyData(const QByteArray &aData, CCCTalk::
     }
 
     if (!CCCTalk::CurrencyData.data().contains(aData)) {
-        toLog(LogLevel::Error, this->mDeviceName + QString(": Unknown country = %1").arg(aData.data()));
+        this->toLog(LogLevel::Error, this->mDeviceName + QString(": Unknown country = %1").arg(aData.data()));
         return false;
     }
 
     aCurrencyData = CCCTalk::CurrencyData[aData];
 
     if (aCurrencyData.code == Currency::NoCurrency) {
-        toLog(LogLevel::Error, QString("%1: Unknown currency code for country %2 (code %3)")
-                                   .arg(this->mDeviceName)
-                                   .arg(aCurrencyData.country)
-                                   .arg(aData.data()));
+        this->toLog(LogLevel::Error, QString("%1: Unknown currency code for country %2 (code %3)")
+                                         .arg(this->mDeviceName)
+                                         .arg(aCurrencyData.country)
+                                         .arg(aData.data()));
         return false;
     }
 

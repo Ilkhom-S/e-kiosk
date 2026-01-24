@@ -31,9 +31,9 @@ namespace {
     }
 } // namespace
 
-REGISTER_PLUGIN(SDK::Plugin::makePath(SDK::PaymentProcessor::Application, PPSDK::CComponents::ScenarioFactory,
-                                      CScenarioPlugin::PluginName),
-                &CreatePlugin);
+REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application, PPSDK::CComponents::ScenarioFactory,
+                         CScenarioPlugin::PluginName),
+                &CreatePlugin, &SDK::Plugin::PluginInitializer::emptyParameterList, ScreenMakerMainScenario);
 
 namespace ScreenMaker {
 

@@ -1,7 +1,12 @@
 // Project
 #include "Connect.h"
 
+#ifdef Q_OS_WIN32
+#include <windows.h>
+#endif
+
 ConnectionPart::ConnectionPart(QObject *parent) : QObject(parent) {
+#ifdef Q_OS_WIN
     rasConn = new RasConnection(this);
     connect(rasConn, SIGNAL(emit_ConnectionError()), this, SIGNAL(emit_ConnectionError()));
     connect(rasConn, SIGNAL(emit_ConnectionUp()), this, SIGNAL(emit_ConnectionUp()));
@@ -9,6 +14,7 @@ ConnectionPart::ConnectionPart(QObject *parent) : QObject(parent) {
     connect(rasConn, SIGNAL(emit_errorState(QString, QString)), this, SIGNAL(emit_errorState(QString, QString)));
     connect(rasConn, SIGNAL(emit_dialupState(int)), SLOT(nowStateDialuping(int)));
     connect(rasConn, SIGNAL(emit_toLoging(int, QString, QString)), SIGNAL(emit_toLoging(int, QString, QString)));
+#endif
 
     checkConn = new CheckConnection(this);
     connect(checkConn, SIGNAL(emit_Ping(bool)), this, SIGNAL(emit_Ping(bool)));
@@ -26,6 +32,7 @@ void ConnectionPart::nowStateDialuping(int state) {
 }
 
 void ConnectionPart::setDateTimeIn(QString dt) {
+#ifdef Q_OS_WIN32
     HANDLE hToken;
     TOKEN_PRIVILEGES tkp;
 
@@ -58,12 +65,12 @@ void ConnectionPart::setDateTimeIn(QString dt) {
 
     GetLocalTime(systime);
 
-    systime->wYear = dt.midRef(0, 4).toInt();
-    systime->wMonth = dt.midRef(5, 2).toInt();
-    systime->wDay = dt.midRef(8, 2).toInt();
-    systime->wHour = dt.midRef(11, 2).toInt();
-    systime->wMinute = dt.midRef(14, 2).toInt();
-    systime->wSecond = dt.midRef(17, 2).toInt();
+    systime->wYear = dt.mid(0, 4).toInt();
+    systime->wMonth = dt.mid(5, 2).toInt();
+    systime->wDay = dt.mid(8, 2).toInt();
+    systime->wHour = dt.mid(11, 2).toInt();
+    systime->wMinute = dt.mid(14, 2).toInt();
+    systime->wSecond = dt.mid(17, 2).toInt();
 
     bool test_time = SetLocalTime(systime);
 
@@ -72,6 +79,10 @@ void ConnectionPart::setDateTimeIn(QString dt) {
     emit emit_toLoging(0, "SYNCHRONIZATION", QString("%1").arg(test_time));
 
     CloseHandle(hToken);
+#else
+    // Date/time synchronization not implemented for this platform
+    emit emit_toLoging(2, "SYNCHRONIZATION", QString("Date/time synchronization not supported on this platform"));
+#endif
 }
 
 void ConnectionPart::startCheckConnection() {
@@ -91,6 +102,7 @@ QStringList ConnectionPart::getLocalConnectionList() {
 }
 
 QStringList ConnectionPart::getRasConnectionList() {
+#ifdef Q_OS_WIN
     QStringList list;
     rasConn->getConnection(list);
 
@@ -99,10 +111,18 @@ QStringList ConnectionPart::getRasConnectionList() {
     }
 
     return list;
+#else
+    return QStringList();
+#endif
 }
 
 bool ConnectionPart::getNowConnectionState(QStringList &lstCon) {
+#ifdef Q_OS_WIN
     return rasConn->getConName(lstCon);
+#else
+    lstCon.clear();
+    return false;
+#endif
 }
 
 QString ConnectionPart::getActiveConnection() {
@@ -124,30 +144,50 @@ void ConnectionPart::closeThis() {
 
 int ConnectionPart::createNewDialupConnection(QString conName, QString devName, QString phone, QString login,
                                               QString pass) {
+#ifdef Q_OS_WIN
     int status = rasConn->createNewDialupConnection(conName, devName, phone, login, pass);
     return status;
+#else
+    Q_UNUSED(conName);
+    Q_UNUSED(devName);
+    Q_UNUSED(phone);
+    Q_UNUSED(login);
+    Q_UNUSED(pass);
+    return -1; // Not supported
+#endif
 }
 
 bool ConnectionPart::hasInstalledModems(QStringList &lstModemList) {
+#ifdef Q_OS_WIN
     bool result = rasConn->HasInstalledModems(lstModemList);
     return result;
+#else
+    Q_UNUSED(lstModemList);
+    return false;
+#endif
 }
 
 void ConnectionPart::connectNet() {
+#ifdef Q_OS_WIN
     if (connectionName.toUpper() != "LOCAL CONNECTION") {
         rasConn->execCommand(DialupParam::StartDial);
     }
+#endif
 }
 
 void ConnectionPart::setConnectionConfig(QString pointName) {
     connectionName = pointName;
+#ifdef Q_OS_WIN
     rasConn->setConnectionName(this->connectionName);
+#endif
 }
 
 bool ConnectionPart::disconnectNet() {
+#ifdef Q_OS_WIN
     if (connectionName.toUpper() != "LOCAL CONNECTION") {
         rasConn->HangUp();
     }
+#endif
 
     return true;
 }
@@ -161,6 +201,7 @@ void ConnectionPart::setEndpoint(int respTime, QString serverAddress) {
 }
 
 bool ConnectionPart::restartWindows(bool restart) {
+#ifdef Q_OS_WIN
     HANDLE hToken;
     TOKEN_PRIVILEGES tkp;
 
@@ -189,8 +230,14 @@ bool ConnectionPart::restartWindows(bool restart) {
     }
 
     return true;
+#else
+    Q_UNUSED(restart);
+    return false; // Not supported on this platform
+#endif
 }
 
 void ConnectionPart::stopReconnect() {
+#ifdef Q_OS_WIN
     rasConn->stopReconnect();
+#endif
 }

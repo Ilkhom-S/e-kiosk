@@ -138,13 +138,18 @@ class TestDebugUtils : public QObject {
         // This test verifies that the exception handler can be set without crashing
         // We can't easily test the actual exception handling without crashing the test process
 
+#ifdef Q_OS_WIN
         // Original handler (may be null)
         LPTOP_LEVEL_EXCEPTION_FILTER originalHandler = nullptr;
 
-#ifdef Q_OS_WIN
         // Get current handler
         originalHandler = SetUnhandledExceptionFilter(nullptr);
         SetUnhandledExceptionFilter(originalHandler); // Restore
+#endif
+
+        // For non-Windows platforms, set to nullptr
+#ifndef Q_OS_WIN
+        TExceptionHandler originalHandler = nullptr;
 #endif
 
         // Setting our handler should not crash

@@ -29,6 +29,6 @@ namespace {
 
 REGISTER_PLUGIN(SDK::Plugin::makePath(SDK::PaymentProcessor::Application, PPSDK::CComponents::ScriptFactory,
                                       Ucs::PluginName),
-                &CreatePlugin);
+                &CreatePlugin, &SDK::Plugin::PluginInitializer::emptyParameterList, UcsBackend);
 
 //---------------------------------------------------------------------------

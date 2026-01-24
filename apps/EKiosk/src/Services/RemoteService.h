@@ -224,7 +224,7 @@ class RemoteService : public SDK::PaymentProcessor::IRemoteService, public PPSDK
     QList<PPSDK::IRemoteClient *> mMonitoringClients;
 
     /// Синхронизация заполнения очереди команд мониторинга.
-    QMutex mCommandMutex;
+    QRecursiveMutex mCommandMutex;
 
     /// Номер последней принятой команды.
     int mLastCommand;
