@@ -24,57 +24,58 @@ template class PollingDeviceBase<ProtoWatchdog>;
 //--------------------------------------------------------------------------------
 template <class T>
 PollingDeviceBase<T>::PollingDeviceBase() : mPollingInterval(0), mPollingActive(false), mForceNotWaitFirst(false) {
-    mPolling.moveToThread(&mThread);
-    connect(&mPolling, SIGNAL(timeout()), SLOT(onPoll()));
+    this->mPolling.moveToThread(&this->mThread);
+    connect(&this->mPolling, SIGNAL(timeout()), SLOT(onPoll()));
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void PollingDeviceBase<T>::releasePolling() {
-    if (!isAutoDetecting() && (!mStatusCollection.isEmpty() || (mInitialized == ERequestStatus::InProcess))) {
-        waitCondition([&]() -> bool { return mPollingActive; }, CPollingDeviceBase::StopWaiting);
+    if (!this->isAutoDetecting() &&
+        (!this->mStatusCollection.isEmpty() || (this->mInitialized == ERequestStatus::InProcess))) {
+        this->waitCondition([&]() -> bool { return this->mPollingActive; }, CPollingDeviceBase::StopWaiting);
     }
 
-    stopPolling();
+    this->stopPolling();
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool PollingDeviceBase<T>::release() {
-    releasePolling();
+    this->releasePolling();
 
-    return DeviceBase<T>::release();
+    return this->DeviceBase<T>::release();
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void PollingDeviceBase<T>::finalizeInitialization() {
-    if (!mConnected) {
-        processStatusCodes(TStatusCodes() << DeviceStatusCode::Error::NotAvailable);
+    if (!this->mConnected) {
+        this->processStatusCodes(TStatusCodes() << DeviceStatusCode::Error::NotAvailable);
     }
 
-    bool notWaitFirst = mForceNotWaitFirst || !mConnected;
+    bool notWaitFirst = this->mForceNotWaitFirst || !this->mConnected;
 
-    startPolling(notWaitFirst);
+    this->startPolling(notWaitFirst);
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void PollingDeviceBase<T>::setPollingActive(bool aActive) {
-    if (!mOperatorPresence) {
-        toLog(LogLevel::Normal, aActive ? "Start polling." : "Stop polling.");
+    if (!this->mOperatorPresence) {
+        this->toLog(LogLevel::Normal, aActive ? "Start polling." : "Stop polling.");
 
-        aActive ? mPolling.start(mPollingInterval) : mPolling.stop();
+        aActive ? this->mPolling.start(this->mPollingInterval) : this->mPolling.stop();
 
-        mPollingActive = aActive;
+        this->mPollingActive = aActive;
     }
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void PollingDeviceBase<T>::startPolling(bool aNotWaitFirst) {
-    if (mPollingActive) {
+    if (this->mPollingActive) {
         return;
     }
 
-    Qt::ConnectionType connectionType = !isWorkingThread() ? Qt::BlockingQueuedConnection : Qt::DirectConnection;
+    Qt::ConnectionType connectionType = !this->isWorkingThread() ? Qt::BlockingQueuedConnection : Qt::DirectConnection;
 
-    if (mPollingInterval) {
+    if (this->mPollingInterval) {
         QMetaObject::invokeMethod(this, "setPollingActive", connectionType, Q_ARG(bool, true));
     }
 
@@ -85,12 +86,13 @@ template <class T> void PollingDeviceBase<T>::startPolling(bool aNotWaitFirst) {
 
 //--------------------------------------------------------------------------------
 template <class T> void PollingDeviceBase<T>::stopPolling(bool aWait) {
-    if (mPollingActive) {
-        Qt::ConnectionType connectionType = !isWorkingThread() ? Qt::BlockingQueuedConnection : Qt::DirectConnection;
+    if (this->mPollingActive) {
+        Qt::ConnectionType connectionType =
+            !this->isWorkingThread() ? Qt::BlockingQueuedConnection : Qt::DirectConnection;
         QMetaObject::invokeMethod(this, "setPollingActive", connectionType, Q_ARG(bool, false));
 
         if (aWait) {
-            waitCondition([&]() -> bool { return !mPollingActive; }, CPollingDeviceBase::StopWaiting);
+            this->waitCondition([&]() -> bool { return !this->mPollingActive; }, CPollingDeviceBase::StopWaiting);
         }
     }
 }
@@ -99,12 +101,12 @@ template <class T> void PollingDeviceBase<T>::stopPolling(bool aWait) {
 template <class T> void PollingDeviceBase<T>::setPollingInterval(int aPollingInterval) {
     Q_ASSERT(aPollingInterval != 0);
 
-    int delta = mPollingInterval - aPollingInterval;
-    mPollingInterval = aPollingInterval;
+    int delta = this->mPollingInterval - aPollingInterval;
+    this->mPollingInterval = aPollingInterval;
 
-    if (mPollingActive && delta) {
-        stopPolling();
-        startPolling(false);
+    if (this->mPollingActive && delta) {
+        this->stopPolling();
+        this->startPolling(false);
     }
 }
 
@@ -112,20 +114,20 @@ template <class T> void PollingDeviceBase<T>::setPollingInterval(int aPollingInt
 template <class T>
 void PollingDeviceBase<T>::postPollingAction(const TStatusCollection &aNewStatusCollection,
                                              const TStatusCollection &aOldStatusCollection) {
-    if (mConnected) {
-        for (int i = 0; i < mPPTaskList.size(); ++i) {
-            mPPTaskList[i]();
+    if (this->mConnected) {
+        for (int i = 0; i < this->mPPTaskList.size(); ++i) {
+            this->mPPTaskList[i]();
 
-            mPPTaskList.removeAt(i--);
+            this->mPPTaskList.removeAt(i--);
         }
     }
 
-    DeviceBase::postPollingAction(aNewStatusCollection, aOldStatusCollection);
+    this->DeviceBase<T>::postPollingAction(aNewStatusCollection, aOldStatusCollection);
 }
 
 //--------------------------------------------------------------------------------
 template <class T> bool PollingDeviceBase<T>::waitCondition(TBoolMethod aCondition, const SWaitingData &aWaitingData) {
-    if (isWorkingThread()) {
+    if (this->DeviceBase<T>::isWorkingThread()) {
         return aCondition();
     }
 
@@ -136,14 +138,14 @@ template <class T> bool PollingDeviceBase<T>::waitCondition(TBoolMethod aConditi
 
 //--------------------------------------------------------------------------------
 template <class T> void PollingDeviceBase<T>::reInitialize() {
-    stopPolling(false);
+    this->stopPolling(false);
 
-    DeviceBase<T>::reInitialize();
+    this->DeviceBase<T>::reInitialize();
 }
 
 //---------------------------------------------------------------------------
 template <class T> bool PollingDeviceBase<T>::isInitializationError(TStatusCodes &aStatusCodes) {
-    return mPollingActive && DeviceBase<T>::isInitializationError(aStatusCodes);
+    return this->mPollingActive && this->DeviceBase<T>::isInitializationError(aStatusCodes);
 }
 
 //--------------------------------------------------------------------------------
