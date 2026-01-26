@@ -5,7 +5,7 @@
 // Modules
 #include "Hardware/Common/DeviceCodeSpecification.h"
 #include "Hardware/Common/WaitingData.h"
-#include "Hardware/Protocols/CashAcceptor/SSPDataTypes.h"
+#include <Hardware/Protocols/CashAcceptor/SSPDataTypes.h>
 
 // Project
 #include "Hardware/CashAcceptors/CashAcceptorStatusCodes.h"
