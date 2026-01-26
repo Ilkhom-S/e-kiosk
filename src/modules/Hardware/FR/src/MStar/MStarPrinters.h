@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Hardware/FR/SerialFRBase.h"
-#include "Hardware/Protocols/FR/IncotexFR.h"
+#include <Hardware/FR/IncotexFR.h>
 
 //--------------------------------------------------------------------------------
 class MStarPrinters : public SerialFRBase {
