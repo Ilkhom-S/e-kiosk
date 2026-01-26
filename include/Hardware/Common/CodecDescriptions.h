@@ -4,7 +4,7 @@
 
 #include "Hardware/FR/AtolCodec.h"
 #include <Hardware/FR/SparkCodec.h>
-#include "Hardware/Printers/CustomKZTCodec.h"
+#include <Hardware/Printers/CustomKZTCodec.h>
 
 // Qt
 #include <memory>

@@ -3,7 +3,7 @@
 #pragma once
 
 // Project
-#include "Hardware/Printers/Tags.h"
+#include <Hardware/Printers/Tags.h>
 #include "OPOSMStarTUPKData.h"
 
 //--------------------------------------------------------------------------------

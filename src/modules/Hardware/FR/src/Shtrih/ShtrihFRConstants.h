@@ -7,7 +7,7 @@
 
 // Modules
 #include "Hardware/Common/ASCII.h"
-#include "Hardware/Printers/Tags.h"
+#include <Hardware/Printers/Tags.h>
 
 // Project
 #include "Hardware/FR/FRErrorDescription.h"

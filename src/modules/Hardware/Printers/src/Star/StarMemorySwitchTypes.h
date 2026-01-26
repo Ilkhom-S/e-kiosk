@@ -1,21 +1,9 @@
-/* @file Мем-свичи принтеров STAR. */
+/* @file DEPRECATED - See include/Hardware/Printers/StarMemorySwitchTypes.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/Hardware/Printers/.
+All NEW code should include <Hardware/Printers/StarMemorySwitchTypes.h>.
+*/
 
 #pragma once
-
-namespace ESTARMemorySwitchTypes {
-    enum Enum {
-        LoopHoldEjector,
-        Chinese,
-        ASB,
-        ASBPresenter,
-        BlackMark,
-        LineSpacing,
-        CR,
-        VerticalMountMode,
-        AutoRetractionTimeout,
-        PowerOnReaction,
-        Codepage
-    };
-} // namespace ESTARMemorySwitchTypes
-
-//--------------------------------------------------------------------------------
+#include <Hardware/Printers/StarMemorySwitchTypes.h>

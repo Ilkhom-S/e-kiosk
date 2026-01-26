@@ -1,37 +1,9 @@
-/* @file Принтеры семейства Epson EU-T400. */
+/* @file DEPRECATED - See include/Hardware/Printers/EpsonEUT400.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/Hardware/Printers/.
+All NEW code should include <Hardware/Printers/EpsonEUT400.h>.
+*/
 
 #pragma once
-
-#include "Hardware/Printers/PortPOSPrinters.h"
-
-//--------------------------------------------------------------------------------
-class EpsonEUT400 : public TSerialPOSPrinter {
-    SET_SUBSERIES("EpsonEUT400")
-
-  public:
-    EpsonEUT400();
-
-    /// Инициализация устройства.
-    virtual bool updateParametersOut();
-
-    /// Устанавливает конфигурацию устройству.
-    virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
-
-  protected:
-    /// Инициализация устройства.
-    virtual bool updateParameters();
-
-    /// Запросить и сохранить параметры устройства.
-    virtual void processDeviceData();
-
-    /// Установить memory switch.
-    bool setMemorySwitch(char aNumber, char aValue);
-
-    /// Получить memory-switch.
-    bool getMemorySwitch(char aNumber, char &aValue);
-
-    /// Выполнить сброс.
-    bool reset();
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/Printers/EpsonEUT400.h>

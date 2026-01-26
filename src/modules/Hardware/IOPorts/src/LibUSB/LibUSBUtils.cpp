@@ -494,7 +494,8 @@ namespace LibUSBUtils {
 
                     QVariantMap companionEPData;
                     companionEPData.insert(CompanionEPData::MaxBurstPacketAmount, epCompanionDescriptor->bMaxBurst);
-                    companionEPData.insert(CompanionEPData::Attributes, toHexLog(epCompanionDescriptor->this->mAttributes));
+                    companionEPData.insert(CompanionEPData::Attributes,
+                                           toHexLog(epCompanionDescriptor->this->mAttributes));
                     companionEPData.insert(CompanionEPData::BytesPerInterval, epCompanionDescriptor->wBytesPerInterval);
 
                     result << companionEPData;

@@ -17,7 +17,7 @@
 #include "../../src/modules/Hardware/Printers/src/POSPrinters/Custom/CustomTG2480H.h"
 #include "../../src/modules/Hardware/Printers/src/POSPrinters/Custom/CustomVKP/CustomVKP80.h"
 #include "../../src/modules/Hardware/Printers/src/POSPrinters/Custom/CustomVKP/CustomVKP80III.h"
-#include "../../src/modules/Hardware/Printers/src/POSPrinters/Epson/EpsonEUT400.h"
+#include <Hardware/Printers/EpsonEUT400.h>
 #include "../../src/modules/Hardware/Printers/src/PrimexNP2511/PrimexNP2511.h"
 #include "../../src/modules/Hardware/Printers/src/Star/EjectorStarPrinters.h"
 #include "../../src/modules/Hardware/Printers/src/Star/StarPrinters.h"

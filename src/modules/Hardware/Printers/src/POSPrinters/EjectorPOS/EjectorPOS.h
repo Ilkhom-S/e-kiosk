@@ -1,30 +1,9 @@
-/* @file POS-принтеры с эжектором. */
+/* @file DEPRECATED - See include/Hardware/Printers/EjectorPOS.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/Hardware/Printers/.
+All NEW code should include <Hardware/Printers/EjectorPOS.h>.
+*/
 
 #pragma once
-
-#include "Hardware/Printers/PortPOSPrinters.h"
-
-/// Константы POS-принтеров с эжектором.
-namespace CEjectorPOS {
-    /// Минимальная длина презентации
-    const int MinPresentationLength = 2;
-} // namespace CEjectorPOS
-
-//--------------------------------------------------------------------------------
-template <class T> class EjectorPOS : public POSPrinter<T> {
-  public:
-    EjectorPOS();
-
-    /// Устанавливает конфигурацию устройству.
-    virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
-
-  protected:
-    /// Инициализация устройства.
-    virtual bool updateParameters();
-};
-
-//--------------------------------------------------------------------------------
-typedef SerialPOSPrinter<EjectorPOS<TSerialPrinterBase>> TSerialEjectorPOS;
-typedef EjectorPOS<TLibUSBPrinterBase> TLibUSBEjectorPOS;
-
-//--------------------------------------------------------------------------------
+#include <Hardware/Printers/EjectorPOS.h>

@@ -6,7 +6,7 @@
 #include "Hardware/Common/ASCII.h"
 
 // Project
-#include "Hardware/Printers/Tags.h"
+#include <Hardware/Printers/Tags.h>
 #include "Hardware/FR/FRErrorDescription.h"
 #include "AtolDataTypes.h"
 

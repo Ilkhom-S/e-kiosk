@@ -10,6 +10,11 @@
     "thirdparty/": true,
     "vcpkg_installed/": true
   },
+  "c-cpp-flylint.excludeFromWorkspacePaths": [
+    "thirdparty",
+    "build",
+    "vcpkg_installed"
+  ],
   "openInExternalApp.openMapper": [
     {
       "extensionName": "qml",

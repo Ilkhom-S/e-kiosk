@@ -6,8 +6,8 @@
 #include <QtCore/QRecursiveMutex>
 #include <Common/QtHeadersEnd.h>
 
-// Project
-#include "POSParameters.h"
+// System
+#include <Hardware/Printers/POSParameters.h>
 
 namespace POSPrinters {
 

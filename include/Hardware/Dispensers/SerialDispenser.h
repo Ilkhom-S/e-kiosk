@@ -1,7 +1,6 @@
 /* @file Серийный диспенсер. */
 #pragma once
 
-
 // System
 #include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/Common/SerialDeviceBase.h"

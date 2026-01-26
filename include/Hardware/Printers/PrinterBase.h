@@ -16,7 +16,7 @@
 // Project
 #include "Hardware/Printers/PrinterConstants.h"
 #include "Hardware/Printers/PrinterStatusCodes.h"
-#include "Hardware/Printers/Tags.h"
+#include <Hardware/Printers/Tags.h>
 
 namespace CPrinter {
     /// Спец-теги.
