@@ -1,25 +1,9 @@
-/* @file Дефолтное HID-устройство на COM-порту. */
+/* @file DEPRECATED - See include/Hardware/Scanners/SerialScanner.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/Scanners/SerialScanner.h>.
+*/
 
 #pragma once
-
-// Modules
-#include "Hardware/Common/SerialDeviceBase.h"
-#include "Hardware/Common/PortPollingDeviceBase.h"
-#include "Hardware/HID/ProtoHID.h"
-
-// Project
-#include <Hardware/Scanners/PortScanner.h>
-
-//--------------------------------------------------------------------------------
-typedef PortScanner<SerialDeviceBase<PortPollingDeviceBase<ProtoHID>>> TSerialScanner;
-
-class SerialScanner : public TSerialScanner {
-  public:
-    SerialScanner();
-
-  protected:
-    /// Получить данные
-    virtual bool getData(QByteArray &aAnswer);
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/Scanners/SerialScanner.h>

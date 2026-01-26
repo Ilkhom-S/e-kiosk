@@ -1,9 +1,9 @@
 /* @file Дефолтное HID-устройство на COM-порту. */
 
 
-#include "SerialScanner.h"
+// System
+#include <Hardware/Scanners/SerialScanner.h>
 
-//--------------------------------------------------------------------------------
 SerialScanner::SerialScanner() {
     mDeviceName = "Generic serial HID";
     mAutoDetectable = false;

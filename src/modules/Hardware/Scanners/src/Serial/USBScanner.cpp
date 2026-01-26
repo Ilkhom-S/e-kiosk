@@ -1,7 +1,8 @@
 /* @file USB-сканер. */
 
-#include "USBScanner.h"
-#include "HHPDetectingData.h"
+// System
+#include <Hardware/Scanners/HHPDetectingData.h>
+#include <Hardware/Scanners/USBScanner.h>
 
 using namespace SDK::Driver;
 
