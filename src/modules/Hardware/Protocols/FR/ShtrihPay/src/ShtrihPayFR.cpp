@@ -5,11 +5,12 @@
 #include <QtCore/QTime>
 #include <Common/QtHeadersEnd.h>
 
+// System
+#include <Hardware/FR/ShtrihPayFR.h>
+
 // Project
-#include "ShtrihPayFR.h"
 #include "ShtrihPayFRConstants.h"
 
-//--------------------------------------------------------------------------------
 ShtrihPayFRProtocol::ShtrihPayFRProtocol() : mPacketId(0) {
 }
 
