@@ -13,7 +13,7 @@
 #include "Hardware/Common/ConfigCleaner.h"
 #include "Hardware/Common/WorkingThreadProxy.h"
 #include "Hardware/FR/FRStatusCodes.h"
-#include "Hardware/FR/FSSerialData.h"
+#include <Hardware/FR/FSSerialData.h>
 #include "Hardware/FR/OFDServerData.h"
 #include "Hardware/Protocols/Common/ProtocolUtils.h"
 #include "PaymentProcessor/PrintConstants.h"

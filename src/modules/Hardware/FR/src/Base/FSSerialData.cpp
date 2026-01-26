@@ -1,9 +1,9 @@
 /* @file Данные ФН. */
 
 
-#include "FSSerialData.h"
+// System
+#include <Hardware/FR/FSSerialData.h>
 
-//--------------------------------------------------------------------------------
 namespace FS {
     CData::CData() {
         add("87100001", 13, EFFD::F10, "ООО \"РИК\"");
