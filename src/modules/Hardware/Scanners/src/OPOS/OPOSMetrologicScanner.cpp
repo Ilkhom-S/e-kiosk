@@ -21,7 +21,7 @@
 #include "Hardware/Common/BaseStatusDescriptions.h"
 
 // Project
-#include "OPOSMetrologicScanner.h"
+#include <Hardware/Scanners/OPOSMetrologicScanner.h>
 
 #pragma pop_macro("max")
 #pragma pop_macro("min")
