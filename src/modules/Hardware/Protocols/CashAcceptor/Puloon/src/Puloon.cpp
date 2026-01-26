@@ -5,8 +5,10 @@
 #include <QtCore/QElapsedTimer>
 #include <Common/QtHeadersEnd.h>
 
+// System
+#include <Hardware/Protocols/Dispensers/Puloon.h>
+
 // Project
-#include "Puloon.h"
 #include "PuloonConstants.h"
 
 uchar Puloon::calcCRC(const QByteArray &aData) const {
