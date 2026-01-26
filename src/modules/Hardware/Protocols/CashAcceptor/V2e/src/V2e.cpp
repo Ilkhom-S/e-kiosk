@@ -8,8 +8,10 @@
 #include <QtCore/QElapsedTimer>
 #include <Common/QtHeadersEnd.h>
 
+// System
+#include <Hardware/Protocols/CashAcceptor/V2e.h>
+
 // Project
-#include "V2e.h"
 #include "V2eConstants.h"
 
 ushort V2eProtocol::calcCRC(const QByteArray &aData) {

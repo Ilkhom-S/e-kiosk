@@ -1,30 +1,9 @@
-/* @file Протокол V2e. */
+/* @file DEPRECATED - See include/Hardware/Protocols/CashAcceptor/V2e.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/Protocols/CashAcceptor/V2e.h>.
+*/
 
 #pragma once
-
-#include "Hardware/Common/ProtocolBase.h"
-
-//--------------------------------------------------------------------------------
-class V2eProtocol : public ProtocolBase {
-  public:
-    /// Выполнить команду протокола.
-    TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData);
-
-  protected:
-    /// Подсчет контрольной суммы пакета данных.
-    ushort calcCRC(const QByteArray &aData);
-
-    /// Обработать ошибку в ответе купюроприемника.
-    TResult handleError(const QByteArray &aRequest, QByteArray &aAnswer);
-
-    /// Получить пакет данных из порта.
-    bool getAnswer(QByteArray &aAnswer);
-
-    /// Упаковка команды и данных в пакет.
-    void pack(QByteArray &aCommandData);
-
-    /// Проверка пришедших из порта данных.
-    bool check(const QByteArray &aAnswer, const QByteArray &aRequest);
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/Protocols/CashAcceptor/V2e.h>
