@@ -15,7 +15,7 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [x] Implement LibUSB integration for USB device support in plugins
 - [x] Fix Ad plugin tests: move to tests/plugins/Ad/, fix Qt cleanup crash, enhance coverage
 - [x] Implement FR (Fiscal Register) deprecation Phase 1 - exclude from build system
-- [x] Complete header refactoring: migrate all redirect headers from src/modules/ to include/ with proper deprecation notes
+- [x] Complete header refactoring: migrate all major redirect headers from src/modules/ to include/ with proper deprecation notes (FR protocols, CashAcceptor protocols, data types, Scanners, IOPorts, Watchdogs, CashAcceptors collections completed; ~13 platform-specific/individual headers remain)
 - [ ] Update CMake to build each app and link shared code
       Notes:
 - `SingleApplication` is now vendored as a git submodule under `thirdparty/SingleApplication` to avoid pulling Qt6 via vcpkg. Use `git submodule update --init --recursive` after cloning.
