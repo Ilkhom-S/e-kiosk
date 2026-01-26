@@ -1,72 +1,9 @@
-/* @file Купюроприемник на протоколе ID003. */
+/* @file DEPRECATED - See include/Hardware/CashAcceptors/SSPCashAcceptor.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/CashAcceptors/SSPCashAcceptor.h>.
+*/
 
 #pragma once
-
-// Modules
-#include "Hardware/Protocols/CashAcceptor/SSP.h"
-
-// Project
-#include "Hardware/CashAcceptors/SerialCashAcceptor.h"
-
-//--------------------------------------------------------------------------------
-class SSPCashAcceptor : public TSerialCashAcceptor {
-    SET_SERIES("SSP")
-
-  public:
-    SSPCashAcceptor();
-
-    /// Возвращает список поддерживаемых устройств.
-    static QStringList getModelList();
-
-    /// Принять купюру.
-    virtual bool stack();
-
-    /// Вернуть купюру.
-    virtual bool reject();
-
-  protected:
-    /// Попытка самоидентификации.
-    virtual bool isConnected();
-
-    /// Установка параметров по умолчанию.
-    virtual bool setDefaultParameters();
-
-    /// Запросить и сохранить параметры устройства.
-    virtual void processDeviceData();
-
-    /// Применить таблицу номиналов.
-    virtual bool applyParTable();
-
-    /// Изменение режима приема денег.
-    virtual bool enableMoneyAcceptingMode(bool aEnabled);
-
-    /// Загрузка таблицы номиналов из устройства.
-    virtual bool loadParTable();
-
-    /// Получить статусы.
-    virtual bool checkStatuses(TStatusData &aData);
-
-    /// Локальный сброс.
-    virtual bool processReset();
-
-    /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
-                                QByteArray *aAnswer = nullptr);
-
-    /// Обновить прошивку.
-    virtual bool performUpdateFirmware(const QByteArray &aBuffer);
-
-    /// Изменить скорость работы.
-    bool performBaudRateChanging(bool aUp);
-
-    /// Протокол.
-    SSPProtocol mProtocol;
-
-    /// Удачна ли была последняя транзакция связи с устройством.
-    bool mLastConnectionOK;
-
-    /// Признак включенности на прием денег.
-    bool mEnabled;
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/CashAcceptors/SSPCashAcceptor.h>

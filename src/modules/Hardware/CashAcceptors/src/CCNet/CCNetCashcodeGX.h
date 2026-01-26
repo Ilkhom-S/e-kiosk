@@ -1,43 +1,9 @@
-/* @file Купюроприемник Cashcode GX на протоколе CCNet. */
+/* @file DEPRECATED - See include/Hardware/CashAcceptors/CCNetCashcodeGX.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/CashAcceptors/CCNetCashcodeGX.h>.
+*/
 
 #pragma once
-
-#include <cmath>
-
-#include "CCNetCashAcceptorBase.h"
-
-//--------------------------------------------------------------------------------
-namespace CCCNetCashcodeGX {
-    /// Пауза после резета, [мс].
-    const int ResetPause = 15 * 1000;
-
-    /// Выход из initilaize-а.
-    const int ExitInitializeTimeout = 20 * 1000;
-} // namespace CCCNetCashcodeGX
-
-//--------------------------------------------------------------------------------
-class CCNetCashcodeGX : public CCNetCashAcceptorBase {
-    SET_SUBSERIES("CashcodeGX")
-
-  public:
-    CCNetCashcodeGX();
-
-  protected:
-    /// Проверка возможности выполнения функционала, предполагающего связь с устройством.
-    virtual bool checkConnectionAbility();
-
-    /// Выполнить команду.
-    virtual TResult performCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
-                                   QByteArray *aAnswer = nullptr);
-
-    /// Локальный сброс.
-    virtual bool processReset();
-
-    /// Отправить буфер данных обновления прошивки для купюроприемника Cashcode GX.
-    virtual bool processUpdating(const QByteArray &aBuffer, int aSectionSize);
-
-    /// Изменить скорость работы.
-    virtual bool performBaudRateChanging(const SDK::Driver::TPortParameters &aPortParameters);
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/CashAcceptors/CCNetCashcodeGX.h>

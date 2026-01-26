@@ -1,50 +1,9 @@
-/* @file Купюроприемник на протоколе ICT. */
+/* @file DEPRECATED - See include/Hardware/CashAcceptors/ICTCashAcceptor.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/CashAcceptors/ICTCashAcceptor.h>.
+*/
 
 #pragma once
-
-#include "Hardware/CashAcceptors/SerialCashAcceptor.h"
-
-//--------------------------------------------------------------------------------
-class ICTCashAcceptor : public TSerialCashAcceptor {
-    SET_SERIES("ICT")
-
-  public:
-    ICTCashAcceptor();
-
-    /// Возвращает список поддерживаемых устройств.
-    static QStringList getModelList();
-
-    /// Принять купюру.
-    virtual bool stack();
-
-    /// Вернуть купюру.
-    virtual bool reject();
-
-  protected:
-    /// Попытка самоидентификации.
-    virtual bool isConnected();
-
-    /// Фоновая логика при появлении определенных состояний устройства.
-    virtual void postPollingAction(const TStatusCollection &aNewStatusCollection,
-                                   const TStatusCollection &aOldStatusCollection);
-
-    /// Проверка возможности применения буфера статусов.
-    virtual bool isStatusesReplaceable(TStatusCodes &aStatusCodes);
-
-    /// Изменение режима приема денег.
-    virtual bool enableMoneyAcceptingMode(bool aEnabled);
-
-    /// Загрузка таблицы номиналов из устройства.
-    virtual bool loadParTable();
-
-    /// Получить статус.
-    virtual bool checkStatus(QByteArray &aAnswer);
-
-    /// Ответить на команду Reset.
-    bool answerToReset();
-
-    /// Локальный сброс.
-    virtual bool processReset();
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/CashAcceptors/ICTCashAcceptor.h>

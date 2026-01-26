@@ -1,26 +1,9 @@
-/* @file Ресайклер на протоколе CCNet. */
+/* @file DEPRECATED - See include/Hardware/CashAcceptors/CCNetRecycler.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/CashAcceptors/CCNetRecycler.h>.
+*/
 
 #pragma once
-
-#include "CCNetCashAcceptorBase.h"
-
-//--------------------------------------------------------------------------------
-namespace CCCNetRecycler {
-    /// Выход из initilaize-а.
-    const int ExitInitializeTimeout = 30 * 1000;
-} // namespace CCCNetRecycler
-
-//--------------------------------------------------------------------------------
-class CCNetRecycler : public CCNetCashAcceptorBase {
-    // TODO: сделать отдельный тип устройств при реализации диспенсерного функционала
-    SET_SUBSERIES("Recycler")
-
-  public:
-    CCNetRecycler();
-
-  protected:
-    /// Локальный сброс.
-    virtual bool processReset();
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/CashAcceptors/CCNetRecycler.h>
