@@ -1,22 +1,9 @@
-/* @file Типы данных купюроприемников на протоколе CCNet. */
+/* @file DEPRECATED - See include/Hardware/Protocols/CashAcceptor/CCNetDataTypes.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/Protocols/CashAcceptor/CCNetDataTypes.h>.
+*/
 
 #pragma once
-
-//--------------------------------------------------------------------------------
-namespace CCCNet {
-    namespace Commands {
-        struct SData {
-            bool deviceACK;
-            bool hostACK;
-            int timeout;
-
-            SData() : deviceACK(true), hostACK(false), timeout(0) {
-            }
-            SData(bool aDeviceACK, bool aHostACK, int aTimeout)
-                : deviceACK(aDeviceACK), hostACK(aHostACK), timeout(aTimeout) {
-            }
-        };
-    } // namespace Commands
-} // namespace CCCNet
-
-//--------------------------------------------------------------------------------
+#include <Hardware/Protocols/CashAcceptor/CCNetDataTypes.h>

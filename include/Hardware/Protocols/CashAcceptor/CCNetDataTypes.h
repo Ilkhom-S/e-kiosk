@@ -1,4 +1,22 @@
-/* @file Типы данных CCNet. */
+/* @file Типы данных купюроприемников на протоколе CCNet. */
 
-// System
-#include "../../src/modules/Hardware/Protocols/CashAcceptor/CCNet/src/CCNetDataTypes.h"
+#pragma once
+
+//--------------------------------------------------------------------------------
+namespace CCCNet {
+    namespace Commands {
+        struct SData {
+            bool deviceACK;
+            bool hostACK;
+            int timeout;
+
+            SData() : deviceACK(true), hostACK(false), timeout(0) {
+            }
+            SData(bool aDeviceACK, bool aHostACK, int aTimeout)
+                : deviceACK(aDeviceACK), hostACK(aHostACK), timeout(aTimeout) {
+            }
+        };
+    } // namespace Commands
+} // namespace CCCNet
+
+//--------------------------------------------------------------------------------
