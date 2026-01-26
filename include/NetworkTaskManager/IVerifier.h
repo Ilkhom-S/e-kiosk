@@ -1,4 +1,17 @@
-/* @file Интерфейс верификатора. */
+/* @file Интерфейс верификатора данных. */
 
-// System
-#include "../../modules/NetworkTaskManager/src/IVerifier.h"
+#pragma once
+
+class QByteArray;
+class NetworkTask;
+
+//------------------------------------------------------------------------
+class IVerifier {
+  public:
+    virtual ~IVerifier() {
+    }
+
+    virtual bool verify(NetworkTask *aTask, const QByteArray &aData) = 0;
+};
+
+//------------------------------------------------------------------------

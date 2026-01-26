@@ -1,17 +1,9 @@
-/* @file Интерфейс верификатора данных. */
+/* @file DEPRECATED - See ../../../<NetworkTaskManager/IVerifier.h> instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in ../../../<NetworkTaskManager/IVerifier.h>.
+All NEW code should include ../../../<NetworkTaskManager/IVerifier.h>.
+*/
 
 #pragma once
-
-class QByteArray;
-class NetworkTask;
-
-//------------------------------------------------------------------------
-class IVerifier {
-  public:
-    virtual ~IVerifier() {
-    }
-
-    virtual bool verify(NetworkTask *aTask, const QByteArray &aData) = 0;
-};
-
-//------------------------------------------------------------------------
+#include ../../../<NetworkTaskManager/IVerifier.h>
