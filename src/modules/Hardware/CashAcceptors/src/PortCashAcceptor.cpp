@@ -9,11 +9,9 @@
 #include <Common/QtHeadersEnd.h>
 
 // System
-#include "Hardware/CashAcceptors/CashAcceptorData.h"
+#include <Hardware/CashAcceptors/CashAcceptorData.h>
+#include <Hardware/CashAcceptors/PortCashAcceptor.h>
 #include <Hardware/Common/LoggingType.h>
-
-// Project
-#include "PortCashAcceptor.h"
 
 using namespace SDK::Driver;
 
