@@ -10,9 +10,7 @@
 #include "Hardware/Common/SerialDeviceBase.h"
 #include "Hardware/Common/USBDeviceBase.h"
 #include "Hardware/HID/ProtoHID.h"
-
-// Project
-#include "PortScanner.h"
+#include <Hardware/Scanners/PortScanner.h>
 
 template class PortScanner<USBDeviceBase<PortPollingDeviceBase<ProtoHID>>>;
 template class PortScanner<SerialDeviceBase<PortPollingDeviceBase<ProtoHID>>>;

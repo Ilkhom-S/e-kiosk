@@ -8,7 +8,7 @@
 #include "Hardware/HID/ProtoHID.h"
 
 // Project
-#include "PortScanner.h"
+#include <Hardware/Scanners/PortScanner.h>
 
 //--------------------------------------------------------------------------------
 namespace CUSBScanner {

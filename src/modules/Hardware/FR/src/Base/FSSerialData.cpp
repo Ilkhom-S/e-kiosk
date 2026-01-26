@@ -1,6 +1,5 @@
 /* @file Данные ФН. */
 
-
 // System
 #include <Hardware/FR/FSSerialData.h>
 
