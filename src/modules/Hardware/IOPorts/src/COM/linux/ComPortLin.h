@@ -1,10 +1,12 @@
 #pragma once
 
+// Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QSharedPointer>
 #include <Common/QtHeadersEnd.h>
 
-#include "Devices/Ports/ComPort/ComPortBase.h"
+// System
+#include <Hardware/IOPorts/COMPortBase.h>
 
 class SerialDevice;
 
