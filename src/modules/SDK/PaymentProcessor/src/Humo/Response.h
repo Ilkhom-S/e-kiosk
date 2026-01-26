@@ -6,4 +6,4 @@ All NEW code should include ../../../../../<SDK/PaymentProcessor/Humo/Response.h
 */
 
 #pragma once
-#include ../../../../../<SDK/PaymentProcessor/Humo/Response.h>
+#include <SDK/PaymentProcessor/Humo/Response.h>

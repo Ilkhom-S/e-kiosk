@@ -6,4 +6,4 @@ All NEW code should include ../<SDK/PaymentProcessor/Settings/Commissions.h>.
 */
 
 #pragma once
-#include ../<SDK/PaymentProcessor/Settings/Commissions.h>
+#include <SDK/PaymentProcessor/Settings/Commissions.h>

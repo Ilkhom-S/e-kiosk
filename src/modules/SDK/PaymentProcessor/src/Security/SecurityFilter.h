@@ -6,4 +6,4 @@ All NEW code should include ../../../../../<SDK/PaymentProcessor/Payment/Securit
 */
 
 #pragma once
-#include ../../../../../<SDK/PaymentProcessor/Payment/Security.h>
+#include <SDK/PaymentProcessor/Payment/Security.h>

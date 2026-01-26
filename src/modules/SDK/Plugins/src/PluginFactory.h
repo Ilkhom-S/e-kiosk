@@ -6,4 +6,4 @@ All NEW code should include ../<SDK/Plugins/PluginFactory.h>.
 */
 
 #pragma once
-#include ../<SDK/Plugins/PluginFactory.h>
+#include <SDK/Plugins/PluginFactory.h>

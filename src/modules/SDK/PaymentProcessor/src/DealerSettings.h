@@ -6,4 +6,4 @@ All NEW code should include ../<SDK/PaymentProcessor/Settings/DealerSettings.h>.
 */
 
 #pragma once
-#include ../<SDK/PaymentProcessor/Settings/DealerSettings.h>
+#include <SDK/PaymentProcessor/Settings/DealerSettings.h>

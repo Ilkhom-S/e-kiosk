@@ -1,43 +1,9 @@
-/* @file Протокол ФР АТОЛ. */
+/* @file DEPRECATED - See include/Hardware/FR/Atol2FR.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/FR/Atol2FR.h>.
+*/
 
 #pragma once
-
-#include "Hardware/Common/ProtocolBase.h"
-
-//--------------------------------------------------------------------------------
-/// Класс протокола KKM.
-class Atol2FRProtocol : public ProtocolBase {
-  public:
-    /// Выполнить команду протокола.
-    TResult processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, int aTimeout);
-
-  private:
-    /// Вычислить CRC.
-    char calcCRC(const QByteArray &aData);
-
-    /// Исполнить команду.
-    bool execCommand(QByteArray &aPacket);
-
-    /// Распаковать данные.
-    bool unpack(QByteArray &aAnswer);
-
-    /// Получить пакет данных из порта.
-    bool read(QByteArray &aData);
-
-    /// Открыть сеанс связи для записи данных.
-    bool openWriteSession();
-
-    /// Открыть сеанс связи для чтения данных.
-    bool openReadSession(int aTimeout);
-
-    /// Закрыть сеанс связи для записи данных.
-    bool closeWriteSession();
-
-    /// Закрыть сеанс связи для чтения данных.
-    bool closeReadSession();
-
-    /// Отправить ACK.
-    bool sendACK();
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/FR/Atol2FR.h>

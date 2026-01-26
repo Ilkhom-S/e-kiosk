@@ -6,4 +6,4 @@ All NEW code should include ../../../../../<SDK/PaymentProcessor/Humo/ErrorCodes
 */
 
 #pragma once
-#include ../../../../../<SDK/PaymentProcessor/Humo/ErrorCodes.h>
+#include <SDK/PaymentProcessor/Humo/ErrorCodes.h>

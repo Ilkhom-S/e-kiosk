@@ -6,4 +6,4 @@ All NEW code should include ../<SDK/PaymentProcessor/Settings/TerminalSettings.h
 */
 
 #pragma once
-#include ../<SDK/PaymentProcessor/Settings/TerminalSettings.h>
+#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>

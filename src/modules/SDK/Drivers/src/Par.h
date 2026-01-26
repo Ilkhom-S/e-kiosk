@@ -6,4 +6,4 @@ All NEW code should include ../<SDK/Drivers/CashAcceptor/Par.h>.
 */
 
 #pragma once
-#include ../<SDK/Drivers/CashAcceptor/Par.h>
+#include <SDK/Drivers/CashAcceptor/Par.h>

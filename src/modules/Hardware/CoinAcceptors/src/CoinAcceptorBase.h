@@ -1,27 +1,9 @@
-/* @file Базовый класс монетоприемников. */
+/* @file DEPRECATED - See include/Hardware/CoinAcceptors/CoinAcceptorBase.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/CoinAcceptors/CoinAcceptorBase.h>.
+*/
 
 #pragma once
-
-#include "Hardware/CashAcceptors/SerialCashAcceptor.h"
-
-//--------------------------------------------------------------------------------
-namespace CCoinAcceptor {
-    /// Таймаут отсылки сигнала об отключении монетника, [мс].
-    const int DisablingTimeout = 600;
-} // namespace CCoinAcceptor
-
-//--------------------------------------------------------------------------------
-class CoinAcceptorBase : public TSerialCashAcceptor {
-    SET_DEVICE_TYPE(CoinAcceptor)
-
-  public:
-    CoinAcceptorBase();
-
-    /// Принять купюру.
-    virtual bool stack();
-
-    /// Вернуть купюру. Правильный термин - return (ключевое слово).
-    virtual bool reject();
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/CoinAcceptors/CoinAcceptorBase.h>

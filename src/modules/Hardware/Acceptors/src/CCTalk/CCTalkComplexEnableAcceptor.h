@@ -1,20 +1,9 @@
-/* @file Устройство приема денег на протоколе ccTalk с 2-ступенчатой схемой включения на прием денег. */
+/* @file DEPRECATED - See include/Hardware/Acceptors/CCTalkComplexEnableAcceptor.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/Acceptors/CCTalkComplexEnableAcceptor.h>.
+*/
 
 #pragma once
-
-#include "CCTalkAcceptorBase.h"
-
-//--------------------------------------------------------------------------------
-template <class T> class CCTalkComplexEnableAcceptor : public T {
-    SET_SUBSERIES("ComplexEnabling")
-
-  protected:
-    /// Фоновая логика при появлении определенных состояний устройства.
-    virtual void postPollingAction(const TStatusCollection &aNewStatusCollection,
-                                   const TStatusCollection &aOldStatusCollection);
-
-    /// Применить таблицу номиналов.
-    virtual bool applyParTable();
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/Acceptors/CCTalkComplexEnableAcceptor.h>

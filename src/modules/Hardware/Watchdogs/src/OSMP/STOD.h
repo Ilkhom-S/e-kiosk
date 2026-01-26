@@ -1,22 +1,9 @@
-/* @file Сторожевой таймер STOD. */
+/* @file DEPRECATED - See include/Hardware/Watchdogs/STOD.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/Watchdogs/STOD.h>.
+*/
 
 #pragma once
-
-#include "OSMP.h"
-
-//--------------------------------------------------------------------------------
-class STOD : public OSMP {
-    SET_SERIES("STOD")
-
-  public:
-    STOD() {
-        mDeviceName = "STOD";
-
-        mData[EOSMPCommandId::IdentificationData] = "STODSIM";
-
-        mData[EOSMPCommandId::Identification] = "OSP\x09";
-        mData[EOSMPCommandId::RebootPC] = "OSTR";
-    }
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/Watchdogs/STOD.h>

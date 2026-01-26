@@ -1,30 +1,9 @@
-/* @file Модели устройств на протоколе CCNet. */
+/* @file DEPRECATED - See include/Hardware/CashAcceptors/Models.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The constants have been moved to the public header in include/.
+All NEW code should include <Hardware/CashAcceptors/Models.h>.
+*/
 
 #pragma once
-
-//--------------------------------------------------------------------------------
-namespace CCCNet {
-    const QString Cashcode = "Cashcode";
-
-    namespace Models {
-        const char CashcodeG200[] = "Cashcode G-200";
-
-        const char CashcodeGX[] = "Cashcode GX";
-        const char CashcodeSM[] = "Cashcode SM";
-        const char CashcodeMSM[] = "Cashcode MSM";
-        const char CashcodeMVU[] = "Cashcode MVU";
-        const char CashcodeMFL[] = "Cashcode MFL";
-        const char CashcodeSL[] = "Cashcode SL";
-        const char CashcodeFLS[] = "Cashcode FLS";
-
-        const char ICTV77E[] = "ICT V77E";
-        const char ICTL83[] = "ICT L83";
-
-        const char ITLNV9[] = "ITL NV9";
-        const char ITLNV200[] = "ITL NV200";
-
-        const char CreatorC100[] = "Creator C100";
-    } // namespace Models
-} // namespace CCCNet
-
-//--------------------------------------------------------------------------------
+#include <Hardware/CashAcceptors/Models.h>

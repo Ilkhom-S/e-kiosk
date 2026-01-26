@@ -1,46 +1,9 @@
-/* @file Данные моделей устройств на протоколе CCNet. */
+/* @file DEPRECATED - See include/Hardware/CashAcceptors/CCNetModelData.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/CashAcceptors/CCNetModelData.h>.
+*/
 
 #pragma once
-
-// Modules
-#include "Hardware/CashAcceptors/ModelData.h"
-
-// Project
-#include "Models.h"
-
-//--------------------------------------------------------------------------------
-namespace CCCNet {
-    class ModelData : public CSpecification<QString, SBaseModelData> {
-      public:
-        ModelData() {
-            add("BB", Models::CashcodeG200);
-
-            add("GX", Models::CashcodeGX, true);
-            add("SM", Models::CashcodeSM);
-            add("SME", Models::CashcodeSM, true);
-            add("MS", Models::CashcodeMSM);
-            add("VU", Models::CashcodeMVU);
-            add("FL", Models::CashcodeMFL);
-            add("SL", Models::CashcodeSL);
-            add("FLS", Models::CashcodeFLS);
-
-            add("V77", Models::ICTV77E);
-            add("ICTL83", Models::ICTL83);
-            add("ICTV77", Models::ICTV77E);
-
-            add("BV009", Models::ITLNV9);
-            add("BV200", Models::ITLNV200);
-
-            add("C100", Models::CreatorC100, true);
-        }
-
-      private:
-        void add(const QString &aId, const QString &aName, bool aUpdatable = false) {
-            append(aId, SBaseModelData(aName, true, aUpdatable));
-        }
-    };
-
-    typedef QMap<QString, SBaseModelData>::iterator TModelDataIt;
-} // namespace CCCNet
-
-//--------------------------------------------------------------------------------
+#include <Hardware/CashAcceptors/CCNetModelData.h>
