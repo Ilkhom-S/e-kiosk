@@ -14,9 +14,9 @@
 
 // System
 #include "Hardware/Common/ASCII.h"
+#include <Hardware/Protocols/CashAcceptor/CCNet.h>
 
 // Project
-#include "CCNet.h"
 #include "CCNetConstants.h"
 
 using namespace SDK::Driver;
