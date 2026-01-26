@@ -5,8 +5,10 @@
 #include <QtCore/QElapsedTimer>
 #include <Common/QtHeadersEnd.h>
 
+// System
+#include <Hardware/Protocols/CashAcceptor/ID003.h>
+
 // Project
-#include "ID003.h"
 #include "ID003Constants.h"
 
 ushort ID003Protocol::calcCRC16(const QByteArray &aData) {
