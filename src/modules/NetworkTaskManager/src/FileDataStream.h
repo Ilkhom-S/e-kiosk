@@ -1,21 +1,9 @@
-/* @file Реализация файлового потока данных. */
+/* @file DEPRECATED - See ../../../<NetworkTaskManager/FileDataStream.h> instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in ../../../<NetworkTaskManager/FileDataStream.h>.
+All NEW code should include ../../../<NetworkTaskManager/FileDataStream.h>.
+*/
 
 #pragma once
-
-#include "DataStream.h"
-
-class QByteArray;
-class QString;
-
-//------------------------------------------------------------------------
-class FileDataStream : public DataStream {
-  public:
-    FileDataStream(const QString &aPath);
-
-    virtual bool clear();
-    virtual bool write(const QByteArray &aData);
-
-    virtual qint64 size() const;
-};
-
-//------------------------------------------------------------------------
+#include ../../../<NetworkTaskManager/FileDataStream.h>
