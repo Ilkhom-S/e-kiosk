@@ -3,7 +3,7 @@
 #pragma once
 
 // Modules
-#include "Hardware/Protocols/FR/ShtrihFR.h"
+#include <Hardware/FR/ShtrihFR.h>
 
 // Project
 #include "../ShtrihFRDataTypes.h"
