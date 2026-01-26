@@ -1,49 +1,9 @@
-/* @file Сторожевой таймер OSMP. */
+/* @file DEPRECATED - See include/Hardware/Watchdogs/OSMP.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/Watchdogs/OSMP.h>.
+*/
 
 #pragma once
-
-// Modules
-#include "Hardware/Watchdogs/WatchdogBase.h"
-
-// Project
-#include "OSMPWdData.h"
-
-//--------------------------------------------------------------------------------
-namespace COSMP {
-    /// Проверка на неправильную идентификацию
-    const QByteArray WrongDeviceCheck = QByteArray::fromRawData("\xa5\x00\x00\x5b", 4);
-
-    /// Пауза при переоткрытии порта, [мс]
-    const int ReopenPortPause = 1000;
-} // namespace COSMP
-
-//--------------------------------------------------------------------------------
-class OSMP : public WatchdogBase {
-    typedef QMap<EOSMPCommandId::Enum, const char *> TData;
-
-    SET_SERIES("OSMP")
-
-  public:
-    OSMP();
-
-    /// Перезагрузка линии питания.
-    virtual bool reset(const QString &aLine);
-
-  protected:
-    /// Обработчик сигнала пинга.
-    virtual void onPing();
-
-    /// Запуск/останов пинга.
-    virtual void setPingEnable(bool aEnabled);
-
-    /// Идентифицирует устройство.
-    virtual bool isConnected();
-
-    /// Выполнить команду.
-    bool performCommand(const QByteArray &aCommand, QByteArray *aAnswer = nullptr);
-
-    /// Данные протокола сторожевого таймера.
-    TData mData;
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/Watchdogs/OSMP.h>

@@ -1,21 +1,9 @@
-/* @file Команды сторожевого таймера ОСМП. */
+/* @file DEPRECATED - See include/Hardware/Watchdogs/OSMPWdData.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The definitions have been moved to the public header in include/.
+All NEW code should include <Hardware/Watchdogs/OSMPWdData.h>.
+*/
 
 #pragma once
-
-//--------------------------------------------------------------------------------
-namespace EOSMPCommandId {
-    enum Enum {
-        IdentificationData, /// Строка для идентификации.
-
-        /// Команды.
-        Identification, /// Идентификация.
-        ResetModem,     /// Перезагрузка модема.
-        StartTimer,     /// Запуск таймера.
-        StopTimer,      /// Останов таймера.
-        Ping,           /// Пинг сторожа.
-        RebootPC,       /// Перезагрузка PC.
-        GetSensorStatus /// Получить статусы датчиков.
-    };
-} // namespace EOSMPCommandId
-
-//--------------------------------------------------------------------------------
+#include <Hardware/Watchdogs/OSMPWdData.h>

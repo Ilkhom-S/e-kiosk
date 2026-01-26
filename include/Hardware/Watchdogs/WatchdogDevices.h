@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "../../src/modules/Hardware/Watchdogs/src/Alarm/Alarm.h"
-#include "../../src/modules/Hardware/Watchdogs/src/OSMP/OSMP.h"
+#include <Hardware/Watchdogs/Alarm.h>
+#include <Hardware/Watchdogs/OSMP.h>
 #include "../../src/modules/Hardware/Watchdogs/src/OSMP/OSMP2.h"
 #include "../../src/modules/Hardware/Watchdogs/src/OSMP/STOD.h"
 #include "../../src/modules/Hardware/Watchdogs/src/LDog/LDog.h"
