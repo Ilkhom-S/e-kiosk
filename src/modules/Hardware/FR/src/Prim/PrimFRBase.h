@@ -4,7 +4,7 @@
 
 // Modules
 #include "Hardware/FR/PortFRBase.h"
-#include "Hardware/Protocols/FR/PrimFR.h"
+#include <Hardware/FR/PrimFR.h>
 
 // Project
 #include "PrimModelData.h"

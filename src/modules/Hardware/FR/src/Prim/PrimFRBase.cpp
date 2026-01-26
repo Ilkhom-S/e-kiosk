@@ -1,8 +1,8 @@
 /* @file Принтеры семейства ПРИМ. */
 
-// Modules
+// System
+#include <Hardware/FR/PrimFR.h>
 #include "Hardware/Printers/POSPrinterData.h"
-#include "Hardware/Protocols/FR/PrimFR.h"
 
 // Project
 #include "PrimFRBase.h"
