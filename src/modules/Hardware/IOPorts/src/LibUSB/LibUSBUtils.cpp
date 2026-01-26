@@ -5,15 +5,15 @@
 #include <QtCore/QDebug>
 #include <Common/QtHeadersEnd.h>
 
-// Modules
+// System
+#include "Hardware/Common/CodecDescriptions.h"
 #include "Hardware/Common/DataPointer.h"
 #include "Hardware/Common/DeviceDataConstants.h"
-#include "Hardware/Common/CodecDescriptions.h"
 #include "Hardware/Common/DeviceUtils.h"
+#include <Hardware/IOPorts/LibUSBUtils.h>
 #include "Hardware/Protocols/Common/ProtocolUtils.h"
 
 // Project
-#include "LibUSBUtils.h"
 #include "USBClassCodes.h"
 
 using namespace ProtocolUtils;

@@ -1,6 +1,5 @@
 /* @file Дефолтное HID-устройство на COM-порту. */
 
-
 // System
 #include <Hardware/Scanners/SerialScanner.h>
 

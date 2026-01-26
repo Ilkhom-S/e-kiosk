@@ -3,8 +3,8 @@
 // SDK
 #include <SDK/Drivers/Components.h>
 
-// Project
-#include "IOPortBase.h"
+// System
+#include <Hardware/IOPorts/IOPortBase.h>
 
 using namespace SDK::Driver;
 

@@ -1,9 +1,9 @@
 /* @file Базовый класс устройств на TCP-порту. */
 
-// Modules
+// System
 #include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/FR/ProtoFR.h"
-#include "Hardware/IOPorts/TCPPort.h"
+#include <Hardware/IOPorts/TCPPort.h>
 
 // Project
 #include "TCPDeviceBase.h"

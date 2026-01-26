@@ -2,14 +2,13 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegularExpression>
 #include <QtCore/QMetaType>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
-// Project
-#include "TCPPort.h"
+// System
+#include <Hardware/IOPorts/TCPPort.h>
 
-//--------------------------------------------------------------------------------
 TCPPort::TCPPort()
     : mState(QAbstractSocket::UnconnectedState), mError(QAbstractSocket::UnknownSocketError),
       mSocketGuard(QMutex::Recursive) {

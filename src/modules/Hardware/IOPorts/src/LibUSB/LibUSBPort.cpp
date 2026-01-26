@@ -2,13 +2,15 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegularExpression>
 #include <QtCore/QMetaType>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
+
+// System
+#include <Hardware/IOPorts/LibUSBUtils.h>
 
 // Project
 #include "LibUSBPort.h"
-#include "LibUSBUtils.h"
 
 using namespace ProtocolUtils;
 

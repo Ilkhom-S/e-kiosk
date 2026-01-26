@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "POSPrinter.h"
+#include <Hardware/Printers/POSPrinter.h>
 
 //--------------------------------------------------------------------------------
 /// Последовательный POS-принтер.

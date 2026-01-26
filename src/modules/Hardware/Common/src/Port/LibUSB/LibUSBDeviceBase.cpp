@@ -10,7 +10,7 @@
 #include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/Common/ProtoDevices.h"
-#include "Hardware/IOPorts/LibUSBUtils.h"
+#include <Hardware/IOPorts/LibUSBUtils.h>
 
 // Project
 #include "LibUSBDeviceBase.h"

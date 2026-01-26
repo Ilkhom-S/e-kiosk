@@ -3,7 +3,7 @@
 // System
 #include "Hardware/IOPorts/AsyncSerialPort.h"
 #include "Hardware/IOPorts/LibUSBPort.h"
-#include "Hardware/IOPorts/TCPPort.h"
+#include <Hardware/IOPorts/TCPPort.h>
 #include "Hardware/IOPorts/USBPort.h"
 #include "Hardware/Plugins/CommonParameters.h"
 
