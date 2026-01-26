@@ -1,42 +1,9 @@
-/* @file Настройки пользователя. */
+/* @file DEPRECATED - See ../../../../<SDK/PaymentProcessor/Settings/UserSettings.h> instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in ../../../../<SDK/PaymentProcessor/Settings/UserSettings.h>.
+All NEW code should include ../../../../<SDK/PaymentProcessor/Settings/UserSettings.h>.
+*/
 
 #pragma once
-
-// SDK
-#include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>
-
-#include <Common/ILogable.h>
-#include <Common/PropertyTree.h>
-
-namespace SDK {
-    namespace PaymentProcessor {
-
-        //----------------------------------------------------------------------------
-        class UserSettings : public ISettingsAdapter, public ILogable {
-          public:
-            UserSettings(TPtree &aProperties);
-            virtual ~UserSettings();
-
-            /// Валидация данных.
-            virtual bool isValid() const;
-
-            /// Получить имя адаптера.
-            static QString getAdapterName();
-
-            /// Настройка для мониторинга: выгружать все платежи, игнорируя статус
-            bool reportAllPayments() const;
-
-            /// Требовать ввода номера стекера в момент инкассации
-            bool useStackerID() const;
-
-          private:
-            TPtree &mProperties;
-
-          private:
-            Q_DISABLE_COPY(UserSettings);
-        };
-
-    } // namespace PaymentProcessor
-} // namespace SDK
-
-//---------------------------------------------------------------------------
+#include ../../../../<SDK/PaymentProcessor/Settings/UserSettings.h>
