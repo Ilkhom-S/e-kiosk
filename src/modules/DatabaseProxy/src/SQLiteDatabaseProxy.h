@@ -85,7 +85,7 @@ class SQLiteDatabaseProxy : public IDatabaseProxy, protected ILogable {
 
   private:
     QSharedPointer<QSqlDatabase> mDb;
-    QMutex mMutex;
+    QRecursiveMutex mMutex;
     QString mCurrentBase;
     IDatabaseQueryChecker *mQueryChecker;
 };

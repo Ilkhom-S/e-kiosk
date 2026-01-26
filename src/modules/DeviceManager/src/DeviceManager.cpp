@@ -5,8 +5,9 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtConcurrent/QtConcurrentRun>
+#include <QtConcurrent/QtConcurrent>
 #include <QtCore/QFutureSynchronizer>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // SDK
@@ -37,7 +38,7 @@ DeviceManager::~DeviceManager() {
 bool DeviceManager::initialize() {
     QString pluginPath;
 
-    QStringList driverPlugins = mPluginLoader->getPluginList(QRegExp("\\.Driver\\."));
+    QStringList driverPlugins = mPluginLoader->getPluginList(QRegularExpression("\\.Driver\\."));
 
     // Составляем таблицу необходимых устройств.
     foreach (pluginPath, driverPlugins) {
@@ -403,9 +404,12 @@ void DeviceManager::findSimpleDevice(const QString &aDriverName, QStringList &aR
     bool detected = false;
 
     TNamedDevice namedDevice;
+    QVariantMap emptyConfig;
+    bool createSimple = true;
     QMetaObject::invokeMethod(this, "createDevice", Qt::BlockingQueuedConnection,
-                              QReturnArgument<TNamedDevice>("TNamedDevice", namedDevice), Q_ARG(QString, aDriverName),
-                              Q_ARG(QVariantMap, QVariantMap()), Q_ARG(bool, true));
+                              QGenericReturnArgument("TNamedDevice", &namedDevice),
+                              QGenericArgument("QString", &aDriverName), QGenericArgument("QVariantMap", &emptyConfig),
+                              QGenericArgument("bool", &createSimple));
 
     if (!namedDevice.second) {
         return;
@@ -450,10 +454,12 @@ void DeviceManager::findSimpleDevice(const QString &aDriverName, QStringList &aR
                 break;
             }
 
-            QMetaObject::invokeMethod(this, "createDevice", Qt::BlockingQueuedConnection,
-                                      QReturnArgument<TNamedDevice>("TNamedDevice", namedDevice),
-                                      Q_ARG(QString, aDriverName), Q_ARG(QVariantMap, QVariantMap()),
-                                      Q_ARG(bool, true));
+            QVariantMap emptyConfig2;
+            bool createSimple2 = true;
+            QMetaObject::invokeMethod(
+                this, "createDevice", Qt::BlockingQueuedConnection,
+                QGenericReturnArgument("TNamedDevice", &namedDevice), QGenericArgument("QString", &aDriverName),
+                QGenericArgument("QVariantMap", &emptyConfig2), QGenericArgument("bool", &createSimple2));
 
             detected = false;
 
@@ -517,8 +523,10 @@ QStringList DeviceManager::detect(const QString & /*aDeviceType*/) {
     QStringList TCPDevices = allDevices.filter(CInteractionTypes::TCP, Qt::CaseInsensitive);
     QStringList simpleDevices = mRequiredResources.keys("") + TCPDevices;
 
-    QStringSet OPOSDevices = simpleDevices.filter(CInteractionTypes::OPOS, Qt::CaseInsensitive).toSet();
-    QStringSet nonOPOSDevices = simpleDevices.toSet() - OPOSDevices;
+    QStringSet OPOSDevices(simpleDevices.filter(CInteractionTypes::OPOS, Qt::CaseInsensitive).begin(),
+                           simpleDevices.filter(CInteractionTypes::OPOS, Qt::CaseInsensitive).end());
+    QStringSet nonOPOSDevices(simpleDevices.begin(), simpleDevices.end());
+    nonOPOSDevices -= OPOSDevices;
 
     foreach (const QString &driverName, nonOPOSDevices) {
         if (!mRDSystemNames.contains(driverName)) {
@@ -540,15 +548,15 @@ QStringList DeviceManager::detect(const QString & /*aDeviceType*/) {
     QVector<IDevice *> requiredList;
 
     // Для каждого ресурса берем список системных имен, связанных с ресурсом.
-    foreach (const QString &requiredDevice, mRDSystemNames.keys().toSet()) {
+    foreach (const QString &requiredDevice, QStringSet(mRDSystemNames.keys().begin(), mRDSystemNames.keys().end())) {
         QStringList devicesToFind = mRequiredResources.keys(requiredDevice);
 
         if (devicesToFind.isEmpty() || requiredDevice.contains(CInteractionTypes::TCP)) {
             continue;
         }
 
-        qSort(devicesToFind.begin(), devicesToFind.end(),
-              std::bind(&DeviceManager::deviceSortPredicate, this, std::placeholders::_1, std::placeholders::_2));
+        std::sort(devicesToFind.begin(), devicesToFind.end(),
+                  std::bind(&DeviceManager::deviceSortPredicate, this, std::placeholders::_1, std::placeholders::_2));
 
         // Для каждого системного имени создаем устройство.
         foreach (const QString &systemName, mRDSystemNames.values(requiredDevice)) {
@@ -562,7 +570,8 @@ QStringList DeviceManager::detect(const QString & /*aDeviceType*/) {
             }
 
             // Запускаем асинхронный поиск.
-            synchronizer.addFuture(QtConcurrent::run(this, &DeviceManager::findDevice, required.second, devicesToFind));
+            synchronizer.addFuture(QtConcurrent::run(
+                [this, required, devicesToFind]() { return findDevice(required.second, devicesToFind); }));
             requiredList.append(required.second);
         }
     }
@@ -699,7 +708,7 @@ void DeviceManager::checkITInstancePath(QString &aInstancePath) {
 
 //------------------------------------------------------------------------------
 void DeviceManager::checkInstancePath(QString &aInstancePath) {
-    QStringList pluginList = mPluginLoader->getPluginList(QRegExp("\\.Driver\\."));
+    QStringList pluginList = mPluginLoader->getPluginList(QRegularExpression("\\.Driver\\."));
     QString initialPath = aInstancePath.section(CPlugin::InstancePathSeparator, 0, 0);
 
     if (pluginList.contains(initialPath)) {
@@ -1014,7 +1023,7 @@ QString DeviceManager::getSimpleDeviceLogName(IDevice *aDevice, bool aDetecting)
     int logIndex = 0;
 
     auto filterIndexes = [&logIndexes]() -> int {
-        qSort(logIndexes);
+        std::sort(logIndexes.begin(), logIndexes.end());
         if (logIndexes.isEmpty() || logIndexes[0])
             return 0;
         for (int i = 0; i < logIndexes.last(); ++i)

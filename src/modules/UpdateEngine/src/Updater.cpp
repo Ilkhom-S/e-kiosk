@@ -240,7 +240,8 @@ TFileList Updater::getWorkingDirStructure() const throw(Exception) {
 //---------------------------------------------------------------------------
 void Updater::addExceptionDirs(const QStringList &aDirs) {
     foreach (auto dir, aDirs) {
-        mExceptionDirs.push_back(QString("/") + QString(dir).remove(QRegularExpression("^/+|/+$"), ""));
+        QString cleanedDir = QString(dir).remove(QRegularExpression("^/+|/+$"), "");
+        mExceptionDirs.push_back(QString("/") + cleanedDir);
     }
 }
 

@@ -6,6 +6,7 @@
 #include <QtCore/QDirIterator>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QSettings>
+#include <QtGui/QGuiApplication>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QKeySequence>
 #include <QtGui/QRegion>
@@ -13,23 +14,13 @@
 #include <QtQml/QQmlProperty>
 #include <QtQuick/QQuickItem>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QDesktopWidget>
 #include <QtWidgets/QGraphicsProxyWidget>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QWidget>
 #include <Common/QtHeadersEnd.h>
 
-#ifndef _SIZE_T_DEFINED
-#ifdef _WIN64
-typedef unsigned __int64 size_t;
-#else
-typedef _W64 unsigned int size_t;
-#endif
-#define _SIZE_T_DEFINED
-#endif
-
-// Проект
+// Project
 #include "GraphicsEngine.h"
 
 namespace GUI {
@@ -90,14 +81,14 @@ namespace GUI {
     GraphicsEngine::GraphicsEngine()
         : ILogable("Interface"), mShowingModal(false), mHost(nullptr), mIsVirtualKeyboardVisible(false),
           mQuickView(nullptr), mRootView(nullptr), mQuickContainer(nullptr) {
-        QDesktopWidget *desktop = QApplication::desktop();
+        QList<QScreen *> screens = QGuiApplication::screens();
 
-        for (int i = 0, index = 1; i < desktop->numScreens(); ++i) {
+        for (int i = 0, index = 1; i < screens.size(); ++i) {
             SScreen screen;
             screen.number = i;
-            screen.isPrimary = i == desktop->primaryScreen();
-            screen.geometry = desktop->screenGeometry(i);
-            screen.widget = desktop->screen(i);
+            screen.isPrimary = screens[i] == QGuiApplication::primaryScreen();
+            screen.geometry = screens[i]->geometry();
+            screen.widget = nullptr;
 
             mScreens[screen.isPrimary ? 0 : index++] = screen;
         }
@@ -286,7 +277,6 @@ namespace GUI {
             entry.next();
 
             QSettings file(entry.fileInfo().absoluteFilePath(), QSettings::IniFormat);
-            file.setIniCodec("UTF-8");
 
             if (file.childGroups().contains(CGraphicsEngine::SectionItemName)) {
                 SWidget widget;
@@ -317,7 +307,7 @@ namespace GUI {
                     file.endGroup();
 
                     // Добавляем элемент в список доступных
-                    mWidgets.insertMulti(widget.info.name, widget);
+                    mWidgets.insert(widget.info.name, widget);
 
                     toLog(LogLevel::Normal, QString("Added graphics item '%1'.").arg(entry.filePath()));
                 }
@@ -343,7 +333,7 @@ namespace GUI {
                 } else {
                     SWidget widget;
                     widget.info = info;
-                    mWidgets.insertMulti(widget.info.name, widget);
+                    mWidgets.insert(widget.info.name, widget);
                 }
             }
         }
@@ -661,8 +651,8 @@ namespace GUI {
 
         if (widget == mWidgets.end())
         {
-                toLog(LogLevel::Error, QString("Cannot show '%1': not found.").arg(CGraphicsEngine::InputContextName));
-                return;
+                toLog(LogLevel::Error, QString("Cannot show '%1': not
+        found.").arg(CGraphicsEngine::InputContextName)); return;
         }
 
         // Если ещё не создан - создаём
@@ -742,8 +732,8 @@ namespace GUI {
         switch (type) {
             case QEvent::MouseMove: {
                 QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(aEvent);
-                mDebugWidget.updateMousePos(mouseEvent->screenPos().toPoint());
-                if (mouseEvent->buttons() != Qt::LeftButton && ++intruder >= CGraphicsEngine::IntruderTreshold) {
+                mDebugWidget.updateMousePos(mouseEvent->globalPosition().toPoint());
+                if (mouseEvent->buttons() != Qt::LeftButton && ++intruder >= CGraphicsEngine::IntruderThreshold) {
                     emit intruderActivity();
                 }
             } break;

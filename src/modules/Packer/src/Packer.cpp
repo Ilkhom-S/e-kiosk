@@ -8,7 +8,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QProcess>
-#include <QtCore/QTextCodec>
+#include <QtCore5Compat/QTextCodec>
 #include <Common/QtHeadersEnd.h>
 
 // Modules
@@ -79,7 +79,7 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName,
         nameBuffer.append('\0');
         header.name = (Bytef *)nameBuffer.constData();
         header.name_max = nameBuffer.size();
-        header.time = QDateTime::currentDateTime().toTime_t();
+        header.time = QDateTime::currentDateTime().toSecsSinceEpoch();
 
         ret = deflateSetHeader(&strm, &header);
         if (ret != Z_OK) {
@@ -307,7 +307,7 @@ QStringList Packer::pack(const QString &aTargetName, const QString &aSourceDir, 
     }
 
     mExitCode = mZipProcess.exitCode();
-    mMessages = QTextCodec::codecForLocale()->toUnicode(mZipProcess.readAllStandardOutput()).remove("\r");
+    mMessages = QString::fromLocal8Bit(mZipProcess.readAllStandardOutput()).remove("\r");
 
     if (mExitCode == 1) {
         toLog(LogLevel::Warning, QString("Execute command have some warning: %1 %2. Return code: %3. Output stream: %4")
@@ -334,7 +334,7 @@ QStringList Packer::pack(const QString &aTargetName, const QString &aSourceDir, 
 bool Packer::test(const QString &aTargetName) {
     QString zipCommand = QString("t \"%1\"").arg(QDir::toNativeSeparators(aTargetName));
 
-    mZipProcess.setNativeArguments(zipCommand);
+    mZipProcess.setArguments(QStringList() << zipCommand);
     mZipProcess.start(mToolPath);
     if (!mZipProcess.waitForFinished(mTimeout)) {
         mExitCode = -1;
@@ -344,7 +344,7 @@ bool Packer::test(const QString &aTargetName) {
     }
 
     mExitCode = mZipProcess.exitCode();
-    mMessages = QTextCodec::codecForLocale()->toUnicode(mZipProcess.readAllStandardOutput()).remove("\r");
+    mMessages = QString::fromLocal8Bit(mZipProcess.readAllStandardOutput()).remove("\r");
 
     return mExitCode == 0;
 }
@@ -376,7 +376,7 @@ bool Packer::unpack(const QString &aSourceName, const QString &aDestinationDir, 
     }
 
     mExitCode = mZipProcess.exitCode();
-    mMessages = QTextCodec::codecForLocale()->toUnicode(mZipProcess.readAllStandardOutput()).remove("\r");
+    mMessages = QString::fromLocal8Bit(mZipProcess.readAllStandardOutput()).remove("\r");
 
     return mExitCode == 0;
 }

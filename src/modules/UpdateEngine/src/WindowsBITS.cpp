@@ -70,7 +70,7 @@ namespace CBITS {
                         return false;
                     }
 
-                    toLog(LogLevel::Normal, QString("BITS: Job %1 resumed.").arg(makeJobName()));
+                    toLog(LoggerLevel::Normal, QString("BITS: Job %1 resumed.").arg(makeJobName()));
 
                     mJobsCount++;
                     SJob newJob;
@@ -108,7 +108,7 @@ namespace CBITS {
     //---------------------------------------------------------------------------
     bool CopyManager::resume() {
         if (isReady() && internalResume()) {
-            toLog(LogLevel::Normal, QString("BITS: Job %1 resumed.").arg(makeJobName()));
+            toLog(LoggerLevel::Normal, QString("BITS: Job %1 resumed.").arg(makeJobName()));
 
             return true;
         }

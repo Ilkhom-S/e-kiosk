@@ -11,6 +11,7 @@
 #include <QtCore/QSet>
 #include <QtCore/QMap>
 #include <QtCore/QMutex>
+#include <QtCore/QRecursiveMutex>
 #include <Common/QtHeadersEnd.h>
 
 // Project
@@ -163,7 +164,7 @@ class CryptEngine : public ICryptEngine {
     bool mInitialized;
     CCrypt::ETypeEngine mEngine;
 
-    QMutex mMutex;
+    QRecursiveMutex mMutex;
 
     TKeyPairList mKeyPairs;
 };

@@ -3,17 +3,19 @@
 // boost
 
 // STL
-#include <boost/optional.hpp>
+#include <optional>
+#include <random>
 
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 #include <QtCore/QMutexLocker>
+#include <QtCore/QRandomGenerator>
 #include <QtCore/QString>
-#include <QtCore/QTextCodec>
 #include <QtCore/QTime>
 #include <QtCore/QtGlobal>
+#include <QtCore5Compat/QTextCodec>
 #include <Common/QtHeadersEnd.h>
 
 // Project
@@ -38,7 +40,7 @@ namespace CCryptEngine {
 } // namespace CCryptEngine
 
 //---------------------------------------------------------------------------
-CryptEngine::CryptEngine() : mMutex(QMutex::Recursive), mInitialized(false), mEngine(CCrypt::ETypeEngine::File) {
+CryptEngine::CryptEngine() : mMutex(), mInitialized(false), mEngine(CCrypt::ETypeEngine::File) {
 }
 
 //---------------------------------------------------------------------------
@@ -183,16 +185,13 @@ bool CryptEngine::createKeyPair(const QString &aPath, const QString &aKeyPairNam
 
 //---------------------------------------------------------------------------
 QByteArray CryptEngine::generatePassword() const {
-    QTime time(QTime::currentTime());
-    qsrand(unsigned(time.hour() + time.minute() + time.second() + time.msec()));
-
     QByteArray phrase;
-
-    while (phrase.size() < 32) {
-        phrase.append(QByteArray::number(qrand()));
-    }
-
     phrase.resize(32);
+
+    // QRandomGenerator::global() is thread-safe and
+    // automatically seeded with high-quality system entropy.
+    // fillRange() is the most efficient way to fill a buffer.
+    QRandomGenerator::global()->fillRange(reinterpret_cast<uint *>(phrase.data()), phrase.size() / sizeof(uint));
 
     return phrase;
 }
@@ -326,7 +325,7 @@ bool CryptEngine::createKeyPair(int aKeyPair, CCrypt::ETypeEngine aEngine, const
 
     QMutexLocker locker(&mMutex);
 
-    boost::optional<TKeyPair> oldPair;
+    std::optional<TKeyPair> oldPair;
 
     // Если уже загружена эта пара, то выгружаем и перетираем.
     if (mKeyPairs.contains(aKeyPair)) {
@@ -344,13 +343,13 @@ bool CryptEngine::createKeyPair(int aKeyPair, CCrypt::ETypeEngine aEngine, const
     if (result != 0) {
         aErrorDescription = errorToString(result);
 
-        if (oldPair.is_initialized()) {
-            mKeyPairs.insert(aKeyPair, oldPair.get());
+        if (oldPair.has_value()) {
+            mKeyPairs.insert(aKeyPair, oldPair.value());
         }
 
         return false;
     } else {
-        if (oldPair.is_initialized()) {
+        if (oldPair.has_value()) {
             Crypt_CloseKey(&oldPair->first);
             Crypt_CloseKey(&oldPair->second);
         }

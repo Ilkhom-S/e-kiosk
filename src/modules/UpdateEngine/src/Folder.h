@@ -20,10 +20,10 @@ class Folder : public Component {
            const QString &aURL);
 
     /// Выполнить действие.
-    virtual void applyPostActions(const QString &aWorkingDir) throw(std::exception);
+    virtual void applyPostActions(const QString &aWorkingDir) noexcept(false);
 
     /// Произвести установку файлов aFiles в каталог aDestination.
-    virtual void deploy(const TFileList &aFiles, const QString &aDestination) throw(std::exception);
+    virtual void deploy(const TFileList &aFiles, const QString &aDestination) noexcept(false);
 
     /// Производит закачку компонента, находящего по aBaseURL во временную папку.
     virtual QList<NetworkTask *> download(const QString &aBaseURL, const TFileList &aExceptions);

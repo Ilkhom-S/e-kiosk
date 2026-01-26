@@ -15,7 +15,7 @@ namespace {
         return ILog::getInstance("Updater");
     }
 
-    inline void Log(LogLevel::Enum aLevel, const QString &aMessage) {
+    inline void Log(LoggerLevel::Enum aLevel, const QString &aMessage) {
         Log()->write(aLevel, aMessage);
     }
 } // namespace

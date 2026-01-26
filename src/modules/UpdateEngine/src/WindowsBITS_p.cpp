@@ -20,7 +20,7 @@ namespace CBITS {
         if (!mThreadInitialized.contains(QThread::currentThreadId())) {
             hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
             if (FAILED(hr) && hr != RPC_E_CHANGED_MODE) {
-                toLog(LogLevel::Error, QString("BITS: Error call CoInitializeEx(), result=0x%1").arg(hr, 0, 16));
+                toLog(LoggerLevel::Error, QString("BITS: Error call CoInitializeEx(), result=0x%1").arg(hr, 0, 16));
                 return;
             }
 
@@ -28,7 +28,7 @@ namespace CBITS {
             hr = CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_CONNECT, RPC_C_IMP_LEVEL_IMPERSONATE,
                                       NULL, EOAC_DYNAMIC_CLOAKING, 0);
             if (FAILED(hr) && hr != RPC_E_TOO_LATE) {
-                toLog(LogLevel::Error, QString("BITS: Error call CoInitializeSecurity(), result=0x%1").arg(hr, 0, 16));
+                toLog(LoggerLevel::Error, QString("BITS: Error call CoInitializeSecurity(), result=0x%1").arg(hr, 0, 16));
                 return;
             }
 
@@ -39,7 +39,7 @@ namespace CBITS {
         hr = CoCreateInstance(__uuidof(BackgroundCopyManager), NULL, CLSCTX_LOCAL_SERVER,
                               __uuidof(IBackgroundCopyManager), (void **)&mQueueMgr);
         if (FAILED(hr)) {
-            toLog(LogLevel::Error, QString("BITS: Failed to connect with BITS, result=0x%1").arg(hr, 0, 16));
+            toLog(LoggerLevel::Error, QString("BITS: Failed to connect with BITS, result=0x%1").arg(hr, 0, 16));
         }
     }
 
@@ -117,18 +117,18 @@ namespace CBITS {
                     SJob jobItem;
 
                     if (fillJobInfo(job, jobItem)) {
-                        toLog(LogLevel::Debug, QString("BITS: JOB: %1").arg(jobItem.toString()));
+                        toLog(LoggerLevel::Debug, QString("BITS: JOB: %1").arg(jobItem.toString()));
 
                         result[jobItem.mName] = jobItem;
                     } else {
-                        toLog(LogLevel::Error, QString("BITS: Failed fill job info."));
+                        toLog(LoggerLevel::Error, QString("BITS: Failed fill job info."));
                     }
                 } else {
-                    toLog(LogLevel::Error, QString("BITS: Failed get next job, result=0x%1").arg(hr, 0, 16));
+                    toLog(LoggerLevel::Error, QString("BITS: Failed get next job, result=0x%1").arg(hr, 0, 16));
                 }
             }
         } else {
-            toLog(LogLevel::Error, QString("BITS: Failed to enum jobs BITS, result=0x%1").arg(hr, 0, 16));
+            toLog(LoggerLevel::Error, QString("BITS: Failed to enum jobs BITS, result=0x%1").arg(hr, 0, 16));
         }
 
         return result;
@@ -147,7 +147,7 @@ namespace CBITS {
             hr = mCurrentJob->Complete();
 
             if (FAILED(hr)) {
-                toLog(LogLevel::Error, QString("BITS: Failed to complete job, result=0x%1").arg(hr, 0, 16));
+                toLog(LoggerLevel::Error, QString("BITS: Failed to complete job, result=0x%1").arg(hr, 0, 16));
             }
         }
 
@@ -183,7 +183,7 @@ namespace CBITS {
         GUID guidJob;
         HRESULT hr = mQueueMgr->CreateJob(aName.toStdWString().c_str(), BG_JOB_TYPE_DOWNLOAD, &guidJob, &mCurrentJob);
         if (FAILED(hr) || mCurrentJob == nullptr) {
-            toLog(LogLevel::Error, QString("BITS: Failed to create job, result=0x%1").arg(hr, 0, 16));
+            toLog(LoggerLevel::Error, QString("BITS: Failed to create job, result=0x%1").arg(hr, 0, 16));
 
             return false;
         }
@@ -223,13 +223,13 @@ namespace CBITS {
             CoTaskMemFree(namePtr);
 
             if (SUCCEEDED(hr1) && SUCCEEDED(hr2)) {
-                toLog(LogLevel::Normal,
+                toLog(LoggerLevel::Normal,
                       QString("Set job '%1' notify: '%2' '%3'").arg(name).arg(aApplicationPath).arg(aParameters));
 
                 return true;
             } else {
                 toLog(
-                    LogLevel::Error,
+                    LoggerLevel::Error,
                     QString("Failed set job '%1' notify: '%2' '%3'").arg(name).arg(aApplicationPath).arg(aParameters));
             }
         }
@@ -245,18 +245,18 @@ namespace CBITS {
 
             auto hr = mCurrentJob->AddFile(url.toStdWString().c_str(), path.toStdWString().c_str());
             if (SUCCEEDED(hr)) {
-                toLog(LogLevel::Debug, QString("BITS: Add task to job OK: %1.").arg(url));
+                toLog(LoggerLevel::Debug, QString("BITS: Add task to job OK: %1.").arg(url));
 
                 return AddTaskResult::OK;
             }
 
             if (hr == BG_E_TOO_MANY_FILES_IN_JOB) {
-                toLog(LogLevel::Error, QString("BITS: Add task to job failed. Job is FULL. Url: %1").arg(url));
+                toLog(LoggerLevel::Error, QString("BITS: Add task to job failed. Job is FULL. Url: %1").arg(url));
 
                 return AddTaskResult::JobIsFull;
             }
 
-            toLog(LogLevel::Error, QString("BITS: Add task to job failed: %1. HRESULT=0x%2. Url: %3")
+            toLog(LoggerLevel::Error, QString("BITS: Add task to job failed: %1. HRESULT=0x%2. Url: %3")
                                        .arg(getJobError())
                                        .arg(hr, 8, 16)
                                        .arg(url));
@@ -280,7 +280,7 @@ namespace CBITS {
             return true;
         }
 
-        toLog(LogLevel::Error,
+        toLog(LoggerLevel::Error,
               QString("BITS: Failed open the job: %1. HRESULT=0x%2.").arg(aJob.toString()).arg(hr, 8, 16));
         return false;
     }
@@ -293,7 +293,7 @@ namespace CBITS {
                 return true;
             }
 
-            toLog(LogLevel::Error,
+            toLog(LoggerLevel::Error,
                   QString("BITS: Resume job failed: %1. HRESULT=0x%2.").arg(getJobError()).arg(hr, 8, 16));
         }
 

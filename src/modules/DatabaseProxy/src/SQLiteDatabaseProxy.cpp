@@ -6,7 +6,7 @@
 #include <Common/QtHeadersEnd.h>
 
 // Modules
-#include <Common/Application.h>
+#include <Common/BasicApplication.h>
 #include <Common/SleepHelper.h>
 
 // Project
@@ -18,8 +18,7 @@ namespace CSQLiteDatabaseProxy {
 } // namespace CSQLiteDatabaseProxy
 
 //---------------------------------------------------------------------------
-SQLiteDatabaseProxy::SQLiteDatabaseProxy()
-    : ILogable(CIDatabaseProxy::LogName), mMutex(QMutex::Recursive), mQueryChecker(nullptr) {
+SQLiteDatabaseProxy::SQLiteDatabaseProxy() : ILogable(CIDatabaseProxy::LogName), mMutex(), mQueryChecker(nullptr) {
 }
 
 //---------------------------------------------------------------------------
@@ -169,7 +168,7 @@ IDatabaseQuery *SQLiteDatabaseProxy::execQuery(const QString &aQuery) {
     if (!isConnected()) {
         toLog(LogLevel::Error, QString("Cannot execute sql query in unconnected state. Query: %1.").arg(aQuery));
 
-        return false;
+        return nullptr;
     }
 
     QScopedPointer<IDatabaseQuery> dbQuery(createQuery());

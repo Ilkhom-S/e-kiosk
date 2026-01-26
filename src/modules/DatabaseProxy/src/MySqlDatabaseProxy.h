@@ -77,7 +77,7 @@ class MySqlDatabaseProxy : public IDatabaseProxy {
     virtual bool safeExec(QSqlQuery *query, const QString &queryMessage);
 
   private:
-    QMutex mMutex;
+    QRecursiveMutex mMutex;
     QSqlDatabase *mDb;
     QString mCurrentBase;
     ILog *mLog;

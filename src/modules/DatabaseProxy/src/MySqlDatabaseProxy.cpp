@@ -13,7 +13,7 @@
 #include "DatabaseQuery.h"
 #include "MySqlDatabaseProxy.h"
 
-MySqlDatabaseProxy::MySqlDatabaseProxy() : mMutex(QMutex::Recursive), mDb(nullptr), mQueryChecker(nullptr) {
+MySqlDatabaseProxy::MySqlDatabaseProxy() : mMutex(), mDb(nullptr), mQueryChecker(nullptr) {
     mLog = ILog::getInstance(CMySqlDatabaseProxy::DefaultLog);
 }
 
@@ -142,7 +142,7 @@ bool MySqlDatabaseProxy::execScalar(const QString &strQuery, long &result) {
 //---------------------------------------------------------------------------
 IDatabaseQuery *MySqlDatabaseProxy::execQuery(const QString &strQuery) {
     if (!mDb) {
-        return false;
+        return nullptr;
     }
 
     QScopedPointer<IDatabaseQuery> dbQuery(new DatabaseQuery(*mDb, mQueryChecker));

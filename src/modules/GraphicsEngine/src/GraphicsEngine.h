@@ -236,7 +236,7 @@ namespace GUI {
             std::weak_ptr<SDK::GUI::IGraphicsItem> graphics;
         };
 
-        typedef QMap<QString, SWidget> TWidgetList;
+        typedef QMultiMap<QString, SWidget> TWidgetList;
 
       private: // Данные
                // Интерфейс приложения.
