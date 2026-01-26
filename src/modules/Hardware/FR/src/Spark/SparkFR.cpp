@@ -8,8 +8,10 @@
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
 
+// System
+#include <Hardware/Protocols/FR/SparkFR.h>
+
 // Project
-#include "SparkFR.h"
 #include "AdaptiveFiscalLogic.h"
 
 using namespace SDK::Driver;

@@ -1,29 +1,9 @@
-/* @file Протокол ФР SPARK. */
+/* @file DEPRECATED - See include/Hardware/Protocols/FR/SparkFR.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/Protocols/FR/SparkFR.h>.
+*/
 
 #pragma once
-
-#include "Hardware/Common/ProtocolBase.h"
-
-//--------------------------------------------------------------------------------
-/// Класс протокола KKM.
-class SparkFRProtocol : public ProtocolBase {
-  public:
-    /// Выполнить команду.
-    TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData, int aTimeout);
-    TResult processCommand(char aCommand, QByteArray &aAnswerData, int aTimeout);
-
-  private:
-    /// Выполнить команду.
-    TResult performCommand(const QByteArray &aCommandData, QByteArray &aAnswerData, int aTimeout);
-
-    /// Подсчет контрольной суммы пакета данных.
-    char calcCRC(const QByteArray &aData);
-
-    /// Проверка пришедших из порта данных.
-    bool check(const QByteArray &aAnswerData);
-
-    /// Получить данные из порта.
-    bool readData(QByteArray &aAnswerData, int aTimeout);
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/Protocols/FR/SparkFR.h>

@@ -3,11 +3,12 @@
 // STL
 #include <cmath>
 
+// System
+#include <Hardware/Protocols/FR/SparkFR.h>
+
 // Project
-#include "SparkFR.h"
 #include "SparkFRConstants.h"
 
-//--------------------------------------------------------------------------------
 char SparkFRProtocol::calcCRC(const QByteArray &aData) {
     char sum = aData[0];
 
