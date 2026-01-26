@@ -134,6 +134,8 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
+
+        //------------------------------------------------------------------------------
         QString PluginFactory::getName() const {
             return mName;
         }
@@ -154,9 +156,19 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
+
+        QString PluginFactory::getModuleName() const {
+            return mModuleName;
+        }
+
+        //------------------------------------------------------------------------------
+
         QStringList PluginFactory::getPluginList() const {
             return PluginInitializer::getPluginList().keys();
         }
+
+        // Force vtable instantiation
+        static PluginFactory *dummy = nullptr;
 
         //------------------------------------------------------------------------------
         IPlugin *PluginFactory::createPlugin(const QString &aInstancePath, const QString &aConfigInstancePath) {

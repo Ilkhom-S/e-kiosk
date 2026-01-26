@@ -39,7 +39,7 @@ ek_add_plugin(ad
     NetworkTaskManager
     AdBackend
     PluginsSDK
-    PPSDK
+    PPSDKImpl
     ek_common
     INCLUDE_DIRS
     ${CMAKE_SOURCE_DIR}/apps/EKiosk/src

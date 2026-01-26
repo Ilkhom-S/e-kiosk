@@ -5,6 +5,9 @@ file(GLOB PLUGINSSDK_SOURCES
     src/*.h
 )
 
+# Include the public header for moc generation
+list(APPEND PLUGINSSDK_SOURCES ${EK_INCLUDES_DIR}/SDK/Plugins/PluginFactory.h)
+
 ek_add_library(PluginsSDK
     FOLDER "modules/SDK"
     SOURCES ${PLUGINSSDK_SOURCES}

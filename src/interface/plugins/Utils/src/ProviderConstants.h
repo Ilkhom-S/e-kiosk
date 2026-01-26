@@ -9,9 +9,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------------
-namespace Providers
-{
-	const qint64 AutodetectID = 999;
+namespace Providers {
+    const qint64 AutodetectID = 999;
 } // namespace Providers
 
 //------------------------------------------------------------------------------

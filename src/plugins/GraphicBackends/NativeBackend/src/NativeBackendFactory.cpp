@@ -12,8 +12,10 @@
 #include "NativeBackend.h"
 #include "NativeBackendFactory.h"
 
-QString SDK::Plugin::PluginFactory::mModuleName = "native_backend";
-QString SDK::Plugin::PluginFactory::mName = "Native Backend";
-QString SDK::Plugin::PluginFactory::mDescription = "Native graphics backend for EKiosk";
-QString SDK::Plugin::PluginFactory::mAuthor = "CPP Static Author Test";
-QString SDK::Plugin::PluginFactory::mVersion = "1.0";
+NativeBackendFactory::NativeBackendFactory() {
+    mModuleName = "native_backend";
+    mName = "Native Backend";
+    mDescription = "Native graphics backend for EKiosk";
+    mAuthor = "CPP Static Author Test";
+    mVersion = "1.0";
+}

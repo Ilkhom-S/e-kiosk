@@ -9,8 +9,10 @@
 #include "AdPluginFactory.h"
 #include "AdPluginImpl.h"
 
-QString SDK::Plugin::PluginFactory::mName = "Ad Plugin";
-QString SDK::Plugin::PluginFactory::mDescription = "Advertisement management plugin for EKiosk";
-QString SDK::Plugin::PluginFactory::mAuthor = "HUMO";
-QString SDK::Plugin::PluginFactory::mVersion = "1.0";
-QString SDK::Plugin::PluginFactory::mModuleName = "ad_plugin";
+AdPluginFactory::AdPluginFactory() {
+    mModuleName = "ad_plugin";
+    mName = "Ad Plugin";
+    mDescription = "Advertisement management plugin for EKiosk";
+    mAuthor = "HUMO";
+    mVersion = "1.0";
+}

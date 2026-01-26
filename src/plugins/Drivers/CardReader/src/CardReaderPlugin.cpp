@@ -4,7 +4,7 @@
 #include "Hardware/Plugins/CommonParameters.h"
 
 #ifdef Q_OS_WIN32
-#include "../../../../modules/Hardware/Cardreaders/src/Creator/CreatorReader.h"
+#include <Hardware/CardReaders/CreatorReader.h>
 #include "../../../../modules/Hardware/Cardreaders/src/IDTech/IDTechReader.h"
 #endif
 

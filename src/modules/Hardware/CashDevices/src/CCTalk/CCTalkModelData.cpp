@@ -10,9 +10,7 @@
 
 // System
 #include "Hardware/CashDevices/CCTalkDeviceConstants.h"
-
-// Project
-#include "CCTalkModelData.h"
+#include <Hardware/CashDevices/CCTalkModelData.h>
 
 namespace CCCTalk {
     CVendorData::CVendorData() {

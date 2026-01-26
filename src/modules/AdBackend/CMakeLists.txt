@@ -6,6 +6,11 @@ file(GLOB ADBACKEND_SOURCES
     src/*.qrc
 )
 
+# Add public headers for moc generation
+file(GLOB ADBACKEND_PUBLIC_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/AdBackend/*.h
+)
+
 # Ensure Qt components are found for this module
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Xml Network Sql REQUIRED)
 
@@ -16,7 +21,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Xml Network Sql REQUIRED)
 
 ek_add_library(AdBackend
     FOLDER "modules"
-    SOURCES ${ADBACKEND_SOURCES}
+    SOURCES ${ADBACKEND_SOURCES} ${ADBACKEND_PUBLIC_HEADERS}
     QT_MODULES Core Xml Network Sql
     DEPENDS NetworkTaskManager SysUtils ek_boost
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}

@@ -18,8 +18,8 @@
 #include <QtCore5Compat/QTextCodec>
 #include <Common/QtHeadersEnd.h>
 
-// Project
-#include "CryptEngine.h"
+// System
+#include <Crypt/CryptEngine.h>
 
 namespace CCryptEngine {
 #ifdef TC_USE_MD5

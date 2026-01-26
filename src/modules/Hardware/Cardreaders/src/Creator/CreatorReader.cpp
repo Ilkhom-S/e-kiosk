@@ -3,9 +3,9 @@
 // System
 #include "../EMV/EMVAdapter.h"
 #include "Hardware/CardReaders/CardReaderStatusesDescriptions.h"
+#include <Hardware/CardReaders/CreatorReader.h>
 
 // Project
-#include "CreatorReader.h"
 #include "CreatorReaderConstants.h"
 #include "CreatorReaderDetectingData.h"
 

@@ -3,8 +3,10 @@
 // Project
 #include "ScreenMakerFactory.h"
 
-QString SDK::Plugin::PluginFactory::mName = "Screenshot maker";
-QString SDK::Plugin::PluginFactory::mDescription = "Native scenario for create and edit ui screenshot";
-QString SDK::Plugin::PluginFactory::mAuthor = "Humo";
-QString SDK::Plugin::PluginFactory::mVersion = "1.0";
-QString SDK::Plugin::PluginFactory::mModuleName = "screen_maker";
+ScreenMakerPluginFactory::ScreenMakerPluginFactory() {
+    mName = "Screenshot maker";
+    mDescription = "Native scenario for create and edit ui screenshot";
+    mAuthor = "Humo";
+    mVersion = "1.0";
+    mModuleName = "screen_maker";
+}

@@ -1,6 +1,8 @@
 /* @file Модель-фильтр  списка провайдеров. */
 
 // std
+
+// STL
 #include <limits>
 
 // Qt
@@ -9,109 +11,95 @@
 #include <Common/QtHeadersEnd.h>
 
 // Project
-#include "ProviderListModel.h"
-#include "ProviderListFilter.h"
 #include "ProviderConstants.h"
+#include "ProviderListFilter.h"
+#include "ProviderListModel.h"
 
-//------------------------------------------------------------------------------
-ProviderListFilter::ProviderListFilter(QObject* aParent) : QSortFilterProxyModel(aParent)
-{
-	connect(this, SIGNAL(layoutChanged()), this, SIGNAL(emptyChanged()));
-	connect(this, SIGNAL(modelReset()), this, SIGNAL(emptyChanged()));
+ProviderListFilter::ProviderListFilter(QObject *aParent) : QSortFilterProxyModel(aParent) {
+    connect(this, SIGNAL(layoutChanged()), this, SIGNAL(emptyChanged()));
+    connect(this, SIGNAL(modelReset()), this, SIGNAL(emptyChanged()));
 
-	setDynamicSortFilter(false);
+    setDynamicSortFilter(false);
 }
 
 //------------------------------------------------------------------------------
-ProviderListFilter::~ProviderListFilter() {}
-
-//------------------------------------------------------------------------------
-bool ProviderListFilter::filterAcceptsRow(int aSourceRow, const QModelIndex& /*aSourceParent*/) const
-{
-	if (mFilterLexemList.isEmpty())
-	{
-		return false;
-	}
-
-	QModelIndex index = sourceModel()->index(aSourceRow, 0);
-	QString info = sourceModel()->data(index, ProviderListModel::InfoRole).value<QString>();
-
-	foreach (auto lexem, mFilterLexemList)
-	{
-		if (!info.contains(lexem))
-		{
-			return false;
-		}
-	}
-
-	return true;
+ProviderListFilter::~ProviderListFilter() {
 }
 
 //------------------------------------------------------------------------------
-bool ProviderListFilter::lessThan(const QModelIndex& aLeft, const QModelIndex& aRight) const
-{
-	if (mFilterLexemList.isEmpty())
-	{
-		return false;
-	}
+bool ProviderListFilter::filterAcceptsRow(int aSourceRow, const QModelIndex & /*aSourceParent*/) const {
+    if (mFilterLexemList.isEmpty()) {
+        return false;
+    }
 
-	return calcSortIndex(sourceModel()->data(aLeft, ProviderListModel::InfoRole).value<QString>()) <
-		   calcSortIndex(sourceModel()->data(aRight, ProviderListModel::InfoRole).value<QString>());
+    QModelIndex index = sourceModel()->index(aSourceRow, 0);
+    QString info = sourceModel()->data(index, ProviderListModel::InfoRole).value<QString>();
+
+    foreach (auto lexem, mFilterLexemList) {
+        if (!info.contains(lexem)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 //------------------------------------------------------------------------------
-inline int ProviderListFilter::calcSortIndex(const QString& aInfo) const
-{
-	int index = std::numeric_limits<int>::max();
+bool ProviderListFilter::lessThan(const QModelIndex &aLeft, const QModelIndex &aRight) const {
+    if (mFilterLexemList.isEmpty()) {
+        return false;
+    }
 
-	foreach (auto lexem, mFilterLexemList)
-	{
-		int pos = aInfo.indexOf(lexem);
-
-		if (pos >= 0)
-		{
-			index = qMin(index, pos);
-		}
-	}
-
-	return index;
+    return calcSortIndex(sourceModel()->data(aLeft, ProviderListModel::InfoRole).value<QString>()) <
+           calcSortIndex(sourceModel()->data(aRight, ProviderListModel::InfoRole).value<QString>());
 }
 
 //------------------------------------------------------------------------------
-bool ProviderListFilter::getEmpty() const
-{
-	return rowCount() == 0;
+inline int ProviderListFilter::calcSortIndex(const QString &aInfo) const {
+    int index = std::numeric_limits<int>::max();
+
+    foreach (auto lexem, mFilterLexemList) {
+        int pos = aInfo.indexOf(lexem);
+
+        if (pos >= 0) {
+            index = qMin(index, pos);
+        }
+    }
+
+    return index;
 }
 
 //------------------------------------------------------------------------------
-QString ProviderListFilter::getFilter() const
-{
-	return mFilter;
+bool ProviderListFilter::getEmpty() const {
+    return rowCount() == 0;
 }
 
 //------------------------------------------------------------------------------
-void ProviderListFilter::setFilter(const QString& aFilter)
-{
-	static QRegExp spaceRegExp("\\s+");
-
-	beginResetModel();
-
-	mFilter = aFilter;
-	mFilterLexemList = aFilter.toLower().replace(spaceRegExp, " ").split(" ", QString::SkipEmptyParts);
-
-	endResetModel();
-
-	sort(0);
-
-	emit emptyChanged();
+QString ProviderListFilter::getFilter() const {
+    return mFilter;
 }
 
 //------------------------------------------------------------------------------
-QObject* ProviderListFilter::get(int aIndex)
-{
-	return new ProviderObject(
-		this, sourceModel()->data(mapToSource(index(aIndex, 0)), ProviderListModel::IdRole).value<qint64>(),
-		sourceModel()->data(mapToSource(index(aIndex, 0)), ProviderListModel::NameRole).value<QString>());
+void ProviderListFilter::setFilter(const QString &aFilter) {
+    static QRegExp spaceRegExp("\\s+");
+
+    beginResetModel();
+
+    mFilter = aFilter;
+    mFilterLexemList = aFilter.toLower().replace(spaceRegExp, " ").split(" ", QString::SkipEmptyParts);
+
+    endResetModel();
+
+    sort(0);
+
+    emit emptyChanged();
+}
+
+//------------------------------------------------------------------------------
+QObject *ProviderListFilter::get(int aIndex) {
+    return new ProviderObject(
+        this, sourceModel()->data(mapToSource(index(aIndex, 0)), ProviderListModel::IdRole).value<qint64>(),
+        sourceModel()->data(mapToSource(index(aIndex, 0)), ProviderListModel::NameRole).value<QString>());
 }
 
 //------------------------------------------------------------------------------

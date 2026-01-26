@@ -8,9 +8,10 @@
 // Project
 #include "Migrator3000Factory.h"
 
-QString SDK::Plugin::PluginFactory::mName = "Migrator 3000";
-QString SDK::Plugin::PluginFactory::mDescription =
-    "Native scenario for automatic migration from 2.x.x to 3.x.x version";
-QString SDK::Plugin::PluginFactory::mAuthor = "Humo";
-QString SDK::Plugin::PluginFactory::mVersion = "1.0";
-QString SDK::Plugin::PluginFactory::mModuleName = "migrator3000";
+Migrator3000Factory::Migrator3000Factory() {
+    mModuleName = "migrator3000";
+    mName = "Migrator 3000";
+    mDescription = "Native scenario for automatic migration from 2.x.x to 3.x.x version";
+    mAuthor = "Humo";
+    mVersion = "1.0";
+}

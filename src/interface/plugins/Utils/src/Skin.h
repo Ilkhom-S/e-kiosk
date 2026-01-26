@@ -9,44 +9,43 @@
 #include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------------
-class Skin : public QObject
-{
-	Q_OBJECT
+class Skin : public QObject {
+    Q_OBJECT
 
-public:
-	Skin(const QObject* aApplication, const QString& aInterfacePath, const QString& aUserPath);
+  public:
+    Skin(const QObject *aApplication, const QString &aInterfacePath, const QString &aUserPath);
 
-public:
-	/// Получить имя скина
-	QString getName() const;
+  public:
+    /// Получить имя скина
+    QString getName() const;
 
-	/// Получить конфигурацию скина
-	QVariantMap getConfiguration() const;
+    /// Получить конфигурацию скина
+    QVariantMap getConfiguration() const;
 
-	void reload(const QVariantMap& aParams);
+    void reload(const QVariantMap &aParams);
 
-	bool needReload(const QVariantMap& aParams) const;
+    bool needReload(const QVariantMap &aParams) const;
 
-public slots:
-	QFont font(const QString& aFontName) const;
-	QString color(const QString& aColorName) const;
-	QString image(const QString& aImageId) const;
+  public slots:
+    QFont font(const QString &aFontName) const;
+    QString color(const QString &aColorName) const;
+    QString image(const QString &aImageId) const;
 
-private:
-	/// Возвращает
-	QString skinConfigFileName(const QString& aName) const;
+  private:
+    /// Возвращает
+    QString skinConfigFileName(const QString &aName) const;
 
-	/// Загрузить конфигурацию скина
-	bool loadSkinConfig();
+    /// Загрузить конфигурацию скина
+    bool loadSkinConfig();
 
-private:
-	QString mName;
-	QString mSystemName22;
-	QString mPrevName;
-	QVariantMap mConfig;
-	QString mInterfacePath;
-	QVariantMap mProviderSkinConfig;
-	QObject* mGuiService;
+  private:
+    QString mName;
+    QString mSystemName22;
+    QString mPrevName;
+    QVariantMap mConfig;
+    QString mInterfacePath;
+    QVariantMap mProviderSkinConfig;
+    QObject *mGuiService;
 };
 
 //------------------------------------------------------------------------------

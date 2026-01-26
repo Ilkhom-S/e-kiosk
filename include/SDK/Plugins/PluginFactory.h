@@ -51,6 +51,9 @@ namespace SDK {
             /// Возвращает версию плагина.
             virtual QString getVersion() const;
 
+            /// Возвращает имя модуля плагина.
+            virtual QString getModuleName() const;
+
             /// Возвращает список плагинов.
             virtual QStringList getPluginList() const;
 
@@ -112,11 +115,11 @@ namespace SDK {
             virtual QVariantMap getPluginInstanceConfiguration(const QString &aPath, const QString &aInstance);
 
           protected:
-            static QString mModuleName;
-            static QString mName;
-            static QString mDescription;
-            static QString mAuthor;
-            static QString mVersion;
+            QString mModuleName;
+            QString mName;
+            QString mDescription;
+            QString mAuthor;
+            QString mVersion;
 
             bool mInitialized;
             IKernel *mKernel;

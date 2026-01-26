@@ -10,46 +10,45 @@
 #include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------------
-class Translator : public QObject
-{
-	Q_OBJECT
+class Translator : public QObject {
+    Q_OBJECT
 
-	Q_PROPERTY(QString language READ getLanguage NOTIFY languageChanged);
-	Q_PROPERTY(QString defaultLanguage READ getDefaultLanguage CONSTANT FINAL);
+    Q_PROPERTY(QString language READ getLanguage NOTIFY languageChanged);
+    Q_PROPERTY(QString defaultLanguage READ getDefaultLanguage CONSTANT FINAL);
 
-public:
-	Translator(const QString& aInterfacePath);
+  public:
+    Translator(const QString &aInterfacePath);
 
-public slots:
-	/// Перевести строку
-	QString tr(const QString& aString);
+  public slots:
+    /// Перевести строку
+    QString tr(const QString &aString);
 
-	/// Установить язык интерфейса.
-	void setLanguage(const QString& aLanguage);
+    /// Установить язык интерфейса.
+    void setLanguage(const QString &aLanguage);
 
-	/// Получить текущий язык интерфейса.
-	QString getLanguage() const;
+    /// Получить текущий язык интерфейса.
+    QString getLanguage() const;
 
-	/// Получить язык по умолчанию
-	QString getDefaultLanguage() const;
+    /// Получить язык по умолчанию
+    QString getDefaultLanguage() const;
 
-	/// Получить список доступных языков.
-	QStringList getLanguageList() const;
+    /// Получить список доступных языков.
+    QStringList getLanguageList() const;
 
-signals:
-	void languageChanged();
+  signals:
+    void languageChanged();
 
-private:
-	QString mInterfacePath;
+  private:
+    QString mInterfacePath;
 
-	// Список всех поддерживаемых языков <наименование, локализованное название языка>.
-	QMap<QString, QString> mLanguages;
+    // Список всех поддерживаемых языков <наименование, локализованное название языка>.
+    QMap<QString, QString> mLanguages;
 
-	// Набор трансляторов для каждого модуля.
-	QMap<QString, QTranslator*> mTranslators;
+    // Набор трансляторов для каждого модуля.
+    QMap<QString, QTranslator *> mTranslators;
 
-	QString mCurrentLanguage;
-	QString mDefaultLanguage;
+    QString mCurrentLanguage;
+    QString mDefaultLanguage;
 };
 
 //------------------------------------------------------------------------------

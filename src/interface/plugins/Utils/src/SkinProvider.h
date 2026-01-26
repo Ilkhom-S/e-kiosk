@@ -11,28 +11,27 @@
 class Skin;
 
 //------------------------------------------------------------------------------
-class SkinProvider : public QObject, public QQuickImageProvider
-{
-	Q_OBJECT
+class SkinProvider : public QObject, public QQuickImageProvider {
+    Q_OBJECT
 
-public:
-	SkinProvider(const QString& aInterfacePath, const QString& aLogoPath, const QString& aUserLogoPath,
-				 const Skin* aSkin);
-	~SkinProvider() {};
+  public:
+    SkinProvider(const QString &aInterfacePath, const QString &aLogoPath, const QString &aUserLogoPath,
+                 const Skin *aSkin);
+    ~SkinProvider() {};
 
-	virtual QImage requestImage(const QString& aId, QSize* aSize, const QSize& aRequestedSize);
+    virtual QImage requestImage(const QString &aId, QSize *aSize, const QSize &aRequestedSize);
 
-private:
-	QString getImagePath(const QString& aImageId) const;
+  private:
+    QString getImagePath(const QString &aImageId) const;
 
-private:
-	QString mLogoPath;
-	QString mUserLogoPath;
-	const Skin* mSkin;
-	QString mInterfacePath;
+  private:
+    QString mLogoPath;
+    QString mUserLogoPath;
+    const Skin *mSkin;
+    QString mInterfacePath;
 
-	QHash<QString, QImage> mBackgrounds;
-	QHash<QString, QImage> mLogos;
+    QHash<QString, QImage> mBackgrounds;
+    QHash<QString, QImage> mLogos;
 };
 
 //------------------------------------------------------------------------------
