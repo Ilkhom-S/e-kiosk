@@ -1,29 +1,9 @@
-/* @file Протокол EBDS. */
+/* @file DEPRECATED - See include/Hardware/Protocols/CashAcceptor/EBDS.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/Protocols/CashAcceptor/EBDS.h>.
+*/
 
 #pragma once
-
-#include "Hardware/Common/ProtocolBase.h"
-
-//--------------------------------------------------------------------------------
-class EBDSProtocol : public ProtocolBase {
-  public:
-    EBDSProtocol();
-
-    /// Выполнить команду протокола.
-    TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData, bool aNeedAnswer);
-
-  private:
-    /// Подсчет контрольной суммы пакета данных.
-    const uchar calcCRC(const QByteArray &aData);
-
-    /// Получить пакет данных из порта.
-    const bool getAnswer(QByteArray &aAnswer);
-
-    /// Проверка пришедших из порта данных.
-    bool check(const QByteArray &aCommandPacket, const QByteArray &aAnswerPacket);
-
-    /// Отличительный признак направления посылки.
-    bool mACK;
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/Protocols/CashAcceptor/EBDS.h>

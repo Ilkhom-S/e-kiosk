@@ -5,8 +5,10 @@
 #include <QtCore/QElapsedTimer>
 #include <Common/QtHeadersEnd.h>
 
+// System
+#include <Hardware/Protocols/CashAcceptor/EBDS.h>
+
 // Project
-#include "EBDS.h"
 #include "EBDSConstants.h"
 
 EBDSProtocol::EBDSProtocol() : mACK(false) {
