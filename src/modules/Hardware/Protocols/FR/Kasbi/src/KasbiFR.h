@@ -1,25 +1,9 @@
-/* @file Протокол ФР Касби. */
+/* @file DEPRECATED - See include/Hardware/FR/KasbiFR.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/FR/KasbiFR.h>.
+*/
 
 #pragma once
-
-#include "Hardware/Common/ProtocolBase.h"
-
-//--------------------------------------------------------------------------------
-/// Класс протокола KKM.
-class KasbiFRProtocol : public ProtocolBase {
-  public:
-    /// Выполнить команду протокола.
-    TResult processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, int aTimeout);
-
-  private:
-    /// Подсчет контрольной суммы пакета данных.
-    ushort calcCRC(const QByteArray &aData);
-
-    /// Проверка пришедших из порта данных.
-    bool check(const QByteArray &aAnswer);
-
-    /// Получить пакет данных из порта.
-    bool read(QByteArray &aAnswer, int aTimeout);
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/FR/KasbiFR.h>

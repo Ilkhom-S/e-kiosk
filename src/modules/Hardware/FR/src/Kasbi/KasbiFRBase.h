@@ -4,7 +4,7 @@
 
 // Modules
 #include "Hardware/FR/PortFRBase.h"
-#include "Hardware/Protocols/FR/KasbiFR.h"
+#include <Hardware/FR/KasbiFR.h>
 
 // Project
 #include "KasbiFRConstants.h"
