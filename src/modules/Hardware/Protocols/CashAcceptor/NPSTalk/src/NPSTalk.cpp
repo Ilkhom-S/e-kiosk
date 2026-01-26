@@ -8,8 +8,8 @@
 #include <QtCore/QElapsedTimer>
 #include <Common/QtHeadersEnd.h>
 
-// Project
-#include "NPSTalk.h"
+// System
+#include <Hardware/Protocols/CashAcceptor/NPSTalk.h>
 
 void NPSTalkProtocol::setAddress(uchar aAddress) {
     mDeviceAddress = aAddress;
