@@ -22,7 +22,7 @@
 
 // Project
 #include "Hardware/FR/FRStatusesDescriptions.h"
-#include "Hardware/FR/FiscalFieldDescriptions.h"
+#include <Hardware/FR/FiscalFieldDescriptions.h>
 #include "Hardware/FR/FRDataTypes.h"
 
 //--------------------------------------------------------------------------------

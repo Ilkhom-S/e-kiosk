@@ -9,7 +9,7 @@
 #include <Common/QtHeadersEnd.h>
 
 // Project
-#include "Hardware/FR/FiscalFieldDescriptions.h"
+#include <Hardware/FR/FiscalFieldDescriptions.h>
 
 //--------------------------------------------------------------------------------
 namespace CAFPFR {

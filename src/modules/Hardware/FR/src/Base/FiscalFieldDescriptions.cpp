@@ -9,8 +9,8 @@
 // SDK
 #include <SDK/Drivers/FR/FiscalFields.h>
 
-// Modules
-#include "FiscalFieldDescriptions.h"
+// System
+#include <Hardware/FR/FiscalFieldDescriptions.h>
 
 namespace CFR {
     namespace FiscalFields {
