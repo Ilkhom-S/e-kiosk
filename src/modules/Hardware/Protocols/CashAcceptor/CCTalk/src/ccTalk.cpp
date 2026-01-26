@@ -10,9 +10,9 @@
 
 // System
 #include "Hardware/Common/HardwareConstants.h"
+#include <Hardware/Protocols/CashAcceptor/CCTalk.h>
 
 // Project
-#include "ccTalk.h"
 #include "ccTalkConstants.h"
 
 using namespace SDK::Driver;
