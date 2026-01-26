@@ -1,12 +1,11 @@
 /* @file Кардридер ACS ACR120. */
 
 // ACR120 SDK
+
+// System
 #include <ACR120U/include/ACR120U.h>
+#include <Hardware/Scanners/ACR120.h>
 
-// Project
-#include "ACR120.h"
-
-//--------------------------------------------------------------------------------
 ACR120::ACR120() : mHandle(0), mCardPresent(false) {
     mPollingInterval = 500;
 }

@@ -1,32 +1,9 @@
-/* @file Кардридер ACS ACR120. */
+/* @file DEPRECATED - See include/Hardware/Scanners/ACR120.h instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in include/.
+All NEW code should include <Hardware/Scanners/ACR120.h>.
+*/
 
 #pragma once
-
-#include "Hardware/Common/PollingDeviceBase.h"
-#include "Hardware/HID/ProtoHID.h"
-
-//--------------------------------------------------------------------------------
-typedef PollingDeviceBase<ProtoHID> TPollingHID;
-
-class ACR120 : public TPollingHID {
-  public:
-    ACR120();
-
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
-    virtual bool release();
-
-  private:
-    /// Попытка самоидентификации.
-    virtual bool isConnected();
-
-    /// Получить статус.
-    virtual bool getStatus(TStatusCodes &aStatusCodes);
-
-    /// Хендл устройства.
-    qint16 mHandle;
-
-    /// Приложена ли карта.
-    bool mCardPresent;
-};
-
-//--------------------------------------------------------------------------------
+#include <Hardware/Scanners/ACR120.h>
