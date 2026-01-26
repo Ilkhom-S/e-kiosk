@@ -42,7 +42,8 @@ QList<NetworkTask *> Folder::download(const QString &aBaseURL, const TFileList &
         QString dstPath = fileInfo.name().section("/", 0, -2);
 
         if (!dstPath.isEmpty() && !QDir(getTemporaryFolder()).mkpath(dstPath)) {
-            throw Exception(QString("Failed to create destination folder %1.").arg(dstFilePath));
+            throw Exception(ECategory::Application, ESeverity::Major, 0,
+                            QString("Failed to create destination folder %1.").arg(dstFilePath));
         }
 
         switch (fileInfo.verify(dstFilePath)) {
@@ -87,7 +88,7 @@ void Folder::ensureTargetDirectory(const QString &targetDir, const QString &targ
 }
 
 //---------------------------------------------------------------------------
-void Folder::deploy(const TFileList &aFiles, const QString &aDestination) throw(std::exception) {
+void Folder::deploy(const TFileList &aFiles, const QString &aDestination) noexcept(false) {
     // Копируем файлы в директорию назначения.
     foreach (auto file, getFiles().intersect(aFiles)) {
         Log(LogLevel::Normal, QString("Deploying file %1...").arg(file.name()));
@@ -109,14 +110,15 @@ void Folder::deploy(const TFileList &aFiles, const QString &aDestination) throw(
             }
 
             if (!QFile::copy(srcFileName, destinationFileName)) {
-                throw Exception(QString("Failed to copy file %1.").arg(file.name()));
+                throw Exception(ECategory::Application, ESeverity::Major, 0,
+                                QString("Failed to copy file %1.").arg(file.name()));
             }
         }
     }
 }
 
 //---------------------------------------------------------------------------
-void Folder::applyPostActions(const QString &aWorkingDir) throw(std::exception) {
+void Folder::applyPostActions(const QString &aWorkingDir) noexcept(false) {
     // Выполняем post-actionы.
     foreach (auto action, getPostActions()) {
         QProcess runAction;
@@ -126,11 +128,12 @@ void Folder::applyPostActions(const QString &aWorkingDir) throw(std::exception) 
         // TODO: возможно стоит сделать ограничение по времени, которое отводится на работу процесса. Сейчас по
         // умолчанию 30 секунд.
         if (!runAction.waitForFinished()) {
-            throw Exception(QString("Failed to start %1.").arg(action));
+            throw Exception(ECategory::Application, ESeverity::Major, 0, QString("Failed to start %1.").arg(action));
         }
 
         if (runAction.exitCode() != 0) {
-            throw Exception(QString("Process %1 exited with error. Code %2.").arg(action).arg(runAction.exitCode()));
+            throw Exception(ECategory::Application, ESeverity::Major, 0,
+                            QString("Process %1 exited with error. Code %2.").arg(action).arg(runAction.exitCode()));
         }
     }
 }

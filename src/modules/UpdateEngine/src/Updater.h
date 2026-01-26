@@ -14,7 +14,11 @@
 #include <NetworkTaskManager/NetworkTaskManager.h>
 
 #include "Component.h"
+
+// Windows-specific BITS functionality
+#ifdef Q_OS_WIN32
 #include "WindowsBITS.h"
+#endif
 
 class QDomElement;
 
@@ -87,7 +91,9 @@ class Updater : public QObject {
     int checkIntegrity();
 
     /// Флаг - можно ли использовать BITS
+#ifdef Q_OS_WIN32
     void useBITS(bool aUseBITS, int aJobPriority = CBITS::HIGH);
+#endif
 
   public slots:
     /// Запуск процедуры обновления.
@@ -172,10 +178,14 @@ class Updater : public QObject {
     bool validateConfiguration(const TComponentList &aComponents);
 
   private:
+#ifdef Q_OS_WIN32
     CBITS::CopyManager mBitsManager;
+#endif
 
     /// Перейти к скачиванию файлов с помощью BITS
+#ifdef Q_OS_WIN32
     bool bitsDownload();
+#endif
 
     bool bitsInProgress();
 

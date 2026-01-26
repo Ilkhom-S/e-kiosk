@@ -1,84 +1,43 @@
 # PPSDK (PaymentProcessor SDK) module
 
+# Create interface library for headers
+add_library(PPSDK INTERFACE)
+set_target_properties(PPSDK PROPERTIES FOLDER "modules/SDK")
+
+# Add include directories
+target_include_directories(PPSDK INTERFACE
+    ${EK_INCLUDES_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+# Link Qt modules
+target_link_libraries(PPSDK INTERFACE
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Qml
+    ek_boost
+    ek_common
+)
+
+# Add compile definitions
+target_compile_definitions(PPSDK INTERFACE _UNICODE UNICODE)
+
+# Create implementation library
 file(GLOB_RECURSE PPSDK_SOURCES
     src/*.cpp
     src/*.h
 )
 
-# Public headers live under EK includes dir; let ek_common provide ${EK_INCLUDES_DIR}
-# ek_add_library will export the include dir passed in INCLUDE_DIRS as PUBLIC.
-ek_add_library(PPSDK
+# Also include interface headers for moc generation
+file(GLOB_RECURSE PPSDK_INTERFACE_HEADERS
+    ${EK_INCLUDES_DIR}/SDK/PaymentProcessor/**/*.h
+)
+
+include(${CMAKE_SOURCE_DIR}/cmake/EKLibrary.cmake)
+ek_add_library(PPSDKImpl
     FOLDER "modules/SDK"
-    SOURCES ${PPSDK_SOURCES}
+    SOURCES ${PPSDK_SOURCES} ${PPSDK_INTERFACE_HEADERS}
     QT_MODULES Core Widgets Qml
-    INCLUDE_DIRS ${EK_INCLUDES_DIR}
-    DEPENDS ek_boost ek_common
+    DEPENDS PPSDK
     COMPILE_DEFINITIONS _UNICODE UNICODE
 )
-
-# Add ICore interface header for AUTOMOC processing (contains Q_OBJECT)
-if(EXISTS "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Core/ICore.h")
-    target_sources(PPSDK PRIVATE "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Core/ICore.h")
-else()
-    # Fall back to include path in source tree during development
-    target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/Core/ICore.h")
-endif()
-
-# Ensure automoc picks up Q_OBJECT in public headers (IRemoteClient lives in ${EK_INCLUDES_DIR})
-# Add the public header to target sources so CMake's AUTOMOC processes it.
-# Use a full path constructed from EK_INCLUDES_DIR to be explicit about location.
-if(EXISTS "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Core/IRemoteClient.h")
-    target_sources(PPSDK PRIVATE "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Core/IRemoteClient.h")
-else()
-    # Fall back to include path in source tree during development
-    target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/Core/IRemoteClient.h")
-endif()
-
-# Add IDeviceTest interface header for AUTOMOC processing
-if(EXISTS "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/IDeviceTest.h")
-    target_sources(PPSDK PRIVATE "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/IDeviceTest.h")
-else()
-    # Fall back to include path in source tree during development
-    target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/IDeviceTest.h")
-endif()
-
-# Add EventTypes header for AUTOMOC processing (contains Q_ENUM)
-if(EXISTS "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Core/EventTypes.h")
-    target_sources(PPSDK PRIVATE "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Core/EventTypes.h")
-else()
-    # Fall back to include path in source tree during development
-    target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/Core/EventTypes.h")
-endif()
-
-# Add scripting headers with Q_OBJECT for AUTOMOC processing
-set(SCRIPTING_HEADERS
-    IBackendScenarioObject.h
-    Settings.h
-    ScriptArray.h
-    PrinterService.h
-    NetworkService.h
-    PaymentService.h
-    HIDService.h
-    GUIService.h
-    FundsService.h
-    DeviceService.h
-    Core.h
-    AdService.h
-)
-
-foreach(HEADER ${SCRIPTING_HEADERS})
-    if(EXISTS "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Scripting/${HEADER}")
-        target_sources(PPSDK PRIVATE "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Scripting/${HEADER}")
-    else()
-        # Fall back to include path in source tree during development
-        target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/Scripting/${HEADER}")
-    endif()
-endforeach()
-
-# Add payment headers with Q_OBJECT for AUTOMOC processing
-if(EXISTS "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Payment/Step.h")
-    target_sources(PPSDK PRIVATE "${EK_INCLUDES_DIR}/SDK/PaymentProcessor/Payment/Step.h")
-else()
-    # Fall back to include path in source tree during development
-    target_sources(PPSDK PRIVATE "${CMAKE_SOURCE_DIR}/include/SDK/PaymentProcessor/Payment/Step.h")
-endif()

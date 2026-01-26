@@ -16,15 +16,15 @@ endif()
 # Ensure Qt components are found for this module
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
-# Find Boost stacktrace using the standard approach
-find_package(Boost REQUIRED)
+# Find Boost stacktrace using the standard approach (header-only in Boost 1.65+)
+# Note: ek_boost provides include directories, no need for separate find_package
 
 ek_add_library(DebugUtils
     FOLDER "modules"
     SOURCES ${DEBUGUTILS_SOURCES}
     QT_MODULES Core
-    LIBRARIES Boost::boost
-    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
+    # DEPENDS ek_boost  # Removed to avoid linking issues - using direct include instead
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/vcpkg_installed/arm64-osx/include
 )
 
 # Set minimum Windows version for XP compatibility and Unicode support

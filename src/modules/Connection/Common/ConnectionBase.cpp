@@ -243,3 +243,20 @@ void ConnectionBase::toLog(LogLevel::Enum aLevel, const QString &aMessage) const
 }
 
 //----------------------------------------------------------------------------
+
+IConnection *IConnection::create(const QString &aName, EConnectionTypes::Enum aType, NetworkTaskManager *aNetwork,
+                                 ILog *aLog) {
+#ifdef Q_OS_WIN32
+    // Windows-specific implementation is in Win32/src/Common.cpp
+    return nullptr; // This will be overridden by the Windows implementation
+#else
+    // Non-Windows platforms don't support dial-up connections
+    Q_UNUSED(aName)
+    Q_UNUSED(aType)
+    Q_UNUSED(aNetwork)
+    Q_UNUSED(aLog)
+    return nullptr;
+#endif
+}
+
+//----------------------------------------------------------------------------

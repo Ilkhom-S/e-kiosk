@@ -1,5 +1,8 @@
 /* @file Обертка над подсистемой Windows BITS. Приватный класс. */
 
+// Windows-specific code: BITS is only available on Windows
+#ifdef Q_OS_WIN32
+
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QDir>
@@ -28,7 +31,8 @@ namespace CBITS {
             hr = CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_CONNECT, RPC_C_IMP_LEVEL_IMPERSONATE,
                                       NULL, EOAC_DYNAMIC_CLOAKING, 0);
             if (FAILED(hr) && hr != RPC_E_TOO_LATE) {
-                toLog(LoggerLevel::Error, QString("BITS: Error call CoInitializeSecurity(), result=0x%1").arg(hr, 0, 16));
+                toLog(LoggerLevel::Error,
+                      QString("BITS: Error call CoInitializeSecurity(), result=0x%1").arg(hr, 0, 16));
                 return;
             }
 
@@ -257,9 +261,9 @@ namespace CBITS {
             }
 
             toLog(LoggerLevel::Error, QString("BITS: Add task to job failed: %1. HRESULT=0x%2. Url: %3")
-                                       .arg(getJobError())
-                                       .arg(hr, 8, 16)
-                                       .arg(url));
+                                          .arg(getJobError())
+                                          .arg(hr, 8, 16)
+                                          .arg(url));
         }
 
         return AddTaskResult::Error;
@@ -319,3 +323,5 @@ namespace CBITS {
 
     //---------------------------------------------------------------------------
 } // namespace CBITS
+
+#endif // Q_OS_WIN32

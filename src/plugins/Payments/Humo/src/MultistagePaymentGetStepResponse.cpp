@@ -47,7 +47,7 @@ MultistagePaymentGetStepResponse::MultistagePaymentGetStepResponse(const Request
 
         QDomDocument doc("mydocument");
         auto result = doc.setContent(mFields);
-        mIsOk = mFields.isEmpty() ? true : (result.error() == QDomDocument::ParseError::NoError);
+        mIsOk = mFields.isEmpty() ? true : static_cast<bool>(result);
     }
 }
 

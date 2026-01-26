@@ -2,6 +2,9 @@
 
 #pragma once
 
+// Windows-specific code: BITS is only available on Windows
+#ifdef Q_OS_WIN32
+
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QMap>
@@ -72,3 +75,5 @@ namespace CBITS {
 
     //---------------------------------------------------------------------------
 } // namespace CBITS
+
+#endif // Q_OS_WIN32

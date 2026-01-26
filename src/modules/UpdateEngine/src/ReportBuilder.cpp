@@ -7,7 +7,7 @@
 #include <Common/QtHeadersEnd.h>
 
 // Modules
-#include <Common/Application.h>
+#include <Common/BasicApplication.h>
 
 // Project
 #include "ReportBuilder.h"

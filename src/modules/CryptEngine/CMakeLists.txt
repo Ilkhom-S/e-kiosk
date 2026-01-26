@@ -13,6 +13,6 @@ ek_add_library(CryptEngine
     SOURCES ${CRYPTENGINE_SOURCES}
     QT_MODULES Core
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
-    DEPENDS boost EK::libipriv
+    DEPENDS ek_boost EK::libipriv
     COMPILE_DEFINITIONS _UNICODE UNICODE
 )

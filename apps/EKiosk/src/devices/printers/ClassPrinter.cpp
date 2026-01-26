@@ -953,3 +953,10 @@ bool IsPrinterError(HANDLE hPrinter) {
     return false;
 }
 #endif // Q_OS_WIN32
+
+#ifndef Q_OS_WIN32
+void ClassPrinter::clearListPrinterData(QString /*name*/) {
+    // Stub implementation for non-Windows platforms
+    // Printer job management is Windows-specific
+}
+#endif // !Q_OS_WIN32

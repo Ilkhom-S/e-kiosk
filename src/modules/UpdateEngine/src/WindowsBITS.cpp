@@ -1,5 +1,8 @@
 /* @file Обертка над подсистемой Windows BITS. */
 
+// Windows-specific code: BITS is only available on Windows
+#ifdef Q_OS_WIN32
+
 // Project
 #include "WindowsBITS.h"
 #include "WindowsBITS_p.h"
@@ -136,3 +139,5 @@ namespace CBITS {
 
     //---------------------------------------------------------------------------
 } // namespace CBITS
+
+#endif // Q_OS_WIN32

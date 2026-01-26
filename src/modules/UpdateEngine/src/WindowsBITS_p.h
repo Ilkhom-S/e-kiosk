@@ -2,6 +2,9 @@
 
 #pragma once
 
+// Windows-specific code: BITS is only available on Windows
+#ifdef Q_OS_WIN32
+
 // Windows
 #include <Windows.h>
 #include <atlbase.h>
@@ -73,3 +76,5 @@ namespace CBITS {
 
     //---------------------------------------------------------------------------
 } // namespace CBITS
+
+#endif // Q_OS_WIN32

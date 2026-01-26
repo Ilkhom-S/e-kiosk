@@ -33,6 +33,7 @@ ek_add_application(client
     BasicApplication
     EK::QZint
     PPSDK
+    PPSDKImpl
     GUISDK
     PluginsSDK
     DriversSDK
@@ -51,6 +52,7 @@ ek_add_application(client
     Packer
     AdBackend
     SysUtils
+    KeysUtils
     $<$<PLATFORM_ID:Windows>:rasapi32;winspool;psapi;user32;Advapi32>
 )
 
@@ -58,8 +60,7 @@ ek_add_application(client
 target_link_libraries(client PUBLIC ek_common)
 
 # Link Boost includes for SDK headers that use Boost
-# Link Boost includes for SDK headers that use Boost
-target_link_libraries(client PUBLIC ek_boost)
+# target_link_libraries(client PUBLIC ek_boost)  # Removed to avoid linking issues
 
 # Option to enable test mode (disables kiosk restrictions, e.g. killing explorer.exe)
 option(EKIOSK_TEST_MODE "Enable test mode (no kiosk restrictions)" ON)

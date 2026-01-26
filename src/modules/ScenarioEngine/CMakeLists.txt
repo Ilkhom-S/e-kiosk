@@ -30,13 +30,13 @@ elseif(QT_VERSION_MAJOR EQUAL 6)
 endif()
 
 # Find Boost components used by this module
-find_package(Boost REQUIRED)
+# find_package(Boost REQUIRED)
 
 ek_add_library(ScenarioEngine
     FOLDER "modules"
     SOURCES ${SCENARIOENGINE_SOURCES} ${SCENARIOENGINE_PUBLIC_HEADERS}
     QT_MODULES ${SCENARIOENGINE_QT_MODULES}
-    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS}
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
     COMPILE_DEFINITIONS _UNICODE UNICODE
     DEPENDS ek_boost
 )

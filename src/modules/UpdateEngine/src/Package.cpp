@@ -65,12 +65,12 @@ QList<NetworkTask *> Package::download(const QString &aBaseURL, const TFileList 
 
         switch (componentFile.verify(filePath)) {
             case File::OK: // качать не нужно
-                Log(LoggerLevel::Normal,
+                Log(LogLevel::Normal,
                     QString("File '%1' already downloaded into temp folder. Skip download.").arg(filePath));
                 return tasks;
 
             case File::Error:
-                Log(LoggerLevel::Warning,
+                Log(LogLevel::Warning,
                     QString("Wrong file '%1' in temp folder. Remove it and renew download.").arg(filePath));
                 QFile::remove(filePath);
                 // break тут не нужен!
@@ -94,16 +94,16 @@ QList<NetworkTask *> Package::download(const QString &aBaseURL, const TFileList 
 }
 
 //---------------------------------------------------------------------------
-void Package::deploy(const TFileList &aFiles, const QString &aDestination) throw(std::exception) {
+void Package::deploy(const TFileList &aFiles, const QString &aDestination) noexcept(false) {
     if (!aFiles.isEmpty()) {
-        Log(LoggerLevel::Normal,
+        Log(LogLevel::Normal,
             QString("Deploying package %1%2...").arg(getId()).arg(mSkipExisting ? " with skip existing" : ""));
 
         // Распаковываем архив в папку назначения.
         Packer unzip("", Log());
 
         if (optional() && QFile(QDir::toNativeSeparators(getTemporaryFolder() + "/" + getId() + ".zip")).size() <= 0) {
-            Log(LoggerLevel::Warning, QString("Skip optional component %1...").arg(getId()));
+            Log(LogLevel::Warning, QString("Skip optional component %1...").arg(getId()));
         } else {
             if (!unzip.unpack(QDir::toNativeSeparators(getTemporaryFolder() + "/" + getId() + ".zip"),
                               QDir::toNativeSeparators(aDestination), mSkipExisting)) {
@@ -114,18 +114,18 @@ void Package::deploy(const TFileList &aFiles, const QString &aDestination) throw
                                     .arg(QString(unzip.messages())));
             }
 
-            Log(LoggerLevel::Normal, QString("Deploying %1 OK:\n%2").arg(getId()).arg(unzip.messages()));
+            Log(LogLevel::Normal, QString("Deploying %1 OK:\n%2").arg(getId()).arg(unzip.messages()));
         }
     }
 }
 
 //---------------------------------------------------------------------------
-void Package::applyPostActions(const QString &aWorkingDir) throw(std::exception) {
+void Package::applyPostActions(const QString &aWorkingDir) noexcept(false) {
     auto postActions = getPostActions();
 
     // Распаковываем файлы из архива во временную папку.
     if (!postActions.empty()) {
-        Log(LoggerLevel::Normal, QString("Extraction post actions %1...").arg(getId()));
+        Log(LogLevel::Normal, QString("Extraction post actions %1...").arg(getId()));
 
         Packer unzip("", Log());
 
@@ -143,7 +143,7 @@ void Package::applyPostActions(const QString &aWorkingDir) throw(std::exception)
     foreach (auto action, postActions) {
         QProcess runAction;
 
-        Log(LoggerLevel::Normal, QString("Running post action %1...").arg(action));
+        Log(LogLevel::Normal, QString("Running post action %1...").arg(action));
 
         runAction.start(getTemporaryFolder() + "/" + action, QStringList() << QDir::toNativeSeparators(aWorkingDir));
 
@@ -161,7 +161,7 @@ void Package::applyPostActions(const QString &aWorkingDir) throw(std::exception)
                                 .arg(runAction.exitCode())
                                 .arg(QString(runAction.readAllStandardOutput())));
         } else {
-            Log(LoggerLevel::Normal,
+            Log(LogLevel::Normal,
                 QString("Process %1 run OK, output: %2.").arg(action).arg(QString(runAction.readAllStandardOutput())));
         }
     }

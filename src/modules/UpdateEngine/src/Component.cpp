@@ -5,6 +5,7 @@
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
+#include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
 
 // Modules
@@ -50,7 +51,8 @@ QString Component::getTemporaryFolder() const {
 
     if (!dir.exists()) {
         if (!dir.mkpath(dir.path())) {
-            throw Exception(QString("Failed to create path %1.").arg(dir.path()));
+            throw Exception(ECategory::Application, ESeverity::Major, 0,
+                            QString("Failed to create path %1.").arg(dir.path()));
         }
     }
 

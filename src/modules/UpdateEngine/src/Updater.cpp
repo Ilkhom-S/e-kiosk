@@ -8,6 +8,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QCryptographicHash>
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
@@ -16,6 +17,7 @@
 #include <QtCore/QScopedPointer>
 #include <QtCore/QSettings>
 #include <QtCore/QUrlQuery>
+#include <QtNetwork/QNetworkProxy>
 #include <QtXml/QDomDocument>
 #include <Common/QtHeadersEnd.h>
 
@@ -58,7 +60,12 @@ namespace CUpdater {
 //---------------------------------------------------------------------------
 Updater::Updater(QObject *aParent)
     : QObject(aParent), mFailCount(0), mAllTasksCount(0), mProgressPercent(0),
-      mBitsManager(ILog::getInstance(CUpdater::Name)), mUseBITS(true), mJobPriority(CBITS::HIGH) {
+#ifdef Q_OS_WIN32
+      mBitsManager(ILog::getInstance(CUpdater::Name)), mUseBITS(true), mJobPriority(CBITS::HIGH)
+#else
+      mUseBITS(false), mJobPriority(0)
+#endif
+{
     mNetworkTaskManager.setLog(ILog::getInstance(CUpdater::Name));
 
     mNetworkTaskManager.setDownloadSpeedLimit(80);
@@ -72,7 +79,13 @@ Updater::Updater(const QString &aConfigURL, const QString &aUpdateURL, const QSt
     : mConfigURL(aConfigURL), mUpdateURL(aUpdateURL + "/" + aAppId + "/" + aConfiguration), mVersion(aVersion),
       mAppId(aAppId), mConfiguration(aConfiguration), mNetworkTaskManager(ILog::getInstance(CUpdater::Name)),
       mCurrentTaskSize(0), mWaitUpdateServer(false), mFailCount(0), mAP(aPointId), mAllTasksCount(0),
-      mProgressPercent(0), mBitsManager(ILog::getInstance(CUpdater::Name)), mUseBITS(true) {
+      mProgressPercent(0),
+#ifdef Q_OS_WIN32
+      mBitsManager(ILog::getInstance(CUpdater::Name)), mUseBITS(true), mJobPriority(CBITS::HIGH)
+#else
+      mUseBITS(false), mJobPriority(0)
+#endif
+{
     mNetworkTaskManager.setDownloadSpeedLimit(80);
 
     connect(&mProgressTimer, SIGNAL(timeout()), this, SLOT(showProgress()));
@@ -233,20 +246,20 @@ void Updater::addComponentForUpdate(const QStringList &aComponents) {
 }
 
 //---------------------------------------------------------------------------
-TFileList Updater::getWorkingDirStructure() const throw(Exception) {
+TFileList Updater::getWorkingDirStructure() const noexcept(false) {
     return getWorkingDirStructure("");
 }
 
 //---------------------------------------------------------------------------
 void Updater::addExceptionDirs(const QStringList &aDirs) {
     foreach (auto dir, aDirs) {
-        QString cleanedDir = QString(dir).remove(QRegularExpression("^/+|/+$"), "");
+        QString cleanedDir = QString(dir).replace(QRegularExpression("^/+|/+$"), "");
         mExceptionDirs.push_back(QString("/") + cleanedDir);
     }
 }
 
 //---------------------------------------------------------------------------
-TFileList Updater::getWorkingDirStructure(const QString &aDir) const throw(Exception) {
+TFileList Updater::getWorkingDirStructure(const QString &aDir) const noexcept(false) {
     TFileList list;
 
     if (mExceptionDirs.contains(aDir, Qt::CaseInsensitive)) {
@@ -266,7 +279,7 @@ TFileList Updater::getWorkingDirStructure(const QString &aDir) const throw(Excep
 
 #if QT_VERSION >= 0x050000
                 list.insert(File(
-                    filePath.remove(QRegularExpression("^/+"), ""),
+                    filePath.replace(QRegularExpression("^/+"), ""),
                     QString::fromLatin1(QCryptographicHash::hash(file.readAll(), QCryptographicHash::Sha256).toHex()),
                     "", fileInfo.size()));
 #else
@@ -276,7 +289,8 @@ TFileList Updater::getWorkingDirStructure(const QString &aDir) const throw(Excep
                     "", fileInfo.size()));
 #endif
             } else {
-                throw Exception(QString("Failed to calculate checksum for file %1.").arg(fileInfo.filePath()));
+                throw Exception(ECategory::Application, ESeverity::Major, 0,
+                                QString("Failed to calculate checksum for file %1.").arg(fileInfo.filePath()));
             }
         } else if (fileInfo.isDir()) {
             list += getWorkingDirStructure(aDir + "/" + fileInfo.fileName());
@@ -288,7 +302,7 @@ TFileList Updater::getWorkingDirStructure(const QString &aDir) const throw(Excep
 
 //-------------------------------------------------------------------------
 void Updater::copyFiles(const QString &aSrcDir, const QString &aDstDir, const TFileList &aFiles,
-                        bool aIgnoreError) throw(Exception) {
+                        bool aIgnoreError) noexcept(false) {
     Log(LogLevel::Normal, QString("Copy files from '%1' to '%2'.").arg(aSrcDir).arg(aDstDir));
 
     foreach (auto file, aFiles) {
@@ -299,7 +313,8 @@ void Updater::copyFiles(const QString &aSrcDir, const QString &aDstDir, const TF
             if (aIgnoreError) {
                 Log(LogLevel::Warning, QString("Failed to create destination path %1.").arg(dstFilePath));
             } else {
-                throw Exception(QString("Failed to create destination path %1.").arg(dstFilePath));
+                throw Exception(ECategory::Application, ESeverity::Major, 0,
+                                QString("Failed to create destination path %1.").arg(dstFilePath));
             }
         }
 
@@ -308,14 +323,15 @@ void Updater::copyFiles(const QString &aSrcDir, const QString &aDstDir, const TF
             if (aIgnoreError) {
                 Log(LogLevel::Warning, QString("Failed to copy file %1.").arg(file.name()));
             } else {
-                throw Exception(QString("Failed to copy file %1").arg(file.name()));
+                throw Exception(ECategory::Application, ESeverity::Major, 0,
+                                QString("Failed to copy file %1").arg(file.name()));
             }
         }
     }
 }
 
 //---------------------------------------------------------------------------
-void Updater::deleteFiles(const TFileList &aFiles, bool aIgnoreError) throw(Exception) {
+void Updater::deleteFiles(const TFileList &aFiles, bool aIgnoreError) noexcept(false) {
     foreach (auto file, aFiles) {
         if (QFile::exists(mWorkingDir + "/" + file.name()) &&
             !mExceptionDirs.contains("/" + file.dir(), Qt::CaseInsensitive)) {
@@ -325,7 +341,8 @@ void Updater::deleteFiles(const TFileList &aFiles, bool aIgnoreError) throw(Exce
                 if (aIgnoreError) {
                     Log(LogLevel::Warning, QString("Failed to remove file %1.").arg(file.name()));
                 } else {
-                    throw Exception(QString("Failed to remove file %1").arg(file.name()));
+                    throw Exception(ECategory::Application, ESeverity::Major, 0,
+                                    QString("Failed to remove file %1").arg(file.name()));
                 }
             }
         }
@@ -345,7 +362,11 @@ void Updater::download() {
         return;
     }
 
+#ifdef Q_OS_WIN32
     if (!bitsDownload()) {
+#else
+    if (true) { // Always use network download on non-Windows
+#endif
         auto task = mActiveTasks.front();
         task->connect(task, SIGNAL(onComplete()), this, SLOT(downloadComplete()), Qt::UniqueConnection);
 
@@ -554,7 +575,8 @@ void Updater::deploy() {
 
         // Создаем временную папку для бекапов.
         if (!QDir().mkpath(backupDir)) {
-            throw Exception(QString("Failed to create path %1.").arg(backupDir));
+            throw Exception(ECategory::Application, ESeverity::Major, 0,
+                            QString("Failed to create path %1.").arg(backupDir));
         }
 
         // Делаем резервную копию.
@@ -711,10 +733,12 @@ int Updater::checkIntegrity() {
 }
 
 //---------------------------------------------------------------------------
+#ifdef Q_OS_WIN32
 void Updater::useBITS(bool aUseBITS, int aJobPriority) {
     mUseBITS = aUseBITS;
     mJobPriority = aJobPriority;
 }
+#endif
 
 //---------------------------------------------------------------------------
 void Updater::runUpdate() {
@@ -784,7 +808,8 @@ void Updater::downloadPackage() {
 
     if (!mConfigURL.contains("=") && !mConfigURL.contains("?")) {
         // Фиктивный список файлов (реальный состав может отличаться).
-        QFileInfo fileInfo = mConfigURL.section("/", -1, -1);
+        QString fileName = mConfigURL.section("/", -1, -1);
+        QFileInfo fileInfo(fileName);
         auto fileList = TFileList() << File("config.xml", "", "");
         package = new Package(fileInfo.completeBaseName(), "1", fileList, QStringList(), "", mMD5, 0);
         tasks = package->download(mConfigURL + "?", TFileList());
@@ -920,6 +945,7 @@ bool Updater::validateConfiguration(const TComponentList &aComponents) {
 }
 
 //---------------------------------------------------------------------------
+#ifdef Q_OS_WIN32
 bool Updater::bitsDownload() {
     if (!mBitsManager.isReady() || !mUseBITS) {
         return false;
@@ -972,8 +998,10 @@ bool Updater::bitsDownload() {
     // перейти обратно к схеме скачивания вручную
     return false;
 }
+#endif
 
 //---------------------------------------------------------------------------
+#ifdef Q_OS_WIN32
 void Updater::bitsCompleteAllJobs(int &aCount, int &aCountComplete, int &aCountError) {
     auto jobs = mBitsManager.getJobs(bitsJobName());
     aCount = jobs.size();
@@ -1020,8 +1048,19 @@ void Updater::bitsCompleteAllJobs(int &aCount, int &aCountComplete, int &aCountE
         }
     }
 }
+#endif
 
 //---------------------------------------------------------------------------
+#ifndef Q_OS_WIN32
+void Updater::bitsCompleteAllJobs(int &aCount, int &aCountComplete, int &aCountError) {
+    aCount = 0;
+    aCountComplete = 0;
+    aCountError = 0; // BITS not available on this platform
+}
+#endif
+
+//---------------------------------------------------------------------------
+#ifdef Q_OS_WIN32
 bool Updater::bitsInProgress() {
     int count = 0;
     int countComplete = 0;
@@ -1047,8 +1086,17 @@ bool Updater::bitsInProgress() {
 
     return false;
 }
+#endif
 
 //---------------------------------------------------------------------------
+#ifndef Q_OS_WIN32
+bool Updater::bitsInProgress() {
+    return false; // BITS not available on this platform
+}
+#endif
+
+//---------------------------------------------------------------------------
+#ifdef Q_OS_WIN32
 void Updater::bitsCleanupOldTasks() {
     Log(LogLevel::Normal, QString("Cancel all bits jobs."));
 
@@ -1063,6 +1111,14 @@ void Updater::bitsCleanupOldTasks() {
         }
     }
 }
+#endif
+
+//---------------------------------------------------------------------------
+#ifndef Q_OS_WIN32
+void Updater::bitsCleanupOldTasks() {
+    // BITS not available on this platform - no cleanup needed
+}
+#endif
 
 //---------------------------------------------------------------------------
 QString Updater::bitsJobName() const {
@@ -1117,14 +1173,14 @@ CUpdaterErrors::Enum Updater::loadComponents(const QByteArray &aContent, Updater
                 auto record = node.toElement();
 
                 if (record.tagName() == "file") {
-                    files.insert(File(record.attribute("path").remove(leadingSlash, ""),
+                    files.insert(File(record.attribute("path").replace(leadingSlash, ""),
                                       record.attribute("hash_sha256"), record.attribute("url"),
                                       record.attribute("size").toInt()));
                     continue;
                 }
 
                 if (record.tagName() == "post-action") {
-                    auto name = record.attribute("path").remove(leadingSlash, "");
+                    auto name = record.attribute("path").replace(leadingSlash, "");
                     // auto url = record.attribute("url");
 
                     actions.append(name);
@@ -1234,6 +1290,7 @@ bool Updater::bitsLoadState(QStringList *aParameters) {
 }
 
 //---------------------------------------------------------------------------
+#ifdef Q_OS_WIN32
 bool Updater::bitsIsComplete() {
     Log(LogLevel::Normal, QString("BITS job name: %1.").arg(bitsJobName()));
 
@@ -1255,8 +1312,17 @@ bool Updater::bitsIsComplete() {
 
     return jobs.count() && jobs.count() == countComplete;
 }
+#endif
 
 //---------------------------------------------------------------------------
+#ifndef Q_OS_WIN32
+bool Updater::bitsIsComplete() {
+    return false; // BITS not available on this platform
+}
+#endif
+
+//---------------------------------------------------------------------------
+#ifdef Q_OS_WIN32
 bool Updater::bitsIsError() {
     auto jobs = mBitsManager.getJobs(bitsJobName());
     int badJobs = 0;
@@ -1293,5 +1359,13 @@ bool Updater::bitsIsError() {
 
     return badJobs > 0;
 }
+#endif
+
+//---------------------------------------------------------------------------
+#ifndef Q_OS_WIN32
+bool Updater::bitsIsError() {
+    return false; // BITS not available on this platform
+}
+#endif
 
 //---------------------------------------------------------------------------

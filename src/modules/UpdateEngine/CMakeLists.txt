@@ -8,6 +8,16 @@ file(GLOB UPDATEENGINE_SOURCES
     src/*.h
 )
 
+# Windows-specific BITS files
+if(WIN32)
+    list(APPEND UPDATEENGINE_SOURCES
+        src/WindowsBITS.cpp
+        src/WindowsBITS.h
+        src/WindowsBITS_p.cpp
+        src/WindowsBITS_p.h
+    )
+endif()
+
 # XmlPatterns is deprecated in Qt6
 if(QT_VERSION_MAJOR EQUAL 5)
     ek_add_library(UpdateEngine

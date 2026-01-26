@@ -12,12 +12,10 @@
 
 // System
 #include <Crypt/ICryptEngine.h>
+#include <KeysUtils/KeysUtils.h>
 #include <NetworkTaskManager/MemoryDataStream.h>
 #include <NetworkTaskManager/NetworkTask.h>
 #include <NetworkTaskManager/NetworkTaskManager.h>
-
-// Project
-#include "KeysUtils.h"
 
 namespace CKeysFactory {
     const int KeySize = 2048;

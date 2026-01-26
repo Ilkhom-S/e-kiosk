@@ -339,3 +339,19 @@ bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *a
     return false;
 #endif
 }
+
+//--------------------------------------------------------------------------------
+bool ISysUtils::bringWindowToFront(WId aWindow) {
+    Q_UNUSED(aWindow)
+    // Not implemented on Unix-like systems
+    return false;
+}
+
+//--------------------------------------------------------------------------------
+bool ISysUtils::bringWindowToFront(const QString &aWindowTitle) {
+    Q_UNUSED(aWindowTitle)
+    // Not implemented on Unix-like systems
+    return false;
+}
+
+//--------------------------------------------------------------------------------
