@@ -5,7 +5,7 @@
 #include "Hardware/Common/DeviceBase.h"
 #include "Hardware/Common/VirtualDeviceBase.h"
 #include "Hardware/Dispensers/ProtoDispenser.h"
-#include "Hardware/Dispensers/DispenserBase.h"
+#include <Hardware/Dispensers/DispenserBase.h>
 
 //---------------------------------------------------------------------------------------------
 namespace CVirtualDispenser {

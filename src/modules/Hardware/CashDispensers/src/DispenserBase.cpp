@@ -8,10 +8,8 @@
 
 // System
 #include "Hardware/CashAcceptors/CashAcceptorStatusesDescriptions.h"
+#include <Hardware/Dispensers/DispenserBase.h>
 #include "Hardware/Dispensers/DispenserStatusesDescriptions.h"
-
-// Project
-#include "DispenserBase.h"
 
 using namespace SDK::Driver;
 

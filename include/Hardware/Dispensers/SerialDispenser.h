@@ -7,7 +7,7 @@
 #include "Hardware/Common/SerialDeviceBase.h"
 
 // Project
-#include "DispenserBase.h"
+#include <Hardware/Dispensers/DispenserBase.h>
 
 typedef DispenserBase<SerialDeviceBase<PortPollingDeviceBase<ProtoDispenser>>> TSerialDispenser;
 
