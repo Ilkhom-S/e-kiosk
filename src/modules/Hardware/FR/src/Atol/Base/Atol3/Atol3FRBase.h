@@ -3,7 +3,7 @@
 #pragma once
 
 // Modules
-#include "Hardware/Protocols/FR/Atol3FR.h"
+#include <Hardware/FR/Atol3FR.h>
 
 // Project
 #include "../AtolFRBase.h"
