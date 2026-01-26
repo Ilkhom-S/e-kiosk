@@ -1,33 +1,9 @@
-/* @file Реализация базового класса потока данных. */
+/* @file DEPRECATED - See ../../../<NetworkTaskManager/DataStream.h> instead.
+
+MIGRATION NOTE: This file kept for backward compatibility only.
+The class definition has been moved to the public header in ../../../<NetworkTaskManager/DataStream.h>.
+All NEW code should include ../../../<NetworkTaskManager/DataStream.h>.
+*/
 
 #pragma once
-
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QIODevice>
-#include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
-
-class QByteArray;
-
-//------------------------------------------------------------------------
-class DataStream {
-  public:
-    DataStream(QIODevice *aDevice);
-    virtual ~DataStream();
-
-    virtual bool clear();
-    virtual bool seek(qint64 aOffset);
-    virtual bool write(const QByteArray &aData);
-
-    virtual QByteArray takeAll();
-    virtual QByteArray readAll();
-
-    virtual qint64 size() const;
-
-    virtual void close();
-
-  protected:
-    QSharedPointer<QIODevice> m_stream;
-};
-
-//------------------------------------------------------------------------
+#include ../../../<NetworkTaskManager/DataStream.h>
