@@ -8,8 +8,10 @@
 #include <QtCore/QElapsedTimer>
 #include <Common/QtHeadersEnd.h>
 
+// System
+#include <Hardware/Protocols/CashAcceptor/SSP.h>
+
 // Project
-#include "SSP.h"
 #include "SSPConstants.h"
 
 using namespace SDK::Driver;
