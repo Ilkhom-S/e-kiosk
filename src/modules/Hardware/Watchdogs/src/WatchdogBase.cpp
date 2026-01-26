@@ -1,12 +1,9 @@
 /* @file Базовый класс сторожевого устойства. */
 
-// Modules
-#include "Hardware/Watchdogs/WatchdogStatusesDescriptions.h"
+// System
+#include <Hardware/Watchdogs/WatchdogBase.h>
+#include <Hardware/Watchdogs/WatchdogStatusesDescriptions.h>
 
-// Project
-#include "WatchdogBase.h"
-
-//-----------------------------------------------------------------------------
 WatchdogBase::WatchdogBase() {
     mPingTimer.moveToThread(&mThread);
 
