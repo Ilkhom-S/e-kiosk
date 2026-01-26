@@ -59,6 +59,9 @@ ek_add_application(client
 # Link common include INTERFACE target so `include/` headers are available
 target_link_libraries(client PUBLIC ek_common)
 
+# Add zint include directory for qzint.h header
+target_include_directories(client PRIVATE "${CMAKE_SOURCE_DIR}/thirdparty/zint/backend_qt")
+
 # Link Boost includes for SDK headers that use Boost
 # target_link_libraries(client PUBLIC ek_boost)  # Removed to avoid linking issues
 
