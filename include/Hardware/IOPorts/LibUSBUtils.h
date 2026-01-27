@@ -7,13 +7,15 @@
 
 // Modules
 #include <Hardware/Common/HardwareConstants.h>
+#include <Hardware/Common/DeviceDataConstants.h>
 #include <Hardware/Common/CommandResults.h>
 
 // Project
 #include <Hardware/IOPorts/LibUSBDeviceDataTypes.h>
 
 //--------------------------------------------------------------------------------
-namespace CLibUSBUtils {
+namespace CLibUSBUtils
+{
     /// Русская локаль для вывода сообщений.
     const char Locale[] = "ru";
 
@@ -24,9 +26,11 @@ namespace CLibUSBUtils {
     const uint16_t USB2_01 = 0x0201;
 
     //--------------------------------------------------------------------------------
-    class CSpeedDescriptions : public CDescription<uint16_t> {
+    class CSpeedDescriptions : public CDescription<uint16_t>
+    {
       public:
-        CSpeedDescriptions() {
+        CSpeedDescriptions()
+        {
             append(LIBUSB_LOW_SPEED_OPERATION, "1.5 MBit/s");
             append(LIBUSB_FULL_SPEED_OPERATION, "12 MBit/s");
             append(LIBUSB_HIGH_SPEED_OPERATION, "480 MBit/s");
@@ -35,21 +39,32 @@ namespace CLibUSBUtils {
         }
 
       protected:
-        virtual const QString &value(const uint16_t &aKey) const {
-            return mBuffer.value(aKey, mDefaultValue);
+        virtual QString value(const uint16_t &aKey) const
+        {
+            if (mBuffer.contains(aKey))
+            {
+                return mBuffer.value(aKey);
+            }
+            else
+            {
+                return QString("%1 (unknown)").arg(aKey); // Fallback for unknown keys
+            }
         }
     };
 
     static CSpeedDescriptions SpeedDescriptions;
 
     //--------------------------------------------------------------------------------
-    inline libusb_transfer_type transferType(uint8_t aData) {
+    inline libusb_transfer_type transferType(uint8_t aData)
+    {
         return libusb_transfer_type(aData & LIBUSB_TRANSFER_TYPE_MASK);
     }
 
-    class CTransferTypeDescriptions : public CLibUSB::CConfigTypeDescriptions<libusb_transfer_type, 0> {
+    class CTransferTypeDescriptions : public CLibUSB::CConfigTypeDescriptions<libusb_transfer_type, 0>
+    {
       public:
-        CTransferTypeDescriptions() {
+        CTransferTypeDescriptions()
+        {
             add(LIBUSB_TRANSFER_TYPE_CONTROL, "control");
             add(LIBUSB_TRANSFER_TYPE_ISOCHRONOUS, "isochronous");
             add(LIBUSB_TRANSFER_TYPE_BULK, "bulk");
@@ -61,9 +76,11 @@ namespace CLibUSBUtils {
     static CTransferTypeDescriptions TransferTypeDescriptions;
 
     //--------------------------------------------------------------------------------
-    class CIsoSyncTypeDescriptions : public CLibUSB::CConfigTypeDescriptions<libusb_iso_sync_type, 2> {
+    class CIsoSyncTypeDescriptions : public CLibUSB::CConfigTypeDescriptions<libusb_iso_sync_type, 2>
+    {
       public:
-        CIsoSyncTypeDescriptions() {
+        CIsoSyncTypeDescriptions()
+        {
             add(LIBUSB_ISO_SYNC_TYPE_NONE, "none");
             add(LIBUSB_ISO_SYNC_TYPE_ASYNC, "asynchronous");
             add(LIBUSB_ISO_SYNC_TYPE_ADAPTIVE, "adaptive");
@@ -74,9 +91,11 @@ namespace CLibUSBUtils {
     static CIsoSyncTypeDescriptions IsoSyncTypeDescriptions;
 
     //--------------------------------------------------------------------------------
-    class CIsoUsageTypeDescriptions : public CLibUSB::CConfigTypeDescriptions<libusb_iso_usage_type, 4> {
+    class CIsoUsageTypeDescriptions : public CLibUSB::CConfigTypeDescriptions<libusb_iso_usage_type, 4>
+    {
       public:
-        CIsoUsageTypeDescriptions() {
+        CIsoUsageTypeDescriptions()
+        {
             add(LIBUSB_ISO_USAGE_TYPE_DATA, "data");
             add(LIBUSB_ISO_USAGE_TYPE_FEEDBACK, "feedback");
             add(LIBUSB_ISO_USAGE_TYPE_IMPLICIT, "implicit feedback data");
@@ -91,8 +110,9 @@ namespace CLibUSBUtils {
 #define LIB_USB_CALL_LOG(aLog, aName, ...) LibUSBUtils::logAnswer(#aName, aName(__VA_ARGS__), aLog)
 
 //--------------------------------------------------------------------------------
-namespace LibUSBUtils {
-    /// Логгировать ошибку.
+namespace LibUSBUtils
+{
+    /// Логировать ошибку.
     TResult logAnswer(const QString &aFunctionName, int aResult, ILog *aLog = nullptr);
 
     /// Получить контекст библиотеки LibUSB.

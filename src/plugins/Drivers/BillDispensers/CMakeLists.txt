@@ -12,17 +12,13 @@ file(GLOB BILLDISPENSERS_SOURCES
     ../../../includes/Hardware/Dispensers/DispenserStatusesDescriptions.h
 )
 
-ek_add_plugin(bill_dispensers
+ek_add_driver_plugin(bill_dispensers
     FOLDER "plugins/Drivers"
     SOURCES ${BILLDISPENSERS_SOURCES}
-    QT_MODULES Core
     DEPENDS
-    DriversSDK
     HardwareProtocols
     HardwareCommon
     CashDispensers
-    PluginsSDK
-    ek_common
 )
 
 # Translations - merge common and plugin-specific translations

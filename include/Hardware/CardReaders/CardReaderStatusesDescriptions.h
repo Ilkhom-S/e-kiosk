@@ -10,7 +10,8 @@
 #include "Hardware/CardReaders/CardReaderStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace CardReaderStatusCode {
+namespace CardReaderStatusCode
+{
 #define ADD_CA_TYPE(aStatusType, aStatusCode, aStatus, aWarninglevel, aDescription, aTranslation)                      \
     append(aStatusType::aStatusCode, SStatusCodeSpecification(SDK::Driver::EWarningLevel::aWarninglevel, aDescription, \
                                                               aTranslation, SDK::Driver::ECardReaderStatus::aStatus))
@@ -30,9 +31,11 @@ namespace CardReaderStatusCode {
     ADD_CA_TYPE(Reject, aStatusCode, Rejected, Warning, "Reject by " #aStatusCode,                                     \
                 QCoreApplication::translate("CardReaderStatuses", "#rejected"))
 
-    class CSpecifications : public DeviceStatusCode::CSpecifications {
+    class CSpecifications : public DeviceStatusCode::CSpecifications
+    {
       public:
-        CSpecifications() {
+        CSpecifications()
+        {
             /// Предупреждения.
             ADD_CR_WARNING(Fan, QCoreApplication::translate("CardReaderStatuses", "#fan"));
             ADD_CR_SPECIAL(Forgotten, QCoreApplication::translate("CardReaderStatuses", "#forgotten"));

@@ -13,7 +13,8 @@
 #include "Hardware/Printers/PrinterBase.h"
 
 //--------------------------------------------------------------------------------
-namespace CPortPrinter {
+namespace CPortPrinter
+{
     /// Интервал поллинга при ожидании отмораживания по умолчанию, [мс].
     const int WaitingPollingInterval = 100;
 
@@ -21,29 +22,34 @@ namespace CPortPrinter {
     const int PrintingStringTimeout = 100;
 } // namespace CPortPrinter
 
-struct SPrintingOutData {
+struct SPrintingOutData
+{
     ILog *log;
     bool receiptProcessing;
     ELoggingType::Enum IOMessageLogging;
     QVariantMap configuration;
     QStringList receipt;
 
-    SPrintingOutData() : log(nullptr), receiptProcessing(false), IOMessageLogging(ELoggingType::ReadWrite) {
+    SPrintingOutData() : log(nullptr), receiptProcessing(false), IOMessageLogging(ELoggingType::ReadWrite)
+    {
     }
     SPrintingOutData(ILog *aLog, bool aReceiptProcessing, ELoggingType::Enum aIOMessageLogging,
                      const QVariantMap &aConfiguration, const QStringList &aReceipt)
         : log(aLog), receiptProcessing(aReceiptProcessing), IOMessageLogging(aIOMessageLogging),
-          configuration(aConfiguration), receipt(aReceipt) {
+          configuration(aConfiguration), receipt(aReceipt)
+    {
     }
 };
 
 //--------------------------------------------------------------------------------
-template <class T> class PortPrinterBase : public T {
+template <class T> class PortPrinterBase : public T
+{
   public:
     PortPrinterBase();
 
     /// Инициализация устройства.
-    virtual bool updateParametersOut() {
+    virtual bool updateParametersOut()
+    {
         return true;
     };
 

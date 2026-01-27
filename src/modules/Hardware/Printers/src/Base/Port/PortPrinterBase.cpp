@@ -6,7 +6,8 @@
 template class PortPrinterBase<PrinterBase<SerialDeviceBase<PortPollingDeviceBase<ProtoPrinter>>>>;
 
 //---------------------------------------------------------------------------
-template <class T> PortPrinterBase<T>::PortPrinterBase() {
+template <class T> PortPrinterBase<T>::PortPrinterBase()
+{
     this->mIOMessageLogging = ELoggingType::ReadWrite;
 
     // кодек - удалено для Qt 6 совместимости
@@ -14,27 +15,36 @@ template <class T> PortPrinterBase<T>::PortPrinterBase() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void PortPrinterBase<T>::finalizeInitialization() {
+template <class T> void PortPrinterBase<T>::finalizeInitialization()
+{
     this->addPortData();
 
-    if (this->mOperatorPresence) {
-        if (!this->mConnected) {
+    if (this->mOperatorPresence)
+    {
+        if (!this->mConnected)
+        {
             this->processStatusCodes(TStatusCodes() << DeviceStatusCode::Error::NotAvailable);
-        } else {
+        }
+        else
+        {
             this->onPoll();
         }
 
         this->mIOPort->close();
-    } else {
+    }
+    else
+    {
         T::finalizeInitialization();
     }
 }
 
 //---------------------------------------------------------------------------
-template <class T> bool PortPrinterBase<T>::isPossible(bool aOnline, QVariant aCommand) {
+template <class T> bool PortPrinterBase<T>::isPossible(bool aOnline, QVariant aCommand)
+{
     bool result = T::isPossible(aOnline, aCommand);
 
-    if (this->mOperatorPresence && aOnline) {
+    if (this->mOperatorPresence && aOnline)
+    {
         this->mIOPort->close();
     }
 
@@ -42,10 +52,12 @@ template <class T> bool PortPrinterBase<T>::isPossible(bool aOnline, QVariant aC
 }
 
 //---------------------------------------------------------------------------
-template <class T> bool PortPrinterBase<T>::print(const QStringList &aReceipt) {
+template <class T> bool PortPrinterBase<T>::print(const QStringList &aReceipt)
+{
     bool result = T::print(aReceipt);
 
-    if (this->mOperatorPresence) {
+    if (this->mOperatorPresence)
+    {
         this->mIOPort->close();
     }
 
@@ -53,12 +65,14 @@ template <class T> bool PortPrinterBase<T>::print(const QStringList &aReceipt) {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PortPrinterBase<T>::getAnswer(QByteArray &aAnswer, int aTimeout) const {
+template <class T> bool PortPrinterBase<T>::getAnswer(QByteArray &aAnswer, int aTimeout) const
+{
     QVariantMap configuration;
     configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::Write));
     this->mIOPort->setDeviceConfiguration(configuration);
 
-    if (!this->mIOPort->read(aAnswer, aTimeout)) {
+    if (!this->mIOPort->read(aAnswer, aTimeout))
+    {
         return false;
     }
 
@@ -69,16 +83,20 @@ template <class T> bool PortPrinterBase<T>::getAnswer(QByteArray &aAnswer, int a
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void PortPrinterBase<T>::execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine) {
+template <class T> void PortPrinterBase<T>::execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine)
+{
     // 1. В Qt 6 для превращения QString в QByteArray используем QStringEncoder.
     // Если mDecoder — это std::shared_ptr<QStringDecoder>, создаем энкодер на его основе.
     QByteArray data;
 
-    if (this->mDecoder) {
+    if (this->mDecoder)
+    {
         // Создаем временный энкодер с тем же именем кодировки (напр. "IBM 866")
         QStringEncoder encoder(this->mDecoder->name());
         data = encoder(aTagLexeme.data);
-    } else {
+    }
+    else
+    {
         // Фолбэк на Latin1, если кодек не задан
         data = aTagLexeme.data.toLatin1();
     }
@@ -87,7 +105,8 @@ template <class T> void PortPrinterBase<T>::execTags(Tags::SLexeme &aTagLexeme, 
     // mTagEngine->groupsTypesByPrefix возвращает контейнер групп типов.
     auto groups = this->mTagEngine->groupsTypesByPrefix(aTagLexeme.tags);
 
-    for (const Tags::TTypes &types : groups) {
+    for (const Tags::TTypes &types : groups)
+    {
         // Получаем открывающий и закрывающий теги (байтовые последовательности)
         QByteArray openTag = this->mTagEngine->getTag(types, Tags::Direction::Open);
         QByteArray closeTag = this->mTagEngine->getTag(types, Tags::Direction::Close);
@@ -101,20 +120,23 @@ template <class T> void PortPrinterBase<T>::execTags(Tags::SLexeme &aTagLexeme, 
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PortPrinterBase<T>::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
+template <class T> bool PortPrinterBase<T>::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt)
+{
     this->mActualStringCount = 0;
 
     return T::printReceipt(aLexemeReceipt);
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PortPrinterBase<T>::printOut(const SPrintingOutData &aPrintingOutData) {
+template <class T> bool PortPrinterBase<T>::printOut(const SPrintingOutData &aPrintingOutData)
+{
     this->setLog(aPrintingOutData.log);
     this->setDeviceConfiguration(aPrintingOutData.configuration);
     this->mConnected = true;
     this->mInitialized = ERequestStatus::Success;
 
-    if (!this->checkConnectionAbility()) {
+    if (!this->checkConnectionAbility())
+    {
         return false;
     }
 
@@ -134,10 +156,12 @@ template <class T> bool PortPrinterBase<T>::printOut(const SPrintingOutData &aPr
 }
 
 //---------------------------------------------------------------------------
-template <class T> bool PortPrinterBase<T>::printLine(const QVariant &aLine) {
+template <class T> bool PortPrinterBase<T>::printLine(const QVariant &aLine)
+{
     QByteArray request = aLine.toByteArray();
 
-    if (this->mLineFeed) {
+    if (this->mLineFeed)
+    {
         request += CPrinters::LineSpacer;
     }
 
@@ -145,13 +169,16 @@ template <class T> bool PortPrinterBase<T>::printLine(const QVariant &aLine) {
 }
 
 //---------------------------------------------------------------------------
-template <class T> bool PortPrinterBase<T>::printLine(const QByteArray &aLine) {
+template <class T> bool PortPrinterBase<T>::printLine(const QByteArray &aLine)
+{
     return this->mIOPort->write(aLine);
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PortPrinterBase<T>::cut() {
-    if (!this->mIOPort->write(this->getConfigParameter(CHardware::Printer::Commands::Cutting).toByteArray())) {
+template <class T> bool PortPrinterBase<T>::cut()
+{
+    if (!this->mIOPort->write(this->getConfigParameter(CHardware::Printer::Commands::Cutting).toByteArray()))
+    {
         this->toLog(LogLevel::Error, this->mDeviceName + ": Failed to cut paper");
         return false;
     }
@@ -160,13 +187,15 @@ template <class T> bool PortPrinterBase<T>::cut() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PortPrinterBase<T>::present() {
+template <class T> bool PortPrinterBase<T>::present()
+{
     using namespace CHardware::Printer;
 
     QByteArray command = this->getConfigParameter(Commands::Presentation).toByteArray() +
                          char(this->getConfigParameter(Settings::PresentationLength).toInt());
 
-    if (!this->mIOPort->write(command)) {
+    if (!this->mIOPort->write(command))
+    {
         this->toLog(LogLevel::Error, this->mDeviceName + ": Failed to present paper");
         return false;
     }
@@ -175,24 +204,28 @@ template <class T> bool PortPrinterBase<T>::present() {
 }
 
 //---------------------------------------------------------------------------
-template <class T> bool PortPrinterBase<T>::push() {
+template <class T> bool PortPrinterBase<T>::push()
+{
     QByteArray command = this->getConfigParameter(CHardware::Printer::Commands::Pushing).toByteArray();
 
     return this->mIOPort->write(command);
 }
 
 //---------------------------------------------------------------------------
-template <class T> bool PortPrinterBase<T>::retract() {
+template <class T> bool PortPrinterBase<T>::retract()
+{
     QByteArray command = this->getConfigParameter(CHardware::Printer::Commands::Retraction).toByteArray();
 
     return this->mIOPort->write(command);
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PortPrinterBase<T>::waitAvailable() {
+template <class T> bool PortPrinterBase<T>::waitAvailable()
+{
     int timeout = CPortPrinter::PrintingStringTimeout * this->mActualStringCount;
 
-    if (!timeout) {
+    if (!timeout)
+    {
         return true;
     }
 

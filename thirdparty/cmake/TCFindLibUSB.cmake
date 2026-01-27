@@ -22,6 +22,12 @@ if(NOT TARGET EK::LibUSB)
             ${CMAKE_CURRENT_LIST_DIR}/../libusb/libusb/libusb-1.0.def
             ${CMAKE_CURRENT_LIST_DIR}/../libusb/libusb/libusb-1.0.rc
         )
+    elseif(APPLE)
+        list(APPEND LIBUSB_SOURCES
+            ${CMAKE_CURRENT_LIST_DIR}/../libusb/libusb/os/darwin_usb.c
+            ${CMAKE_CURRENT_LIST_DIR}/../libusb/libusb/os/events_posix.c
+            ${CMAKE_CURRENT_LIST_DIR}/../libusb/libusb/os/threads_posix.c
+        )
     elseif(UNIX AND NOT APPLE)
         list(APPEND LIBUSB_SOURCES
             ${CMAKE_CURRENT_LIST_DIR}/../libusb/libusb/os/events_posix.c
@@ -87,6 +93,8 @@ if(NOT TARGET EK::LibUSB)
     if(WIN32)
         target_compile_definitions(libusb_static PRIVATE _WIN32_WINNT=0x0600)
         target_link_libraries(libusb_static PRIVATE setupapi)
+    elseif(APPLE)
+        target_link_libraries(libusb_static PRIVATE "-framework IOKit" "-framework CoreFoundation" "-framework Security")
     elseif(UNIX AND NOT APPLE)
         target_link_libraries(libusb_static PRIVATE pthread)
     endif()

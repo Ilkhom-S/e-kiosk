@@ -1,17 +1,20 @@
 /* @file Константы принтеров Fujitsu на контроллере Trentino FTP-609. */
 
-// Project
+// System
 #include "Hardware/Printers/PrinterStatusCodes.h"
 #include "Hardware/Printers/Tags.h"
 
 using namespace PrinterStatusCode;
 
 //--------------------------------------------------------------------------------
-namespace CFujitsu {
+namespace CFujitsu
+{
     /// Статусы.
-    class CStatuses : public CSpecification<int, int> {
+    class CStatuses : public CSpecification<int, int>
+    {
       public:
-        CStatuses() {
+        CStatuses()
+        {
             append(0, PrinterStatusCode::Warning::PaperNearEnd);
             append(1, PrinterStatusCode::Error::PaperEnd);
             append(2, PrinterStatusCode::Error::Temperature);
@@ -26,13 +29,15 @@ namespace CFujitsu {
     static CStatuses Statuses;
 
     /// Напряжение.
-    namespace Voltage {
+    namespace Voltage
+    {
         const int Nominal = 24;
         const double Delta = 2.4; // V = Vnom +/- Vdelta
     } // namespace Voltage
 
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char Identification[] = "\x17";
         const char Initialize[] = "\x16";
         const char Status[] = "\x18";
@@ -41,9 +46,11 @@ namespace CFujitsu {
 
     //----------------------------------------------------------------------------
     /// Теги.
-    class TagEngine : public Tags::Engine {
+    class TagEngine : public Tags::Engine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             appendSingle(Tags::Type::UnderLine, "", "\x11", "\x10");
             appendSingle(Tags::Type::DoubleWidth, "", "\x04", "\x03");
             appendSingle(Tags::Type::DoubleHeight, "", "\x05", "\x03");

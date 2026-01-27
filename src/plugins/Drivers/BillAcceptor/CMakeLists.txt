@@ -7,6 +7,7 @@ file(GLOB BILLACCEPTOR_SOURCES
     src/*.cpp
     src/*.h
     ${EK_INCLUDES_DIR}/Common/CoreVersion.rc
+    ../../../includes/Hardware/CashAcceptors/CashAcceptorStatusesDescriptions.h
 )
 
 ek_add_driver_plugin(bill_acceptors

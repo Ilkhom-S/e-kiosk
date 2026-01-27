@@ -47,7 +47,7 @@ endforeach()
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 
 # Load the actual Qt package with required components
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui Network WebSockets SerialPort Sql Quick Concurrent Xml LinguistTools QuickWidgets Qml)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui Network WebSockets SerialPort Sql Quick Concurrent Xml LinguistTools QuickWidgets Qml PrintSupport)
 
 # Find Boost (installed via vcpkg) - header-only usage only
 # find_package(Boost REQUIRED)

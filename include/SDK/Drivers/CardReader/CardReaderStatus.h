@@ -10,14 +10,18 @@
 // SDK
 #include <SDK/Drivers/DeviceStatus.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //---------------------------------------------------------------------------
         /// Обобщенные статусы устройств приема денег. Передаются в пп и служат для внутренних нужд драйвера. Порядок не
         /// менять.
-        namespace ECardReaderStatus {
-            enum Enum {
+        namespace ECardReaderStatus
+        {
+            enum Enum
+            {
                 OK = 1,  /// Хороший статус.
                 Warning, /// Находится в подозрительном состоянии.
                 Error,   /// Ошибка.

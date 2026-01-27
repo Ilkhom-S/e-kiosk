@@ -302,3 +302,8 @@ template TResult PortDeviceBase<PollingDeviceBase<ProtoDispenser>>::processComma
 
 // Explicit template instantiation for PortDeviceBase constructor (ProtoDispenser)
 template PortDeviceBase<PollingDeviceBase<ProtoDispenser>>::PortDeviceBase();
+
+// Explicit template instantiation for PortDeviceBase constructor (ProtoModem)
+template PortDeviceBase<DeviceBase<ProtoModem>>::PortDeviceBase();
+// Explicit template instantiation for PortDeviceBase constructor (ProtoPrinter)
+template PortDeviceBase<PollingDeviceBase<ProtoPrinter>>::PortDeviceBase();

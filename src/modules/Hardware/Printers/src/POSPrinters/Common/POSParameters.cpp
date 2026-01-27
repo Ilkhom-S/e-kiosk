@@ -9,22 +9,27 @@
 // System
 #include <Hardware/Printers/POSParameters.h>
 
-namespace POSPrinters {
+namespace POSPrinters
+{
 
-    SModelData::SModelData() {
+    SModelData::SModelData()
+    {
     }
 
     //--------------------------------------------------------------------------------
     SModelData::SModelData(const QString &aName, bool aVerified, const QString &aDescription)
-        : name(aName), verified(aVerified), description(aDescription) {
+        : name(aName), verified(aVerified), description(aDescription)
+    {
     }
 
     //--------------------------------------------------------------------------------
-    ModelData::ModelData() {
+    ModelData::ModelData()
+    {
     }
 
     //--------------------------------------------------------------------------------
-    void ModelData::add(char aModelId, bool aVerified, const QString &aName, const QString &aDescription) {
+    void ModelData::add(char aModelId, bool aVerified, const QString &aName, const QString &aDescription)
+    {
         QMutexLocker locker(&mMutex);
 
         append(aModelId, SModelData(aName, aVerified, aDescription));
@@ -32,7 +37,8 @@ namespace POSPrinters {
     }
 
     //--------------------------------------------------------------------------------
-    const TModelIds &ModelData::getModelIds() {
+    const TModelIds &ModelData::getModelIds()
+    {
         QMutexLocker locker(&mMutex);
 
         return mModelIds;

@@ -84,17 +84,17 @@ BinPackParameters: true
 BitFieldColonSpacing: Both
 BraceWrapping:
   AfterCaseLabel: false
-  AfterClass: false
+  AfterClass: true
   AfterControlStatement: Never
-  AfterEnum: false
+  AfterEnum: true
   AfterFunction: true
-  AfterNamespace: false
+  AfterNamespace: true
   AfterObjCDeclaration: false
-  AfterStruct: false
-  AfterUnion: false
+  AfterStruct: true
+  AfterUnion: true
   AfterExternBlock: false
-  BeforeCatch: false
-  BeforeElse: false
+  BeforeCatch: true
+  BeforeElse: true
   BeforeLambdaBody: false
   BeforeWhile: false
   IndentBraces: false
@@ -107,7 +107,7 @@ BreakAfterJavaFieldAnnotations: false
 BreakAfterReturnType: None
 BreakArrays: true
 BreakBeforeBinaryOperators: None
-BreakBeforeBraces: Attach
+BreakBeforeBraces: Allman
 BreakBeforeConceptDeclarations: Always
 BreakBeforeInlineASMColon: OnlyMultiline
 BreakBeforeTernaryOperators: true
@@ -117,7 +117,7 @@ BreakInheritanceList: BeforeColon
 BreakStringLiterals: true
 BreakTemplateDeclarations: MultiLine
 ColumnLimit: 120
-CommentPragmas: "^ IWYU pragma:"
+CommentPragmas: '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
@@ -149,7 +149,7 @@ IncludeCategories:
     SortPriority: 0
     CaseSensitive: false
 IncludeIsMainRegex: (Test)?$
-IncludeIsMainSourceRegex: ""
+IncludeIsMainSourceRegex: ''
 IndentAccessModifiers: false
 IndentCaseBlocks: false
 IndentCaseLabels: true
@@ -177,8 +177,8 @@ KeepEmptyLines:
   AtStartOfFile: true
 LambdaBodyIndentation: Signature
 LineEnding: DeriveLF
-MacroBlockBegin: ""
-MacroBlockEnd: ""
+MacroBlockBegin: ''
+MacroBlockEnd: ''
 MainIncludeChar: Quote
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All

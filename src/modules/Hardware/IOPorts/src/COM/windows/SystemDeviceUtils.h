@@ -19,22 +19,27 @@
 #include "Hardware/Common/ASCII.h"
 
 //--------------------------------------------------------------------------------
-struct SVPID {
+struct SVPID
+{
     quint16 VID;
     quint16 PID;
 
-    SVPID() : VID(0), PID(0) {
+    SVPID() : VID(0), PID(0)
+    {
     }
-    SVPID(quint16 aVID, quint16 aPID) : VID(aVID), PID(aPID) {
+    SVPID(quint16 aVID, quint16 aPID) : VID(aVID), PID(aPID)
+    {
     }
-    bool isValid() {
+    bool isValid()
+    {
         return VID && PID;
     }
 };
 
 typedef QMap<QString, QString> TWinProperties;
 
-struct SWinDeviceProperties : public SVPID {
+struct SWinDeviceProperties : public SVPID
+{
     QString path;
     TWinProperties data;
 };
@@ -43,7 +48,8 @@ typedef QMap<QString, SWinDeviceProperties> TWinDeviceProperties;
 typedef QMap<QString, QStringList> TSourceDeviceData;
 
 /// Работа с реестром.
-namespace CRegistrySerialPort {
+namespace CRegistrySerialPort
+{
     /// Начальный путь для поиска
     const char InitialPath[] = "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Enum";
 
@@ -67,7 +73,8 @@ namespace CRegistrySerialPort {
 } // namespace CRegistrySerialPort
 
 //--------------------------------------------------------------------------------
-namespace SystemDeviceUtils {
+namespace SystemDeviceUtils
+{
     /// Формирует список COM-портов.
     QStringList enumerateCOMPorts();
 

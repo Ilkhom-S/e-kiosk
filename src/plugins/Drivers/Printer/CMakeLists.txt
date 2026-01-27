@@ -1,10 +1,12 @@
 # Printer driver plugin
 
 include(${CMAKE_SOURCE_DIR}/cmake/EKPlugin.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/EKTranslation.cmake)
 
 file(GLOB PRINTER_SOURCES
     src/*.cpp
     src/*.h
+    ../../../includes/Common/CoreVersion.rc
 )
 
 # Include shared parameters
@@ -18,18 +20,35 @@ set(PRINTER_HEADERS
     ${CMAKE_SOURCE_DIR}/include/Hardware/Printers/PrinterStatusesDescriptions.h
 )
 
-ek_add_plugin(printers
-    FOLDER "plugins/Drivers"
+set(QT_MODULES Gui PrintSupport)
+if(WIN32)
+    list(APPEND QT_MODULES AxContainer)
+endif()
+
+ek_add_driver_plugin(printers
     SOURCES ${PRINTER_SOURCES} ${PRINTER_PARAMS} ${PRINTER_HEADERS}
-    QT_MODULES Core Gui
+    QT_MODULES ${QT_MODULES}
     DEPENDS
     DriversSDK
     HardwareCommon
     HardwarePrinters
     SysUtils
     HardwareIOPorts
-    ek_common
+    EK::LibUSB
+    INCLUDE_DIRS
+    ${CMAKE_SOURCE_DIR}/src/modules/Hardware/Printers/src
 )
+
+# Translations - merge printer and common translations
+file(GLOB TS_FILES_PRINTER src/locale/*.ts)
+file(GLOB TS_FILES_COMMON ../../../modules/Hardware/Common/src/locale/*.ts)
+set(TS_FILES ${TS_FILES_PRINTER} ${TS_FILES_COMMON})
+if(TS_FILES)
+    ek_add_translations(PrinterTranslations
+        SOURCES ${TS_FILES}
+        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+    )
+endif()
 
 if(WIN32)
     target_link_libraries(printers PRIVATE Advapi32 User32 Winspool)

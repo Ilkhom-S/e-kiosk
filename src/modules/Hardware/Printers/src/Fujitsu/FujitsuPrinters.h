@@ -5,7 +5,8 @@
 #include "Hardware/Printers/PortPrintersBase.h"
 
 //--------------------------------------------------------------------------------
-class FujitsuPrinter : public TSerialPrinterBase {
+class FujitsuPrinter : public TSerialPrinterBase
+{
   public:
     FujitsuPrinter();
     virtual ~FujitsuPrinter();

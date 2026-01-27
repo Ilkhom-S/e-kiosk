@@ -8,7 +8,8 @@ using namespace SDK::Driver::IOPort::COM;
 using namespace PrinterStatusCode;
 
 //--------------------------------------------------------------------------------
-FujitsuPrinter::FujitsuPrinter() {
+FujitsuPrinter::FujitsuPrinter()
+{
     // данные устройства
     mDeviceName = "Fujitsu FTP-609";
 
@@ -33,10 +34,12 @@ FujitsuPrinter::FujitsuPrinter() {
 }
 
 //--------------------------------------------------------------------------------
-bool FujitsuPrinter::isConnected() {
+bool FujitsuPrinter::isConnected()
+{
     QByteArray answer;
 
-    if (!processCommand(CFujitsu::Commands::Identification, &answer)) {
+    if (!processCommand(CFujitsu::Commands::Identification, &answer))
+    {
         return false;
     }
 
@@ -45,8 +48,10 @@ bool FujitsuPrinter::isConnected() {
 }
 
 //----------------------------------------------------------------------------
-bool FujitsuPrinter::processCommand(const QByteArray &aCommand, QByteArray *aAnswer) {
-    if (!mIOPort->write(aCommand)) {
+bool FujitsuPrinter::processCommand(const QByteArray &aCommand, QByteArray *aAnswer)
+{
+    if (!mIOPort->write(aCommand))
+    {
         return false;
     }
 
@@ -54,7 +59,8 @@ bool FujitsuPrinter::processCommand(const QByteArray &aCommand, QByteArray *aAns
     QByteArray &answer = aAnswer ? *aAnswer : data;
 
     // TODO: переписка
-    if (isNeedAnswer(aCommand)) {
+    if (isNeedAnswer(aCommand))
+    {
         SleepHelper::msleep(5);
         mIOPort->read(answer);
 
@@ -65,26 +71,32 @@ bool FujitsuPrinter::processCommand(const QByteArray &aCommand, QByteArray *aAns
 }
 
 //----------------------------------------------------------------------------
-bool FujitsuPrinter::isNeedAnswer(const QByteArray &aCommand) const {
+bool FujitsuPrinter::isNeedAnswer(const QByteArray &aCommand) const
+{
     return (aCommand == CFujitsu::Commands::Identification) || (aCommand == CFujitsu::Commands::Status) ||
            (aCommand == CFujitsu::Commands::Voltage);
 }
 
 //--------------------------------------------------------------------------------
-bool FujitsuPrinter::updateParameters() {
+bool FujitsuPrinter::updateParameters()
+{
     return processCommand(CFujitsu::Commands::Initialize);
 }
 
 //--------------------------------------------------------------------------------
-bool FujitsuPrinter::getStatus(TStatusCodes &aStatusCodes) {
+bool FujitsuPrinter::getStatus(TStatusCodes &aStatusCodes)
+{
     QByteArray answer;
 
-    if (!processCommand(CFujitsu::Commands::Status, &answer)) {
+    if (!processCommand(CFujitsu::Commands::Status, &answer))
+    {
         return false;
     }
 
-    for (int i = 0; i < 8; ++i) {
-        if ((answer[0] & (1 << i)) == (i != 7)) {
+    for (int i = 0; i < 8; ++i)
+    {
+        if ((answer[0] & (1 << i)) == (i != 7))
+        {
             aStatusCodes.insert(CFujitsu::Statuses[i]);
         }
     }
@@ -92,13 +104,15 @@ bool FujitsuPrinter::getStatus(TStatusCodes &aStatusCodes) {
     // TODO: buffer full
 
     // TODO: переписка - иногда не приходит ответ
-    if (!processCommand(CFujitsu::Commands::Voltage, &answer)) {
+    if (!processCommand(CFujitsu::Commands::Voltage, &answer))
+    {
         return false;
     }
 
     double voltage = uchar(answer[0]) * 0.1;
 
-    if (fabs(voltage - CFujitsu::Voltage::Nominal) > CFujitsu::Voltage::Delta) {
+    if (fabs(voltage - CFujitsu::Voltage::Nominal) > CFujitsu::Voltage::Delta)
+    {
         aStatusCodes.insert(DeviceStatusCode::Error::PowerSupply);
     }
 

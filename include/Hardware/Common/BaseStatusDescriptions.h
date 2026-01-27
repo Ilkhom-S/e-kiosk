@@ -17,7 +17,8 @@
 
 //--------------------------------------------------------------------------------
 /// Описатель статус-кода для логирования и отправки в пп.
-struct SStatusCodeSpecification {
+struct SStatusCodeSpecification
+{
     /// Уровень тревожности статуса.
     SDK::Driver::EWarningLevel::Enum warningLevel;
 
@@ -32,11 +33,13 @@ struct SStatusCodeSpecification {
 
     SStatusCodeSpecification()
         : warningLevel(SDK::Driver::EWarningLevel::OK), description("unknown state"),
-          translation(QCoreApplication::translate("GeneralStatuses", "#unknown_state")), status(-1) {
+          translation(QCoreApplication::translate("GeneralStatuses", "#unknown_state")), status(-1)
+    {
     }
     SStatusCodeSpecification(SDK::Driver::EWarningLevel::Enum aWarningLevel, const QString &aDescription,
                              const QString &aTranslation, int aStatus = -1)
-        : warningLevel(aWarningLevel), description(aDescription), translation(aTranslation), status(aStatus) {
+        : warningLevel(aWarningLevel), description(aDescription), translation(aTranslation), status(aStatus)
+    {
     }
 };
 
@@ -50,10 +53,13 @@ struct SStatusCodeSpecification {
 typedef CSpecification<int, SStatusCodeSpecification> TStatusCodeSpecification;
 
 //--------------------------------------------------------------------------------
-namespace DeviceStatusCode {
-    class CSpecifications : public TStatusCodeSpecification {
+namespace DeviceStatusCode
+{
+    class CSpecifications : public TStatusCodeSpecification
+    {
       public:
-        CSpecifications() {
+        CSpecifications()
+        {
             ADD_OK_STATUS(OK, QCoreApplication::translate("GeneralStatuses", "#ok"));
             ADD_OK_STATUS(Busy, QCoreApplication::translate("GeneralStatuses", "#busy"));
             ADD_OK_STATUS(Initialization, QCoreApplication::translate("GeneralStatuses", "#initialization"));
@@ -101,8 +107,10 @@ namespace DeviceStatusCode {
 
         SDK::Driver::EWarningLevel::Enum warningLevelByStatus(int aStatus) // именно статус, а не статус-код!
         {
-            foreach (const SStatusCodeSpecification &statusCodeSpecification, mBuffer.values()) {
-                if (statusCodeSpecification.status == aStatus) {
+            foreach (const SStatusCodeSpecification &statusCodeSpecification, mBuffer.values())
+            {
+                if (statusCodeSpecification.status == aStatus)
+                {
                     return statusCodeSpecification.warningLevel;
                 }
             }

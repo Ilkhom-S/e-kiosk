@@ -1,4 +1,4 @@
-/* @file DEPRECATED - See include/Hardware/Common/USBDeviceBase.h instead.
+/* @file DEPRECATED - See include/Hardware/Common/TCPDeviceBase.h instead.
 
 MIGRATION NOTE: This file kept for backward compatibility only.
 The class definition has been moved to the public header in include/.

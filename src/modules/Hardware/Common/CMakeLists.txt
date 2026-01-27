@@ -6,13 +6,6 @@ file(GLOB_RECURSE HARDWARECOMMON_SOURCES
     src/*.h
 )
 
-# Exclude platform-specific sources on non-Windows platforms
-if(NOT WIN32)
-    list(FILTER HARDWARECOMMON_SOURCES EXCLUDE REGEX ".*/Port/LibUSB/.*")
-    list(FILTER HARDWARECOMMON_SOURCES EXCLUDE REGEX ".*/Port/USB/.*")
-    list(FILTER HARDWARECOMMON_SOURCES EXCLUDE REGEX ".*/Port/TCP/.*")
-endif()
-
 file(GLOB PROTOCOLUTILS_SOURCES
     ../Protocols/Common/ProtocolUtils.cpp
     ../Protocols/Common/ProtocolUtils.h
@@ -60,7 +53,6 @@ ek_add_library(HardwareCommon
     ${CMAKE_SOURCE_DIR}/include/SDK/Drivers
     ${CMAKE_CURRENT_SOURCE_DIR}
     DEPENDS ek_common
-    $<$<PLATFORM_ID:Windows>:EK::LibUSB>
     COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 
@@ -87,8 +79,6 @@ else()
     endif()
 endif()
 
-# Ensure EK::LibUSB target is available for this library (Windows only)
-if(WIN32)
-    include(${CMAKE_SOURCE_DIR}/thirdparty/cmake/TCFindLibUSB.cmake)
-    target_link_libraries(HardwareCommon PRIVATE EK::LibUSB)
-endif()
+# Ensure EK::LibUSB target is available for this library
+include(${CMAKE_SOURCE_DIR}/thirdparty/cmake/TCFindLibUSB.cmake)
+target_link_libraries(HardwareCommon PRIVATE EK::LibUSB)

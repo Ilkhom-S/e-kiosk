@@ -3,6 +3,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QDebug>
+#include <QtCore/QMetaType>
 #include <Common/QtHeadersEnd.h>
 
 // System
@@ -130,7 +131,7 @@ namespace LibUSBUtils {
             QStringList complexKeys;
 
             for (auto it = data.begin(); it != data.end(); ++it) {
-                if (it->type() == QVariant::UserType) {
+                if (it->typeId() == QMetaType::User) {
                     complexKeys << it.key();
                     CLibUSB::TDeviceDataList complexList = data[it.key()].value<CLibUSB::TDeviceDataList>();
                 } else {
@@ -298,7 +299,7 @@ namespace LibUSBUtils {
                                        &usb_2_0_extension)) {
                     result.insert(DeviceUSBData::BOS::Capability, "USB 2.0");
                     result.insert(DeviceUSBData::BOS::Capability2_0::Attributes,
-                                  toHexLog(usb_2_0_extension->this->mAttributes));
+                                  toHexLog(usb_2_0_extension->bmAttributes));
 
                     libusb_free_usb_2_0_extension_descriptor(usb_2_0_extension);
                 }
@@ -309,7 +310,7 @@ namespace LibUSBUtils {
                                        BOS->dev_capability[0], &deviceCapability)) {
                     result.insert(DeviceUSBData::BOS::Capability, "USB 3.0");
                     result.insert(DeviceUSBData::BOS::Capability3_0::Attributes,
-                                  toHexLog(deviceCapability->this->mAttributes));
+                                  toHexLog(deviceCapability->bmAttributes));
                     result.insert(DeviceUSBData::BOS::Capability3_0::SpeedSupported,
                                   CLibUSBUtils::SpeedDescriptions[deviceCapability->wSpeedSupported]);
                     result.insert(DeviceUSBData::BOS::Capability3_0::FunctionalitySupport,
@@ -342,7 +343,7 @@ namespace LibUSBUtils {
                 configData.insert(ConfigData::InterfaceAmount, config->bNumInterfaces);
                 configData.insert(ConfigData::Index, config->iConfiguration);
                 configData.insert(ConfigData::Value, toHexLog(config->bConfigurationValue));
-                configData.insert(ConfigData::Attributes, toHexLog(config->this->mAttributes));
+                configData.insert(ConfigData::Attributes, toHexLog(config->bmAttributes));
                 configData.insert(ConfigData::MaxPower, config->MaxPower /* + " mA"*/);
 
                 // TODO: добавить параметры
@@ -430,7 +431,7 @@ namespace LibUSBUtils {
             libusb_endpoint_descriptor endpoint = aInterface.endpoint[i];
             QVariantMap endpointData;
 
-            uint8_t attributes = endpoint.this->mAttributes;
+            uint8_t attributes = endpoint.bmAttributes;
             endpointData.insert(EndpointData::TransferType, CLibUSBUtils::TransferTypeDescriptions[attributes]);
 
             libusb_transfer_type transferType = CLibUSBUtils::transferType(attributes);
@@ -441,7 +442,7 @@ namespace LibUSBUtils {
             }
 
             endpointData.insert(EndpointData::Address, toHexLog(endpoint.bEndpointAddress));
-            endpointData.insert(EndpointData::Attributes, toHexLog(endpoint.this->mAttributes));
+            endpointData.insert(EndpointData::Attributes, toHexLog(endpoint.bmAttributes));
             endpointData.insert(EndpointData::MaxPacketSize, endpoint.wMaxPacketSize);
             endpointData.insert(EndpointData::PollingInterval, endpoint.bInterval);
             endpointData.insert(EndpointData::SyncRefreshRate, endpoint.bRefresh); // только для аудио-устройств
@@ -494,8 +495,7 @@ namespace LibUSBUtils {
 
                     QVariantMap companionEPData;
                     companionEPData.insert(CompanionEPData::MaxBurstPacketAmount, epCompanionDescriptor->bMaxBurst);
-                    companionEPData.insert(CompanionEPData::Attributes,
-                                           toHexLog(epCompanionDescriptor->this->mAttributes));
+                    companionEPData.insert(CompanionEPData::Attributes, toHexLog(epCompanionDescriptor->bmAttributes));
                     companionEPData.insert(CompanionEPData::BytesPerInterval, epCompanionDescriptor->wBytesPerInterval);
 
                     result << companionEPData;
@@ -554,7 +554,7 @@ namespace LibUSBUtils {
 
     //--------------------------------------------------------------------------------
     bool getDataFromMap(QVariantMap &aData, const QString &aKey, bool aSetNextData) {
-        if (!aData.contains(aKey) || !aData[aKey].isValid() && (aData[aKey].type() != QVariant::UserType)) {
+        if (!aData.contains(aKey) || !aData[aKey].isValid() && (aData[aKey].typeId() != QMetaType::User)) {
             return false;
         }
 

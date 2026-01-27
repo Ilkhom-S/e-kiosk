@@ -12,12 +12,15 @@
 #define ADD_PRINTER_ERROR(aStatusCode, aTranslation) ADD_PRINTER_STATUS(aStatusCode, aTranslation, Error)
 
 //--------------------------------------------------------------------------------
-namespace PrinterStatusCode {
+namespace PrinterStatusCode
+{
     /// Спецификации кодов состояний принтеров.
-    class CSpecifications : public DeviceStatusCode::CSpecifications {
+    class CSpecifications : public DeviceStatusCode::CSpecifications
+    {
       public:
         /// Конструктор.
-        CSpecifications() {
+        CSpecifications()
+        {
             /// OK.
             ADD_OK_STATUS(PaperInPresenter, QCoreApplication::translate("PrinterStatuses", "#paper_in_presenter"));
             ADD_OK_STATUS(MotorMotion, QCoreApplication::translate("PrinterStatuses", "#motor_motion"));
@@ -55,7 +58,8 @@ namespace PrinterStatusCode {
             ADD_PRINTER_ERROR(OFDNotSent, QCoreApplication::translate("PrinterStatuses", "#ofd_not_sent"));
         }
 
-        TStatusCodes getAvailableErrors() {
+        TStatusCodes getAvailableErrors()
+        {
             using namespace DeviceStatusCode;
 
             return mStatusCodes - (TStatusCodes()

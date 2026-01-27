@@ -18,8 +18,6 @@ if(WIN32)
         src/COM/windows/*.h
         src/USB/*.cpp
         src/USB/*.h
-        src/LibUSB/*.cpp
-        src/LibUSB/*.h
         src/TCP/*.cpp
         src/TCP/*.h
     )
@@ -43,13 +41,19 @@ list(APPEND IOPORTS_SOURCES ${IOPORTS_BASE_SOURCES})
 # Cross-platform AsyncSerialPort implementation
 list(APPEND IOPORTS_SOURCES src/COM/AsyncSerialPort.cpp)
 
+# Cross-platform LibUSB implementation (needed by Printer plugin on all platforms)
+file(GLOB IOPORTS_LIBUSB_SOURCES
+    src/LibUSB/*.cpp
+    src/LibUSB/*.h
+)
+list(APPEND IOPORTS_SOURCES ${IOPORTS_LIBUSB_SOURCES})
+
 ek_add_library(HardwareIOPorts
     FOLDER "modules/Hardware"
     SOURCES ${IOPORTS_SOURCES}
     QT_MODULES Core Network
     INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
-    DEPENDS HardwareCommon SysUtils
-    $<$<PLATFORM_ID:Windows>:EK::LibUSB>
+    DEPENDS HardwareCommon SysUtils EK::LibUSB
     COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 

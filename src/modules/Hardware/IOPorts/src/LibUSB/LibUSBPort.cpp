@@ -1,7 +1,11 @@
 /* @file LibUSB-порт. */
 
+// STL
+#include <iterator>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
+#include <QtCore/QElapsedTimer>
 #include <QtCore/QMetaType>
 #include <QtCore/QRegularExpression>
 #include <Common/QtHeadersEnd.h>
@@ -15,7 +19,7 @@
 using namespace ProtocolUtils;
 
 //--------------------------------------------------------------------------------
-QMutex LibUSBPort::mDevicesPropertyMutex(QMutex::Recursive);
+QRecursiveMutex LibUSBPort::mDevicesPropertyMutex;
 
 //--------------------------------------------------------------------------------
 LibUSBPort::LibUSBPort() : mHandle(nullptr), mExist(false), mDevice(nullptr) {
@@ -216,7 +220,7 @@ bool LibUSBPort::read(QByteArray &aData, int aTimeout, int aMinSize) {
         return false;
     }
 
-    QTime waitingTimer;
+    QElapsedTimer waitingTimer;
     waitingTimer.start();
 
     while ((waitingTimer.elapsed() < aTimeout) && (aData.size() < aMinSize)) {
@@ -340,7 +344,7 @@ CLibUSB::TDeviceProperties LibUSBPort::getDevicesProperties(bool aForce) {
     for (auto it = properties.begin(); it != properties.end();) {
         QString deviceProduct = it->deviceData.value(DeviceUSBData::Product).toString().toLower();
         bool needErase = !it->VID || !it->PID || deviceProduct.contains("mouse");
-        it = needErase ? properties.erase(it) : it + 1;
+        it = needErase ? properties.erase(it) : std::next(it);
     }
 
     mDevices = properties.keys();

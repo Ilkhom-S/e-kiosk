@@ -9,18 +9,22 @@ typedef QVariantList TTCPDevicePortParameter;
 typedef QMap<QString, TTCPDevicePortParameter> TTCPDevicePortParameters;
 
 // Параметры TCP-порта.
-struct STCPPortParameters {
+struct STCPPortParameters
+{
     QVariant IP;
     QVariant number;
 
-    STCPPortParameters() : number(0) {
+    STCPPortParameters() : number(0)
+    {
     }
-    STCPPortParameters(const QVariant &aIP, const QVariant &aNumber) : IP(aIP), number(aNumber) {
+    STCPPortParameters(const QVariant &aIP, const QVariant &aNumber) : IP(aIP), number(aNumber)
+    {
     }
 };
 
 //--------------------------------------------------------------------------------
-template <class T> class TCPDeviceBase : public T {
+template <class T> class TCPDeviceBase : public T
+{
     SET_INTERACTION_TYPE(TCP)
 
   public:

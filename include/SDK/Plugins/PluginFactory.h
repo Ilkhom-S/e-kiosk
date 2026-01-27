@@ -16,14 +16,17 @@
 // Plugin SDK
 #include <SDK/Plugins/IPluginFactory.h>
 
-namespace SDK {
-    namespace Plugin {
+namespace SDK
+{
+    namespace Plugin
+    {
 
         //------------------------------------------------------------------------------
         /// Фабрика плагинов регистрирует плагины, слинкованные в данной динамической библиотеке и предоставляет
         /// внешнему приложению их список и возможность создания. В одной библиотеке может быть только одна фабрика.
 
-        class PluginFactory : public QObject, public IPluginFactory, public IEnvironment {
+        class PluginFactory : public QObject, public IPluginFactory, public IEnvironment
+        {
             Q_OBJECT
             Q_INTERFACES(SDK::Plugin::IPluginFactory)
 

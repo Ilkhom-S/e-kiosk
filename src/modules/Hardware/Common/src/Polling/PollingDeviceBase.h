@@ -10,7 +10,8 @@
 // Project
 #include "Hardware/Common/DeviceBase.h"
 
-namespace CPollingDeviceBase {
+namespace CPollingDeviceBase
+{
     /// Ожидание останова поллинга, [мс].
     const SWaitingData StopWaiting = SWaitingData(1, 15 * 1000);
 } // namespace CPollingDeviceBase
@@ -19,7 +20,8 @@ namespace CPollingDeviceBase {
 typedef QList<TVoidMethod> TTaskList;
 
 //---------------------------------------------------------------------------
-template <class T> class PollingDeviceBase : public DeviceBase<T> {
+template <class T> class PollingDeviceBase : public DeviceBase<T>
+{
   public:
     PollingDeviceBase();
 

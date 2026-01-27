@@ -13,9 +13,11 @@
 #include "Hardware/Common/USBDeviceVendors.h"
 
 //--------------------------------------------------------------------------------
-namespace CUSBDevice {
+namespace CUSBDevice
+{
     /// данные моделей по PID-ам.
-    template <class T> class ProductDataBase : public CSpecification<quint16, T> {
+    template <class T> class ProductDataBase : public CSpecification<quint16, T>
+    {
       public:
         QStringList getModelList(const QString &aVendor);
         void setDefaultModel(const QString &aModel);
@@ -26,16 +28,19 @@ namespace CUSBDevice {
     };
 
     //--------------------------------------------------------------------------------
-    class ProductData : public ProductDataBase<SProductData> {
+    class ProductData : public ProductDataBase<SProductData>
+    {
       public:
-        void add(quint16 aPID, const QString &aModel, bool aVerified = false) {
+        void add(quint16 aPID, const QString &aModel, bool aVerified = false)
+        {
             append(aPID, SProductData(aModel, aVerified));
         }
     };
 
     //--------------------------------------------------------------------------------
     /// Данные моделей по VID-ам.
-    class DetectingData : public CSpecification<quint16, ProductData> {
+    class DetectingData : public CSpecification<quint16, ProductData>
+    {
       public:
         void set(const QString &aVendor, quint16 aPID, const QString &aModel, bool aVerified = false);
         void set(const QString &aVendor, const QString &aDeviceName, quint16 aPID);

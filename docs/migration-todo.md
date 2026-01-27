@@ -19,7 +19,7 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [ ] Complete Hardware module header migration: migrate HardwareCommon, CashAcceptors, and other hardware protocol headers to resolve plugin linking issues
 - [x] Fix PluginFactory static member conflicts: refactor PluginFactory to use instance variables instead of static members for metadata
 - [x] Update all plugins to use new PluginFactory instance variable approach (Ad, NativeBackend, Migrator3000, ScreenMaker, TemplatePlugin, BillAcceptor, CardReader, CoinAcceptor, IOPort, Printer, Modem completed)
-- [ ] Update CMake to build each app and link shared code
+- [x] Refactor Printer plugin: add CoreVersion.rc, DriversSDK, conditional AxContainer, translations; fix template instantiation and class definitions
       Notes:
 - `SingleApplication` is now vendored as a git submodule under `thirdparty/SingleApplication` to avoid pulling Qt6 via vcpkg. Use `git submodule update --init --recursive` after cloning.
 - [x] Mirror src/ structure in tests/ (Connection and NetworkTaskManager done)

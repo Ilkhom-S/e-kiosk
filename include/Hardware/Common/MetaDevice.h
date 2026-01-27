@@ -184,3 +184,16 @@ class MetaDevice : public T, public SDK::Driver::IDevice::IDetectingIterator, pu
 };
 
 //---------------------------------------------------------------------------
+// Template implementations
+
+template <class T> bool MetaDevice<T>::moveNext() {
+    return (mDetectingPosition++ == 0);
+}
+
+template <class T> void MetaDevice<T>::setLog(ILog *aLog) {
+    mLog = aLog;
+}
+
+template <class T> bool MetaDevice<T>::isWorkingThread() {
+    return &mThread == QThread::currentThread();
+}

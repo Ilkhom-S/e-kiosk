@@ -10,6 +10,7 @@
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QVector>
+#include <QtCore/QRecursiveMutex>
 #include <QtCore/qmath.h>
 #include <Common/QtHeadersEnd.h>
 
@@ -23,7 +24,8 @@
 #define LIB_USB_CALL(aName, ...) handleResult(#aName, aName(__VA_ARGS__))
 
 //--------------------------------------------------------------------------------
-namespace CLibUSBPort {
+namespace CLibUSBPort
+{
     /// Таймаут отправки 1 байта, [мс].
     const double ByteTimeout = 0.01;
 
@@ -31,7 +33,8 @@ namespace CLibUSBPort {
     const double SystemTimeout = 1;
 
     /// Таймаут для отправки данных, [мс].
-    inline int writingTimeout(int aSize) {
+    inline int writingTimeout(int aSize)
+    {
         return qCeil(SystemTimeout + aSize * ByteTimeout);
     }
 
@@ -42,7 +45,8 @@ namespace CLibUSBPort {
 } // namespace CLibUSBPort
 
 //--------------------------------------------------------------------------------
-class LibUSBPort : public IOPortBase {
+class LibUSBPort : public IOPortBase
+{
     SET_SERIES("LibUSB")
 
   public:
@@ -120,7 +124,7 @@ class LibUSBPort : public IOPortBase {
     bool mExist;
 
     /// Мьютекс для защиты статических пропертей портов.
-    static QMutex mDevicesPropertyMutex;
+    static QRecursiveMutex mDevicesPropertyMutex;
 };
 
 //--------------------------------------------------------------------------------

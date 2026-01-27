@@ -8,7 +8,8 @@
 // Project
 #include "PluginLibraryDefinition.h"
 
-PrintersPluginFactory::PrintersPluginFactory() {
+PrintersPluginFactory::PrintersPluginFactory()
+{
     mName = "Printers";
     mDescription = "Printer driver library.";
     mAuthor = "Humo";
