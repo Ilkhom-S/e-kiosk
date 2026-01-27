@@ -26,23 +26,6 @@
 using namespace SDK::Driver;
 
 //-------------------------------------------------------------------------------
-template class MetaDevice<ICardReader>;
-template class MetaDevice<ICashAcceptor>;
-template class MetaDevice<IDevice>;
-template class MetaDevice<IDispenser>;
-template class MetaDevice<IFiscalPrinter>;
-template class MetaDevice<IHID>;
-template class MetaDevice<IIOPort>;
-template class MetaDevice<IMifareReader>;
-template class MetaDevice<IModem>;
-template class MetaDevice<IPrinter>;
-template class MetaDevice<IWatchdog>;
-
-// Explicit instantiations for methods that may not be instantiated by class instantiation
-template MetaDevice<IIOPort>::MetaDevice();
-template bool MetaDevice<IIOPort>::isAutoDetecting() const;
-
-//-------------------------------------------------------------------------------
 template <class T>
 MetaDevice<T>::MetaDevice()
     : mDeviceName(CMetaDevice::DefaultName), mLogDate(QDate::currentDate()), mOperatorPresence(false),
@@ -273,3 +256,16 @@ template <class T> bool MetaDevice<T>::isWorkingThread() {
 }
 
 //--------------------------------------------------------------------------------
+
+// Explicit template instantiations
+template class MetaDevice<ICardReader>;
+template class MetaDevice<ICashAcceptor>;
+template class MetaDevice<IDevice>;
+template class MetaDevice<IDispenser>;
+template class MetaDevice<IFiscalPrinter>;
+template class MetaDevice<IHID>;
+template class MetaDevice<IIOPort>;
+template class MetaDevice<IMifareReader>;
+template class MetaDevice<IModem>;
+template class MetaDevice<IPrinter>;
+template class MetaDevice<IWatchdog>;

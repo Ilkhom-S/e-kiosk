@@ -1,8 +1,9 @@
 /* @file Плагин c драйверами валидаторов. */
 
-#include "Hardware/Plugins/DevicePluginBase.h"
-#include "Hardware/Plugins/CommonParameters.h"
+// System
 #include "Hardware/CashAcceptors/CashAcceptorDevices.h"
+#include "Hardware/Plugins/CommonParameters.h"
+#include "Hardware/Plugins/DevicePluginBase.h"
 
 using namespace SDK::Driver;
 using namespace SDK::Plugin;

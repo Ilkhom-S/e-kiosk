@@ -319,3 +319,5 @@ double getFrameSize(const TPortParameters &aPortParameters) {
 }
 
 //--------------------------------------------------------------------------------
+// Explicit template instantiations for SerialDeviceBase constructor
+template SerialDeviceBase<PortPollingDeviceBase<ProtoCashAcceptor>>::SerialDeviceBase();

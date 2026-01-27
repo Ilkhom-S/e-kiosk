@@ -24,8 +24,15 @@ template class PollingDeviceBase<ProtoWatchdog>;
 //--------------------------------------------------------------------------------
 template <class T>
 PollingDeviceBase<T>::PollingDeviceBase() : mPollingInterval(0), mPollingActive(false), mForceNotWaitFirst(false) {
+    // Таймер переносится в поток устройства, чтобы обработка сигналов
+    // происходила в контексте mThread, а не главного (GUI) потока.
     this->mPolling.moveToThread(&this->mThread);
-    connect(&this->mPolling, SIGNAL(timeout()), SLOT(onPoll()));
+
+    // В шаблонных классах C++14/17 использование макросов SIGNAL/SLOT часто приводит
+    // к ошибкам поиска имен. Синтаксис на указателях проверяется при компиляции.
+    // static_cast необходим для явного указания типа в контексте шаблона.
+    QObject::connect(&this->mPolling, &QTimer::timeout, static_cast<PollingDeviceBase *>(this),
+                     &PollingDeviceBase::onPoll);
 }
 
 //--------------------------------------------------------------------------------
@@ -149,3 +156,8 @@ template <class T> bool PollingDeviceBase<T>::isInitializationError(TStatusCodes
 }
 
 //--------------------------------------------------------------------------------
+// Explicit template instantiations for setPollingInterval method
+template void PollingDeviceBase<ProtoCashAcceptor>::setPollingInterval(int);
+
+// Explicit template instantiation for PollingDeviceBase constructor
+template PollingDeviceBase<ProtoCashAcceptor>::PollingDeviceBase();

@@ -161,7 +161,7 @@ class MetaDevice : public T, public SDK::Driver::IDevice::IDetectingIterator, pu
     /// Данные устройства.
     TDeviceData mDeviceData;
 
-    /// Время последнего логгирования.
+    /// Время последнего логирования.
     QDate mLogDate;
 
     /// Итерация авто поиска.

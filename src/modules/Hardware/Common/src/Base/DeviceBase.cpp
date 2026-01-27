@@ -28,17 +28,6 @@
 
 using namespace SDK::Driver;
 
-//-------------------------------------------------------------------------------
-template class DeviceBase<ProtoPrinter>;
-template class DeviceBase<ProtoDispenser>;
-template class DeviceBase<ProtoCashAcceptor>;
-template class DeviceBase<ProtoWatchdog>;
-template class DeviceBase<ProtoModem>;
-template class DeviceBase<ProtoFR>;
-template class DeviceBase<ProtoHID>;
-template class DeviceBase<ProtoMifareReader>;
-template class DeviceBase<ProtoDeviceBase>;
-
 //--------------------------------------------------------------------------------
 template <class T> DeviceBase<T>::DeviceBase() : mExternalMutex(), mResourceMutex() {
     this->moveToThread(&this->mThread);
@@ -774,3 +763,14 @@ template <class T> bool DeviceBase<T>::find() {
 }
 
 //--------------------------------------------------------------------------------
+
+// Explicit template instantiations
+template class DeviceBase<ProtoPrinter>;
+template class DeviceBase<ProtoDispenser>;
+template class DeviceBase<ProtoCashAcceptor>;
+template class DeviceBase<ProtoWatchdog>;
+template class DeviceBase<ProtoModem>;
+template class DeviceBase<ProtoFR>;
+template class DeviceBase<ProtoHID>;
+template class DeviceBase<ProtoMifareReader>;
+template class DeviceBase<ProtoDeviceBase>;

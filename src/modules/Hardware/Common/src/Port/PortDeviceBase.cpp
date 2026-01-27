@@ -15,7 +15,8 @@
 
 using namespace SDK::Driver;
 
-//-------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------
+
 template class PortDeviceBase<PollingDeviceBase<ProtoPrinter>>;
 template class PortDeviceBase<PollingDeviceBase<ProtoDispenser>>;
 template class PortDeviceBase<PollingDeviceBase<ProtoCashAcceptor>>;
@@ -24,7 +25,6 @@ template class PortDeviceBase<DeviceBase<ProtoModem>>;
 template class PortDeviceBase<PollingDeviceBase<ProtoFR>>;
 template class PortDeviceBase<PollingDeviceBase<ProtoMifareReader>>;
 template class PortDeviceBase<PollingDeviceBase<ProtoHID>>;
-
 //--------------------------------------------------------------------------------
 template <class T>
 PortDeviceBase<T>::PortDeviceBase() : mIOPort(nullptr), mIOMessageLogging(ELoggingType::None), mControlRemoving(false) {
@@ -281,3 +281,13 @@ template <class T> void PortDeviceBase<T>::setLog(ILog *aLog) {
 }
 
 //--------------------------------------------------------------------------------
+// Explicit template instantiations for processCommand methods
+template TResult PortDeviceBase<PollingDeviceBase<ProtoCashAcceptor>>::processCommand(char, QByteArray *);
+template TResult PortDeviceBase<PollingDeviceBase<ProtoCashAcceptor>>::processCommand(const QByteArray &, QByteArray *);
+template TResult PortDeviceBase<PollingDeviceBase<ProtoCashAcceptor>>::processCommand(char, const QByteArray &,
+                                                                                      QByteArray *);
+template TResult PortDeviceBase<PollingDeviceBase<ProtoCashAcceptor>>::processCommand(const QByteArray &,
+                                                                                      const QByteArray &, QByteArray *);
+
+// Explicit template instantiation for PortDeviceBase constructor
+template PortDeviceBase<PollingDeviceBase<ProtoCashAcceptor>>::PortDeviceBase();
