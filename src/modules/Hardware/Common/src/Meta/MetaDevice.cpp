@@ -109,36 +109,41 @@ template <class T>
 void MetaDevice<T>::setDeviceParameter(const QString &aName, const QVariant &aValue, const QString &aExtensibleName,
                                        bool aUpdateExtensible) {
     QString value = aValue.toString().simplified();
-    QVariant::Type type = aValue.type();
 
-    if (type == QVariant::ByteArray) {
+    // В Qt 6 QVariant::type() помечен как устаревший (obsolete).
+    // QVariant::typeId() — современная и более производительная замена, доступная и в 5.15.
+    auto typeId = aValue.typeId();
+
+    if (typeId == QMetaType::QByteArray) {
         value = ProtocolUtils::clean(aValue.toByteArray());
-    } else if (type == QVariant::String) {
+    } else if (typeId == QMetaType::QString) {
         value = ProtocolUtils::clean(aValue.toString());
-    } else if (type == QVariant::Bool) {
+    } else if (typeId == QMetaType::Bool) {
         value = aValue.toBool() ? CDeviceData::Values::Yes : CDeviceData::Values::No;
     }
 
     if (aExtensibleName.isEmpty()) {
         QWriteLocker locker(&mConfigurationGuard);
-
         mDeviceData.insert(aName, value);
     } else if (!value.isEmpty()) {
-        value.prepend(aName + " ");
+        // Использование QStringBuilder (через % вместо +) позволяет избежать
+        // создания промежуточных объектов строк при конкатенации.
+        value = aName % " " % value;
 
         if (!aUpdateExtensible) {
             QReadLocker locker(&mConfigurationGuard);
 
-            QString extensibleValue = mDeviceData[aExtensibleName];
+            // Использование value() вместо оператора [] предотвращает случайное
+            // создание пустых записей в контейнере при чтении.
+            QString extensibleValue = mDeviceData.value(aExtensibleName);
 
             if (!extensibleValue.isEmpty()) {
-                value.prepend(extensibleValue + ", ");
+                value = extensibleValue % ", " % value;
             }
         }
 
         {
             QWriteLocker locker(&mConfigurationGuard);
-
             mDeviceData.insert(aExtensibleName, value);
         }
     }

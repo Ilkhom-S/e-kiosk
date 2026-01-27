@@ -6,18 +6,14 @@ include(${CMAKE_SOURCE_DIR}/cmake/EKTranslation.cmake)
 file(GLOB BILLACCEPTOR_SOURCES
     src/*.cpp
     src/*.h
+    ${EK_INCLUDES_DIR}/Common/CoreVersion.rc
 )
 
-ek_add_plugin(bill_acceptors
-    FOLDER "plugins/Drivers"
+ek_add_driver_plugin(bill_acceptors
     SOURCES ${BILLACCEPTOR_SOURCES}
-    QT_MODULES Core
     DEPENDS
     HardwareCommon
     CashAcceptors
-    DriversSDK
-    PluginsSDK
-    ek_common
 )
 
 # Translations - merge common and plugin-specific translations

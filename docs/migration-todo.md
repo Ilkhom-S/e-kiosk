@@ -18,7 +18,7 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [x] Complete header refactoring: migrate all major redirect headers from src/modules/ to include/ with proper deprecation notes (FR protocols, CashAcceptor protocols, SparkFR.h, data types, Scanners, IOPorts, Watchdogs, CashAcceptors, DispenserBase, Printers collections, CryptEngine, CreatorReader, and remaining individual headers completed)
 - [ ] Complete Hardware module header migration: migrate HardwareCommon, CashAcceptors, and other hardware protocol headers to resolve plugin linking issues
 - [x] Fix PluginFactory static member conflicts: refactor PluginFactory to use instance variables instead of static members for metadata
-- [x] Update all plugins to use new PluginFactory instance variable approach (Ad, NativeBackend, Migrator3000, ScreenMaker, TemplatePlugin, BillAcceptor completed)
+- [x] Update all plugins to use new PluginFactory instance variable approach (Ad, NativeBackend, Migrator3000, ScreenMaker, TemplatePlugin, BillAcceptor, CardReader, CoinAcceptor, IOPort, Printer, Modem completed)
 - [ ] Update CMake to build each app and link shared code
       Notes:
 - `SingleApplication` is now vendored as a git submodule under `thirdparty/SingleApplication` to avoid pulling Qt6 via vcpkg. Use `git submodule update --init --recursive` after cloning.

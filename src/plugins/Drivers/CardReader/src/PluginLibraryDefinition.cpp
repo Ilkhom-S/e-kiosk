@@ -5,10 +5,15 @@
 // SDK
 #include <SDK/Plugins/PluginFactory.h>
 
-QString SDK::Plugin::PluginFactory::mName = "CardReader";
-QString SDK::Plugin::PluginFactory::mDescription = "Driver for card reader";
-QString SDK::Plugin::PluginFactory::mAuthor = "Humo";
-QString SDK::Plugin::PluginFactory::mVersion = "1.0";
-QString SDK::Plugin::PluginFactory::mModuleName = "card_readers"; // Название dll/so модуля без расширения
+// Project
+#include "PluginLibraryDefinition.h"
+
+CardReaderPluginFactory::CardReaderPluginFactory() {
+    mName = "CardReader";
+    mDescription = "Driver for card reader";
+    mAuthor = "Humo";
+    mVersion = "1.0";
+    mModuleName = "card_readers"; // Название dll/so модуля без расширения
+}
 
 //------------------------------------------------------------------------------

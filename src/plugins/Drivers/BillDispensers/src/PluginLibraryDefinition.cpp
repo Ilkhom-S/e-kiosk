@@ -5,10 +5,15 @@
 // SDK
 #include <SDK/Plugins/PluginFactory.h>
 
-QString SDK::Plugin::PluginFactory::mName = "BillDispenser";
-QString SDK::Plugin::PluginFactory::mDescription = "BillDispenser driver library";
-QString SDK::Plugin::PluginFactory::mAuthor = "Humo";
-QString SDK::Plugin::PluginFactory::mVersion = "1.0";
-QString SDK::Plugin::PluginFactory::mModuleName = "bill_dispensers"; // Название dll/so модуля без расширения
+// Project
+#include "PluginLibraryDefinition.h"
+
+BillDispenserPluginFactory::BillDispenserPluginFactory() {
+    mName = "BillDispenser";
+    mDescription = "BillDispenser driver library";
+    mAuthor = "Humo";
+    mVersion = "1.0";
+    mModuleName = "bill_dispensers"; // Название dll/so модуля без расширения
+}
 
 //------------------------------------------------------------------------------

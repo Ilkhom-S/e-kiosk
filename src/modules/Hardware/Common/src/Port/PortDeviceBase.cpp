@@ -291,3 +291,14 @@ template TResult PortDeviceBase<PollingDeviceBase<ProtoCashAcceptor>>::processCo
 
 // Explicit template instantiation for PortDeviceBase constructor
 template PortDeviceBase<PollingDeviceBase<ProtoCashAcceptor>>::PortDeviceBase();
+
+// Explicit template instantiations for ProtoDispenser
+template TResult PortDeviceBase<PollingDeviceBase<ProtoDispenser>>::processCommand(char, QByteArray *);
+template TResult PortDeviceBase<PollingDeviceBase<ProtoDispenser>>::processCommand(const QByteArray &, QByteArray *);
+template TResult PortDeviceBase<PollingDeviceBase<ProtoDispenser>>::processCommand(char, const QByteArray &,
+                                                                                   QByteArray *);
+template TResult PortDeviceBase<PollingDeviceBase<ProtoDispenser>>::processCommand(const QByteArray &,
+                                                                                   const QByteArray &, QByteArray *);
+
+// Explicit template instantiation for PortDeviceBase constructor (ProtoDispenser)
+template PortDeviceBase<PollingDeviceBase<ProtoDispenser>>::PortDeviceBase();

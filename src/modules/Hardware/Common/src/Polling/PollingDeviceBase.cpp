@@ -161,3 +161,6 @@ template void PollingDeviceBase<ProtoCashAcceptor>::setPollingInterval(int);
 
 // Explicit template instantiation for PollingDeviceBase constructor
 template PollingDeviceBase<ProtoCashAcceptor>::PollingDeviceBase();
+
+// Explicit template instantiation for PollingDeviceBase constructor (ProtoDispenser)
+template PollingDeviceBase<ProtoDispenser>::PollingDeviceBase();

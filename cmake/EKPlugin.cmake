@@ -16,19 +16,14 @@ function(ek_add_plugin TARGET_NAME)
         endif()
     endif()
 
-    # Set plugin build output directory from EK_PLUGIN_DIR if set, else use bin/plugins
+    # Set plugin build base directory from EK_PLUGIN_DIR if set, else use CMAKE_RUNTIME_OUTPUT_DIRECTORY (bin)
     if(DEFINED ENV{EK_PLUGIN_DIR})
         set(_plugin_output_dir "$ENV{EK_PLUGIN_DIR}")
     else()
-        set(_plugin_output_dir "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugins")
+        set(_plugin_output_dir "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
     endif()
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${_plugin_output_dir}")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${_plugin_output_dir}")
-    foreach(_cfg IN ITEMS Debug Release RelWithDebInfo MinSizeRel)
-        string(TOUPPER "${_cfg}" _CFG_UPPER)
-        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${_CFG_UPPER} "${_plugin_output_dir}")
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${_CFG_UPPER} "${_plugin_output_dir}")
-    endforeach()
+    # Note: We don't set CMAKE_LIBRARY_OUTPUT_DIRECTORY globally as it interferes with target-specific properties
+    # Instead, we set target-specific LIBRARY_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_DIRECTORY
 
     add_library(${TARGET_NAME} SHARED ${ARG_SOURCES})
     # Ensure Qt auto-generation (moc/uic/rcc) runs for plugin targets that use Qt
@@ -36,8 +31,8 @@ function(ek_add_plugin TARGET_NAME)
         AUTOMOC ON
         AUTOUIC ON
         AUTORCC ON
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${ARG_INSTALL_DIR}
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${ARG_INSTALL_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${ARG_INSTALL_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${ARG_INSTALL_DIR}
         OUTPUT_NAME ${TARGET_NAME}
         DEBUG_POSTFIX "d"
     )
@@ -96,8 +91,75 @@ function(ek_add_plugin TARGET_NAME)
         endif()
     endif()
 
+    # Install plugins: skip install for driver plugins (handled by ek_add_driver_plugin)
+    if(NOT ARG_INSTALL_DIR STREQUAL "plugins/drivers")
+        install(TARGETS ${TARGET_NAME}
+            RUNTIME DESTINATION bin/${ARG_INSTALL_DIR}
+            LIBRARY DESTINATION lib/${ARG_INSTALL_DIR}
+        )
+    endif()
+endfunction()
+# EKDriverPlugin.cmake - Helper function for creating driver plugins
+# Based on the QBS template from TerminalClient
+# Provides common dependencies and settings for all driver plugins:
+# - Common dependencies: DriversSDK, PluginsSDK, ek_common
+# - Common Qt modules: Core
+# - Install directory: plugins/drivers
+# - Windows XP compatibility defines (when building on Windows)
+
+function(ek_add_driver_plugin TARGET_NAME)
+    set(options "")
+    set(oneValueArgs FOLDER)
+    set(multiValueArgs SOURCES QT_MODULES DEPENDS INCLUDE_DIRS COMPILE_DEFINITIONS LIBRARIES)
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    # Set default folder for drivers
+    if(NOT ARG_FOLDER)
+        set(ARG_FOLDER "plugins/Drivers")
+    endif()
+
+    # Common driver dependencies (equivalent to QBS Depends)
+    set(_driver_depends
+        DriversSDK
+        PluginsSDK
+        ek_common # Equivalent to 'Core' in QBS
+    )
+
+    # Add any additional dependencies specified by the caller
+    if(ARG_DEPENDS)
+        list(APPEND _driver_depends ${ARG_DEPENDS})
+    endif()
+
+    # Common Qt modules for drivers
+    set(_driver_qt_modules Core)
+    if(ARG_QT_MODULES)
+        list(APPEND _driver_qt_modules ${ARG_QT_MODULES})
+    endif()
+
+    # Windows XP compatibility (equivalent to QBS Windows XP settings)
+    set(_driver_compile_defs)
+    if(WIN32)
+        list(APPEND _driver_compile_defs _USING_V110_SDK71_)
+    endif()
+    if(ARG_COMPILE_DEFINITIONS)
+        list(APPEND _driver_compile_defs ${ARG_COMPILE_DEFINITIONS})
+    endif()
+
+    # Call the base plugin function with driver-specific defaults
+    ek_add_plugin(${TARGET_NAME}
+        FOLDER "${ARG_FOLDER}"
+        SOURCES ${ARG_SOURCES}
+        QT_MODULES ${_driver_qt_modules}
+        DEPENDS ${_driver_depends}
+        INCLUDE_DIRS ${ARG_INCLUDE_DIRS}
+        COMPILE_DEFINITIONS ${_driver_compile_defs}
+        LIBRARIES ${ARG_LIBRARIES}
+        INSTALL_DIR "plugins/drivers"
+    )
+
+    # Override install location for drivers to match QBS template (direct to plugins/drivers)
     install(TARGETS ${TARGET_NAME}
-        RUNTIME DESTINATION bin/${ARG_INSTALL_DIR}
-        LIBRARY DESTINATION lib/${ARG_INSTALL_DIR}
+        RUNTIME DESTINATION plugins/drivers
+        LIBRARY DESTINATION plugins/drivers
     )
 endfunction()
