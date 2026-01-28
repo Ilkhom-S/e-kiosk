@@ -6,9 +6,11 @@
 #include "../../EjectorPOS/EjectorPOS.h"
 
 //--------------------------------------------------------------------------------
-namespace CCitizenPPU700 {
+namespace CCitizenPPU700
+{
     /// Команды.
-    namespace Command {
+    namespace Command
+    {
         const char GetFirmware[] = "\x1D\x49\x41";     /// Получение версии прошивки.
         const char GetSerialNumber[] = "\x1D\x49\x44"; /// Получение серийного номера.
 
@@ -17,7 +19,8 @@ namespace CCitizenPPU700 {
     } // namespace Command
 
     /// Мем-свичи.
-    namespace MemorySwitches {
+    namespace MemorySwitches
+    {
         /// Размер ответа на запрос мем-свича.
         const int AnswerSize = 11;
 
@@ -27,7 +30,8 @@ namespace CCitizenPPU700 {
 } // namespace CCitizenPPU700
 
 //--------------------------------------------------------------------------------
-template <class T> class CitizenPPU700 : public CitizenBase<EjectorPOS<T>> {
+template <class T> class CitizenPPU700 : public CitizenBase<EjectorPOS<T>>
+{
     SET_SUBSERIES("CitizenPPU700")
 
   public:
@@ -55,9 +59,11 @@ typedef SerialPOSPrinter<CitizenPPU700<TSerialPrinterBase>> TSerialCitizenPPU700
 typedef CitizenPPU700<TLibUSBPrinterBase> TLibUSBCitizenPPU700;
 
 //--------------------------------------------------------------------------------
-class SerialCitizenPPU700 : public TSerialCitizenPPU700 {
+class SerialCitizenPPU700 : public TSerialCitizenPPU700
+{
   public:
-    SerialCitizenPPU700() {
+    SerialCitizenPPU700()
+    {
         using namespace SDK::Driver::IOPort::COM;
 
         this->mPortParameters.insert(EParameters::BaudRate, POSPrinters::TSerialDevicePortParameter()
@@ -67,20 +73,24 @@ class SerialCitizenPPU700 : public TSerialCitizenPPU700 {
 };
 
 //--------------------------------------------------------------------------------
-template <class T> class CitizenPPU700II : public CitizenPPU700<T> {
+template <class T> class CitizenPPU700II : public CitizenPPU700<T>
+{
     SET_SUBSERIES("CitizenPPU700II")
 
   public:
-    CitizenPPU700II() {
+    CitizenPPU700II()
+    {
         this->mDeviceName = "Citizen PPU-700II";
         this->mOptionMSW = true;
     }
 };
 
 //--------------------------------------------------------------------------------
-class LibUSBCitizenPPU700II : public CitizenPPU700II<TLibUSBPrinterBase> {
+class LibUSBCitizenPPU700II : public CitizenPPU700II<TLibUSBPrinterBase>
+{
   public:
-    LibUSBCitizenPPU700II() {
+    LibUSBCitizenPPU700II()
+    {
         this->mDetectingData->set(CUSBVendors::Citizen1, this->mDeviceName, 0x201e);
     }
 };

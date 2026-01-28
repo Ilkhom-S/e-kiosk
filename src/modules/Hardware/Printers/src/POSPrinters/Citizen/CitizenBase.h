@@ -5,9 +5,11 @@
 #include "Hardware/Printers/PortPOSPrinters.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class CitizenBase : public T {
+template <class T> class CitizenBase : public T
+{
   public:
-    CitizenBase() {
+    CitizenBase()
+    {
         this->mRussianCodePage = '\x07';
 
         // теги

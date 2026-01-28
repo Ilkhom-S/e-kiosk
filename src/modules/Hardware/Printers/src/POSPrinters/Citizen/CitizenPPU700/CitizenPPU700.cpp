@@ -12,7 +12,8 @@ template class SerialPOSPrinter<CitizenPPU700<TSerialPrinterBase>>;
 template class SerialPOSPrinter<CitizenPPU700II<TSerialPrinterBase>>;
 
 //--------------------------------------------------------------------------------
-template <class T> CitizenPPU700<T>::CitizenPPU700() {
+template <class T> CitizenPPU700<T>::CitizenPPU700()
+{
     // статусы ошибок
     this->mParameters.errors.clear();
 
@@ -51,17 +52,21 @@ template <class T> CitizenPPU700<T>::CitizenPPU700() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool CitizenPPU700<T>::isConnected() {
-    if (!this->isConnected()) {
+template <class T> bool CitizenPPU700<T>::isConnected()
+{
+    if (!this->isConnected())
+    {
         return false;
     }
 
-    if (this->mModelCompatibility) {
+    if (this->mModelCompatibility)
+    {
         QByteArray answer;
 
         if (!this->mIOPort->write(CCitizenPPU700::Command::GetMemorySwitch5) ||
             !this->mIOPort->read(answer, CCitizenPPU700::MemorySwitches::ReadingTimeout,
-                                 CCitizenPPU700::MemorySwitches::AnswerSize)) {
+                                 CCitizenPPU700::MemorySwitches::AnswerSize))
+        {
             return false;
         }
 
@@ -75,23 +80,27 @@ template <class T> bool CitizenPPU700<T>::isConnected() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void CitizenPPU700<T>::processDeviceData() {
+template <class T> void CitizenPPU700<T>::processDeviceData()
+{
     this->processDeviceData();
     QByteArray answer;
 
     if (this->mIOPort->write(CCitizenPPU700::Command::GetFirmware) &&
-        this->getNULStoppedAnswer(answer, CPOSPrinter::Timeouts::Info)) {
+        this->getNULStoppedAnswer(answer, CPOSPrinter::Timeouts::Info))
+    {
         this->setDeviceParameter(CDeviceData::Firmware, answer);
     }
 
     if (this->mIOPort->write(CCitizenPPU700::Command::GetSerialNumber) &&
-        this->getNULStoppedAnswer(answer, CPOSPrinter::Timeouts::Info)) {
+        this->getNULStoppedAnswer(answer, CPOSPrinter::Timeouts::Info))
+    {
         this->setDeviceParameter(CDeviceData::SerialNumber, answer);
     }
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool CitizenPPU700<T>::getNULStoppedAnswer(QByteArray &aAnswer, int aTimeout) const {
+template <class T> bool CitizenPPU700<T>::getNULStoppedAnswer(QByteArray &aAnswer, int aTimeout) const
+{
     QVariantMap configuration;
     configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::Write));
     this->mIOPort->setDeviceConfiguration(configuration);
@@ -101,10 +110,12 @@ template <class T> bool CitizenPPU700<T>::getNULStoppedAnswer(QByteArray &aAnswe
     QElapsedTimer timer;
     timer.start();
 
-    do {
+    do
+    {
         QByteArray data;
 
-        if (!this->mIOPort->read(data, 10)) {
+        if (!this->mIOPort->read(data, 10))
+        {
             return false;
         }
 
@@ -118,7 +129,8 @@ template <class T> bool CitizenPPU700<T>::getNULStoppedAnswer(QByteArray &aAnswe
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void CitizenPPU700<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
+template <class T> void CitizenPPU700<T>::setDeviceConfiguration(const QVariantMap &aConfiguration)
+{
     this->setDeviceConfiguration(aConfiguration);
 
     int lineSpacing = this->getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();

@@ -1,5 +1,4 @@
 /* @file Спецификация данных моделей USB-устройств для авто поиска. */
-
 #pragma once
 
 // Qt
@@ -13,15 +12,46 @@
 #include "Hardware/Common/USBDeviceVendors.h"
 
 //--------------------------------------------------------------------------------
+
 namespace CUSBDevice
 {
-    /// данные моделей по PID-ам.
+    /// Данные моделей по PID-ам.
     template <class T> class ProductDataBase : public CSpecification<quint16, T>
     {
       public:
-        QStringList getModelList(const QString &aVendor);
-        void setDefaultModel(const QString &aModel);
-        TProductData getProductData();
+        // Возвращает список названий моделей для указанного производителя
+        QStringList getModelList(const QString &aVendor)
+        {
+            QStringList result;
+            result.reserve(this->mBuffer.size());
+
+            // Используем range-based for (C++11/14) вместо устаревшего foreach
+            for (const auto &data : this->mBuffer)
+            {
+                // QStringLiteral оптимизирует память на Windows 7
+                result << aVendor + QStringLiteral(" ") + data.model;
+            }
+            return result;
+        }
+
+        // Устанавливает модель по умолчанию
+        void setDefaultModel(const QString &aModel)
+        {
+            // this-> обязателен в шаблонах для обращения к mBuffer базового класса
+            for (auto it = this->mBuffer.begin(); it != this->mBuffer.end(); ++it)
+            {
+                if (it.value().model == aModel)
+                {
+                    this->setDefault(it.value());
+                    break;
+                }
+            }
+        }
+
+        TProductData getProductData() const
+        {
+            return mProductData;
+        }
 
       protected:
         TProductData mProductData;
@@ -33,7 +63,8 @@ namespace CUSBDevice
       public:
         void add(quint16 aPID, const QString &aModel, bool aVerified = false)
         {
-            append(aPID, SProductData(aModel, aVerified));
+            // Метод append наследуется от CSpecification
+            this->append(aPID, SProductData(aModel, aVerified));
         }
     };
 
@@ -42,12 +73,14 @@ namespace CUSBDevice
     class DetectingData : public CSpecification<quint16, ProductData>
     {
       public:
+        // Реализации этих методов (не шаблонных) можно оставить в .cpp
         void set(const QString &aVendor, quint16 aPID, const QString &aModel, bool aVerified = false);
         void set(const QString &aVendor, const QString &aDeviceName, quint16 aPID);
         void set(const SDetectingData &aDetectingData);
         void set(const QString &aVendor, const TProductData &aProductData);
 
       protected:
+        // static члены определяются в .cpp
         static CUSBVendors::Data mVendorData;
     };
 

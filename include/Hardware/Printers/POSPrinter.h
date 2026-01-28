@@ -7,7 +7,8 @@
 #include <Hardware/Printers/POSParameters.h>
 
 //--------------------------------------------------------------------------------
-template <class T> class POSPrinter : public T {
+template <class T> class POSPrinter : public T
+{
     SET_SERIES("POS")
 
   public:

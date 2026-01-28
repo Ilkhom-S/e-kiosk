@@ -6,10 +6,12 @@
 
 //--------------------------------------------------------------------------------
 /// Последовательный POS-принтер.
-template <class T> class SerialPOSPrinter : public T {
+template <class T> class SerialPOSPrinter : public T
+{
   public:
     /// Конструктор.
-    SerialPOSPrinter() {
+    SerialPOSPrinter()
+    {
         using namespace SDK::Driver::IOPort::COM;
 
         // параметры порта

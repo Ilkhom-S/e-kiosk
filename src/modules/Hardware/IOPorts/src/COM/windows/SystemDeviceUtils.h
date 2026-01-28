@@ -16,36 +16,8 @@
 
 // Project
 #include "Hardware/IOPorts/DeviceWinProperties.h"
+#include <Hardware/IOPorts/DeviceProperties.h>
 #include "Hardware/Common/ASCII.h"
-
-//--------------------------------------------------------------------------------
-struct SVPID
-{
-    quint16 VID;
-    quint16 PID;
-
-    SVPID() : VID(0), PID(0)
-    {
-    }
-    SVPID(quint16 aVID, quint16 aPID) : VID(aVID), PID(aPID)
-    {
-    }
-    bool isValid()
-    {
-        return VID && PID;
-    }
-};
-
-typedef QMap<QString, QString> TWinProperties;
-
-struct SWinDeviceProperties : public SVPID
-{
-    QString path;
-    TWinProperties data;
-};
-
-typedef QMap<QString, SWinDeviceProperties> TWinDeviceProperties;
-typedef QMap<QString, QStringList> TSourceDeviceData;
 
 /// Работа с реестром.
 namespace CRegistrySerialPort

@@ -18,6 +18,7 @@ ek_add_driver_plugin(io_ports
     HardwareCommon
     HardwareIOPorts
     SysUtils
+    EK::LibUSB
 )
 
 # Translations
@@ -29,6 +30,4 @@ if(TS_FILES)
     )
 endif()
 
-# Ensure EK::LibUSB target is available for this library
-include(${CMAKE_SOURCE_DIR}/thirdparty/cmake/TCFindLibUSB.cmake)
-target_link_libraries(io_ports PRIVATE EK::LibUSB)
+

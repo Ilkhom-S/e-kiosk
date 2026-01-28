@@ -99,71 +99,119 @@ template <class T> void USBDeviceBase<T>::resetPDOName()
 }
 
 //--------------------------------------------------------------------------------
+#include <QtSerialPort/QSerialPortInfo>
+
 template <class T> bool USBDeviceBase<T>::setPDOName(const QString &aPDOName)
 {
-    // Безопасное получение свойств устройства через .value()
-    SWinDeviceProperties properties = mUSBPort.getDevicesProperties(false, true).value(aPDOName);
-    QString logVID = ProtocolUtils::toHexLog(properties.VID);
-    QString logPID = ProtocolUtils::toHexLog(properties.PID);
+    // 1. Ищем информацию о порте по его системному имени (aPDOName)
+    // Это работает на Windows (COM1), Linux (/dev/ttyUSB0) и Mac.
+    QSerialPortInfo portInfo(aPDOName);
 
-    if (!mDetectingData->data().contains(properties.VID))
+    if (portInfo.isNull())
+    {
+        this->toLog(LogLevel::Error,
+                    QStringLiteral("%1: Port %2 not found via QSerialPortInfo").arg(this->mDeviceName, aPDOName));
+        return false;
+    }
+
+    // 2. Получаем VID и PID напрямую из QSerialPortInfo
+    quint16 VID = portInfo.hasVendorIdentifier() ? portInfo.vendorIdentifier() : 0;
+    quint16 PID = portInfo.hasProductIdentifier() ? portInfo.productIdentifier() : 0;
+
+    QString logVID = ProtocolUtils::toHexLog(VID);
+    QString logPID = ProtocolUtils::toHexLog(PID);
+
+    // 3. Проверка VID в данных авто поиска (CSpecification)
+    if (!mDetectingData->data().contains(VID))
     {
         this->toLog(LogLevel::Normal, QStringLiteral("%1: No such VID %2").arg(this->mDeviceName, logVID));
         return false;
     }
 
-    // Доступ через constData() для соответствия новому интерфейсу CSpecification
-    const auto &PIDData = mDetectingData->value(properties.VID).constData();
+    const auto &PIDData = mDetectingData->value(VID).constData();
 
-    if (!PIDData.contains(properties.PID))
+    // 4. Проверка PID
+    if (!PIDData.contains(PID))
     {
         this->toLog(LogLevel::Normal,
                     QStringLiteral("%1: No PID %2 for VID %3").arg(this->mDeviceName, logPID, logVID));
         return false;
     }
 
-    const auto &data = PIDData[properties.PID];
+    // 5. Установка данных устройства из мета-данных
+    const auto &data = PIDData[PID];
     this->mDeviceName = data.model;
     this->mVerified = data.verified;
 
+    // Блокируем имя порта как занятое в статическом массиве
     mPDOData[aPDOName] = false;
 
+    // 6. Сохранение конфигурации
     QVariantMap configuration;
     configuration.insert(CHardwareSDK::SystemName, aPDOName);
-    this->toLog(LogLevel::Normal,
-                QStringLiteral("%1: Set USB PDO %2 (VID %3 PID %4)").arg(this->mDeviceName, aPDOName, logVID, logPID));
+
+    this->toLog(
+        LogLevel::Normal,
+        QStringLiteral("%1: Set USB Device %2 (VID %3 PID %4)").arg(this->mDeviceName, aPDOName, logVID, logPID));
 
     this->mIOPort->setDeviceConfiguration(configuration);
+
     return true;
 }
 
 //--------------------------------------------------------------------------------
+#include <QtSerialPort/QSerialPortInfo>
+
 template <class T> void USBDeviceBase<T>::initializeUSBPort()
 {
-    mUSBPort.initialize();
-    TWinDeviceProperties devicesProperties = mUSBPort.getDevicesProperties(true, mPDODetecting);
+    // 1. Получаем список всех доступных последовательных портов в системе.
+    // Это работает на Windows, Linux и macOS.
+    const auto availablePorts = QSerialPortInfo::availablePorts();
+
+    // Подготавливаем набор имен текущих физических портов для синхронизации
+    QSet<QString> systemPortNames;
+    for (const QSerialPortInfo &info : availablePorts)
+    {
+        systemPortNames.insert(info.portName());
+    }
 
     QMutexLocker lock(&mPDODataGuard);
 
-    // Замена keys().toSet() на конструктор QSet (совместимо с Qt 6)
-    QSet<QString> currentKeys(mPDOData.keyBegin(), mPDOData.keyEnd());
-    QSet<QString> newKeys(devicesProperties.keyBegin(), devicesProperties.keyEnd());
-    QSet<QString> deletedPDONames = currentKeys - newKeys;
+    // 2. Очистка mPDOData от портов, которые больше не существуют в системе.
+    QSet<QString> cachedPortNames(mPDOData.keyBegin(), mPDOData.keyEnd());
+    QSet<QString> deletedPorts = cachedPortNames - systemPortNames;
 
-    for (const QString &aPDOName : deletedPDONames)
+    for (const QString &portName : deletedPorts)
     {
-        mPDOData.remove(aPDOName);
+        mPDOData.remove(portName);
     }
 
-    for (auto it = devicesProperties.begin(); it != devicesProperties.end(); ++it)
+    // 3. Сопоставление найденных портов с данными авто поиска (VID/PID).
+    for (const QSerialPortInfo &info : availablePorts)
     {
-        for (auto jt = mDetectingData->data().begin(); jt != mDetectingData->data().end(); ++jt)
+        // Пропускаем, если порт уже есть в базе данных или не имеет идентификаторов
+        if (mPDOData.contains(info.portName()) || !info.hasVendorIdentifier() || !info.hasProductIdentifier())
         {
-            for (auto kt = jt.value().constData().begin(); kt != jt.value().constData().end(); ++kt)
+            continue;
+        }
+
+        quint16 vID = info.vendorIdentifier();
+        quint16 pID = info.productIdentifier();
+
+        // Проходим по иерархии данных авто поиска (VID -> PID)
+        // Используем constData() из вашего CSpecification для безопасности.
+        for (auto jt = this->mDetectingData->data().begin(); jt != this->mDetectingData->data().end(); ++jt)
+        {
+            if (vID == jt.key())
             {
-                if (!mPDOData.contains(it.key()) && (it->VID == jt.key()) && (it->PID == kt.key()))
+                const auto &pidMap = jt.value().constData();
+
+                // Если PID найден в списке разрешенных для этого устройства
+                if (pidMap.contains(pID))
                 {
-                    mPDOData.insert(it.key(), true);
+                    // Помечаем порт как свободный (true) для последующего использования
+                    mPDOData.insert(info.portName(), true);
+                    break;
                 }
             }
         }

@@ -1,54 +1,44 @@
-/* @file Асинхронная Windows-реализация USB-порта. */
+/* @file Кроссплатформенная реализация USB-порта. */
 
 #pragma once
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QMutex>
+#include <QtSerialPort/QSerialPortInfo>
+#include <Common/QtHeadersEnd.h>
 
 #include "Hardware/IOPorts/AsyncSerialPort.h"
+#include "Hardware/IOPorts/DeviceProperties.h" // Для TWinDeviceProperties
 
 //--------------------------------------------------------------------------------
-/// Константы USB-порта.
-namespace CUSBPort {
-    /// Пауза при открытии, [мс].
+namespace CUSBPort
+{
     const int OpeningPause = 500;
 
-    /// Идентификационные теги устройств на USB-порту.
-    namespace DeviceTags {
-        const char ACPI[] = "ACPI";     /// ACPI-устройство.
-        const char Mouse[] = "Mouse";   /// Mouse.
-        const char USBPDO[] = "USBPDO"; /// Physical Device Object (PDO).
+    namespace DeviceTags
+    {
+        const char ACPI[] = "ACPI";
+        const char Mouse[] = "Mouse";
+        const char USBPDO[] = "USBPDO";
     } // namespace DeviceTags
 
-    /// Размер буфера для чтения по умолчанию.
     const int DefaultMaxReadSize = 1024;
-
-    /// Пустой буфер.
-    const TReadingBuffer EmptyBuffer = TReadingBuffer(DefaultMaxReadSize, ASCII::NUL);
-
-    /// GUIDы для авто поиска портов. Класс нужен для использования в static-фунцкии.
-    class Uuids : public TUuids {
-      public:
-        Uuids() {
-            append(GUID_DEVINTERFACE_COMPORT);
-            append(GUIDs::USB1);
-            append(GUIDs::USBHID);
-        }
-    };
-
-    /// Системное свойство для формирования пути для открытия порта.
-    const DWORD PathProperty = SPDRP_PHYSICAL_DEVICE_OBJECT_NAME;
 } // namespace CUSBPort
 
 //--------------------------------------------------------------------------------
-class USBPort : public AsyncSerialPort {
+class USBPort : public AsyncSerialPort
+{
     SET_SERIES("USB")
 
   public:
     USBPort();
+    virtual ~USBPort() = default;
 
     /// Очистить буферы порта.
-    virtual bool clear();
+    virtual bool clear() override;
 
-    /// Получить системные свойства устройств.
-    TWinDeviceProperties getDevicesProperties(bool aForce, bool aPDODetecting = false);
+    /// Получить системные свойства устройств (кроссплатформенно через QSerialPortInfo).
+    /// Мы сохраняем тип TWinDeviceProperties для совместимости, но наполняем его данными Qt.
+    TDeviceProperties getDevicesProperties(bool aForce, bool aPDODetecting = false);
 
   protected:
     /// Проверить готовность порта.
@@ -60,8 +50,6 @@ class USBPort : public AsyncSerialPort {
     /// Прочитать данные.
     virtual bool processReading(QByteArray &aData, int aTimeout);
 
-    /// Мьютекс для защиты статических пропертей портов.
+    /// Мьютекс для защиты общих данных.
     static QMutex mSystemPropertyMutex;
 };
-
-//--------------------------------------------------------------------------------
