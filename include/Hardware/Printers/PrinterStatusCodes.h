@@ -5,15 +5,18 @@
 #include "Hardware/Common/BaseStatus.h"
 
 //--------------------------------------------------------------------------------
-namespace PrinterStatusCode {
+namespace PrinterStatusCode
+{
     /// OK.
-    namespace OK {
+    namespace OK
+    {
         const int PaperInPresenter = 200; /// Бумага удерживается презентером.
         const int MotorMotion = 201;      /// Движение мотора.
     } // namespace OK
 
     /// Предупреждения.
-    namespace Warning {
+    namespace Warning
+    {
         const int PaperNearEnd = 210;         /// Чековая лента заканчивается.
         const int ControlPaperNearEnd = 211;  /// Контрольная лента заканчивается.
         const int TonerNearEnd = 212;         /// Тонер заканчивается.
@@ -23,7 +26,8 @@ namespace PrinterStatusCode {
     } // namespace Warning
 
     /// Ошибки.
-    namespace Error {
+    namespace Error
+    {
         const int PaperEnd = 220;              /// Чековая лента закончилась.
         const int ControlPaperEnd = 221;       /// Контрольная лента закончилась.
         const int PaperJam = 222;              /// Бумага зажевана.

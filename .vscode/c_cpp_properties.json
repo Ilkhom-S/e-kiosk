@@ -12,8 +12,26 @@
       "windowsSdkVersion": "10.0.26100.0",
       "compilerPath": "cl.exe",
       "cStandard": "c11",
-      "cppStandard": "c++17",
-      "intelliSenseMode": "windows-msvc-x64"
+      "cppStandard": "c++14",
+      "intelliSenseMode": "windows-msvc-x64",
+      "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+    },
+    {
+      "name": "Mac",
+      "includePath": [
+        "${workspaceFolder}/include",
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/thirdparty",
+        "${workspaceFolder}/**",
+        "/Users/ilkhom/Qt/6.10.1/macos/include",
+        "/Users/ilkhom/Qt/6.10.1/macos/include/QtCore"
+      ],
+      "defines": [],
+      "compilerPath": "/usr/bin/clang++",
+      "cStandard": "c11",
+      "cppStandard": "c++14",
+      "intelliSenseMode": "macos-clang-arm64",
+      "compileCommands": "${workspaceFolder}/build/compile_commands.json"
     }
   ],
   "version": 4

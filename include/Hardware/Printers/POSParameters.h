@@ -18,7 +18,8 @@
 
 //--------------------------------------------------------------------------------
 /// Типы данных POS-принтеров.
-namespace POSPrinters {
+namespace POSPrinters
+{
     /// Ошибки принтера.
     typedef QMap<char, int> TErrors;
     typedef QMap<char, TErrors> TCustomErrors;
@@ -31,11 +32,13 @@ namespace POSPrinters {
     typedef CSpecification<int, TSerialDevicePortParameter> CSerialDevicePortParameters;
     typedef QSharedPointer<CSerialDevicePortParameters> PSerialDevicePortParameters;
 
-    struct SParameters {
+    struct SParameters
+    {
         TAllErrors errors;
         Tags::Engine tagEngine;
 
-        SParameters() {
+        SParameters()
+        {
             // теги по умолчанию
             tagEngine.appendSingle(Tags::Type::Bold, "\x1B\x45", "\x01");
             tagEngine.appendSingle(Tags::Type::UnderLine, "\x1B\x2D", "\x01");
@@ -53,7 +56,8 @@ namespace POSPrinters {
     /// Параметры по умолчанию.
     const SParameters CommonParameters;
 
-    struct SModelData {
+    struct SModelData
+    {
         QString name;
         bool verified;
         QString description;
@@ -65,7 +69,8 @@ namespace POSPrinters {
     typedef QMap<char, SModelData> TModelData;
     typedef QSet<char> TModelIds;
 
-    class ModelData : public CSpecification<char, SModelData> {
+    class ModelData : public CSpecification<char, SModelData>
+    {
       public:
         ModelData();
         void add(char aModelId, bool aVerified, const QString &aName, const QString &aDescription = "");

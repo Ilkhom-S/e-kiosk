@@ -3,9 +3,11 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-namespace DeviceStatusCode {
+namespace DeviceStatusCode
+{
     /// OK.
-    namespace OK {
+    namespace OK
+    {
         const int OK = 0;             /// Нет ошибок, готов к работе.
         const int Busy = 1;           /// Занят чем-то нужным, скоро будет готов.
         const int Initialization = 2; /// Инициализация.
@@ -13,7 +15,8 @@ namespace DeviceStatusCode {
     } // namespace OK
 
     /// Предупреждения.
-    namespace Warning {
+    namespace Warning
+    {
         const int Firmware = 30;            /// Необходимо обновить прошивку.
         const int BootFirmware = 31;        /// Необходимо обновить прошивку загрузчика.
         const int NeedReboot = 32;          /// Необходимо перезагрузить устройство по питанию.
@@ -30,7 +33,8 @@ namespace DeviceStatusCode {
     } // namespace Warning
 
     /// Ошибки.
-    namespace Error {
+    namespace Error
+    {
         const int Unknown = 60;              /// Неизвестная ошибка устройства.
         const int MechanismPosition = 61;    /// Внутренний механизм не приведен в рабочее положение.
         const int PowerSupply = 62;          /// Ошибка электропитания.

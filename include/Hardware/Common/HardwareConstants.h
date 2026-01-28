@@ -6,7 +6,8 @@
 #include <SDK/Drivers/HardwareConstants.h>
 
 //---------------------------------------------------------------------------
-namespace CHardware {
+namespace CHardware
+{
     /// Общие константы.
     const char OPOSName[] = "opos_name";
     const char Codepage[] = "codepage";
@@ -21,13 +22,15 @@ namespace CHardware {
     const char ProtocolType[] = "protocol_type";
 
     /// Типы вызова функционала драйвера.
-    namespace CallingTypes {
+    namespace CallingTypes
+    {
         const char Internal[] = "internal";
         const char External[] = "external";
     } // namespace CallingTypes
 
     /// Типы устройств.
-    namespace Types {
+    namespace Types
+    {
         const char CashAcceptor[] = "CashAcceptor";
         const char BillAcceptor[] = "BillAcceptor";
         const char Dispenser[] = "Dispenser";
@@ -36,7 +39,8 @@ namespace CHardware {
     } // namespace Types
 
     /// Кодировки.
-    namespace Codepages {
+    namespace Codepages
+    {
         const char CP850[] = "CP858 (Western Europe)";
         const char CP866[] = "CP866 (Cyrillic Russian)";
         const char Win1250[] = "Win-1250 (Eastern & Central Europe)";
@@ -49,7 +53,8 @@ namespace CHardware {
     } // namespace Codepages
 
     /// Константы порта.
-    namespace Port {
+    namespace Port
+    {
         const char IOLogging[] = "IO_logging";
         const char DeviceModelName[] = "device_model_name";
         const char MaxReadingSize[] = "max_reading_size";
@@ -59,7 +64,8 @@ namespace CHardware {
         const char JustConnected[] = "just_connected";
 
         /// Константы COM-порта.
-        namespace COM {
+        namespace COM
+        {
             const char BaudRate[] = "baud_rate";
             const char Parity[] = "parity";
             const char ByteSize[] = "byte_size";
@@ -71,23 +77,27 @@ namespace CHardware {
         } // namespace COM
 
         /// Константы USB-порта.
-        namespace USB {
+        namespace USB
+        {
             const char VID[] = "vid";
             const char PID[] = "pid";
         } // namespace USB
     } // namespace Port
 
     /// Константы кардридера.
-    namespace CardReader {
+    namespace CardReader
+    {
         const char Track1[] = "track1";
         const char Track2[] = "track2";
         const char Track3[] = "track3";
     } // namespace CardReader
 
     /// Константы устройства работы с деньгами.
-    namespace CashDevice {
+    namespace CashDevice
+    {
         /// Типы протокола CCTalk.
-        namespace CCTalkTypes {
+        namespace CCTalkTypes
+        {
             const char CRC8[] = "CRC8";
             const char CRC16[] = "CRC16";
             const char CRC16Encrypted[] = "CRC16 Encrypted";
@@ -95,7 +105,8 @@ namespace CHardware {
     } // namespace CashDevice
 
     /// Константы устройства приема денег.
-    namespace CashAcceptor {
+    namespace CashAcceptor
+    {
         const char SecurityLevel[] = "set_security";
         const char ParTable[] = "par_table";
         const char Enabled[] = "enabled";
@@ -108,24 +119,28 @@ namespace CHardware {
     } // namespace CashAcceptor
 
     /// Константы виртуального устройства приема денег.
-    namespace VirtualCashAcceptor {
+    namespace VirtualCashAcceptor
+    {
         const char NotesPerEscrow[] = "notes_per_escrow";
     } // namespace VirtualCashAcceptor
 
     /// Константы диспенсера.
-    namespace Dispenser {
+    namespace Dispenser
+    {
         const char Units[] = "units";
         const char JammedItem[] = "jammed_item";
         const char NearEndCount[] = "near_end_count";
     } // namespace Dispenser
 
     /// Константы сканера.
-    namespace Scanner {
+    namespace Scanner
+    {
         const char Prefix[] = "prefix";
     } // namespace Scanner
 
     /// Константы принтера.
-    namespace Printer {
+    namespace Printer
+    {
         const char FeedingAmount[] = "feeding_amount";
         const char NeedCutting[] = "need_cutting";
         const char NeedSeparating[] = "need_separating";
@@ -141,7 +156,8 @@ namespace CHardware {
         const char OutCall[] = "out_call";
 
         /// Команды.
-        namespace Commands {
+        namespace Commands
+        {
             const char Cutting[] = "cutting_command";
             const char Presentation[] = "presentation_command";
             const char Pushing[] = "pushing_command";
@@ -149,7 +165,8 @@ namespace CHardware {
         } // namespace Commands
 
         /// Настройки для плагина.
-        namespace Values {
+        namespace Values
+        {
             const char Cut[] = "cut";
             const char Retract[] = "retract";
             const char Push[] = "push";
@@ -157,7 +174,8 @@ namespace CHardware {
         } // namespace Values
 
         /// Настройки для плагина.
-        namespace Settings {
+        namespace Settings
+        {
             const char NotTakenReceipt[] = "not_taken_receipt";
             const char PreviousReceipt[] = "previous_receipt";
             const char PreviousAndNotTakenReceipts[] = "previous_and_not_taken_receipts";
@@ -180,7 +198,8 @@ namespace CHardware {
         } // namespace Settings
 
         /// Параметры обработки чека после отрезки.
-        namespace EjectorMode {
+        namespace EjectorMode
+        {
             const char Presenting[] = "presenting";
             const char Printing[] = "printing";
             const char Action[] = "action";
@@ -188,25 +207,29 @@ namespace CHardware {
     } // namespace Printer
 
     /// Константы сторожевого таймера.
-    namespace Watchdog {
+    namespace Watchdog
+    {
         const char CanRegisterKey[] = "can_register_key";
         const char CanWakeUpPC[] = "can_wake_up_pc";
         const char PCWakingUpTime[] = "pc_waking_up_time";
 
-        namespace Sensor {
+        namespace Sensor
+        {
             const char Safe[] = "safe";            /// Сейф.
             const char UpperUnit[] = "upper_unit"; /// Верхний модуль.
             const char LowerUnit[] = "lower_unit"; /// Верхний модуль.
 
             /// Настройки срабатывания датчиков.
-            namespace Action {
+            namespace Action
+            {
                 const char Safe[] = "safe_action";            /// Сейф.
                 const char UpperUnit[] = "upper_unit_action"; /// Верхний модуль.
                 const char LowerUnit[] = "lower_unit_action"; /// Верхний модуль.
             } // namespace Action
 
             /// Действия при срабатывании датчика.
-            namespace ActionValue {
+            namespace ActionValue
+            {
                 const char EnterServiceMenu[] = "enter service menu"; /// Войти в сервисное меню.
                 const char LockTerminal[] = "lock terminal";          /// Заблокировать терминал.
             } // namespace ActionValue
@@ -214,7 +237,8 @@ namespace CHardware {
     } // namespace Watchdog
 
     /// Константы фискального регистратора.
-    namespace FR {
+    namespace FR
+    {
         const char EjectorParameters[] = "ejector_parameters";
         const char FiscalMode[] = "fiscal_mode";
         const char CanAutoCloseSession[] = "can_auto_close_session";
@@ -232,12 +256,14 @@ namespace CHardware {
         const char CanZReportWithoutPrinting[] = "can_z_report_without_printing";
 
         /// Команды.
-        namespace Commands {
+        namespace Commands
+        {
             const char PrintingDeferredZReports[] = "printing_deferred_z_reports_command";
         } // namespace Commands
 
         /// Варианты использования настроек.
-        namespace Values {
+        namespace Values
+        {
             const char Adaptive[] = "adaptive";
             const char Discrete[] = "discrete";
             const char LoopAndPushNotTakenOnTimeout[] = "loop and push not taken receipt on timeout";
@@ -245,7 +271,8 @@ namespace CHardware {
             const char NoLoopAndRetractNotTakenOnTimeout[] = "no loop and retract not taken receipt on timeout";
         } // namespace Values
 
-        namespace Strings {
+        namespace Strings
+        {
             const char Payment[] = "payment_name";
             const char Depositing[] = "depositing_name";
             const char INN[] = "inn_name";
@@ -261,7 +288,8 @@ namespace CHardware {
             const char WithoutTaxes[] = "without_taxes";
         } // namespace Strings
 
-        namespace DocumentCapData {
+        namespace DocumentCapData
+        {
             const char DealerName[] = "dealer_name";
             const char DealerAddress[] = "dealer_address";
             const char DealerSupportPhone[] = "dealer_support_phone";
@@ -270,7 +298,8 @@ namespace CHardware {
     } // namespace FR
 
     /// Константы веб-камеры.
-    namespace WebCamera {
+    namespace WebCamera
+    {
         const char FaceDetection[] = "face_detection";
         const char FPS[] = "fps";
     } // namespace WebCamera

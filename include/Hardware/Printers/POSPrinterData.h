@@ -12,9 +12,11 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний POS-принтеров.
-namespace CPOSPrinter {
+namespace CPOSPrinter
+{
     /// Команды.
-    namespace Command {
+    namespace Command
+    {
         const char GetModelId[] = "\x1D\x49\x01";        /// Получение идентификатора модели.
         const char GetTypeId[] = "\x1D\x49\x02";         /// Получение идентификатора типа модели.
         const char GetROMVersion[] = "\x1D\x49\x03";     /// Получение версии прошивки.
@@ -32,18 +34,22 @@ namespace CPOSPrinter {
         const char PrintImage[] = "\x1D\x76\x30";        /// Печать картинки.
         const char AlignLeft[] = "\x1B\x61\x30";         /// Выравнивание по левому краю.
 
-        inline QByteArray GetStatus(char aStatusType) {
+        inline QByteArray GetStatus(char aStatusType)
+        {
             return QByteArray("\x10\x04") + aStatusType;
         } /// Запрос статуса.
-        inline QByteArray SetCodePage(char aCodePage) {
+        inline QByteArray SetCodePage(char aCodePage)
+        {
             return QByteArray("\x1B\x74") + aCodePage;
         } /// Установка кодовой страницы.
-        inline QByteArray SetLineSpacing(int aSpacing) {
+        inline QByteArray SetLineSpacing(int aSpacing)
+        {
             return QByteArray("\x1B\x33") + char(aSpacing);
         } /// Установка множителя высоты строки.
 
         /// Штрих-коды.
-        namespace Barcode {
+        namespace Barcode
+        {
             const char Height[] = "\x1D\x68";      /// Высота штрих-кода - 20.25 мм.
             const char HRIPosition[] = "\x1D\x48"; /// Позиционирование символов штрих-кода - выше штрих-кода.
             const char FontSize[] = "\x1D\x66";    /// Размер шрифта штрих-кода.
@@ -56,7 +62,8 @@ namespace CPOSPrinter {
     const char DefaultName[] = "Unknown POS Printer"; /// Имя принтера по умолчанию.
 
     /// Штрих-коды.
-    namespace Barcode {
+    namespace Barcode
+    {
         const char Height = '\xA0';            /// Высота штрих-кода - 20.25 мм.
         const char HRIPosition = '\x01';       /// Позиционирование символов штрих-кода - выше штрих-кода.
         const char FontSize = '\x49';          /// Размер шрифта штрих-кода.
@@ -66,13 +73,15 @@ namespace CPOSPrinter {
     } // namespace Barcode
 
     /// Константы для представления коэффициентов масштаба (1 или 2).
-    namespace ImageFactors {
+    namespace ImageFactors
+    {
         const char DoubleWidth = '\x01';
         const char DoubleHeight = '\x02';
     } // namespace ImageFactors
 
     /// Таймауты ожидания ответа на запрос, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         const int Status = 200; /// Статус.
         const int Info = 1000;  /// Информация о модели.
     } // namespace Timeouts

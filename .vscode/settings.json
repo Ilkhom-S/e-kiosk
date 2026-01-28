@@ -36,11 +36,7 @@
   "C_Cpp.default.compileCommands": "${workspaceFolder}/build/win-msvc-qt5-x64/compile_commands.json",
   // Use CMake Tools as configuration provider if installed
   // Optional: speed up file watching
-  "files.watcherExclude": {
-    "**/build/": true,
-    "**/thirdparty/": true,
-    "**/vcpkg_installed/": true
-  },
+
   "emeraldwalk.runonsave": {
     "commands": [
       {

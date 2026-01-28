@@ -3,46 +3,49 @@
 #pragma once
 
 // Qt
-#include <Common/QtHeadersBegin.h>
+#include <QtCore/QStringList>
+#include <QtCore/QDateTime>
+#include <QtCore/QVariantMap>
+#include <QtCore/QRegularExpression>
 #include <QtGui/QImage>
-#include <Common/QtHeadersEnd.h>
 
 // SDK
 #include <SDK/Drivers/PrintingModes.h>
 
 // Modules
 #include "Hardware/Common/DeviceBase.h"
-
-// Project
 #include "Hardware/Printers/PrinterConstants.h"
 #include "Hardware/Printers/PrinterStatusCodes.h"
-#include <Hardware/Printers/Tags.h>
+#include "Hardware/Printers/PrinterStatusesDescriptions.h"
+#include "Hardware/Printers/Tags.h"
 
-namespace CPrinter {
+namespace CPrinter
+{
     /// Спец-теги.
     const Tags::TTypes SpecialTags = Tags::TTypes() << Tags::Type::Image << Tags::Type::BarCode;
 } // namespace CPrinter
 
 //--------------------------------------------------------------------------------
-template <class T> class PrinterBase : public T {
+template <class T> class PrinterBase : public T
+{
   public:
     PrinterBase();
 
     /// Напечатать массив строк.
-    virtual bool print(const QStringList &aReceipt);
+    virtual bool print(const QStringList &aReceipt) override;
 
     /// Готов ли к печати.
-    virtual bool isDeviceReady(bool aOnline);
+    virtual bool isDeviceReady(bool aOnline) override;
 
     /// Устанавливает конфигурацию устройству.
-    virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
+    virtual void setDeviceConfiguration(const QVariantMap &aConfiguration) override;
 
   protected:
     /// Идентифицирует устройство.
-    virtual bool isConnected();
+    virtual bool isConnected() override;
 
     /// Завершение инициализации.
-    virtual void finalizeInitialization();
+    virtual void finalizeInitialization() override;
 
     /// Выполнить нереентерабельную команду.
     virtual bool processNonReentrant(TBoolMethod aCommand);
@@ -52,7 +55,7 @@ template <class T> class PrinterBase : public T {
 
     /// Фоновая логика при появлении определенных состояний устройства.
     virtual void postPollingAction(const TStatusCollection &aNewStatusCollection,
-                                   const TStatusCollection &aOldStatusCollection);
+                                   const TStatusCollection &aOldStatusCollection) override;
 
     /// Возможно ли печать.
     virtual bool isPossible(bool aOnline, QVariant aCommand = QVariant());
@@ -66,107 +69,239 @@ template <class T> class PrinterBase : public T {
     /// Проверить необходимость печати.
     virtual bool isPrintingNeed(const QStringList &aReceipt);
 
-    /// Удалить строки, содержащие только ' ', \n, \r и \t.
+    /// Удалить пустые строки и лишние пробелы.
     QStringList simplifyReceipt(const QStringList &aReceipt);
 
-    /// Возможно ли принудительное включение буфера статусов после выполнения печатной операции.
-    virtual bool canForceStatusBufferEnable() {
+    virtual bool canForceStatusBufferEnable()
+    {
         return false;
     }
 
-    /// Разбивает List строк на составные строки, используя разделители.
+    /// Разбивает строки по разделителям тега BR.
     void separate(QStringList &aReceipt) const;
 
-    /// Анализирует коды статусов устройства и фильтрует лишние.
-    virtual void cleanStatusCodes(TStatusCodes &aStatusCodes);
-
-    /// Применить спец-тег.
+    virtual void cleanStatusCodes(TStatusCodes &aStatusCodes) override;
     virtual bool execSpecialTag(const Tags::SLexeme &aTagLexeme);
-
-    /// Разделить список лексем с учетом длины строки.
     void adjustToLineSize(Tags::TLexemesBuffer &aTagLexemes, Tags::TLexemesCollection &aLexemesCollection);
-
-    /// Сформировать построчный список лексем с тегами из списка строк.
     void makeLexemeReceipt(const QStringList &aReceipt, Tags::TLexemeReceipt &aLexemeReceipt);
-
-    /// Очистить диспенсер.
     bool clearDispenser(const QString &aCondition);
-
-    /// Применить теги.
     virtual void execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine);
-
-    /// Промотка.
     virtual bool feed();
-
-    /// Напечатать строку.
-    virtual bool printLine(const QVariant & /*aLine*/) {
+    virtual bool printLine(const QVariant &)
+    {
         return true;
     }
-
-    /// Напечатать картинку.
-    virtual bool printImage(const QImage & /*aImage*/, const Tags::TTypes & /*aTags*/) {
+    virtual bool printImage(const QImage &, const Tags::TTypes &)
+    {
         return true;
     }
-
-    /// Обработка тега bc - печать штрих-кода.
-    virtual bool printBarcode(const QString & /*aBarcode*/) {
+    virtual bool printBarcode(const QString &)
+    {
         return true;
     }
-
-    /// Отрезка.
-    virtual bool cut() {
+    virtual bool cut()
+    {
         return true;
     }
-
-    /// Презентация чека.
-    virtual bool present() {
+    virtual bool present()
+    {
         return true;
     }
-
-    /// Вытолкнуть чек.
-    virtual bool push() {
+    virtual bool push()
+    {
         return true;
     }
-
-    /// Забрать чек в ретрактор.
-    virtual bool retract() {
+    virtual bool retract()
+    {
         return true;
     }
-
-    /// Можно ли проверять готовность устройства.
     bool canCheckReady(bool aOnline);
 
-    /// Время первого обнаружения бумаги в презентере.
     QDateTime mPaperInPresenter;
-
-    /// Экземляр движка тегов.
     Tags::PEngine mTagEngine;
-
-    /// Спецификация кодов статусов.
     DeviceStatusCode::PSpecifications mStatusCodesSpecification;
-
-    /// Максимальное количество плохих ответов.
     int mMaxBadAnswers;
-
-    /// Ошибки, при которых возможно выполнение определенных команд.
     typedef QMap<int, TStatusCodes> TUnnecessaryErrors;
     TUnnecessaryErrors mUnnecessaryErrors;
-
-    /// Максимальное количество символов в строке, если известно и учитывается.
     int mLineSize;
-
-    /// Необходимость перевода строки при построчной печати.
     bool mLineFeed;
-
-    /// Теги для обработки отдельными командами.
     Tags::TTypes mLineTags;
-
-    /// Количество фактически напечатанных строк.
     int mActualStringCount;
-
-    /// Режим печати документа.
     SDK::Driver::EPrintingModes::Enum mPrintingMode;
-
-    /// Отключение очистки диспенсера.
     bool mClearingDispenserTurnOff;
 };
+
+//--------------------------------------------------------------------------------
+// РЕАЛИЗАЦИЯ (IMPLEMENTATION)
+//--------------------------------------------------------------------------------
+
+template <class T> PrinterBase<T>::PrinterBase()
+{
+    // Использование this-> обязательно для доступа к членам шаблона на Linux/Mac
+    this->mTagEngine = Tags::PEngine(new Tags::Engine());
+    this->mStatusCodesSpecification = DeviceStatusCode::PSpecifications(new PrinterStatusCode::CSpecifications());
+    this->mMaxBadAnswers = 2;
+
+    // Инициализируем настройки устройства
+    this->mPollingInterval = 5 * 1000;
+    this->mLineSize = 0;
+    this->mLineFeed = true;
+    this->mPaperInPresenter = QDateTime::currentDateTime();
+    this->mActualStringCount = 0;
+    this->mPrintingMode = SDK::Driver::EPrintingModes::None;
+    this->mClearingDispenserTurnOff = false;
+
+    // Параметры конфигурации по умолчанию
+    this->setConfigParameter(CHardware::Printer::NeedSeparating, true);
+    this->setConfigParameter(CHardware::Printer::PresenterEnable, false);
+    this->setConfigParameter(CHardware::Printer::RetractorEnable, false);
+    this->setConfigParameter(CHardware::Printer::FeedingAmount, 0);
+    this->setConfigParameter(CHardware::Printer::NeedCutting, true);
+}
+
+template <class T> bool PrinterBase<T>::print(const QStringList &aReceipt)
+{
+    if (!this->isPrintingNeed(aReceipt))
+    {
+        return true;
+    }
+
+    QStringList receipt = this->simplifyReceipt(aReceipt);
+
+    // Используем лямбду вместо std::bind для лучшей совместимости с макросами потоков Qt
+    return this->processNonReentrant([this, receipt]() { return this->processReceipt(receipt, true); });
+}
+
+template <class T>
+void PrinterBase<T>::makeLexemeReceipt(const QStringList &aReceipt, Tags::TLexemeReceipt &aLexemeReceipt)
+{
+    QStringList receipt = aReceipt;
+
+    if (this->getConfigParameter(CHardware::Printer::NeedSeparating).toBool())
+    {
+        this->separate(receipt);
+    }
+
+    for (const QString &line : receipt)
+    {
+        Tags::TLexemesBuffer tagLexemes;
+        this->mTagEngine->splitForLexemes(line, tagLexemes);
+
+        if (!tagLexemes.isEmpty())
+        {
+            Tags::TLexemesCollection lexemesCollection;
+            this->adjustToLineSize(tagLexemes, lexemesCollection);
+            aLexemeReceipt << lexemesCollection;
+        }
+    }
+}
+
+template <class T> QStringList PrinterBase<T>::simplifyReceipt(const QStringList &aReceipt)
+{
+    QStringList result = aReceipt;
+
+    // Qt 6 замена для QRegExp. QStringLiteral оптимизирует работу на Win7.
+    QRegularExpression regExpEmptyLine(QStringLiteral("^[ \\n\\r\\t]*$"));
+    QRegularExpression regExpTrailingSpace(QStringLiteral("[ \\n\\r\\t]+$"));
+
+    for (int i = 0; i < result.size(); ++i)
+    {
+        // Удаляем пробельные символы в конце строки
+        auto match = regExpTrailingSpace.match(result[i]);
+        if (match.hasMatch())
+        {
+            result[i] = result[i].left(static_cast<int>(match.capturedStart()));
+        }
+
+        // Удаляем полностью пустые строки
+        if (regExpEmptyLine.match(result[i]).hasMatch())
+        {
+            result.removeAt(i--);
+        }
+    }
+    return result;
+}
+
+template <class T> void PrinterBase<T>::separate(QStringList &aReceipt) const
+{
+    for (int i = 0; i < aReceipt.size(); ++i)
+    {
+        if (aReceipt[i].contains(Tags::BR))
+        {
+            QStringList lines = aReceipt[i].split(Tags::BR);
+            aReceipt.removeAt(i);
+            for (int j = 0; j < lines.size(); ++j)
+            {
+                aReceipt.insert(i + j, lines[j]);
+            }
+            i += lines.size() - 1;
+        }
+    }
+}
+
+template <class T>
+void PrinterBase<T>::postPollingAction(const TStatusCollection &aNewStatusCollection,
+                                       const TStatusCollection &aOldStatusCollection)
+{
+    // Используем пространство имен из вашего PrinterStatusCodes.h
+    if (aNewStatusCollection.contains(PrinterStatusCode::OK::PaperInPresenter))
+    {
+        QDateTime current = QDateTime::currentDateTime();
+
+        // В шаблонах обязательно используем this-> для методов базового класса
+        int timeout = this->getConfigParameter(CHardware::Printer::Settings::LeftReceiptTimeout).toInt();
+
+        // Проверяем таймаут нахождения чека в презентере
+        if ((this->mPaperInPresenter.secsTo(current) > timeout) &&
+            !this->clearDispenser(CHardware::Printer::Settings::NotTakenReceipt))
+        {
+            // Рассчитываем время следующей попытки очистки
+            int repeatTimeout = CPrinters::ClearingPresenterRepeatTimeout;
+            this->mPaperInPresenter = current.addMSecs((repeatTimeout - timeout) * 1000 - this->mPollingInterval);
+        }
+    }
+    else
+    {
+        // Сброс таймера, если бумага забрана или отсутствует
+        this->mPaperInPresenter = QDateTime::currentDateTime();
+    }
+
+    // Вызов реализации базового класса (PortPollingDeviceBase или PollingDeviceBase)
+    T::postPollingAction(aNewStatusCollection, aOldStatusCollection);
+}
+
+template <class T> bool PrinterBase<T>::isPrintingNeed(const QStringList &aReceipt)
+{
+    for (const QString &line : aReceipt)
+    {
+        if (!line.trimmed().isEmpty())
+            return true;
+    }
+    return false;
+}
+
+// Заглушки для базовых методов, чтобы обеспечить компиляцию шаблона
+template <class T> void PrinterBase<T>::finalizeInitialization()
+{
+    T::finalizeInitialization();
+}
+template <class T> bool PrinterBase<T>::isConnected()
+{
+    return T::isConnected();
+}
+template <class T> bool PrinterBase<T>::isDeviceReady(bool aOnline)
+{
+    return T::isDeviceReady(aOnline);
+}
+template <class T> bool PrinterBase<T>::isPossible(bool aO, QVariant aC)
+{
+    return this->isPossible(aO, aC);
+}
+template <class T> void PrinterBase<T>::setDeviceConfiguration(const QVariantMap &aC)
+{
+    T::setDeviceConfiguration(aC);
+}
+template <class T> bool PrinterBase<T>::processNonReentrant(TBoolMethod aC)
+{
+    return this->processNonReentrant(aC);
+}

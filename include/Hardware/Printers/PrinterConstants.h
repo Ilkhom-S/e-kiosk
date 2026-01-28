@@ -11,7 +11,8 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CPrinters {
+namespace CPrinters
+{
     /// Число пробелов в табуляции.
     const int SpacesInTAB = 8;
 
@@ -31,8 +32,10 @@ namespace CPrinters {
     const QRgb White = QColor(Qt::transparent).rgb();
 
     /// Действие с не забранным чеком.
-    namespace ELeftReceiptAction {
-        enum Enum {
+    namespace ELeftReceiptAction
+    {
+        enum Enum
+        {
             Default, /// Ничего не делать, принтер сам разберется.
             Push,    /// Вытолкнуть.
             Retract  /// Забрать в ретрактор.
@@ -40,10 +43,12 @@ namespace CPrinters {
     } // namespace ELeftReceiptAction
 
     /// Автозамена символов.
-    class CAutoCorrection : public CSpecification<QChar, QChar> {
+    class CAutoCorrection : public CSpecification<QChar, QChar>
+    {
       public:
         /// Конструктор.
-        CAutoCorrection() {
+        CAutoCorrection()
+        {
             add("«", "\"");
             add("»", "\"");
             add("˝", "\"");
@@ -58,7 +63,8 @@ namespace CPrinters {
 
       private:
         /// Добавить.
-        void add(const char *aKey, const char *aValue) {
+        void add(const char *aKey, const char *aValue)
+        {
             mBuffer.insert(QString::fromUtf8(aKey)[0], QString::fromUtf8(aValue)[0]);
         }
     };
