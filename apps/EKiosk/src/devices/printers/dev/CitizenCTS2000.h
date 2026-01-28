@@ -5,7 +5,8 @@
 
 class BasePrinterDevices;
 
-namespace CMDCitizenCTS2000 {
+namespace CMDCitizenCTS2000
+{
     const char charTimeOut = 40;
     const int TimeOutAfterWriting = 100; /// Таймаут порта после запроса.
     const int MaxBufferSize = 1024;      /// Размер буфера.
@@ -70,17 +71,24 @@ namespace CMDCitizenCTS2000 {
     const int StatusAnswerLength = 3;
 
     // набор эвристик для идентификации
-    namespace Control {
+    namespace Control
+    {
         const char StatusMask = '\x12';
     }
 
     // Режимы работы
-    namespace Modes {
-        enum Enum { Standart = '\x53', Page = '\x4C' };
+    namespace Modes
+    {
+        enum Enum
+        {
+            Standart = '\x53',
+            Page = '\x4C'
+        };
     }
 }; // namespace CMDCitizenCTS2000
 
-class CitizenCTS2000_PRINTER : public BasePrinterDevices {
+class CitizenCTS2000_PRINTER : public BasePrinterDevices
+{
 
   public:
     CitizenCTS2000_PRINTER(QObject *parent = 0);
@@ -104,7 +112,7 @@ class CitizenCTS2000_PRINTER : public BasePrinterDevices {
     bool feed(int aCount);
     void dispense();
     bool printImage();
-    void getSpecialCharecters(QByteArray &printText);
+    void getSpecialCharacters(QByteArray &printText);
 
   private:
     QByteArray getState();

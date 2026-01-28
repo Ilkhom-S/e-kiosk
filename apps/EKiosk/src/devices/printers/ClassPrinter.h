@@ -23,7 +23,8 @@ class CitizenCTS2000_PRINTER;
 class CitizenCBM1000_PRINTER;
 class Phoenix_PRINTER;
 
-namespace PrinterModel {
+namespace PrinterModel
+{
     const QString Custom_VKP80 = "CustomVKP80";
     const QString Star_TUP900 = "StarTUP900";
     const QString AV_268 = "AV268";
@@ -36,7 +37,8 @@ namespace PrinterModel {
     const QString KM1X = "KM1X";
 } // namespace PrinterModel
 
-namespace PrinterCommand {
+namespace PrinterCommand
+{
     const QString cmdPrint = "print";
     const QString cmdGetStatus = "get_status";
     const QString cmdInit = "init";
@@ -44,7 +46,8 @@ namespace PrinterCommand {
     const QString cmdIsItYou = "is_it_you";
 } // namespace PrinterCommand
 
-class ClassPrinter : public QThread {
+class ClassPrinter : public QThread
+{
     Q_OBJECT
 
   public:
@@ -107,7 +110,7 @@ class ClassPrinter : public QThread {
     KM1X_PRINTER *KM1X;
 
     QString systemModel;
-    int chekWidth;
+    int checkWidth;
     QString firmName;
     QStringList comList;
     QString portName;

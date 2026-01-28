@@ -7,9 +7,12 @@ class BasePrinterDevices;
 
 /// Константы принтера, используются по дефолту в случае пустого конфига.
 
-namespace CMDCitizenPPU700 {
-    namespace Constants {
-        namespace Status {
+namespace CMDCitizenPPU700
+{
+    namespace Constants
+    {
+        namespace Status
+        {
             const char Printer = '\x01';
             const char Offline = '\x02';
             const char Errors = '\x03';
@@ -20,43 +23,50 @@ namespace CMDCitizenPPU700 {
     } // namespace Constants
 
     /// Позиции в пакетах
-    namespace Positions {
+    namespace Positions
+    {
         /// Байты в пакете команды
-        namespace Command {
+        namespace Command
+        {
             const int Prefix = 0;
             const int Command = 1;
             const int Data = 2;
         } // namespace Command
 
         /// Биты в пакете ответа
-        namespace Answer {
+        namespace Answer
+        {
             const int CoverOpen = 2;
             const int Offline = 3;
             const int PaperOut = 5;
             const int Error = 6;
 
-            namespace Errors {
+            namespace Errors
+            {
                 const int DetectionPresenter = 2;
                 const int Cutter = 3;
                 const int Unrecoverable = 5;
                 const int AutoRecovery = 6;
             } // namespace Errors
 
-            namespace Paper {
+            namespace Paper
+            {
                 const int NearEndSensor1 = 2;
                 const int NearEndSensor2 = 3;
                 const int End = 5;
                 const int InPresenter = 6;
             } // namespace Paper
 
-            namespace ErrorDetails1 {
+            namespace ErrorDetails1
+            {
                 const int CoverOpen = 2;
                 const int HeadOverheat = 3;
                 const int LowVoltage = 5;
                 const int HighVoltage = 6;
             } // namespace ErrorDetails1
 
-            namespace ErrorDetails2 {
+            namespace ErrorDetails2
+            {
                 const int Memory = 2;
                 const int CRC = 3;
                 const int Presentor = 5;
@@ -65,12 +75,14 @@ namespace CMDCitizenPPU700 {
         } // namespace Answer
     } // namespace Positions
 
-    namespace Commands {
+    namespace Commands
+    {
         const char Status = '\x04';
     }
 
     // статусы неисправностей
-    struct SFailures {
+    struct SFailures
+    {
         bool DetectionPresenter;
         bool Cutter;
         bool Unrecoverable;
@@ -91,23 +103,27 @@ namespace CMDCitizenPPU700 {
 
               CoverOpen(false), HeadOverheat(false), LowVoltage(false), HighVoltage(false),
 
-              Memory(false), CRC(false), Presentor(false), CPU(false) {
+              Memory(false), CRC(false), Presentor(false), CPU(false)
+        {
         }
     };
 
     // статус бумаги
-    struct SPaper {
+    struct SPaper
+    {
         bool NearEndSensor1;
         bool NearEndSensor2;
         bool InPresenter;
         bool End;
 
-        SPaper() : NearEndSensor1(false), NearEndSensor2(false), InPresenter(false), End(false) {
+        SPaper() : NearEndSensor1(false), NearEndSensor2(false), InPresenter(false), End(false)
+        {
         }
     };
 
     // структуры для парсинга статусов
-    struct SStatus {
+    struct SStatus
+    {
         bool NotAvailabled;
 
         // статус принтера
@@ -124,7 +140,8 @@ namespace CMDCitizenPPU700 {
         // неисправности
         SFailures Failures;
 
-        SStatus() : NotAvailabled(false), Offline(false), CoverOpen(false), PaperOut(false), Error(false) {
+        SStatus() : NotAvailabled(false), Offline(false), CoverOpen(false), PaperOut(false), Error(false)
+        {
         }
     };
 
@@ -222,22 +239,30 @@ namespace CMDCitizenPPU700 {
     const int StatusAnswerLength = 1;
 
     // набор эвристик для идентификации
-    namespace Control {
+    namespace Control
+    {
         const char StatusMask = '\x12';
     }
 
     // Режимы работы
-    namespace Modes {
-        enum Enum { Standart = 0x53, Page = 0x4C };
+    namespace Modes
+    {
+        enum Enum
+        {
+            Standart = 0x53,
+            Page = 0x4C
+        };
     }
 
-    namespace Response_d {
+    namespace Response_d
+    {
         const char StatusMask = '\x75';
         const QByteArray Resp_Mod_Name = "PPU-700";
     } // namespace Response_d
 } // namespace CMDCitizenPPU700
 
-class CitizenPPU700_PRINTER : public BasePrinterDevices {
+class CitizenPPU700_PRINTER : public BasePrinterDevices
+{
 
   public:
     CitizenPPU700_PRINTER(QObject *parent = 0);
@@ -263,7 +288,7 @@ class CitizenPPU700_PRINTER : public BasePrinterDevices {
     bool feed(int aCount);
     void dispense();
     bool printImage();
-    void getSpecialCharecters(QByteArray &printText);
+    void getSpecialCharacters(QByteArray &printText);
 
   private:
     bool getState(char aStatusType, CMDCitizenPPU700::SStatus &aStatus);

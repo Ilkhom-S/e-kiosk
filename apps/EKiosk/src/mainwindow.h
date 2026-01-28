@@ -58,7 +58,7 @@ struct PrinterParams {
     QString comment;
 
     bool smallChek = false;
-    int chekWidth = 80;
+    int checkWidth = 80;
     bool smallBeetwenString;
     int leftMargin = 2;
     int state = 0;

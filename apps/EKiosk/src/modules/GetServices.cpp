@@ -1,7 +1,8 @@
 // Project
 #include "GetServices.h"
 
-GetServices::GetServices(QObject *parent) : SendRequest(parent) {
+GetServices::GetServices(QObject *parent) : SendRequest(parent)
+{
     this->senderName = "GET_SERVICES";
     connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
     //    connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(errorResponse()));
@@ -16,37 +17,47 @@ GetServices::GetServices(QObject *parent) : SendRequest(parent) {
 //    emit emit_getServices(true);
 //}
 
-void GetServices::setDataNote(const QDomNode &domElement) {
+void GetServices::setDataNote(const QDomNode &domElement)
+{
     this->getReqStatus = true;
 
     bool fullParsing = true;
 
     banners.clear();
 
-    if (!getProviderCount()) {
+    if (!getProviderCount())
+    {
         fullParsing = true;
-    } else {
+    }
+    else
+    {
         // Парсим хеш
         this->parcerHash(domElement);
 
         // Сравниваем хешы
         QString db_hash = getHashConfig();
 
-        if (db_hash == infoMap["hash"]) {
+        if (db_hash == infoMap["hash"])
+        {
             // Берем данные Extra из БД
             fullParsing = false;
             getTerminalExtra(infoMap);
-        } else {
+        }
+        else
+        {
             // Парсим полностью
             fullParsing = true;
         }
     }
 
-    if (getReqStatus) {
+    if (getReqStatus)
+    {
         // Полный парсинг
-        if (fullParsing) {
+        if (fullParsing)
+        {
             // Данные удалились
-            if (deleteOldData()) {
+            if (deleteOldData())
+            {
                 toLogData = "";
 
                 providerList.clear();
@@ -55,14 +66,17 @@ void GetServices::setDataNote(const QDomNode &domElement) {
                 // Парсим данные
                 this->parcerNote(domElement);
 
-                if (!getReqStatus) {
+                if (!getReqStatus)
+                {
                     return;
                 }
 
                 // Делаем небольшую проверку
-                if (providerList.count() == count_providers) {
+                if (providerList.count() == count_providers)
+                {
                     // Записываем список провайдеров в БД
-                    if (!saveServicesDB()) {
+                    if (!saveServicesDB())
+                    {
                         //                        emit emit_errorDB();
                     }
 
@@ -82,7 +96,8 @@ void GetServices::setDataNote(const QDomNode &domElement) {
                                         infoMap["threshold"].toDouble());
 
         // Проверяем активен ли терминал
-        if (infoMap["active"].toString().trimmed() != "") {
+        if (infoMap["active"].toString().trimmed() != "")
+        {
             emit this->emit_responseIsActive(infoMap["active"].toInt() == 1);
         }
 
@@ -95,79 +110,96 @@ void GetServices::setDataNote(const QDomNode &domElement) {
         emit this->emit_getServices(true);
 
         emit this->emit_Loging(0, this->senderName, "Кофигурация получена успешна...\n" + toLogData);
-
-    } else {
+    }
+    else
+    {
         // Конфигурация не загруженна
         emit this->emit_getServices(false);
     }
 }
 
-void GetServices::parcerHash(const QDomNode &domElement) {
+void GetServices::parcerHash(const QDomNode &domElement)
+{
     QDomNode domNode = domElement.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
 
             QDomElement domElement = domNode.toElement();
             QString strTag = domElement.tagName();
 
             // проверяем респонс
-            if (strTag == "resultCode") {
+            if (strTag == "resultCode")
+            {
                 QString sts = domElement.text();
                 if (sts == "150" || sts == "151" || sts == "245" || sts == "11" || sts == "12" || sts == "133" ||
-                    sts == "14") {
+                    sts == "14")
+                {
                     emit this->lockUnlockAvtorization(true, sts.toInt());
                     getReqStatus = false;
                     return;
                 }
 
-                if (sts == "0") {
+                if (sts == "0")
+                {
                     emit this->lockUnlockAvtorization(false, 0);
                 }
             }
 
             // Данные о дилере
-            if (strTag == "balance") {
+            if (strTag == "balance")
+            {
                 infoMap["balance"] = domElement.text();
                 toLogData += QString("- Баланс агента              - %1\n").arg(infoMap["balance"].toString());
             }
 
-            if (strTag == "overdraft") {
+            if (strTag == "overdraft")
+            {
                 infoMap["overdraft"] = domElement.text();
                 toLogData += QString("- Овердрафт агента           - %1  \n").arg(infoMap["overdraft"].toString());
             }
 
-            if (strTag == "threshold") {
+            if (strTag == "threshold")
+            {
                 infoMap["threshold"] = domElement.text();
                 toLogData += QString("- Порог отключения           - %1  \n").arg(infoMap["threshold"].toString());
             }
 
-            if (strTag == "hash") {
+            if (strTag == "hash")
+            {
                 infoMap["hash"] = domElement.text();
                 toLogData += QString("- Идентификатор конфигурации - %1 \n").arg(infoMap["hash"].toString());
             }
 
-            if (strTag == "active") {
+            if (strTag == "active")
+            {
                 infoMap["active"] = domElement.text();
                 toLogData += QString("- Активность терминала       - %1  \n").arg(infoMap["active"].toString());
             }
 
-            if (strTag == "cur") {
+            if (strTag == "cur")
+            {
                 int id = domElement.attribute("id", "").toInt();
                 this->curMap[id] = domElement.text();
             }
 
-            if (strTag == "server_time") {
+            if (strTag == "server_time")
+            {
                 infoMap["server_time"] = domElement.text();
             }
 
-            if (strTag == "coin_acceptor") {
-                if (domElement.parentNode().toElement().tagName() == "devices") {
+            if (strTag == "coin_acceptor")
+            {
+                if (domElement.parentNode().toElement().tagName() == "devices")
+                {
                     infoMap["coin_acceptor"] = domElement.text();
                 }
             }
 
-            if (strTag == "banner") {
+            if (strTag == "banner")
+            {
                 QVariantMap banner;
                 banner["id"] = domElement.attribute("id").toInt();
                 banner["delay"] = domElement.attribute("delay").toInt();
@@ -182,23 +214,28 @@ void GetServices::parcerHash(const QDomNode &domElement) {
     }
 }
 
-void GetServices::parcerNote(const QDomNode &domElement) {
+void GetServices::parcerNote(const QDomNode &domElement)
+{
     QDomNode domNode = domElement.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
 
             QDomElement domElement = domNode.toElement();
             QString strTag = domElement.tagName();
 
-            // if(Debuger) qDebug() << strTag + " " + domElement.text();
+            // if(Debugger) qDebug() << strTag + " " + domElement.text();
 
             // проверям респонс
-            if (strTag == "resultCode") {
+            if (strTag == "resultCode")
+            {
                 QString sts = domElement.text();
 
                 if (sts == "150" || sts == "151" || sts == "245" || sts == "11" || sts == "12" || sts == "133" ||
-                    sts == "14") {
+                    sts == "14")
+                {
                     emit this->lockUnlockAvtorization(true, sts.toInt());
                     getReqStatus = false;
                     // Говорим что конфигурация не загруженна
@@ -206,86 +243,102 @@ void GetServices::parcerNote(const QDomNode &domElement) {
                     return;
                 }
 
-                if (sts == "0") {
+                if (sts == "0")
+                {
                     emit this->lockUnlockAvtorization(false, 0);
                 }
             }
 
             // Узнаем сколько провайдеров
-            if (strTag == "providers") {
+            if (strTag == "providers")
+            {
                 count_providers = domNode.childNodes().count();
             }
 
             // Данные о дилере
-            if (strTag == "balance") {
+            if (strTag == "balance")
+            {
                 infoMap["balance"] = domElement.text();
                 toLogData += QString("- Баланс агента              - %1\n").arg(infoMap["balance"].toString());
             }
 
-            if (strTag == "overdraft") {
+            if (strTag == "overdraft")
+            {
                 infoMap["overdraft"] = domElement.text();
                 toLogData += QString("- Овердрафт агента           - %1  \n").arg(infoMap["overdraft"].toString());
             }
 
-            if (strTag == "id_agent") {
+            if (strTag == "id_agent")
+            {
                 infoMap["id_agent"] = domElement.text();
                 toLogData += QString("- ID агента                  - %1  \n").arg(infoMap["id_agent"].toString());
             }
 
-            if (strTag == "name") {
+            if (strTag == "name")
+            {
                 infoMap["name_agent"] = domElement.text().replace("\'", "").replace("\"", "");
                 toLogData += QString("- Наименование агента        - %1  \n").arg(infoMap["name_agent"].toString());
             }
 
-            if (strTag == "inn") {
+            if (strTag == "inn")
+            {
                 infoMap["inn_agent"] = domElement.text();
                 toLogData += QString("- ИНН агента                 - %1  \n").arg(infoMap["inn_agent"].toString());
             }
 
-            if (strTag == "phone") {
+            if (strTag == "phone")
+            {
                 infoMap["phone_agent"] = domElement.text().replace("\'", "").replace("\"", "");
                 toLogData += QString("- Служба поддержки           - %1 \n").arg(infoMap["phone_agent"].toString());
             }
 
-            if (strTag == "threshold") {
+            if (strTag == "threshold")
+            {
                 infoMap["threshold"] = domElement.text();
                 toLogData += QString("- Порог отключения           - %1  \n").arg(infoMap["threshold"].toString());
             }
 
-            if (strTag == "hash") {
+            if (strTag == "hash")
+            {
                 infoMap["hash"] = domElement.text();
                 toLogData += QString("- Идентификатор конфигурации - %1 \n").arg(infoMap["hash"].toString());
             }
 
-            if (strTag == "hash_conf") {
+            if (strTag == "hash_conf")
+            {
                 infoMap["hashxml"] = domElement.text();
                 infoMap["path_name"] = domElement.attribute("p", "");
                 toLogData += QString("- Идентификатор интерфейса   - %1 \n").arg(infoMap["hashxml"].toString());
                 toLogData += QString("- Путь для закачки           - %1  \n").arg(infoMap["path_name"].toString());
             }
 
-            if (strTag == "currency_usd") {
+            if (strTag == "currency_usd")
+            {
                 infoMap["usd_curce"] = domElement.text();
                 toLogData += QString("- Курс доллара               - %1  \n").arg(infoMap["usd_curce"].toString());
             }
 
-            if (strTag == "active") {
+            if (strTag == "active")
+            {
                 infoMap["active"] = domElement.text();
                 toLogData += QString("- Активность терминала       - %1  \n").arg(infoMap["active"].toString());
             }
 
-            if (strTag == "address") {
+            if (strTag == "address")
+            {
                 infoMap["address"] = domElement.text().replace("\'", "").replace("\"", "");
                 toLogData += QString("- Адрес                      - %1  \n").arg(infoMap["address"].toString());
             }
 
-            if (strTag == "cur") {
+            if (strTag == "cur")
+            {
                 int id = domElement.attribute("id", "").toInt();
                 this->curMap[id] = domElement.text();
             }
 
             // Данные провайдера
-            if (strTag == "prv") {
+            if (strTag == "prv")
+            {
                 providerList[index_prv]["id"] = domElement.attribute("id", "");
                 providerList[index_prv]["nbl"] = domElement.attribute("nbl", "");
                 providerList[index_prv]["cid"] = domElement.attribute("cid", "");
@@ -313,7 +366,8 @@ void GetServices::parcerNote(const QDomNode &domElement) {
                 index_prv++;
             }
 
-            if (strTag == "categories") {
+            if (strTag == "categories")
+            {
                 QVariantMap category;
                 category["id"] = domElement.attribute("id").toInt();
                 category["name_local"] = domElement.attribute("name_loc").replace("'", "''");
@@ -326,12 +380,14 @@ void GetServices::parcerNote(const QDomNode &domElement) {
                 category["description_en"] = domElement.attribute("description_en");
                 category["queue"] = domElement.attribute("queue").toInt();
 
-                if (category.value("queue").toInt() >= 0) {
+                if (category.value("queue").toInt() >= 0)
+                {
                     saveCategoriesDB(category);
                 }
             }
 
-            if (strTag == "inputs") {
+            if (strTag == "inputs")
+            {
                 QVariantMap input;
                 input["id"] = domElement.attribute("id").toInt();
                 input["input_panel"] = domElement.attribute("ipan").toInt();
@@ -349,7 +405,8 @@ void GetServices::parcerNote(const QDomNode &domElement) {
                 saveInputsDB(input);
             }
 
-            if (strTag == "si") {
+            if (strTag == "si")
+            {
                 QVariantMap si;
                 si["input_id"] = domElement.attribute("input_id");
                 si["service_id"] = domElement.attribute("service_id");
@@ -362,11 +419,13 @@ void GetServices::parcerNote(const QDomNode &domElement) {
             }
 
             // Данные о комиссии
-            if (strTag == "commission") {
+            if (strTag == "commission")
+            {
                 auto serviceId = domElement.parentNode().toElement().attribute("id", "");
                 auto cid = domElement.parentNode().toElement().attribute("cid", "");
 
-                if (serviceId != "") {
+                if (serviceId != "")
+                {
                     auto index = domElement.attribute("index", "").toInt();
                     auto sumFrom = domElement.attribute("start", "").toDouble();
                     auto sumTo = domElement.attribute("end", "").toDouble();
@@ -377,17 +436,21 @@ void GetServices::parcerNote(const QDomNode &domElement) {
                 }
             }
 
-            if (strTag == "server_time") {
+            if (strTag == "server_time")
+            {
                 infoMap["server_time"] = domElement.text();
             }
 
-            if (strTag == "coin_acceptor") {
-                if (domElement.parentNode().toElement().tagName() == "devices") {
+            if (strTag == "coin_acceptor")
+            {
+                if (domElement.parentNode().toElement().tagName() == "devices")
+                {
                     infoMap["coin_acceptor"] = domElement.text();
                 }
             }
 
-            if (strTag == "banner") {
+            if (strTag == "banner")
+            {
                 QVariantMap banner;
                 banner["id"] = domElement.attribute("id").toInt();
                 banner["delay"] = domElement.attribute("delay").toInt();
@@ -402,10 +465,12 @@ void GetServices::parcerNote(const QDomNode &domElement) {
     }
 }
 
-bool GetServices::saveServicesDB() {
+bool GetServices::saveServicesDB()
+{
     int prvCount = providerList.count();
 
-    if (prvCount == 0) {
+    if (prvCount == 0)
+    {
         return true;
     }
 
@@ -424,7 +489,8 @@ bool GetServices::saveServicesDB() {
 
     bool result = true;
 
-    for (int i = 0; i < providerList.count(); i++) {
+    for (int i = 0; i < providerList.count(); i++)
+    {
         int id = providerList[i]["id"].toInt();
         int nbl = providerList[i]["nbl"] == "true" ? 1 : 0;
         int cid = providerList[i]["cid"].toInt();
@@ -471,14 +537,18 @@ bool GetServices::saveServicesDB() {
         sqlQuery.bindValue(":rgns", rgns);
         sqlQuery.bindValue(":faque", faque);
 
-        if (!sqlQuery.exec()) {
+        if (!sqlQuery.exec())
+        {
             result = false;
         }
     }
 
-    if (result) {
+    if (result)
+    {
         db.commit();
-    } else {
+    }
+    else
+    {
         db.rollback();
     }
 
@@ -486,7 +556,8 @@ bool GetServices::saveServicesDB() {
 }
 
 bool GetServices::saveCommissionDB(const int id, const double sumFrom, const double sumTo, const int type,
-                                   const double value, const int serviceId, const int index) {
+                                   const double value, const int serviceId, const int index)
+{
     // Создаем объект QSqlQuery
     QSqlQuery insertDataQuery(this->db);
 
@@ -502,8 +573,9 @@ bool GetServices::saveCommissionDB(const int id, const double sumFrom, const dou
                         .arg(index);
 
     // Записываем данные в Базу
-    if (!insertDataQuery.exec(query)) {
-        // if(Debuger)
+    if (!insertDataQuery.exec(query))
+    {
+        // if(Debugger)
         qDebug() << insertDataQuery.lastError();
         return false;
     }
@@ -511,7 +583,8 @@ bool GetServices::saveCommissionDB(const int id, const double sumFrom, const dou
     return true;
 }
 
-bool GetServices::saveCategoriesDB(const QVariantMap category) {
+bool GetServices::saveCategoriesDB(const QVariantMap category)
+{
     // Создаем объект QSqlQuery
     QSqlQuery insertDataQuery(this->db);
 
@@ -531,8 +604,9 @@ bool GetServices::saveCategoriesDB(const QVariantMap category) {
                         .arg(category.value("queue").toInt());
 
     // Записываем данные в Базу
-    if (!insertDataQuery.exec(query)) {
-        // if(Debuger)
+    if (!insertDataQuery.exec(query))
+    {
+        // if(Debugger)
         qDebug() << insertDataQuery.lastError();
         return false;
     }
@@ -540,7 +614,8 @@ bool GetServices::saveCategoriesDB(const QVariantMap category) {
     return true;
 }
 
-bool GetServices::saveInputsDB(const QVariantMap input) {
+bool GetServices::saveInputsDB(const QVariantMap input)
+{
     // Создаем объект QSqlQuery
     QSqlQuery insertDataQuery(this->db);
 
@@ -562,8 +637,9 @@ bool GetServices::saveInputsDB(const QVariantMap input) {
                         .arg(input.value("placeholder_en").toString());
 
     // Записываем данные в Базу
-    if (!insertDataQuery.exec(query)) {
-        // if(Debuger)
+    if (!insertDataQuery.exec(query))
+    {
+        // if(Debugger)
         qDebug() << insertDataQuery.lastError();
         return false;
     }
@@ -571,8 +647,10 @@ bool GetServices::saveInputsDB(const QVariantMap input) {
     return true;
 }
 
-bool GetServices::saveServicesInputsDB() {
-    if (servicesInputs.count() == 0) {
+bool GetServices::saveServicesInputsDB()
+{
+    if (servicesInputs.count() == 0)
+    {
         return true;
     }
 
@@ -586,7 +664,8 @@ bool GetServices::saveServicesInputsDB() {
 
     bool result = true;
 
-    for (auto &i : servicesInputs) {
+    for (auto &i : servicesInputs)
+    {
         auto input = i.toMap();
 
         sqlQuery.bindValue(":input_id", input.value("input_id").toInt());
@@ -596,21 +675,26 @@ bool GetServices::saveServicesInputsDB() {
         sqlQuery.bindValue(":prefix", input.value("prefix").toString());
         sqlQuery.bindValue(":que", input.value("que").toInt());
 
-        if (!sqlQuery.exec()) {
+        if (!sqlQuery.exec())
+        {
             result = false;
         }
     }
 
-    if (result) {
+    if (result)
+    {
         db.commit();
-    } else {
+    }
+    else
+    {
         db.rollback();
     }
 
     return result;
 }
 
-bool GetServices::insertTerminalExtra(QVariantMap map) {
+bool GetServices::insertTerminalExtra(QVariantMap map)
+{
     // Создаем объект QSqlQuery
     QSqlQuery insertDataQuery(this->db);
 
@@ -631,10 +715,11 @@ bool GetServices::insertTerminalExtra(QVariantMap map) {
                         .arg(map["path_name"].toString())
                         .arg(map["server_time"].toString());
 
-    //    if(Debuger) qDebug() << query;
+    //    if(Debugger) qDebug() << query;
 
     // Записываем данные в Базу
-    if (!insertDataQuery.exec(query)) {
+    if (!insertDataQuery.exec(query))
+    {
         if (debugger)
             qDebug() << insertDataQuery.lastError();
         return false;
@@ -643,17 +728,20 @@ bool GetServices::insertTerminalExtra(QVariantMap map) {
     return true;
 }
 
-bool GetServices::getTerminalExtra(QVariantMap &map) {
+bool GetServices::getTerminalExtra(QVariantMap &map)
+{
     QSqlQuery selectQuery(this->db);
     QString strSelect = QString("SELECT * FROM terminal_extra;");
 
-    if (!selectQuery.exec(strSelect)) {
+    if (!selectQuery.exec(strSelect))
+    {
         return false;
     }
 
     QSqlRecord record = selectQuery.record();
 
-    if (selectQuery.next()) {
+    if (selectQuery.next())
+    {
         map["id_agent"] = selectQuery.value(record.indexOf("id_agent")).toString();
         map["name_agent"] = selectQuery.value(record.indexOf("name")).toString();
         map["inn_agent"] = selectQuery.value(record.indexOf("inn")).toString();
@@ -667,12 +755,14 @@ bool GetServices::getTerminalExtra(QVariantMap &map) {
     return true;
 }
 
-QString GetServices::getHashConfig() {
+QString GetServices::getHashConfig()
+{
     QSqlQuery userSql(this->db);
 
     QString userQuery = "SELECT * FROM terminal_extra;";
 
-    if (!userSql.exec(userQuery)) {
+    if (!userSql.exec(userQuery))
+    {
         return "";
     }
 
@@ -680,28 +770,35 @@ QString GetServices::getHashConfig() {
 
     QString hash_config = "";
 
-    if (userSql.next()) {
+    if (userSql.next())
+    {
         hash_config = userSql.value(record.indexOf("hash")).toString();
     }
 
     return hash_config;
 }
 
-int GetServices::getProviderCount() {
+int GetServices::getProviderCount()
+{
     QSqlQuery querySql(this->db);
 
     QString sqlQuery = "SELECT count(*) AS count FROM terminal_services;";
 
-    if (!querySql.exec(sqlQuery)) {
+    if (!querySql.exec(sqlQuery))
+    {
         return 0;
     }
 
-    if (!querySql.isSelect()) {
+    if (!querySql.isSelect())
+    {
         return 0;
-    } else {
+    }
+    else
+    {
         QSqlRecord record = querySql.record();
 
-        if (querySql.next()) {
+        if (querySql.next())
+        {
             int id = querySql.value(record.indexOf("count")).toInt();
             return id;
         }
@@ -710,7 +807,8 @@ int GetServices::getProviderCount() {
     return 0;
 }
 
-void GetServices::sendGetServicesQuery() {
+void GetServices::sendGetServicesQuery()
+{
     QString header_xml = getHeaderRequest(Request::Type::GetServices);
     QString footer_xml = getFooterRequest();
 
@@ -723,17 +821,19 @@ void GetServices::sendGetServicesQuery() {
     infoMap.clear();
     toLogData = "";
 
-    //    if(Debuger) qDebug() << "\n================REQUEST=================\n";
-    //    if(Debuger) qDebug() << request;
+    //    if(Debugger) qDebug() << "\n================REQUEST=================\n";
+    //    if(Debugger) qDebug() << request;
 
     emit emit_Loging(0, senderName, "Отправлен запрос на получение конфигурации.");
 
-    if (!sendRequest(request, 60000)) {
+    if (!sendRequest(request, 60000))
+    {
         emit emit_ErrResponse();
     }
 }
 
-bool GetServices::deleteOldData() {
+bool GetServices::deleteOldData()
+{
     bool result = true;
 
     // Создаем объект QSqlQuery
@@ -742,7 +842,8 @@ bool GetServices::deleteOldData() {
     // Очищаем Таблицы
     QString sqlDeletePrv = "DELETE FROM terminal_services;";
 
-    if (!deleteData.exec(sqlDeletePrv)) {
+    if (!deleteData.exec(sqlDeletePrv))
+    {
         if (debugger)
             qDebug() << deleteData.lastError();
         result = false;
@@ -750,7 +851,8 @@ bool GetServices::deleteOldData() {
 
     sqlDeletePrv = "DELETE FROM terminal_categories;";
 
-    if (!deleteData.exec(sqlDeletePrv)) {
+    if (!deleteData.exec(sqlDeletePrv))
+    {
         if (debugger)
             qDebug() << deleteData.lastError();
         result = false;
@@ -758,7 +860,8 @@ bool GetServices::deleteOldData() {
 
     sqlDeletePrv = "DELETE FROM terminal_commission;";
 
-    if (!deleteData.exec(sqlDeletePrv)) {
+    if (!deleteData.exec(sqlDeletePrv))
+    {
         if (debugger)
             qDebug() << deleteData.lastError();
         result = false;
@@ -766,7 +869,8 @@ bool GetServices::deleteOldData() {
 
     sqlDeletePrv = "DELETE FROM terminal_extra;";
 
-    if (!deleteData.exec(sqlDeletePrv)) {
+    if (!deleteData.exec(sqlDeletePrv))
+    {
         if (debugger)
             qDebug() << deleteData.lastError();
         result = false;
@@ -774,7 +878,8 @@ bool GetServices::deleteOldData() {
 
     sqlDeletePrv = "DELETE FROM terminal_inputs;";
 
-    if (!deleteData.exec(sqlDeletePrv)) {
+    if (!deleteData.exec(sqlDeletePrv))
+    {
         if (debugger)
             qDebug() << deleteData.lastError();
         result = false;
@@ -782,7 +887,8 @@ bool GetServices::deleteOldData() {
 
     sqlDeletePrv = "DELETE FROM terminal_services_inputs;";
 
-    if (!deleteData.exec(sqlDeletePrv)) {
+    if (!deleteData.exec(sqlDeletePrv))
+    {
         if (debugger)
             qDebug() << deleteData.lastError();
         result = false;

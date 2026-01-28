@@ -1,18 +1,21 @@
 // Project
 #include "GetBalanceAgent.h"
 
-GetBalanceAgent::GetBalanceAgent(QObject *parent) : SendRequest(parent) {
+GetBalanceAgent::GetBalanceAgent(QObject *parent) : SendRequest(parent)
+{
     senderName = "AGENT_BALANCE";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
     connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 }
 
-void GetBalanceAgent::resendRequest() {
+void GetBalanceAgent::resendRequest()
+{
     emit emit_BalanceAgent("---", "---");
 }
 
-void GetBalanceAgent::setDataNote(const QDomNode &domElement) {
+void GetBalanceAgent::setDataNote(const QDomNode &domElement)
+{
     resultCode = false;
     getData = false;
     balance = "resultCode";
@@ -21,7 +24,8 @@ void GetBalanceAgent::setDataNote(const QDomNode &domElement) {
     // Парсим данные
     parcerNote(domElement);
 
-    if (balance != "resultCode" && overdraft != "resultCode") {
+    if (balance != "resultCode" && overdraft != "resultCode")
+    {
         // Тут отправляем сигнал с балансом
         emit emit_BalanceAgent(balance, overdraft);
         return;
@@ -30,24 +34,29 @@ void GetBalanceAgent::setDataNote(const QDomNode &domElement) {
     emit emit_BalanceAgent("---", "---");
 }
 
-void GetBalanceAgent::parcerNote(const QDomNode &domElement) {
+void GetBalanceAgent::parcerNote(const QDomNode &domElement)
+{
     // Необходимо отпарсить документ
     QDomNode domNode = domElement.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
 
             QDomElement domElement = domNode.toElement();
             QString strTag = domElement.tagName();
 
-            // if(Debuger) qDebug() << strTag + " " + domElement.text();
+            // if(Debugger) qDebug() << strTag + " " + domElement.text();
 
             // Данные о дилере
-            if (strTag == "balance") {
+            if (strTag == "balance")
+            {
                 balance = domElement.text();
             }
 
-            if (strTag == "overdraft") {
+            if (strTag == "overdraft")
+            {
                 overdraft = domElement.text();
             }
         }
@@ -56,7 +65,8 @@ void GetBalanceAgent::parcerNote(const QDomNode &domElement) {
     }
 }
 
-void GetBalanceAgent::sendDataRequest() {
+void GetBalanceAgent::sendDataRequest()
+{
     QString header_xml = getHeaderRequest(Request::Type::GetBalance);
     ;
 

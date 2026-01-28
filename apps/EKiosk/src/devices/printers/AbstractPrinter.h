@@ -11,12 +11,14 @@
 #include <QtSerialPort/QSerialPort>
 #include <Common/QtHeadersEnd.h>
 
-namespace CScodec {
+namespace CScodec
+{
     const QByteArray c_IBM866 = "IBM 866";
     const QByteArray WindowsCp1251 = "Windows-1251";
 } // namespace CScodec
 
-namespace PrinterState {
+namespace PrinterState
+{
     /// Вообще не статус
     const int NoStatus = 0xFFFFFFFF;
 
@@ -93,11 +95,18 @@ namespace PrinterState {
 
     //--------------------------------------------
     // тип запроса состояния принтера
-    namespace Type {
-        enum Enum { isFiscalOK, isPrinterOK, isStatusOK };
+    namespace Type
+    {
+        enum Enum
+        {
+            isFiscalOK,
+            isPrinterOK,
+            isStatusOK
+        };
     } // namespace Type
 
-    namespace Param {
+    namespace Param
+    {
         const QString PrinterOK = "0";
         const QString PaperEnd = "1";
         const QString PaperNearEnd = "2";
@@ -123,7 +132,8 @@ namespace PrinterState {
     } // namespace Param
 } // namespace PrinterState
 
-namespace ASCII {
+namespace ASCII
+{
     const char NUL = '\x00';
     const char ETX = '\x02';
     const char STX = '\x03';
@@ -143,7 +153,8 @@ namespace ASCII {
     const char Dot = '\x2E';
 } // namespace ASCII
 
-namespace CScharsetParam {
+namespace CScharsetParam
+{
     /// Тэги для разных шрифтов
     const QString FontTypeBold = "b";
     const QString FontTypeItalic = "i";
@@ -152,7 +163,7 @@ namespace CScharsetParam {
     const QString FontTypeDoubleHeight = "dh";
     /// Тэг для штрих-кода
     const QString BarCodeTag = "bc";
-    const QString ProbelCount = "p";
+    const QString SpaceCount = "p";
     const QString StarCount = "s";
     const QString MinusCount = "m";
     const QString CenterCount = "c";
@@ -162,7 +173,8 @@ namespace CScharsetParam {
     const QString CloseTagSymbol = "/";
 } // namespace CScharsetParam
 
-class BasePrinterDevices : public QThread {
+class BasePrinterDevices : public QThread
+{
 
   public:
     BasePrinterDevices(QObject *parent = 0);
@@ -174,13 +186,13 @@ class BasePrinterDevices : public QThread {
     bool is_open;
 
     QString comName;
-    QString compani_name;
+    QString company_name;
     int statusDevices;
-    bool smallChek;
-    int chekWidth;
+    bool smallCheck;
+    int checkWidth;
     bool viewLogoImg;
     int leftMargin;
-    bool SmallBeetwenString;
+    bool SmallBetweenString;
     bool counterIndicate;
 
     // Методы которые не надо перегружать
@@ -194,18 +206,19 @@ class BasePrinterDevices : public QThread {
     // Печатаем в 16-ом коде
     void printDataToHex(const QByteArray &data);
     // задержка между некоторыми командами
-    static void msleep(int ms) {
+    static void msleep(int ms)
+    {
         QThread::msleep(ms);
     }
     bool sendCommand(QByteArray dataRequest, bool getResponse, int timeResponse, bool &respOk, QByteArray &dataResponse,
                      int timeSleep);
     QByteArray encodingString(const QString &text, const QByteArray charCode);
-    void setFirmPatern(const QString firm_name);
-    void setChekWidth(int width);
-    void setChekSmall(bool smallChek);
+    void setFirmPattern(const QString firm_name);
+    void setCheckWidth(int width);
+    void setCheckSmall(bool smallCheck);
     void setLeftMargin(int left_margin);
     QByteArray packetImage(const QString &aPixelString, uchar aWidth);
-    void setSmallBeetwenString(bool beetwen);
+    void setSmallBetweenString(bool between);
 
     QByteArray asciiNull();
 };

@@ -3,7 +3,8 @@
 // System
 #include "../AbstractPrinter.h"
 
-namespace CMDTG2480 {
+namespace CMDTG2480
+{
     const int charTimeOut = 15;        /// Time out
     const int TimeOutAfterWriting = 0; /// Таймаут порта после запроса.
     const int MaxBufferSize = 1024;    /// Размер буфера.
@@ -38,7 +39,8 @@ namespace CMDTG2480 {
 
 class BasePrinterDevices;
 
-class TG2480_PRINTER : public BasePrinterDevices {
+class TG2480_PRINTER : public BasePrinterDevices
+{
     Q_OBJECT
 
   public:
@@ -54,6 +56,6 @@ class TG2480_PRINTER : public BasePrinterDevices {
     bool initialize();
     bool cut();
     bool printCheck(const QString &aCheck);
-    void getSpecialCharecters(QByteArray &printText);
+    void getSpecialCharacters(QByteArray &printText);
     bool feed(int aCount);
 };

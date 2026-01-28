@@ -1,25 +1,31 @@
 // Project
 #include "AbstractAcceptor.h"
 
-BaseAcceptorDevices::BaseAcceptorDevices(QObject *parent) : QThread(parent) {
-    Debuger = 0;
+BaseAcceptorDevices::BaseAcceptorDevices(QObject *parent) : QThread(parent)
+{
+    Debugger = 0;
     devicesCreated = false;
     this->createDevicePort();
 }
 
-bool BaseAcceptorDevices::createDevicePort() {
+bool BaseAcceptorDevices::createDevicePort()
+{
     serialPort = new QSerialPort(this);
 
-    if (serialPort) {
+    if (serialPort)
+    {
         devicesCreated = true;
-    } else {
+    }
+    else
+    {
         devicesCreated = false;
     }
 
     return devicesCreated;
 }
 
-bool BaseAcceptorDevices::isOpened() {
+bool BaseAcceptorDevices::isOpened()
+{
     if (serialPort->isOpen())
         is_open = true;
     else
@@ -28,17 +34,21 @@ bool BaseAcceptorDevices::isOpened() {
     return is_open;
 }
 
-void BaseAcceptorDevices::setPortName(const QString com_Name) {
+void BaseAcceptorDevices::setPortName(const QString com_Name)
+{
     comName = com_Name;
 }
 
-void BaseAcceptorDevices::setPartNumber(const QString partNumber) {
+void BaseAcceptorDevices::setPartNumber(const QString partNumber)
+{
 
     part_number = partNumber;
 }
 
-bool BaseAcceptorDevices::closePort() {
-    if (!isOpened()) {
+bool BaseAcceptorDevices::closePort()
+{
+    if (!isOpened())
+    {
         return true;
     }
 
@@ -50,10 +60,12 @@ bool BaseAcceptorDevices::closePort() {
 }
 
 bool BaseAcceptorDevices::sendCommand(QByteArray dataRequest, bool getResponse, int timeResponse,
-                                      QByteArray &dataResponse, int timeSleep) {
+                                      QByteArray &dataResponse, int timeSleep)
+{
     bool respOk = false;
 
-    if (isOpened()) {
+    if (isOpened())
+    {
         // Если девайс открыт
         respOk = false;
 
@@ -61,10 +73,12 @@ bool BaseAcceptorDevices::sendCommand(QByteArray dataRequest, bool getResponse, 
 
         msleep(timeSleep);
 
-        if (getResponse) {
+        if (getResponse)
+        {
             QByteArray data;
 
-            while (serialPort->waitForReadyRead(timeResponse)) {
+            while (serialPort->waitForReadyRead(timeResponse))
+            {
                 data += serialPort->readAll();
             }
 

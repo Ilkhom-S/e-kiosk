@@ -3,7 +3,8 @@
 // System
 #include "../AbstractPrinter.h"
 
-namespace CMDAV268 {
+namespace CMDAV268
+{
     const int charTimeOut = 15;        /// Time out
     const int TimeOutAfterWriting = 0; /// Таймаут порта после запроса.
     const int MaxBufferSize = 1024;    /// Размер буфера.
@@ -38,7 +39,8 @@ namespace CMDAV268 {
 
 class BasePrinterDevices;
 
-class AV268_PRINTER : public BasePrinterDevices {
+class AV268_PRINTER : public BasePrinterDevices
+{
     Q_OBJECT
 
   public:
@@ -55,5 +57,5 @@ class AV268_PRINTER : public BasePrinterDevices {
     bool initialize();
     bool cut();
     bool printCheck(const QString &aCheck);
-    void getSpecialCharecters(QByteArray &printText);
+    void getSpecialCharacters(QByteArray &printText);
 };

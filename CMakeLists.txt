@@ -1,5 +1,4 @@
-
-
+cmake_minimum_required(VERSION 3.16)
 
 # Include EKiosk version configuration logic
 include(scripts/build/cmake/EKVersionConfig.cmake)
@@ -7,8 +6,9 @@ include(scripts/build/cmake/EKVersionConfig.cmake)
 # Generate version files during configure step (so they always exist for IDEs and build)
 ek_configure_version()
 
-
-cmake_minimum_required(VERSION 3.16)
+if(APPLE)
+    add_link_options("-Wl,-no_warn_duplicate_libraries")
+endif()
 
 # Ensure SingleApplication include path is available globally on non-Windows platforms
 if(NOT WIN32)

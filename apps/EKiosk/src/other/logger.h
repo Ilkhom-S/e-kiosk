@@ -12,11 +12,18 @@
 #include <QtCore/QTimer>
 #include <Common/QtHeadersEnd.h>
 
-namespace LoggerLevel {
-    enum Enum { Info = 0, Warning = 1, Error = 2 };
+namespace LoggerLevel
+{
+    enum Enum
+    {
+        Info = 0,
+        Warning = 1,
+        Error = 2
+    };
 } // namespace LoggerLevel
 
-class Logger : public QThread {
+class Logger : public QThread
+{
     Q_OBJECT
 
   public:
@@ -24,7 +31,8 @@ class Logger : public QThread {
     QStringList lstLoging;
     QString fileName;
 
-    Logger() {
+    Logger()
+    {
         timer = new QTimer();
         timer->setInterval(1000);
         connect(timer, SIGNAL(timeout()), this, SLOT(start()));
@@ -32,7 +40,8 @@ class Logger : public QThread {
         QFile info;
         QString fileInit = "log";
 
-        if (!info.exists(fileInit)) {
+        if (!info.exists(fileInit))
+        {
             // Тут надо создать папку
             QDir dir;
             dir.mkpath(fileInit);
@@ -41,10 +50,12 @@ class Logger : public QThread {
         timer->start();
     }
 
-    void setLogingText(int state, QString title, QString text) {
+    void setLogingText(int state, QString title, QString text)
+    {
         QString stateInfo = "";
 
-        switch (state) {
+        switch (state)
+        {
             case LoggerLevel::Info:
                 stateInfo = "INFO:    ";
                 break;
@@ -64,15 +75,18 @@ class Logger : public QThread {
         lstLoging << time + " - " + stateInfo + title + " " + text;
     }
 
-    virtual void run() {
+    virtual void run()
+    {
         writeData();
         return;
     }
 
   private slots:
-    void writeData() {
-        if (lstLoging.count() > 0) {
-            bool Debuger = false;
+    void writeData()
+    {
+        if (lstLoging.count() > 0)
+        {
+            bool Debugger = false;
 
             QString str_date = QDate::currentDate().toString("dd.MM.yyyy");
 
@@ -82,15 +96,20 @@ class Logger : public QThread {
             QFile fileLogLocal(fileNameLocal);
 
             // Локальные данные
-            if (fileLogLocal.exists()) {
-                if (!fileLogLocal.open(QIODevice::Append | QIODevice::Text)) {
-                    if (Debuger)
+            if (fileLogLocal.exists())
+            {
+                if (!fileLogLocal.open(QIODevice::Append | QIODevice::Text))
+                {
+                    if (Debugger)
                         qDebug() << "error open file log QIODevice::Append";
                     return;
                 }
-            } else {
-                if (!fileLogLocal.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                    if (Debuger)
+            }
+            else
+            {
+                if (!fileLogLocal.open(QIODevice::WriteOnly | QIODevice::Text))
+                {
+                    if (Debugger)
                         qDebug() << "error open file log QIODevice::WriteOnly";
                     return;
                 }

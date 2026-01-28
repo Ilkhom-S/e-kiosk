@@ -13,8 +13,10 @@
 #include "keypud.h"
 #include "selectcategorylogview.h"
 
-namespace AdminLisTitle {
-    enum ListTitle {
+namespace AdminLisTitle
+{
+    enum ListTitle
+    {
         lSettingsMain = 0,
         lSettingsDevice = 1,
         lSettingsConnection = 2,
@@ -24,8 +26,10 @@ namespace AdminLisTitle {
     };
 } // namespace AdminLisTitle
 
-namespace AdminCommand {
-    enum AdminCmd {
+namespace AdminCommand
+{
+    enum AdminCmd
+    {
         // Проверить баланс
         aCmdGetBalance = 0,
         // Количество новых платежей
@@ -127,11 +131,13 @@ namespace AdminCommand {
     };
 } // namespace AdminCommand
 
-namespace Ui {
+namespace Ui
+{
     class AdminDialog;
 }
 
-class AdminDialog : public QDialog {
+class AdminDialog : public QDialog
+{
     Q_OBJECT
 
   public:
@@ -176,7 +182,7 @@ class AdminDialog : public QDialog {
 
     AdminButton *adminButtons;
 
-    int Debuger;
+    int Debugger;
     QStringList lstAdminListTitle;
     //    QStringList logLst;
     QTimer *closeTimer;

@@ -5,10 +5,13 @@
 
 class BasePrinterDevices;
 
-namespace CMDCustomVKP80 {
+namespace CMDCustomVKP80
+{
 
-    namespace Constants {
-        namespace Status {
+    namespace Constants
+    {
+        namespace Status
+        {
             const char Printer = 1;
             const char Offline = 2;
             const char Errors = 3;
@@ -16,25 +19,29 @@ namespace CMDCustomVKP80 {
             const char Printing = 17;
         } // namespace Status
 
-        namespace ControlInfo {
+        namespace ControlInfo
+        {
             const char ModelID = 49;
             const char Features = 50;
             const char ROM = 51;
         } // namespace ControlInfo
 
         /// Идентификаторы моделей принтеров
-        namespace ModelIDs {
+        namespace ModelIDs
+        {
             const char PrinterID200Dpi = '\x5D'; /// VKP80 200 dpi.
             const char PrinterID300Dpi = '\x5E'; /// VKP80 300 dpi.
         } // namespace ModelIDs
     } // namespace Constants
 
-    namespace AnswersLength {
+    namespace AnswersLength
+    {
         // на запрос статуса возвращается 1 байт
         const int Status = 1;
 
         // на запрос статуса возвращается 1 байт
-        namespace ControlInfo {
+        namespace ControlInfo
+        {
             const int ModelID = 1;
             const int Features = 1;
             const int ROM = 4;
@@ -42,78 +49,93 @@ namespace CMDCustomVKP80 {
     } // namespace AnswersLength
 
     /// Позиции в пакетах
-    namespace Positions {
+    namespace Positions
+    {
         /// Байты в пакете команды
-        namespace Command {
+        namespace Command
+        {
             const int Prefix = 0;
             const int Command = 1;
             const int Data = 2;
         } // namespace Command
 
         /// Биты в пакете ответа
-        namespace Answer {
+        namespace Answer
+        {
             const int CoverOpen = 2;
             const int Offline = 3;
             const int PaperOut = 5;
             const int Error = 6;
 
-            namespace Failures {
+            namespace Failures
+            {
                 const int Cutter = 3;
                 const int Unrecoverable = 5;
                 const int AutoRecovery = 6;
             } // namespace Failures
 
-            namespace Paper {
+            namespace Paper
+            {
                 const int NearEnd = 2;
                 const int End = 5;
             } // namespace Paper
 
-            namespace Printing {
+            namespace Printing
+            {
                 const int MotorOff = 2;
                 const int PaperOff = 5;
             } // namespace Printing
 
-            namespace GetFeaturesInfo {
+            namespace GetFeaturesInfo
+            {
                 const int UnicodeSupported = 0;
                 const int AutoCutterSupplied = 1;
             } // namespace GetFeaturesInfo
         } // namespace Answer
     } // namespace Positions
 
-    namespace Commands {
+    namespace Commands
+    {
         const char Status = '\x04';
         const char GetControlInfo = '\x49';
     } // namespace Commands
 
     //  статусы неисправностей
-    struct SFailures {
+    struct SFailures
+    {
         bool Cutter;
         bool Unrecoverable;
         bool AutoRecovery;
 
-        SFailures() : Cutter(false), Unrecoverable(false), AutoRecovery(false) {
+        SFailures() : Cutter(false), Unrecoverable(false), AutoRecovery(false)
+        {
         }
     };
 
-    struct SPrinting {
+    struct SPrinting
+    {
         bool MotorOff;
         bool PaperOff;
 
-        SPrinting() : MotorOff(false), PaperOff(false) {
+        SPrinting() : MotorOff(false), PaperOff(false)
+        {
         }
     };
 
     // статус бумаги
-    struct SPaper {
+    struct SPaper
+    {
         bool NearEnd;
         bool End;
 
-        SPaper() : NearEnd(false), End(false) {
+        SPaper() : NearEnd(false), End(false)
+        {
         }
     };
 
     // структура для парсинга статусов
-    struct SStatus {
+    struct SStatus
+    {
         bool NotAvailabled;
 
         // статус принтера
@@ -133,12 +155,14 @@ namespace CMDCustomVKP80 {
         bool PaperOut;
         bool Error;
 
-        SStatus() : NotAvailabled(false), Offline(false), CoverOpen(false), PaperOut(false), Error(false) {
+        SStatus() : NotAvailabled(false), Offline(false), CoverOpen(false), PaperOut(false), Error(false)
+        {
         }
     };
 
     // структура для парсинга информации
-    struct SControlInfo {
+    struct SControlInfo
+    {
         bool noAnswer;
         bool wrongAnswer;
         int Resolution;
@@ -148,7 +172,8 @@ namespace CMDCustomVKP80 {
 
         SControlInfo()
             : noAnswer(false), wrongAnswer(false), Resolution(0), isUnicodeSupported(false),
-              isAutoCutterSupplied(false), ROMVersion("") {
+              isAutoCutterSupplied(false), ROMVersion("")
+        {
         }
     };
 
@@ -227,13 +252,15 @@ namespace CMDCustomVKP80 {
 
     const QString DeviceName = "CustomVKP80";
 
-    namespace Control {
+    namespace Control
+    {
         const char StatusMask1 = '\x12';
         const char StatusMask0 = '\x7E';
     } // namespace Control
 } // namespace CMDCustomVKP80
 
-class CustomVKP80_PRINTER : public BasePrinterDevices {
+class CustomVKP80_PRINTER : public BasePrinterDevices
+{
 
   public:
     CustomVKP80_PRINTER(QObject *parent = 0);
@@ -260,7 +287,7 @@ class CustomVKP80_PRINTER : public BasePrinterDevices {
     bool feed(int aCount);
     void dispense();
     bool printImage();
-    void getSpecialCharecters(QByteArray &printText);
+    void getSpecialCharacters(QByteArray &printText);
 
   private:
     bool getState(char aStatusType, CMDCustomVKP80::SStatus &aStatus);

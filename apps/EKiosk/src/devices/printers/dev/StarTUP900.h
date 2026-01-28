@@ -87,7 +87,7 @@ class StarTUP900_PRINTER : public BasePrinterDevices {
     bool feed(int aCount);
     void dispense();
     bool printImage();
-    void getSpecialCharecters(QByteArray &printText);
+    void getSpecialCharacters(QByteArray &printText);
 
   private:
     QByteArray getState();

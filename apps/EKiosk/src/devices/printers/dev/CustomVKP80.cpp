@@ -9,25 +9,30 @@
 // Project
 #include "CustomVKP80.h"
 
-CustomVKP80_PRINTER::CustomVKP80_PRINTER(QObject *parent) : BasePrinterDevices(parent) {
+CustomVKP80_PRINTER::CustomVKP80_PRINTER(QObject *parent) : BasePrinterDevices(parent)
+{
     //    printer_name = "Custom-VKP80";
 }
 
-bool CustomVKP80_PRINTER::OpenPrinterPort() {
+bool CustomVKP80_PRINTER::OpenPrinterPort()
+{
     this->openPort();
 
     return is_open;
 }
 
-bool CustomVKP80_PRINTER::openPort() {
-    if (devicesCreated) {
+bool CustomVKP80_PRINTER::openPort()
+{
+    if (devicesCreated)
+    {
         // Если девайс для работы с портом обявлен
         is_open = false;
 
         // Даем девайсу название порта
         serialPort->setPortName(comName);
 
-        if (serialPort->open(QIODevice::ReadWrite)) {
+        if (serialPort->open(QIODevice::ReadWrite))
+        {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
@@ -43,54 +48,68 @@ bool CustomVKP80_PRINTER::openPort() {
                 return false;
 
             is_open = true;
-        } else {
+        }
+        else
+        {
             is_open = false;
         }
-    } else {
+    }
+    else
+    {
         is_open = false;
     }
 
     return is_open;
 }
 
-bool CustomVKP80_PRINTER::isEnabled(CMDCustomVKP80::SStatus &s_status, int &state) {
-    if (!this->getStatus(state, s_status)) {
+bool CustomVKP80_PRINTER::isEnabled(CMDCustomVKP80::SStatus &s_status, int &state)
+{
+    if (!this->getStatus(state, s_status))
+    {
         return false;
     }
 
     return (state != PrinterState::PrinterNotAvailable);
 }
 
-bool CustomVKP80_PRINTER::getStatus(int &aStatus, CMDCustomVKP80::SStatus &s_status) {
+bool CustomVKP80_PRINTER::getStatus(int &aStatus, CMDCustomVKP80::SStatus &s_status)
+{
     // смотрим оффлайн
-    if (!getState(CMDCustomVKP80::Constants::Status::Printer, s_status)) {
-        // if(Debuger) qDebug() << "Unable to get status, type Printer!";
+    if (!getState(CMDCustomVKP80::Constants::Status::Printer, s_status))
+    {
+        // if(Debugger) qDebug() << "Unable to get status, type Printer!";
         return false;
     }
 
     // если в оффлайне - смотрим причину
-    if (s_status.Offline) {
-        if (!getState(CMDCustomVKP80::Constants::Status::Offline, s_status)) {
-            // if(Debuger) qDebug() <<  "Unable to get status, type Offline!";
+    if (s_status.Offline)
+    {
+        if (!getState(CMDCustomVKP80::Constants::Status::Offline, s_status))
+        {
+            // if(Debugger) qDebug() <<  "Unable to get status, type Offline!";
             return false;
         }
     }
 
     // статус ошибки смотрим всегда
-    if (!getState(CMDCustomVKP80::Constants::Status::Errors, s_status)) {
-        // if(Debuger) qDebug() << "Unable to get status, type Errors!";
+    if (!getState(CMDCustomVKP80::Constants::Status::Errors, s_status))
+    {
+        // if(Debugger) qDebug() << "Unable to get status, type Errors!";
         return false;
     }
 
-    if (!getState(CMDCustomVKP80::Constants::Status::Printing, s_status)) {
-        // if(Debuger) qDebug() << "Unable to get status, type Printing!";
+    if (!getState(CMDCustomVKP80::Constants::Status::Printing, s_status))
+    {
+        // if(Debugger) qDebug() << "Unable to get status, type Printing!";
         return false;
     }
 
     // статус бумаги смотрим только если не в оффлайне из-за конца бумаги
-    if (!s_status.PaperOut) {
-        if (!getState(CMDCustomVKP80::Constants::Status::Paper, s_status)) {
-            // if(Debuger) qDebug() << "Unable to get status, type Paper!";
+    if (!s_status.PaperOut)
+    {
+        if (!getState(CMDCustomVKP80::Constants::Status::Paper, s_status))
+        {
+            // if(Debugger) qDebug() << "Unable to get status, type Paper!";
             return false;
         }
     }
@@ -99,15 +118,24 @@ bool CustomVKP80_PRINTER::getStatus(int &aStatus, CMDCustomVKP80::SStatus &s_sta
     aStatus = PrinterState::PrinterOK;
 
     // ошибки
-    if (s_status.NotAvailabled) {
+    if (s_status.NotAvailabled)
+    {
         aStatus |= PrinterState::PrinterNotAvailable;
-    } else if (s_status.CoverOpen) {
+    }
+    else if (s_status.CoverOpen)
+    {
         aStatus |= PrinterState::CoverIsOpened;
-    } else if (s_status.Failures.Cutter) {
+    }
+    else if (s_status.Failures.Cutter)
+    {
         aStatus |= PrinterState::CutterError;
-    } else if (s_status.PaperOut || s_status.Paper.End || s_status.Printing.PaperOff) {
+    }
+    else if (s_status.PaperOut || s_status.Paper.End || s_status.Printing.PaperOff)
+    {
         aStatus |= PrinterState::PaperEnd;
-    } else if (s_status.Failures.Unrecoverable || s_status.Error) {
+    }
+    else if (s_status.Failures.Unrecoverable || s_status.Error)
+    {
         aStatus |= PrinterState::PrinterError;
     }
 
@@ -138,10 +166,12 @@ bool CustomVKP80_PRINTER::getStatus(int &aStatus, CMDCustomVKP80::SStatus &s_sta
     return true;
 }
 
-bool CustomVKP80_PRINTER::getState(char aStatusType, CMDCustomVKP80::SStatus &aStatus) {
+bool CustomVKP80_PRINTER::getState(char aStatusType, CMDCustomVKP80::SStatus &aStatus)
+{
     qDebug() << "----------inter to get state---------";
 
-    if (aStatus.NotAvailabled) {
+    if (aStatus.NotAvailabled)
+    {
         qDebug() << "----------aStatus.NotAvailabled---------";
         return true;
     }
@@ -154,8 +184,10 @@ bool CustomVKP80_PRINTER::getState(char aStatusType, CMDCustomVKP80::SStatus &aS
 
     bool result = true;
 
-    if (this->sendCommand(commandPacket, true, 50, respData, answerPacket, 0)) {
-        if (answerPacket.size() != CMDCustomVKP80::AnswersLength::Status) {
+    if (this->sendCommand(commandPacket, true, 50, respData, answerPacket, 0))
+    {
+        if (answerPacket.size() != CMDCustomVKP80::AnswersLength::Status)
+        {
             qDebug() << "==========aStatus.NotAvailabled = true;======";
             aStatus.NotAvailabled = true;
             return true;
@@ -166,23 +198,28 @@ bool CustomVKP80_PRINTER::getState(char aStatusType, CMDCustomVKP80::SStatus &aS
 
         // если ответило другое устройство
         if (!(positiveMasking(answer, CMDCustomVKP80::Control::StatusMask1) &&
-              negativeMasking(answer, CMDCustomVKP80::Control::StatusMask0))) {
+              negativeMasking(answer, CMDCustomVKP80::Control::StatusMask0)))
+        {
             aStatus.NotAvailabled = true;
             return true;
         }
 
-        switch (aStatusType) {
-            case CMDCustomVKP80::Constants::Status::Printer: {
+        switch (aStatusType)
+        {
+            case CMDCustomVKP80::Constants::Status::Printer:
+            {
                 aStatus.Offline = getBit(answer, CMDCustomVKP80::Positions::Answer::Offline);
                 break;
             }
-            case CMDCustomVKP80::Constants::Status::Offline: {
+            case CMDCustomVKP80::Constants::Status::Offline:
+            {
                 aStatus.CoverOpen = getBit(answer, CMDCustomVKP80::Positions::Answer::CoverOpen);
                 aStatus.PaperOut = getBit(answer, CMDCustomVKP80::Positions::Answer::PaperOut);
                 aStatus.Error = getBit(answer, CMDCustomVKP80::Positions::Answer::Error);
                 break;
             }
-            case CMDCustomVKP80::Constants::Status::Errors: {
+            case CMDCustomVKP80::Constants::Status::Errors:
+            {
                 aStatus.Failures.Cutter = getBit(answer, CMDCustomVKP80::Positions::Answer::Failures::Cutter);
                 aStatus.Failures.Unrecoverable =
                     getBit(answer, CMDCustomVKP80::Positions::Answer::Failures::Unrecoverable);
@@ -190,48 +227,59 @@ bool CustomVKP80_PRINTER::getState(char aStatusType, CMDCustomVKP80::SStatus &aS
                     getBit(answer, CMDCustomVKP80::Positions::Answer::Failures::AutoRecovery);
                 break;
             }
-            case CMDCustomVKP80::Constants::Status::Paper: {
+            case CMDCustomVKP80::Constants::Status::Paper:
+            {
                 aStatus.Paper.End = getBit(answer, CMDCustomVKP80::Positions::Answer::Paper::End);
                 aStatus.Paper.NearEnd = getBit(answer, CMDCustomVKP80::Positions::Answer::Paper::NearEnd);
                 break;
             }
-            case CMDCustomVKP80::Constants::Status::Printing: {
+            case CMDCustomVKP80::Constants::Status::Printing:
+            {
                 aStatus.Printing.MotorOff = getBit(answer, CMDCustomVKP80::Positions::Answer::Printing::MotorOff);
                 aStatus.Printing.PaperOff = getBit(answer, CMDCustomVKP80::Positions::Answer::Printing::PaperOff);
                 break;
             }
-            default: {
+            default:
+            {
                 result = false;
             }
         }
-    } else {
+    }
+    else
+    {
         result = false;
     }
 
     return result;
 }
 
-bool CustomVKP80_PRINTER::isItYou() {
+bool CustomVKP80_PRINTER::isItYou()
+{
     CMDCustomVKP80::SControlInfo controlInfo;
 
-    if (!getControlInfo(CMDCustomVKP80::Constants::ControlInfo::ModelID, controlInfo)) {
-        // if(Debuger) qDebug() << "Unable to get control info, type Model ID!";
+    if (!getControlInfo(CMDCustomVKP80::Constants::ControlInfo::ModelID, controlInfo))
+    {
+        // if(Debugger) qDebug() << "Unable to get control info, type Model ID!";
     }
 
-    if (!getControlInfo(CMDCustomVKP80::Constants::ControlInfo::Features, controlInfo)) {
-        // if(Debuger) qDebug() << "Unable to get control info, type Features!";
+    if (!getControlInfo(CMDCustomVKP80::Constants::ControlInfo::Features, controlInfo))
+    {
+        // if(Debugger) qDebug() << "Unable to get control info, type Features!";
     }
 
-    if (!getControlInfo(CMDCustomVKP80::Constants::ControlInfo::ROM, controlInfo)) {
-        // if(Debuger) qDebug() << "Unable to get control info, type ROM version!";
+    if (!getControlInfo(CMDCustomVKP80::Constants::ControlInfo::ROM, controlInfo))
+    {
+        // if(Debugger) qDebug() << "Unable to get control info, type ROM version!";
     }
 
     bool result = false;
 
     // может не ответить, если находится в оффлайне
-    if (!controlInfo.wrongAnswer) {
-        if (!controlInfo.noAnswer) {
-            /*                         if(Debuger) qDebug() << QString("Control info:\
+    if (!controlInfo.wrongAnswer)
+    {
+        if (!controlInfo.noAnswer)
+        {
+            /*                         if(Debugger) qDebug() << QString("Control info:\
                                                             \nResolution = %1,\
                                                             \nFeatures: Unicode
                symbols is %2supported, Autocutter is %3supplied\
@@ -251,8 +299,10 @@ bool CustomVKP80_PRINTER::isItYou() {
     return result;
 }
 
-bool CustomVKP80_PRINTER::getControlInfo(char aInfoType, CMDCustomVKP80::SControlInfo &aControlInfo) {
-    if (aControlInfo.noAnswer || aControlInfo.wrongAnswer) {
+bool CustomVKP80_PRINTER::getControlInfo(char aInfoType, CMDCustomVKP80::SControlInfo &aControlInfo)
+{
+    if (aControlInfo.noAnswer || aControlInfo.wrongAnswer)
+    {
         return true;
     }
 
@@ -262,73 +312,98 @@ bool CustomVKP80_PRINTER::getControlInfo(char aInfoType, CMDCustomVKP80::SContro
     commandPacket.push_back(CMDCustomVKP80::Commands::GetControlInfo);
     commandPacket.push_back(aInfoType);
 
-    if (this->sendCommand(commandPacket, true, 200, resp, answerPacket, 0)) {
-        if (answerPacket.isEmpty()) {
+    if (this->sendCommand(commandPacket, true, 200, resp, answerPacket, 0))
+    {
+        if (answerPacket.isEmpty())
+        {
             aControlInfo.noAnswer = true;
             return true;
         }
 
-        switch (aInfoType) {
-            case CMDCustomVKP80::Constants::ControlInfo::ModelID: {
-                if (answerPacket.size() == CMDCustomVKP80::AnswersLength::ControlInfo::ModelID) {
-                    if (answerPacket[0] == CMDCustomVKP80::Constants::ModelIDs::PrinterID200Dpi) {
+        switch (aInfoType)
+        {
+            case CMDCustomVKP80::Constants::ControlInfo::ModelID:
+            {
+                if (answerPacket.size() == CMDCustomVKP80::AnswersLength::ControlInfo::ModelID)
+                {
+                    if (answerPacket[0] == CMDCustomVKP80::Constants::ModelIDs::PrinterID200Dpi)
+                    {
                         aControlInfo.Resolution = 200;
-                    } else if (answerPacket[0] == CMDCustomVKP80::Constants::ModelIDs::PrinterID300Dpi) {
+                    }
+                    else if (answerPacket[0] == CMDCustomVKP80::Constants::ModelIDs::PrinterID300Dpi)
+                    {
                         aControlInfo.Resolution = 300;
-                    } else {
+                    }
+                    else
+                    {
                         aControlInfo.wrongAnswer = true;
                     }
-                } else {
+                }
+                else
+                {
                     aControlInfo.wrongAnswer = true;
                 }
 
-                if (aControlInfo.wrongAnswer) {
+                if (aControlInfo.wrongAnswer)
+                {
 
-                    // if(Debuger) qDebug() << "getControlInfo, request modelID: wrong
+                    // if(Debugger) qDebug() << "getControlInfo, request modelID: wrong
                     // answer from printer";
                 }
 
                 break;
             }
 
-            case CMDCustomVKP80::Constants::ControlInfo::Features: {
-                if (answerPacket.size() == CMDCustomVKP80::AnswersLength::ControlInfo::Features) {
+            case CMDCustomVKP80::Constants::ControlInfo::Features:
+            {
+                if (answerPacket.size() == CMDCustomVKP80::AnswersLength::ControlInfo::Features)
+                {
                     aControlInfo.isUnicodeSupported =
                         getBit(answerPacket[0], CMDCustomVKP80::Positions::Answer::GetFeaturesInfo::UnicodeSupported);
                     aControlInfo.isAutoCutterSupplied =
                         getBit(answerPacket[0], CMDCustomVKP80::Positions::Answer::GetFeaturesInfo::AutoCutterSupplied);
-                } else {
-                    // if(Debuger) qDebug() << "getControlInfo, request Features: wrong
+                }
+                else
+                {
+                    // if(Debugger) qDebug() << "getControlInfo, request Features: wrong
                     // answer from printer";
                     aControlInfo.wrongAnswer = true;
                 }
                 break;
             }
 
-            case CMDCustomVKP80::Constants::ControlInfo::ROM: {
-                if (answerPacket.size() == CMDCustomVKP80::AnswersLength::ControlInfo::ROM) {
+            case CMDCustomVKP80::Constants::ControlInfo::ROM:
+            {
+                if (answerPacket.size() == CMDCustomVKP80::AnswersLength::ControlInfo::ROM)
+                {
                     aControlInfo.ROMVersion = answerPacket;
-                } else {
-                    // if(Debuger) qDebug() << "getControlInfo, request ROM version: wrong
+                }
+                else
+                {
+                    // if(Debugger) qDebug() << "getControlInfo, request ROM version: wrong
                     // answer from printer";
                     aControlInfo.wrongAnswer = true;
                 }
                 break;
             }
-            default: {
-                // if(Debuger) qDebug() << QString("getControlInfo, unknown request = 0x
+            default:
+            {
+                // if(Debugger) qDebug() << QString("getControlInfo, unknown request = 0x
                 // %1").arg(QString(QByteArray(1, aInfoType).toHex()));
                 aControlInfo.wrongAnswer = true;
             }
         }
-    } else {
+    }
+    else
+    {
         return false;
     }
 
     return true;
 }
 
-void CustomVKP80_PRINTER::getSpecialCharecters(QByteArray &printText) {
+void CustomVKP80_PRINTER::getSpecialCharacters(QByteArray &printText)
+{
 
     QByteArray fontTypeBold_start;
     fontTypeBold_start.push_back(CMDCustomVKP80::PrinterCommandFirstByte);
@@ -431,18 +506,19 @@ void CustomVKP80_PRINTER::getSpecialCharecters(QByteArray &printText) {
                           .toUtf8(),
                       fontTypeUnderLine_end);
 
-    // Если надо добавить проабел
-    QByteArray probel;
-    for (int i = 1; i <= leftMargin; i++) {
-        probel.append(ASCII::Space);
+    // Если надо добавить пробел
+    QByteArray space;
+    for (int i = 1; i <= leftMargin; i++)
+    {
+        space.append(ASCII::Space);
     }
     printText.replace(
-        QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::ProbelCount + CScharsetParam::CloseTagDelimiter)
+        QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::SpaceCount + CScharsetParam::CloseTagDelimiter)
             .toUtf8(),
-        probel);
+        space);
 
     // Добавляем звезды
-    int col_z = (chekWidth - 11 - leftMargin) / 2;
+    int col_z = (checkWidth - 11 - leftMargin) / 2;
     QByteArray star;
     for (int j = 1; j <= col_z; j++)
         star.append("*");
@@ -453,13 +529,14 @@ void CustomVKP80_PRINTER::getSpecialCharecters(QByteArray &printText) {
         star);
 }
 
-bool CustomVKP80_PRINTER::printCheck(const QString &aCheck) {
+bool CustomVKP80_PRINTER::printCheck(const QString &aCheck)
+{
     // Меняем кодировку
     QByteArray printText;
     printText = this->encodingString(aCheck, CScodec::c_IBM866);
 
     // Вставляем если есть Подчеркнутый, Жирный, Курсивный... Шрифт
-    this->getSpecialCharecters(printText);
+    this->getSpecialCharacters(printText);
 
     //    QByteArray cmd;
     QByteArray answer;
@@ -478,14 +555,16 @@ bool CustomVKP80_PRINTER::printCheck(const QString &aCheck) {
     //    cmd.push_back(CMDCustomVKP80::PrinterCommandPaperSizeThirdByteSmall);
     //    cmd.push_back(0x0A);
 
-    if (!this->sendCommand(printText, true, 200, respData, answer, 50)) {
+    if (!this->sendCommand(printText, true, 200, respData, answer, 50))
+    {
         return false;
     }
 
     return true;
 }
 
-QByteArray CustomVKP80_PRINTER::getImage(QString fileName) {
+QByteArray CustomVKP80_PRINTER::getImage(QString fileName)
+{
     QImage image(fileName);
 
     QByteArray ba;
@@ -499,7 +578,8 @@ QByteArray CustomVKP80_PRINTER::getImage(QString fileName) {
     return ba;
 }
 
-void CustomVKP80_PRINTER::print(const QString &aCheck) {
+void CustomVKP80_PRINTER::print(const QString &aCheck)
+{
     //    cmd.push_back(ASCII::NUL);
     //    cmd.push_back(0x0D);
     //    cmd.push_back(0x01);
@@ -554,7 +634,8 @@ void CustomVKP80_PRINTER::print(const QString &aCheck) {
     this->dispense();
 }
 
-void CustomVKP80_PRINTER::dispense() {
+void CustomVKP80_PRINTER::dispense()
+{
     QByteArray cmd;
     QByteArray answer;
     bool respData = false;
@@ -565,12 +646,14 @@ void CustomVKP80_PRINTER::dispense() {
     cmd.push_back(CMDCustomVKP80::PrinterCommandDispenseThirdByte);
     cmd.push_back(CMDCustomVKP80::PrinterCommandDispenseForthByte);
 
-    if (!this->sendCommand(cmd, false, 0, respData, answer, 50)) {
+    if (!this->sendCommand(cmd, false, 0, respData, answer, 50))
+    {
         return;
     }
 }
 
-bool CustomVKP80_PRINTER::initialize() {
+bool CustomVKP80_PRINTER::initialize()
+{
     QByteArray cmd;
     QByteArray answer;
     bool respData = false;
@@ -579,21 +662,24 @@ bool CustomVKP80_PRINTER::initialize() {
     cmd.push_back(CMDCustomVKP80::PrinterCommandFirstByte);
     cmd.push_back(CMDCustomVKP80::PrinterCommandInitSecondByte);
 
-    if (!this->sendCommand(cmd, false, 0, respData, answer, 0)) {
+    if (!this->sendCommand(cmd, false, 0, respData, answer, 0))
+    {
         return false;
     }
 
     // Установим размер чека
-    if (smallChek) {
+    if (smallCheck)
+    {
         // Укороченный чек
-        // if(Debuger) qDebug() << QString("small chek true");
+        // if(Debugger) qDebug() << QString("small check true");
 
         cmd.clear();
         cmd.push_back(CMDCustomVKP80::PrinterCommandFirstByte);
         cmd.push_back(CMDCustomVKP80::PrinterCommandPaperSizeSecondByte);
         cmd.push_back(CMDCustomVKP80::PrinterCommandPaperSizeThirdByteSmall);
 
-        if (!this->sendCommand(cmd, false, 0, respData, answer, 0)) {
+        if (!this->sendCommand(cmd, false, 0, respData, answer, 0))
+        {
             return false;
         }
     }
@@ -604,7 +690,8 @@ bool CustomVKP80_PRINTER::initialize() {
     cmd.push_back(CMDCustomVKP80::PrinterCommandSetCodePageSecondByte);
     cmd.push_back(CMDCustomVKP80::PrinterCommandSetCodePageThirdByte);
 
-    if (!this->sendCommand(cmd, false, 0, respData, answer, 0)) {
+    if (!this->sendCommand(cmd, false, 0, respData, answer, 0))
+    {
         return false;
     }
 
@@ -614,14 +701,16 @@ bool CustomVKP80_PRINTER::initialize() {
     cmd.push_back(CMDCustomVKP80::PrinterCommandCharacterSetSecondByte);
     cmd.push_back(CMDCustomVKP80::PrinterCommandCharacterSetThirdByte);
 
-    if (!this->sendCommand(cmd, false, 0, respData, answer, 0)) {
+    if (!this->sendCommand(cmd, false, 0, respData, answer, 0))
+    {
         return false;
     }
 
     return true;
 }
 
-void CustomVKP80_PRINTER::sendFiscalData() {
+void CustomVKP80_PRINTER::sendFiscalData()
+{
     QByteArray cmd;
     QByteArray answer;
     bool respData = true;
@@ -635,7 +724,8 @@ void CustomVKP80_PRINTER::sendFiscalData() {
     this->sendCommand(cmd, true, 50, respData, answer, 50);
 }
 
-bool CustomVKP80_PRINTER::cut() {
+bool CustomVKP80_PRINTER::cut()
+{
     QByteArray cmd;
     QByteArray answer;
     bool respData = false;
@@ -644,19 +734,22 @@ bool CustomVKP80_PRINTER::cut() {
     cmd.push_back(CMDCustomVKP80::PrinterCommandCutSecondByte);
     //    cmd.push_back(CMDCustomVKP80::PaperEnd);
 
-    if (!this->sendCommand(cmd, false, 0, respData, answer, 0)) {
+    if (!this->sendCommand(cmd, false, 0, respData, answer, 0))
+    {
         return false;
     }
 
     return true;
 }
 
-bool CustomVKP80_PRINTER::feed(int aCount) {
+bool CustomVKP80_PRINTER::feed(int aCount)
+{
     Q_UNUSED(aCount)
     return true;
 }
 
-bool CustomVKP80_PRINTER::printImage() {
+bool CustomVKP80_PRINTER::printImage()
+{
     QByteArray cmd;
     QByteArray answer;
     bool respData = false;
@@ -669,20 +762,24 @@ bool CustomVKP80_PRINTER::printImage() {
     cmd.push_back(ASCII::NUL);
     cmd.push_back(CMDCustomVKP80::PrinterCommandLogoPrintFothByte);
 
-    if (!this->sendCommand(cmd, false, 0, respData, answer, 50)) {
+    if (!this->sendCommand(cmd, false, 0, respData, answer, 50))
+    {
         return false;
     }
 
     return true;
 }
 
-bool CustomVKP80_PRINTER::printImageI(const QString &aPixelString, uchar aWidth, bool aNeedRegisterLogo) {
+bool CustomVKP80_PRINTER::printImageI(const QString &aPixelString, uchar aWidth, bool aNeedRegisterLogo)
+{
     QByteArray cmd;
     QByteArray resp_data;
     bool resp_ok = false;
 
-    if (aNeedRegisterLogo) {
-        if (!registerLogo(aPixelString, aWidth)) {
+    if (aNeedRegisterLogo)
+    {
+        if (!registerLogo(aPixelString, aWidth))
+        {
             return false;
         }
     }
@@ -698,10 +795,12 @@ bool CustomVKP80_PRINTER::printImageI(const QString &aPixelString, uchar aWidth,
     return this->sendCommand(cmd, true, 100, resp_ok, resp_data, 0);
 }
 
-bool CustomVKP80_PRINTER::registerLogo(const QString &aPixelString, uchar aWidth) {
+bool CustomVKP80_PRINTER::registerLogo(const QString &aPixelString, uchar aWidth)
+{
     Q_UNUSED(aPixelString)
 
-    if (!aWidth) {
+    if (!aWidth)
+    {
         return true;
     }
 
@@ -730,7 +829,7 @@ bool CustomVKP80_PRINTER::registerLogo(const QString &aPixelString, uchar aWidth
     cmd.push_back(8);
     cmd.push_back(8);
 
-    // if(Debuger) qDebug() << "aPixelString.size()" << aPixelString.size();
+    // if(Debugger) qDebug() << "aPixelString.size()" << aPixelString.size();
     //        this->printDataToHex(imageData);
     cmd.append(imageData);
     bool res = this->sendCommand(cmd, true, 3000, resp_data, response, 3000);

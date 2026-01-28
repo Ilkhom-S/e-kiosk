@@ -23,7 +23,7 @@ ConnectionPart::ConnectionPart(QObject *parent) : QObject(parent) {
     daemonTimer = new QTimer(this);
     connect(daemonTimer, SIGNAL(timeout()), SIGNAL(emit_checkConState()));
 
-    conState = Connection::conStateDoun;
+    conState = Connection::conStateDown;
 }
 
 void ConnectionPart::nowStateDialuping(int state) {

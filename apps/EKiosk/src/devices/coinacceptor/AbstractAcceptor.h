@@ -19,8 +19,10 @@
 // System
 #include "../ConstantData.h"
 
-namespace AcceptorCommands {
-    enum Enum {
+namespace AcceptorCommands
+{
+    enum Enum
+    {
         Reset = 1,
         GetNominalTable = 2,
         SetNominalTable = 3,
@@ -44,8 +46,10 @@ namespace AcceptorCommands {
 }; // namespace AcceptorCommands
 
 /// Коды ошибок абстрактного валидатора
-namespace AcceptorErrors {
-    enum Enum {
+namespace AcceptorErrors
+{
+    enum Enum
+    {
         /// Всё окей, ошибок нет
         OK = 0,
 
@@ -185,13 +189,20 @@ namespace AcceptorErrors {
     };
 } // namespace AcceptorErrors
 
-namespace CCtalkStatus {
-    namespace Success {
-        enum S { Ok = 0 };
+namespace CCtalkStatus
+{
+    namespace Success
+    {
+        enum S
+        {
+            Ok = 0
+        };
     } // namespace Success
 
-    namespace Errors {
-        enum E {
+    namespace Errors
+    {
+        enum E
+        {
             RejectCoin = 1,
             InhibitedCoin = 2,
             MultipleWindow = 3,
@@ -230,13 +241,14 @@ namespace CCtalkStatus {
     } // namespace Errors
 } // namespace CCtalkStatus
 
-class BaseAcceptorDevices : public QThread {
+class BaseAcceptorDevices : public QThread
+{
 
   public:
     BaseAcceptorDevices(QObject *parent = 0);
     QSerialPort *serialPort;
 
-    int Debuger;
+    int Debugger;
     bool devicesCreated;
     bool is_open;
     int statusDevices;
@@ -251,7 +263,8 @@ class BaseAcceptorDevices : public QThread {
 
     bool isOpened();
 
-    static void msleep(int ms) {
+    static void msleep(int ms)
+    {
         QThread::msleep(ms);
     }
 

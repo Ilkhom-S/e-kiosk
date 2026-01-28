@@ -25,6 +25,7 @@ static QMutex mUsageDataGuard;
 #include <Hardware/Common/USBDeviceModelData.h>
 #include <Hardware/IOPorts/LibUSBPort.h>
 #include <Hardware/IOPorts/LibUSBUtils.h>
+#include <Hardware/Common/DeviceBase.h>
 #include <Hardware/IOPorts/IOPortStatusCodes.h>
 
 // System
@@ -77,6 +78,16 @@ template <class T> class LibUSBDeviceBase : public T
 // РЕАЛИЗАЦИЯ (Методы шаблонов должны быть в заголовочном файле)
 //--------------------------------------------------------------------------------
 
+template <class T> typename LibUSBDeviceBase<T>::TUsageData LibUSBDeviceBase<T>::mUsageData;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+// Для Qt 6 используется кроссплатформенный QRecursiveMutex
+template <class T> QRecursiveMutex LibUSBDeviceBase<T>::mUsageDataGuard;
+#else
+// Для Qt 5 инициализируем мьютекс в рекурсивном режиме
+template <class T> QMutex LibUSBDeviceBase<T>::mUsageDataGuard(QMutex::Recursive);
+#endif
+
 template <class T> LibUSBDeviceBase<T>::LibUSBDeviceBase()
 {
     // this->mIOPort необходим в шаблонах для доступа к членам базового класса на Linux/Mac
@@ -100,7 +111,7 @@ template <class T> bool LibUSBDeviceBase<T>::release()
 template <class T> void LibUSBDeviceBase<T>::initialize()
 {
     // Используем оператор & и полное имя класса для корректного получения адреса метода в шаблоне
-    START_IN_WORKING_THREAD(&LibUSBDeviceBase<T>::initialize)
+    START_IN_WORKING_THREAD(&LibUSBDeviceBase<T>::initialize);
     initializeUSBPort();
     setFreeUsageData();
     T::initialize();

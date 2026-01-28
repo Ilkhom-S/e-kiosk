@@ -1,25 +1,30 @@
 // Project
 #include "StarTUP900.h"
 
-StarTUP900_PRINTER::StarTUP900_PRINTER(QObject *parent) : BasePrinterDevices(parent) {
+StarTUP900_PRINTER::StarTUP900_PRINTER(QObject *parent) : BasePrinterDevices(parent)
+{
     //    printer_name = "Custom-VKP80";
 }
 
-bool StarTUP900_PRINTER::OpenPrinterPort() {
+bool StarTUP900_PRINTER::OpenPrinterPort()
+{
     this->openPort();
 
     return is_open;
 }
 
-bool StarTUP900_PRINTER::openPort() {
-    if (devicesCreated) {
+bool StarTUP900_PRINTER::openPort()
+{
+    if (devicesCreated)
+    {
         // Если девайс для работы с портом обявлен
         is_open = false;
         //    return is_open;
         // Даем девайсу название порта
         serialPort->setPortName(comName);
 
-        if (serialPort->open(QIODevice::ReadWrite)) {
+        if (serialPort->open(QIODevice::ReadWrite))
+        {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
@@ -35,18 +40,22 @@ bool StarTUP900_PRINTER::openPort() {
                 return false;
 
             is_open = true;
-
-        } else {
+        }
+        else
+        {
             is_open = false;
         }
-    } else {
+    }
+    else
+    {
         is_open = false;
     }
 
     return is_open;
 }
 
-bool StarTUP900_PRINTER::isEnabled() {
+bool StarTUP900_PRINTER::isEnabled()
+{
     int status = 0;
     //    CMDCustomVKP80::SStatus s_status;
     if (!this->getStatus(status))
@@ -54,14 +63,16 @@ bool StarTUP900_PRINTER::isEnabled() {
     return (status != PrinterState::PrinterNotAvailable);
 }
 
-bool StarTUP900_PRINTER::isItYou() {
+bool StarTUP900_PRINTER::isItYou()
+{
 
     bool result = isEnabled();
 
     return result;
 }
 
-bool StarTUP900_PRINTER::cut() {
+bool StarTUP900_PRINTER::cut()
+{
     QByteArray cmd;
     QByteArray answer;
     bool respData;
@@ -74,7 +85,8 @@ bool StarTUP900_PRINTER::cut() {
 }
 
 //--------------------------------------------------------------------------------
-bool StarTUP900_PRINTER::initialize() {
+bool StarTUP900_PRINTER::initialize()
+{
     QByteArray cmd;
     QByteArray answer;
     bool respData;
@@ -119,7 +131,8 @@ bool StarTUP900_PRINTER::initialize() {
     return this->sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, respData, answer, 0);
 }
 
-bool StarTUP900_PRINTER::print(const QString &aCheck) {
+bool StarTUP900_PRINTER::print(const QString &aCheck)
+{
     this->initialize();
 
     this->printCheck(aCheck);
@@ -130,25 +143,28 @@ bool StarTUP900_PRINTER::print(const QString &aCheck) {
     return cut();
 }
 
-bool StarTUP900_PRINTER::feed(int aCount) {
+bool StarTUP900_PRINTER::feed(int aCount)
+{
     QByteArray cmd;
     bool result = false;
     QByteArray answer;
     cmd.push_back(CMDStarTUP900::PrinterCommandFeedFirstByte);
     cmd.push_back(CMDStarTUP900::PrinterCommandFeedSecondByte);
-    for (int i = 0; i < aCount; ++i) {
+    for (int i = 0; i < aCount; ++i)
+    {
         if (!sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, result, answer, 0))
             return false;
     }
     return true;
 }
 
-bool StarTUP900_PRINTER::printCheck(const QString &aCheck) {
+bool StarTUP900_PRINTER::printCheck(const QString &aCheck)
+{
     QByteArray printText;
     printText = this->encodingString(aCheck, CScodec::c_IBM866);
 
     // Вставляем если есть Подчеркнутый, Жирный, Курсивный... Шрифт
-    this->getSpecialCharecters(printText);
+    this->getSpecialCharacters(printText);
 
     //    QByteArray cmd;
     QByteArray answer;
@@ -159,7 +175,8 @@ bool StarTUP900_PRINTER::printCheck(const QString &aCheck) {
     return result;
 }
 
-void StarTUP900_PRINTER::getSpecialCharecters(QByteArray &printText) {
+void StarTUP900_PRINTER::getSpecialCharacters(QByteArray &printText)
+{
     // Устанавливаем если есть жирный фонт
     printText.replace(
         QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeBold + CScharsetParam::CloseTagDelimiter)
@@ -213,16 +230,17 @@ void StarTUP900_PRINTER::getSpecialCharecters(QByteArray &printText) {
 
     // Если надо добавить проабел
     QByteArray probel;
-    for (int i = 1; i <= leftMargin; i++) {
+    for (int i = 1; i <= leftMargin; i++)
+    {
         probel.append(ASCII::Space);
     }
     printText.replace(
-        QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::ProbelCount + CScharsetParam::CloseTagDelimiter)
+        QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::SpaceCount + CScharsetParam::CloseTagDelimiter)
             .toUtf8(),
         probel);
 
     // Добавляем звезды
-    int col_z = (chekWidth - 11 - leftMargin) / 2;
+    int col_z = (checkWidth - 11 - leftMargin) / 2;
     QByteArray star;
     for (int j = 1; j <= col_z; j++)
         star.append("*");
@@ -233,10 +251,12 @@ void StarTUP900_PRINTER::getSpecialCharecters(QByteArray &printText) {
         star);
 }
 
-bool StarTUP900_PRINTER::getStatus(int &aStatus) {
+bool StarTUP900_PRINTER::getStatus(int &aStatus)
+{
     QByteArray status = getState();
     int result = 0;
-    if (status.size() != 1) {
+    if (status.size() != 1)
+    {
         result |= PrinterState::PrinterNotAvailable;
         aStatus = result;
         return false;
@@ -244,7 +264,8 @@ bool StarTUP900_PRINTER::getStatus(int &aStatus) {
 
     // проверка фиксированных битов
     uchar stateByte = status[0];
-    if ((stateByte & 0x80) || !(stateByte & 0x10) || (stateByte & 0x01)) {
+    if ((stateByte & 0x80) || !(stateByte & 0x10) || (stateByte & 0x01))
+    {
         // не его статус
         result |= PrinterState::PrinterNotAvailable;
         aStatus = result;
@@ -252,41 +273,47 @@ bool StarTUP900_PRINTER::getStatus(int &aStatus) {
     }
 
     int paperDetectorError = status[0];
-    if (paperDetectorError == CMDStarTUP900::PrinterIsNotAvailable) {
+    if (paperDetectorError == CMDStarTUP900::PrinterIsNotAvailable)
+    {
         // Printer is not available
         result |= PrinterState::PrinterNotAvailable;
-        // if(Debuger) qDebug() << "StarTUP900::getStatus(): Printer is not
+        // if(Debugger) qDebug() << "StarTUP900::getStatus(): Printer is not
         // available";
         aStatus = result;
         return true;
     }
 
-    if (paperDetectorError != CMDStarTUP900::PrinterIsOK) {
+    if (paperDetectorError != CMDStarTUP900::PrinterIsOK)
+    {
         // Error
         int code = paperDetectorError & CMDStarTUP900::PaperNearEnd;
-        if (code > 0) {
+        if (code > 0)
+        {
             // Paper near end
             result |= PrinterState::PaperNearEnd;
-            // if(Debuger) qDebug() << "StarTUP900::getStatus(): Paper near end";
+            // if(Debugger) qDebug() << "StarTUP900::getStatus(): Paper near end";
         }
         code = paperDetectorError & CMDStarTUP900::PaperEnd;
-        if (code > 0) {
+        if (code > 0)
+        {
             // Paper end
             result |= PrinterState::PaperEnd;
-            // if(Debuger) qDebug() << "StarTUP900::getStatus(): Paper end";
+            // if(Debugger) qDebug() << "StarTUP900::getStatus(): Paper end";
         }
         code = paperDetectorError & CMDStarTUP900::PaperJamError;
-        if (code > 0) {
+        if (code > 0)
+        {
             // Paper jam
             result |= PrinterState::PaperJam;
-            // if(Debuger) qDebug() << "StarTUP900::getStatus(): Paper jam";
+            // if(Debugger) qDebug() << "StarTUP900::getStatus(): Paper jam";
         }
     }
     aStatus = result;
     return true;
 }
 
-QByteArray StarTUP900_PRINTER::getState() {
+QByteArray StarTUP900_PRINTER::getState()
+{
     // засылаем в порт команду получения статуса
     QByteArray cmd;
     bool respData;
@@ -294,8 +321,9 @@ QByteArray StarTUP900_PRINTER::getState() {
 
     cmd.push_back(CMDStarTUP900::PrinterStatusCommand);
 
-    if (!this->sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, respData, answer, 0)) {
-        // if(Debuger) qDebug() << "StarTUP900::getState(): error in
+    if (!this->sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, respData, answer, 0))
+    {
+        // if(Debugger) qDebug() << "StarTUP900::getState(): error in
         // sendPacketInPort()"; 		return answer;
     }
 

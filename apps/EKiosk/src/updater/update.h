@@ -27,7 +27,8 @@
 #include "CopyFile.h"
 #include "textprogressbar.h"
 
-class DownloadManager : public QThread {
+class DownloadManager : public QThread
+{
     Q_OBJECT
   public:
     DownloadManager();
@@ -88,7 +89,7 @@ class DownloadManager : public QThread {
     QString senderName;
     QUrl now_url;
     int totalCount;
-    int Debuger;
+    int Debugger;
     bool fileWrite;
     int countFileTag;
     int count_download;

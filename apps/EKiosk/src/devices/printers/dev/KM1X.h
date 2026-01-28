@@ -5,14 +5,16 @@
 
 class BasePrinterDevices;
 
-namespace CMDKM1X {
+namespace CMDKM1X
+{
     const int charTimeOut = 50; /// Time out
     const QString DeviceName = "KM1X";
 
     const uchar PrinterCommandFirstByte = 0x1B; /// Первая часть команды.
 } // namespace CMDKM1X
 
-class KM1X_PRINTER : public BasePrinterDevices {
+class KM1X_PRINTER : public BasePrinterDevices
+{
   public:
     KM1X_PRINTER(QObject *parent = 0);
 
@@ -32,5 +34,5 @@ class KM1X_PRINTER : public BasePrinterDevices {
     bool cut();
     bool feed(int aCount);
     void dispense();
-    void getSpecialCharecters(QByteArray &printText);
+    void getSpecialCharacters(QByteArray &printText);
 };

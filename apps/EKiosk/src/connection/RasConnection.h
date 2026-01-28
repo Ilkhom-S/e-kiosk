@@ -45,9 +45,11 @@ using namespace std;
 #define WINVER OLD_WINVER
 #undef OLD_WINVER
 
-namespace DialupParam {
+namespace DialupParam
+{
 
-    enum Cmd {
+    enum Cmd
+    {
 
         StartDial = 1,
 
@@ -61,8 +63,10 @@ namespace DialupParam {
     };
 } // namespace DialupParam
 
-namespace ErrorDialup {
-    enum err {
+namespace ErrorDialup
+{
+    enum err
+    {
         rNoError = 0,
 
         rErrorCreateDialupCon = 1,
@@ -71,10 +75,13 @@ namespace ErrorDialup {
     };
 } // namespace ErrorDialup
 
-namespace Connection {
+namespace Connection
+{
 
-    namespace Type {
-        enum i_type {
+    namespace Type
+    {
+        enum i_type
+        {
 
             Dialup = 1,
 
@@ -85,17 +92,20 @@ namespace Connection {
 
     } // namespace Type
 
-    enum conSate {
+    enum conSate
+    {
         conStateUp = 0,
-        conStateDoun = 1,
+        conStateDown = 1,
         conStateUpping = 2,
         conStateError = 3,
         SendingSMS = 4,
         GetSimData = 5
     };
-    namespace TypePing {
+    namespace TypePing
+    {
 
-        enum i_typeping {
+        enum i_typeping
+        {
 
             Ping = 1,
 
@@ -106,7 +116,8 @@ namespace Connection {
     } // namespace TypePing
 } // namespace Connection
 
-class RasConnection : public QThread {
+class RasConnection : public QThread
+{
     Q_OBJECT
 
   public:
@@ -132,7 +143,7 @@ class RasConnection : public QThread {
 
   private:
     QString conName;
-    int Debuger;
+    int Debugger;
     int nowCmd;
     QTimer *stateDialTimer;
     QTimer *reCallTimer;
@@ -141,7 +152,8 @@ class RasConnection : public QThread {
 
     virtual void run();
 
-    static void msleep(int ms) {
+    static void msleep(int ms)
+    {
         QThread::msleep(ms);
     }
 

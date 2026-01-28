@@ -19,7 +19,7 @@ class RasConnection;
 namespace Connection {
     enum conSate {
         conStateUp = 0,
-        conStateDoun = 1,
+        conStateDown = 1,
         conStateUpping = 2,
         conStateError = 3,
         SendingSMS = 4,

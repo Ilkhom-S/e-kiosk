@@ -7,7 +7,8 @@
 // Project
 #include "SendLogInfo.h"
 
-SendLogInfo::SendLogInfo(QObject *parent) : SendRequest(parent) {
+SendLogInfo::SendLogInfo(QObject *parent) : SendRequest(parent)
+{
     senderName = "COMMAND_CONFIRM";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
@@ -21,11 +22,15 @@ SendLogInfo::SendLogInfo(QObject *parent) : SendRequest(parent) {
     systemLog = "";
 }
 
-void SendLogInfo::resendRequest() {
-    if (countAllRep < 20) {
+void SendLogInfo::resendRequest()
+{
+    if (countAllRep < 20)
+    {
         // Повторная отправка
         QTimer::singleShot(20000 * this->countAllRep, this, SLOT(sendRequestRepeet()));
-    } else {
+    }
+    else
+    {
         emit emit_Loging(2, "SEND_LOG_INFO",
                          QString("Невозможно отправить лог с id - %1 на сервер, "
                                  "количество повторов превысело 20")
@@ -33,7 +38,8 @@ void SendLogInfo::resendRequest() {
     }
 }
 
-void SendLogInfo::sendRequestRepeet() {
+void SendLogInfo::sendRequestRepeet()
+{
     countAllRep++;
 
     emit emit_Loging(0, "SEND_LOG_INFO",
@@ -42,13 +48,15 @@ void SendLogInfo::sendRequestRepeet() {
     sendRequest(requestXml, 30000);
 }
 
-void SendLogInfo::setDataNote(const QDomNode &domElement) {
+void SendLogInfo::setDataNote(const QDomNode &domElement)
+{
     resultCode = false;
 
     // Парсим данные
     parcerNote(domElement);
 
-    if (resultCode) {
+    if (resultCode)
+    {
         // Обнуляем счетчик
         countAllRep = 0;
 
@@ -60,21 +68,26 @@ void SendLogInfo::setDataNote(const QDomNode &domElement) {
     }
 }
 
-void SendLogInfo::parcerNote(const QDomNode &domElement) {
+void SendLogInfo::parcerNote(const QDomNode &domElement)
+{
     // Необходимо отпарсить документ
     QDomNode domNode = domElement.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
             QDomElement domElement = domNode.toElement();
             QString strTag = domElement.tagName();
 
-            // if(Debuger) qDebug() << strTag + " " + domElement.text();
+            // if(Debugger) qDebug() << strTag + " " + domElement.text();
 
-            if (strTag == "resultCode") {
+            if (strTag == "resultCode")
+            {
                 QString sts = domElement.text();
 
-                if (sts == "0") {
+                if (sts == "0")
+                {
                     resultCode = true;
                 }
             }
@@ -85,7 +98,8 @@ void SendLogInfo::parcerNote(const QDomNode &domElement) {
     }
 }
 
-void SendLogInfo::sendLogInfoToServer(QString trn, QString date) {
+void SendLogInfo::sendLogInfoToServer(QString trn, QString date)
+{
 
     QString header_xml = getHeaderRequest(Request::Type::SendLogInfo);
 
@@ -128,7 +142,8 @@ void SendLogInfo::sendLogInfoToServer(QString trn, QString date) {
     sendRequest(xml, 120000);
 }
 
-void SendLogInfo::sendLogValidatorToServer(QString trn, QString date, QString account) {
+void SendLogInfo::sendLogValidatorToServer(QString trn, QString date, QString account)
+{
     QString header_xml = getHeaderRequest(Request::Type::SendLogInfo);
 
     QString vrmDate = date;
@@ -168,11 +183,13 @@ void SendLogInfo::sendLogValidatorToServer(QString trn, QString date, QString ac
     sendRequest(xml, 120000);
 }
 
-void SendLogInfo::getCompressLogData(QString date, bool &result, QString &strip) {
+void SendLogInfo::getCompressLogData(QString date, bool &result, QString &strip)
+{
     QByteArray ba;
     QFile fileInfo(QString("log/%1.txt").arg(date));
 
-    if (!fileInfo.open(QIODevice::ReadOnly)) {
+    if (!fileInfo.open(QIODevice::ReadOnly))
+    {
         qDebug() << "Error opened file - " << date;
         ba = QString("Лог файл не найден").toUtf8();
         result = false;
@@ -190,16 +207,19 @@ void SendLogInfo::getCompressLogData(QString date, bool &result, QString &strip)
     strip = QString(qCompress(ba, 9).toBase64());
 }
 
-void SendLogInfo::getCompressValiatorLogData(QString date, QString account, bool &result, QString &strip) {
+void SendLogInfo::getCompressValiatorLogData(QString date, QString account, bool &result, QString &strip)
+{
     QByteArray ba;
     QFile fileInfo(QString("logvalidator/%1/%2.txt").arg(date, account));
 
     QString string = "";
 
     // если меньше 9MB
-    if (fileInfo.size() < 9000000) {
+    if (fileInfo.size() < 9000000)
+    {
 
-        if (!fileInfo.open(QIODevice::ReadOnly)) {
+        if (!fileInfo.open(QIODevice::ReadOnly))
+        {
             qDebug() << "Error opened file - " << date;
             ba = QString("Лог файл не найден").toUtf8();
             result = false;
@@ -212,7 +232,9 @@ void SendLogInfo::getCompressValiatorLogData(QString date, QString account, bool
         fileInfo.close();
 
         string.append(ba);
-    } else {
+    }
+    else
+    {
         ba = "File is very big";
     }
 
