@@ -41,6 +41,7 @@ ek_add_plugin(ad
     PluginsSDK
     PPSDKImpl
     ek_common
+    ek_boost
     INCLUDE_DIRS
     ${CMAKE_SOURCE_DIR}/apps/EKiosk/src
     INSTALL_DIR plugins

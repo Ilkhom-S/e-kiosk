@@ -1,6 +1,7 @@
 /* @file Базовый платёж через процессинг Хумо. */
 
-// Stl
+// STL
+#include <memory>
 
 // Qt
 #include <Common/QtHeadersBegin.h>
@@ -87,7 +88,7 @@ Response *AdPayment::sendRequest(const QUrl &aUrl, Request &aRequest)
 
     RequestSender::ESendError error;
 
-    QScopedPointer<Response> response(mRequestSender.post(aUrl, aRequest, RequestSender::Solid, error));
+    std::unique_ptr<Response> response(mRequestSender.post(aUrl, aRequest, RequestSender::Solid, error));
     if (!response)
     {
         toLog(LogLevel::Error, QString("AdPayment %1. Failed to send request: %2.")
@@ -114,7 +115,7 @@ Response *AdPayment::sendRequest(const QUrl &aUrl, Request &aRequest)
     setParameter(SParameter(PPSDK::CPayment::Parameters::ServerResult, response->getResult(), true));
     setParameter(SParameter(PPSDK::CPayment::Parameters::ErrorMessage, response->getErrorMessage(), true));
 
-    return response.take();
+    return response.release();
 }
 
 //---------------------------------------------------------------------------
