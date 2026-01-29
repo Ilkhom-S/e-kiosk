@@ -58,9 +58,18 @@ file(GLOB TS_FILES src/locale/*.ts)
 if(TS_FILES)
     ek_add_translations(WatchServiceTranslations
         SOURCES ${TS_FILES}
+        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        INSTALL
     )
-    if(TARGET WatchServiceTranslations)
-        add_dependencies(guard WatchServiceTranslations)
+    if(TARGET WatchServiceTranslations_translations)
+        add_dependencies(guard WatchServiceTranslations_translations)
+        # Copy translation files to executable directory for debugging
+        add_custom_command(TARGET guard POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_BINARY_DIR}/locale
+            $<TARGET_FILE_DIR:guard>/locale
+            COMMENT "Copying translation files to executable directory"
+        )
     endif()
 endif()
 
