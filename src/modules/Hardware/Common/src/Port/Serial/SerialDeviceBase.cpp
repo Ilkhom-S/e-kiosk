@@ -26,3 +26,18 @@ template class SerialDeviceBase<PortPollingDeviceBase<ProtoFR>>;
 template class SerialDeviceBase<PortPollingDeviceBase<ProtoHID>>;
 
 //--------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------
+double getFrameSize(const TPortParameters &aPortParameters)
+{
+    int parity = aPortParameters[EParameters::Parity];
+    int bytesize = aPortParameters[EParameters::ByteSize];
+    int stop = aPortParameters[EParameters::StopBits];
+
+    int parityBits = (parity == EParity::No) ? 0 : 1;
+    double stopBits = (stop == EStopBits::One) ? 1 : ((stop == EStopBits::Two) ? 2 : 1.5);
+
+    return 1 + bytesize + parityBits + stopBits;
+}
+
+//--------------------------------------------------------------------------------
