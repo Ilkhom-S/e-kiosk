@@ -6,7 +6,6 @@ file(GLOB WATCHSERVICE_SOURCES
 )
 
 if(NOT WIN32)
-    list(REMOVE_ITEM WATCHSERVICE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/CpuSpeed.cpp)
     list(REMOVE_ITEM WATCHSERVICE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/win_processenumerator.cpp)
 endif()
 
@@ -34,7 +33,6 @@ ek_add_application(guard
     ${WS_VERSION_RC}
     QT_MODULES Gui Widgets
     DEPENDS
-    App
     Log
     SysUtils
     DebugUtils
