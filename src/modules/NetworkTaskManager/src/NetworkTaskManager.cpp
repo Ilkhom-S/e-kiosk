@@ -351,6 +351,8 @@ void NetworkTaskManager::onTaskError(QNetworkReply::NetworkError aError)
                 case QNetworkReply::ProxyTimeoutError:
                     emit networkTaskStatus(true);
                     break;
+                default:
+                    break;
             }
 
             return;
