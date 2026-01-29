@@ -291,11 +291,14 @@ template <class T> bool PrinterBase<T>::isConnected()
 }
 template <class T> bool PrinterBase<T>::isDeviceReady(bool aOnline)
 {
-    return T::isDeviceReady(aOnline);
+    Q_UNUSED(aOnline)
+    return true;  // Default implementation
 }
 template <class T> bool PrinterBase<T>::isPossible(bool aO, QVariant aC)
 {
-    return this->isPossible(aO, aC);
+    Q_UNUSED(aO)
+    Q_UNUSED(aC)
+    return true;  // Default implementation
 }
 template <class T> void PrinterBase<T>::setDeviceConfiguration(const QVariantMap &aC)
 {
@@ -304,4 +307,60 @@ template <class T> void PrinterBase<T>::setDeviceConfiguration(const QVariantMap
 template <class T> bool PrinterBase<T>::processNonReentrant(TBoolMethod aC)
 {
     return this->processNonReentrant(aC);
+}
+
+// Default implementations for virtual methods
+template <class T> bool PrinterBase<T>::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt)
+{
+    Q_UNUSED(aLexemeReceipt)
+    return true;
+}
+
+template <class T> bool PrinterBase<T>::processReceipt(const QStringList &aReceipt, bool aProcessing)
+{
+    Q_UNUSED(aReceipt)
+    Q_UNUSED(aProcessing)
+    return true;
+}
+
+template <class T> bool PrinterBase<T>::receiptProcessing()
+{
+    return true;
+}
+
+template <class T> bool PrinterBase<T>::clearDispenser(const QString &aCondition)
+{
+    Q_UNUSED(aCondition)
+    return true;
+}
+
+template <class T> void PrinterBase<T>::execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine)
+{
+    Q_UNUSED(aTagLexeme)
+    Q_UNUSED(aLine)
+}
+
+template <class T> bool PrinterBase<T>::feed()
+{
+    return true;
+}
+
+template <class T> void PrinterBase<T>::cleanStatusCodes(TStatusCodes &aStatusCodes)
+{
+    Q_UNUSED(aStatusCodes)
+}
+
+template <class T> bool PrinterBase<T>::execSpecialTag(const Tags::SLexeme &aTagLexeme)
+{
+    Q_UNUSED(aTagLexeme)
+    return true;
+}
+
+template <class T> void PrinterBase<T>::adjustToLineSize(Tags::TLexemesBuffer &aTagLexemes, Tags::TLexemesCollection &aLexemesCollection)
+{
+    // Default implementation: add the tag lexemes as a single collection
+    if (!aTagLexemes.isEmpty())
+    {
+        aLexemesCollection << aTagLexemes;
+    }
 }
