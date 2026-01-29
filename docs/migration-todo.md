@@ -36,6 +36,7 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [x] Complete Migrator3000 scenario plugin modernization: remove Qt plugin dependencies, add PPSDK and QtScript/QtQml dependencies, fix AUTOMOC processing
   - Note: Migrator3000 is now deprecated and will be removed in a future release
 - [x] Fix Qt 6 deprecation warnings for QVariant::type() usage throughout the codebase, replacing with typeId() and QMetaType equivalents
+- [x] Fix AUTOMOC processing issues for Qt classes with Q_OBJECT macros by adding public headers to CMake SOURCES (GraphicsEngine, DeviceManager, ScenarioEngine, UpdateEngine)
 
 ## Version Pinning
 

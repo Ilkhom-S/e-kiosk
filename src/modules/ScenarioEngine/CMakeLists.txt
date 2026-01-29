@@ -18,6 +18,7 @@ file(GLOB SCENARIOENGINE_SOURCES
 # For AUTOMOC to process the public header with Q_OBJECT
 set(SCENARIOENGINE_PUBLIC_HEADERS
     ${CMAKE_SOURCE_DIR}/include/ScenarioEngine/Scenario.h
+    ${CMAKE_SOURCE_DIR}/include/ScenarioEngine/ScenarioEngine.h
 )
 
 # Ensure Qt components are found for this module
