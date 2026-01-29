@@ -8,7 +8,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/EKLibrary.cmake)
 
 ek_add_library(BasicApplication
     FOLDER "modules/Common"
-    SOURCES src/BasicApplication.cpp
+    SOURCES src/BasicApplication.cpp ${CMAKE_SOURCE_DIR}/include/Common/SafeApplication.h
     QT_MODULES Core Network Widgets
     DEPENDS ek_common Log DebugUtils SysUtils EK::SingleApplication
 )

@@ -316,4 +316,13 @@ bool SafeQApplication::notify(QObject *aReceiver, QEvent *aEvent)
         abort();
     }
 }
+#else
+// Cross-platform implementation for non-Windows platforms
+// Note: SEH (__try/__except) is Windows-specific. On Unix platforms,
+// Qt handles exceptions differently and we rely on Qt's built-in
+// exception safety mechanisms.
+bool SafeQApplication::notify(QObject *aReceiver, QEvent *aEvent)
+{
+    return QApplication::notify(aReceiver, aEvent);
+}
 #endif
