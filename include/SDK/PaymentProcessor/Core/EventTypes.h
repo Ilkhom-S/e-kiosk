@@ -13,11 +13,11 @@ namespace SDK
 
         //---------------------------------------------------------------------------
         // Сделан в виде класса, чтобы получить метаданные.
-        namespace EEventType
+        class EEventType
         {
             // Use Q_NAMESPACE to get metadata without the overhead of a full QObject class
-            Q_NAMESPACE
-
+            Q_GADGET
+          public:
             enum Enum
             {
                 Unknown = 0, /// Неизвестный тип события.
@@ -64,7 +64,7 @@ namespace SDK
                 ProcessEncashment, /// Команда провести инкассацию всех компонент
             };
 
-            Q_ENUM_NS(Enum)
+            Q_ENUM(Enum)
         }; // namespace EEventType
 
         //---------------------------------------------------------------------------

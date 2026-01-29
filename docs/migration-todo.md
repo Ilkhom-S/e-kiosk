@@ -35,6 +35,7 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [x] Update TemplatePlugin to use C++ static metadata instead of JSON files
 - [x] Complete Migrator3000 scenario plugin modernization: remove Qt plugin dependencies, add PPSDK and QtScript/QtQml dependencies, fix AUTOMOC processing
   - Note: Migrator3000 is now deprecated and will be removed in a future release
+- [x] Fix Qt 6 deprecation warnings for QVariant::type() usage throughout the codebase, replacing with typeId() and QMetaType equivalents
 
 ## Version Pinning
 

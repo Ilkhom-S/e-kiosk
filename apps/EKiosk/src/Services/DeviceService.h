@@ -13,10 +13,6 @@
 // Modules
 #include <Common/ILog.h>
 
-// SDK
-#include <SDK/Drivers/IDevice.h>
-#include <SDK/Plugins/IPLuginLoader.h>
-
 // PP Core
 #include <SDK/PaymentProcessor/Core/IDeviceService.h>
 #include <SDK/Plugins/IPluginLoader.h>

@@ -145,7 +145,7 @@ void WebGraphicsItem::onFrameLoaded(bool aOk)
                 QVariant result =
                     tag.evaluateJavaScript(QString("%1; true").arg(CWebGraphicsItem::InitializeHandlerSignature));
 
-                if (result.type() != QVariant::Bool || result.toBool() != true)
+                if (result.typeId() != QMetaType::Bool || result.toBool() != true)
                 {
                     LOG(mLog, LogLevel::Error,
                         "Web frame has no initialize() method or error occured. Graphics events are inaccessible.");

@@ -211,9 +211,9 @@ void DeviceSlot::onTestResult(const QString &aTestName, const QVariant &aTestRes
 
     QVariantMap params;
 
-    switch (aTestResult.type())
+    switch (aTestResult.typeId())
     {
-        case QVariant::Image:
+        case QMetaType::QImage:
         {
             QBuffer buffer;
             if (aTestResult.value<QImage>().save(&buffer, "jpg", 70))

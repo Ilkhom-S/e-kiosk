@@ -590,7 +590,7 @@ void MainPageLoader::gotoPageInsertNominal(QString account, QString accountDesig
 
     for (auto &key : fieldsData.keys())
     {
-        if (fieldsData[key].type() == QVariant::String)
+        if (fieldsData[key].typeId() == QMetaType::QString)
         {
             extraInfo[key] = normalizeField(fieldsData[key].toString());
         }

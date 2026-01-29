@@ -78,13 +78,13 @@ void HIDTest::onData(const QVariantMap &aDataMap)
     {
         const QVariant data = aDataMap.value(CHardwareSDK::HID::Text);
 
-        switch (data.type())
+        switch (data.typeId())
         {
-            case QVariant::String:
+            case QMetaType::QString:
                 value = data.value<QString>();
                 break;
 
-            case QVariant::ByteArray:
+            case QMetaType::QByteArray:
             {
                 QStringDecoder decoderUtf8(QStringDecoder::Utf8);
                 QString utf8 = decoderUtf8.decode(data.toByteArray());

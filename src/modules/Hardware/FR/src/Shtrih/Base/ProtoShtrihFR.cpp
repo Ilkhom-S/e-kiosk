@@ -783,9 +783,9 @@ bool ProtoShtrihFR<T>::setFRParameter(const CShtrihFR::FRParameters::SData &aDat
     commandData.append(getHexReverted(aSeries, 2));
     commandData.append(char(aData.field));
 
-    if (aValue.type() == QVariant::ByteArray)
+    if (aValue.typeId() == QMetaType::QByteArray)
         commandData.append(aValue.toByteArray());
-    else if (aValue.type() == QVariant::String)
+    else if (aValue.typeId() == QMetaType::QString)
         commandData.append(mCodec->fromUnicode(aValue.toString()));
     else
         commandData.append(char(aValue.toInt()));

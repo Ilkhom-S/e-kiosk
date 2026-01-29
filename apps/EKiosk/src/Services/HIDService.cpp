@@ -230,7 +230,7 @@ bool HIDService::setEnable(bool aEnable, const QString &aDevice)
 //------------------------------------------------------------------------------
 QString HIDService::valueToString(const QVariant &aData)
 {
-    if (aData.type() == QVariant::ByteArray)
+    if (aData.typeId() == QMetaType::QByteArray)
     {
         QStringDecoder decoderUtf8(QStringDecoder::Utf8);
         QString utf8 = decoderUtf8(aData.toByteArray());

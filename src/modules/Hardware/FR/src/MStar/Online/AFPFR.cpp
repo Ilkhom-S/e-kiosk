@@ -1,5 +1,6 @@
 /* @file Онлайн ФР семейства MStar на протоколе AFP. */
 
+// Project
 #include "AFPFR.h"
 #include "ModelData.h"
 
@@ -387,12 +388,12 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
 
     foreach (auto dataItem, aCommandData)
     {
-        QVariant::Type type = dataItem.type();
+        int type = dataItem.typeId();
         QByteArray data;
 
-        if (type == QVariant::String)
+        if (type == QMetaType::QString)
             data = mCodec->fromUnicode(dataItem.toString());
-        else if ((type == QVariant::ByteArray) || (type == QVariant::Double))
+        else if ((type == QMetaType::QByteArray) || (type == QMetaType::Double))
             data = dataItem.toByteArray();
         else
             data = QByteArray::number(dataItem.toULongLong());

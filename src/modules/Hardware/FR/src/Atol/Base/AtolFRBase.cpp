@@ -1024,9 +1024,9 @@ bool AtolFRBase::setFRParameter(const CAtolFR::FRParameters::SData &aData, const
     commandData.append(uchar(aData.series << 0));
     commandData.append(aData.field);
 
-    if (aValue.type() == QVariant::ByteArray)
+    if (aValue.typeId() == QMetaType::QByteArray)
         commandData.append(aValue.toByteArray());
-    else if (aValue.type() == QVariant::String)
+    else if (aValue.typeId() == QMetaType::QString)
         commandData.append(mCodec->fromUnicode(aValue.toString()));
     else
         commandData.append(char(aValue.toInt()));
