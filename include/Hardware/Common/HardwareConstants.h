@@ -154,6 +154,8 @@ namespace CHardware
         const char BlackMark[] = "black_mark";
         const char PowerOnReaction[] = "power-on_reaction";
         const char OutCall[] = "out_call";
+        const char LineSize[] = "line_size";
+        const char PrintingMode[] = "printing_mode";
 
         /// Команды.
         namespace Commands
