@@ -14,9 +14,14 @@
 class QObject;
 
 //---------------------------------------------------------------------------
-class IWatchServiceClient {
+class IWatchServiceClient
+{
   public:
-    typedef enum { DedicateThread, MainThread } PingThread;
+    typedef enum
+    {
+        DedicateThread,
+        MainThread
+    } PingThread;
 
   public:
     virtual ~IWatchServiceClient() {};

@@ -9,7 +9,8 @@
 #include "../AtolFRConstants.h"
 
 //--------------------------------------------------------------------------------
-namespace CAtolOnlineFR {
+namespace CAtolOnlineFR
+{
     /// Имя модели по умолчанию
     const char DefaultModelName[] = "ATOL online FR";
 
@@ -59,13 +60,16 @@ namespace CAtolOnlineFR {
     const SWaitingData RebootWaiting = SWaitingData(1000, 20000);
 
     //------------------------------------------------------------------------------------------------
-    namespace FRParameters {
+    namespace FRParameters
+    {
         using namespace CAtolFR::FRParameters;
 
-        inline SData TaxDescription(int aSeries) {
+        inline SData TaxDescription(int aSeries)
+        {
             return SData(13, ushort(aSeries), 1);
         }
-        inline SData Tax(int aSeries) {
+        inline SData Tax(int aSeries)
+        {
             return SData(13, ushort(aSeries), 2);
         }
 
@@ -82,7 +86,8 @@ namespace CAtolOnlineFR {
     } // namespace FRParameters
 
     /// Флаги выполнения фискальных операций.
-    namespace FiscalFlags {
+    namespace FiscalFlags
+    {
         /// Не печатать чек - на открытии чека.
         const char NotPrinting = '\x04';
 
@@ -95,7 +100,8 @@ namespace CAtolOnlineFR {
     } // namespace FiscalFlags
 
     /// Регистры
-    namespace Registers {
+    namespace Registers
+    {
         const char OFDNotSentCount[] = "not sent fiscal to OFD documents count";
         const char ExtendedErrorData[] = "extended error data";
         const char FFD[] = "FFD";
@@ -107,7 +113,8 @@ namespace CAtolOnlineFR {
 
     //------------------------------------------------------------------------------------------------
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         /// Фискальные команды.
         const char StartSale = '\xEA';                 /// Начать формирование позиции.
         const char EndSale = '\xEB';                   /// Завершить формирование позиции.
@@ -119,7 +126,8 @@ namespace CAtolOnlineFR {
         const char GetInternalFirmware[] = "\x9D\x91"; /// Получить внутренний номер прошивки.
 
         /// Коды команд ФН-а.
-        namespace FS {
+        namespace FS
+        {
             const char GetStatus[] = "\xA4\x30";             /// Получить статус ФН.
             const char GetNumber[] = "\xA4\x31";             /// Получить номер ФН.
             const char GetValidity[] = "\xA4\x32";           /// Получить срок действия ФН.
@@ -134,14 +142,17 @@ namespace CAtolOnlineFR {
 
     //------------------------------------------------------------------------------------------------
     /// Ошибки.
-    namespace Errors {
+    namespace Errors
+    {
         const char NoRequiedDataInFS = '\xDA';     /// В ФН нет запрошенных данных.
         const char FSOfflineEnd = '\xEB';          /// Исчерпан ресурс хранения ФН.
         const char NeedExtendedErrorCode = '\xEE'; /// Запросить расширенный код ошибки в регистре 55.
 
-        class Data : public FRError::Data {
+        class Data : public FRError::Data
+        {
           public:
-            Data() {
+            Data()
+            {
                 using namespace FRError;
 
                 add('\x01', "Контрольная лента обработана без ошибок");
@@ -292,9 +303,11 @@ namespace CAtolOnlineFR {
             }
         };
 
-        class CExtraData : public CDescription<ushort> {
+        class CExtraData : public CDescription<ushort>
+        {
           public:
-            CExtraData() {
+            CExtraData()
+            {
                 append(0x0101, "Недопустимо более одной регистрации в чеке коррекции");
                 append(0x0102, "Недопустимо передавать более 10 регистраций при наличии в чеке кода товарной "
                                "номенклатуры в автономном режиме");

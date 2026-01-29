@@ -13,7 +13,8 @@
 class ServiceMenuBackend;
 
 //---------------------------------------------------------------------------
-class WelcomeWizardPage : public WizardPageBase, protected Ui::WelcomeWizardPage {
+class WelcomeWizardPage : public WizardPageBase, protected Ui::WelcomeWizardPage
+{
     Q_OBJECT
 
   public:

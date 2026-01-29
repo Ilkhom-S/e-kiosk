@@ -15,7 +15,8 @@
 #include <Common/ILog.h>
 
 //---------------------------------------------------------------------------
-class LogManager {
+class LogManager
+{
   public:
     LogManager();
     virtual ~LogManager();

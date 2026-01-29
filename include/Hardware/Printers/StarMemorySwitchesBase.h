@@ -24,7 +24,8 @@
 
 //--------------------------------------------------------------------------------
 /// Константы принтера, используются по дефолту в случае пустого конфига.
-namespace CSTAR {
+namespace CSTAR
+{
     /// Варианты значений комплексного параметра мем-свича.
     typedef QMap<QString, QStringList> TMSWParameters;
 
@@ -35,7 +36,8 @@ namespace CSTAR {
     typedef QSet<QString> TModels;
 
     /// Параметр мем-свича.
-    struct SMSWParameter {
+    struct SMSWParameter
+    {
         int number;                /// Номер мем-свича.
         int index;                 /// Индекс начального бита параметра мем-свича.
         int bitAmount;             /// Количество битов параметра мем-свича.
@@ -44,24 +46,29 @@ namespace CSTAR {
         QString description;       /// Описание (б.ч. для логгирования).
         TModels models;
 
-        SMSWParameter() : number(-1), index(-1), bitAmount(0) {
+        SMSWParameter() : number(-1), index(-1), bitAmount(0)
+        {
         }
         SMSWParameter(int aNumber, int aIndex, int aBitAmount, const QStringList &aDataTypes,
                       const TMSWParameters &aParameters, const QString &aDescription, const TModels &aModels)
             : number(aNumber), index(aIndex), bitAmount(aBitAmount), dataTypes(aDataTypes), parameters(aParameters),
-              description(aDescription), models(aModels) {
+              description(aDescription), models(aModels)
+        {
         }
     };
 
     typedef QMap<ESTARMemorySwitchTypes::Enum, SMSWParameter> TMSWData;
 
-    struct SMemorySwitch {
+    struct SMemorySwitch
+    {
         ushort value;
         bool valid;
 
-        SMemorySwitch() : value(0), valid(false) {
+        SMemorySwitch() : value(0), valid(false)
+        {
         }
-        bool operator==(const SMemorySwitch &aMemorySwitch) const {
+        bool operator==(const SMemorySwitch &aMemorySwitch) const
+        {
             return value == aMemorySwitch.value;
         }
     };
@@ -70,7 +77,8 @@ namespace CSTAR {
     typedef QList<ESTARMemorySwitchTypes::Enum> TMemorySwitchTypes;
 
     /// Описатель параметров мем-свичей.
-    class BaseMemorySwitchUtils : public ILogable {
+    class BaseMemorySwitchUtils : public ILogable
+    {
       public:
         /// Проверить возможность и обновить параметр memory-switch-а по настройкам из конфига.
         bool update(TMemorySwitches &aMemorySwitches);
@@ -136,29 +144,36 @@ namespace CSTAR {
         TModels mModels;
     };
 
-    struct SModelMSWData {
+    struct SModelMSWData
+    {
         QVariantMap configuration;
         TModels models;
     };
 
     /// Общие обязательные параметры для всех принтеров.
-    class CMainSettingsBase : public CSpecification<ESTARMemorySwitchTypes::Enum, SModelMSWData> {
+    class CMainSettingsBase : public CSpecification<ESTARMemorySwitchTypes::Enum, SModelMSWData>
+    {
       protected:
         void add(ESTARMemorySwitchTypes::Enum aType, const QString &aName, const QVariant &aValue,
-                 const TModels &aModels = TModels()) {
+                 const TModels &aModels = TModels())
+        {
             QVariant value(aValue);
 
-            if (value.metaType().id() == QMetaType::Bool) {
+            if (value.metaType().id() == QMetaType::Bool)
+            {
                 value = value.toBool() ? CHardwareSDK::Values::Use : CHardwareSDK::Values::NotUse;
             }
 
             QVariantMap configuration;
             configuration.insert(aName, value);
 
-            if (!mBuffer.contains(aType) || mBuffer[aType].models != aModels) {
+            if (!mBuffer.contains(aType) || mBuffer[aType].models != aModels)
+            {
                 SModelMSWData data = {configuration, aModels};
                 mBuffer.insert(aType, data);
-            } else {
+            }
+            else
+            {
                 mBuffer[aType].configuration.insert(aName, value);
             }
         }

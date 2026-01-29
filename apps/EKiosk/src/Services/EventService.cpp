@@ -18,75 +18,90 @@
 namespace PP = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-EventService *EventService::instance(IApplication *aApplication) {
+EventService *EventService::instance(IApplication *aApplication)
+{
     return static_cast<EventService *>(aApplication->getCore()->getService(CServices::EventService));
 }
 
 //---------------------------------------------------------------------------
-EventService::EventService() {
+EventService::EventService()
+{
     qRegisterMetaType<SDK::PaymentProcessor::Event>("SDK::PaymentProcessor::Event");
 }
 
 //---------------------------------------------------------------------------
-EventService::~EventService() {
+EventService::~EventService()
+{
 }
 
 //---------------------------------------------------------------------------
-bool EventService::initialize() {
+bool EventService::initialize()
+{
     return true;
 }
 
 //------------------------------------------------------------------------------
-void EventService::finishInitialize() {
+void EventService::finishInitialize()
+{
 }
 
 //---------------------------------------------------------------------------
-bool EventService::canShutdown() {
+bool EventService::canShutdown()
+{
     return true;
 }
 
 //---------------------------------------------------------------------------
-bool EventService::shutdown() {
+bool EventService::shutdown()
+{
     return true;
 }
 
 //---------------------------------------------------------------------------
-QString EventService::getName() const {
+QString EventService::getName() const
+{
     return CServices::EventService;
 }
 
 //---------------------------------------------------------------------------
-const QSet<QString> &EventService::getRequiredServices() const {
+const QSet<QString> &EventService::getRequiredServices() const
+{
     static QSet<QString> requiredResources;
     return requiredResources;
 }
 
 //---------------------------------------------------------------------------
-QVariantMap EventService::getParameters() const {
+QVariantMap EventService::getParameters() const
+{
     return QVariantMap();
 }
 
 //---------------------------------------------------------------------------
-void EventService::resetParameters(const QSet<QString> &) {
+void EventService::resetParameters(const QSet<QString> &)
+{
 }
 
 //---------------------------------------------------------------------------
-void EventService::sendEvent(const SDK::PaymentProcessor::Event &aEvent) {
+void EventService::sendEvent(const SDK::PaymentProcessor::Event &aEvent)
+{
     emit event(aEvent);
 }
 
 //---------------------------------------------------------------------------
-void EventService::sendEvent(SDK::PaymentProcessor::EEventType::Enum aType, const QVariant &aData) {
+void EventService::sendEvent(SDK::PaymentProcessor::EEventType::Enum aType, const QVariant &aData)
+{
     emit event(SDK::PaymentProcessor::Event(aType, QString(), aData));
 }
 
 //---------------------------------------------------------------------------
-void EventService::subscribe(const QObject *aObject, const char *aSlot) {
+void EventService::subscribe(const QObject *aObject, const char *aSlot)
+{
     connect(this, SIGNAL(event(const SDK::PaymentProcessor::Event &)), aObject, aSlot, Qt::QueuedConnection);
 }
 
 //---------------------------------------------------------------------------
-void EventService::unsubscribe(const QObject *aObject, const char *aSlot) {
+void EventService::unsubscribe(const QObject *aObject, const char *aSlot)
+{
     disconnect(this, SIGNAL(event(const SDK::PaymentProcessor::Event &)), aObject, aSlot);
 }
 

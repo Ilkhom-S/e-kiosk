@@ -8,17 +8,21 @@
 #include <QtCore/QVariantMap>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         class ICore;
         class IAudioService;
 
-        namespace Scripting {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
             /// Прокси-класс для работы со звуком в скриптах.
-            class AudioService : public QObject {
+            class AudioService : public QObject
+            {
                 Q_OBJECT
 
               public:

@@ -8,13 +8,16 @@
 #include <QtCore/QMap>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace GUI {
+namespace SDK
+{
+    namespace GUI
+    {
 
         //---------------------------------------------------------------------------
         /// Описатель графического объекта. Загружается из файла description.ini в
         /// каталоге объекта.
-        struct GraphicsItemInfo {
+        struct GraphicsItemInfo
+        {
             QString name;      /// Уникальное название графического элемента.
             QString type;      /// Тип нужного графического движка.
             QString directory; /// Директория с контентом элемента.
@@ -23,14 +26,16 @@ namespace SDK {
             QVariantMap context;               /// Специфические параметры для виджета.
 
             /// Оператор ==.
-            inline bool operator==(const GraphicsItemInfo &aGraphicsItemInfo) {
+            inline bool operator==(const GraphicsItemInfo &aGraphicsItemInfo)
+            {
                 return name == aGraphicsItemInfo.name && type == aGraphicsItemInfo.type &&
                        directory == aGraphicsItemInfo.directory && parameters == aGraphicsItemInfo.parameters &&
                        context == aGraphicsItemInfo.context;
             }
 
             /// Оператор !=.
-            inline bool operator!=(const GraphicsItemInfo &aGraphicsItemInfo) {
+            inline bool operator!=(const GraphicsItemInfo &aGraphicsItemInfo)
+            {
                 return !(*this == aGraphicsItemInfo);
             }
         };

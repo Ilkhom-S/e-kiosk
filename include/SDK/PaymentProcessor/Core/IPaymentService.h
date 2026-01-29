@@ -16,19 +16,29 @@
 #include <SDK/PaymentProcessor/Payment/Step.h>
 #include <SDK/PaymentProcessor/Settings/Provider.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
-        namespace EncashmentResult {
-            enum Enum { OK, Error, TryLater };
+        namespace EncashmentResult
+        {
+            enum Enum
+            {
+                OK,
+                Error,
+                TryLater
+            };
         } // namespace EncashmentResult
 
-        namespace EncashmentParameter {
+        namespace EncashmentParameter
+        {
             const char StackerID[] = "STACKER_ID";
         } // namespace EncashmentParameter
 
         //------------------------------------------------------------------------------
-        class IPaymentService : public QObject {
+        class IPaymentService : public QObject
+        {
             Q_OBJECT
 
           public:
@@ -144,7 +154,8 @@ namespace SDK {
             void stepCompleted(qint64 aPayment, int aStep, bool aError);
 
           protected:
-            virtual ~IPaymentService() {
+            virtual ~IPaymentService()
+            {
             }
         };
 

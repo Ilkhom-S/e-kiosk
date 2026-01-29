@@ -9,13 +9,15 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace EMV {
+namespace EMV
+{
     const QString PSE = "1PAY.SYS.DDF01";
 
     // нужный тип карты http://ludovic.rousseau.free.fr/softwares/pcsc-tools/smartcard_list.txt
     const QByteArray VisaMastercardCartType = QByteArray::fromRawData("\x3B\x68\x00\x00", 4);
 
-    namespace Command {
+    namespace Command
+    {
         // ISO7816 select command (00 A4 04 00 size)
         const QByteArray SelectPSE = QByteArray::fromRawData("\x00\xa4\x04\x00", 4);
 
@@ -27,7 +29,8 @@ namespace EMV {
     } // namespace Command
 
     // EMV4.3 Book 3 Annex A
-    namespace Tags {
+    namespace Tags
+    {
         const quint16 Track2 = 0x0057; // Track 2 Equivalent Data
         const quint16 AFL = 0x0094;    // Application File Locator (AFL)
 

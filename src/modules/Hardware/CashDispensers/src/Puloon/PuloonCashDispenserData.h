@@ -6,7 +6,8 @@
 #include "Hardware/Dispensers/DispenserStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace CPuloonLCDM {
+namespace CPuloonLCDM
+{
     /// Интервал поллинга в режиме выдачи денег.
     const int DispensingPollingInterval = 300;
 
@@ -38,7 +39,8 @@ namespace CPuloonLCDM {
     const int MaxOutputPack = 60;
 
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         char Reset = '\x44';         /// Сброс.
         char GetStatus = '\x46';     /// Статус.
         char UpperDispense = '\x45'; /// Выдача денег из верхней кассеты.
@@ -47,20 +49,25 @@ namespace CPuloonLCDM {
         char GetROMVersion = '\x47'; /// Получить версию прошивки.
 
         /// Данные команды.
-        struct SData {
+        struct SData
+        {
             int error;   /// Позиция кода ошибки;
             int timeout; /// Таймаут;
 
-            SData() : error(-1), timeout(0) {
+            SData() : error(-1), timeout(0)
+            {
             }
-            SData(int aError, int aTimeout) : error(aError), timeout(aTimeout) {
+            SData(int aError, int aTimeout) : error(aError), timeout(aTimeout)
+            {
             }
         };
 
         /// Данные команд.
-        class CData : public CSpecification<char, SData> {
+        class CData : public CSpecification<char, SData>
+        {
           public:
-            CData() {
+            CData()
+            {
                 add(Reset, 0, 20 * 1000);
                 add(GetROMVersion, -1, 5 * 1000);
                 add(GetStatus, 1);
@@ -72,7 +79,8 @@ namespace CPuloonLCDM {
             }
 
           private:
-            void add(char aCommand, int aError = 0, int aTimeout = DispensingPollingInterval) {
+            void add(char aCommand, int aError = 0, int aTimeout = DispensingPollingInterval)
+            {
                 append(aCommand, SData(aError, aTimeout));
             }
         };
@@ -84,9 +92,11 @@ namespace CPuloonLCDM {
     const char LowerUnitEmpty = '\x40'; /// Нижняя кассета пуста.
 
     /// Ошибки.
-    class CDeviceCodeSpecification : public CommonDeviceCodeSpecification {
+    class CDeviceCodeSpecification : public CommonDeviceCodeSpecification
+    {
       public:
-        CDeviceCodeSpecification() {
+        CDeviceCodeSpecification()
+        {
             addStatus('\x30', DeviceStatusCode::OK::OK);
             addStatus('\x31', DeviceStatusCode::OK::OK);
 
@@ -126,9 +136,11 @@ namespace CPuloonLCDM {
     static CDeviceCodeSpecification DeviceCodeSpecification;
 
     /// Сенсоры.
-    class CSensorSpecification : public BitmapDeviceCodeSpecification {
+    class CSensorSpecification : public BitmapDeviceCodeSpecification
+    {
       public:
-        CSensorSpecification() {
+        CSensorSpecification()
+        {
             addStatus(0, DeviceStatusCode::Warning::Unknown, "Check sensor 1");
             addStatus(1, DeviceStatusCode::Warning::Unknown, "Check sensor 2");
             addStatus(2, DeviceStatusCode::Warning::Unknown, "Divertor sensor 1");
@@ -150,9 +162,11 @@ namespace CPuloonLCDM {
     static CSensorSpecification SensorSpecification;
 
     /// Режекты.
-    class CRejectingSpecification : public CDescription<char> {
+    class CRejectingSpecification : public CDescription<char>
+    {
       public:
-        CRejectingSpecification() {
+        CRejectingSpecification()
+        {
             append('\x33', "distance is too close");
             append('\x3F', "One more banknote is picked and followed in the final pickup trial");
             append('\x36', "One more banknote is picked up during the processing the dispense command");

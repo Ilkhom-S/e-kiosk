@@ -20,7 +20,8 @@
 #include <Common/ILogable.h>
 
 //------------------------------------------------------------------------
-namespace CNetworkTaskManager {
+namespace CNetworkTaskManager
+{
     const char LogName[] = "DownloadManager";
     const int BadTask = -1;
 } // namespace CNetworkTaskManager
@@ -31,7 +32,8 @@ class NetworkTask;
 //------------------------------------------------------------------------
 /// Класс для упрощения отправки сетевых запросов. Поддерживаются блокирующие и
 /// неблокирующие механизмы. Все публичные методы потокозащищены.
-class NetworkTaskManager : public QThread, public ILogable {
+class NetworkTaskManager : public QThread, public ILogable
+{
     Q_OBJECT
 
   public:

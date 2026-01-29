@@ -5,13 +5,15 @@
 #include <Hardware/Printers/PortPOSPrinters.h>
 
 /// Константы POS-принтеров с эжектором.
-namespace CEjectorPOS {
+namespace CEjectorPOS
+{
     /// Минимальная длина презентации
     const int MinPresentationLength = 2;
 } // namespace CEjectorPOS
 
 //--------------------------------------------------------------------------------
-template <class T> class EjectorPOS : public POSPrinter<T> {
+template <class T> class EjectorPOS : public POSPrinter<T>
+{
   public:
     EjectorPOS();
 

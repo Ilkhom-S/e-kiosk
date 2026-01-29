@@ -3,7 +3,8 @@
 // System
 #include "../AbstractAcceptor.h"
 
-namespace CCTalkConstruct {
+namespace CCTalkConstruct
+{
     const char NAK = '\x05';
     const char BUSY = '\x06';
 
@@ -20,7 +21,8 @@ namespace CCTalkConstruct {
     const int MaxBusyNAKRepeats = 3;
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Повтор после BUSY или NAK-а.
         const int NAKBusy = 1000;
 
@@ -28,11 +30,23 @@ namespace CCTalkConstruct {
         const int Reading = 500;
     } // namespace Timeouts
 
-    enum Address { Host = 0x01, CoinAcceptor = 0x02 };
+    enum Address
+    {
+        Host = 0x01,
+        CoinAcceptor = 0x02
+    };
 
-    enum perekl { ApZero = 0x00, ApOne = 0x01, ApTwo = 0x02, ApThree = 0x03, ApFour = 0x04 };
+    enum perekl
+    {
+        ApZero = 0x00,
+        ApOne = 0x01,
+        ApTwo = 0x02,
+        ApThree = 0x03,
+        ApFour = 0x04
+    };
 
-    enum ControllerCommands {
+    enum ControllerCommands
+    {
         ApReset = 0x01,
         ApRequestCommStatus = 0x02,
         ApClearCommStatus = 0x03,
@@ -72,7 +86,8 @@ namespace CCTalkConstruct {
         ApSimplePoll = 0xFE
     };
 
-    namespace States {
+    namespace States
+    {
         const char Accepting = 0x00;
         const char RejectCoin = 0x01;
         const char InhibitedCoin = 0x02;
@@ -111,7 +126,8 @@ namespace CCTalkConstruct {
 } // namespace CCTalkConstruct
 
 class BaseAcceptorDevices;
-class CCTalk : public BaseAcceptorDevices {
+class CCTalk : public BaseAcceptorDevices
+{
     Q_OBJECT
 
   public:

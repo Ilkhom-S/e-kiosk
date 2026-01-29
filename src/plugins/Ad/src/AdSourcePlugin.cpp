@@ -20,14 +20,17 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------------
-namespace CAdRemotePlugin {
+namespace CAdRemotePlugin
+{
     const char PluginName[] = "HumoAd";
 } // namespace CAdRemotePlugin
 
 //------------------------------------------------------------------------------
-namespace {
+namespace
+{
     /// Конструктор экземпляра плагина.
-    SDK::Plugin::IPlugin *CreateAdSourcePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+    SDK::Plugin::IPlugin *CreateAdSourcePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+    {
         return new AdSourcePlugin(aFactory, aInstancePath);
     }
 
@@ -39,7 +42,8 @@ namespace {
 //---------------------------------------------------------------------------
 // Конструктор плагина источника рекламы
 AdSourcePlugin::AdSourcePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mFactory(aFactory), mInstancePath(aInstancePath) {
+    : mFactory(aFactory), mInstancePath(aInstancePath)
+{
     mClient = getAdClientInstance(aFactory);
 
     mCore =
@@ -47,48 +51,57 @@ AdSourcePlugin::AdSourcePlugin(SDK::Plugin::IEnvironment *aFactory, const QStrin
 }
 
 //------------------------------------------------------------------------------
-AdSourcePlugin::~AdSourcePlugin(void) {
+AdSourcePlugin::~AdSourcePlugin(void)
+{
     mClient.clear();
 }
 
 //------------------------------------------------------------------------------
-QString AdSourcePlugin::getPluginName() const {
+QString AdSourcePlugin::getPluginName() const
+{
     return CAdRemotePlugin::PluginName;
 }
 
 //------------------------------------------------------------------------------
-QVariantMap AdSourcePlugin::getConfiguration() const {
+QVariantMap AdSourcePlugin::getConfiguration() const
+{
     return QVariantMap();
 }
 
 //------------------------------------------------------------------------------
-void AdSourcePlugin::setConfiguration(const QVariantMap &aParameters) {
+void AdSourcePlugin::setConfiguration(const QVariantMap &aParameters)
+{
     Q_UNUSED(aParameters)
 }
 
 //------------------------------------------------------------------------------
-QString AdSourcePlugin::getConfigurationName() const {
+QString AdSourcePlugin::getConfigurationName() const
+{
     return mInstancePath;
 }
 
 //------------------------------------------------------------------------------
-bool AdSourcePlugin::saveConfiguration() {
+bool AdSourcePlugin::saveConfiguration()
+{
     // У плагина нет параметров
     return true;
 }
 
 //------------------------------------------------------------------------------
-bool AdSourcePlugin::isReady() const {
+bool AdSourcePlugin::isReady() const
+{
     return true;
 }
 
 //------------------------------------------------------------------------------
-QString AdSourcePlugin::getContent(const QString &aType) const {
+QString AdSourcePlugin::getContent(const QString &aType) const
+{
     return mClient->getContent(aType);
 }
 
 //------------------------------------------------------------------------------
-void AdSourcePlugin::addEvent(const QString &aType, const QVariantMap &aParameters) {
+void AdSourcePlugin::addEvent(const QString &aType, const QVariantMap &aParameters)
+{
     Q_UNUSED(aParameters)
 
     // TODO use aParameters!!!

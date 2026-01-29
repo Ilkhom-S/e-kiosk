@@ -12,7 +12,8 @@
 #include <SDK/Drivers/WarningLevel.h>
 
 //--------------------------------------------------------------------------------
-class IDeviceWorkingThread : public QThread {
+class IDeviceWorkingThread : public QThread
+{
     Q_OBJECT
 
   signals:

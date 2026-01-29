@@ -5,7 +5,8 @@
 #include <Hardware/Watchdogs/WatchdogBase.h>
 
 //----------------------------------------------------------------------------
-class Alarm : public WatchdogBase {
+class Alarm : public WatchdogBase
+{
     SET_SERIES("Alarm")
 
   public:

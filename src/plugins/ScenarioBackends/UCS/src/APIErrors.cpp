@@ -1,26 +1,32 @@
 /* Реализация протокола с EFTPOS 3.0 компании Ucs. */
 
-
 // Project headers
 #include "API.h"
 
-namespace Ucs {
+namespace Ucs
+{
 
     //---------------------------------------------------------------------------
-    QString API::translateErrorMessage(const QString &aError, const QString &aMessage) const {
+    QString API::translateErrorMessage(const QString &aError, const QString &aMessage) const
+    {
         QString fullErrorCode = aError;
 
-        if (aError == "09" || aError == "0B" || aError == "0C") {
+        if (aError == "09" || aError == "0B" || aError == "0C")
+        {
             fullErrorCode = QString("%01%02").arg(aError).arg(aMessage.left(2));
         }
 
-        if (fullErrorCode == "0G") {
+        if (fullErrorCode == "0G")
+        {
             return QObject::tr("#0G00");
-        } else if (fullErrorCode == "0X") {
+        }
+        else if (fullErrorCode == "0X")
+        {
             return QObject::tr("#0X00");
         }
 
-        switch (fullErrorCode.toInt(nullptr, 16)) {
+        switch (fullErrorCode.toInt(nullptr, 16))
+        {
             case 0x0100:
                 return QObject::tr("#0100");
             case 0x0200:

@@ -5,7 +5,8 @@
 #include "Hardware/Common/ASCII.h"
 
 //--------------------------------------------------------------------------------
-namespace CEBDS {
+namespace CEBDS
+{
     /// Первый байт.
     const char Prefix = ASCII::STX;
 

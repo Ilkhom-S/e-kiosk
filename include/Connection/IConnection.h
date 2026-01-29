@@ -23,7 +23,8 @@ class NetworkTaskManager;
 
 //--------------------------------------------------------------------------------
 /// Интерфейс сетевого соединения.
-class IConnection : public QObject {
+class IConnection : public QObject
+{
     Q_OBJECT
 
   public:
@@ -36,7 +37,8 @@ class IConnection : public QObject {
                                ILog *aLog);
 
     /// Деструктор.
-    virtual ~IConnection() {
+    virtual ~IConnection()
+    {
     }
 
     /// Возвращает имя соединения.

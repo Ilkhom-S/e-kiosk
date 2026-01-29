@@ -9,7 +9,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-class SleepHelper : public QThread {
+class SleepHelper : public QThread
+{
   public:
     /// Использование статических методов сна из QThread.
     using QThread::msleep;

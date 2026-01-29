@@ -23,11 +23,13 @@
 namespace ETextPosition = CSparkFR::TextProperties::EPosition;
 
 //--------------------------------------------------------------------------------
-AdaptiveFiscalLogic::AdaptiveFiscalLogic(const QVariantMap &aConfiguration) : mConfiguration(aConfiguration) {
+AdaptiveFiscalLogic::AdaptiveFiscalLogic(const QVariantMap &aConfiguration) : mConfiguration(aConfiguration)
+{
 }
 
 //--------------------------------------------------------------------------------
-void AdaptiveFiscalLogic::removeDelimeter(QStringList &aBuffer, ETextPosition::Enum aPosition) {
+void AdaptiveFiscalLogic::removeDelimeter(QStringList &aBuffer, ETextPosition::Enum aPosition)
+{
     QRegularExpression regExp("^[ \t_-]*$");
 
     if (((aPosition == ETextPosition::Bound) || (aPosition == ETextPosition::Up)) &&
@@ -37,9 +39,12 @@ void AdaptiveFiscalLogic::removeDelimeter(QStringList &aBuffer, ETextPosition::E
         (regExp.match(aBuffer.last().capturedStart()) != -1))
         aBuffer.removeLast();
 
-    if (aPosition == ETextPosition::AllOver) {
-        for (int i = 0; i < aBuffer.size(); ++i) {
-            if (regExp.match(aBuffer[i]).capturedStart() != -1) {
+    if (aPosition == ETextPosition::AllOver)
+    {
+        for (int i = 0; i < aBuffer.size(); ++i)
+        {
+            if (regExp.match(aBuffer[i]).capturedStart() != -1)
+            {
                 aBuffer.removeAt(i--);
             }
         }
@@ -47,11 +52,13 @@ void AdaptiveFiscalLogic::removeDelimeter(QStringList &aBuffer, ETextPosition::E
 }
 
 //--------------------------------------------------------------------------------
-QStringList AdaptiveFiscalLogic::getSeparatedBuffer(const QString &aLine) {
+QStringList AdaptiveFiscalLogic::getSeparatedBuffer(const QString &aLine)
+{
     QStringList result;
     int size = qCeil(qreal(aLine.size()) / CSparkFR::TextProperties::LineSize);
 
-    for (int j = 0; j < size; ++j) {
+    for (int j = 0; j < size; ++j)
+    {
         result << aLine.mid(j * CSparkFR::TextProperties::LineSize, CSparkFR::TextProperties::LineSize);
     }
 
@@ -59,17 +66,22 @@ QStringList AdaptiveFiscalLogic::getSeparatedBuffer(const QString &aLine) {
 }
 
 //--------------------------------------------------------------------------------
-bool AdaptiveFiscalLogic::adjustBuffer(QStringList &aBuffer, ETextPosition::Enum aPosition) {
-    if (aPosition != ETextPosition::No) {
+bool AdaptiveFiscalLogic::adjustBuffer(QStringList &aBuffer, ETextPosition::Enum aPosition)
+{
+    if (aPosition != ETextPosition::No)
+    {
         removeDelimeter(aBuffer, aPosition);
     }
 
-    for (int i = 0; i < aBuffer.size(); ++i) {
+    for (int i = 0; i < aBuffer.size(); ++i)
+    {
         QStringList newBuffer = getSeparatedBuffer(aBuffer[i]);
         int size = newBuffer.size();
 
-        if (size > 1) {
-            for (int j = 0; j < newBuffer.size(); ++j) {
+        if (size > 1)
+        {
+            for (int j = 0; j < newBuffer.size(); ++j)
+            {
                 aBuffer.insert(i + j, newBuffer[j]);
             }
 
@@ -83,7 +95,8 @@ bool AdaptiveFiscalLogic::adjustBuffer(QStringList &aBuffer, ETextPosition::Enum
 }
 
 //--------------------------------------------------------------------------------
-TMoneyPosition AdaptiveFiscalLogic::getMoneyPosition() {
+TMoneyPosition AdaptiveFiscalLogic::getMoneyPosition()
+{
     std::list<QString> reciptTemplate =
         mConfiguration[CHardwareSDK::Printer::ReceiptTemplate].toStringList().toStdList();
 
@@ -93,11 +106,13 @@ TMoneyPosition AdaptiveFiscalLogic::getMoneyPosition() {
     auto firstIt = std::find_if(reciptTemplate.begin(), reciptTemplate.end(),
                                 [&](const QString &aLine) -> bool { return aLine.contains(currencyTemplate); });
 
-    if (firstIt != reciptTemplate.end()) {
+    if (firstIt != reciptTemplate.end())
+    {
         auto lastIt = std::find_if(reciptTemplate.rbegin(), reciptTemplate.rend(),
                                    [&](const QString &aLine) -> bool { return aLine.contains(currencyTemplate); });
 
-        if (lastIt != reciptTemplate.rend()) {
+        if (lastIt != reciptTemplate.rend())
+        {
             QStringList qreciptTemplate = QStringList::fromStdList(reciptTemplate);
             result = TMoneyPosition(qreciptTemplate.indexOf(*firstIt), qreciptTemplate.lastIndexOf(*lastIt));
         }
@@ -107,15 +122,17 @@ TMoneyPosition AdaptiveFiscalLogic::getMoneyPosition() {
 }
 
 //--------------------------------------------------------------------------------
-bool AdaptiveFiscalLogic::adjustReceipt(const QStringList &aReceipt) {
+bool AdaptiveFiscalLogic::adjustReceipt(const QStringList &aReceipt)
+{
     TMoneyPosition moneyPosition = getMoneyPosition();
 
-    if (adjustReceipt(aReceipt, moneyPosition, ETextPosition::No)) {
+    if (adjustReceipt(aReceipt, moneyPosition, ETextPosition::No))
+    {
         return true;
     }
 
-    if ((moneyPosition != TMoneyPosition(-1, -1)) &&
-        adjustReceipt(aReceipt, TMoneyPosition(-1, -1), ETextPosition::No)) {
+    if ((moneyPosition != TMoneyPosition(-1, -1)) && adjustReceipt(aReceipt, TMoneyPosition(-1, -1), ETextPosition::No))
+    {
         return true;
     }
 
@@ -126,7 +143,8 @@ bool AdaptiveFiscalLogic::adjustReceipt(const QStringList &aReceipt) {
 
 //--------------------------------------------------------------------------------
 bool AdaptiveFiscalLogic::adjustReceipt(const QStringList &aReceipt, const TMoneyPosition &aMoneyPosition,
-                                        ETextPosition::Enum aPosition) {
+                                        ETextPosition::Enum aPosition)
+{
     QStringList receipt(aReceipt);
     removeDelimeter(receipt, aPosition);
 
@@ -139,16 +157,19 @@ bool AdaptiveFiscalLogic::adjustReceipt(const QStringList &aReceipt, const TMone
     QStringList payDataBuffer;
     QStringList endDataBuffer;
 
-    if (smartAdaptive) {
+    if (smartAdaptive)
+    {
         payDataBuffer = receipt.mid(aMoneyPosition.first, aMoneyPosition.second - aMoneyPosition.first + 1);
         endDataBuffer = receipt.mid(aMoneyPosition.second + 1);
 
-        auto isDataOK = [&](QStringList &aBuffer, ETextPosition::Enum aPosition) -> bool {
+        auto isDataOK = [&](QStringList &aBuffer, ETextPosition::Enum aPosition) -> bool
+        {
             return adjustBuffer(aBuffer, aPosition) || adjustBuffer(aBuffer, ETextPosition::Bound) ||
                    adjustBuffer(aBuffer, ETextPosition::AllOver);
         };
 
-        while (isDataOK(payDataBuffer, ETextPosition::Down) && !isDataOK(endDataBuffer, ETextPosition::Up)) {
+        while (isDataOK(payDataBuffer, ETextPosition::Down) && !isDataOK(endDataBuffer, ETextPosition::Up))
+        {
             payDataBuffer << endDataBuffer.first();
             endDataBuffer.removeFirst();
         }
@@ -156,13 +177,17 @@ bool AdaptiveFiscalLogic::adjustReceipt(const QStringList &aReceipt, const TMone
         smartAdaptive = isDataOK(payDataBuffer, ETextPosition::Down) && isDataOK(endDataBuffer, ETextPosition::Up);
     }
 
-    for (int i = 0; i < receipt.size(); ++i) {
-        if (smartAdaptive && (aMoneyPosition.first == i)) {
-            if (result.size() > (CSparkFR::TextProperties::Numbers.size() - 2)) {
+    for (int i = 0; i < receipt.size(); ++i)
+    {
+        if (smartAdaptive && (aMoneyPosition.first == i))
+        {
+            if (result.size() > (CSparkFR::TextProperties::Numbers.size() - 2))
+            {
                 return false;
             }
 
-            while (result.size() != (CSparkFR::TextProperties::Numbers.size() - 2)) {
+            while (result.size() != (CSparkFR::TextProperties::Numbers.size() - 2))
+            {
                 result << "";
             }
 
@@ -177,15 +202,21 @@ bool AdaptiveFiscalLogic::adjustReceipt(const QStringList &aReceipt, const TMone
         int lines = result.last().count(CSparkFR::TextProperties::Separator) + 1;
 
         if ((lines < CSparkFR::TextProperties::MaxListSize) &&
-            ((result.last() + newLine).size() < CSparkFR::TextProperties::MaxSize)) {
-            if (!result.last().isEmpty()) {
+            ((result.last() + newLine).size() < CSparkFR::TextProperties::MaxSize))
+        {
+            if (!result.last().isEmpty())
+            {
                 newLine.prepend(CSparkFR::TextProperties::Separator);
             }
 
             result.last() += newLine;
-        } else if (result.size() < CSparkFR::TextProperties::Numbers.size()) {
+        }
+        else if (result.size() < CSparkFR::TextProperties::Numbers.size())
+        {
             result << newLine;
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
@@ -196,7 +227,8 @@ bool AdaptiveFiscalLogic::adjustReceipt(const QStringList &aReceipt, const TMone
 }
 
 //--------------------------------------------------------------------------------
-QStringList &AdaptiveFiscalLogic::getTextProperties() {
+QStringList &AdaptiveFiscalLogic::getTextProperties()
+{
     return mTextProperties;
 }
 

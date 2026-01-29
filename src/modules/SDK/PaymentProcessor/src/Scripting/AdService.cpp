@@ -5,39 +5,50 @@
 #include <SDK/PaymentProcessor/Core/IGUIService.h>
 #include <SDK/PaymentProcessor/Scripting/AdService.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Scripting {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
-            AdService::AdService(ICore *aCore) : mCore(aCore), mAdSource(nullptr) {
+            AdService::AdService(ICore *aCore) : mCore(aCore), mAdSource(nullptr)
+            {
             }
 
             //------------------------------------------------------------------------------
-            void AdService::addEvent(const QString &aEvent, const QVariantMap &aParameters) {
-                if (getAdSource()) {
+            void AdService::addEvent(const QString &aEvent, const QVariantMap &aParameters)
+            {
+                if (getAdSource())
+                {
                     getAdSource()->addEvent(aEvent, aParameters);
                 }
             }
 
             //------------------------------------------------------------------------------
-            QString AdService::getBanner(const QString &aBanner) {
+            QString AdService::getBanner(const QString &aBanner)
+            {
                 return getContent(aBanner);
             }
 
             //------------------------------------------------------------------------------
-            QString AdService::getReceiptHeader() {
+            QString AdService::getReceiptHeader()
+            {
                 return QString();
             }
 
             //------------------------------------------------------------------------------
-            QString AdService::getReceiptFooter() {
+            QString AdService::getReceiptFooter()
+            {
                 return getContent("receipt");
             }
 
             //------------------------------------------------------------------------------
-            SDK::GUI::IAdSource *AdService::getAdSource() {
-                if (!mAdSource) {
+            SDK::GUI::IAdSource *AdService::getAdSource()
+            {
+                if (!mAdSource)
+                {
                     mAdSource = mCore->getGUIService()->getAdSource();
                 }
 
@@ -45,7 +56,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QString AdService::getContent(const QString &aName) {
+            QString AdService::getContent(const QString &aName)
+            {
                 return getAdSource() ? getAdSource()->getContent(aName) : "";
             }
 

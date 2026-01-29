@@ -17,7 +17,8 @@
 typedef QPair<int, int> TMoneyPosition;
 
 //--------------------------------------------------------------------------------
-class AdaptiveFiscalLogic {
+class AdaptiveFiscalLogic
+{
   public:
     AdaptiveFiscalLogic(const QVariantMap &aConfiguration);
 

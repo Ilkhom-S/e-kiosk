@@ -3,7 +3,8 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-namespace CCCNetCreator {
+namespace CCCNetCreator
+{
     /// Формат представления даты в ответе на запросы идентификации.
     const QString DateFormat = "yyyyMM";
 
@@ -14,9 +15,11 @@ namespace CCCNetCreator {
     const int ExitInitializeTimeout = 5 * 1000;
 
     /// Команды
-    namespace Commands {
+    namespace Commands
+    {
         /// Обновление прошивки. A1..A3 - это вроде как команды купюроприёмника
-        namespace UpdatingFirmware {
+        namespace UpdatingFirmware
+        {
             const char SetBaudRate[] = "\xA0";
             const char WriteHead[] = "\xA1";
             const char WriteBlock[] = "\xA2";
@@ -28,7 +31,8 @@ namespace CCCNetCreator {
     } // namespace Commands
 
     /// Обновление прошивки.
-    namespace UpdatingFirmware {
+    namespace UpdatingFirmware
+    {
         /// Размер заголовка прошивки.
         const int HeadSize = 39;
 
@@ -36,7 +40,8 @@ namespace CCCNetCreator {
         const int BlockSize = 128;
 
         /// Ответы на команды обновления прошивки.
-        namespace Answers {
+        namespace Answers
+        {
             const char WritingBlockOK = '\xA4';
             const char WritingBlockError = '\xA5';
         } // namespace Answers

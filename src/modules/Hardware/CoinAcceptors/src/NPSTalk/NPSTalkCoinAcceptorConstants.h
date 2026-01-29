@@ -3,9 +3,11 @@
 #pragma once
 
 /// Константы, команды и коды состояний устройств на протоколе NPSTalk.
-namespace CNPSTalk {
+namespace CNPSTalk
+{
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// После сброса валидатора.
         // const int ResetValidator = 3000;  // если будем делать валидаторы на NPSTalk - раскомментить.
 
@@ -17,7 +19,8 @@ namespace CNPSTalk {
     } // namespace Timeouts
 
     /// Команды.
-    namespace Command {
+    namespace Command
+    {
         const char TestConnection = '\xA1';
         const char Reset = '\xA2';
         const char GetModelVersion = '\xA3';

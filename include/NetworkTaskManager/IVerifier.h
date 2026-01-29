@@ -6,9 +6,11 @@ class QByteArray;
 class NetworkTask;
 
 //------------------------------------------------------------------------
-class IVerifier {
+class IVerifier
+{
   public:
-    virtual ~IVerifier() {
+    virtual ~IVerifier()
+    {
     }
 
     virtual bool verify(NetworkTask *aTask, const QByteArray &aData) = 0;

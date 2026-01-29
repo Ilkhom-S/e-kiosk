@@ -5,11 +5,13 @@
 #include <QtWidgets/QWidget>
 #include <Common/QtHeadersEnd.h>
 
-namespace Ui {
+namespace Ui
+{
     class SearchDevicesForm;
 }
 
-class SearchDevicesForm : public QWidget {
+class SearchDevicesForm : public QWidget
+{
     Q_OBJECT
 
   public:

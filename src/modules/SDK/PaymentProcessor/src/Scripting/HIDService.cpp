@@ -19,12 +19,16 @@
 
 namespace PPSDK = SDK::PaymentProcessor;
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Scripting {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
-            HIDService::HIDService(ICore *aCore) : mCore(aCore), mService(mCore->getHIDService()) {
+            HIDService::HIDService(ICore *aCore) : mCore(aCore), mService(mCore->getHIDService())
+            {
                 connect(mService, SIGNAL(error()), SIGNAL(error()));
 
                 // Сигналы из ядра завернем в общий скртптовый сигнал hiddata
@@ -36,22 +40,26 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void HIDService::enable(const QString &aName) {
+            void HIDService::enable(const QString &aName)
+            {
                 mService->setEnable(true, aName);
             }
 
             //------------------------------------------------------------------------------
-            void HIDService::disable(const QString &aName) {
+            void HIDService::disable(const QString &aName)
+            {
                 mService->setEnable(false, aName);
             }
 
             //------------------------------------------------------------------------------
-            void HIDService::updateParameters(const QVariantMap &aParameters) {
+            void HIDService::updateParameters(const QVariantMap &aParameters)
+            {
                 mParameters = aParameters;
             }
 
             //------------------------------------------------------------------------------
-            QString HIDService::getExternalData() {
+            QString HIDService::getExternalData()
+            {
                 qint64 providerId = mParameters[SDK::PaymentProcessor::CPayment::Parameters::Provider].toLongLong();
 
                 return mCore->getPaymentService()->getProvider(providerId).externalDataHandler;
@@ -67,11 +75,13 @@ namespace SDK {
             }*/
 
             //------------------------------------------------------------------------------
-            void HIDService::onData(const QVariantMap &aDataMap) {
+            void HIDService::onData(const QVariantMap &aDataMap)
+            {
                 QVariantMap parameters;
                 QString value;
 
-                if (aDataMap.contains(CHardwareSDK::HID::Text)) {
+                if (aDataMap.contains(CHardwareSDK::HID::Text))
+                {
                     value = mService->valueToString(aDataMap.value(CHardwareSDK::HID::Text));
 
                     parameters.insert(HID::SOURCE, HID::SOURCE_SCANNER);
@@ -82,7 +92,8 @@ namespace SDK {
                     parameters.insert(HID::EXTERNAL_DATA, false);
 
                     QString externalDataHandler = getExternalData();
-                    if (!externalDataHandler.trimmed().isEmpty() && !value.isEmpty()) {
+                    if (!externalDataHandler.trimmed().isEmpty() && !value.isEmpty())
+                    {
                         QJSEngine script;
 
                         // TODO PORT_QT5
@@ -112,7 +123,8 @@ namespace SDK {
                     }
                 }
 
-                if (aDataMap.contains(CHardwareSDK::HID::Image)) {
+                if (aDataMap.contains(CHardwareSDK::HID::Image))
+                {
                     bool faceDetected = aDataMap.value(CHardwareSDK::HID::FaceDetected, false).value<bool>();
 
                     QImage image = aDataMap.value(CHardwareSDK::HID::Image).value<QImage>();
@@ -125,7 +137,8 @@ namespace SDK {
                     parameters.insert(HID::RAW_BASE64, QString(buffer.data().toBase64()));
                     parameters.insert(HID::CAMERA_FACE_DETECTED, faceDetected);
 
-                    if (faceDetected) {
+                    if (faceDetected)
+                    {
                         buffer.open(QIODevice::WriteOnly);
                         aDataMap.value(CHardwareSDK::HID::ImageWithFaceArea)
                             .value<QImage>()
@@ -139,13 +152,15 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void HIDService::onInserted(const QVariantMap &aData) {
+            void HIDService::onInserted(const QVariantMap &aData)
+            {
                 QVariantMap data;
 
                 data.insert(HID::SOURCE, HID::SOURCE_CARD);
                 data.insert(HID::SIGNAL, HID::SIGNAL_INSERT);
 
-                foreach (QString name, aData.keys()) {
+                foreach (QString name, aData.keys())
+                {
                     data.insert(name, aData[name]);
                 }
 
@@ -153,7 +168,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void HIDService::onEjected() {
+            void HIDService::onEjected()
+            {
                 QVariantMap data;
 
                 data.insert(HID::SOURCE, HID::SOURCE_CARD);
@@ -163,7 +179,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void HIDService::executeExternalHandler(const QVariantMap &aExpression) {
+            void HIDService::executeExternalHandler(const QVariantMap &aExpression)
+            {
                 emit externalHandler(aExpression);
             }
 

@@ -12,7 +12,8 @@
 #include "IServiceWindow.h"
 
 //------------------------------------------------------------------------
-class KeysServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::KeysServiceWindow {
+class KeysServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::KeysServiceWindow
+{
     Q_OBJECT
 
   public:

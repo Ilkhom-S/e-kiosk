@@ -18,7 +18,8 @@
 #include "Packer.h"
 #include <zlib.h>
 
-namespace CPacker {
+namespace CPacker
+{
     const int DefaultTimeout = 300 * 1000; // таймаут распаковки/запаковки в мс.
 
     // ported from https://stackoverflow.com/questions/2690328/qt-quncompress-gzip-data
@@ -29,8 +30,10 @@ namespace CPacker {
 //------------------------------------------------------------------------------
 Packer::Packer(const QString &aToolPath, ILog *aLog)
     : mExitCode(0), mUpdateMode(false), mFormat(Zip), mLevel(9), mRecursive(false), mTimeout(CPacker::DefaultTimeout),
-      mToolPath("7za.exe") {
-    if (aLog) {
+      mToolPath("7za.exe")
+{
+    if (aLog)
+    {
         setLog(aLog);
     }
 
@@ -38,8 +41,10 @@ Packer::Packer(const QString &aToolPath, ILog *aLog)
 }
 
 //------------------------------------------------------------------------------
-void Packer::setToolPath(const QString &aToolPath) {
-    if (!aToolPath.isEmpty()) {
+void Packer::setToolPath(const QString &aToolPath)
+{
+    if (!aToolPath.isEmpty())
+    {
         mToolPath = QDir::toNativeSeparators(QDir::cleanPath(aToolPath + QDir::separator() + "7za.exe"));
 
         toLog(LogLevel::Debug, QString("Zip tool path: '%1'").arg(mToolPath));
@@ -47,17 +52,20 @@ void Packer::setToolPath(const QString &aToolPath) {
 }
 
 //------------------------------------------------------------------------------
-void Packer::setUpdateMode(bool aUpdateMode) {
+void Packer::setUpdateMode(bool aUpdateMode)
+{
     mUpdateMode = aUpdateMode;
 }
 
 //---------------------------------------------------------------------------
-bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName, QByteArray &aOutBuffer, int aLevel) {
+bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName, QByteArray &aOutBuffer, int aLevel)
+{
     // Prepare output
     aOutBuffer.clear();
 
     // Is there something to do?
-    if (aInBuffer.length()) {
+    if (aInBuffer.length())
+    {
         // Declare vars
         int flush = 0;
 
@@ -69,7 +77,8 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName,
         int ret = deflateInit2(&strm, qMax(-1, qMin(9, aLevel)), Z_DEFLATED, CPacker::GZIP_WINDOWS_BIT, 8,
                                Z_DEFAULT_STRATEGY);
 
-        if (ret != Z_OK) {
+        if (ret != Z_OK)
+        {
             return false;
         }
 
@@ -82,7 +91,8 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName,
         header.time = QDateTime::currentDateTime().toSecsSinceEpoch();
 
         ret = deflateSetHeader(&strm, &header);
-        if (ret != Z_OK) {
+        if (ret != Z_OK)
+        {
             return false;
         }
 
@@ -94,7 +104,8 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName,
         int input_data_left = aInBuffer.length();
 
         // Compress data until available
-        do {
+        do
+        {
             // Determine current chunk size
             int chunk_size = qMin(CPacker::GZIP_CHUNK_SIZE, input_data_left);
 
@@ -110,7 +121,8 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName,
             flush = (input_data_left <= 0 ? Z_FINISH : Z_NO_FLUSH);
 
             // Deflate chunk and cumulate output
-            do {
+            do
+            {
                 // Declare vars
                 char out[CPacker::GZIP_CHUNK_SIZE];
 
@@ -122,7 +134,8 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName,
                 ret = deflate(&strm, flush);
 
                 // Check errors
-                if (ret == Z_STREAM_ERROR) {
+                if (ret == Z_STREAM_ERROR)
+                {
                     // Clean-up
                     deflateEnd(&strm);
 
@@ -134,7 +147,8 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName,
                 int have = (CPacker::GZIP_CHUNK_SIZE - strm.avail_out);
 
                 // Cumulate result
-                if (have > 0) {
+                if (have > 0)
+                {
                     aOutBuffer.append((char *)out, have);
                 }
             } while (strm.avail_out == 0);
@@ -152,13 +166,15 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName,
 }
 
 //------------------------------------------------------------------------------
-bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QByteArray &aOutBuffer) {
+bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QByteArray &aOutBuffer)
+{
     // Prepare output
     aFileName.clear();
     aOutBuffer.clear();
 
     // Is there something to do?
-    if (aInBuffer.length() > 0) {
+    if (aInBuffer.length() > 0)
+    {
         // Prepare inflater status
         z_stream strm;
         memset(&strm, 0, sizeof(strm));
@@ -166,7 +182,8 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QBy
         // Initialize inflater
         int ret = inflateInit2(&strm, CPacker::GZIP_WINDOWS_BIT);
 
-        if (ret != Z_OK) {
+        if (ret != Z_OK)
+        {
             return false;
         }
 
@@ -178,7 +195,8 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QBy
         header.name_max = nameBuffer.size();
 
         ret = inflateGetHeader(&strm, &header);
-        if (ret != Z_OK) {
+        if (ret != Z_OK)
+        {
             return false;
         }
 
@@ -187,12 +205,14 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QBy
         int input_data_left = aInBuffer.length();
 
         // Decompress data until available
-        do {
+        do
+        {
             // Determine current chunk size
             int chunk_size = qMin(CPacker::GZIP_CHUNK_SIZE, input_data_left);
 
             // Check for termination
-            if (chunk_size <= 0) {
+            if (chunk_size <= 0)
+            {
                 break;
             }
 
@@ -205,7 +225,8 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QBy
             input_data_left -= chunk_size;
 
             // Inflate chunk and cumulate output
-            do {
+            do
+            {
                 // Declare vars
                 char out[CPacker::GZIP_CHUNK_SIZE];
 
@@ -216,7 +237,8 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QBy
                 // Try to inflate chunk
                 ret = inflate(&strm, Z_NO_FLUSH);
 
-                switch (ret) {
+                switch (ret)
+                {
                     case Z_NEED_DICT:
                         ret = Z_DATA_ERROR;
                     case Z_DATA_ERROR:
@@ -230,7 +252,8 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QBy
                 int have = (CPacker::GZIP_CHUNK_SIZE - strm.avail_out);
 
                 // Cumulate result
-                if (have > 0) {
+                if (have > 0)
+                {
                     aOutBuffer.append((char *)out, have);
                 }
 
@@ -238,7 +261,8 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QBy
 
         } while (ret != Z_STREAM_END);
 
-        if (strlen((const char *)header.name)) {
+        if (strlen((const char *)header.name))
+        {
             aFileName = QString::fromLatin1((const char *)header.name);
         }
 
@@ -254,7 +278,8 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QBy
 
 //------------------------------------------------------------------------------
 QString Packer::pack(const QString &aTargetName, const QString &aSourceDir, const QStringList &aSearchMasks,
-                     const QStringList &aExcludeWildcard) {
+                     const QStringList &aExcludeWildcard)
+{
     QStringList files = pack(aTargetName, aSourceDir, aSearchMasks, aExcludeWildcard, 0);
 
     return files.isEmpty() ? QString() : files.first();
@@ -262,33 +287,41 @@ QString Packer::pack(const QString &aTargetName, const QString &aSourceDir, cons
 
 //------------------------------------------------------------------------------
 QStringList Packer::pack(const QString &aTargetName, const QString &aSourceDir, const QStringList &aSearchMasks,
-                         const QStringList &aExcludeWildcard, int aMaxPartSize) {
+                         const QStringList &aExcludeWildcard, int aMaxPartSize)
+{
     QStringList zipArguments = QStringList() << (mUpdateMode ? "u" : "a") << (mFormat == SevenZip ? "-t7z" : "-tzip")
                                              << "-bd" << QString("-mx=%1").arg(mLevel) << "-ssw" << "-y" << aTargetName;
 
-    if (mRecursive) {
+    if (mRecursive)
+    {
         zipArguments << "-r";
     }
 
-    foreach (auto mask, aSearchMasks) {
+    foreach (auto mask, aSearchMasks)
+    {
         zipArguments << aSourceDir + QDir::separator() + mask;
     }
 
-    if (aMaxPartSize) {
+    if (aMaxPartSize)
+    {
         zipArguments << QString("-v%1b").arg(aMaxPartSize);
     }
 
-    foreach (auto wildcard, aExcludeWildcard) {
-        if (!wildcard.isEmpty()) {
+    foreach (auto wildcard, aExcludeWildcard)
+    {
+        if (!wildcard.isEmpty())
+        {
             zipArguments << QString("-xr!%1").arg(wildcard);
         }
     }
 
     QFileInfo info(aTargetName);
 
-    if (!mUpdateMode) {
+    if (!mUpdateMode)
+    {
         // remove old archive
-        foreach (const QString &file, QDir(info.absolutePath(), info.fileName() + "*").entryList()) {
+        foreach (const QString &file, QDir(info.absolutePath(), info.fileName() + "*").entryList())
+        {
             QFile::remove(QDir::toNativeSeparators(QDir::cleanPath(info.absolutePath() + QDir::separator() + file)));
         }
     }
@@ -296,7 +329,8 @@ QStringList Packer::pack(const QString &aTargetName, const QString &aSourceDir, 
     toLog(LogLevel::Normal, QString("Executing command: %1 %2").arg(mToolPath).arg(zipArguments.join(" ")));
 
     mZipProcess.start(mToolPath, zipArguments);
-    if (!mZipProcess.waitForFinished(mTimeout)) {
+    if (!mZipProcess.waitForFinished(mTimeout))
+    {
         mExitCode = -1;
         toLog(LogLevel::Error, QString("Unknown error while executing command or timeout expired(%1 sec): %2 %3")
                                    .arg(mTimeout / 1000., 0, 'f', 1)
@@ -309,14 +343,18 @@ QStringList Packer::pack(const QString &aTargetName, const QString &aSourceDir, 
     mExitCode = mZipProcess.exitCode();
     mMessages = QString::fromLocal8Bit(mZipProcess.readAllStandardOutput()).remove("\r");
 
-    if (mExitCode == 1) {
+    if (mExitCode == 1)
+    {
         toLog(LogLevel::Warning, QString("Execute command have some warning: %1 %2. Return code: %3. Output stream: %4")
                                      .arg(mToolPath)
                                      .arg(zipArguments.join(" "))
                                      .arg(mExitCode)
                                      .arg(mMessages));
-    } else {
-        if (mExitCode > 1) {
+    }
+    else
+    {
+        if (mExitCode > 1)
+        {
             toLog(LogLevel::Error, QString("Can't execute command: %1 %2. Return code: %3. Output stream: %4")
                                        .arg(mToolPath)
                                        .arg(zipArguments.join(" "))
@@ -331,12 +369,14 @@ QStringList Packer::pack(const QString &aTargetName, const QString &aSourceDir, 
 }
 
 //------------------------------------------------------------------------------
-bool Packer::test(const QString &aTargetName) {
+bool Packer::test(const QString &aTargetName)
+{
     QString zipCommand = QString("t \"%1\"").arg(QDir::toNativeSeparators(aTargetName));
 
     mZipProcess.setArguments(QStringList() << zipCommand);
     mZipProcess.start(mToolPath);
-    if (!mZipProcess.waitForFinished(mTimeout)) {
+    if (!mZipProcess.waitForFinished(mTimeout))
+    {
         mExitCode = -1;
         toLog(LogLevel::Error, QString("Unknown error while executing command: %1 %2").arg(mToolPath).arg(zipCommand));
 
@@ -351,14 +391,17 @@ bool Packer::test(const QString &aTargetName) {
 
 //------------------------------------------------------------------------------
 bool Packer::unpack(const QString &aSourceName, const QString &aDestinationDir, bool aSkipExisting,
-                    const QStringList &aExtractFiles /*= QStringList()*/) {
+                    const QStringList &aExtractFiles /*= QStringList()*/)
+{
     QStringList commanParams;
 
     commanParams << "x" << "-bd" << "-y";
-    if (!aDestinationDir.isEmpty()) {
+    if (!aDestinationDir.isEmpty())
+    {
         commanParams << "-o" + aDestinationDir;
     }
-    if (aSkipExisting) {
+    if (aSkipExisting)
+    {
         commanParams << "-aos";
     }
 
@@ -367,7 +410,8 @@ bool Packer::unpack(const QString &aSourceName, const QString &aDestinationDir, 
 
     mZipProcess.start(mToolPath, commanParams);
 
-    if (!mZipProcess.waitForFinished(mTimeout)) {
+    if (!mZipProcess.waitForFinished(mTimeout))
+    {
         mExitCode = -1;
         toLog(LogLevel::Error,
               QString("Unknown error while executing command: %1 %2.").arg(mToolPath).arg(commanParams.join(" ")));
@@ -382,35 +426,42 @@ bool Packer::unpack(const QString &aSourceName, const QString &aDestinationDir, 
 }
 
 //------------------------------------------------------------------------------
-int Packer::exitCode() const {
+int Packer::exitCode() const
+{
     return mExitCode;
 }
 
 //------------------------------------------------------------------------------
-const QString &Packer::messages() const {
+const QString &Packer::messages() const
+{
     return mMessages;
 }
 
 //------------------------------------------------------------------------------
-void Packer::setLevel(int aLevel) {
+void Packer::setLevel(int aLevel)
+{
     Q_ASSERT(aLevel >= 3 && aLevel <= 9);
 
     mLevel = aLevel;
 }
 
 //------------------------------------------------------------------------------
-void Packer::setFormat(Packer::Format aFormat) {
+void Packer::setFormat(Packer::Format aFormat)
+{
     mFormat = aFormat;
 }
 
 //------------------------------------------------------------------------------
-void Packer::setTimeout(int aTimeout) {
+void Packer::setTimeout(int aTimeout)
+{
     mTimeout = aTimeout;
 }
 
 //------------------------------------------------------------------------------
-void Packer::terminate() {
-    if (mZipProcess.state() != QProcess::NotRunning) {
+void Packer::terminate()
+{
+    if (mZipProcess.state() != QProcess::NotRunning)
+    {
         toLog(LogLevel::Error, "Terminate packer process.");
 
         mZipProcess.kill();
@@ -418,8 +469,10 @@ void Packer::terminate() {
 }
 
 //------------------------------------------------------------------------------
-QString Packer::exitCodeDescription() const {
-    switch (mExitCode) {
+QString Packer::exitCodeDescription() const
+{
+    switch (mExitCode)
+    {
         case -1:
             return "Error or timeout execution 7za.exe";
         case 0:
@@ -440,7 +493,8 @@ QString Packer::exitCodeDescription() const {
 }
 
 //------------------------------------------------------------------------------
-void Packer::setRecursive(bool aRecursive) {
+void Packer::setRecursive(bool aRecursive)
+{
     mRecursive = aRecursive;
 }
 

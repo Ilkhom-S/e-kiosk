@@ -26,17 +26,20 @@ namespace FiscalCommand = SDK::Driver::EFiscalPrinterCommand;
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-void PrintCommand::setReceiptTemplate(const QString &aTemplateName) {
+void PrintCommand::setReceiptTemplate(const QString &aTemplateName)
+{
     mReceiptTemplate = aTemplateName;
 }
 
 //---------------------------------------------------------------------------
-QVariantMap PrintCommand::getPrintingParameters(SDK::Driver::IPrinter *aPrinter) {
+QVariantMap PrintCommand::getPrintingParameters(SDK::Driver::IPrinter *aPrinter)
+{
     QVariantMap configuration = aPrinter->getDeviceConfiguration();
     QVariantMap result;
 
     if (configuration.contains(CHardwareSDK::Printer::LineSize) &&
-        configuration[CHardwareSDK::Printer::LineSize].isValid()) {
+        configuration[CHardwareSDK::Printer::LineSize].isValid())
+    {
         result.insert(CHardwareSDK::Printer::LineSize, configuration[CHardwareSDK::Printer::LineSize]);
     }
 
@@ -46,7 +49,8 @@ QVariantMap PrintCommand::getPrintingParameters(SDK::Driver::IPrinter *aPrinter)
 //---------------------------------------------------------------------------
 PrintFiscalCommand::PrintFiscalCommand(const QString &aReceiptType, FiscalCommand::Enum aFiscalCommand,
                                        PrintingService *aService)
-    : PrintCommand(aReceiptType), mFiscalCommand(aFiscalCommand), mService(aService) {
+    : PrintCommand(aReceiptType), mFiscalCommand(aFiscalCommand), mService(aService)
+{
 }
 
 #if 0
@@ -65,7 +69,8 @@ QVariantMap toUpperCaseKeys(const QVariantMap & aParameters)
 #endif
 
 //---------------------------------------------------------------------------
-DSDK::SPaymentData PrintFiscalCommand::getPaymentData(const QVariantMap &aParameters) {
+DSDK::SPaymentData PrintFiscalCommand::getPaymentData(const QVariantMap &aParameters)
+{
     DSDK::TUnitDataList unitDataList;
 
     bool dealerIsBank = aParameters.value(CPrintConstants::DealerIsBank, false).toBool();
@@ -77,21 +82,25 @@ DSDK::SPaymentData PrintFiscalCommand::getPaymentData(const QVariantMap &aParame
     double fee = aParameters.value("DEALER_FEE").toDouble();
     int vat = aParameters.value("VAT").toInt();
 
-    if (amountList.isNull()) {
+    if (amountList.isNull())
+    {
         QString operatorINN = aParameters.value(CPrintConstants::OpINN).toString();
         QString paymentTitle = QString("%1 (%2)")
                                    .arg(aParameters[CPrintConstants::ServiceType].toString())
                                    .arg(aParameters[CPrintConstants::OpBrand].toString());
 
         unitDataList << DSDK::SUnitData(amount, vat, paymentTitle, operatorINN, DSDK::EPayOffSubjectTypes::Payment);
-    } else {
+    }
+    else
+    {
         QVariantList amounts = amountList.toList();
         QVariantList amountTitles = aParameters.value("[AMOUNT_TITLE]").toList();
         QVariantList amountsVAT = aParameters.value("[AMOUNT_VAT]").toList();
         QVariantList operatorINNs = aParameters.value("[OPERATOR_INN]").toList();
 
         // amount содержит список сумм для печати реестра нераспечатанных чеков
-        for (int i = 0; i < amounts.size(); i++) {
+        for (int i = 0; i < amounts.size(); i++)
+        {
             unitDataList << DSDK::SUnitData(amounts.value(i).toDouble(), amountsVAT.value(i).toInt(),
                                             amountTitles.value(i).toString(), operatorINNs.value(i).toString(),
                                             DSDK::EPayOffSubjectTypes::Payment);
@@ -101,14 +110,19 @@ DSDK::SPaymentData PrintFiscalCommand::getPaymentData(const QVariantMap &aParame
     bool combineFeeWithZeroVAT = aParameters.value("COMBINE_FEE_WITH_ZERO_VAT", false).toBool();
     QString feeName = combineFeeWithZeroVAT ? tr("#dealer_bpa_fee") : tr("#dealer_fee");
 
-    if (dealerVAT == 0 && combineFeeWithZeroVAT) {
+    if (dealerVAT == 0 && combineFeeWithZeroVAT)
+    {
         fee = aParameters.value("FEE").toDouble();
-        if (!qFuzzyIsNull(fee)) {
+        if (!qFuzzyIsNull(fee))
+        {
             QString dealerINN = aParameters.value(CPrintConstants::DealerInn).toString();
             unitDataList << DSDK::SUnitData(fee, dealerVAT, feeName, dealerINN, DSDK::EPayOffSubjectTypes::AgentFee);
         }
-    } else {
-        if (!qFuzzyIsNull(fee)) {
+    }
+    else
+    {
+        if (!qFuzzyIsNull(fee))
+        {
             QString dealerINN = aParameters.value(CPrintConstants::DealerInn).toString();
             unitDataList << (dealerIsBank ? DSDK::SUnitData(fee, dealerVAT, tr("#bank_fee"), dealerINN,
                                                             DSDK::EPayOffSubjectTypes::Payment)
@@ -116,7 +130,8 @@ DSDK::SPaymentData PrintFiscalCommand::getPaymentData(const QVariantMap &aParame
                                                             DSDK::EPayOffSubjectTypes::AgentFee));
         }
 
-        if (!qFuzzyIsNull(processingFee)) {
+        if (!qFuzzyIsNull(processingFee))
+        {
             QString bankINN = aParameters.value(CPrintConstants::BankInn).toString();
             unitDataList << DSDK::SUnitData(processingFee, 0, tr("#processing_fee"), bankINN,
                                             DSDK::EPayOffSubjectTypes::Payment);
@@ -139,7 +154,8 @@ DSDK::SPaymentData PrintFiscalCommand::getPaymentData(const QVariantMap &aParame
     result.fiscalParameters[CHardwareSDK::FR::UserPhone] = QString();
     result.fiscalParameters[CHardwareSDK::FR::UserMail] = QString();
 
-    foreach (auto FFData, CPrintCommands::FFDataList) {
+    foreach (auto FFData, CPrintCommands::FFDataList)
+    {
         result.fiscalParameters[FFData] = aParameters[FFData];
     }
 
@@ -178,7 +194,8 @@ DSDK::SPaymentData PrintFiscalCommand::getPaymentData(const QVariantMap &aParame
 }
 
 //---------------------------------------------------------------------------
-bool PrintFiscalCommand::canFiscalPrint(DSDK::IPrinter *aPrinter, bool aRealCheck) {
+bool PrintFiscalCommand::canFiscalPrint(DSDK::IPrinter *aPrinter, bool aRealCheck)
+{
     auto fr = dynamic_cast<DSDK::IFiscalPrinter *>(aPrinter);
 
     return (mService->getFiscalRegister() && PrintCommand::canPrint(aPrinter, aRealCheck)) ||
@@ -186,10 +203,12 @@ bool PrintFiscalCommand::canFiscalPrint(DSDK::IPrinter *aPrinter, bool aRealChec
 }
 
 //---------------------------------------------------------------------------
-bool PrintFiscalCommand::getFiscalInfo(QVariantMap &aParameters, QStringList &aReceiptLines, bool aWaitResult) {
+bool PrintFiscalCommand::getFiscalInfo(QVariantMap &aParameters, QStringList &aReceiptLines, bool aWaitResult)
+{
     PPSDK::IFiscalRegister *fr = mService->getFiscalRegister();
 
-    if (!fr || !fr->hasCapability(PPSDK::ERequestType::Receipt) || !fr->isReady(PPSDK::ERequestType::Receipt)) {
+    if (!fr || !fr->hasCapability(PPSDK::ERequestType::Receipt) || !fr->isReady(PPSDK::ERequestType::Receipt))
+    {
         return false;
     }
 
@@ -202,11 +221,13 @@ bool PrintFiscalCommand::getFiscalInfo(QVariantMap &aParameters, QStringList &aR
                    .isEmpty();
     SDK::Driver::SPaymentData fiscalPaymentData;
 
-    if (!OK) {
+    if (!OK)
+    {
         fiscalPaymentData = getPaymentData(aParameters);
         auto fiscalParameters = fr->createFiscalTicket(paymentId, aParameters, fiscalPaymentData, aWaitResult);
 
-        if (!aWaitResult) {
+        if (!aWaitResult)
+        {
             return true;
         }
 
@@ -217,7 +238,8 @@ bool PrintFiscalCommand::getFiscalInfo(QVariantMap &aParameters, QStringList &aR
         mService->setFiscalNumber(paymentId, fiscalParameters);
     }
 
-    if (OK) {
+    if (OK)
+    {
         aReceiptLines = fr->getReceipt(paymentId, aParameters, fiscalPaymentData);
     }
 
@@ -225,8 +247,10 @@ bool PrintFiscalCommand::getFiscalInfo(QVariantMap &aParameters, QStringList &aR
 }
 
 //---------------------------------------------------------------------------
-bool PrintPayment::canPrint(DSDK::IPrinter *aPrinter, bool aRealCheck) {
-    if (!aPrinter) {
+bool PrintPayment::canPrint(DSDK::IPrinter *aPrinter, bool aRealCheck)
+{
+    if (!aPrinter)
+    {
         return false;
     }
 
@@ -237,7 +261,8 @@ bool PrintPayment::canPrint(DSDK::IPrinter *aPrinter, bool aRealCheck) {
 }
 
 //---------------------------------------------------------------------------
-bool PrintPayment::makeFiscalByFR(const QVariantMap &aParameters) {
+bool PrintPayment::makeFiscalByFR(const QVariantMap &aParameters)
+{
     QStringList receipt = mService->getReceipt(mReceiptTemplate, aParameters);
     QVariantMap parameters(aParameters);
     QStringList fiscalPart;
@@ -246,7 +271,8 @@ bool PrintPayment::makeFiscalByFR(const QVariantMap &aParameters) {
 }
 
 //---------------------------------------------------------------------------
-bool PrintPayment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameters) {
+bool PrintPayment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameters)
+{
     // Добавляем строки основного чека
     QVariantMap configuration = aPrinter->getDeviceConfiguration();
     bool onlineKKM = configuration[CHardwareSDK::CanOnline].toBool();
@@ -254,7 +280,8 @@ bool PrintPayment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
 
     QString KKMSerialNumber = "0";
 
-    if (!fiscalPrinting) {
+    if (!fiscalPrinting)
+    {
         KKMSerialNumber = configuration[CHardwareSDK::SerialNumber].toString();
     }
 
@@ -270,30 +297,39 @@ bool PrintPayment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
     actualParameters.insert(CPrintConstants::FiscalData, int(hasFiscalInfo));
     QStringList receipt = mService->getReceipt(mReceiptTemplate, actualParameters);
 
-    if (hasFiscalInfo) {
+    if (hasFiscalInfo)
+    {
         receipt.append(fiscalPart);
     }
 
     bool result = false;
 
     // Повторно мы печатаем только нефискальные чеки
-    if (!fiscalPrinting) {
+    if (!fiscalPrinting)
+    {
         // Если есть фискальный сервис, но нет фискальной информации и запрещено печатать чеки без ФП
-        if (!mService->enableBlankFiscalData() && mService->getFiscalRegister() && !hasFiscalInfo) {
+        if (!mService->enableBlankFiscalData() && mService->getFiscalRegister() && !hasFiscalInfo)
+        {
             mService->toLog(LogLevel::Error, QString("[%1] Not print receipt with blank fiscal data.")
                                                  .arg(aParameters[PPSDK::CPayment::Parameters::ID].toLongLong()));
-        } else {
+        }
+        else
+        {
             result = canPrint(aPrinter, false) && aPrinter->print(receipt);
         }
-    } else if (canFiscalPrint(aPrinter, false)) {
+    }
+    else if (canFiscalPrint(aPrinter, false))
+    {
         DSDK::SPaymentData paymentData = getPaymentData(actualParameters);
         DSDK::IFiscalPrinter *fiscalPrinter = static_cast<DSDK::IFiscalPrinter *>(aPrinter);
 
         quint32 FDNumber = 0;
         result = fiscalPrinter->printFiscal(receipt, paymentData, &FDNumber);
 
-        if (result) {
-            if (mFiscalFieldData.isEmpty()) {
+        if (result)
+        {
+            if (mFiscalFieldData.isEmpty())
+            {
                 mFiscalFieldData = aPrinter->getDeviceConfiguration()
                                        .value(CHardwareSDK::FR::FiscalFieldData)
                                        .value<DSDK::TFiscalFieldData>();
@@ -305,7 +341,8 @@ bool PrintPayment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
 
             addFiscalPaymentData(fiscalPaymentData, receipt);
 
-            for (int i = 0; i < payOffSubjectData.size(); ++i) {
+            for (int i = 0; i < payOffSubjectData.size(); ++i)
+            {
                 addFiscalPaymentData(payOffSubjectData[i], receipt);
             }
         }
@@ -320,8 +357,10 @@ bool PrintPayment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
 }
 
 //---------------------------------------------------------------------------
-void PrintPayment::addFiscalPaymentData(const DSDK::TFiscalPaymentData &aFPData, QStringList &aData) {
-    for (auto it = aFPData.begin(); it != aFPData.end(); ++it) {
+void PrintPayment::addFiscalPaymentData(const DSDK::TFiscalPaymentData &aFPData, QStringList &aData)
+{
+    for (auto it = aFPData.begin(); it != aFPData.end(); ++it)
+    {
         DSDK::SFiscalFieldData FFData = mFiscalFieldData.value(it.key());
 
         QString key = FFData.translationPF;
@@ -335,28 +374,32 @@ void PrintPayment::addFiscalPaymentData(const DSDK::TFiscalPaymentData &aFPData,
         else if (!value.isEmpty())
             text = value;
 
-        if (!text.isEmpty()) {
+        if (!text.isEmpty())
+        {
             aData << text.simplified();
         }
     }
 }
 
 //---------------------------------------------------------------------------
-bool PrintPayment::isFiscal(DSDK::IPrinter *aPrinter) {
+bool PrintPayment::isFiscal(DSDK::IPrinter *aPrinter)
+{
     DSDK::IFiscalPrinter *fiscalPrinter = dynamic_cast<DSDK::IFiscalPrinter *>(aPrinter);
 
     return fiscalPrinter && fiscalPrinter->isFiscal();
 }
 
 //---------------------------------------------------------------------------
-bool PrintBalance::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameters) {
+bool PrintBalance::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameters)
+{
     QStringList receipt = mService->getReceipt(mReceiptType, expandFields(aParameters));
     auto virtualFR = mService->getFiscalRegister();
     QStringList fiscalReceipt;
 
     if (mFiscalMode && virtualFR && virtualFR->hasCapability(PPSDK::ERequestType::XReport) &&
         virtualFR->isReady(PPSDK::ERequestType::XReport) &&
-        virtualFR->serviceRequest(PPSDK::ERequestType::XReport, fiscalReceipt, getPrintingParameters(aPrinter))) {
+        virtualFR->serviceRequest(PPSDK::ERequestType::XReport, fiscalReceipt, getPrintingParameters(aPrinter)))
+    {
         receipt << fiscalReceipt;
     }
 
@@ -368,14 +411,17 @@ bool PrintBalance::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
 }
 
 //---------------------------------------------------------------------------
-QVariantMap PrintBalance::expandFields(const QVariantMap &aParameters) {
+QVariantMap PrintBalance::expandFields(const QVariantMap &aParameters)
+{
     QVariantMap parameters;
 
     auto currencySettings = mService->getCurrencySettings();
 
-    auto fillParameters = [&](const QString &aPrefix) {
+    auto fillParameters = [&](const QString &aPrefix)
+    {
         // монеты
-        foreach (auto coin, currencySettings.coins) {
+        foreach (auto coin, currencySettings.coins)
+        {
             parameters[aPrefix + QString("%1_COIN_COUNT").arg(coin.toString())] = 0;
             parameters[aPrefix + QString("%1_COIN_SUM").arg(coin.toString())] = 0;
         }
@@ -384,7 +430,8 @@ QVariantMap PrintBalance::expandFields(const QVariantMap &aParameters) {
         parameters[aPrefix + "COIN_SUM"] = 0;
 
         // купюры
-        foreach (auto note, currencySettings.notes) {
+        foreach (auto note, currencySettings.notes)
+        {
             parameters[aPrefix + QString("%1_BILL_COUNT").arg(note.toString())] = 0;
             parameters[aPrefix + QString("%1_BILL_SUM").arg(note.toString())] = 0;
         }
@@ -396,7 +443,8 @@ QVariantMap PrintBalance::expandFields(const QVariantMap &aParameters) {
     fillParameters("");
     fillParameters("DISPENSED_");
 
-    for (auto i = aParameters.begin(); i != aParameters.end(); ++i) {
+    for (auto i = aParameters.begin(); i != aParameters.end(); ++i)
+    {
         parameters.insert(i.key(), i.value());
     }
 
@@ -405,12 +453,14 @@ QVariantMap PrintBalance::expandFields(const QVariantMap &aParameters) {
 
 //---------------------------------------------------------------------------
 PrintEncashment::PrintEncashment(const QString &aReceiptType, PrintingService *aService)
-    : PrintBalance(aReceiptType, aService) {
+    : PrintBalance(aReceiptType, aService)
+{
     mFiscalCommand = FiscalCommand::Encashment;
 }
 
 //---------------------------------------------------------------------------
-bool PrintEncashment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameters) {
+bool PrintEncashment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameters)
+{
     // Сохраняем чек перед печатью.
     QStringList receipt = mService->getReceipt(mReceiptType, expandFields(aParameters));
     auto virtualFR = mService->getFiscalRegister();
@@ -419,7 +469,8 @@ bool PrintEncashment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParame
     // Производим выплату фискального регистратора.
     if (mFiscalMode && virtualFR && virtualFR->hasCapability(PPSDK::ERequestType::Encashment) &&
         virtualFR->isReady(PPSDK::ERequestType::Encashment) &&
-        virtualFR->serviceRequest(PPSDK::ERequestType::Encashment, fiscalReceipt, getPrintingParameters(aPrinter))) {
+        virtualFR->serviceRequest(PPSDK::ERequestType::Encashment, fiscalReceipt, getPrintingParameters(aPrinter)))
+    {
         receipt << fiscalReceipt;
     }
 
@@ -429,7 +480,8 @@ bool PrintEncashment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParame
                                  receipt);
     auto fr = dynamic_cast<DSDK::IFiscalPrinter *>(aPrinter);
 
-    if (!canPrint(aPrinter, false)) {
+    if (!canPrint(aPrinter, false))
+    {
         return false;
     }
 
@@ -438,7 +490,8 @@ bool PrintEncashment::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParame
 }
 
 //---------------------------------------------------------------------------
-bool PrintZReport::canPrint(DSDK::IPrinter *aPrinter, bool aRealCheck) {
+bool PrintZReport::canPrint(DSDK::IPrinter *aPrinter, bool aRealCheck)
+{
     auto fr = dynamic_cast<DSDK::IFiscalPrinter *>(aPrinter);
 
     auto virtualFR = mService->getFiscalRegister();
@@ -449,10 +502,12 @@ bool PrintZReport::canPrint(DSDK::IPrinter *aPrinter, bool aRealCheck) {
 }
 
 //---------------------------------------------------------------------------
-bool PrintZReport::print(DSDK::IPrinter *aPrinter, const QVariantMap & /*aParameters*/) {
+bool PrintZReport::print(DSDK::IPrinter *aPrinter, const QVariantMap & /*aParameters*/)
+{
     bool result = false;
 
-    if (!canFiscalPrint(aPrinter, false)) {
+    if (!canFiscalPrint(aPrinter, false))
+    {
         return false;
     }
 
@@ -461,8 +516,10 @@ bool PrintZReport::print(DSDK::IPrinter *aPrinter, const QVariantMap & /*aParame
 
     if (virtualFR && virtualFR->hasCapability(PPSDK::ERequestType::ZReport) &&
         virtualFR->isReady(PPSDK::ERequestType::ZReport) &&
-        virtualFR->serviceRequest(PPSDK::ERequestType::ZReport, fiscalReport, getPrintingParameters(aPrinter))) {
-        if (!fiscalReport.isEmpty()) {
+        virtualFR->serviceRequest(PPSDK::ERequestType::ZReport, fiscalReport, getPrintingParameters(aPrinter)))
+    {
+        if (!fiscalReport.isEmpty())
+        {
             result = aPrinter && aPrinter->print(fiscalReport);
 
             mService->saveReceiptContent(QString("%1_Z_report%2")
@@ -478,15 +535,18 @@ bool PrintZReport::print(DSDK::IPrinter *aPrinter, const QVariantMap & /*aParame
 }
 
 //---------------------------------------------------------------------------
-bool PrintReceipt::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameters) {
-    if (aPrinter == nullptr) {
+bool PrintReceipt::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameters)
+{
+    if (aPrinter == nullptr)
+    {
         return false;
     }
 
     QVariantMap configuration = aPrinter->getDeviceConfiguration();
     QString KKMSerialNumber = configuration[CHardwareSDK::SerialNumber].toString();
 
-    if (KKMSerialNumber.isEmpty()) {
+    if (KKMSerialNumber.isEmpty())
+    {
         KKMSerialNumber = "0";
     }
 
@@ -496,7 +556,8 @@ bool PrintReceipt::print(DSDK::IPrinter *aPrinter, const QVariantMap &aParameter
 
     QString receiptFileName = QString("%1_%2").arg(QTime::currentTime().toString("hhmmsszzz")).arg(mReceiptTemplate);
 
-    if (aParameters.contains(SDK::PaymentProcessor::CPayment::Parameters::ID)) {
+    if (aParameters.contains(SDK::PaymentProcessor::CPayment::Parameters::ID))
+    {
         receiptFileName +=
             QString("_%1").arg(aParameters[SDK::PaymentProcessor::CPayment::Parameters::ID].toLongLong());
     }

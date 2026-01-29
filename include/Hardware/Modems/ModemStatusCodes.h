@@ -5,9 +5,11 @@
 #include "Hardware/Common/BaseStatus.h"
 
 //--------------------------------------------------------------------------------
-namespace ModemStatusCode {
+namespace ModemStatusCode
+{
     /// Ошибки.
-    namespace Error {
+    namespace Error
+    {
         const int SIMError = 151;  /// Ошибка сим-карты.
         const int NoNetwork = 152; /// Отсутствует GSM сигнал.
     } // namespace Error

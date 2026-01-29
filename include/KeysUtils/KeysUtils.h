@@ -12,8 +12,10 @@ class ICryptEngine;
 class NetworkTaskManager;
 
 //---------------------------------------------------------------------------
-namespace EKeysUtilsError {
-    enum Enum {
+namespace EKeysUtilsError
+{
+    enum Enum
+    {
         /// Ошибок нет
         Ok = 0,
         /// Во время обмена с сервером произошла сетевая ошибка
@@ -36,8 +38,10 @@ namespace EKeysUtilsError {
 }; // namespace EKeysUtilsError
 
 //---------------------------------------------------------------------------
-struct SKeyPair {
-    SKeyPair() {
+struct SKeyPair
+{
+    SKeyPair()
+    {
         id = 0;
         engine = 0;
     }

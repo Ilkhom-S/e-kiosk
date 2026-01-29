@@ -11,23 +11,30 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CSparkFR {
+namespace CSparkFR
+{
     /// Системные флаги.
-    namespace SystemFlags {
-        struct SData {
+    namespace SystemFlags
+    {
+        struct SData
+        {
             int number;
             QString mask;
             QString name;
 
-            SData() : number(0) {
+            SData() : number(0)
+            {
             }
-            SData(int aNumber, const QString &aMask, const QString &aName) : number(aNumber), mask(aMask), name(aName) {
+            SData(int aNumber, const QString &aMask, const QString &aName) : number(aNumber), mask(aMask), name(aName)
+            {
             }
         };
 
-        class Data : public QList<SystemFlags::SData> {
+        class Data : public QList<SystemFlags::SData>
+        {
           public:
-            void add(int aNumber, const QString &aMask, const QString &aName) {
+            void add(int aNumber, const QString &aMask, const QString &aName)
+            {
                 append(SystemFlags::SData(aNumber, aMask, aName));
             }
         };
@@ -35,7 +42,8 @@ namespace CSparkFR {
 
     //--------------------------------------------------------------------------------
     /// Модели.
-    namespace Models {
+    namespace Models
+    {
         /// Название модели по умолчанию.
         const char Default[] = "SPARK FR";
 
@@ -46,22 +54,27 @@ namespace CSparkFR {
         const char RegExpData[] = "([0-9]+).*([0-9\\.]+)";
 
         /// Данные модели.
-        struct SData {
+        struct SData
+        {
             QString name;
             int lineSize;
             bool verified;
             SystemFlags::Data systemFlags;
 
-            SData() : name(Default), lineSize(43), verified(false) {
+            SData() : name(Default), lineSize(43), verified(false)
+            {
             }
             SData(const QString &aName, int aLineSize, bool aVerified, const SystemFlags::Data &aSystemFlags)
-                : name(aName), lineSize(aLineSize), verified(aVerified), systemFlags(aSystemFlags) {
+                : name(aName), lineSize(aLineSize), verified(aVerified), systemFlags(aSystemFlags)
+            {
             }
         };
 
-        class CData : public CSpecification<int, SData> {
+        class CData : public CSpecification<int, SData>
+        {
           public:
-            CData() {
+            CData()
+            {
                 // add(100, "SPARK FR100K", 44);
                 // add(800, "SPARK 800TK" , 43);
 
@@ -96,11 +109,13 @@ namespace CSparkFR {
             }
 
           private:
-            void add(int aTag, const QString &aName, int aLineSize) {
+            void add(int aTag, const QString &aName, int aLineSize)
+            {
                 append(aTag, SData(aName, aLineSize, false, SystemFlags::Data()));
             }
 
-            void add(int aTag, const QString &aName, int aLineSize, const SystemFlags::Data &aSystemFlags) {
+            void add(int aTag, const QString &aName, int aLineSize, const SystemFlags::Data &aSystemFlags)
+            {
                 append(aTag, SData(aName, aLineSize, true, aSystemFlags));
             }
         };

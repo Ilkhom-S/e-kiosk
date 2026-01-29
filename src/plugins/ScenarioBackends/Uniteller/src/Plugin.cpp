@@ -17,7 +17,8 @@ using namespace SDK::Driver;
 using namespace SDK::Plugin;
 
 //------------------------------------------------------------------------------
-static IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
+static IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath)
+{
     auto plugin = new DevicePluginBase<UnitellerDevice>(Uniteller::ModelName, aEnvironment, aInstancePath);
 
     plugin->setCore(dynamic_cast<SDK::PaymentProcessor::ICore *>(
@@ -27,7 +28,8 @@ static IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstanc
     return plugin;
 }
 
-TParameterList defaultParameters() {
+TParameterList defaultParameters()
+{
     return TParameterList() << SPluginParameter(CHardwareSDK::ModelName, false, CPPT::ModelName, QString(),
                                                 Uniteller::ModelName, QStringList() << Uniteller::ModelName, true);
 }

@@ -20,25 +20,47 @@
 
 //--------------------------------------------------------------------------------
 /// Теги.
-namespace Tags {
+namespace Tags
+{
     /// BR.
     const char BR[] = "[br]";
 
-    namespace Direction {
-        enum Enum { Open, Close };
+    namespace Direction
+    {
+        enum Enum
+        {
+            Open,
+            Close
+        };
     } // namespace Direction
 
-    namespace Type {
-        enum Enum { Bold, Italic, UnderLine, DoubleWidth, DoubleHeight, BarCode, Image, HR, Center, Amount, None };
+    namespace Type
+    {
+        enum Enum
+        {
+            Bold,
+            Italic,
+            UnderLine,
+            DoubleWidth,
+            DoubleHeight,
+            BarCode,
+            Image,
+            HR,
+            Center,
+            Amount,
+            None
+        };
     } // namespace Type
 
     typedef QSet<Type::Enum> TTypes;
     typedef QSet<TTypes> TGroupTypes;
 
     //--------------------------------------------------------------------------------
-    class CTypes : public CSpecification<QString, Type::Enum> {
+    class CTypes : public CSpecification<QString, Type::Enum>
+    {
       public:
-        CTypes() {
+        CTypes()
+        {
             append("b", Type::Bold);
             append("i", Type::Italic);
             append("u", Type::UnderLine);
@@ -62,15 +84,19 @@ namespace Tags {
     const QString regExpData = QString("%1(.*)%1").arg("\\[(/?[a-z]+)\\]"); /// Шаблон произвольного тега.
     const QString None = QString("[%1]").arg(Types.key(Type::None));        /// Открывающий тег none.
 
-    struct SLexeme {
+    struct SLexeme
+    {
         QString data;
         TTypes tags;
 
-        SLexeme() {
+        SLexeme()
+        {
         }
-        SLexeme(const QString &aData) : data(aData) {
+        SLexeme(const QString &aData) : data(aData)
+        {
         }
-        SLexeme(const QString &aData, TTypes aTags) : tags(aTags), data(aData) {
+        SLexeme(const QString &aData, TTypes aTags) : tags(aTags), data(aData)
+        {
         }
     };
 
@@ -79,16 +105,19 @@ namespace Tags {
     typedef QList<TLexemesCollection> TLexemeReceipt;
 
     //--------------------------------------------------------------------------------
-    struct STagData {
+    struct STagData
+    {
         QByteArray prefix;
         QByteArray open;
         QByteArray close;
         bool bitField;
 
-        STagData() : bitField(false) {
+        STagData() : bitField(false)
+        {
         }
         STagData(bool aBitField, const QByteArray &aPrefix, const QByteArray &aOpen, const QByteArray &aClose)
-            : bitField(aBitField), prefix(aPrefix), open(aOpen), close(aClose) {
+            : bitField(aBitField), prefix(aPrefix), open(aOpen), close(aClose)
+        {
         }
     };
 
@@ -96,7 +125,8 @@ namespace Tags {
     typedef QMap<Type::Enum, STagData> TTagData;
 
     //--------------------------------------------------------------------------------
-    class Engine : public CSpecification<Type::Enum, STagData> {
+    class Engine : public CSpecification<Type::Enum, STagData>
+    {
       public:
         /// Добавить в группу одиночный тег.
         void appendSingle(Type::Enum aType, const QByteArray &aPrefix, const QByteArray &aOpen,

@@ -7,7 +7,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //----------------------------------------------------------------------------
-namespace MessageQueueConstants {
+namespace MessageQueueConstants
+{
     /// Сообщение
     const QByteArray PingMessage = "@@@PingMessage@@@";
     /// Время, через которое пингуем

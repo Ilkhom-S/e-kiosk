@@ -13,7 +13,8 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний принтеров STAR.
-namespace CSTAR {
+namespace CSTAR
+{
     /// Минимальная "версия" прошивки (число, характеризующее прошивку а Header 2 в ответе на запрос статуса).
     const int MinVersionNumber = 3;
 
@@ -31,7 +32,8 @@ namespace CSTAR {
 
     //----------------------------------------------------------------------------
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// По умолчанию на получение ответа от устройства.
         const int Default = 1500;
 
@@ -62,7 +64,8 @@ namespace CSTAR {
 
     //----------------------------------------------------------------------------
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char Initialize[] = "\x1B\x40";        /// Переинициализация логики.
         const char Reset[] = "\x1B\x06\x18";         /// Сброс (логика + механика).
         const char ASBStatus[] = "\x1B\x06\x01";     /// Статус (ASB).
@@ -74,20 +77,24 @@ namespace CSTAR {
             "\x1B\x1D\x03\x01\x00\x00", 6); /// Дождаться окончания печати и получить счетчик чеков.
 
         /// Команды работы с мем-свичами
-        template <class T> inline QString int2ASCII(T aValue, int aDigits) {
+        template <class T> inline QString int2ASCII(T aValue, int aDigits)
+        {
             QString hex = QString::number(aValue, 16).toUpper();
-            while (hex.length() < aDigits) {
+            while (hex.length() < aDigits)
+            {
                 hex.prepend('0');
             }
             return hex;
         }
 
-        inline QByteArray getMemorySwitch(char aNumber) {
+        inline QByteArray getMemorySwitch(char aNumber)
+        {
             return ProtocolUtils::getBufferFromString(
                 QString("1B 23 %1 3F 30 30 30 30 0A 00").arg(int2ASCII(aNumber, 1)));
         } /// Получить значение memory switch-а.
 
-        inline QByteArray setMemorySwitch(char aNumber, ushort aValue) {
+        inline QByteArray setMemorySwitch(char aNumber, ushort aValue)
+        {
             return ProtocolUtils::getBufferFromString(
                 QString("1B 1D 23 2C %1 %2 0A 00").arg(int2ASCII(aNumber, sizeof(aNumber))).arg(int2ASCII(aValue, 4)));
         } /// Установить значение memory switch-а.
@@ -99,9 +106,11 @@ namespace CSTAR {
 
     //----------------------------------------------------------------------------
     /// Кодовые страницы.
-    class CCodepage : public CSpecification<QString, uchar> {
+    class CCodepage : public CSpecification<QString, uchar>
+    {
       public:
-        CCodepage() {
+        CCodepage()
+        {
             using namespace CHardware::Codepages;
 
             // append(CP437, 3);    // отсутствует в Qt
@@ -116,7 +125,8 @@ namespace CSTAR {
             setDefault(value(CP866));
         }
 
-        const QByteArray operator[](const QString &aCodepage) const {
+        const QByteArray operator[](const QString &aCodepage) const
+        {
             return QByteArray("\x1B\x1D\x74").append(value(aCodepage));
         }
     };
@@ -127,9 +137,11 @@ namespace CSTAR {
     /// Статусы.
     typedef QMap<int, int> TStatus;
 
-    class CASBStatus : public CSpecification<int, TStatus> {
+    class CASBStatus : public CSpecification<int, TStatus>
+    {
       public:
-        CASBStatus() {
+        CASBStatus()
+        {
             data()[1].insert(3, DeviceStatusCode::Error::Unknown);
             data()[1].insert(5, DeviceStatusCode::Error::CoverIsOpened);
 
@@ -150,9 +162,11 @@ namespace CSTAR {
 
     //----------------------------------------------------------------------------
     /// Теги.
-    class TagEngine : public Tags::Engine {
+    class TagEngine : public Tags::Engine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             appendSingle(Tags::Type::Bold, "\x1B", "\x45", "\x46");
             appendSingle(Tags::Type::UnderLine, "\x1B\x2D", "\x01");
             appendSingle(Tags::Type::DoubleWidth, "\x1B\x57", "\x01");

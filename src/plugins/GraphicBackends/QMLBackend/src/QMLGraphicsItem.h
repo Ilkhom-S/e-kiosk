@@ -17,7 +17,8 @@ class ILog;
 
 //---------------------------------------------------------------------------
 /// Интерфейс для созданного движком графического объекта.
-class QMLGraphicsItem : public SDK::GUI::IGraphicsItem {
+class QMLGraphicsItem : public SDK::GUI::IGraphicsItem
+{
   public:
     QMLGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo, QQmlEngine *aEngine, ILog *aLog);
 
@@ -42,7 +43,8 @@ class QMLGraphicsItem : public SDK::GUI::IGraphicsItem {
     /// Возвращает виджет.
     virtual QQuickItem *getWidget() const;
 
-    virtual QWidget *getNativeWidget() const {
+    virtual QWidget *getNativeWidget() const
+    {
         return nullptr;
     }
 

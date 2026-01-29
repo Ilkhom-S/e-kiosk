@@ -18,16 +18,21 @@
 
 #include "PluginLoader.h"
 
-namespace SDK {
-    namespace Plugin {
+namespace SDK
+{
+    namespace Plugin
+    {
 
         //------------------------------------------------------------------------------
-        PluginLoader::PluginLoader(IKernel *aKernel) : mKernel(aKernel) {
+        PluginLoader::PluginLoader(IKernel *aKernel) : mKernel(aKernel)
+        {
         }
 
         //------------------------------------------------------------------------------
-        PluginLoader::~PluginLoader() {
-            foreach (QSharedPointer<QPluginLoader> library, mLibraries) {
+        PluginLoader::~PluginLoader()
+        {
+            foreach (QSharedPointer<QPluginLoader> library, mLibraries)
+            {
                 mKernel->getLog()->write(LogLevel::Debug,
                                          QString("Plugin '%1' will be unloaded.").arg(library->fileName()));
 
@@ -38,7 +43,8 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        QStringList PluginLoader::getPluginList(const QRegularExpression &aFilter) const {
+        QStringList PluginLoader::getPluginList(const QRegularExpression &aFilter) const
+        {
             QMutexLocker lock(&mAccessMutex);
 
             getPluginPathList(aFilter);
@@ -47,12 +53,14 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        QStringList PluginLoader::getPluginPathList(const QRegularExpression &aFilter) const {
+        QStringList PluginLoader::getPluginPathList(const QRegularExpression &aFilter) const
+        {
             QMutexLocker lock(&mAccessMutex);
 
             QStringList result;
 
-            foreach (QSharedPointer<QPluginLoader> p, mLibraries) {
+            foreach (QSharedPointer<QPluginLoader> p, mLibraries)
+            {
                 result << p->fileName();
             }
 
@@ -61,8 +69,10 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         QVariantMap PluginLoader::getPluginInstanceConfiguration(const QString &aInstancePath,
-                                                                 const QString &aConfigPath) {
-            if (!mPlugins.contains(aInstancePath)) {
+                                                                 const QString &aConfigPath)
+        {
+            if (!mPlugins.contains(aInstancePath))
+            {
                 mKernel->getLog()->write(LogLevel::Error, QString("No such plugin %1.").arg(aInstancePath));
                 return QVariantMap();
             }
@@ -74,21 +84,26 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        IPlugin *PluginLoader::createPlugin(const QString &aInstancePath, const QString &aConfigInstancePath) {
+        IPlugin *PluginLoader::createPlugin(const QString &aInstancePath, const QString &aConfigInstancePath)
+        {
             QMutexLocker lock(&mAccessMutex);
 
             SDK::Plugin::IPlugin *plugin = 0;
 
             QString path = aInstancePath.section(CPlugin::InstancePathSeparator, 0, 0);
 
-            if (mPlugins.contains(path)) {
+            if (mPlugins.contains(path))
+            {
                 QString configInstancePath = aConfigInstancePath.isEmpty() ? aInstancePath : aConfigInstancePath;
                 plugin = mPlugins[path]->createPlugin(aInstancePath, configInstancePath);
 
-                if (plugin) {
+                if (plugin)
+                {
                     mCreatedPlugins[plugin] = mPlugins[path];
                 }
-            } else {
+            }
+            else
+            {
                 mKernel->getLog()->write(LogLevel::Error, QString("No such plugin %1.").arg(aInstancePath));
             }
 
@@ -97,15 +112,18 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         std::weak_ptr<IPlugin> PluginLoader::createPluginPtr(const QString &aInstancePath,
-                                                             const QString &aConfigInstancePath) {
+                                                             const QString &aConfigInstancePath)
+        {
             QMutexLocker lock(&mAccessMutex);
 
             QString path = aInstancePath.section(CPlugin::InstancePathSeparator, 0, 0);
 
-            if (mPlugins.contains(path)) {
+            if (mPlugins.contains(path))
+            {
                 QString configInstancePath = aConfigInstancePath.isEmpty() ? aInstancePath : aConfigInstancePath;
                 auto p = mPlugins[path]->createPluginPtr(aInstancePath, configInstancePath);
-                if (!p.expired()) {
+                if (!p.expired())
+                {
                     TPluginPtr plugin = p.lock();
                     mCreatedPluginsPtr[plugin] = mPlugins[path];
                     return p;
@@ -118,10 +136,12 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        bool PluginLoader::destroyPlugin(IPlugin *aPlugin) {
+        bool PluginLoader::destroyPlugin(IPlugin *aPlugin)
+        {
             QMutexLocker lock(&mAccessMutex);
 
-            if (mCreatedPlugins.contains(aPlugin)) {
+            if (mCreatedPlugins.contains(aPlugin))
+            {
                 mCreatedPlugins[aPlugin]->destroyPlugin(aPlugin);
                 mCreatedPlugins.remove(aPlugin);
 
@@ -136,12 +156,14 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        bool PluginLoader::destroyPluginPtr(const std::weak_ptr<IPlugin> &aPlugin) {
+        bool PluginLoader::destroyPluginPtr(const std::weak_ptr<IPlugin> &aPlugin)
+        {
             QMutexLocker lock(&mAccessMutex);
 
             auto ptr = aPlugin.lock();
 
-            if (mCreatedPluginsPtr.find(ptr) != mCreatedPluginsPtr.end()) {
+            if (mCreatedPluginsPtr.find(ptr) != mCreatedPluginsPtr.end())
+            {
                 auto fabric = mCreatedPluginsPtr[ptr];
                 mCreatedPluginsPtr.erase(ptr);
                 fabric->destroyPlugin(ptr);
@@ -157,7 +179,8 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        int PluginLoader::addDirectory(const QString &aDirectory) {
+        int PluginLoader::addDirectory(const QString &aDirectory)
+        {
             QMutexLocker lock(&mAccessMutex);
 
             mDirectories << aDirectory;
@@ -172,7 +195,8 @@ namespace SDK {
             QDirIterator dirEntry(aDirectory, fileNameFilter, QDir::Files, QDirIterator::Subdirectories);
 
             // Загрузка библиотек
-            while (dirEntry.hasNext()) {
+            while (dirEntry.hasNext())
+            {
                 dirEntry.next();
 
 #ifdef Q_OS_WIN
@@ -185,7 +209,8 @@ namespace SDK {
                 QString pluginDir = dirEntry.fileInfo().absolutePath();
                 QString currentLdPath = qgetenv("LD_LIBRARY_PATH");
 
-                if (!currentLdPath.contains(pluginDir)) {
+                if (!currentLdPath.contains(pluginDir))
+                {
                     QString newLdPath = pluginDir + ":" + currentLdPath;
                     qputenv("LD_LIBRARY_PATH", newLdPath.toUtf8());
                 }
@@ -194,11 +219,14 @@ namespace SDK {
                 QSharedPointer<QPluginLoader> library(new QPluginLoader(dirEntry.filePath()));
                 QObject *rootObject = library->instance();
 
-                if (rootObject) {
+                if (rootObject)
+                {
                     SDK::Plugin::IPluginFactory *factory = qobject_cast<SDK::Plugin::IPluginFactory *>(rootObject);
 
-                    if (factory) {
-                        if (factory->initialize(mKernel, dirEntry.fileInfo().absolutePath())) {
+                    if (factory)
+                    {
+                        if (factory->initialize(mKernel, dirEntry.fileInfo().absolutePath()))
+                        {
                             mKernel->getLog()->write(LogLevel::Normal,
                                                      QString("Loading %1. Name: %3. Author: %4. Version: %5.")
                                                          .arg(dirEntry.filePath())
@@ -212,11 +240,13 @@ namespace SDK {
                             QDir translations(dirEntry.fileInfo().absolutePath(),
                                               QString("%1_*.qm").arg(dirEntry.fileInfo().baseName()));
 
-                            if (translations.count()) {
+                            if (translations.count())
+                            {
                                 QString translation = translations.entryInfoList().first().absoluteFilePath();
                                 std::unique_ptr<QTranslator> translator(new QTranslator(qApp));
 
-                                if (translator->load(translation)) {
+                                if (translator->load(translation))
+                                {
                                     qApp->installTranslator(translator.release());
 
                                     mKernel->getLog()->write(LogLevel::Normal, QString("Translation %1 for %2 loaded.")
@@ -228,30 +258,40 @@ namespace SDK {
                             factory->translateParameters();
 
                             // Загрузка информации о плагинах
-                            foreach (QString path, factory->getPluginList()) {
-                                if (mPlugins.contains(path)) {
+                            foreach (QString path, factory->getPluginList())
+                            {
+                                if (mPlugins.contains(path))
+                                {
                                     mKernel->getLog()->write(
                                         LogLevel::Warning,
                                         QString("Plugin %1 is already registered in %2, ignoring this one...")
                                             .arg(path)
                                             .arg(mPlugins[path]->getName()));
-                                } else {
+                                }
+                                else
+                                {
                                     mPlugins[path] = factory;
                                 }
                             }
-                        } else {
+                        }
+                        else
+                        {
                             mKernel->getLog()->write(
                                 LogLevel::Warning,
                                 QString("Failed to initialize plugin factory in %1.").arg(dirEntry.filePath()));
                             library->unload();
                         }
-                    } else {
+                    }
+                    else
+                    {
                         mKernel->getLog()->write(
                             LogLevel::Warning,
                             QString("%1 doesn't support base plugin interface.").arg(dirEntry.filePath()));
                         library->unload();
                     }
-                } else {
+                }
+                else
+                {
                     mKernel->getLog()->write(
                         LogLevel::Warning,
                         QString("Skipping %1: %2").arg(dirEntry.filePath()).arg(library->errorString()));
@@ -270,10 +310,12 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        TParameterList PluginLoader::getPluginParametersDescription(const QString &aPath) const {
+        TParameterList PluginLoader::getPluginParametersDescription(const QString &aPath) const
+        {
             QMutexLocker lock(&mAccessMutex);
 
-            if (mPlugins.contains(aPath)) {
+            if (mPlugins.contains(aPath))
+            {
                 return mPlugins.value(aPath)->getPluginParametersDescription(aPath);
             }
 

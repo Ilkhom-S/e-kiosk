@@ -41,7 +41,8 @@ public:
 
 //---------------------------------------------------------------------------
 class HookService : public QObject,
-                    /*public SDK::PaymentProcessor::IHookService,*/ public SDK::PaymentProcessor::IService {
+                    /*public SDK::PaymentProcessor::IHookService,*/ public SDK::PaymentProcessor::IService
+{
     Q_OBJECT
 
   public:

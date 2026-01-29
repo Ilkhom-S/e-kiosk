@@ -10,10 +10,13 @@
 #include "KasbiFRConstants.h"
 #include "Hardware/FR/KasbiPrinters.h"
 
-class KasbiSeriesType {};
+class KasbiSeriesType
+{
+};
 
 //--------------------------------------------------------------------------------
-class KasbiFRBase : public TSerialFRBase {
+class KasbiFRBase : public TSerialFRBase
+{
     SET_SERIES("KasbiOnline")
 
   public:

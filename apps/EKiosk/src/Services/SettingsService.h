@@ -15,7 +15,8 @@ class SettingsManager;
 class IApplication;
 
 //---------------------------------------------------------------------------
-class SettingsService : public SDK::PaymentProcessor::IService, public SDK::PaymentProcessor::ISettingsService {
+class SettingsService : public SDK::PaymentProcessor::IService, public SDK::PaymentProcessor::ISettingsService
+{
   public:
     SettingsService(IApplication *aApplication);
     virtual ~SettingsService();
@@ -53,7 +54,8 @@ class SettingsService : public SDK::PaymentProcessor::IService, public SDK::Paym
     SettingsManager *getSettingsManager() const;
 
     /// Получить адаптер настроек по его имени.
-    template <typename T> T *getAdapter() {
+    template <typename T> T *getAdapter()
+    {
         QString adapterName = T::getAdapterName();
         return static_cast<T *>(mSettingsAdapters.contains(adapterName) ? mSettingsAdapters[adapterName] : 0);
     }

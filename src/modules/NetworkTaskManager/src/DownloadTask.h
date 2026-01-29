@@ -6,7 +6,8 @@
 
 //------------------------------------------------------------------------
 /// Запрос на загрузку файла по пути aUrl.
-class DownloadTask : public NetworkTask {
+class DownloadTask : public NetworkTask
+{
   public:
     DownloadTask(const QUrl &aUrl);
 };

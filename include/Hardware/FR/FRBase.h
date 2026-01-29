@@ -16,7 +16,8 @@
 #include <Hardware/FR/FFEngine.h>
 
 //--------------------------------------------------------------------------------
-template <class T> class FRBase : public T {
+template <class T> class FRBase : public T
+{
   public:
     FRBase();
 
@@ -101,7 +102,8 @@ template <class T> class FRBase : public T {
     virtual SDK::Driver::EDocumentState::Enum getDocumentState();
 
     /// Открыть смену.
-    virtual bool openSession() {
+    virtual bool openSession()
+    {
         return false;
     }
 
@@ -115,12 +117,14 @@ template <class T> class FRBase : public T {
     virtual void cleanStatusCodes(TStatusCodes &aStatusCodes);
 
     /// Получить дату и время ФР.
-    virtual QDateTime getDateTime() {
+    virtual QDateTime getDateTime()
+    {
         return QDateTime();
     }
 
     /// Получить номер смены.
-    virtual int getSessionNumber() {
+    virtual int getSessionNumber()
+    {
         return 0;
     }
 
@@ -172,7 +176,8 @@ template <class T> class FRBase : public T {
     virtual bool checkTaxes();
 
     /// Проверить параметры налога.
-    virtual bool checkTax(SDK::Driver::TVAT /*aVAT*/, CFR::Taxes::SData & /*aData*/) {
+    virtual bool checkTax(SDK::Driver::TVAT /*aVAT*/, CFR::Taxes::SData & /*aData*/)
+    {
         return true;
     }
 
@@ -190,7 +195,8 @@ template <class T> class FRBase : public T {
 
     /// Печать фискального чека.
     virtual bool performFiscal(const QStringList & /*aReceipt*/, const SDK::Driver::SPaymentData & /*aPaymentData*/,
-                               uint * /*aFDNumber = nullptr*/) {
+                               uint * /*aFDNumber = nullptr*/)
+    {
         return false;
     }
 
@@ -199,7 +205,8 @@ template <class T> class FRBase : public T {
 
     /// Получить фискальные теги по номеру документа.
     virtual bool getFiscalFields(quint32 /*aFDNumber*/, SDK::Driver::TFiscalPaymentData & /*aFPData*/,
-                                 SDK::Driver::TComplexFiscalPaymentData & /*aPSData*/) {
+                                 SDK::Driver::TComplexFiscalPaymentData & /*aPSData*/)
+    {
         return false;
     }
 
@@ -210,7 +217,8 @@ template <class T> class FRBase : public T {
     bool setOFDParametersOnSale(const SDK::Driver::SUnitData &aUnitData);
 
     /// Установить TLV-параметр.
-    virtual bool setTLV(int /*aField*/, bool /*aForSale*/ = false) {
+    virtual bool setTLV(int /*aField*/, bool /*aForSale*/ = false)
+    {
         return true;
     }
 
@@ -221,7 +229,8 @@ template <class T> class FRBase : public T {
     virtual void onExecZReport();
 
     /// Выполнить Z-отчет.
-    virtual bool execZReport(bool /*aAuto*/) {
+    virtual bool execZReport(bool /*aAuto*/)
+    {
         return false;
     }
 
@@ -238,7 +247,8 @@ template <class T> class FRBase : public T {
     bool complexFiscalDocument(TBoolMethod aMethod, const QString &aLog);
 
     /// Печать выплаты.
-    virtual bool processPayout(double /*aAmount*/) {
+    virtual bool processPayout(double /*aAmount*/)
+    {
         return false;
     }
 
@@ -246,7 +256,8 @@ template <class T> class FRBase : public T {
     bool processEncashment(const QStringList &aReceipt, double aAmount = DBL_MAX);
 
     /// Получить сумму в кассе.
-    virtual double getAmountInCash() {
+    virtual double getAmountInCash()
+    {
         return -1;
     }
 

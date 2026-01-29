@@ -16,7 +16,8 @@
 using namespace SDK::PaymentProcessor::Humo;
 
 //---------------------------------------------------------------------------
-class PaymentResponse : public Response, private ILogable {
+class PaymentResponse : public Response, private ILogable
+{
   public:
     PaymentResponse(const Request &aRequest, const QString &aResponseString);
 

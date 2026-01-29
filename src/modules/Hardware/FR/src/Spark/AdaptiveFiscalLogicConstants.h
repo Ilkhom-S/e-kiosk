@@ -9,9 +9,11 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-namespace CSparkFR {
+namespace CSparkFR
+{
     /// Текстовые реквизиты для ПФД.
-    namespace TextProperties {
+    namespace TextProperties
+    {
         /// Номера реквизитов с максимальной длиной поля
         typedef QList<int> TNumbers;
         const TNumbers Numbers = TNumbers() << 5 << 6 << 9 << 10 << 11 << 12 << 15;
@@ -35,8 +37,10 @@ namespace CSparkFR {
         const int LineSize = 44;
 
         /// Откуда удалять разделители
-        namespace EPosition {
-            enum Enum {
+        namespace EPosition
+        {
+            enum Enum
+            {
                 No = 0, /// Не удалять
                 Up,     /// Сверху
                 Down,   /// Снизу

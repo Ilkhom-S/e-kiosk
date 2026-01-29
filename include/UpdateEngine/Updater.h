@@ -23,13 +23,16 @@
 class QDomElement;
 
 //---------------------------------------------------------------------------
-namespace CUpdater {
+namespace CUpdater
+{
     const char Name[] = "Updater";
 } // namespace CUpdater
 
 //---------------------------------------------------------------------------
-namespace CUpdaterErrors {
-    enum Enum {
+namespace CUpdaterErrors
+{
+    enum Enum
+    {
         OK,
         UnknownError,
         NetworkError,
@@ -41,7 +44,8 @@ namespace CUpdaterErrors {
 } // namespace CUpdaterErrors
 
 //---------------------------------------------------------------------------
-class Updater : public QObject {
+class Updater : public QObject
+{
     Q_OBJECT
 
   public:
@@ -67,7 +71,8 @@ class Updater : public QObject {
     /// Установить рабочую папку.
     void setWorkingDir(const QString &aDir);
 
-    QString getWorkingDir() const {
+    QString getWorkingDir() const
+    {
         return mWorkingDir;
     }
 

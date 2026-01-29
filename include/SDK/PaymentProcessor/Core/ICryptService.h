@@ -8,18 +8,23 @@
 
 class ICryptEngine;
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        class ICryptService {
+        class ICryptService
+        {
           public:
-            struct SKeyInfo {
+            struct SKeyInfo
+            {
                 QString sd; /// Код дилера.
                 QString ap; /// Код точки.
                 QString op; /// Код оператора.
 
-                bool isValid() {
+                bool isValid()
+                {
                     return !sd.isEmpty() && !ap.isEmpty() && !op.isEmpty();
                 }
             };
@@ -46,7 +51,8 @@ namespace SDK {
             virtual ICryptEngine *getCryptEngine() = 0;
 
           protected:
-            virtual ~ICryptService() {
+            virtual ~ICryptService()
+            {
             }
         };
 

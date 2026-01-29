@@ -24,14 +24,22 @@
 // Project
 #include "WindowsBITS_i.h"
 
-namespace CBITS {
+namespace CBITS
+{
 
-    namespace AddTaskResult {
-        enum Enum { OK, Error, JobIsFull };
+    namespace AddTaskResult
+    {
+        enum Enum
+        {
+            OK,
+            Error,
+            JobIsFull
+        };
     } // namespace AddTaskResult
 
     //---------------------------------------------------------------------------
-    class CopyManager_p : public ILogable {
+    class CopyManager_p : public ILogable
+    {
       public:
         CopyManager_p(ILog *aLog);
         virtual ~CopyManager_p();

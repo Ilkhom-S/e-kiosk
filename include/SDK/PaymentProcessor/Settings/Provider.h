@@ -10,14 +10,18 @@
 #include <QtCore/QUrl>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
         /// Структура описывает одно поле с данными, необходимое для формирования платежа.
-        struct SProviderField {
+        struct SProviderField
+        {
             /// Структура описывает элемент списка возможных значения для поля типа "список".
-            struct SEnumItem {
+            struct SEnumItem
+            {
                 QString title;
                 QString value;
                 QString id;
@@ -25,16 +29,24 @@ namespace SDK {
 
                 QList<SEnumItem> subItems;
 
-                SEnumItem() : sort(0) {
+                SEnumItem() : sort(0)
+                {
                 }
             };
 
             typedef QList<SEnumItem> TEnumItems;
 
             /// Подсистемы для маскирования поля
-            enum SecuritySubsystem { Default, Display, Log, Printer };
+            enum SecuritySubsystem
+            {
+                Default,
+                Display,
+                Log,
+                Printer
+            };
 
-            SProviderField() : sort(0), minSize(-1), maxSize(-1), isRequired(true), isPassword(false) {
+            SProviderField() : sort(0), minSize(-1), maxSize(-1), isRequired(true), isPassword(false)
+            {
             }
 
             QString type; /// Тип поля.
@@ -72,7 +84,8 @@ namespace SDK {
             QMap<SecuritySubsystem, QString> security; /// Маски безопасности для разных подсистем
 
             /// Возвращает признак, шифровать ли поля для хранения в БД
-            bool keepEncrypted() const {
+            bool keepEncrypted() const
+            {
                 return isPassword || !security.isEmpty();
             }
         };
@@ -81,10 +94,16 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         /// Структура описывает стандартного провайдера для оплаты.
-        struct SProvider {
-            enum FeeType { FeeByAmount = 0, FeeByAmountAll };
+        struct SProvider
+        {
+            enum FeeType
+            {
+                FeeByAmount = 0,
+                FeeByAmountAll
+            };
 
-            struct SLimits {
+            struct SLimits
+            {
                 QString min;
                 QString max;
                 QString system;
@@ -95,10 +114,14 @@ namespace SDK {
                 QString externalMax;
             };
 
-            struct SProcessingTraits {
-                struct SRequest {
-                    struct SField {
-                        SField() {
+            struct SProcessingTraits
+            {
+                struct SRequest
+                {
+                    struct SField
+                    {
+                        SField()
+                        {
                             crypted = false;
                             algorithm = Ipriv;
                         }
@@ -106,14 +129,30 @@ namespace SDK {
                         QString name;  /// имя поля
                         QString value; /// значение поля
 
-                        bool crypted;                                /// флаг, что поле зашифровано
-                        enum { Ipriv, Md5, Sha1, Sha256 } algorithm; /// алгоритм шифрования поля
+                        bool crypted; /// флаг, что поле зашифровано
+                        enum
+                        {
+                            Ipriv,
+                            Md5,
+                            Sha1,
+                            Sha256
+                        } algorithm; /// алгоритм шифрования поля
                     };
 
-                    struct SResponseField : SField {
-                        typedef enum { Windows1251, Utf8 } Codepage;
+                    struct SResponseField : SField
+                    {
+                        typedef enum
+                        {
+                            Windows1251,
+                            Utf8
+                        } Codepage;
 
-                        typedef enum { Text, Url, Base64 } Encoding;
+                        typedef enum
+                        {
+                            Text,
+                            Url,
+                            Base64
+                        } Encoding;
 
                         SResponseField();
 
@@ -135,7 +174,8 @@ namespace SDK {
 
                 typedef QMap<QString, SRequest> TRequests;
 
-                SProcessingTraits() {
+                SProcessingTraits()
+                {
                     keyPair = 0;
                     clientCard = 0;
                     feeType = FeeByAmount;
@@ -159,10 +199,12 @@ namespace SDK {
                 TRequests requests;
             };
 
-            SProvider() : id(-1), cid(-1) {
+            SProvider() : id(-1), cid(-1)
+            {
             }
 
-            bool isNull() const {
+            bool isNull() const
+            {
                 return (id == -1);
             }
 

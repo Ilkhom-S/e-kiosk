@@ -23,10 +23,12 @@
 // Project
 #include "GraphicsEngine.h"
 
-namespace GUI {
+namespace GUI
+{
 
     //---------------------------------------------------------------------------
-    namespace CGraphicsEngine {
+    namespace CGraphicsEngine
+    {
         const char DescriptorFileSuffix[] = "ini";
 
         const char PopupClosedReason[] = "popup_closed";
@@ -80,10 +82,12 @@ namespace GUI {
     //---------------------------------------------------------------------------
     GraphicsEngine::GraphicsEngine()
         : ILogable("Interface"), mShowingModal(false), mHost(nullptr), mIsVirtualKeyboardVisible(false),
-          mQuickView(nullptr), mRootView(nullptr), mQuickContainer(nullptr) {
+          mQuickView(nullptr), mRootView(nullptr), mQuickContainer(nullptr)
+    {
         QList<QScreen *> screens = QGuiApplication::screens();
 
-        for (int i = 0, index = 1; i < screens.size(); ++i) {
+        for (int i = 0, index = 1; i < screens.size(); ++i)
+        {
             SScreen screen;
             screen.number = i;
             screen.isPrimary = screens[i] == QGuiApplication::primaryScreen();
@@ -117,13 +121,16 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    GraphicsEngine::~GraphicsEngine() {
+    GraphicsEngine::~GraphicsEngine()
+    {
     }
 
     //---------------------------------------------------------------------------
-    bool GraphicsEngine::initialize(int aDisplay, int aWidth, int aHeight, bool aShowCursor, bool aShowDebugInfo) {
+    bool GraphicsEngine::initialize(int aDisplay, int aWidth, int aHeight, bool aShowCursor, bool aShowDebugInfo)
+    {
         // Если задан отсутствующий в системе дисплей, откатываемся на нулевой
-        if (aDisplay < 0 || aDisplay > mScreens.size() - 1) {
+        if (aDisplay < 0 || aDisplay > mScreens.size() - 1)
+        {
             aDisplay = 0;
         }
 
@@ -148,7 +155,8 @@ namespace GUI {
         */
 
         // Настраиваем курсор
-        if (!aShowCursor) {
+        if (!aShowCursor)
+        {
             qApp->setOverrideCursor(QCursor(Qt::BlankCursor));
         }
 
@@ -158,7 +166,8 @@ namespace GUI {
         mModalBackgroundWidget.setParentItem(mQuickView->contentItem());
 
         // Настраиваем курсор
-        if (!aShowCursor) {
+        if (!aShowCursor)
+        {
             qApp->setOverrideCursor(QCursor(Qt::BlankCursor));
         }
 
@@ -168,8 +177,10 @@ namespace GUI {
         mTopWidget = mWidgets.end();
         mPopupWidget = mWidgets.end();
 
-        foreach (const SWidget &widget, mWidgets) {
-            if (!mBackends.contains(widget.info.type)) {
+        foreach (const SWidget &widget, mWidgets)
+        {
+            if (!mBackends.contains(widget.info.type))
+            {
                 toLog(LogLevel::Error,
                       QString("Cannot find '%1' backend for '%2' widget.").arg(widget.info.type).arg(widget.info.name));
                 return false;
@@ -180,10 +191,13 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    bool GraphicsEngine::finalize() {
-        foreach (const SWidget &widget, mWidgets) {
+    bool GraphicsEngine::finalize()
+    {
+        foreach (const SWidget &widget, mWidgets)
+        {
             if (!widget.graphics.expired() && widget.graphics.lock()->isValid() &&
-                widget.graphics.lock()->getWidget()->window() == mQuickView) {
+                widget.graphics.lock()->getWidget()->window() == mQuickView)
+            {
                 widget.graphics.lock()->getWidget()->setParentItem(nullptr);
             }
         }
@@ -197,7 +211,8 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::start() {
+    void GraphicsEngine::start()
+    {
 #ifndef _DEBUG
         mRootView->setWindowFlags(mRootView->windowFlags() | Qt::WindowStaysOnTopHint);
         mRootView->showFullScreen();
@@ -207,16 +222,20 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::pause() {
+    void GraphicsEngine::pause()
+    {
         mRootView->hide();
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::stop() {
+    void GraphicsEngine::stop()
+    {
         mRootView->hide();
 
-        foreach (SWidget widget, mWidgets.values()) {
-            if (!widget.graphics.expired() && widget.graphics.lock()->isValid()) {
+        foreach (SWidget widget, mWidgets.values())
+        {
+            if (!widget.graphics.expired() && widget.graphics.lock()->isValid())
+            {
                 widget.graphics.lock()->getWidget()->setVisible(false);
                 widget.graphics.lock()->getWidget()->setZ(0);
             }
@@ -228,11 +247,14 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::reset(EWidgetType aType) {
-        auto getWidgetType = [](GraphicsEngine::EWidgetType aType) -> QString {
+    void GraphicsEngine::reset(EWidgetType aType)
+    {
+        auto getWidgetType = [](GraphicsEngine::EWidgetType aType) -> QString
+        {
             const QMetaObject metaObject = GraphicsEngine::staticMetaObject;
             int enumIndex = metaObject.indexOfEnumerator("EWidgetType");
-            if (enumIndex == -1) {
+            if (enumIndex == -1)
+            {
                 return "";
             }
 
@@ -242,13 +264,16 @@ namespace GUI {
 
         QString widgetType = getWidgetType(aType).toLower();
 
-        foreach (const SWidget &widget, mWidgets) {
-            if (widget.info.type != widgetType && aType != GraphicsEngine::All) {
+        foreach (const SWidget &widget, mWidgets)
+        {
+            if (widget.info.type != widgetType && aType != GraphicsEngine::All)
+            {
                 continue;
             }
 
             if (!widget.graphics.expired() && widget.graphics.lock()->isValid() &&
-                widget.graphics.lock()->getWidget()->window() == mQuickView) {
+                widget.graphics.lock()->getWidget()->window() == mQuickView)
+            {
                 widget.graphics.lock()->getWidget()->setParentItem(nullptr);
                 mBackends[widget.info.type]->removeItem(widget.info);
                 toLog(LogLevel::Debug, QString("REMOVE widget '%1'").arg(widget.info.name));
@@ -261,11 +286,13 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::addContentDirectory(const QString &aDirectory) {
+    void GraphicsEngine::addContentDirectory(const QString &aDirectory)
+    {
         mContentDirectories << aDirectory;
 
         bool fromResources = false;
-        if (aDirectory.left(2) == ":/") {
+        if (aDirectory.left(2) == ":/")
+        {
             fromResources = true;
         }
 
@@ -273,12 +300,14 @@ namespace GUI {
         QDirIterator entry(aDirectory, QStringList() << QString("*.%1").arg(CGraphicsEngine::DescriptorFileSuffix),
                            QDir::Files, QDirIterator::Subdirectories);
 
-        while (entry.hasNext()) {
+        while (entry.hasNext())
+        {
             entry.next();
 
             QSettings file(entry.fileInfo().absoluteFilePath(), QSettings::IniFormat);
 
-            if (file.childGroups().contains(CGraphicsEngine::SectionItemName)) {
+            if (file.childGroups().contains(CGraphicsEngine::SectionItemName))
+            {
                 SWidget widget;
 
                 widget.info.name = file.value(CGraphicsEngine::NameKey).toString();
@@ -288,20 +317,25 @@ namespace GUI {
                 widget.info.directory = (fromResources ? "qrc" : "") + entry.fileInfo().absolutePath();
 
                 // Описатель должен содержать как минимум имя и тип
-                if (widget.info.name.isEmpty() || widget.info.type.isEmpty()) {
+                if (widget.info.name.isEmpty() || widget.info.type.isEmpty())
+                {
                     toLog(LogLevel::Warning,
                           QString("Skipping %1: item name or type not specified.").arg(entry.filePath()));
-                } else {
+                }
+                else
+                {
                     // Читаем специфичные для движка параметры
                     file.beginGroup(widget.info.type);
-                    foreach (QString key, file.childKeys()) {
+                    foreach (QString key, file.childKeys())
+                    {
                         widget.info.parameters[key] = file.value(key).toString();
                     }
                     file.endGroup();
 
                     // Читаем специфичные для виджета параметры
                     file.beginGroup(CGraphicsEngine::SectionContextName);
-                    foreach (QString key, file.childKeys()) {
+                    foreach (QString key, file.childKeys())
+                    {
                         widget.info.context[key] = file.value(key).toString();
                     }
                     file.endGroup();
@@ -316,21 +350,28 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::addHandledKeys(const QStringList &aHandledKeyList) {
+    void GraphicsEngine::addHandledKeys(const QStringList &aHandledKeyList)
+    {
         mHandledKeyList = aHandledKeyList;
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::addBackend(SDK::GUI::IGraphicsBackend *aBackend) {
+    void GraphicsEngine::addBackend(SDK::GUI::IGraphicsBackend *aBackend)
+    {
         mBackends[aBackend->getType()] = aBackend;
 
-        if (aBackend->getType() == "native") {
-            foreach (SDK::GUI::GraphicsItemInfo info, aBackend->getItemList()) {
+        if (aBackend->getType() == "native")
+        {
+            foreach (SDK::GUI::GraphicsItemInfo info, aBackend->getItemList())
+            {
                 // Для "нативных" виджетов необходимо обновить параметр directory
                 TWidgetList::Iterator widget = mWidgets.find(info.name);
-                if (widget != mWidgets.end()) {
+                if (widget != mWidgets.end())
+                {
                     widget->info.directory = info.directory;
-                } else {
+                }
+                else
+                {
                     SWidget widget;
                     widget.info = info;
                     mWidgets.insert(widget.info.name, widget);
@@ -340,45 +381,55 @@ namespace GUI {
     }
 
     //------------------------------------------------------------------------------
-    ILog *GraphicsEngine::getLog() const {
+    ILog *GraphicsEngine::getLog() const
+    {
         return ILogable::getLog();
     }
 
     //---------------------------------------------------------------------------
-    QRect GraphicsEngine::getDisplayRectangle(int aIndex) const {
+    QRect GraphicsEngine::getDisplayRectangle(int aIndex) const
+    {
         return mScreens.value(aIndex).geometry;
     }
 
     //---------------------------------------------------------------------------
-    QPixmap GraphicsEngine::getScreenshot() {
+    QPixmap GraphicsEngine::getScreenshot()
+    {
         QPixmap screenshot(mRootView->size());
         mRootView->render(&screenshot, QPoint(), QRegion(mRootView->geometry()));
         return screenshot;
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::onRequestSoftwareInputPanel() {
-        if (mTopWidget->info.parameters[CGraphicsEngine::VirtualKeyboardKey] == "true") {
+    void GraphicsEngine::onRequestSoftwareInputPanel()
+    {
+        if (mTopWidget->info.parameters[CGraphicsEngine::VirtualKeyboardKey] == "true")
+        {
             showVirtualKeyboard();
         }
     }
 
     //---------------------------------------------------------------------------
-    bool GraphicsEngine::show(const QString &aWidget, const QVariantMap &aParameters) {
+    bool GraphicsEngine::show(const QString &aWidget, const QVariantMap &aParameters)
+    {
         return showWidget(aWidget, false, aParameters);
     }
 
     //---------------------------------------------------------------------------
-    bool GraphicsEngine::showPopup(const QString &aWidget, const QVariantMap &aParameters) {
+    bool GraphicsEngine::showPopup(const QString &aWidget, const QVariantMap &aParameters)
+    {
         return showWidget(aWidget, true, aParameters);
     }
 
     //---------------------------------------------------------------------------
-    QVariantMap GraphicsEngine::showModal(const QString &aWidget, const QVariantMap &aParameters) {
-        if (showPopup(aWidget, aParameters)) {
+    QVariantMap GraphicsEngine::showModal(const QString &aWidget, const QVariantMap &aParameters)
+    {
+        if (showPopup(aWidget, aParameters))
+        {
             mShowingModal = true;
 
-            while (mShowingModal) {
+            while (mShowingModal)
+            {
                 QApplication::processEvents(QEventLoop::WaitForMoreEvents);
             }
         }
@@ -387,8 +438,10 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    bool GraphicsEngine::hidePopup(const QVariantMap &aParameters) {
-        if (mPopupWidget == mWidgets.end()) {
+    bool GraphicsEngine::hidePopup(const QVariantMap &aParameters)
+    {
+        if (mPopupWidget == mWidgets.end())
+        {
             return false;
         }
 
@@ -400,7 +453,8 @@ namespace GUI {
         mPopupWidget->graphics.lock()->hide();
         mPopupWidget = mWidgets.end();
 
-        if (mTopWidget != mWidgets.end()) {
+        if (mTopWidget != mWidgets.end())
+        {
             mTopWidget->graphics.lock()->notify(CGraphicsEngine::PopupClosedReason, aParameters);
         }
 
@@ -410,27 +464,33 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::notify(const QString &aEvent, const QVariantMap &aParameters) {
-        auto formatParams = [](const QVariantMap &aParameters) -> QString {
-            return QString::fromUtf8(QJsonDocument::fromVariant(aParameters).toJson(QJsonDocument::Compact));
-        };
+    void GraphicsEngine::notify(const QString &aEvent, const QVariantMap &aParameters)
+    {
+        auto formatParams = [](const QVariantMap &aParameters) -> QString
+        { return QString::fromUtf8(QJsonDocument::fromVariant(aParameters).toJson(QJsonDocument::Compact)); };
 
         TWidgetList::Iterator w = mWidgets.end();
 
-        if (mPopupWidget != mWidgets.end()) {
+        if (mPopupWidget != mWidgets.end())
+        {
             w = mPopupWidget;
             mPopupWidget->graphics.lock()->notify(aEvent, aParameters);
-        } else if (mTopWidget != mWidgets.end()) {
+        }
+        else if (mTopWidget != mWidgets.end())
+        {
             w = mTopWidget;
             mTopWidget->graphics.lock()->notify(aEvent, aParameters);
         }
 
         toLog(LogLevel::Debug, QString("NOTIFY '%1'. Parameters: %2").arg(w->info.name).arg(formatParams(aParameters)));
 
-        if (w != mWidgets.end()) {
+        if (w != mWidgets.end())
+        {
             toLog(LogLevel::Debug,
                   QString("NOTIFY '%1'. Parameters: %2").arg(w->info.name).arg(formatParams(aParameters)));
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Debug, QString("NOTIFY WIDGET NOT FOUND. Parameters: %1").arg(formatParams(aParameters)));
         }
 
@@ -439,8 +499,10 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::popupNotify(const QString &aEvent, const QVariantMap &aParameters) {
-        if (mTopWidget != mWidgets.end()) {
+    void GraphicsEngine::popupNotify(const QString &aEvent, const QVariantMap &aParameters)
+    {
+        if (mTopWidget != mWidgets.end())
+        {
             // Оповещаем виджет, который находится под всплывающим окном
             mTopWidget->graphics.lock()->notify(aEvent, aParameters);
 
@@ -452,14 +514,17 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    bool GraphicsEngine::showWidget(const QString &aWidget, bool aPopup, const QVariantMap &aParameters) {
+    bool GraphicsEngine::showWidget(const QString &aWidget, bool aPopup, const QVariantMap &aParameters)
+    {
         // Нативная клавиатура может остаться от предыдущего виджета. Закроем ее
-        if (mIsVirtualKeyboardVisible) {
+        if (mIsVirtualKeyboardVisible)
+        {
             hideVirtualKeyboard();
         }
 
         // Если находимся в модальном режиме, то обычный show не отрабатываем
-        if (mShowingModal) {
+        if (mShowingModal)
+        {
             toLog(LogLevel::Error, QString("Cannot show '%1': already showing a modal widget.").arg(aWidget));
             return false;
         }
@@ -468,34 +533,44 @@ namespace GUI {
         TWidgetList::Iterator oldWidget = mTopWidget;
 
         // Проверяем существует ли такой виджет
-        if (newWidget == mWidgets.end()) {
+        if (newWidget == mWidgets.end())
+        {
             toLog(LogLevel::Error, QString("Cannot show '%1': not found.").arg(aWidget));
             return false;
         }
 
         // Если виджетов с одинаковым именем больше одного
         // Ищем виджет с таким же контекстом. Если не нашли, то оставляем первый c пустым контекстом
-        if (mWidgets.values(aWidget).count() > 1) {
+        if (mWidgets.values(aWidget).count() > 1)
+        {
             TWidgetList::Iterator widgetWithContext;
             TWidgetList::Iterator firstWidget = newWidget;
 
-            for (widgetWithContext = firstWidget; widgetWithContext != mWidgets.end(); ++widgetWithContext) {
-                if (widgetWithContext->info.name == aWidget && widgetWithContext->info.context.isEmpty()) {
+            for (widgetWithContext = firstWidget; widgetWithContext != mWidgets.end(); ++widgetWithContext)
+            {
+                if (widgetWithContext->info.name == aWidget && widgetWithContext->info.context.isEmpty())
+                {
                     newWidget = widgetWithContext;
                     break;
                 }
             }
 
-            foreach (QString paramKey, aParameters.keys()) {
-                for (widgetWithContext = firstWidget; widgetWithContext != mWidgets.end(); ++widgetWithContext) {
-                    if (widgetWithContext->info.name != aWidget) {
+            foreach (QString paramKey, aParameters.keys())
+            {
+                for (widgetWithContext = firstWidget; widgetWithContext != mWidgets.end(); ++widgetWithContext)
+                {
+                    if (widgetWithContext->info.name != aWidget)
+                    {
                         continue;
                     }
 
-                    foreach (QString contextKey, widgetWithContext->info.context.keys()) {
-                        if (contextKey == paramKey) {
+                    foreach (QString contextKey, widgetWithContext->info.context.keys())
+                    {
+                        if (contextKey == paramKey)
+                        {
                             if (widgetWithContext->info.context[paramKey].toString().split("|").contains(
-                                    aParameters[paramKey].toString())) {
+                                    aParameters[paramKey].toString()))
+                            {
                                 newWidget = widgetWithContext;
                             }
                         }
@@ -505,16 +580,23 @@ namespace GUI {
         }
 
         // Если ещё не создан - создаём
-        if (newWidget->graphics.expired()) {
+        if (newWidget->graphics.expired())
+        {
             newWidget->graphics = mBackends[newWidget->info.type]->getItem(newWidget->info);
         }
 
-        if (!newWidget->graphics.expired() && newWidget->graphics.lock()->isValid()) {
-            if (newWidget->graphics.lock()->getWidget() && !newWidget->graphics.lock()->getWidget()->window()) {
+        if (!newWidget->graphics.expired() && newWidget->graphics.lock()->isValid())
+        {
+            if (newWidget->graphics.lock()->getWidget() && !newWidget->graphics.lock()->getWidget()->window())
+            {
                 newWidget->graphics.lock()->getWidget()->setParentItem(mQuickView->contentItem());
-            } else if (QWidget *w = newWidget->graphics.lock()->getNativeWidget()) {
             }
-        } else {
+            else if (QWidget *w = newWidget->graphics.lock()->getNativeWidget())
+            {
+            }
+        }
+        else
+        {
             toLog(LogLevel::Error, QString("Failed to instantiate widget '%1'.").arg(aWidget));
             return false;
         }
@@ -523,25 +605,30 @@ namespace GUI {
         int level = 1;
 
         // Если отображается всплывающее окно, то закрываем его
-        if (mPopupWidget != mWidgets.end() && !aPopup) {
+        if (mPopupWidget != mWidgets.end() && !aPopup)
+        {
             hidePopup(QVariantMap());
         }
 
         // Если нужно, инициализируем новый виджет
-        if (aParameters.contains("reset") ? aParameters["reset"].toBool() : true) {
+        if (aParameters.contains("reset") ? aParameters["reset"].toBool() : true)
+        {
             newWidget->graphics.lock()->reset(aParameters);
         }
 
         // Если виджет уже отображается, то только вызываем обработок showHandler
-        if (newWidget == mTopWidget) {
+        if (newWidget == mTopWidget)
+        {
             mTopWidget->graphics.lock()->show();
             return true;
         }
 
         // Если всплывающий или модальный виджет, то маска и всплывающее окно выводятся уровнем выше текущего виджета
-        if (aPopup) {
+        if (aPopup)
+        {
             // Масштабируем, если надо, всплывающее окно
-            if (aParameters["scaled"].toBool()) {
+            if (aParameters["scaled"].toBool())
+            {
                 QRectF rect = newWidget->graphics.lock()->getWidget()->boundingRect();
                 qreal scale = qMin(mQuickView->width() / rect.width(), mQuickView->height() / rect.height());
                 newWidget->graphics.lock()->getWidget()->setScale(scale);
@@ -549,7 +636,8 @@ namespace GUI {
 
             // Установим цвет фона модального окна
             QString popupOverlayColor = aParameters["popup_overlay_color"].toString();
-            if (!popupOverlayColor.isEmpty()) {
+            if (!popupOverlayColor.isEmpty())
+            {
                 mModalBackgroundWidget.setColor(popupOverlayColor);
             }
 
@@ -559,8 +647,11 @@ namespace GUI {
             // Показываем всплывающее окно
             level = 3;
             mPopupWidget = newWidget;
-        } else {
-            if (mTopWidget != mWidgets.end()) {
+        }
+        else
+        {
+            if (mTopWidget != mWidgets.end())
+            {
                 oldWidget = mTopWidget;
                 oldWidget->graphics.lock()->hide();
             }
@@ -568,19 +659,23 @@ namespace GUI {
             mTopWidget = newWidget;
         }
 
-        if (!aPopup && newWidget->graphics.expired()) {
+        if (!aPopup && newWidget->graphics.expired())
+        {
             return false;
         }
 
         newWidget->graphics.lock()->show();
 
-        if (newWidget->info.type == "native") {
+        if (newWidget->info.type == "native")
+        {
             mQuickContainer->setVisible(false);
 
             QWidget *w = newWidget->graphics.lock()->getNativeWidget();
             w->setParent(mRootView);
             w->setVisible(true);
-        } else {
+        }
+        else
+        {
             mQuickContainer->setVisible(true);
 
             // Отрисовка через очередь, чтобы showHandler/resetHandler успели отработать
@@ -612,21 +707,25 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::setFrontWidget(QQuickItem *aNewWidget, QQuickItem *aOldWidget, int aLevel, bool aPopup) {
+    void GraphicsEngine::setFrontWidget(QQuickItem *aNewWidget, QQuickItem *aOldWidget, int aLevel, bool aPopup)
+    {
         // Всплывающее окно уже могли спрятать
-        if (aPopup && mPopupWidget == mWidgets.end()) {
+        if (aPopup && mPopupWidget == mWidgets.end())
+        {
             return;
         }
 
         aNewWidget->setVisible(true);
         aNewWidget->setZ(aLevel);
 
-        if (aOldWidget) {
+        if (aOldWidget)
+        {
             aOldWidget->setVisible(false);
             aOldWidget->setZ(0);
         }
 
-        if (mPopupWidget != mWidgets.end()) {
+        if (mPopupWidget != mWidgets.end())
+        {
             QRectF rect(aNewWidget->boundingRect());
             qreal scale = qobject_cast<QQuickItem *>(aNewWidget)->scale();
             aNewWidget->setPosition(QPointF((mQuickView->width() - rect.width() / scale) / 2,
@@ -635,7 +734,8 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::showVirtualKeyboard() {
+    void GraphicsEngine::showVirtualKeyboard()
+    {
         /*QGraphicsItem * focusItem = mTopWidget->graphics->getWidget();
         QGraphicsItem * focusItem = mTopWidget->graphics.lock()->getWidget();
         QQuickItem * focusItem = mTopWidget->graphics->getWidget();
@@ -716,7 +816,8 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::hideVirtualKeyboard() {
+    void GraphicsEngine::hideVirtualKeyboard()
+    {
         /*TWidgetList::Iterator widget = mWidgets.find(CGraphicsEngine::InputContextName);
         QGraphicsItem * item = widget->graphics.lock()->getWidget();
         item->setVisible(false);
@@ -725,18 +826,23 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    bool GraphicsEngine::eventFilter(QObject *aObject, QEvent *aEvent) {
+    bool GraphicsEngine::eventFilter(QObject *aObject, QEvent *aEvent)
+    {
         QEvent::Type type = aEvent->type();
         static int intruder;
 
-        switch (type) {
-            case QEvent::MouseMove: {
+        switch (type)
+        {
+            case QEvent::MouseMove:
+            {
                 QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(aEvent);
                 mDebugWidget.updateMousePos(mouseEvent->globalPosition().toPoint());
-                if (mouseEvent->buttons() != Qt::LeftButton && ++intruder >= CGraphicsEngine::IntruderThreshold) {
+                if (mouseEvent->buttons() != Qt::LeftButton && ++intruder >= CGraphicsEngine::IntruderThreshold)
+                {
                     emit intruderActivity();
                 }
-            } break;
+            }
+            break;
 
             case QEvent::Wheel:
                 emit intruderActivity();
@@ -744,7 +850,8 @@ namespace GUI {
 
             case QEvent::MouseButtonPress:
             case QEvent::MouseButtonDblClick:
-                if (mIsVirtualKeyboardVisible) {
+                if (mIsVirtualKeyboardVisible)
+                {
                     /*auto * mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(aEvent);
                     TWidgetList::Iterator widget = mWidgets.find(CGraphicsEngine::InputContextName);
                     QGraphicsItem * keyboardItem = widget->graphics.lock()->getWidget();
@@ -760,17 +867,21 @@ namespace GUI {
                 intruder = 0;
                 break;
 
-            case QEvent::KeyPress: {
-                if (!mHandledKeyList.isEmpty()) {
+            case QEvent::KeyPress:
+            {
+                if (!mHandledKeyList.isEmpty())
+                {
                     auto *keyEvent = static_cast<QKeyEvent *>(aEvent);
 
                     QString key = QKeySequence(keyEvent->key()).toString();
-                    if (mHandledKeyList.indexOf(key) != -1) {
+                    if (mHandledKeyList.indexOf(key) != -1)
+                    {
                         emit keyPressed(key);
                         return true;
                     }
                 }
-            } break;
+            }
+            break;
 
             case QEvent::Close:
                 emit closed();
@@ -781,12 +892,14 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    SDK::GUI::IGraphicsHost *GraphicsEngine::getGraphicsHost() {
+    SDK::GUI::IGraphicsHost *GraphicsEngine::getGraphicsHost()
+    {
         return mHost;
     }
 
     //---------------------------------------------------------------------------
-    void GraphicsEngine::setGraphicsHost(SDK::GUI::IGraphicsHost *aHost) {
+    void GraphicsEngine::setGraphicsHost(SDK::GUI::IGraphicsHost *aHost)
+    {
         mHost = aHost;
     }
 

@@ -18,13 +18,15 @@
 #include "Hardware/Common/Specifications.h"
 #include "Hardware/Common/ASCII.h"
 
-namespace CLibUSB {
+namespace CLibUSB
+{
     /// Функция обработки IO.
     typedef int(LIBUSB_CALL *TProcessIO)(libusb_device_handle *, unsigned char, unsigned char *, int, int *,
                                          unsigned int);
 
     /// Данные конечной точки.
-    struct SEndPoint {
+    struct SEndPoint
+    {
         libusb_transfer_type transferType;
         char data;
         int maxPacketSize;
@@ -33,41 +35,49 @@ namespace CLibUSB {
 
         SEndPoint()
             : transferType(LIBUSB_TRANSFER_TYPE_CONTROL), data(ASCII::NUL), maxPacketSize(0), pollingInterval(0),
-              processIO(nullptr) {
+              processIO(nullptr)
+        {
         }
         SEndPoint(libusb_transfer_type aTransferType, char aData, int aMaxPacketSize, int aPollingInterval)
-            : transferType(aTransferType), data(aData), maxPacketSize(aMaxPacketSize),
-              pollingInterval(aPollingInterval) {
+            : transferType(aTransferType), data(aData), maxPacketSize(aMaxPacketSize), pollingInterval(aPollingInterval)
+        {
         }
 
-        bool getDirection() {
+        bool getDirection()
+        {
             return bool(data & LIBUSB_ENDPOINT_DIR_MASK);
         }
-        bool valid() {
+        bool valid()
+        {
             return maxPacketSize && processIO && ~(data & (LIBUSB_ENDPOINT_DIR_MASK | LIBUSB_ENDPOINT_ADDRESS_MASK)) &&
                    ((transferType == LIBUSB_TRANSFER_TYPE_BULK) || (transferType == LIBUSB_TRANSFER_TYPE_INTERRUPT));
         }
-        char operator()() {
+        char operator()()
+        {
             return data;
         }
     };
 
     /// Параметры устройства.
-    struct SDeviceProperties {
+    struct SDeviceProperties
+    {
         QVariantMap deviceData;
         quint16 VID;
         quint16 PID;
         QString portData;
         SEndPoint deviceToHost;
         SEndPoint hostToDevice;
-        bool valid() {
+        bool valid()
+        {
             return VID && PID && deviceToHost.valid() && hostToDevice.valid() && deviceToHost.getDirection() &&
                    !hostToDevice.getDirection();
         }
 
-        SDeviceProperties() : VID(0), PID(0) {
+        SDeviceProperties() : VID(0), PID(0)
+        {
         }
-        SDeviceProperties(const QVariantMap &aDeviceData) : deviceData(aDeviceData) {
+        SDeviceProperties(const QVariantMap &aDeviceData) : deviceData(aDeviceData)
+        {
         }
     };
 
@@ -77,15 +87,18 @@ namespace CLibUSB {
 
     //--------------------------------------------------------------------------------
     /// Описания типов конфигураций.
-    template <class T, int aIndex> class CConfigTypeDescriptions : public CDescription<T> {
+    template <class T, int aIndex> class CConfigTypeDescriptions : public CDescription<T>
+    {
       public:
         /// Добавить.
-        void add(T aKey, const QString &aDescription) {
+        void add(T aKey, const QString &aDescription)
+        {
             this->append(T(aKey << aIndex), aDescription);
         }
 
         /// Оператор [].
-        const QString operator[](uint8_t aData) const {
+        const QString operator[](uint8_t aData) const
+        {
             return this->mBuffer.value(T(aData & ('\x03' << aIndex)), "unknown");
         }
     };

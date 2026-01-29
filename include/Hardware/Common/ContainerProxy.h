@@ -3,21 +3,26 @@
 #pragma once
 
 //---------------------------------------------------------------------------
-template <class T> class ContainerProxy : public T {
+template <class T> class ContainerProxy : public T
+{
   public:
-    ContainerProxy() {
+    ContainerProxy()
+    {
     }
-    ContainerProxy(const T &aOther) {
+    ContainerProxy(const T &aOther)
+    {
         operator=(aOther);
     }
 
-    const T &operator=(const T &aOther) {
+    const T &operator=(const T &aOther)
+    {
         this->append(aOther);
 
         return *this;
     }
 
-    T &data() {
+    T &data()
+    {
         return *dynamic_cast<T *>(this);
     }
 };

@@ -8,7 +8,8 @@
 // Project
 #include "FlashPlayerItem.h"
 
-FlashPlayerItem::FlashPlayerItem(QDeclarativeItem *aParent) : QDeclarativeItem(aParent) {
+FlashPlayerItem::FlashPlayerItem(QDeclarativeItem *aParent) : QDeclarativeItem(aParent)
+{
     setFlag(QGraphicsItem::ItemHasNoContents, false);
 
     QWebSettings *defaultSettings = QWebSettings::globalSettings();
@@ -26,16 +27,19 @@ FlashPlayerItem::FlashPlayerItem(QDeclarativeItem *aParent) : QDeclarativeItem(a
 }
 
 //--------------------------------------------------------------------------
-FlashPlayerItem::~FlashPlayerItem() {
+FlashPlayerItem::~FlashPlayerItem()
+{
 }
 
 //--------------------------------------------------------------------------
-QString FlashPlayerItem::getMovie() const {
+QString FlashPlayerItem::getMovie() const
+{
     return mMovie;
 }
 
 //--------------------------------------------------------------------------
-void FlashPlayerItem::setMovie(const QString &aMovie) {
+void FlashPlayerItem::setMovie(const QString &aMovie)
+{
     mMovie = aMovie;
 
     QString html = QString(mHtmlWrapper)
@@ -47,12 +51,15 @@ void FlashPlayerItem::setMovie(const QString &aMovie) {
 }
 
 //--------------------------------------------------------------------------
-void FlashPlayerItem::geometryChanged(const QRectF &aNewGeometry, const QRectF &aOldGeometry) {
-    if (aNewGeometry != aOldGeometry) {
+void FlashPlayerItem::geometryChanged(const QRectF &aNewGeometry, const QRectF &aOldGeometry)
+{
+    if (aNewGeometry != aOldGeometry)
+    {
         mWebView->setGeometry(QRectF(0., 0., aNewGeometry.width(), aNewGeometry.height()));
         mGeometry = aNewGeometry;
 
-        if (!mMovie.isEmpty()) {
+        if (!mMovie.isEmpty())
+        {
             QString html = QString(mHtmlWrapper)
                                .arg(QString::number(mGeometry.width()))
                                .arg(QString::number(mGeometry.height()))
@@ -66,7 +73,8 @@ void FlashPlayerItem::geometryChanged(const QRectF &aNewGeometry, const QRectF &
 }
 
 //--------------------------------------------------------------------------
-void FlashPlayerItem::populateJavaScriptWindowObject() {
+void FlashPlayerItem::populateJavaScriptWindowObject()
+{
     mWebView->page()->mainFrame()->addToJavaScriptWindowObject("handler", this);
 }
 

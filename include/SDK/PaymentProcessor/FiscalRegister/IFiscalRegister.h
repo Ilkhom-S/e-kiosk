@@ -12,24 +12,36 @@
 #include <SDK/PaymentProcessor/Payment/Amount.h>
 #include <SDK/Drivers/FR/FiscalDataTypes.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         /// Типы запросов.
-        namespace ERequestType {
-            enum Enum { Receipt = 1, XReport = 2, Encashment = 4, ZReport = 8, SessionData };
+        namespace ERequestType
+        {
+            enum Enum
+            {
+                Receipt = 1,
+                XReport = 2,
+                Encashment = 4,
+                ZReport = 8,
+                SessionData
+            };
         } // namespace ERequestType
 
         //------------------------------------------------------------------------------
         /// Интерфейс фискального регистратора.
-        class IFiscalRegister {
+        class IFiscalRegister
+        {
           public:
             /// Сигнал о неотправленных документах в ОФД.
             static const char *OFDNotSentSignal; // SIGNAL(OFDNotSent(bool));
 
           public:
             /// Деструктор.
-            virtual ~IFiscalRegister() {
+            virtual ~IFiscalRegister()
+            {
             }
 
             /// Соединяет сигнал данного класса со слотом приёмника.

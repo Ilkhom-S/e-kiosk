@@ -12,77 +12,96 @@
 #include "SDK/PaymentProcessor/Payment/Step.h"
 
 //---------------------------------------------------------------------------
-class PaymentInfo {
+class PaymentInfo
+{
   public:
     PaymentInfo()
-        : id(0), amount(0.0), amountAll(0.0), status(SDK::PaymentProcessor::EPaymentStatus::Init), printed(false) {
+        : id(0), amount(0.0), amountAll(0.0), status(SDK::PaymentProcessor::EPaymentStatus::Init), printed(false)
+    {
     }
 
-    void setId(qint64 aId) {
+    void setId(qint64 aId)
+    {
         id = aId;
     }
 
-    qint64 getId() const {
+    qint64 getId() const
+    {
         return id;
     }
 
-    void setProvider(const QString &aProvider) {
+    void setProvider(const QString &aProvider)
+    {
         provider = aProvider;
     }
 
-    QString getProvider() const {
+    QString getProvider() const
+    {
         return provider;
     }
 
-    void setCreationDate(const QDateTime &aDate) {
+    void setCreationDate(const QDateTime &aDate)
+    {
         creationDate = aDate;
     }
 
-    QDateTime getCreationDate() const {
+    QDateTime getCreationDate() const
+    {
         return creationDate;
     }
 
-    void setLastUpdate(const QDateTime &aDate) {
+    void setLastUpdate(const QDateTime &aDate)
+    {
         lastUpdate = aDate;
     }
 
-    QDateTime getLastUpdate() const {
+    QDateTime getLastUpdate() const
+    {
         return lastUpdate;
     }
 
-    void setStatus(SDK::PaymentProcessor::EPaymentStatus::Enum aStatus) {
+    void setStatus(SDK::PaymentProcessor::EPaymentStatus::Enum aStatus)
+    {
         status = aStatus;
     }
 
-    SDK::PaymentProcessor::EPaymentStatus::Enum getStatus() const {
+    SDK::PaymentProcessor::EPaymentStatus::Enum getStatus() const
+    {
         return status;
     }
 
-    void setAmount(float aAmount) {
+    void setAmount(float aAmount)
+    {
         amount = aAmount;
     }
 
-    float getAmount() const {
+    float getAmount() const
+    {
         return amount;
     }
 
-    void setAmountAll(float aAmount) {
+    void setAmountAll(float aAmount)
+    {
         amountAll = aAmount;
     }
 
-    float getAmountAll() const {
+    float getAmountAll() const
+    {
         return amountAll;
     }
 
-    void setPrinted(bool isPrinted) {
+    void setPrinted(bool isPrinted)
+    {
         printed = isPrinted;
     }
 
-    bool getPrinted() const {
+    bool getPrinted() const
+    {
         return printed;
     }
 
-    bool isProcessed() const {
+    bool isProcessed() const
+    {
         return !(status == SDK::PaymentProcessor::EPaymentStatus::Cheated ||
                  status == SDK::PaymentProcessor::EPaymentStatus::ReadyForCheck ||
                  status == SDK::PaymentProcessor::EPaymentStatus::ProcessError ||
@@ -91,20 +110,24 @@ class PaymentInfo {
     }
 
     /// Возвращает true, если платеж можно распечатать
-    bool canPrint() const {
+    bool canPrint() const
+    {
         return status != SDK::PaymentProcessor::EPaymentStatus::LostChange &&
                status != SDK::PaymentProcessor::EPaymentStatus::Init;
     }
 
     /// Возвращает true, если платеж можно провести
-    bool canProcess() const {
+    bool canProcess() const
+    {
         return status == SDK::PaymentProcessor::EPaymentStatus::ProcessError ||
                status == SDK::PaymentProcessor::EPaymentStatus::ReadyForCheck;
     }
 
-    QString getStatusString() const {
+    QString getStatusString() const
+    {
         QString statusString;
-        switch (status) {
+        switch (status)
+        {
             case SDK::PaymentProcessor::EPaymentStatus::LostChange:
                 statusString = QObject::tr("#lost_change");
                 break;
@@ -140,35 +163,43 @@ class PaymentInfo {
         return QString("%1 (%2)").arg(statusString).arg(status);
     }
 
-    void setProviderFields(const QString &aProviderFields) {
+    void setProviderFields(const QString &aProviderFields)
+    {
         providerFields = aProviderFields;
     }
 
-    QString getProviderFields() const {
+    QString getProviderFields() const
+    {
         return providerFields;
     }
 
-    void setInitialSession(const QString &aInitialSession) {
+    void setInitialSession(const QString &aInitialSession)
+    {
         initialSession = aInitialSession;
     }
 
-    QString getInitialSession() const {
+    QString getInitialSession() const
+    {
         return initialSession;
     }
 
-    void setSession(const QString &aSession) {
+    void setSession(const QString &aSession)
+    {
         session = aSession;
     }
 
-    QString getSession() const {
+    QString getSession() const
+    {
         return session;
     }
 
-    void setTransId(const QString &aTransId) {
+    void setTransId(const QString &aTransId)
+    {
         transId = aTransId;
     }
 
-    QString getTransId() const {
+    QString getTransId() const
+    {
         return transId;
     }
 

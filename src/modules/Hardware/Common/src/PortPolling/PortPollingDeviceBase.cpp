@@ -21,7 +21,8 @@ template class PortPollingDeviceBase<ProtoHID>;
 template class PortPollingDeviceBase<ProtoMifareReader>;
 
 //--------------------------------------------------------------------------------
-template <class T> void PortPollingDeviceBase<T>::initialize() {
+template <class T> void PortPollingDeviceBase<T>::initialize()
+{
     START_IN_WORKING_THREAD(initialize)
 
     PortDeviceBase<PollingDeviceBase<T>>::initialize();
@@ -30,10 +31,12 @@ template <class T> void PortPollingDeviceBase<T>::initialize() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void PortPollingDeviceBase<T>::setPollingActive(bool aActive) {
+template <class T> void PortPollingDeviceBase<T>::setPollingActive(bool aActive)
+{
     QVariantMap configuration = this->mIOPort->getDeviceConfiguration();
 
-    if (!configuration.value(CHardware::Port::Suspended).toBool()) {
+    if (!configuration.value(CHardware::Port::Suspended).toBool())
+    {
         PortDeviceBase<PollingDeviceBase<T>>::setPollingActive(aActive);
     }
 }

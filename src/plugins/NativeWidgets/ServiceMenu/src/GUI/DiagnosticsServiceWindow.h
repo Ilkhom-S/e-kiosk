@@ -18,7 +18,8 @@
 class DeviceStatusWindow;
 
 //------------------------------------------------------------------------
-class DiagnosticsServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::DiagnosticsServiceWindow {
+class DiagnosticsServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::DiagnosticsServiceWindow
+{
     Q_OBJECT
 
   public:

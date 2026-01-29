@@ -9,7 +9,8 @@
 // Project
 #include "UpdaterApp.h"
 
-int main(int aArgc, char *aArgv[]) {
+int main(int aArgc, char *aArgv[])
+{
     qInstallMessageHandler(UpdaterApp::qtMessageHandler);
 
     UpdaterApp app(aArgc, aArgv);

@@ -2,12 +2,16 @@
 
 #pragma once
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        namespace CPayment {
-            namespace Parameters {
+        namespace CPayment
+        {
+            namespace Parameters
+            {
                 /// Обязательные параметры.
                 const char ID[] = "ID";
                 const char Type[] = "PROCESSING_TYPE";

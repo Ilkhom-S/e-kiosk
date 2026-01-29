@@ -20,9 +20,11 @@
 #include "API.h"
 #include "UnitellerBackend.h"
 
-namespace {
+namespace
+{
     /// Конструктор плагина.
-    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+    {
         return new CUnitellerBackend::UnitellerBackendPlugin(aFactory, aInstancePath);
     }
 } // namespace
@@ -32,14 +34,17 @@ REGISTER_PLUGIN(SDK::Plugin::makePath(SDK::PaymentProcessor::Application, PPSDK:
                                       CUnitellerBackend::PluginName),
                 &CreatePlugin, &SDK::Plugin::PluginInitializer::emptyParameterList, UnitellerBackend);
 
-namespace CUnitellerBackend {
+namespace CUnitellerBackend
+{
     //---------------------------------------------------------------------------
     UnitellerBackendPlugin::UnitellerBackendPlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-        : mEnvironment(aFactory), mInstancePath(aInstancePath) {
+        : mEnvironment(aFactory), mInstancePath(aInstancePath)
+    {
     }
 
     //---------------------------------------------------------------------------
-    PPSDK::Scripting::IBackendScenarioObject *UnitellerBackendPlugin::create(const QString &aClassName) const {
+    PPSDK::Scripting::IBackendScenarioObject *UnitellerBackendPlugin::create(const QString &aClassName) const
+    {
         PPSDK::ICore *core = dynamic_cast<PPSDK::ICore *>(mEnvironment->getInterface(PPSDK::CInterfaces::ICore));
 
         return new UnitellerCore(core, mEnvironment->getLog(Uniteller::LogName),
@@ -48,7 +53,8 @@ namespace CUnitellerBackend {
 
     //---------------------------------------------------------------------------
     UnitellerCore::UnitellerCore(SDK::PaymentProcessor::ICore *aCore, ILog *aLog, QSharedPointer<Uniteller::API> aAPI)
-        : ILogable(aLog), mCore(aCore), mCountPINNumbers(0) {
+        : ILogable(aLog), mCore(aCore), mCountPINNumbers(0)
+    {
         connect(&mDummyTimer, SIGNAL(timeout()), this, SIGNAL(onTimeout()));
         mDummyTimer.setInterval(1000);
         mDummyTimer.start();
@@ -64,15 +70,19 @@ namespace CUnitellerBackend {
     }
 
     //---------------------------------------------------------------------------
-    void UnitellerCore::ejectCard() {
+    void UnitellerCore::ejectCard()
+    {
         emit ejected();
     }
 
     //---------------------------------------------------------------------------
-    void UnitellerCore::onDeviceEvent(Uniteller::DeviceEvent::Enum aEvent, Uniteller::KeyCode::Enum aKeyCode) {
-        switch (aEvent) {
+    void UnitellerCore::onDeviceEvent(Uniteller::DeviceEvent::Enum aEvent, Uniteller::KeyCode::Enum aKeyCode)
+    {
+        switch (aEvent)
+        {
             case Uniteller::DeviceEvent::KeyPress:
-                switch (aKeyCode) {
+                switch (aKeyCode)
+                {
                     case Uniteller::KeyCode::Timeout:
                         break;
 
@@ -114,7 +124,8 @@ namespace CUnitellerBackend {
     }
 
     //---------------------------------------------------------------------------
-    void UnitellerCore::onPrintReceipt(const QStringList &aLines) {
+    void UnitellerCore::onPrintReceipt(const QStringList &aLines)
+    {
         QVariantMap parameters;
         parameters["EMV_DATA"] = aLines.join("[br]");
 

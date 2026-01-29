@@ -9,15 +9,19 @@
 
 #include <SDK/PaymentProcessor/Payment/Amount.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
-        namespace CChargeProvider {
+        namespace CChargeProvider
+        {
             static const char *StackedSignal = SIGNAL(stacked(SDK::PaymentProcessor::SNote));
         } // namespace CChargeProvider
 
         //------------------------------------------------------------------------------
-        class IChargeProvider {
+        class IChargeProvider
+        {
           public:
             /// Соединяет сигнал данного интерфейса со слотом приёмника.
             virtual bool subscribe(const char *aSignal, QObject *aReceiver, const char *aSlot) = 0;
@@ -36,7 +40,8 @@ namespace SDK {
             virtual bool disable() = 0;
 
           protected:
-            virtual ~IChargeProvider() {
+            virtual ~IChargeProvider()
+            {
             }
         };
 

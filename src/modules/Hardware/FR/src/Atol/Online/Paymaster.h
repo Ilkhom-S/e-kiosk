@@ -6,9 +6,11 @@
 #include "../Ejector/AtolVKP80BasedFR.h"
 
 /// Константы Казначея.
-namespace CPaymaster {
+namespace CPaymaster
+{
     /// Ошибки короткого статуса.
-    namespace ShortStatusError {
+    namespace ShortStatusError
+    {
         const char PaperJam = '\x20';  /// Замятие бумаги.
         const char Presenter = '\x40'; /// Только для PPU-700: Ошибка презентера или в презентере осталась бумага.
     } // namespace ShortStatusError
@@ -18,7 +20,8 @@ namespace CPaymaster {
 } // namespace CPaymaster
 
 //--------------------------------------------------------------------------------
-template <class T> class Paymaster : public AtolVKP80BasedFR<T> {
+template <class T> class Paymaster : public AtolVKP80BasedFR<T>
+{
     SET_SUBSERIES("Paymaster")
 
   public:

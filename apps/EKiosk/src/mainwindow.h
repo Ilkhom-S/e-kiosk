@@ -44,7 +44,8 @@
 // Project
 #include "main.h"
 
-struct TerminalParams {
+struct TerminalParams
+{
     QString login;
     QString token;
     QString secretLogin;
@@ -52,7 +53,8 @@ struct TerminalParams {
 };
 
 // Параметры принтера
-struct PrinterParams {
+struct PrinterParams
+{
     QString name;
     QString port;
     QString comment;
@@ -66,7 +68,8 @@ struct PrinterParams {
     int printCheckUntil = 0;
 };
 
-struct ValidatorParams {
+struct ValidatorParams
+{
     QString name;
     QString port;
     QString comment;
@@ -76,7 +79,8 @@ struct ValidatorParams {
     QString partNumber;
 };
 
-struct CoinAcceptorParams {
+struct CoinAcceptorParams
+{
     QString name;
     QString port;
     QString comment;
@@ -86,7 +90,8 @@ struct CoinAcceptorParams {
     QString partNumber;
 };
 
-struct ModemParams {
+struct ModemParams
+{
     bool found = false;
     QString name;
     QString port;
@@ -100,7 +105,8 @@ struct ModemParams {
     QString number;
 };
 
-struct WDParams {
+struct WDParams
+{
     bool found = false;
     QString name;
     QString port;
@@ -108,7 +114,8 @@ struct WDParams {
     bool present = false;
 };
 
-struct Config {
+struct Config
+{
     // Пораметры терминала
     TerminalParams terminalData;
     // Пораметры модема
@@ -213,10 +220,17 @@ struct Config {
     bool autoUpdateStatus = true;
 };
 
-enum Page { LoadingDevices = 0, LoadingGprs = 1, LoadingMain = 2 };
+enum Page
+{
+    LoadingDevices = 0,
+    LoadingGprs = 1,
+    LoadingMain = 2
+};
 
-namespace Action {
-    enum Ac {
+namespace Action
+{
+    enum Ac
+    {
         /// Снят валидатор купюр
         aOpenValidatorBox = 0,
         /// АСО загружает обновления
@@ -228,8 +242,10 @@ namespace Action {
     };
 } // namespace Action
 
-namespace CommandInit {
-    enum Cmd {
+namespace CommandInit
+{
+    enum Cmd
+    {
         /// Перезагрузить терминал
         cRebootTerminal = 0,
         /// Выключить терминал
@@ -255,19 +271,31 @@ namespace CommandInit {
     };
 } // namespace CommandInit
 
-namespace SmsSend {
-    enum smsState { NotSend = 0, OK = 1 };
+namespace SmsSend
+{
+    enum smsState
+    {
+        NotSend = 0,
+        OK = 1
+    };
 
-    enum lockState { Unlock = 0, Lock = 1 };
+    enum lockState
+    {
+        Unlock = 0,
+        Lock = 1
+    };
 } // namespace SmsSend
 
-struct LockItem {
+struct LockItem
+{
     bool lock;
     QString comment;
 };
 
-namespace Lock {
-    enum Data {
+namespace Lock
+{
+    enum Data
+    {
         // Терминал работает
         Ok = 0,
         // Терминал заблокирован из за недостатка средств
@@ -305,12 +333,14 @@ namespace Lock {
 } // namespace Lock
 
 QT_BEGIN_NAMESPACE
-namespace Ui {
+namespace Ui
+{
     class MainWindow;
 }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 
   public:

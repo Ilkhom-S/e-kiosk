@@ -35,28 +35,34 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-FundsService *FundsService::instance(IApplication *aApplication) {
+FundsService *FundsService::instance(IApplication *aApplication)
+{
     return static_cast<FundsService *>(aApplication->getCore()->getService(CServices::FundsService));
 }
 
 //---------------------------------------------------------------------------
 FundsService::FundsService(IApplication *aApplication)
     : ILogable(CFundsService::LogName), mApplication(aApplication), mCashDispenserManager(nullptr),
-      mCashAcceptorManager(nullptr) {
+      mCashAcceptorManager(nullptr)
+{
 }
 
 //---------------------------------------------------------------------------
-FundsService::~FundsService() {
+FundsService::~FundsService()
+{
 }
 
 //---------------------------------------------------------------------------
-bool FundsService::initialize() {
-    if (!mCashAcceptorManager) {
+bool FundsService::initialize()
+{
+    if (!mCashAcceptorManager)
+    {
         mCashAcceptorManager = new CashAcceptorManager(mApplication);
         mCashAcceptorManager->setParent(this);
     }
 
-    if (!mCashDispenserManager) {
+    if (!mCashDispenserManager)
+    {
         mCashDispenserManager = new CashDispenserManager(mApplication);
         mCashDispenserManager->setParent(this);
     }
@@ -67,23 +73,28 @@ bool FundsService::initialize() {
 }
 
 //------------------------------------------------------------------------------
-void FundsService::finishInitialize() {
+void FundsService::finishInitialize()
+{
 }
 
 //---------------------------------------------------------------------------
-bool FundsService::canShutdown() {
+bool FundsService::canShutdown()
+{
     return true;
 }
 
 //---------------------------------------------------------------------------
-bool FundsService::shutdown() {
-    if (mCashAcceptorManager) {
+bool FundsService::shutdown()
+{
+    if (mCashAcceptorManager)
+    {
         mCashAcceptorManager->shutdown();
         delete mCashAcceptorManager;
         mCashAcceptorManager = nullptr;
     }
 
-    if (mCashDispenserManager) {
+    if (mCashDispenserManager)
+    {
         mCashDispenserManager->shutdown();
         delete mCashDispenserManager;
         mCashDispenserManager = nullptr;
@@ -93,12 +104,14 @@ bool FundsService::shutdown() {
 }
 
 //---------------------------------------------------------------------------
-QString FundsService::getName() const {
+QString FundsService::getName() const
+{
     return CServices::FundsService;
 }
 
 //---------------------------------------------------------------------------
-const QSet<QString> &FundsService::getRequiredServices() const {
+const QSet<QString> &FundsService::getRequiredServices() const
+{
     static QSet<QString> requiredServices = QSet<QString>() << CServices::SettingsService << CServices::DeviceService
                                                             << CServices::DatabaseService;
 
@@ -106,7 +119,8 @@ const QSet<QString> &FundsService::getRequiredServices() const {
 }
 
 //---------------------------------------------------------------------------
-QVariantMap FundsService::getParameters() const {
+QVariantMap FundsService::getParameters() const
+{
     QVariantMap parameters;
 
     parameters[PPSDK::CServiceParameters::Funds::RejectCount] = mCashAcceptorManager->getRejectCount();
@@ -115,8 +129,10 @@ QVariantMap FundsService::getParameters() const {
 }
 
 //---------------------------------------------------------------------------
-void FundsService::resetParameters(const QSet<QString> &aParameters) {
-    if (aParameters.contains(PPSDK::CServiceParameters::Funds::RejectCount)) {
+void FundsService::resetParameters(const QSet<QString> &aParameters)
+{
+    if (aParameters.contains(PPSDK::CServiceParameters::Funds::RejectCount))
+    {
         auto dbUtils = DatabaseService::instance(mApplication)->getDatabaseUtils<IHardwareDatabaseUtils>();
         dbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                 PPSDK::CDatabaseConstants::Parameters::RejectCount, 0);
@@ -124,7 +140,8 @@ void FundsService::resetParameters(const QSet<QString> &aParameters) {
 }
 
 //------------------------------------------------------------------------------
-QString FundsService::getState() const {
+QString FundsService::getState() const
+{
     // Получаем список всех доступных устройств.
     PPSDK::TerminalSettings *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
     QStringList deviceList = settings->getDeviceList().filter(QRegularExpression(
@@ -132,18 +149,23 @@ QString FundsService::getState() const {
 
     QStringList result;
 
-    foreach (const QString &configurationName, deviceList) {
+    foreach (const QString &configurationName, deviceList)
+    {
         DSDK::IDevice *device = DeviceService::instance(mApplication)->acquireDevice(configurationName);
-        if (device) {
+        if (device)
+        {
             QStringList dd = device->getDeviceConfiguration().value(CHardwareSDK::DeviceData).toString().split("\n");
-            if (!dd.isEmpty()) {
+            if (!dd.isEmpty())
+            {
                 QVariantMap ddMap;
-                foreach (QString param, dd) {
+                foreach (QString param, dd)
+                {
                     if (param.isEmpty())
                         continue;
 
                     QStringList pp = param.split(":");
-                    if (!pp.isEmpty()) {
+                    if (!pp.isEmpty())
+                    {
                         ddMap.insert(pp.first().trimmed(), pp.last().trimmed());
                     }
                 }
@@ -161,12 +183,14 @@ QString FundsService::getState() const {
 }
 
 //---------------------------------------------------------------------------
-SDK::PaymentProcessor::ICashAcceptorManager *FundsService::getAcceptor() const {
+SDK::PaymentProcessor::ICashAcceptorManager *FundsService::getAcceptor() const
+{
     return mCashAcceptorManager;
 }
 
 //---------------------------------------------------------------------------
-SDK::PaymentProcessor::ICashDispenserManager *FundsService::getDispenser() const {
+SDK::PaymentProcessor::ICashDispenserManager *FundsService::getDispenser() const
+{
     return mCashDispenserManager;
 }
 

@@ -12,7 +12,8 @@
 typedef QList<SDK::PaymentProcessor::IPayment::SParameter> TPaymentParameters;
 
 //---------------------------------------------------------------------------
-class IPaymentDatabaseUtils {
+class IPaymentDatabaseUtils
+{
   public:
     /// Создание пустой платёжной записи в базе.
     virtual qint64 createDummyPayment() = 0;
@@ -70,7 +71,8 @@ class IPaymentDatabaseUtils {
     virtual QMap<qint64, quint32> getStatistic() const = 0;
 
   protected:
-    virtual ~IPaymentDatabaseUtils() {
+    virtual ~IPaymentDatabaseUtils()
+    {
     }
 };
 

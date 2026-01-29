@@ -19,9 +19,11 @@
 #define APPEND_CODEC(aName, aCodec) append(CHardware::Codepages::aName, std::make_shared<QStringDecoder>(#aCodec))
 
 // T2 теперь std::shared_ptr<QStringDecoder>, который можно копировать в QMap
-class CodecDescriptions : public CSpecification<QString, std::shared_ptr<QStringDecoder>> {
+class CodecDescriptions : public CSpecification<QString, std::shared_ptr<QStringDecoder>>
+{
   public:
-    CodecDescriptions() {
+    CodecDescriptions()
+    {
         // Инициализация стандартных кодировок через новый API Qt 6
         APPEND_CODEC(CP850, "IBM 850");
         APPEND_CODEC(CP866, "IBM 866");

@@ -6,11 +6,13 @@
 #include <QtWidgets/QDialog>
 #include <Common/QtHeadersEnd.h>
 
-namespace Ui {
+namespace Ui
+{
     class CreateDialupConnection;
 }
 
-class CreateDialupConnection : public QDialog {
+class CreateDialupConnection : public QDialog
+{
     Q_OBJECT
 
   public:

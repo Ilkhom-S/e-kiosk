@@ -6,18 +6,21 @@
 // Project
 #include "CheckOnline.h"
 
-CheckOnline::CheckOnline(QObject *parent) : SendRequest(parent) {
+CheckOnline::CheckOnline(QObject *parent) : SendRequest(parent)
+{
     senderName = "CHECK_ONLINE";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
     connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 }
 
-void CheckOnline::resendRequest() {
+void CheckOnline::resendRequest()
+{
     emit emit_CheckOnlineResult("", "", "", QVariantList());
 }
 
-void CheckOnline::setDataNote(const QDomNode &domElement) {
+void CheckOnline::setDataNote(const QDomNode &domElement)
+{
     getData = false;
     resultCode = "";
     items.clear();
@@ -25,7 +28,8 @@ void CheckOnline::setDataNote(const QDomNode &domElement) {
     // Парсим данные
     parcerNote(domElement);
 
-    if (resultCode != "") {
+    if (resultCode != "")
+    {
         // Тут отправляем сигнал с балансом
         emit emit_CheckOnlineResult(resultCode, status, message, items);
         return;
@@ -35,29 +39,36 @@ void CheckOnline::setDataNote(const QDomNode &domElement) {
     return;
 }
 
-void CheckOnline::parcerNote(const QDomNode &domElement) {
+void CheckOnline::parcerNote(const QDomNode &domElement)
+{
     // Необходимо отпарсить документ
     QDomNode domNode = domElement.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
 
             QDomElement domElement = domNode.toElement();
             QString strTag = domElement.tagName();
 
-            if (strTag == "resultCode") {
+            if (strTag == "resultCode")
+            {
                 resultCode = domElement.text();
             }
 
-            if (strTag == "status") {
+            if (strTag == "status")
+            {
                 status = domElement.text();
             }
 
-            if (strTag == "message") {
+            if (strTag == "message")
+            {
                 message = domElement.text();
             }
 
-            if (strTag == "item") {
+            if (strTag == "item")
+            {
                 QVariantMap item;
                 item["label"] = domElement.attribute("label");
                 item["value"] = domElement.attribute("value");
@@ -71,8 +82,8 @@ void CheckOnline::parcerNote(const QDomNode &domElement) {
     }
 }
 
-void CheckOnline::sendCheckOnlineRequest(QString trn, QString prvId, QString account, double amount,
-                                         QVariantMap param) {
+void CheckOnline::sendCheckOnlineRequest(QString trn, QString prvId, QString account, double amount, QVariantMap param)
+{
     QString header_xml = getHeaderRequest(Request::Type::CheckOnline);
 
     QString footer_xml = getFooterRequest();

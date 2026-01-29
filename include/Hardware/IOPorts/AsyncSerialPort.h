@@ -27,7 +27,8 @@ typedef QMap<QString, QString> TIOPortDeviceData;
 
 //--------------------------------------------------------------------------------
 /// Константы для работы с асинхронным COM-портом.
-namespace CAsyncSerialPort {
+namespace CAsyncSerialPort
+{
     /// Коэффициент надежности.
     const double KSafety = 1.8;
 
@@ -35,16 +36,19 @@ namespace CAsyncSerialPort {
     const double KOpeningTimeout = 1.5;
 
     /// Id для идентификации COM-портов.
-    namespace Tags {
+    namespace Tags
+    {
         /// Виртуальные COM-порты (через USB).
-        inline QStringList Virtual() {
+        inline QStringList Virtual()
+        {
             return QStringList() << "USB"      /// Драйвер cp210x и совместимые.
                                  << "FTDI"     /// Чип FTDI.
                                  << "Virtual"; /// Что-то виртуальное.
         }
 
         /// Эмуляторы (программные) COM-порты.
-        inline QStringList Emulator() {
+        inline QStringList Emulator()
+        {
             return QStringList() << "COM0COM"
                                  << "Emulator";
         }
@@ -73,7 +77,8 @@ namespace CAsyncSerialPort {
 //--------------------------------------------------------------------------------
 /// Платформо-независимый асинхронный последовательный порт.
 /// Использует композицию для выбора правильной платформенной реализации.
-class AsyncSerialPort : public IOPortBase {
+class AsyncSerialPort : public IOPortBase
+{
     SET_SERIES("COM")
 
   public:
@@ -131,7 +136,8 @@ class AsyncSerialPort : public IOPortBase {
 
   public:
     /// Интерфейс платформенной реализации
-    class ISerialPortImpl {
+    class ISerialPortImpl
+    {
       public:
         virtual ~ISerialPortImpl() = default;
 

@@ -15,26 +15,33 @@
 // SDK
 #include <SDK/PaymentProcessor/Payment/Amount.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
-        struct SCashUnit {
+        struct SCashUnit
+        {
             QString currencyName;
             int nominal;
             int count;
 
-            SCashUnit() : nominal(0), count(0) {
+            SCashUnit() : nominal(0), count(0)
+            {
             }
             SCashUnit(const QString &aCurrencyName, int aNominal = 0, int aCount = 0)
-                : currencyName(aCurrencyName), nominal(aNominal), count(aCount) {
+                : currencyName(aCurrencyName), nominal(aNominal), count(aCount)
+            {
             }
 
-            bool operator==(const SCashUnit &aUnit) const {
+            bool operator==(const SCashUnit &aUnit) const
+            {
                 return currencyName == aUnit.currencyName && nominal == aUnit.nominal && count == aUnit.count;
             }
 
-            int amount() const {
+            int amount() const
+            {
                 return nominal * count;
             }
         };
@@ -45,7 +52,8 @@ namespace SDK {
         typedef QMap<QString, TCashUnitList> TCashUnitsState;
 
         //------------------------------------------------------------------------------
-        class ICashDispenserManager : public QObject {
+        class ICashDispenserManager : public QObject
+        {
             Q_OBJECT
 
           public:
@@ -73,7 +81,8 @@ namespace SDK {
             void error(QString aError);
 
           protected:
-            virtual ~ICashDispenserManager() {
+            virtual ~ICashDispenserManager()
+            {
             }
         };
 

@@ -12,17 +12,22 @@
 #include <SDK/PaymentProcessor/Scripting/ScriptArray.h>
 #include <SDK/PaymentProcessor/Scripting/Settings.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Scripting {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Scripting
+        {
 
-            namespace {
+            namespace
+            {
                 const QString DefaultSkin = "default";
                 const QString CommonSkinDirectory = "skins";
             } // namespace
 
             //------------------------------------------------------------------------------
-            DealerSettings::DealerSettings(ICore *aCore) {
+            DealerSettings::DealerSettings(ICore *aCore)
+            {
                 ISettingsService *settingsService = aCore->getSettingsService();
 
                 mSettings = static_cast<SDK::PaymentProcessor::DealerSettings *>(
@@ -31,18 +36,22 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            bool DealerSettings::isPaymentAllowed(const QVariantMap &aParameters) const {
+            bool DealerSettings::isPaymentAllowed(const QVariantMap &aParameters) const
+            {
                 return mSettings->isCustomerAllowed(aParameters);
             }
 
             //------------------------------------------------------------------------------
-            QObject *DealerSettings::getCommissions(qint64 aProvider, const QVariantMap &aParameters, double aAmount) {
+            QObject *DealerSettings::getCommissions(qint64 aProvider, const QVariantMap &aParameters, double aAmount)
+            {
                 ScriptArray *result = new ScriptArray(this);
 
-                foreach (const Commission &commission, mSettings->getCommissions(aProvider, aParameters)) {
+                foreach (const Commission &commission, mSettings->getCommissions(aProvider, aParameters))
+                {
                     // Комиссия подходит для данной суммы если нет ограничений по сумме или выполняется условие "сумма
                     // <= maxLimit"
-                    if (!commission.hasLimits() || aAmount <= commission.getMaxLimit() || qFuzzyIsNull(aAmount)) {
+                    if (!commission.hasLimits() || aAmount <= commission.getMaxLimit() || qFuzzyIsNull(aAmount))
+                    {
                         result->append(new SCommission(commission, result));
                     }
                 }
@@ -51,7 +60,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            TerminalSettings::TerminalSettings(ICore *aCore) {
+            TerminalSettings::TerminalSettings(ICore *aCore)
+            {
                 ISettingsService *settingsService = aCore->getSettingsService();
                 mTerminalSettings = static_cast<SDK::PaymentProcessor::TerminalSettings *>(
                     settingsService->getAdapter(CAdapterNames::TerminalAdapter));
@@ -60,10 +70,13 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            bool TerminalSettings::isItServiceProvider(qint64 aProvider, const QVariantMap &aParameters) {
-                if (mTerminalSettings->getServiceMenuPasswords().operatorId == aProvider) {
+            bool TerminalSettings::isItServiceProvider(qint64 aProvider, const QVariantMap &aParameters)
+            {
+                if (mTerminalSettings->getServiceMenuPasswords().operatorId == aProvider)
+                {
                     if (aParameters.size() && aParameters.value(aParameters.keys().first()).toString() ==
-                                                  mTerminalSettings->getServiceMenuPasswords().phone) {
+                                                  mTerminalSettings->getServiceMenuPasswords().phone)
+                    {
                         return true;
                     }
                 }
@@ -72,7 +85,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QString TerminalSettings::getCurrentSkinPath() const {
+            QString TerminalSettings::getCurrentSkinPath() const
+            {
                 QString name = mGuiService->getUiSettings("ui")["skin"].toString();
 
                 return mTerminalSettings->getAppEnvironment().interfacePath + QDir::separator() + CommonSkinDirectory +

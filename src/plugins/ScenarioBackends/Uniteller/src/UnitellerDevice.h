@@ -24,7 +24,8 @@
 // Project
 #include "API.h"
 
-namespace Uniteller {
+namespace Uniteller
+{
     const char ModelName[] = "Uniteller";
 } // namespace Uniteller
 
@@ -32,23 +33,28 @@ namespace Uniteller {
 class UnitellerDevice : public QObject,
                         public SDK::Driver::ICardReader,
                         private SDK::Driver::SingleDetectingIterator,
-                        public ILogable {
+                        public ILogable
+{
     Q_OBJECT
 
   public:
     UnitellerDevice();
     ~UnitellerDevice();
 
-    static QString getDeviceType() {
+    static QString getDeviceType()
+    {
         return SDK::Driver::CComponents::CardReader;
     }
-    static QString getInteractionType() {
+    static QString getInteractionType()
+    {
         return SDK::Driver::CInteractionTypes::External;
     }
-    static QString getSeries() {
+    static QString getSeries()
+    {
         return Uniteller::ModelName;
     }
-    static QString getSubSeries() {
+    static QString getSubSeries()
+    {
         return "";
     }
 

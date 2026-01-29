@@ -21,10 +21,12 @@
 
 namespace PPSDK = SDK::PaymentProcessor;
 
-namespace CUcsChargeProvider {
+namespace CUcsChargeProvider
+{
     const QString PluginName = "UcsChargeProvider";
 
-    QPointer<UcsChargeProvider> &plugin() {
+    QPointer<UcsChargeProvider> &plugin()
+    {
         static QPointer<UcsChargeProvider> p;
 
         return p;
@@ -32,10 +34,13 @@ namespace CUcsChargeProvider {
 } // namespace CUcsChargeProvider
 
 //------------------------------------------------------------------------------
-namespace {
+namespace
+{
     /// Конструктор экземпляра плагина.
-    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
-        if (CUcsChargeProvider::plugin().isNull()) {
+    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+    {
+        if (CUcsChargeProvider::plugin().isNull())
+        {
             CUcsChargeProvider::plugin() = new UcsChargeProvider(aFactory, aInstancePath);
         }
 
@@ -43,7 +48,8 @@ namespace {
     }
 } // namespace
 
-static SDK::Plugin::TParameterList EnumerateParameters() {
+static SDK::Plugin::TParameterList EnumerateParameters()
+{
     return SDK::Plugin::TParameterList() << SDK::Plugin::SPluginParameter(
                SDK::Plugin::Parameters::Singleton, SDK::Plugin::SPluginParameter::Bool, false,
                SDK::Plugin::Parameters::Singleton, QString(), true, QVariantMap(), true);
@@ -60,7 +66,8 @@ UcsChargeProvider::UcsChargeProvider(SDK::Plugin::IEnvironment *aFactory, const 
     : ILogable(aFactory->getLog(Ucs::LogName)), mFactory(aFactory), mInstancePath(aInstancePath),
       mCore(dynamic_cast<SDK::PaymentProcessor::ICore *>(
           aFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore))),
-      mApi(Ucs::API::getInstance(mCore, aFactory->getLog(Ucs::LogName))) {
+      mApi(Ucs::API::getInstance(mCore, aFactory->getLog(Ucs::LogName)))
+{
     qRegisterMetaType<SDK::PaymentProcessor::SNote>("SDK::PaymentProcessor::SNote");
 
     mDealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
@@ -75,86 +82,102 @@ UcsChargeProvider::UcsChargeProvider(SDK::Plugin::IEnvironment *aFactory, const 
 }
 
 //------------------------------------------------------------------------------
-UcsChargeProvider::~UcsChargeProvider() {
+UcsChargeProvider::~UcsChargeProvider()
+{
 }
 
 //------------------------------------------------------------------------------
-QString UcsChargeProvider::getPluginName() const {
+QString UcsChargeProvider::getPluginName() const
+{
     return CUcsChargeProvider::PluginName;
 }
 
 //------------------------------------------------------------------------------
-QVariantMap UcsChargeProvider::getConfiguration() const {
+QVariantMap UcsChargeProvider::getConfiguration() const
+{
     return mParameters;
 }
 
 //------------------------------------------------------------------------------
-void UcsChargeProvider::setConfiguration(const QVariantMap &aParameters) {
+void UcsChargeProvider::setConfiguration(const QVariantMap &aParameters)
+{
     mParameters = aParameters;
 
     mApi->setupRuntime(aParameters.value(ParamRuntimePath).toString());
 }
 
 //------------------------------------------------------------------------------
-QString UcsChargeProvider::getConfigurationName() const {
+QString UcsChargeProvider::getConfigurationName() const
+{
     return mInstancePath;
 }
 
 //------------------------------------------------------------------------------
-bool UcsChargeProvider::saveConfiguration() {
+bool UcsChargeProvider::saveConfiguration()
+{
     // У плагина нет параметров
     return true;
 }
 
 //------------------------------------------------------------------------------
-bool UcsChargeProvider::isReady() const {
+bool UcsChargeProvider::isReady() const
+{
     return true;
 }
 
 //------------------------------------------------------------------------------
-bool UcsChargeProvider::subscribe(const char *aSignal, QObject *aReceiver, const char *aSlot) {
+bool UcsChargeProvider::subscribe(const char *aSignal, QObject *aReceiver, const char *aSlot)
+{
     return QObject::connect(this, aSignal, aReceiver, aSlot,
                             Qt::ConnectionType(Qt::UniqueConnection | Qt::QueuedConnection));
 }
 
 //------------------------------------------------------------------------------
-bool UcsChargeProvider::unsubscribe(const char *aSignal, QObject *aReceiver) {
+bool UcsChargeProvider::unsubscribe(const char *aSignal, QObject *aReceiver)
+{
     return QObject::disconnect(aSignal, aReceiver);
 }
 
 //------------------------------------------------------------------------------
-QString UcsChargeProvider::getMethod() {
+QString UcsChargeProvider::getMethod()
+{
     return mApi->isReady() ? "card_ucs" : QString();
 }
 
 //------------------------------------------------------------------------------
-bool UcsChargeProvider::enable(PPSDK::TPaymentAmount aMaxAmount) {
+bool UcsChargeProvider::enable(PPSDK::TPaymentAmount aMaxAmount)
+{
     return mApi->enable(aMaxAmount);
 }
 
 //------------------------------------------------------------------------------
-bool UcsChargeProvider::disable() {
+bool UcsChargeProvider::disable()
+{
     // Чистим ресурсы по команде сценария, т.к. нужны дополнительные движения с API
     // mApi->disable();
     return true;
 }
 
 //------------------------------------------------------------------------------
-void UcsChargeProvider::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
-    if (aEvent.getType() == PPSDK::EEventType::ProcessEncashment) {
+void UcsChargeProvider::onEvent(const SDK::PaymentProcessor::Event &aEvent)
+{
+    if (aEvent.getType() == PPSDK::EEventType::ProcessEncashment)
+    {
         mApi->encashment(false);
     }
 }
 
 //------------------------------------------------------------------------------
-void UcsChargeProvider::onEncashmentComplete() {
+void UcsChargeProvider::onEncashmentComplete()
+{
     // TODO - напечатать все чеки отложенных инкассаций
     // mCore->getPrinterService()->pri
 }
 
 //------------------------------------------------------------------------------
 void UcsChargeProvider::onSaleComplete(double aAmount, int aCurrency, const QString &aRRN,
-                                       const QString &aConfirmationCode) {
+                                       const QString &aConfirmationCode)
+{
     toLog(
         LogLevel::Normal,
         QString("Sale complete: %1 RRN:%2 confirmation:%3.").arg(aAmount, 0, 'f', 2).arg(aRRN).arg(aConfirmationCode));

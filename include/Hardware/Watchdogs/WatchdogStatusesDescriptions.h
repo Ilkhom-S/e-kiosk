@@ -6,7 +6,8 @@
 #include "Hardware/Watchdogs/WatchdogStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace WatchdogStatusCode {
+namespace WatchdogStatusCode
+{
 #define ADD_WARNING(aStatusCode, aTranslation)                                                                         \
     append(Warning::aStatusCode,                                                                                       \
            SStatusCodeSpecification(SDK::Driver::EWarningLevel::Warning, #aStatusCode, aTranslation))
@@ -14,10 +15,12 @@ namespace WatchdogStatusCode {
     append(Error::aStatusCode, SStatusCodeSpecification(SDK::Driver::EWarningLevel::Error, #aStatusCode, aTranslation))
 
     /// Спецификации кодов состояний сторожевых таймеров.
-    class CSpecifications : public DeviceStatusCode::CSpecifications {
+    class CSpecifications : public DeviceStatusCode::CSpecifications
+    {
       public:
         /// Конструктор.
-        CSpecifications() {
+        CSpecifications()
+        {
             ADD_WARNING(Door, QCoreApplication::translate("WatchdogSensors", "#door"));
             ADD_WARNING(Safe, QCoreApplication::translate("WatchdogSensors", "#safe"));
             ADD_WARNING(UpperUnit, QCoreApplication::translate("WatchdogSensors", "#upper_unit"));

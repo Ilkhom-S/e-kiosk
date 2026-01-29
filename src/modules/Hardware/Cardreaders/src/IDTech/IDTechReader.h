@@ -10,13 +10,15 @@
 #include "Hardware/Common/PollingDeviceBase.h"
 #include "Hardware/HID/ProtoHID.h"
 
-namespace CIDTechReader {
+namespace CIDTechReader
+{
     // Имя dll SDK.
     const char DLLSDKName[] = "libIDTechSDK.dll.1.0.16";
 } // namespace CIDTechReader
 
 //------------------------------------------------------------------------------
-class IDTechReader : public PollingDeviceBase<ProtoHID> {
+class IDTechReader : public PollingDeviceBase<ProtoHID>
+{
     SET_INTERACTION_TYPE(External)
     SET_SERIES("IDTech")
 

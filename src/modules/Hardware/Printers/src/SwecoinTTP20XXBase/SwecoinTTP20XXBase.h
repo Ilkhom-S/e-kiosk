@@ -5,7 +5,8 @@
 #include "Hardware/Printers/PortPrintersBase.h"
 
 //--------------------------------------------------------------------------------
-class SwecoinPrinter : public TSerialPrinterBase {
+class SwecoinPrinter : public TSerialPrinterBase
+{
   public:
     SwecoinPrinter();
 

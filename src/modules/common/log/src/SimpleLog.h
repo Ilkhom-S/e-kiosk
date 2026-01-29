@@ -26,47 +26,50 @@
 class SimpleLog;
 
 //---------------------------------------------------------------------------
-class DestinationFile {
+class DestinationFile
+{
     QFile mFile;
     FILE *mStdFile;
-      #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-      QRecursiveMutex mMutex;
-      #else
-      QMutex mMutex;
-      #endif
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRecursiveMutex mMutex;
+#else
+    QMutex mMutex;
+#endif
     QTextStream mLogStream;
     QString mFileName;
 
   protected:
     DestinationFile()
-  #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-      : mStdFile(nullptr), mMutex(QMutex::Recursive), mLogStream(&mFile)
-  #else
-      : mStdFile(nullptr), mLogStream(&mFile)
-  #endif
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        : mStdFile(nullptr), mMutex(QMutex::Recursive), mLogStream(&mFile)
+#else
+        : mStdFile(nullptr), mLogStream(&mFile)
+#endif
     {
-      #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-      mLogStream.setCodec("utf-8");
-      #endif
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        mLogStream.setCodec("utf-8");
+#endif
     }
 
     friend class SimpleLog;
 
   public:
-    bool open(const QString &aLogPath) {
+    bool open(const QString &aLogPath)
+    {
         mFile.close();
 
-        if (mStdFile) {
+        if (mStdFile)
+        {
             fflush(mStdFile);
             fclose(mStdFile);
         }
 
-          // Cross-platform file open
-          #ifdef Q_OS_WIN
+// Cross-platform file open
+#ifdef Q_OS_WIN
         mStdFile = _fsopen(aLogPath.toLocal8Bit().constData(), "ab+", _SH_DENYNO);
-          #else
+#else
         mStdFile = fopen(aLogPath.toLocal8Bit().constData(), "ab+");
-          #endif
+#endif
 
         bool isOK = mStdFile && mFile.open(mStdFile, QIODevice::Append | QIODevice::Text);
 
@@ -75,15 +78,18 @@ class DestinationFile {
         return isOK;
     }
 
-    bool isOpen() const {
+    bool isOpen() const
+    {
         return mFile.isOpen();
     }
 
-    QString fileName() const {
+    QString fileName() const
+    {
         return mFileName;
     }
 
-    void write(const QString &aMessage) {
+    void write(const QString &aMessage)
+    {
         QMutexLocker locker(&mMutex);
 
         mLogStream << aMessage;
@@ -95,7 +101,8 @@ class DestinationFile {
 typedef QSharedPointer<DestinationFile> DestinationFilePtr;
 
 //---------------------------------------------------------------------------
-class SimpleLog : public ILog {
+class SimpleLog : public ILog
+{
   public:
     explicit SimpleLog(const QString &aName = "Default", LogType::Enum aType = LogType::File,
                        LogLevel::Enum aMaxLogLevel = LogLevel::Normal);

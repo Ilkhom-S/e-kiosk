@@ -9,7 +9,8 @@
 // Project
 #include "SettingsManager.h"
 
-class TestSettingsManager : public QObject {
+class TestSettingsManager : public QObject
+{
     Q_OBJECT
 
   private slots:
@@ -17,7 +18,8 @@ class TestSettingsManager : public QObject {
     void testSaveXML();
 };
 
-void TestSettingsManager::testLoadXML() {
+void TestSettingsManager::testLoadXML()
+{
     QTemporaryDir tmp;
     QVERIFY(tmp.isValid());
 
@@ -51,7 +53,8 @@ void TestSettingsManager::testLoadXML() {
     QCOMPARE(val, QString("value1"));
 }
 
-void TestSettingsManager::testSaveXML() {
+void TestSettingsManager::testSaveXML()
+{
     QTemporaryDir tmp;
     QVERIFY(tmp.isValid());
 

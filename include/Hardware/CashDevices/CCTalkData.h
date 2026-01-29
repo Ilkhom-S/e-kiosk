@@ -11,8 +11,10 @@
 #include "Hardware/Common/HardwareConstants.h"
 
 //--------------------------------------------------------------------------------
-namespace CCCTalk {
-    namespace Address {
+namespace CCCTalk
+{
+    namespace Address
+    {
         const uchar Unknown = 255;     /// Не установлен.
         const uchar Common = 0;        /// Широкополосная команда.
         const uchar Host = 1;          /// Хост.

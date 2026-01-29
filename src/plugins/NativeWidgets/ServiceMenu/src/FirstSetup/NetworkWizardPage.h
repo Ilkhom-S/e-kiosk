@@ -11,7 +11,8 @@
 #include "WizardPage.h"
 
 //---------------------------------------------------------------------------
-class NetworkWizardPage : public WizardPageBase, protected Ui::NetworkWizardPage {
+class NetworkWizardPage : public WizardPageBase, protected Ui::NetworkWizardPage
+{
     Q_OBJECT
 
   public:

@@ -9,7 +9,8 @@
 class IDatabaseQuery;
 
 //---------------------------------------------------------------------------
-namespace CIDatabaseProxy {
+namespace CIDatabaseProxy
+{
     const QString DefaultDatabase = "ek.db";
     const QString DefaultHost = "";
     const QString DefaultUser = "";
@@ -22,17 +23,23 @@ namespace CIDatabaseProxy {
 } // namespace CIDatabaseProxy
 
 //---------------------------------------------------------------------------
-class IDatabaseQueryChecker {
+class IDatabaseQueryChecker
+{
   public:
     /// Проверка результата работы запроса к БД
     virtual bool isGood(bool aQueryResult) = 0;
 };
 
 //---------------------------------------------------------------------------
-class IDatabaseProxy {
+class IDatabaseProxy
+{
   public:
     /// Тип базы данных.
-    enum Type { SQLite = 0, MySql };
+    enum Type
+    {
+        SQLite = 0,
+        MySql
+    };
 
     /// Вызываем этот метод для получения текущей реализации интерфейса БД.
     static IDatabaseProxy *getInstance(IDatabaseQueryChecker *aErrorChecker, Type aType = SQLite);

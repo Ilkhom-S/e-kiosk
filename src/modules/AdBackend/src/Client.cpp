@@ -34,12 +34,14 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 using namespace std::placeholders;
 
-namespace Ad {
+namespace Ad
+{
     /// Имя файла настроек
     const QString SettingsName = "ad.ini";
 
     /// Имена параметров в ini, описывающие рекламную кампанию
-    namespace Settings {
+    namespace Settings
+    {
         const QString Url = "ad/url";
 
         const QString Types = "ad/types";
@@ -52,7 +54,8 @@ namespace Ad {
     } // namespace Settings
 
     //------------------------------------------------------------------------
-    namespace CClient {
+    namespace CClient
+    {
         const int ReinitInterval = 10 * 60 * 1000;
         const int ContentCheckInterval = 20 * 60 * 1000;
         const int ContentRecheckInterval = 3 * 60 * 1000;
@@ -64,7 +67,8 @@ namespace Ad {
 
     //------------------------------------------------------------------------
     Client::Client(SDK::PaymentProcessor::ICore *aCore, ILog *aLog, int aKeyPair)
-        : ILogable(aLog), mCore(aCore), mSavedTypes(0), mExpirationTimer(-1), mCurrentDownloadCommand(-999) {
+        : ILogable(aLog), mCore(aCore), mSavedTypes(0), mExpirationTimer(-1), mCurrentDownloadCommand(-999)
+    {
         mThread.setObjectName(CClient::ThreadName);
         moveToThread(&mThread);
 
@@ -73,7 +77,8 @@ namespace Ad {
         mContentPath = terminalSettings->getAppEnvironment().adPath;
 
         QDir dir;
-        if (!dir.mkpath(mContentPath)) {
+        if (!dir.mkpath(mContentPath))
+        {
             toLog(LogLevel::Error, QString("Cannot create path %1.").arg(mContentPath));
         }
 
@@ -102,27 +107,32 @@ namespace Ad {
     }
 
     //------------------------------------------------------------------------
-    Client::~Client() {
-        if (mThread.isRunning()) {
+    Client::~Client()
+    {
+        if (mThread.isRunning())
+        {
             mThread.quit();
             mThread.wait();
         }
     }
 
     //------------------------------------------------------------------------
-    QSharedPointer<QSettings> Client::getSettings() {
+    QSharedPointer<QSettings> Client::getSettings()
+    {
         return mSettings;
     }
 
     //------------------------------------------------------------------------
-    void Client::reinitialize() {
+    void Client::reinitialize()
+    {
         toLog(LogLevel::Normal, "Initializing advertising system client.");
 
         toLog(LogLevel::Normal, QString("Server: %1.").arg(mServerUrl.toString()));
         toLog(LogLevel::Normal, QString("Content path: %1.").arg(mContentPath));
 
         QDir dir;
-        if (!dir.mkpath(mContentPath)) {
+        if (!dir.mkpath(mContentPath))
+        {
             toLog(LogLevel::Error, QString("Cannot create path %1.").arg(mContentPath));
 
             QTimer::singleShot(CClient::ReinitInterval, this, SLOT(reinitialize()));
@@ -130,13 +140,15 @@ namespace Ad {
             return;
         }
 
-        foreach (auto channel, mSettings->value(Settings::Types).toStringList()) {
+        foreach (auto channel, mSettings->value(Settings::Types).toStringList())
+        {
             checkExpiration(getAdInternal(channel));
         }
     }
 
     //------------------------------------------------------------------------------
-    void Client::update() {
+    void Client::update()
+    {
         // Проинициализировались, теперь можно проверить обновление
         QTimer::singleShot(0, this, SLOT(doUpdate()));
 
@@ -145,17 +157,22 @@ namespace Ad {
     }
 
     //------------------------------------------------------------------------------
-    Response *Client::sendRequest(const QUrl &aUrl, Request &aRequest) {
-        if (mHttp) {
+    Response *Client::sendRequest(const QUrl &aUrl, Request &aRequest)
+    {
+        if (mHttp)
+        {
             toLog(LogLevel::Normal, QString("> %1.").arg(aRequest.toLogString()));
 
             RequestSender::ESendError error;
 
             std::unique_ptr<Response> response(mHttp->post(aUrl, aRequest, RequestSender::Solid, error));
 
-            if (response) {
+            if (response)
+            {
                 toLog(LogLevel::Normal, QString("< %1.").arg(response->toLogString()));
-            } else {
+            }
+            else
+            {
                 toLog(LogLevel::Error, QString("Failed to send: %1.").arg(RequestSender::translateError(error)));
             }
 
@@ -166,12 +183,16 @@ namespace Ad {
     }
 
     //------------------------------------------------------------------------------
-    Response *Client::createResponse(const Request &aRequest, const QString &aResponseString) {
+    Response *Client::createResponse(const Request &aRequest, const QString &aResponseString)
+    {
         QString requestType = aRequest.getParameter(Ad::Parameters::RequestType).toString();
 
-        if (requestType == Ad::Requests::ChannelList) {
+        if (requestType == Ad::Requests::ChannelList)
+        {
             return new AdGetChannelsResponse(aRequest, aResponseString);
-        } else if (requestType == Ad::Requests::Channel) {
+        }
+        else if (requestType == Ad::Requests::Channel)
+        {
             return new AdGetChannelResponse(aRequest, aResponseString);
         }
 
@@ -179,7 +200,8 @@ namespace Ad {
     }
 
     //------------------------------------------------------------------------
-    void Client::doUpdate() {
+    void Client::doUpdate()
+    {
         toLog(LogLevel::Normal, "Getting channels list...");
 
         mUpdateStamp = QDateTime::currentDateTime();
@@ -188,13 +210,16 @@ namespace Ad {
 
         std::unique_ptr<Response> response(sendRequest(mServerUrl, request));
 
-        if (!response || !response->isOk()) {
+        if (!response || !response->isOk())
+        {
             toLog(LogLevel::Error, QString("Failed to get channels list: (%1) %2")
                                        .arg(response ? response->getError() : 0)
                                        .arg(response ? response->getErrorMessage() : ""));
 
             QTimer::singleShot(CClient::ReinitInterval, this, SLOT(doUpdate()));
-        } else {
+        }
+        else
+        {
             mTypeList = static_cast<AdGetChannelsResponse *>(response.get())->channels();
 
             QTimer::singleShot(0, this, SLOT(updateTypes()));
@@ -202,13 +227,16 @@ namespace Ad {
     }
 
     //------------------------------------------------------------------------
-    void Client::updateTypes() {
-        foreach (auto channel, mTypeList) {
+    void Client::updateTypes()
+    {
+        foreach (auto channel, mTypeList)
+        {
             AdGetChannelRequest request(mCore, channel);
 
             std::unique_ptr<Response> response(sendRequest(mServerUrl, request));
 
-            if (!response || !response->isOk()) {
+            if (!response || !response->isOk())
+            {
                 toLog(LogLevel::Error, QString("Failed to get channel '%1': (%2) %3")
                                            .arg(channel)
                                            .arg(response ? response->getError() : 0)
@@ -216,8 +244,11 @@ namespace Ad {
 
                 QTimer::singleShot(CClient::ReinitInterval, this, SLOT(updateTypes()));
                 break;
-            } else {
-                foreach (auto campaign, static_cast<AdGetChannelResponse *>(response.get())->getCampaigns()) {
+            }
+            else
+            {
+                foreach (auto campaign, static_cast<AdGetChannelResponse *>(response.get())->getCampaigns())
+                {
                     toLog(LogLevel::Debug, QString("Receive campaign: %1").arg(campaign.toString()));
 
                     mCampaigns.insert(campaign.type, campaign);
@@ -229,16 +260,22 @@ namespace Ad {
     }
 
     //------------------------------------------------------------------------
-    void Client::checkContent() {
+    void Client::checkContent()
+    {
         mTypeDownloadList.clear();
 
-        foreach (auto campaign, mCampaigns.values()) {
+        foreach (auto campaign, mCampaigns.values())
+        {
             Campaign c = getAdInternal(campaign.type);
 
-            if (!c.isEqual(campaign)) {
-                if (campaign.isDownloaded()) {
+            if (!c.isEqual(campaign))
+            {
+                if (campaign.isDownloaded())
+                {
                     mTypeDownloadList << campaign.type;
-                } else {
+                }
+                else
+                {
                     // сохраняем содержимое канала
                     saveChannel(campaign);
                 }
@@ -249,11 +286,14 @@ namespace Ad {
     }
 
     //------------------------------------------------------------------------
-    void Client::download() {
-        if (mTypeDownloadList.isEmpty()) {
+    void Client::download()
+    {
+        if (mTypeDownloadList.isEmpty())
+        {
             toLog(LogLevel::Normal, "Download nothing. All up to date.");
 
-            if (mSavedTypes) {
+            if (mSavedTypes)
+            {
                 emit contentUpdated();
             }
 
@@ -262,7 +302,8 @@ namespace Ad {
 
         QString campaignName = mTypeDownloadList.at(0);
 
-        if (mCampaigns[campaignName].isValid() && mCampaigns[campaignName].isDownloaded()) {
+        if (mCampaigns[campaignName].isValid() && mCampaigns[campaignName].isDownloaded())
+        {
             toLog(LogLevel::Normal, QString("Download campaign [%1]:%2...")
                                         .arg(mCampaigns[campaignName].id)
                                         .arg(mCampaigns[campaignName].type));
@@ -270,12 +311,15 @@ namespace Ad {
             mCurrentDownloadCommand = mCore->getRemoteService()->registerUpdateCommand(
                 PPSDK::IRemoteService::AdUpdate, mCampaigns[campaignName].url, QUrl(), mCampaigns[campaignName].md5);
 
-            if (!mCurrentDownloadCommand) {
+            if (!mCurrentDownloadCommand)
+            {
                 toLog(LogLevel::Warning, "Failed try to start update ad. Try later.");
 
                 QTimer::singleShot(CClient::ReinitInterval, this, SLOT(download()));
             }
-        } else {
+        }
+        else
+        {
             mTypeDownloadList.removeAt(0);
 
             QTimer::singleShot(10, this, SLOT(download()));
@@ -283,31 +327,41 @@ namespace Ad {
     }
 
     //------------------------------------------------------------------------
-    void Client::sendStatistics() {
+    void Client::sendStatistics()
+    {
         QList<SStatisticRecord> statisticList;
 
         int retryTimeout = CClient::StatisticsResendInterval;
 
-        if (!mDatabaseUtils->getUnsentStatisticRecords(statisticList)) {
+        if (!mDatabaseUtils->getUnsentStatisticRecords(statisticList))
+        {
             toLog(LogLevel::Error, "Cannot get ad statistics from DB.");
-        } else {
-            if (!statisticList.isEmpty()) {
+        }
+        else
+        {
+            if (!statisticList.isEmpty())
+            {
                 AdStatisticRequest request(mCore, statisticList);
 
                 std::unique_ptr<Response> response(sendRequest(mServerUrl, request));
 
-                if (!response || !response->isOk()) {
+                if (!response || !response->isOk())
+                {
                     toLog(LogLevel::Error, QString("Failed to sent statistic: (%1) %2")
                                                .arg(response ? response->getError() : 0)
                                                .arg(response ? response->getErrorMessage() : ""));
-                } else {
+                }
+                else
+                {
                     toLog(LogLevel::Normal, "Mark statistic as sent.");
 
                     mDatabaseUtils->deleteStatisticRecords(statisticList);
 
                     retryTimeout = CClient::StatisticsSendInterval;
                 }
-            } else {
+            }
+            else
+            {
                 toLog(LogLevel::Normal, "Statistic: nothing to send.");
 
                 retryTimeout = CClient::StatisticsSendInterval;
@@ -318,10 +372,12 @@ namespace Ad {
     }
 
     //---------------------------------------------------------------------------
-    QList<Campaign> Client::getAds() const {
+    QList<Campaign> Client::getAds() const
+    {
         QList<Campaign> result;
 
-        foreach (auto ch, mSettings->value(Settings::Types).toStringList()) {
+        foreach (auto ch, mSettings->value(Settings::Types).toStringList())
+        {
             result << getAdInternal(ch);
         }
 
@@ -329,7 +385,8 @@ namespace Ad {
     }
 
     //---------------------------------------------------------------------------
-    Ad::Campaign Client::getAdInternal(const QString &aType) const {
+    Ad::Campaign Client::getAdInternal(const QString &aType) const
+    {
         Ad::Campaign camp;
 
         mSettings->beginGroup("ad_" + aType);
@@ -348,16 +405,19 @@ namespace Ad {
     }
 
     //------------------------------------------------------------------------
-    Ad::Campaign Client::getAd(const QString &aType) const {
+    Ad::Campaign Client::getAd(const QString &aType) const
+    {
         auto channel = getAdInternal(aType);
 
         QString bannerPath = mContentPath + QDir::separator() + channel.type + QDir::separator() + "banner.swf";
 
-        if (!channel.isValid() || channel.isExpired()) {
+        if (!channel.isValid() || channel.isExpired())
+        {
             return getAdInternal(aType + Ad::DefaultChannelPostfix);
         }
 
-        if (!channel.isDefault() && channel.isBanner() && !QFile::exists(bannerPath)) {
+        if (!channel.isDefault() && channel.isBanner() && !QFile::exists(bannerPath))
+        {
             toLog(LogLevel::Error,
                   QString("Failed to get ad content: path '%1' not found. Use default channel.").arg(bannerPath));
 
@@ -368,7 +428,8 @@ namespace Ad {
     }
 
     //------------------------------------------------------------------------
-    void Client::saveChannel(const Campaign &aCampaign) {
+    void Client::saveChannel(const Campaign &aCampaign)
+    {
         mSettings->beginGroup("ad_" + aCampaign.type);
 
         mSettings->setValue(Settings::ID, aCampaign.id);
@@ -380,7 +441,8 @@ namespace Ad {
         mSettings->endGroup();
 
         QStringList types = mSettings->value(Settings::Types).toStringList();
-        if (!types.contains(aCampaign.type)) {
+        if (!types.contains(aCampaign.type))
+        {
             types << aCampaign.type;
             mSettings->setValue(Settings::Types, types);
         }
@@ -393,15 +455,20 @@ namespace Ad {
     }
 
     //------------------------------------------------------------------------
-    void Client::onCommandStatusChanged(int aID, int aStatus, QVariantMap aParameters) {
-        if (mCurrentDownloadCommand != aID) {
+    void Client::onCommandStatusChanged(int aID, int aStatus, QVariantMap aParameters)
+    {
+        if (mCurrentDownloadCommand != aID)
+        {
             return;
         }
 
         // Нас интересуют только финальные состояния
-        switch (aStatus) {
-            case PPSDK::IRemoteService::OK: {
-                if (!mTypeDownloadList.isEmpty()) {
+        switch (aStatus)
+        {
+            case PPSDK::IRemoteService::OK:
+            {
+                if (!mTypeDownloadList.isEmpty())
+                {
                     QString type = mTypeDownloadList.at(0);
 
                     saveChannel(mCampaigns[type]);
@@ -413,68 +480,87 @@ namespace Ad {
 
                     QTimer::singleShot(0, this, SLOT(download()));
                 }
-            } break;
+            }
+            break;
 
-            case PPSDK::IRemoteService::Error: {
+            case PPSDK::IRemoteService::Error:
+            {
                 toLog(LogLevel::Error, "Failed to download ad content. Try later.");
 
                 // Перезапускаем загрузку компаний
                 QTimer::singleShot(CClient::ContentCheckInterval, this, SLOT(download()));
-            } break;
+            }
+            break;
         }
     }
 
     //------------------------------------------------------------------------
-    QString Client::getContent(const QString &aType) {
+    QString Client::getContent(const QString &aType)
+    {
         auto channel = getAd(aType);
 
         return channel.isBanner() ? mContentPath + QDir::separator() + channel.type : channel.text;
     }
 
     //------------------------------------------------------------------------
-    void Client::addEvent(const QString &aType) {
+    void Client::addEvent(const QString &aType)
+    {
         auto channel = getAd(aType);
 
-        if (channel.isValid()) {
-            if (channel.isBanner()) {
+        if (channel.isValid())
+        {
+            if (channel.isBanner())
+            {
                 // Баннер регистрируем только 1 в день
                 mDatabaseUtils->setStatisticRecord(channel.id, channel.type, 1);
-            } else {
+            }
+            else
+            {
                 mDatabaseUtils->addStatisticRecord(channel.id, channel.type);
             }
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Warning, QString("Skip not valid channel '%1' event.").arg(aType));
         }
     }
 
     //------------------------------------------------------------------------
-    bool Client::updateExpired() const {
+    bool Client::updateExpired() const
+    {
         return mUpdateStamp.isNull() || (mUpdateStamp.addSecs(6 * 60 * 60) < QDateTime::currentDateTime());
     }
 
     //------------------------------------------------------------------------
-    void Client::timerEvent(QTimerEvent *aEvent) {
-        if (aEvent->timerId() == mExpirationTimer) {
+    void Client::timerEvent(QTimerEvent *aEvent)
+    {
+        if (aEvent->timerId() == mExpirationTimer)
+        {
             emit contentExpired();
         }
     }
 
     //------------------------------------------------------------------------
-    void Client::checkExpiration(const Campaign &aCampaign) {
+    void Client::checkExpiration(const Campaign &aCampaign)
+    {
         // Планируем перезагрузку ТК по истечении рекламы
-        if (aCampaign.isValid() && !aCampaign.isExpired() && !aCampaign.expired.isNull()) {
+        if (aCampaign.isValid() && !aCampaign.isExpired() && !aCampaign.expired.isNull())
+        {
             toLog(LogLevel::Debug, QString("expTime: %1  camp exp time: %2")
                                        .arg(mExpirationTime.toString())
                                        .arg(aCampaign.expired.toString()));
 
-            if (mExpirationTime.isNull() || mExpirationTime > aCampaign.expired) {
-                if (mExpirationTimer >= 0) {
+            if (mExpirationTime.isNull() || mExpirationTime > aCampaign.expired)
+            {
+                if (mExpirationTimer >= 0)
+                {
                     killTimer(mExpirationTimer);
                 }
 
                 int interval = static_cast<int>(QDateTime::currentDateTime().msecsTo(aCampaign.expired));
 
-                if (interval > 0) {
+                if (interval > 0)
+                {
                     mExpirationTime = aCampaign.expired;
                     toLog(
                         LogLevel::Normal,

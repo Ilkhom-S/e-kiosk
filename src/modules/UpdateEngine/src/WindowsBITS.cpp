@@ -7,35 +7,43 @@
 #include "WindowsBITS.h"
 #include "WindowsBITS_p.h"
 
-namespace CBITS {
+namespace CBITS
+{
 
     //---------------------------------------------------------------------------
-    CopyManager::CopyManager(ILog *aLog) : ILogable(aLog), mJobsCount(0), mPriority(CBITS::HIGH) {
+    CopyManager::CopyManager(ILog *aLog) : ILogable(aLog), mJobsCount(0), mPriority(CBITS::HIGH)
+    {
         mCopyManager = QSharedPointer<CopyManager_p>(new CopyManager_p(aLog));
     }
 
     //---------------------------------------------------------------------------
-    CopyManager::~CopyManager() {
+    CopyManager::~CopyManager()
+    {
     }
 
     //---------------------------------------------------------------------------
-    void CopyManager::shutdown() {
+    void CopyManager::shutdown()
+    {
         mCopyManager.clear();
     }
 
     //---------------------------------------------------------------------------
-    bool CopyManager::isReady() const {
+    bool CopyManager::isReady() const
+    {
         return mCopyManager && mCopyManager->isReady();
     }
 
     //---------------------------------------------------------------------------
-    QMap<QString, SJob> CopyManager::getJobs(const QString &aFilter) {
+    QMap<QString, SJob> CopyManager::getJobs(const QString &aFilter)
+    {
         QMap<QString, SJob> result;
 
-        if (isReady()) {
+        if (isReady())
+        {
             auto allJobs = mCopyManager->getJobs();
 
-            foreach (auto key, QStringList(allJobs.keys()).filter(aFilter, Qt::CaseInsensitive)) {
+            foreach (auto key, QStringList(allJobs.keys()).filter(aFilter, Qt::CaseInsensitive))
+            {
                 result.insert(key, allJobs.value(key));
             }
         }
@@ -44,8 +52,10 @@ namespace CBITS {
     }
 
     //---------------------------------------------------------------------------
-    bool CopyManager::createJob(const QString &aName, SJob &aJob, int aPriority) {
-        if (isReady()) {
+    bool CopyManager::createJob(const QString &aName, SJob &aJob, int aPriority)
+    {
+        if (isReady())
+        {
             mPriority = aPriority;
             return mCopyManager->createJob(makeJobName(aName), aJob, aPriority);
         }
@@ -54,22 +64,28 @@ namespace CBITS {
     }
 
     //---------------------------------------------------------------------------
-    bool CopyManager::setNotify(const QString &aApplicationPath, const QString &aParameters) {
+    bool CopyManager::setNotify(const QString &aApplicationPath, const QString &aParameters)
+    {
         mNotifyApplication = aApplicationPath;
         mNotifyParameters = aParameters;
         return true;
     }
 
     //---------------------------------------------------------------------------
-    bool CopyManager::addTask(const QUrl &aUrl, const QString &aFileName) {
-        if (isReady()) {
-            switch (mCopyManager->addTask(aUrl, aFileName)) {
+    bool CopyManager::addTask(const QUrl &aUrl, const QString &aFileName)
+    {
+        if (isReady())
+        {
+            switch (mCopyManager->addTask(aUrl, aFileName))
+            {
                 case AddTaskResult::OK:
                     return true;
                 case AddTaskResult::Error:
                     return false;
-                case AddTaskResult::JobIsFull: {
-                    if (!internalResume()) {
+                case AddTaskResult::JobIsFull:
+                {
+                    if (!internalResume())
+                    {
                         return false;
                     }
 
@@ -86,8 +102,10 @@ namespace CBITS {
     }
 
     //---------------------------------------------------------------------------
-    bool CopyManager::openJob(const SJob &aJob) {
-        if (isReady()) {
+    bool CopyManager::openJob(const SJob &aJob)
+    {
+        if (isReady())
+        {
             return mCopyManager->openJob(aJob);
         }
 
@@ -95,13 +113,16 @@ namespace CBITS {
     }
 
     //---------------------------------------------------------------------------
-    bool CopyManager::internalResume() {
+    bool CopyManager::internalResume()
+    {
         return mCopyManager->setJobNotify(mNotifyApplication, mNotifyParameters) && mCopyManager->resume();
     }
 
     //---------------------------------------------------------------------------
-    QString CopyManager::makeJobName(const QString &aName /*= QString()*/) {
-        if (!aName.isEmpty()) {
+    QString CopyManager::makeJobName(const QString &aName /*= QString()*/)
+    {
+        if (!aName.isEmpty())
+        {
             mJobName = aName;
         }
 
@@ -109,8 +130,10 @@ namespace CBITS {
     }
 
     //---------------------------------------------------------------------------
-    bool CopyManager::resume() {
-        if (isReady() && internalResume()) {
+    bool CopyManager::resume()
+    {
+        if (isReady() && internalResume())
+        {
             toLog(LoggerLevel::Normal, QString("BITS: Job %1 resumed.").arg(makeJobName()));
 
             return true;
@@ -120,8 +143,10 @@ namespace CBITS {
     }
 
     //---------------------------------------------------------------------------
-    bool CopyManager::cancel() {
-        if (isReady()) {
+    bool CopyManager::cancel()
+    {
+        if (isReady())
+        {
             return mCopyManager->cancel();
         }
 
@@ -129,8 +154,10 @@ namespace CBITS {
     }
 
     //---------------------------------------------------------------------------
-    bool CopyManager::complete() {
-        if (isReady()) {
+    bool CopyManager::complete()
+    {
+        if (isReady())
+        {
             return mCopyManager->complete();
         }
 

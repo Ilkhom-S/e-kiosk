@@ -6,12 +6,15 @@
 // System
 #include "Hardware/Common/BaseStatusDescriptions.h"
 
-namespace TerminalStatusCode {
+namespace TerminalStatusCode
+{
     using namespace SDK::PaymentProcessor;
 
-    class CSpecifications : public TStatusCodeSpecification {
+    class CSpecifications : public TStatusCodeSpecification
+    {
       public:
-        CSpecifications() {
+        CSpecifications()
+        {
             append(DeviceStatusCode::OK::OK,
                    SStatusCodeSpecification(SDK::Driver::EWarningLevel::OK, "OK",
                                             QCoreApplication::translate("TerminalStatuses", "#ok")));
@@ -38,8 +41,10 @@ namespace TerminalStatusCode {
 
         SDK::Driver::EWarningLevel::Enum warningLevelByStatus(int aStatus) // именно статус, а не статус-код!
         {
-            foreach (const SStatusCodeSpecification &statusCodeSpecification, mBuffer.values()) {
-                if (statusCodeSpecification.status == aStatus) {
+            foreach (const SStatusCodeSpecification &statusCodeSpecification, mBuffer.values())
+            {
+                if (statusCodeSpecification.status == aStatus)
+                {
                     return statusCodeSpecification.warningLevel;
                 }
             }

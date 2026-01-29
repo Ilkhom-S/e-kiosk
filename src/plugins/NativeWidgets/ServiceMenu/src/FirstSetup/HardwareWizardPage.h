@@ -15,7 +15,8 @@ class DeviceSlot;
 class HardwareWindow;
 
 //----------------------------------------------------------------------------
-class HardwareWizardPage : public WizardPageBase {
+class HardwareWizardPage : public WizardPageBase
+{
     Q_OBJECT
 
   public:

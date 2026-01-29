@@ -18,7 +18,8 @@ class ICryptEngine;
 class NetworkTaskManager;
 
 //------------------------------------------------------------------------------
-class PaymentFactoryBase : public QObject, public SDK::Plugin::IPlugin, public SDK::PaymentProcessor::IPaymentFactory {
+class PaymentFactoryBase : public QObject, public SDK::Plugin::IPlugin, public SDK::PaymentProcessor::IPaymentFactory
+{
     Q_OBJECT
 
   public:
@@ -75,7 +76,8 @@ class PaymentFactoryBase : public QObject, public SDK::Plugin::IPlugin, public S
     NetworkTaskManager *getNetworkTaskManager() const;
 
     /// Получить окружение
-    SDK::Plugin::IEnvironment *getEnvironment() const {
+    SDK::Plugin::IEnvironment *getEnvironment() const
+    {
         return mFactory;
     }
 

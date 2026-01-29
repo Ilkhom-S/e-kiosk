@@ -21,7 +21,8 @@
 
 //------------------------------------------------------------------------
 /// Переводы общих параметров плагинов.
-namespace CommonPluginParameterTranslations {
+namespace CommonPluginParameterTranslations
+{
     static const char *ModelName = QT_TRANSLATE_NOOP("CommonParameters", "CommonParameters#model_name");
     static const char *OPOSName = QT_TRANSLATE_NOOP("CommonParameters", "CommonParameters#opos_name");
     static const char *RequiredResource = QT_TRANSLATE_NOOP("CommonParameters", "CommonParameters#required_resource");
@@ -34,7 +35,8 @@ namespace CPPT = CommonPluginParameterTranslations;
 namespace DSDKIT = SDK::Driver::CInteractionTypes;
 
 /// Создать путь драйвера.
-template <class T> inline QString makeDriverPath() {
+template <class T> inline QString makeDriverPath()
+{
     QString result = makePath(SDK::Driver::Application, SDK::Driver::CComponents::Driver, T::getDeviceType(),
                               T::getInteractionType());
 
@@ -49,22 +51,27 @@ template <class T> inline QString makeDriverPath() {
     return result;
 }
 
-namespace SDK {
-    namespace Plugin {
+namespace SDK
+{
+    namespace Plugin
+    {
 
         //------------------------------------------------------------------------------
-        template <class T> inline QStringList sortParameters(QList<T> (*aGetParameters)()) {
+        template <class T> inline QStringList sortParameters(QList<T> (*aGetParameters)())
+        {
             QList<T> data = (*aGetParameters)();
             QStringList result;
 
-            foreach (T item, data) {
+            foreach (T item, data)
+            {
                 result << QString("%1").arg(item);
             }
 
             result.removeDuplicates();
             std::sort(result.begin(), result.end());
 
-            if (result.isEmpty()) {
+            if (result.isEmpty())
+            {
                 result << "";
             }
 
@@ -72,25 +79,31 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        inline QStringList sortParameters(QStringList (*aGetParameters)()) {
+        inline QStringList sortParameters(QStringList (*aGetParameters)())
+        {
             return sortParameters<QString>(reinterpret_cast<QList<QString> (*)()>(aGetParameters));
         }
 
         //------------------------------------------------------------------------------
         inline TParameterList modifyValue(const TParameterList &aParameterList, const QString &aName,
-                                          const QVariant &aValue, const QString &aOldValue = "") {
+                                          const QVariant &aValue, const QString &aOldValue = "")
+        {
             TParameterList parameterList(aParameterList);
 
             auto it = std::find_if(parameterList.begin(), parameterList.end(),
                                    [&aName](const SPluginParameter &aParameter) { return aParameter.name == aName; });
 
-            if (it != parameterList.end()) {
+            if (it != parameterList.end())
+            {
                 it->defaultValue = aValue;
                 QVariantMap &possibleValues = it->possibleValues;
 
-                if (possibleValues.contains(aName)) {
+                if (possibleValues.contains(aName))
+                {
                     possibleValues[aName] = aValue;
-                } else if (possibleValues.contains(aOldValue) && (possibleValues[aOldValue] == aOldValue)) {
+                }
+                else if (possibleValues.contains(aOldValue) && (possibleValues[aOldValue] == aOldValue))
+                {
                     possibleValues.remove(aOldValue);
                     possibleValues.insert(aValue.toString(), aValue);
                 }
@@ -101,13 +114,15 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         inline TParameterList modifyPriority(const TParameterList &aParameterList,
-                                             SDK::Driver::EDetectingPriority::Enum aPriority) {
+                                             SDK::Driver::EDetectingPriority::Enum aPriority)
+        {
             return modifyValue(aParameterList, CHardwareSDK::DetectingPriority, aPriority);
         }
 
         //------------------------------------------------------------------------------
         /// Модифицированные значения параметров.
-        inline SPluginParameter setModifiedValues(const QString &aParameterValue, const QVariantMap &aPossibleValues) {
+        inline SPluginParameter setModifiedValues(const QString &aParameterValue, const QVariantMap &aPossibleValues)
+        {
             return SPluginParameter(CPlugin::ModifiedValues, SPluginParameter::Set, false, aParameterValue, QString(),
                                     QString(), aPossibleValues, true);
         }
@@ -115,7 +130,8 @@ namespace SDK {
         //------------------------------------------------------------------------------
         /// Модифицированные значения параметров.
         inline SPluginParameter setModifiedValues(const QString &aParameterValue, const QString &aValueFrom,
-                                                  const QString &aValueTo) {
+                                                  const QString &aValueTo)
+        {
             QVariantMap possibleValues;
             possibleValues.insert(aValueFrom, aValueTo);
 
@@ -125,7 +141,8 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         /// Приоритет при автопоиске.
-        inline SPluginParameter setNormalPriority() {
+        inline SPluginParameter setNormalPriority()
+        {
             QVariantMap possibleValues;
             possibleValues.insert(CHardwareSDK::DetectingPriority, SDK::Driver::EDetectingPriority::Normal);
 
@@ -135,7 +152,8 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         /// Множественный тип атвопоиска устройства.
-        inline SPluginParameter setMultipleExistence() {
+        inline SPluginParameter setMultipleExistence()
+        {
             return SPluginParameter(CHardwareSDK::Existence, false, QString(), QString(),
                                     CHardwareSDK::ExistenceTypes::Multiple,
                                     QStringList() << CHardwareSDK::ExistenceTypes::Multiple, true);
@@ -143,7 +161,8 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         template <class T>
-        inline TParameterList createSimpleNamedList(const QStringList &aModels, const QString &aDefault) {
+        inline TParameterList createSimpleNamedList(const QStringList &aModels, const QString &aDefault)
+        {
             QString interactionType = T::getInteractionType();
             QVariantMap modifiedValues;
             modifiedValues.insert("no change", CHardwareSDK::Values::Auto);
@@ -157,15 +176,19 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        template <class T1, class T2> struct SNamedList {
-            TParameterList create(const QStringList &aModels, const QString &aDefault) {
+        template <class T1, class T2> struct SNamedList
+        {
+            TParameterList create(const QStringList &aModels, const QString &aDefault)
+            {
                 return createSimpleNamedList<T1>(aModels, aDefault);
             }
         };
 
         //------------------------------------------------------------------------------
-        template <class T1> struct SNamedList<T1, DSDKIT::ItCOM> {
-            TParameterList create(const QStringList &aModels, const QString &aDefault) {
+        template <class T1> struct SNamedList<T1, DSDKIT::ItCOM>
+        {
+            TParameterList create(const QStringList &aModels, const QString &aDefault)
+            {
                 QStringList optionalPortSettings = sortParameters(&T1::getOptionalPortSettings);
 
                 return createSimpleNamedList<T1>(aModels, aDefault)
@@ -178,15 +201,19 @@ namespace SDK {
         };
 
         //------------------------------------------------------------------------------
-        template <class T1> struct SNamedList<T1, DSDKIT::ItUSB> {
-            TParameterList create(const QStringList &aModels, const QString &aDefault) {
+        template <class T1> struct SNamedList<T1, DSDKIT::ItUSB>
+        {
+            TParameterList create(const QStringList &aModels, const QString &aDefault)
+            {
                 return createSimpleNamedList<T1>(aModels, aDefault) << setMultipleExistence();
             }
         };
 
         //------------------------------------------------------------------------------
-        template <class T1> struct SNamedList<T1, DSDKIT::ItLibUSB> {
-            TParameterList create(const QStringList &aModels, const QString &aDefault) {
+        template <class T1> struct SNamedList<T1, DSDKIT::ItLibUSB>
+        {
+            TParameterList create(const QStringList &aModels, const QString &aDefault)
+            {
                 return modifyValue(createSimpleNamedList<T1>(aModels, aDefault), CHardwareSDK::InteractionType,
                                    SDK::Driver::CInteractionTypes::USB, SDK::Driver::CInteractionTypes::LibUSB)
                        << setMultipleExistence();
@@ -194,8 +221,10 @@ namespace SDK {
         };
 
         //------------------------------------------------------------------------------
-        template <class T1> struct SNamedList<T1, DSDKIT::ItTCP> {
-            TParameterList create(const QStringList &aModels, const QString &aDefault) {
+        template <class T1> struct SNamedList<T1, DSDKIT::ItTCP>
+        {
+            TParameterList create(const QStringList &aModels, const QString &aDefault)
+            {
                 return createSimpleNamedList<T1>(aModels, aDefault)
                        << SPluginParameter(CHardwareSDK::RequiredResource, SPluginParameter::Text, false,
                                            CPPT::RequiredResource, QString(), "Common.Driver.IOPort.System.TCP",
@@ -205,8 +234,10 @@ namespace SDK {
         };
 
         //------------------------------------------------------------------------------
-        template <class T1> struct SNamedList<T1, DSDKIT::ItOPOS> {
-            TParameterList create(const QStringList &aModels, const QString &aDefault) {
+        template <class T1> struct SNamedList<T1, DSDKIT::ItOPOS>
+        {
+            TParameterList create(const QStringList &aModels, const QString &aDefault)
+            {
                 QStringList possibleNames = sortParameters(&T1::getProfileNames);
 
                 return createSimpleNamedList<T1>(aModels, aDefault)
@@ -218,25 +249,29 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         /// Создать список параметров с именем модели.
-        template <class T> inline TParameterList createNamedList(const QStringList &aModels, const QString &aDefault) {
+        template <class T> inline TParameterList createNamedList(const QStringList &aModels, const QString &aDefault)
+        {
             return SNamedList<T, typename T::TIType>().create(aModels, aDefault);
         }
 
         //------------------------------------------------------------------------------
         /// Создать список параметров с именем модели.
-        template <class T> inline TParameterList createNamedList(const QString &aModel, const QString &aDefault) {
+        template <class T> inline TParameterList createNamedList(const QString &aModel, const QString &aDefault)
+        {
             return createNamedList<T>(QStringList() << aModel, aDefault);
         }
 
         //------------------------------------------------------------------------------
         /// Создать простой список параметров с именем модели.
-        template <class T> inline TParameterList createNamedList(const QString &aModel) {
+        template <class T> inline TParameterList createNamedList(const QString &aModel)
+        {
             return createNamedList<T>(aModel, aModel);
         }
 
         //------------------------------------------------------------------------------
         /// Протокол.
-        inline SPluginParameter setProtocol(const QString &aProtocol) {
+        inline SPluginParameter setProtocol(const QString &aProtocol)
+        {
             return SPluginParameter(CHardwareSDK::ProtocolName, false, CPPT::ProtocolName, QString(), aProtocol,
                                     QStringList() << aProtocol);
         }
@@ -245,14 +280,16 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         // Тип протокола.
-        inline SPluginParameter setProtocolType(const QString &aDefaultType, const QStringList &aPossibleTypes) {
+        inline SPluginParameter setProtocolType(const QString &aDefaultType, const QStringList &aPossibleTypes)
+        {
             return SPluginParameter(CHardware::ProtocolType, false, CPPT::ProtocolType, QString(), aDefaultType,
                                     aPossibleTypes);
         }
 
 //------------------------------------------------------------------------------
 #define CREATE_PLUGIN(aPluginName, aClassName)                                                                         \
-    IPlugin *CreatePlugin_##aClassName(IEnvironment *aEnvironment, const QString &aInstancePath) {                     \
+    IPlugin *CreatePlugin_##aClassName(IEnvironment *aEnvironment, const QString &aInstancePath)                       \
+    {                                                                                                                  \
         return new DevicePluginBase<aClassName>(aPluginName, aEnvironment, aInstancePath);                             \
     }
 

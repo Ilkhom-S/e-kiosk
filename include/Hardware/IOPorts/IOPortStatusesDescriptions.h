@@ -6,12 +6,15 @@
 #include "Hardware/IOPorts/IOPortStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace IOPortStatusCode {
+namespace IOPortStatusCode
+{
     /// Спецификации кодов состояний портов.
-    class CSpecifications : public DeviceStatusCode::CSpecifications {
+    class CSpecifications : public DeviceStatusCode::CSpecifications
+    {
       public:
         /// Конструктор.
-        CSpecifications() {
+        CSpecifications()
+        {
             /// Предупреждения.
             ADD_WARNING_STATUS(MismatchParameters,
                                QCoreApplication::translate("IOPortStatuses", "#mismatch_parameters"));

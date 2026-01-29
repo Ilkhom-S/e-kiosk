@@ -12,14 +12,17 @@
 #include <Common/ObjectPointer.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
         class IDevice;
     } // namespace Driver
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class GenericDeviceTest : public SDK::PaymentProcessor::IDeviceTest {
+class GenericDeviceTest : public SDK::PaymentProcessor::IDeviceTest
+{
     Q_OBJECT
 
   public:

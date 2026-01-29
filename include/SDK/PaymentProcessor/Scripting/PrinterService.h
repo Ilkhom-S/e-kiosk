@@ -12,18 +12,22 @@
 // SDK
 #include <SDK/Drivers/PrintingModes.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         class ICore;
         class IPrinterService;
         class IPaymentService;
 
-        namespace Scripting {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
             /// Прокси класс для работы с принтерами.
-            class PrinterService : public QObject {
+            class PrinterService : public QObject
+            {
                 Q_OBJECT
 
               public:

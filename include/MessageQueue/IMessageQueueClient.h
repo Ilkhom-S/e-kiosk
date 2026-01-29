@@ -10,12 +10,14 @@
 #include <Common/QtHeadersEnd.h>
 
 /// Константы клиента очереди сообщений.
-namespace CIMessageQueueClient {
+namespace CIMessageQueueClient
+{
     const QString DefaultLog = "MessageQueueClient";
     const int ConnectionTimeout = 1000; // msecs
 
     /// Коды ошибок.
-    enum ErrorCode {
+    enum ErrorCode
+    {
         ConnectionRefusedError = QLocalSocket::ConnectionRefusedError,
         PeerClosedError = QLocalSocket::PeerClosedError,
         ServerNotFoundError = QLocalSocket::ServerNotFoundError,
@@ -34,7 +36,8 @@ class QObject;
 
 //----------------------------------------------------------------------------
 /// Интерфейс клиента очереди сообщений.
-class IMessageQueueClient {
+class IMessageQueueClient
+{
   public:
     virtual ~IMessageQueueClient() {};
 

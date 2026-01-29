@@ -1,13 +1,15 @@
 /* @file Параметры моделей ФР Штрих. */
 
-
 #include "ModelData.h"
 
 //--------------------------------------------------------------------------------
-namespace CShtrihFR {
-    namespace Models {
+namespace CShtrihFR
+{
+    namespace Models
+    {
 
-        CData::CData() {
+        CData::CData()
+        {
             /// Штрихи.
             addOld(0, "Shtrih-M Shtrih-FR-F");
             addOld(1, "Shtrih-M Shtrih-FR-F Kazakhstan");
@@ -56,16 +58,19 @@ namespace CShtrihFR {
         }
 
         //--------------------------------------------------------------------------------
-        QStringList CData::getNonEjectorModels(bool aOnline) {
+        QStringList CData::getNonEjectorModels(bool aOnline)
+        {
             QMap<int, CShtrihFR::SModelData> modelData = CShtrihFR::Models::CData().data();
             QStringList models;
 
-            for (auto it = modelData.begin(); it != modelData.end(); ++it) {
+            for (auto it = modelData.begin(); it != modelData.end(); ++it)
+            {
                 int id = it.key();
                 CShtrihFR::SModelData &data = *it;
 
                 if ((data.id.isEmpty() != aOnline) && !data.ejector && (id != CShtrihFR::Models::ID::NeoService) &&
-                    (id != CShtrihFR::Models::ID::MStarTK2)) {
+                    (id != CShtrihFR::Models::ID::MStarTK2))
+                {
                     models.append(data.name);
                 }
             }
@@ -74,10 +79,12 @@ namespace CShtrihFR {
         }
 
         //--------------------------------------------------------------------------------
-        QStringList CData::getModelList(const TIds &aIds) {
+        QStringList CData::getModelList(const TIds &aIds)
+        {
             QStringList models;
 
-            foreach (int id, aIds) {
+            foreach (int id, aIds)
+            {
                 models << value(id).name;
             }
 
@@ -85,19 +92,22 @@ namespace CShtrihFR {
         }
 
         //--------------------------------------------------------------------------------
-        QStringList CData::getModelList(int aId) {
+        QStringList CData::getModelList(int aId)
+        {
             return getModelList(TIds() << aId);
         }
 
         //--------------------------------------------------------------------------------
         void CData::addOld(int aNumber, const QString &aName, bool aVerified, bool aEjector, int aZReportQuantity,
-                           int aFeed, const QDate &aDate, int aBuild) {
+                           int aFeed, const QDate &aDate, int aBuild)
+        {
             append(aNumber, SModelData("", aName, aVerified, aEjector, aZReportQuantity, aFeed, aDate, aBuild, 0));
         }
 
         //--------------------------------------------------------------------------------
         void CData::addNew(int aNumber, const char *aId, const QString &aName, bool aVerified, bool aEjector,
-                           int aZReportQuantity, int aFeed, const QDate &aDate, int aLinePrintingTimeout) {
+                           int aZReportQuantity, int aFeed, const QDate &aDate, int aLinePrintingTimeout)
+        {
             QDate FWDate = aDate.isValid()
                                ? aDate
                                : (mDefaultFWDate.isValid() ? mDefaultFWDate : QDate::currentDate().addYears(100));

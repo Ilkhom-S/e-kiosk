@@ -5,8 +5,10 @@
 
 class SendRequest;
 
-namespace Sender {
-    struct Validator {
+namespace Sender
+{
+    struct Validator
+    {
         int billCount;
         double billSum;
         QString billInfo;
@@ -20,11 +22,13 @@ namespace Sender {
         QString state;
 
         Validator()
-            : billCount(0), billSum(0), moneyOutCount(0), moneyOutSum(0), port(""), serial(""), name(""), state("") {
+            : billCount(0), billSum(0), moneyOutCount(0), moneyOutSum(0), port(""), serial(""), name(""), state("")
+        {
         }
     };
 
-    struct CoinAcceptor {
+    struct CoinAcceptor
+    {
         int coinCount;
         double coinSum;
         QString coinInfo;
@@ -34,21 +38,25 @@ namespace Sender {
         QString name;
         QString state;
 
-        CoinAcceptor() : coinCount(0), coinSum(0), coinInfo(""), port(""), serial(""), name(""), state("") {
+        CoinAcceptor() : coinCount(0), coinSum(0), coinInfo(""), port(""), serial(""), name(""), state("")
+        {
         }
     };
 
-    struct Printer {
+    struct Printer
+    {
         QString name;
         QString port;
         int state;
         QString allState;
 
-        Printer() : name(""), port(""), state(0), allState("") {
+        Printer() : name(""), port(""), state(0), allState("")
+        {
         }
     };
 
-    struct Modem {
+    struct Modem
+    {
         QString name;
         QString port;
         QString state;
@@ -58,11 +66,13 @@ namespace Sender {
         QString number;
         QString comment;
 
-        Modem() : name(""), port(""), state(""), signal(""), balance(""), provider(""), number(""), comment("") {
+        Modem() : name(""), port(""), state(""), signal(""), balance(""), provider(""), number(""), comment("")
+        {
         }
     };
 
-    struct Data {
+    struct Data
+    {
         bool firstSend;
         QString version;
         QString fullVersion;
@@ -80,12 +90,14 @@ namespace Sender {
         Data()
             : firstSend(false), version(""), lockStatus(0),
 
-              actionState(false), connection("0") {
+              actionState(false), connection("0")
+        {
         }
     };
 } // namespace Sender
 
-class StatusDaemons : public SendRequest {
+class StatusDaemons : public SendRequest
+{
     Q_OBJECT
 
   public:

@@ -8,11 +8,13 @@
 #include <QtWidgets/QWidget>
 #include <Common/QtHeadersEnd.h>
 
-namespace Ui {
+namespace Ui
+{
     class keyPud;
 }
 
-class keyPud : public QWidget {
+class keyPud : public QWidget
+{
     Q_OBJECT
 
   public:

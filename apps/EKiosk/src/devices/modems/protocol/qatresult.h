@@ -14,9 +14,11 @@
 
 class QAtResultPrivate;
 
-class QAtResult {
+class QAtResult
+{
   public:
-    enum ResultCode {
+    enum ResultCode
+    {
         OK = -1,
         Connect = -2,
         NoCarrier = -3,
@@ -120,9 +122,11 @@ class QAtResult {
         UnknownError = 500
     };
 
-    class UserData {
+    class UserData
+    {
       public:
-        virtual ~UserData() {
+        virtual ~UserData()
+        {
         }
     };
 

@@ -9,41 +9,52 @@
 // Project
 #include "SecurityFilter.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
         SecurityFilter::SecurityFilter(const SProvider &aProvider, SProviderField::SecuritySubsystem aSubsystem)
-            : mProvider(aProvider), mSubsystem(aSubsystem) {
+            : mProvider(aProvider), mSubsystem(aSubsystem)
+        {
         }
 
         //------------------------------------------------------------------------------
-        bool SecurityFilter::haveFilter(const QString &aParameterName) const {
+        bool SecurityFilter::haveFilter(const QString &aParameterName) const
+        {
             QRegularExpression regExp = getMask(aParameterName);
 
             return !regExp.pattern().isEmpty() && regExp.isValid();
         }
 
         //------------------------------------------------------------------------------
-        QString SecurityFilter::apply(const QString &aParameterName, const QString &aValue) const {
+        QString SecurityFilter::apply(const QString &aParameterName, const QString &aValue) const
+        {
             QRegularExpression regExp = getMask(aParameterName);
 
-            if (!regExp.pattern().isEmpty() && regExp.isValid()) {
+            if (!regExp.pattern().isEmpty() && regExp.isValid())
+            {
                 QRegularExpressionMatch match = regExp.match(aValue);
-                if (match.hasMatch()) {
+                if (match.hasMatch())
+                {
                     QString value = aValue;
 
                     QStringList capturedTexts = match.capturedTexts();
-                    for (int i = 1; i < capturedTexts.size(); i++) {
+                    for (int i = 1; i < capturedTexts.size(); i++)
+                    {
                         QString captured = capturedTexts[i];
-                        if (!captured.isEmpty()) {
+                        if (!captured.isEmpty())
+                        {
                             int pos = match.capturedStart(i);
                             value.replace(pos, captured.size(), QString("*").repeated(captured.size()));
                         }
                     }
 
                     return value;
-                } else {
+                }
+                else
+                {
                     qDebug() << QString("RegExp '%1' not found value in: %2").arg(regExp.pattern()).arg(aValue);
                 }
             }
@@ -52,16 +63,21 @@ namespace SDK {
         }
 
         //------------------------------------------------------------------------------
-        QRegularExpression SecurityFilter::getMask(const QString &aParameterName) const {
-            foreach (auto field, mProvider.fields) {
-                if (aParameterName.contains(field.id, Qt::CaseInsensitive)) {
+        QRegularExpression SecurityFilter::getMask(const QString &aParameterName) const
+        {
+            foreach (auto field, mProvider.fields)
+            {
+                if (aParameterName.contains(field.id, Qt::CaseInsensitive))
+                {
                     auto subsystem = field.security.contains(mSubsystem) ? mSubsystem : SProviderField::Default;
                     QString regExp = field.security.value(subsystem, QString());
 
-                    if (!regExp.isEmpty()) {
+                    if (!regExp.isEmpty())
+                    {
                         QRegularExpression rx(regExp);
 
-                        if (rx.isValid()) {
+                        if (rx.isValid())
+                        {
                             return rx;
                         }
 

@@ -8,7 +8,8 @@
 using namespace SDK::Driver::IOPort::COM;
 
 //--------------------------------------------------------------------------------
-FRProtocolBase::FRProtocolBase() : mSessionOpened(true), mNeedCloseSession(false) {
+FRProtocolBase::FRProtocolBase() : mSessionOpened(true), mNeedCloseSession(false)
+{
     // данные порта
     mPortParameters[EParameters::Parity].append(EParity::No);
 
@@ -17,7 +18,8 @@ FRProtocolBase::FRProtocolBase() : mSessionOpened(true), mNeedCloseSession(false
 }
 
 //--------------------------------------------------------------------------------
-bool FRProtocolBase::isSessionOpened() {
+bool FRProtocolBase::isSessionOpened()
+{
     return mSessionOpened;
 }
 

@@ -6,8 +6,10 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний принтеров AV-268.
-namespace CAV268 {
-    namespace Statuses {
+namespace CAV268
+{
+    namespace Statuses
+    {
         /// Статусы.
         const char HeadOverheat = '\x02';
         const char NoPaper = '\x04';
@@ -21,7 +23,8 @@ namespace CAV268 {
     } // namespace Statuses
 
     /// DIP-свичи.
-    namespace DIPSwitches {
+    namespace DIPSwitches
+    {
         const char HalfHeight = '\x04';
         const char DoubleWidth = '\x08';
         const char CRAvaiable = '\x10';
@@ -31,7 +34,8 @@ namespace CAV268 {
     } // namespace DIPSwitches
 
     /// Пакеты команд.
-    namespace Commands {
+    namespace Commands
+    {
         const char Initialize[] = "\x1B\x40";
         const char GetStatus[] = "\x1B\x76";
         const char GetSettings[] = "\x1D\xFB";
@@ -39,11 +43,13 @@ namespace CAV268 {
         const char GetPresenterStatus[] = "\x1D\xFC";
     } // namespace Commands
 
-    namespace Answers {
+    namespace Answers
+    {
         const char GetSettings[] = "\xEB\xCF";
         const char GetPresenterStatus = '\xEB';
 
-        namespace Presenter {
+        namespace Presenter
+        {
             const char Enable = '\xDA';
             const char Disable = '\xDB';
             const char NotAvaiable = '\xDC';
@@ -51,7 +57,8 @@ namespace CAV268 {
         } // namespace Presenter
     } // namespace Answers
 
-    namespace Timeouts {
+    namespace Timeouts
+    {
         const int Default = 200;
         const int Wait = 100;
         const int Full = 30 * 1000;
@@ -62,9 +69,11 @@ namespace CAV268 {
 
     //----------------------------------------------------------------------------
     /// Теги.
-    class TagEngine : public Tags::Engine {
+    class TagEngine : public Tags::Engine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             QByteArray prefix("\x1B\x21");
 
             appendCommon(Tags::Type::Bold, prefix, "\x08");

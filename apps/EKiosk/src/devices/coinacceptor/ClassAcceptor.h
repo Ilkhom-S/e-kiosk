@@ -3,13 +3,15 @@
 // System
 #include "dev/CCTalk.h"
 
-namespace AcceptorModel {
+namespace AcceptorModel
+{
     const QString CCTalk = "CCTalk";
 }
 
 class CCTalk;
 
-class ClassAcceptor : public QThread {
+class ClassAcceptor : public QThread
+{
     Q_OBJECT
 
   public:

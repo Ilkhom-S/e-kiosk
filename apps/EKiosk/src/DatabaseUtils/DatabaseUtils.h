@@ -20,7 +20,8 @@ class IDatabaseProxy;
 class IApplication;
 
 //---------------------------------------------------------------------------
-class DatabaseUtils : public IDatabaseUtils, public IHardwareDatabaseUtils, public IPaymentDatabaseUtils {
+class DatabaseUtils : public IDatabaseUtils, public IHardwareDatabaseUtils, public IPaymentDatabaseUtils
+{
   public:
     DatabaseUtils(IDatabaseProxy &aProxy, IApplication *aApplication);
     virtual ~DatabaseUtils();

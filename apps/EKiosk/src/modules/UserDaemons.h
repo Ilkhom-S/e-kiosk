@@ -5,7 +5,8 @@
 
 class SendRequest;
 
-class UserDaemons : public SendRequest {
+class UserDaemons : public SendRequest
+{
     Q_OBJECT
 
   public:

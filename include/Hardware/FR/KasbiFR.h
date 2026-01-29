@@ -6,7 +6,8 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола KKM.
-class KasbiFRProtocol : public ProtocolBase {
+class KasbiFRProtocol : public ProtocolBase
+{
   public:
     /// Выполнить команду протокола.
     TResult processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, int aTimeout);

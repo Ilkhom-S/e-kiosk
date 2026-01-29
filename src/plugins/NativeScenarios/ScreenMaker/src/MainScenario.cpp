@@ -24,9 +24,11 @@
 #include "MainScenario.h"
 #include "ScenarioPlugin.h"
 
-namespace {
+namespace
+{
     /// Конструктор плагина.
-    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+    {
         return new ScreenMaker::MainScenarioPlugin(aFactory, aInstancePath);
     }
 } // namespace
@@ -35,11 +37,13 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application, PPSDK::CComponents:
                          CScenarioPlugin::PluginName),
                 &CreatePlugin, &SDK::Plugin::PluginInitializer::emptyParameterList, ScreenMakerMainScenario);
 
-namespace ScreenMaker {
+namespace ScreenMaker
+{
 
     //---------------------------------------------------------------------------
     MainScenario::MainScenario(SDK::PaymentProcessor::ICore *aCore, ILog *aLog)
-        : Scenario(CScenarioPlugin::PluginName, aLog), mCore(aCore), mDrawAreaWindow(nullptr) {
+        : Scenario(CScenarioPlugin::PluginName, aLog), mCore(aCore), mDrawAreaWindow(nullptr)
+    {
         QString path = static_cast<SDK::PaymentProcessor::TerminalSettings *>(
                            mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
                            ->getAppEnvironment()
@@ -49,8 +53,10 @@ namespace ScreenMaker {
         int displayIndex = 0;
 
         QSettings settings(path, QSettings::IniFormat);
-        foreach (QString key, settings.allKeys()) {
-            if (key == "interface/display") {
+        foreach (QString key, settings.allKeys())
+        {
+            if (key == "interface/display")
+            {
                 displayIndex = settings.value(key).toInt();
                 break;
             }
@@ -62,53 +68,63 @@ namespace ScreenMaker {
     }
 
     //---------------------------------------------------------------------------
-    MainScenario::~MainScenario() {
+    MainScenario::~MainScenario()
+    {
     }
 
     //---------------------------------------------------------------------------
-    bool MainScenario::initialize(const QList<GUI::SScriptObject> & /*aScriptObjects*/) {
+    bool MainScenario::initialize(const QList<GUI::SScriptObject> & /*aScriptObjects*/)
+    {
         return true;
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::start(const QVariantMap & /*aContext*/) {
+    void MainScenario::start(const QVariantMap & /*aContext*/)
+    {
         // mCore->getGUIService()->show("ScreenMakerWidget", QVariantMap());
         mDrawAreaWindow->updateImage(mCore->getGUIService()->getScreenshot().toImage());
         mDrawAreaWindow->setVisible(true);
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::stop() {
+    void MainScenario::stop()
+    {
         mTimeoutTimer.stop();
         mDrawAreaWindow->setVisible(false);
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::pause() {
+    void MainScenario::pause()
+    {
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::resume(const QVariantMap & /*aContext*/) {
+    void MainScenario::resume(const QVariantMap & /*aContext*/)
+    {
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::signalTriggered(const QString & /*aSignal*/, const QVariantMap & /*aArguments*/) {
+    void MainScenario::signalTriggered(const QString & /*aSignal*/, const QVariantMap & /*aArguments*/)
+    {
         QVariantMap parameters;
         emit finished(parameters);
     }
 
     //---------------------------------------------------------------------------
-    QString MainScenario::getState() const {
+    QString MainScenario::getState() const
+    {
         return QString("main");
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::onTimeout() {
+    void MainScenario::onTimeout()
+    {
         signalTriggered("finish", QVariantMap());
     }
 
     //--------------------------------------------------------------------------
-    bool MainScenario::canStop() {
+    bool MainScenario::canStop()
+    {
         return true;
     }
 

@@ -11,14 +11,16 @@
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------
-namespace CKeysWindow {
+namespace CKeysWindow
+{
     const QString WarningStyleSheet = "background-color: rgb(255, 192, 192);";
     const QString DefaultStyleSheet = "";
     const int ReservedKeyNumber = 100;
 } // namespace CKeysWindow
 
 //------------------------------------------------------------------------
-class KeysWindow : public QFrame, protected Ui_KeysWindow {
+class KeysWindow : public QFrame, protected Ui_KeysWindow
+{
     Q_OBJECT
 
   public:
@@ -52,7 +54,8 @@ class KeysWindow : public QFrame, protected Ui_KeysWindow {
     void onGenerateTaskFinished();
 
   private:
-    void SetStyleSheet(QWidget *widget, const QString &styleSheet) {
+    void SetStyleSheet(QWidget *widget, const QString &styleSheet)
+    {
         widget->setStyleSheet(QString(widget->metaObject()->className()) + "{" + styleSheet + "}");
     }
 

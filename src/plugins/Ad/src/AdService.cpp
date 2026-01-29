@@ -26,7 +26,8 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-namespace CAdService {
+namespace CAdService
+{
     /// Название лога.
     const QString LogName = "Ad";
 
@@ -40,20 +41,23 @@ namespace CAdService {
     const QString SettingsName = "ad.ini";
 
     /// Имена параметров в ini, описывающие рекламную кампанию
-    namespace Settings {
+    namespace Settings
+    {
         const QString Url = "ad/Url";
         const QString ContendPath = "ad/path";
     } // namespace Settings
 } // namespace CAdService
 
 //---------------------------------------------------------------------------
-AdService *AdService::instance(IApplication *aApplication) {
+AdService *AdService::instance(IApplication *aApplication)
+{
     return static_cast<AdService *>(aApplication->getCore()->getService(CServices::AdService));
 }
 
 //---------------------------------------------------------------------------
 AdService::AdService(IApplication *aApplication)
-    : mApplication(aApplication), ILogable(CAdService::LogName), mSettings(nullptr) {
+    : mApplication(aApplication), ILogable(CAdService::LogName), mSettings(nullptr)
+{
     QString userPath =
         IApplication::toAbsolutePath(mApplication->getSettings().value(CSettings::UserDataPath).toString());
     mSettings = new QSettings(ISysUtils::rmBOM(userPath + QDir::separator() + CAdService::SettingsName),
@@ -66,11 +70,13 @@ AdService::AdService(IApplication *aApplication)
 }
 
 //---------------------------------------------------------------------------
-AdService::~AdService() {
+AdService::~AdService()
+{
 }
 
 //---------------------------------------------------------------------------
-bool AdService::initialize() {
+bool AdService::initialize()
+{
     QString userPath =
         IApplication::toAbsolutePath(mApplication->getSettings().value(CSettings::UserDataPath).toString());
     mDatabase = QSharedPointer<Ad::DatabaseUtils>(new Ad::DatabaseUtils(userPath, getLog()));
@@ -87,16 +93,19 @@ bool AdService::initialize() {
 
 //---------------------------------------------------------------------------
 // Закончена инициализация всех сервисов
-void AdService::finishInitialize() {
+void AdService::finishInitialize()
+{
 }
 
 //---------------------------------------------------------------------------
-bool AdService::canShutdown() {
+bool AdService::canShutdown()
+{
     return true;
 }
 
 //---------------------------------------------------------------------------
-bool AdService::shutdown() {
+bool AdService::shutdown()
+{
     mClient.clear();
     mDatabase.clear();
 
@@ -104,28 +113,33 @@ bool AdService::shutdown() {
 }
 
 //---------------------------------------------------------------------------
-QString AdService::getName() const {
+QString AdService::getName() const
+{
     return CServices::AdService;
 }
 
 //---------------------------------------------------------------------------
-const QSet<QString> &AdService::getRequiredServices() const {
+const QSet<QString> &AdService::getRequiredServices() const
+{
     static QSet<QString> requiredServices = QSet<QString>() << CServices::SettingsService;
 
     return requiredServices;
 }
 
 //---------------------------------------------------------------------------
-QVariantMap AdService::getParameters() const {
+QVariantMap AdService::getParameters() const
+{
     return QVariantMap();
 }
 
 //---------------------------------------------------------------------------
-void AdService::resetParameters(const QSet<QString> &) {
+void AdService::resetParameters(const QSet<QString> &)
+{
 }
 
 //---------------------------------------------------------------------------
-QVariant AdService::getContent(const QString &aName) const {
+QVariant AdService::getContent(const QString &aName) const
+{
     //  auto channel = mClient->channel(aName); // if API is channel()
     // if (!channel || channel->isExpired())
     //     return QVariant();
@@ -134,7 +148,8 @@ QVariant AdService::getContent(const QString &aName) const {
 }
 
 //---------------------------------------------------------------------------
-void AdService::addEvent(const QString &aName) {
+void AdService::addEvent(const QString &aName)
+{
     // TODO
 }
 

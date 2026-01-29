@@ -10,10 +10,13 @@
 #include <SDK/Drivers/ICardReader.h>
 
 //------------------------------------------------------------------------------
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
-        class IMifareReader : public ICardReader {
+        class IMifareReader : public ICardReader
+        {
           public:
             /// Сброс карты по питанию.
             virtual bool reset(QByteArray &aAnswer) = 0;
@@ -22,7 +25,8 @@ namespace SDK {
             virtual bool communicate(const QByteArray &aSendMessage, QByteArray &aReceiveMessage) = 0;
 
           protected:
-            virtual ~IMifareReader() {
+            virtual ~IMifareReader()
+            {
             }
         };
 

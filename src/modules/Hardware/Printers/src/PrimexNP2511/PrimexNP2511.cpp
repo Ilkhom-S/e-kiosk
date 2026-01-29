@@ -7,7 +7,8 @@ using namespace SDK::Driver::IOPort::COM;
 using namespace PrinterStatusCode;
 
 //--------------------------------------------------------------------------------
-PrimexNP2511::PrimexNP2511() {
+PrimexNP2511::PrimexNP2511()
+{
     // данные устройства
     mDeviceName = "Primex NP-2511";
 
@@ -34,14 +35,17 @@ PrimexNP2511::PrimexNP2511() {
 }
 
 //--------------------------------------------------------------------------------
-bool PrimexNP2511::isConnected() {
+bool PrimexNP2511::isConnected()
+{
     CPrimexNP2511::TDeviceParameters deviceParameters = CPrimexNP2511::CDeviceParameters().data();
     bool result = true;
 
-    for (auto it = deviceParameters.begin(); it != deviceParameters.end(); ++it) {
+    for (auto it = deviceParameters.begin(); it != deviceParameters.end(); ++it)
+    {
         QString data;
 
-        if (!processDeviceData(it, data)) {
+        if (!processDeviceData(it, data))
+        {
             result = false;
             break;
         }
@@ -53,34 +57,41 @@ bool PrimexNP2511::isConnected() {
 }
 
 //--------------------------------------------------------------------------------
-bool PrimexNP2511::backFeed(int aCount) {
+bool PrimexNP2511::backFeed(int aCount)
+{
     return !aCount || mIOPort->write(QByteArray(CPrimexNP2511::Commands::BackFeed) + char(aCount));
 }
 
 //--------------------------------------------------------------------------------
-bool PrimexNP2511::updateParameters() {
+bool PrimexNP2511::updateParameters()
+{
     // TODO: вынести выбор кодовой страницы в настройки плагина
     return mIOPort->write(QByteArray(CPrimexNP2511::Commands::Initialize) + CPrimexNP2511::Commands::SetCyrillicPage);
 }
 
 //--------------------------------------------------------------------------------
-bool PrimexNP2511::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
+bool PrimexNP2511::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt)
+{
     // TODO: проверить возможности эжектора и вынести все соответствующие параметры в настройки плагина
     return mIOPort->write(CPrimexNP2511::Commands::ClearDispenser) && backFeed(CPrimexNP2511::BackFeedCount) &&
            mIOPort->write(CPrimexNP2511::Commands::AutoRetract) && SerialPrinterBase::printReceipt(aLexemeReceipt);
 }
 
 //--------------------------------------------------------------------------------
-bool PrimexNP2511::printBarcode(const QString &aBarcode) {
+bool PrimexNP2511::printBarcode(const QString &aBarcode)
+{
     // 1. В Qt 6 для кодирования текста в байты (fromUnicode) используется QStringEncoder.
     // mDecoder в 2026 году — это std::shared_ptr<QStringDecoder>.
     QByteArray barcodeData;
 
-    if (mDecoder) {
+    if (mDecoder)
+    {
         // Создаем энкодер с кодировкой текущего декодера
         QStringEncoder encoder(mDecoder->name());
         barcodeData = encoder(aBarcode);
-    } else {
+    }
+    else
+    {
         // Запасной вариант (Latin1), если декодер не задан
         barcodeData = aBarcode.toLatin1();
     }
@@ -97,15 +108,19 @@ bool PrimexNP2511::printBarcode(const QString &aBarcode) {
 }
 
 //--------------------------------------------------------------------------------
-bool PrimexNP2511::getStatus(TStatusCodes &aStatusCodes) {
+bool PrimexNP2511::getStatus(TStatusCodes &aStatusCodes)
+{
     QByteArray answer;
 
-    if (!mIOPort->write(CPrimexNP2511::Commands::GetStatus) || !mIOPort->read(answer) || (answer.size() != 1)) {
+    if (!mIOPort->write(CPrimexNP2511::Commands::GetStatus) || !mIOPort->read(answer) || (answer.size() != 1))
+    {
         return false;
     }
 
-    for (int i = 0; i < 8; ++i) {
-        if (answer[0] & (1 << i)) {
+    for (int i = 0; i < 8; ++i)
+    {
+        if (answer[0] & (1 << i))
+        {
             aStatusCodes.insert(CPrimexNP2511::Statuses[i]);
         }
     }
@@ -114,29 +129,34 @@ bool PrimexNP2511::getStatus(TStatusCodes &aStatusCodes) {
 }
 
 //--------------------------------------------------------------------------------
-bool PrimexNP2511::processDeviceData(const CPrimexNP2511::TDeviceParametersIt &aIt, QString &aData) {
+bool PrimexNP2511::processDeviceData(const CPrimexNP2511::TDeviceParametersIt &aIt, QString &aData)
+{
     QByteArray answer;
 
-    if (!mIOPort->write(CPrimexNP2511::Commands::PrinterInfo + aIt.key()) || !mIOPort->read(answer)) {
+    if (!mIOPort->write(CPrimexNP2511::Commands::PrinterInfo + aIt.key()) || !mIOPort->read(answer))
+    {
         return false;
     }
 
     QString errorLog = QString("Failed to get %1 due to ").arg(aIt->description);
 
-    if (answer.size() < aIt->size) {
+    if (answer.size() < aIt->size)
+    {
         toLog(LogLevel::Error,
               errorLog + QString("length of the packet is too small, %1 < %2.").arg(answer.size()).arg(aIt->size));
         return false;
     }
 
-    if (answer[0] != ASCII::Full) {
+    if (answer[0] != ASCII::Full)
+    {
         toLog(LogLevel::Error, errorLog + QString("first byte = %1 is wrong, need %2")
                                               .arg(ProtocolUtils::toHexLog(char(answer[0])))
                                               .arg(ProtocolUtils::toHexLog(ASCII::Full)));
         return false;
     }
 
-    if (answer[1] != aIt.key()) {
+    if (answer[1] != aIt.key())
+    {
         toLog(LogLevel::Error, QString("second byte = %1 is wrong, need %2 = command")
                                    .arg(ProtocolUtils::toHexLog(char(answer[1])))
                                    .arg(ProtocolUtils::toHexLog(aIt.key())));

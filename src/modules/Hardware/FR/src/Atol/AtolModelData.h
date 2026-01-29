@@ -16,7 +16,8 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний устройств на протоколе ATOL.
-namespace CAtolFR {
+namespace CAtolFR
+{
     /// Признак наличия ЭКЛЗ по имени устройства.
     const char EKLZPostfix = 'K';
 
@@ -30,7 +31,8 @@ namespace CAtolFR {
     /// Актуальная версия прошивки для терминальных ФР.
     const int OnlineTerminalBuild = 5652;
 
-    namespace Models {
+    namespace Models
+    {
         const char TriumF[] = "ATOL Trium-F";
         const char FelixRF[] = "ATOL Felix-R-F";
         const char Felix02K[] = "ATOL Felix-02K";
@@ -75,7 +77,8 @@ namespace CAtolFR {
     /// Данные моделей.
     typedef QPair<int, EFRType::Enum> TModelKey;
 
-    class CModelData : public CSpecification<TModelKey, SModelData> {
+    class CModelData : public CSpecification<TModelKey, SModelData>
+    {
       public:
         CModelData();
 

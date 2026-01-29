@@ -21,7 +21,8 @@
 // Project
 #include "TokenWindow.h"
 
-TokenWindow::TokenWindow(ServiceMenuBackend *aBackend, QWidget *aParent) : QFrame(aParent), mBackend(aBackend) {
+TokenWindow::TokenWindow(ServiceMenuBackend *aBackend, QWidget *aParent) : QFrame(aParent), mBackend(aBackend)
+{
     setupUi(this);
 
     connect(btnFormat, SIGNAL(clicked()), SLOT(onFormatButtonClicked()));
@@ -30,53 +31,68 @@ TokenWindow::TokenWindow(ServiceMenuBackend *aBackend, QWidget *aParent) : QFram
 }
 
 //------------------------------------------------------------------------
-TokenWindow::~TokenWindow() {
-    if (mFormatTaskWatcher.isRunning()) {
+TokenWindow::~TokenWindow()
+{
+    if (mFormatTaskWatcher.isRunning())
+    {
         mFormatTaskWatcher.waitForFinished();
     }
 }
 
 //------------------------------------------------------------------------
-void TokenWindow::initialize(const CCrypt::TokenStatus &aStatus) {
+void TokenWindow::initialize(const CCrypt::TokenStatus &aStatus)
+{
     updateUI(aStatus);
 }
 
 //------------------------------------------------------------------------
-void TokenWindow::doFormat() {
+void TokenWindow::doFormat()
+{
     mFormatTaskWatcher.setFuture(QtConcurrent::run([this]() { return mBackend->getKeysManager()->formatToken(); }));
 }
 
 //------------------------------------------------------------------------
-void TokenWindow::onFormatButtonClicked() {
+void TokenWindow::onFormatButtonClicked()
+{
     mTaskParameters.clear();
 
     emit beginFormat();
 }
 
 //------------------------------------------------------------------------
-void TokenWindow::onFormatTaskFinished() {
-    if (mFormatTaskWatcher.result()) {
+void TokenWindow::onFormatTaskFinished()
+{
+    if (mFormatTaskWatcher.result())
+    {
         updateUI(mBackend->getKeysManager()->tokenStatus());
 
         emit endFormat();
-    } else {
+    }
+    else
+    {
         emit error(tr("#error_format_token"));
     }
 }
 
 //------------------------------------------------------------------------
-void TokenWindow::updateUI(const CCrypt::TokenStatus &aStatus) {
+void TokenWindow::updateUI(const CCrypt::TokenStatus &aStatus)
+{
     labelName->setText(aStatus.name.isEmpty() ? tr("#empty") : aStatus.name);
 
     QString status;
 
-    if (aStatus.available && aStatus.initialized) {
+    if (aStatus.available && aStatus.initialized)
+    {
         status = tr("#ok");
         btnFormat->setEnabled(false);
-    } else if (aStatus.available) {
+    }
+    else if (aStatus.available)
+    {
         status = tr("#not_initialised");
         btnFormat->setEnabled(true);
-    } else {
+    }
+    else
+    {
         status = tr("#none");
         btnFormat->setEnabled(false);
     }

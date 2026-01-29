@@ -6,7 +6,8 @@
 #include <Hardware/Protocols/CashAcceptor/SSPDataTypes.h>
 
 //--------------------------------------------------------------------------------
-class SSPProtocol : public ProtocolBase {
+class SSPProtocol : public ProtocolBase
+{
   public:
     SSPProtocol();
 

@@ -16,7 +16,8 @@
 typedef QMap<QString, QString> TDeviceData;
 
 //---------------------------------------------------------------------------
-namespace DeviceUtils {
+namespace DeviceUtils
+{
     /// Проверить сложную (вида x.y.z.0...) прошивку на актуальность.
     bool isComplexFirmwareOld(const QString &aFirmware, const QString &aActualFirmware);
 

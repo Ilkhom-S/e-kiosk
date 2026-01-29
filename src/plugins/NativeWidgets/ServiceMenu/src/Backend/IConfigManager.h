@@ -3,9 +3,11 @@
 #pragma once
 
 //------------------------------------------------------------------------
-class IConfigManager {
+class IConfigManager
+{
   public:
-    virtual ~IConfigManager() {
+    virtual ~IConfigManager()
+    {
     }
 
   public:

@@ -14,13 +14,17 @@
 #include <Common/ILog.h>
 #include <SDK/PaymentProcessor/Core/ITask.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        class ISchedulerService {
+        class ISchedulerService
+        {
           protected:
-            virtual ~ISchedulerService() {
+            virtual ~ISchedulerService()
+            {
             }
 
           public:
@@ -29,19 +33,22 @@ namespace SDK {
                 TTaskCreator;
 
             /// зарегистрировать тип задачи в фабрике классов
-            template <class C> void registerTaskType(const QString &aType) {
+            template <class C> void registerTaskType(const QString &aType)
+            {
                 auto taskCreator = [](const QString &aName, const QString &aLogName,
-                                      const QString &aParams) -> SDK::PaymentProcessor::ITask * {
-                    return new C(aName, aLogName, aParams);
-                };
+                                      const QString &aParams) -> SDK::PaymentProcessor::ITask *
+                { return new C(aName, aLogName, aParams); };
 
-                if (!mFactory.contains(aType)) {
+                if (!mFactory.contains(aType))
+                {
                     mFactory[aType] = TTaskCreator(taskCreator);
                 }
             }
 
-            void registerTaskType(const QString &aName, SDK::PaymentProcessor::ITask *aTask) {
-                if (!mExternalTasks.contains(aName)) {
+            void registerTaskType(const QString &aName, SDK::PaymentProcessor::ITask *aTask)
+            {
+                if (!mExternalTasks.contains(aName))
+                {
                     mExternalTasks[aName] = aTask;
                 }
             }

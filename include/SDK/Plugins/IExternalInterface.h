@@ -2,15 +2,19 @@
 
 #pragma once
 
-namespace SDK {
-    namespace Plugin {
+namespace SDK
+{
+    namespace Plugin
+    {
 
         //---------------------------------------------------------------------------
         /// Импортируемый в плагин интерфейс.
-        class IExternalInterface {
+        class IExternalInterface
+        {
           protected:
             /// Деструктор.
-            virtual ~IExternalInterface() {
+            virtual ~IExternalInterface()
+            {
             }
         };
 

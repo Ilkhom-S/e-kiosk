@@ -13,7 +13,8 @@
 #include <Hardware/IOPorts/IOPortBase.h>
 
 //--------------------------------------------------------------------------------
-namespace CTCPPort {
+namespace CTCPPort
+{
     /// Таймаут открытия порта, [мс].
     const int OpeningTimeout = 200;
 
@@ -39,7 +40,8 @@ namespace CTCPPort {
 #define PERFORM_IN_THREAD(aMethod, ...) invokeMethod(std::bind(&TCPPort::aMethod, this, __VA_ARGS__))
 
 //--------------------------------------------------------------------------------
-class TCPPort : public QObject, public IOPortBase {
+class TCPPort : public QObject, public IOPortBase
+{
     Q_OBJECT
 
     SET_SERIES("TCP")

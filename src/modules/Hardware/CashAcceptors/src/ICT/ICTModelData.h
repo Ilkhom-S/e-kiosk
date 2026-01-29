@@ -11,10 +11,13 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CICT {
-    class ModelData : public CSpecification<QString, bool> {
+namespace CICT
+{
+    class ModelData : public CSpecification<QString, bool>
+    {
       public:
-        ModelData() {
+        ModelData()
+        {
             add("ICT A6");
             add("ICT V6");
             add("ICT N6");
@@ -40,7 +43,8 @@ namespace CICT {
         }
 
       private:
-        void add(const QString &aModelName, bool aVerified = false) {
+        void add(const QString &aModelName, bool aVerified = false)
+        {
             append(aModelName, aVerified);
         }
     };

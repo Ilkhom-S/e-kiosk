@@ -15,7 +15,8 @@
 #endif
 
 //------------------------------------------------------------------------
-class TimeChangeListener : public QObject {
+class TimeChangeListener : public QObject
+{
     Q_OBJECT
 
   public:

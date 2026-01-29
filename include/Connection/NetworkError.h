@@ -6,10 +6,12 @@
 #include <Common/Exception.h>
 
 //--------------------------------------------------------------------------------
-class NetworkError : public Exception {
+class NetworkError : public Exception
+{
   public:
     NetworkError(ECategory::Enum aCategory, ESeverity::Enum aSeverity, int aCode, const QString &aMessage = QString())
-        : Exception(aCategory, aSeverity, aCode, aMessage) {
+        : Exception(aCategory, aSeverity, aCode, aMessage)
+    {
     }
 };
 

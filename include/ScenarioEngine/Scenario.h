@@ -13,18 +13,22 @@
 
 #include <Common/ILogable.h>
 
-namespace GUI {
+namespace GUI
+{
 
     class ScenarioEngine;
 
     //---------------------------------------------------------------------------
     /// Описание апи объекта для сценария.
-    struct SScriptObject {
+    struct SScriptObject
+    {
         SScriptObject(const QString &aName, QObject *aObject)
-            : name(aName), isType(false), metaObject(0), object(aObject) {
+            : name(aName), isType(false), metaObject(0), object(aObject)
+        {
         }
         SScriptObject(const QString &aName, const QMetaObject *aMetaObject)
-            : name(aName), isType(true), metaObject(aMetaObject), object(0) {
+            : name(aName), isType(true), metaObject(aMetaObject), object(0)
+        {
         }
 
         QString name;
@@ -35,7 +39,8 @@ namespace GUI {
 
     //---------------------------------------------------------------------------
     /// Базовый класс сценария.
-    class Scenario : public QObject, protected ILogable {
+    class Scenario : public QObject, protected ILogable
+    {
         Q_OBJECT
 
       public:
@@ -57,31 +62,37 @@ namespace GUI {
         /// Инициализация сценария.
         virtual bool initialize(const QList<SScriptObject> &aScriptObjects) = 0;
 
-        struct SExternalStateHook {
+        struct SExternalStateHook
+        {
             typedef std::function<QVariantMap(const QVariantMap &, const QVariantMap &)> THookFunction;
 
             QString targetScenario;
             QString targetState;
             THookFunction hook; // scenario context, state arguments
 
-            SExternalStateHook() {
+            SExternalStateHook()
+            {
             }
             SExternalStateHook(const QString &aTargetScenario, const QString &aTargetState, THookFunction aHook)
-                : targetScenario(aTargetScenario), targetState(aTargetState), hook(aHook) {
+                : targetScenario(aTargetScenario), targetState(aTargetState), hook(aHook)
+            {
             }
 
-            void clear() {
+            void clear()
+            {
                 targetScenario.clear();
                 targetState.clear();
                 hook = nullptr;
             }
         };
 
-        virtual void setStateHook(const QList<SExternalStateHook> &aHook) {
+        virtual void setStateHook(const QList<SExternalStateHook> &aHook)
+        {
             Q_UNUSED(aHook)
         }
 
-        virtual QList<SExternalStateHook> getStateHook() {
+        virtual QList<SExternalStateHook> getStateHook()
+        {
             return QList<SExternalStateHook>();
         }
 

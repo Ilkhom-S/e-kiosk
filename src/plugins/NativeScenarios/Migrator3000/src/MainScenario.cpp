@@ -40,9 +40,11 @@
 #include "MainScenario.h"
 #include "ScenarioPlugin.h"
 
-namespace {
+namespace
+{
     /// Конструктор плагина.
-    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+    {
         return new Migrator3000::MainScenarioPlugin(aFactory, aInstancePath);
     }
 } // namespace
@@ -51,13 +53,15 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application, PPSDK::CComponents:
                          CScenarioPlugin::PluginName),
                 &CreatePlugin, &SDK::Plugin::PluginInitializer::emptyParameterList, Migrator3000MainScenario);
 
-namespace Migrator3000 {
+namespace Migrator3000
+{
 
     //---------------------------------------------------------------------------
     MainScenario::MainScenario(SDK::PaymentProcessor::ICore *aCore, ILog *aLog)
         : Scenario(CScenarioPlugin::PluginName, aLog), mCore(aCore), mNetworkService(aCore->getNetworkService()),
           mTerminalService(aCore->getTerminalService()), mSettingsService(aCore->getSettingsService()),
-          mCryptService(aCore->getCryptService()), mDeviceService(aCore->getDeviceService()), mMonitoringComandId(-1) {
+          mCryptService(aCore->getCryptService()), mDeviceService(aCore->getDeviceService()), mMonitoringComandId(-1)
+    {
         mTerminalSettings = static_cast<PPSDK::TerminalSettings *>(
             mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 
@@ -73,16 +77,19 @@ namespace Migrator3000 {
     }
 
     //---------------------------------------------------------------------------
-    MainScenario::~MainScenario() {
+    MainScenario::~MainScenario()
+    {
     }
 
     //---------------------------------------------------------------------------
-    bool MainScenario::initialize(const QList<GUI::SScriptObject> & /*aScriptObjects*/) {
+    bool MainScenario::initialize(const QList<GUI::SScriptObject> & /*aScriptObjects*/)
+    {
         return true;
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::start(const QVariantMap &aContext) {
+    void MainScenario::start(const QVariantMap &aContext)
+    {
         setStateTimeout(0);
 
         mContext = aContext;
@@ -94,7 +101,8 @@ namespace Migrator3000 {
         QString error;
 
         // check keys
-        if (!mCryptService->getCryptEngine()->sign(0, "Hello Humo", sign, error)) {
+        if (!mCryptService->getCryptEngine()->sign(0, "Hello Humo", sign, error))
+        {
             toLog(LogLevel::Error, QString("CHECK keys error, %1").arg(error));
             signalTriggered("abort", QVariantMap());
             return;
@@ -110,11 +118,14 @@ namespace Migrator3000 {
 
         QString terminalConfig = mKiosk2InstallPath + "/config/terminal.xml";
 
-        try {
+        try
+        {
             read_xml(terminalConfig.toStdString(), pt);
 
-            BOOST_FOREACH (ptree::value_type const &v, pt.get_child("terminal")) {
-                if (v.first == "connection") {
+            BOOST_FOREACH (ptree::value_type const &v, pt.get_child("terminal"))
+            {
+                if (v.first == "connection")
+                {
                     connection.type = QString::fromStdString(v.second.get<std::string>("<xmlattr>.type", "")) == "local"
                                           ? EConnectionTypes::Unmanaged
                                           : EConnectionTypes::Dialup;
@@ -124,17 +135,25 @@ namespace Migrator3000 {
 
                     auto proxyType = QString::fromStdString(v.second.get<std::string>("proxy.<xmlattr>.type", ""));
 
-                    if (proxyType == "http") {
+                    if (proxyType == "http")
+                    {
                         proxy.setType(QNetworkProxy::HttpProxy);
-                    } else if (proxyType == "http_caching") {
+                    }
+                    else if (proxyType == "http_caching")
+                    {
                         proxy.setType(QNetworkProxy::HttpCachingProxy);
-                    } else if (proxyType == "socks5") {
+                    }
+                    else if (proxyType == "socks5")
+                    {
                         proxy.setType(QNetworkProxy::Socks5Proxy);
-                    } else {
+                    }
+                    else
+                    {
                         proxy.setType(QNetworkProxy::NoProxy);
                     }
 
-                    if (proxy.type() != QNetworkProxy::NoProxy) {
+                    if (proxy.type() != QNetworkProxy::NoProxy)
+                    {
                         proxy.setUser(
                             QString::fromStdString(v.second.get<std::string>("proxy.<xmlattr>.username", "")));
                         proxy.setPassword(
@@ -148,7 +167,9 @@ namespace Migrator3000 {
                     connection.proxy = proxy;
                 }
             }
-        } catch (boost::property_tree::xml_parser_error &e) {
+        }
+        catch (boost::property_tree::xml_parser_error &e)
+        {
             toLog(LogLevel::Error,
                   QString("PARSING '%1' error, %2").arg(terminalConfig).arg(QString::fromStdString(e.message())));
             signalTriggered("abort", QVariantMap());
@@ -159,7 +180,8 @@ namespace Migrator3000 {
         mTerminalSettings->setConnection(connection);
 
         // test connection
-        if (!mNetworkService->testConnection()) {
+        if (!mNetworkService->testConnection())
+        {
             toLog(
                 LogLevel::Error,
                 QString("CHECK connection error, %1").arg(mNetworkService->getLastConnectionError().split(":").last()));
@@ -180,7 +202,8 @@ namespace Migrator3000 {
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::stop() {
+    void MainScenario::stop()
+    {
         mTimeoutTimer.stop();
 
         disconnect(mDeviceService, SIGNAL(deviceDetected(const QString &)), this,
@@ -189,26 +212,32 @@ namespace Migrator3000 {
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::pause() {
+    void MainScenario::pause()
+    {
         mTimeoutTimer.stop();
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::resume(const QVariantMap &aContext) {
+    void MainScenario::resume(const QVariantMap &aContext)
+    {
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::signalTriggered(const QString &aSignal, const QVariantMap & /*aArguments*/) {
+    void MainScenario::signalTriggered(const QString &aSignal, const QVariantMap & /*aArguments*/)
+    {
         QVariantMap parameters;
         int returnCode = -1;
 
-        if (aSignal == "abort") {
+        if (aSignal == "abort")
+        {
             parameters.insert("result", "abort");
             returnCode = ExitCode::Error;
 
             mTimeoutTimer.stop();
             emit finished(parameters);
-        } else if (aSignal == "finish") {
+        }
+        else if (aSignal == "finish")
+        {
             returnCode = ExitCode::NoError;
 
             mTimeoutTimer.stop();
@@ -216,7 +245,8 @@ namespace Migrator3000 {
         }
 
         // abort/finish - завершаем сценарий, закрываем приложение
-        if (returnCode == ExitCode::NoError || returnCode == ExitCode::Error) {
+        if (returnCode == ExitCode::NoError || returnCode == ExitCode::Error)
+        {
             QVariantMap parameters;
             parameters.insert("returnCode", returnCode);
             mScriptingCore->postEvent(PPSDK::EEventType::StopSoftware, parameters);
@@ -224,13 +254,16 @@ namespace Migrator3000 {
     }
 
     //---------------------------------------------------------------------------
-    QString MainScenario::getState() const {
+    QString MainScenario::getState() const
+    {
         return QString("main");
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::onTimeout() {
-        if (mTaskWatcher.isRunning()) {
+    void MainScenario::onTimeout()
+    {
+        if (mTaskWatcher.isRunning())
+        {
             mTaskWatcher.waitForFinished();
         }
 
@@ -238,23 +271,27 @@ namespace Migrator3000 {
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::onTaskFinished() {
+    void MainScenario::onTaskFinished()
+    {
         signalTriggered("finish", QVariantMap());
     }
 
     //--------------------------------------------------------------------------
-    bool MainScenario::canStop() {
+    bool MainScenario::canStop()
+    {
         return true;
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::onDeviceDetected(const QString &aConfigName) {
+    void MainScenario::onDeviceDetected(const QString &aConfigName)
+    {
         toLog(LogLevel::Normal, QString("DETECT device %1").arg(aConfigName));
         mFoundedDevices.append(aConfigName);
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::onDetectionStopped() {
+    void MainScenario::onDetectionStopped()
+    {
         toLog(LogLevel::Normal, QString("STOP autodetect. WAIT device init."));
 
         // Подождем, чтобы все устройства успели проинициализироваться
@@ -262,7 +299,8 @@ namespace Migrator3000 {
     }
 
     //---------------------------------------------------------------------------
-    void MainScenario::finishDeviceDetection() {
+    void MainScenario::finishDeviceDetection()
+    {
         toLog(LogLevel::Normal, QString("INIT devices done."));
 
         // update configs
@@ -272,11 +310,14 @@ namespace Migrator3000 {
         // todo check validator/printer config settings
         QStringList configurations = mDeviceService->getConfigurations();
 
-        auto isDeviceOK = [=](const QString &aDeviceType) -> bool {
+        auto isDeviceOK = [=](const QString &aDeviceType) -> bool
+        {
             namespace DSDK = SDK::Driver;
 
-            foreach (QString config, configurations) {
-                if (config.section('.', 2, 2) == aDeviceType) {
+            foreach (QString config, configurations)
+            {
+                if (config.section('.', 2, 2) == aDeviceType)
+                {
                     auto status = mDeviceService->getDeviceStatus(config);
 
                     return status && status->isMatched(DSDK::EWarningLevel::Warning);
@@ -288,7 +329,8 @@ namespace Migrator3000 {
 
         bool validatorOK = isDeviceOK(SDK::Driver::CComponents::BillAcceptor);
 
-        if (!validatorOK) {
+        if (!validatorOK)
+        {
             toLog(LogLevel::Error, QString("BILL VALIDATOR error or not found."));
             signalTriggered("abort");
             return;
@@ -303,7 +345,8 @@ namespace Migrator3000 {
         bool blockTerminalByPrinter =
             mTerminalSettings->getCommonSettings().blockOn(SDK::PaymentProcessor::SCommonSettings::PrinterError);
 
-        if (!printerOK && blockTerminalByPrinter) {
+        if (!printerOK && blockTerminalByPrinter)
+        {
             toLog(LogLevel::Error, QString("PRINTER %1, BLOCK terminal by printer = %2.")
                                        .arg(printerOK ? "OK" : "error")
                                        .arg(blockTerminalByPrinter ? "YES" : "NO"));
@@ -319,7 +362,8 @@ namespace Migrator3000 {
             // Qt 6 uses UTF-8 by default, no need to set codec
             ini.setValue("common/standalone", false);
 
-            if (ini.status() != QSettings::NoError) {
+            if (ini.status() != QSettings::NoError)
+            {
                 toLog(LogLevel::Error, QString("UPDATE standalone flag error: %1.")
                                            .arg(ini.status() == QSettings::AccessError ? "An access error occurred"
                                                                                        : "A format error occurred"));
@@ -339,7 +383,8 @@ namespace Migrator3000 {
                 .arg(mMonitoringComandId)
                 .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"));
 
-        if (!mCore->getDatabaseService()->execQuery(queryStr)) {
+        if (!mCore->getDatabaseService()->execQuery(queryStr))
+        {
             toLog(LogLevel::Error, QString("UPDATE monitoring command error."));
             signalTriggered("abort");
             return;

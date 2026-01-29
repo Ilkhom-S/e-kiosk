@@ -11,12 +11,15 @@
 #include "Hardware/CashAcceptors/ModelData.h"
 
 //--------------------------------------------------------------------------------
-namespace CEBDS {
+namespace CEBDS
+{
     typedef QPair<char, bool> TModelData;
 
-    class ModelData : public CSpecification<TModelData, SBaseModelData> {
+    class ModelData : public CSpecification<TModelData, SBaseModelData>
+    {
       public:
-        ModelData() {
+        ModelData()
+        {
             add(0x01, "MEI ZT1000, USA");
             add(0x11, "MEI ZT1100, USA");
             add(0x0C, "MEI ZT1107, USA");
@@ -53,7 +56,8 @@ namespace CEBDS {
         }
 
       private:
-        void add(char aCode, const QString &aName, bool aVerified = false, bool aAdvanced = false) {
+        void add(char aCode, const QString &aName, bool aVerified = false, bool aAdvanced = false)
+        {
             append(TModelData(aCode, aAdvanced), SBaseModelData(aName, aVerified));
         }
     };

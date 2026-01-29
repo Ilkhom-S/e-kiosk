@@ -3,7 +3,8 @@
 // System
 #include "../AbstractValidator.h"
 
-namespace EBDSConstruct {
+namespace EBDSConstruct
+{
     const char Prefix = '\x02';
 
     /// Конечный байт (не считая CRC).
@@ -44,7 +45,8 @@ namespace EBDSConstruct {
     /// Количество номиналов.
     const int NominalCount = 50;
 
-    namespace Commands {
+    namespace Commands
+    {
         const char Host2Validator = 0x10;   /// Standard Host to Acceptor messages.
         const char Validator2Host = 0x20;   /// Standard Acceptor to Host messages.
         const char BookmarkSelected = 0x30; /// Bookmark selected.
@@ -72,7 +74,8 @@ namespace EBDSConstruct {
     } // namespace Commands
 
     // Byte 0
-    namespace State_0 {
+    namespace State_0
+    {
         const int Idling = 0;
         const int Accepting = 1;
         const int Escrowed = 2;
@@ -82,7 +85,8 @@ namespace EBDSConstruct {
         const int Returned = 6;
     } // namespace State_0
 
-    namespace State_1 {
+    namespace State_1
+    {
         const char Cheated = 0;
         const char Rejected = 1;
         const char Jammed = 2;
@@ -92,20 +96,23 @@ namespace EBDSConstruct {
         const char Calibration = 6;
     } // namespace State_1
 
-    namespace State_2 {
+    namespace State_2
+    {
         const char PowerUp = 0;
         const char InvalidCommand = 1;
         const char Failure = 2;
     } // namespace State_2
 
-    namespace State_3 {
+    namespace State_3
+    {
         const char NoPushMode = 0;
         const char FlashDownload = 1;
         const char PreStack = 2;
     } // namespace State_3
 
     /// Коды ошибок
-    namespace Errors {
+    namespace Errors
+    {
         /// Drop Cassette full condition.
         const uchar StackerFull = 0x41;
 
@@ -135,7 +142,8 @@ namespace EBDSConstruct {
     } // namespace Errors
 
     /// Коды неисправностей
-    namespace Failures {
+    namespace Failures
+    {
         /// Drop Cassette Motor failure.
         const uchar StackerMotor = 0x50;
 
@@ -186,7 +194,8 @@ namespace EBDSConstruct {
     } // namespace Failures
 
     /// Bill-to-Bill unit Jammed
-    namespace BillJammed {
+    namespace BillJammed
+    {
         /// Bill Jammed in Cassette 1.
         const uchar JCassette1 = 0x70;
 
@@ -209,7 +218,8 @@ namespace EBDSConstruct {
 
 class BaseValidatorDevices;
 
-class EBDS : public BaseValidatorDevices {
+class EBDS : public BaseValidatorDevices
+{
     Q_OBJECT
 
   public:

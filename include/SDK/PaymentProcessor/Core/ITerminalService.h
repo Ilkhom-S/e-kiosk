@@ -6,13 +6,17 @@
 #include <QtCore/QString>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
         /// Список ошибок терминала.
-        namespace ETerminalError {
-            enum Enum {
+        namespace ETerminalError
+        {
+            enum Enum
+            {
                 KeyError = 16001,
                 ConfigError,
                 NetworkError,
@@ -24,10 +28,12 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         /// Интерфейс управления терминалом.
-        class ITerminalService {
+        class ITerminalService
+        {
           protected:
             /// Деструктор.
-            virtual ~ITerminalService() {
+            virtual ~ITerminalService()
+            {
             }
 
           public:

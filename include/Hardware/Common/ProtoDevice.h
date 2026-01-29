@@ -17,12 +17,14 @@
 
 #define SET_DEVICE_TYPE(aType)                                                                                         \
   public:                                                                                                              \
-    static QString getDeviceType() {                                                                                   \
+    static QString getDeviceType()                                                                                     \
+    {                                                                                                                  \
         return SDK::Driver::CComponents::aType;                                                                        \
     }
 
 //--------------------------------------------------------------------------------
-class ProtoDevice : public QObject {
+class ProtoDevice : public QObject
+{
     Q_OBJECT
 
   signals:
@@ -43,7 +45,8 @@ class ProtoDevice : public QObject {
     virtual void initialize() {};
 
     /// Идентификация.
-    virtual bool checkExistence() {
+    virtual bool checkExistence()
+    {
         return true;
     };
 
@@ -58,7 +61,8 @@ class ProtoDevice : public QObject {
     virtual void updateFirmware(const QByteArray & /*aBuffer*/) {};
 
     /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
-    virtual bool performRelease() {
+    virtual bool performRelease()
+    {
         return true;
     };
 };

@@ -6,11 +6,14 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CPuloonLCDM {
+namespace CPuloonLCDM
+{
     /// Параметры моделей.
-    namespace Models {
+    namespace Models
+    {
         /// Данные модели.
-        struct SData {
+        struct SData
+        {
             QString name;
             bool verified;
             int ROMVersion;
@@ -19,16 +22,20 @@ namespace CPuloonLCDM {
 
             SData(const QString &aName, bool aVerified, int aROMVersion, const QString &aFullROMVersion, int aUnits)
                 : name(aName), verified(aVerified), ROMVersion(aROMVersion), fullROMVersion(aFullROMVersion),
-                  units(aUnits) {
+                  units(aUnits)
+            {
             }
-            SData() : verified(false), ROMVersion(0), units(0) {
+            SData() : verified(false), ROMVersion(0), units(0)
+            {
             }
         };
 
         /// Данные моделей.
-        class CData : public CSpecification<ushort, SData> {
+        class CData : public CSpecification<ushort, SData>
+        {
           public:
-            CData() {
+            CData()
+            {
                 append(0xAD2C, SData("Puloon LCDM-1000", false, 16, "O16T", 1));
                 append(0x8013, SData("Puloon LCDM-1000", false, 30, "O30T", 1));
 

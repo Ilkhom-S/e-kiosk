@@ -12,14 +12,17 @@
 #include <SDK/Drivers/IHID.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
         class IDevice;
     } // namespace Driver
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class HIDTest : public SDK::PaymentProcessor::IDeviceTest {
+class HIDTest : public SDK::PaymentProcessor::IDeviceTest
+{
     Q_OBJECT
 
   public:

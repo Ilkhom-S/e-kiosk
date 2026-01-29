@@ -28,16 +28,20 @@
 #include <Common/ILogable.h>
 #include <SDK/GUI/MessageBoxParams.h>
 
-namespace GUI {
+namespace GUI
+{
 
     //---------------------------------------------------------------------------
-    namespace {
+    namespace
+    {
         const QString DefaultBackgroundColor = "#003e75";
         const int DefaultAlpha = 0xd8;
 
-        class ModalBackgroundWidget : public QQuickPaintedItem {
+        class ModalBackgroundWidget : public QQuickPaintedItem
+        {
           public:
-            ModalBackgroundWidget() {
+            ModalBackgroundWidget()
+            {
                 setFlag(QQuickItem::ItemHasContents);
                 setFillColor(ModalBackgroundWidget::getColor(DefaultBackgroundColor));
 
@@ -46,30 +50,36 @@ namespace GUI {
             }
 
           public:
-            void setColor(const QString &aColor, int aAlpha = DefaultAlpha) {
+            void setColor(const QString &aColor, int aAlpha = DefaultAlpha)
+            {
                 setFillColor(
                     ModalBackgroundWidget::getColor(aColor.isEmpty() ? DefaultBackgroundColor : aColor, aAlpha));
             }
 
           protected:
-            void paint(QPainter *aPainter) override {
+            void paint(QPainter *aPainter) override
+            {
                 Q_UNUSED(aPainter)
             }
-            void mousePressEvent(QMouseEvent *aEvent) override {
+            void mousePressEvent(QMouseEvent *aEvent) override
+            {
                 Q_UNUSED(aEvent)
             }
 
           private:
-            QColor getColor(const QString &aColor, int aAlpha = DefaultAlpha) {
+            QColor getColor(const QString &aColor, int aAlpha = DefaultAlpha)
+            {
                 QColor color(aColor);
                 color.setAlpha(aAlpha);
                 return color;
             }
         };
 
-        class DebugWidget : public QQuickItem {
+        class DebugWidget : public QQuickItem
+        {
           public:
-            DebugWidget() {
+            DebugWidget()
+            {
                 /*setBrush(QBrush(QColor(255, 0, 255)));
                 setPen(QPen(QColor(255, 255, 0)));
                 setZValue(10);*/
@@ -85,17 +95,20 @@ namespace GUI {
             }*/
 
           public:
-            void setPosition(const QPoint &aLeftBottomPoint) {
+            void setPosition(const QPoint &aLeftBottomPoint)
+            {
                 // setRect(QRect(aLeftBottomPoint.x(), aLeftBottomPoint.y() - 20, 100, 20));
             }
 
-            void updateMousePos(const QPoint &aPos) {
+            void updateMousePos(const QPoint &aPos)
+            {
                 mMousePos = aPos;
                 update();
             }
 
           private:
-            QString getDebugInfo() const {
+            QString getDebugInfo() const
+            {
                 return QString("(%1; %2)").arg(mMousePos.x()).arg(mMousePos.y());
             }
 
@@ -123,7 +136,8 @@ namespace GUI {
 
     //---------------------------------------------------------------------------
     /// Графический интерфейс (канва + контейнер графических движков).
-    class GraphicsEngine : public QObject, public SDK::GUI::IGraphicsEngine, private ILogable {
+    class GraphicsEngine : public QObject, public SDK::GUI::IGraphicsEngine, private ILogable
+    {
         Q_OBJECT
 
       public:
@@ -147,7 +161,13 @@ namespace GUI {
         /// Закрывает все графические элементы, прячет экран.
         void stop();
 
-        enum EWidgetType { All, Qml, Native, Web };
+        enum EWidgetType
+        {
+            All,
+            Qml,
+            Native,
+            Web
+        };
 
         Q_ENUMS(EWidgetType)
 
@@ -223,7 +243,8 @@ namespace GUI {
 
       private: // Типы
                /// Параметры дисплея.
-        struct SScreen {
+        struct SScreen
+        {
             int number;      /// Номер дисплея.
             bool isPrimary;  /// Флаг для главного дисплея.
             QRect geometry;  /// Геометрия.
@@ -231,7 +252,8 @@ namespace GUI {
         };
 
         /// Список графических элементов.
-        struct SWidget {
+        struct SWidget
+        {
             SDK::GUI::GraphicsItemInfo info;
             std::weak_ptr<SDK::GUI::IGraphicsItem> graphics;
         };

@@ -6,12 +6,15 @@
 #include "Hardware/Modems/ModemStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace ModemStatusCode {
+namespace ModemStatusCode
+{
     /// Спецификации кодов состояний модемов.
-    class CSpecifications : public DeviceStatusCode::CSpecifications {
+    class CSpecifications : public DeviceStatusCode::CSpecifications
+    {
       public:
         /// Конструктор.
-        CSpecifications() {
+        CSpecifications()
+        {
             ADD_ERROR_STATUS(SIMError, QCoreApplication::translate("ModemStatuses", "#SIM"));
             ADD_ERROR_STATUS(NoNetwork, QCoreApplication::translate("ModemStatuses", "#NoNetwork"));
         }

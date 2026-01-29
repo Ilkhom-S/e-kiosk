@@ -44,7 +44,8 @@ namespace PPSDK = SDK::PaymentProcessor;
 typedef boost::property_tree::basic_ptree<std::string, std::string> TPtreeOperators;
 
 //---------------------------------------------------------------------------
-namespace CMultistage {
+namespace CMultistage
+{
     const QString Type = "multistage";
 
     const QString Step = "MULTISTAGE_STEP";            /// текущий шаг
@@ -52,15 +53,20 @@ namespace CMultistage {
     const QString History = "MULTISTAGE_HISTORY";      /// история шагов
 } // namespace CMultistage
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Scripting {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
-            ScriptArray *ProviderField::getEnumItems() {
+            ScriptArray *ProviderField::getEnumItems()
+            {
                 ScriptArray *list = new ScriptArray(this);
 
-                foreach (const SProviderField::SEnumItem &item, mField.enumItems) {
+                foreach (const SProviderField::SEnumItem &item, mField.enumItems)
+                {
                     list->append(new EnumItem(item, list));
                 }
 
@@ -68,10 +74,12 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            Provider::Provider(const SProvider &aProvider, QObject *aParent) : QObject(aParent), mProvider(aProvider) {
+            Provider::Provider(const SProvider &aProvider, QObject *aParent) : QObject(aParent), mProvider(aProvider)
+            {
                 QObjectList fields;
 
-                foreach (const SProviderField &field, mProvider.fields) {
+                foreach (const SProviderField &field, mProvider.fields)
+                {
                     fields << new ProviderField(field, this);
                 }
 
@@ -79,7 +87,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            bool Provider::isCheckStepSettingsOK() {
+            bool Provider::isCheckStepSettingsOK()
+            {
                 QStringList limits;
                 limits << mProvider.limits.min << mProvider.limits.max << mProvider.limits.externalMin
                        << mProvider.limits.externalMax;
@@ -87,11 +96,13 @@ namespace SDK {
                 QRegularExpression rx("\\{(.+)\\}");
 
                 QStringList limits2;
-                foreach (QString l, limits) {
+                foreach (QString l, limits)
+                {
                     int pos = 0;
 
                     QRegularExpressionMatch match = rx.match(l, pos);
-                    while ((pos = match.capturedStart()) != -1) {
+                    while ((pos = match.capturedStart()) != -1)
+                    {
                         limits2 << match.captured(1);
                         pos += match.capturedLength();
                     }
@@ -100,7 +111,8 @@ namespace SDK {
                 QStringList responseFields;
 
                 foreach (SProvider::SProcessingTraits::SRequest::SField f,
-                         mProvider.processor.requests.value("CHECK").responseFields) {
+                         mProvider.processor.requests.value("CHECK").responseFields)
+                {
                     responseFields << f.name;
                 }
 
@@ -113,14 +125,18 @@ namespace SDK {
 
             //------------------------------------------------------------------------------
             QString Provider::applySecurityFilter(const QString aId, const QString &aValueRaw,
-                                                  const QString &aValueDisplay) const {
+                                                  const QString &aValueDisplay) const
+            {
                 PPSDK::SecurityFilter filter(mProvider, PPSDK::SProviderField::SecuritySubsystem::Display);
 
                 QString masked = aValueRaw;
 
-                if (filter.haveFilter(aId)) {
+                if (filter.haveFilter(aId))
+                {
                     masked = filter.apply(aId, aValueRaw);
-                } else {
+                }
+                else
+                {
                     masked = aValueDisplay;
                 }
 
@@ -128,7 +144,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QString Provider::xmlFields2Json(const QString &aXmlFields) {
+            QString Provider::xmlFields2Json(const QString &aXmlFields)
+            {
                 TPtreeOperators ptFields;
                 const TPtreeOperators emptyTree;
                 TProviderFields fields;
@@ -136,9 +153,12 @@ namespace SDK {
                 QByteArray buffer = aXmlFields.toUtf8();
                 std::stringstream stream(std::string(buffer.data(), buffer.size()));
 
-                try {
+                try
+                {
                     boost::property_tree::read_xml(stream, ptFields);
-                } catch (boost::property_tree::xml_parser_error &e) {
+                }
+                catch (boost::property_tree::xml_parser_error &e)
+                {
                     qDebug()
                         << QString("xmlFields2Json: XML parser error: %1.").arg(QString::fromStdString(e.message()));
 
@@ -146,10 +166,12 @@ namespace SDK {
                 }
 
                 std::function<void(SProviderField::TEnumItems &, const TPtreeOperators &)> loadProviderEnumItems;
-                loadProviderEnumItems = [&](SProviderField::TEnumItems &aItemList, const TPtreeOperators &aTree) {
+                loadProviderEnumItems = [&](SProviderField::TEnumItems &aItemList, const TPtreeOperators &aTree)
+                {
                     auto searchBounds = aTree.equal_range("item");
 
-                    for (auto itemIt = searchBounds.first; itemIt != searchBounds.second; ++itemIt) {
+                    for (auto itemIt = searchBounds.first; itemIt != searchBounds.second; ++itemIt)
+                    {
                         SProviderField::SEnumItem item;
 
                         auto attr = itemIt->second.get_child("<xmlattr>");
@@ -165,16 +187,18 @@ namespace SDK {
                     }
 
                     std::stable_sort(aItemList.begin(), aItemList.end(),
-                                     [](const SProviderField::SEnumItem &a, const SProviderField::SEnumItem &b) {
-                                         return a.sort < b.sort;
-                                     });
+                                     [](const SProviderField::SEnumItem &a, const SProviderField::SEnumItem &b)
+                                     { return a.sort < b.sort; });
                 };
 
-                BOOST_FOREACH (const auto &fieldIt, ptFields.get_child("add_fields", emptyTree)) {
-                    try {
+                BOOST_FOREACH (const auto &fieldIt, ptFields.get_child("add_fields", emptyTree))
+                {
+                    try
+                    {
                         SProviderField field;
 
-                        if (fieldIt.first == "field") {
+                        if (fieldIt.first == "field")
+                        {
                             auto attr = fieldIt.second.get_child("<xmlattr>");
 
                             field.id = attr.get<QString>("id");
@@ -207,7 +231,9 @@ namespace SDK {
 
                             fields << field;
                         }
-                    } catch (std::runtime_error &error) {
+                    }
+                    catch (std::runtime_error &error)
+                    {
                         qDebug() << error.what();
                     }
                 }
@@ -216,21 +242,26 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QVariant Provider::getFields() {
+            QVariant Provider::getFields()
+            {
                 PaymentService *paymentService = qobject_cast<PaymentService *>(parent());
 
-                if (!paymentService) {
+                if (!paymentService)
+                {
                     return QVariant::fromValue(mFields["0"]);
                 }
 
                 QString currentStep = paymentService->currentStep();
 
-                if (mProvider.processor.type == CMultistage::Type) {
+                if (mProvider.processor.type == CMultistage::Type)
+                {
                     TProviderFields fields;
-                    if (paymentService->loadFieldsForStep(fields)) {
+                    if (paymentService->loadFieldsForStep(fields))
+                    {
                         QObjectList resultList;
 
-                        foreach (const SProviderField &field, fields) {
+                        foreach (const SProviderField &field, fields)
+                        {
                             resultList << new ProviderField(field, this);
                         }
 
@@ -244,7 +275,8 @@ namespace SDK {
             //------------------------------------------------------------------------------
             PaymentService::PaymentService(ICore *aCore)
                 : mCore(aCore), mPaymentService(mCore->getPaymentService()), mProviderWithExternalLimits(-1),
-                  mForcePayOffline(false) {
+                  mForcePayOffline(false)
+            {
                 connect(mPaymentService, SIGNAL(stepCompleted(qint64, int, bool)),
                         SLOT(onStepCompleted(qint64, int, bool)));
                 connect(mPaymentService, SIGNAL(amountUpdated(qint64)), SIGNAL(amountUpdated(qint64)));
@@ -260,25 +292,30 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            qint64 PaymentService::create(qint64 aProvider) {
+            qint64 PaymentService::create(qint64 aProvider)
+            {
                 return mPaymentService->createPayment(aProvider);
             }
 
             //------------------------------------------------------------------------------
-            qint64 PaymentService::getActivePaymentID() {
+            qint64 PaymentService::getActivePaymentID()
+            {
                 return mPaymentService->getActivePayment();
             }
 
             //------------------------------------------------------------------------------
-            qint64 PaymentService::getLastPaymentID() {
+            qint64 PaymentService::getLastPaymentID()
+            {
                 auto payments = mPaymentService->getBalance().payments;
 
-                while (!payments.isEmpty()) {
+                while (!payments.isEmpty())
+                {
                     qint64 payment = payments.takeLast();
 
                     // Проверяем что платеж это не сдача
                     if (mPaymentService->getPaymentField(payment, PPSDK::CPayment::Parameters::Provider)
-                            .value.toLongLong() > 0) {
+                            .value.toLongLong() > 0)
+                    {
                         return payment;
                     }
                 }
@@ -287,27 +324,33 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QVariant PaymentService::getParameter(const QString &aName) {
+            QVariant PaymentService::getParameter(const QString &aName)
+            {
                 return mPaymentService->getPaymentField(getActivePaymentID(), aName).value;
             }
 
             //------------------------------------------------------------------------------
-            QVariantMap PaymentService::getParameters() {
+            QVariantMap PaymentService::getParameters()
+            {
                 return getParameters(getActivePaymentID());
             }
 
             //------------------------------------------------------------------------------
-            QVariantMap PaymentService::calculateCommission(const QVariantMap &aParameters) {
+            QVariantMap PaymentService::calculateCommission(const QVariantMap &aParameters)
+            {
                 QList<PPSDK::IPayment::SParameter> input;
 
-                foreach (auto p, aParameters.keys()) {
+                foreach (auto p, aParameters.keys())
+                {
                     input << PPSDK::IPayment::SParameter(p, aParameters.value(p));
                 }
 
-                if (mPaymentService) {
+                if (mPaymentService)
+                {
                     QVariantMap result;
 
-                    foreach (auto p, mPaymentService->calculateCommission(input)) {
+                    foreach (auto p, mPaymentService->calculateCommission(input))
+                    {
                         result.insert(p.name, p.value);
                     }
 
@@ -318,7 +361,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QVariantMap PaymentService::calculateLimits(const QString &aAmount, bool aFixedAmount) {
+            QVariantMap PaymentService::calculateLimits(const QString &aAmount, bool aFixedAmount)
+            {
                 // TODO Код из paymentbase::calculateLimits
 
                 PPSDK::DealerSettings *dealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
@@ -332,24 +376,30 @@ namespace SDK {
                 double systemMax = provider.limits.system.toDouble();
                 systemMax = maxAmount > systemMax ? systemMax : maxAmount;
 
-                if (!aFixedAmount) {
+                if (!aFixedAmount)
+                {
                     // Корректируем максимальный платеж в зависимости от системного лимита
-                    if (qFuzzyIsNull(maxAmount) || qFuzzyIsNull(systemMax)) {
+                    if (qFuzzyIsNull(maxAmount) || qFuzzyIsNull(systemMax))
+                    {
                         // Если какой-либо из лимитов не задан, то берем тот, который задан.
                         maxAmount = qMax(systemMax, maxAmount);
-                    } else {
+                    }
+                    else
+                    {
                         // Иначе берем нижнюю границу.
                         maxAmount = qMin(systemMax, maxAmount);
                     }
                 }
 
                 // Проверяем значение системного лимита
-                if (qFuzzyIsNull(systemMax)) {
+                if (qFuzzyIsNull(systemMax))
+                {
                     systemMax = maxAmount;
                 }
 
                 // Если провайдер требует округления - применим округление к пограничным значениям
-                if (provider.processor.rounding) {
+                if (provider.processor.rounding)
+                {
                     maxAmount = qCeil(maxAmount);
                     minAmount = aFixedAmount ? maxAmount : qCeil(minAmount);
                 }
@@ -357,72 +407,93 @@ namespace SDK {
                 // Формируем массив заполненных полей для подсчёта комиссий.
                 QVariantMap credentials;
 
-                foreach (const PPSDK::SProviderField &field, provider.fields) {
+                foreach (const PPSDK::SProviderField &field, provider.fields)
+                {
                     credentials.insert(field.id, getParameter(field.id).toString());
                 }
 
                 PPSDK::Commission com(dealerSettings->getCommission(providerID, credentials, maxAmount));
 
-                auto calcAmountAll = [&com, &provider](double aAmount) -> double {
+                auto calcAmountAll = [&com, &provider](double aAmount) -> double
+                {
                     double amountAll = 0.0;
 
-                    if (com.getType() == PPSDK::Commission::Percent) {
+                    if (com.getType() == PPSDK::Commission::Percent)
+                    {
                         double amountAllLimit1 = 0.0;
 
                         if (provider.processor.feeType == PPSDK::SProvider::FeeByAmount ||
-                            com.getBase() == PPSDK::Commission::Amount) {
+                            com.getBase() == PPSDK::Commission::Amount)
+                        {
                             amountAllLimit1 = aAmount * (1 + 0.01 * com.getValue());
-                        } else {
+                        }
+                        else
+                        {
                             amountAllLimit1 = aAmount / (1 - 0.01 * com.getValue());
                         }
 
                         amountAll = amountAllLimit1;
 
-                        if (!qFuzzyIsNull(com.getMinCharge())) {
+                        if (!qFuzzyIsNull(com.getMinCharge()))
+                        {
                             double amountAllLimit2 = aAmount + com.getMinCharge();
                             amountAll = amountAllLimit1 > amountAllLimit2 ? amountAllLimit1 : amountAllLimit2;
                         }
 
-                        if (!qFuzzyIsNull(com.getMaxCharge())) {
+                        if (!qFuzzyIsNull(com.getMaxCharge()))
+                        {
                             double amountAllLimit3 = aAmount + com.getMaxCharge();
                             amountAll = amountAll > amountAllLimit3 ? amountAllLimit3 : amountAll;
                         }
-                    } else {
+                    }
+                    else
+                    {
                         amountAll = aAmount + com.getValue();
                     }
 
                     return amountAll;
                 };
 
-                auto calcAmountAllByAmountAll = [&com, &provider](double &aAmount) -> double {
+                auto calcAmountAllByAmountAll = [&com, &provider](double &aAmount) -> double
+                {
                     double amountAll = 0.0;
 
-                    if (com.getType() == PPSDK::Commission::Percent && com.getValue()) {
+                    if (com.getType() == PPSDK::Commission::Percent && com.getValue())
+                    {
                         double amountAllLimit1 = 0.0;
 
                         if (provider.processor.feeType == PPSDK::SProvider::FeeByAmount ||
-                            com.getBase() == PPSDK::Commission::Amount) {
+                            com.getBase() == PPSDK::Commission::Amount)
+                        {
                             amountAllLimit1 = aAmount / (1 + 0.01 * com.getValue());
-                        } else {
+                        }
+                        else
+                        {
                             amountAllLimit1 = aAmount * (1 - 0.01 * com.getValue());
                         }
 
                         amountAll = amountAllLimit1;
                         double fee = aAmount - amountAllLimit1;
 
-                        if (com.getMinCharge() && fee < com.getMinCharge()) {
+                        if (com.getMinCharge() && fee < com.getMinCharge())
+                        {
                             double amountAllLimit2 = aAmount - com.getMinCharge();
                             amountAll = amountAllLimit1 > amountAllLimit2 ? amountAllLimit1 : amountAllLimit2;
                         }
 
-                        if (com.getMaxCharge() && fee > com.getMaxCharge()) {
+                        if (com.getMaxCharge() && fee > com.getMaxCharge())
+                        {
                             double amountAllLimit3 = aAmount - com.getMaxCharge();
                             amountAll = qMax(amountAllLimit3, amountAll);
                         }
-                    } else if (com.getType() == PPSDK::Commission::Absolute && !qFuzzyIsNull(com.getValue())) {
+                    }
+                    else if (com.getType() == PPSDK::Commission::Absolute && !qFuzzyIsNull(com.getValue()))
+                    {
                         aAmount -= com.getValue();
                         amountAll = aAmount;
-                    } else if (!qFuzzyIsNull(com.getMinCharge())) {
+                    }
+                    else if (!qFuzzyIsNull(com.getMinCharge()))
+                    {
                         amountAll = aAmount - com.getMinCharge();
                     }
 
@@ -432,13 +503,18 @@ namespace SDK {
                 double localAmountAllLimit = calcAmountAll(maxAmount);
                 double maxAmountAll = 0.0;
 
-                if (aFixedAmount) {
+                if (aFixedAmount)
+                {
                     // если лимиты равны и комиссия больше системного лимита, то пропускаем эти лимиты дальше.
                     maxAmountAll = localAmountAllLimit;
-                } else if (localAmountAllLimit > systemMax) {
+                }
+                else if (localAmountAllLimit > systemMax)
+                {
                     maxAmountAll = systemMax;
                     maxAmount = calcAmountAllByAmountAll(maxAmount);
-                } else {
+                }
+                else
+                {
                     maxAmountAll = qMax(localAmountAllLimit, maxAmount);
                 }
 
@@ -446,7 +522,8 @@ namespace SDK {
                 maxAmountAll = qRound64(maxAmountAll * 100) / double(100);
 
                 // Если провайдер требует округления - применим округление к пограничным значениям
-                if (provider.processor.rounding) {
+                if (provider.processor.rounding)
+                {
                     maxAmountAll = qCeil(maxAmountAll);
                 }
 
@@ -459,11 +536,14 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QVariantMap PaymentService::getParameters(qint64 aPaymentId) {
+            QVariantMap PaymentService::getParameters(qint64 aPaymentId)
+            {
                 QVariantMap result;
 
-                if (mPaymentService) {
-                    foreach (auto parameter, mPaymentService->getPaymentFields(aPaymentId)) {
+                if (mPaymentService)
+                {
+                    foreach (auto parameter, mPaymentService->getPaymentFields(aPaymentId))
+                    {
                         result.insert(parameter.name, parameter.value);
                     }
                 }
@@ -472,15 +552,19 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QObject *PaymentService::getProvider() {
+            QObject *PaymentService::getProvider()
+            {
                 return getProvider(getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong());
             }
 
             //------------------------------------------------------------------------------
-            QObject *PaymentService::getProvider(qint64 aID) {
-                foreach (auto pp, mProviderProviders) {
+            QObject *PaymentService::getProvider(qint64 aID)
+            {
+                foreach (auto pp, mProviderProviders)
+                {
                     auto ppRef = pp.toStrongRef();
-                    if (!ppRef.isNull() && ppRef->getId().contains(aID)) {
+                    if (!ppRef.isNull() && ppRef->getId().contains(aID))
+                    {
                         return new Provider(updateSkipCheckFlag(ppRef->getProvider(aID)), this);
                     }
                 }
@@ -489,7 +573,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QObject *PaymentService::getMNPProvider() {
+            QObject *PaymentService::getMNPProvider()
+            {
                 return new Provider(updateSkipCheckFlag(mDealerSettings->getMNPProvider(
                                         getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong(),
                                         getParameter(PPSDK::CPayment::Parameters::MNPGatewayIn).toLongLong(),
@@ -498,7 +583,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QObject *PaymentService::getProviderByGateway(qint64 aCID) {
+            QObject *PaymentService::getProviderByGateway(qint64 aCID)
+            {
                 auto providers = mDealerSettings->getProvidersByCID(aCID);
 
                 return new Provider(providers.isEmpty() ? PPSDK::SProvider() : updateSkipCheckFlag(providers.at(0)),
@@ -506,12 +592,14 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QObject *PaymentService::getProviderForNumber(qint64 aNumber) {
+            QObject *PaymentService::getProviderForNumber(qint64 aNumber)
+            {
                 ScriptArray *result = new ScriptArray(this);
 
                 foreach (const SProvider &p,
                          mDealerSettings->getProvidersByRange(mDirectory->getRangesForNumber(aNumber),
-                                                              mDirectory->getOverlappedIDs())) {
+                                                              mDirectory->getOverlappedIDs()))
+                {
                     result->append(new PPSDK::Scripting::Provider(updateSkipCheckFlag(p), this));
                 }
 
@@ -519,19 +607,23 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::setExternalParameter(const QString &aName, const QVariant &aValue) {
+            void PaymentService::setExternalParameter(const QString &aName, const QVariant &aValue)
+            {
                 mPaymentService->updatePaymentField(getActivePaymentID(),
                                                     IPayment::SParameter(aName, aValue, true, false, true));
             }
 
             //------------------------------------------------------------------------------
-            QString PaymentService::findAliasFromRequest(const QString &aParamName, const QString &aRequestName) {
+            QString PaymentService::findAliasFromRequest(const QString &aParamName, const QString &aRequestName)
+            {
                 auto provider =
                     mPaymentService->getProvider(getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong());
 
                 auto fields = provider.processor.requests.value(aRequestName).requestFields;
-                foreach (auto field, fields) {
-                    if (field.name == aParamName) {
+                foreach (auto field, fields)
+                {
+                    if (field.name == aParamName)
+                    {
                         QRegularExpression macroPattern("\\{(.+)\\}");
                         ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
                         /// compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
@@ -539,7 +631,8 @@ namespace SDK {
                         QString result = field.value;
 
                         QRegularExpressionMatch match = macroPattern.match(result);
-                        if (match.hasMatch()) {
+                        if (match.hasMatch())
+                        {
                             result.replace(match.capturedStart(0), match.capturedLength(0), match.captured(1));
                         }
 
@@ -551,20 +644,25 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::setParameter(const QString &aName, const QVariant &aValue, bool aCrypted /*= false*/) {
+            void PaymentService::setParameter(const QString &aName, const QVariant &aValue, bool aCrypted /*= false*/)
+            {
                 mPaymentService->updatePaymentField(getActivePaymentID(),
                                                     IPayment::SParameter(aName, aValue, true, aCrypted));
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::setParameters(const QVariantMap &aParameters) {
+            void PaymentService::setParameters(const QVariantMap &aParameters)
+            {
                 auto provider =
                     mPaymentService->getProvider(getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong());
 
                 // функция проверки - является ли параметр значением поля, содержащим пароль
-                auto keepEncrypted = [&provider](const QString &aParamName) -> bool {
-                    foreach (auto field, provider.fields) {
-                        if (aParamName.contains(field.id)) {
+                auto keepEncrypted = [&provider](const QString &aParamName) -> bool
+                {
+                    foreach (auto field, provider.fields)
+                    {
+                        if (aParamName.contains(field.id))
+                        {
                             return field.keepEncrypted();
                         }
                     }
@@ -574,7 +672,8 @@ namespace SDK {
 
                 QList<PPSDK::IPayment::SParameter> parameters;
 
-                for (auto it = aParameters.begin(); it != aParameters.end(); ++it) {
+                for (auto it = aParameters.begin(); it != aParameters.end(); ++it)
+                {
                     parameters << PPSDK::IPayment::SParameter(it.key(), it.value(), true, keepEncrypted(it.key()));
                 }
 
@@ -582,51 +681,60 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::updateLimits(qint64 aProviderId, double aExternalMin, double aExternalMax) {
+            void PaymentService::updateLimits(qint64 aProviderId, double aExternalMin, double aExternalMax)
+            {
                 mDealerSettings->setExternalLimits(aProviderId, aExternalMin, aExternalMax);
 
                 mProviderWithExternalLimits = aProviderId;
             }
 
             //------------------------------------------------------------------------------
-            bool PaymentService::canProcessOffline() {
+            bool PaymentService::canProcessOffline()
+            {
                 return mPaymentService->canProcessPaymentOffline(getActivePaymentID());
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::check() {
+            void PaymentService::check()
+            {
                 return processStep(EPaymentStep::DataCheck);
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::stepForward() {
+            void PaymentService::stepForward()
+            {
                 return processStep(EPaymentStep::GetStep);
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::processStep(int aStep) {
+            void PaymentService::processStep(int aStep)
+            {
                 mPaymentService->processPaymentStep(getActivePaymentID(), static_cast<EPaymentStep::Enum>(aStep));
             }
 
             //------------------------------------------------------------------------------
-            PaymentService::EProcessResult PaymentService::process(bool aOnline) {
+            PaymentService::EProcessResult PaymentService::process(bool aOnline)
+            {
                 double amount = getParameter(PPSDK::CPayment::Parameters::Amount).toDouble();
                 double minAmount = getParameter(PPSDK::CPayment::Parameters::MinAmount).toDouble();
 
-                if ((amount < minAmount) && !qFuzzyCompare(amount, minAmount)) {
+                if ((amount < minAmount) && !qFuzzyCompare(amount, minAmount))
+                {
                     cancel();
 
                     return LowMoney;
                 }
 
-                if (!aOnline && !canProcessOffline()) {
+                if (!aOnline && !canProcessOffline())
+                {
                     cancel();
 
                     return OfflineIsNotSupported;
                 }
 
                 if (!aOnline && mCommonSettings.blockCheatedPayment &&
-                    getParameter(PPSDK::CPayment::Parameters::Cheated).toInt()) {
+                    getParameter(PPSDK::CPayment::Parameters::Cheated).toInt())
+                {
                     stop(PPSDK::Humo::EServerError::Cheated, "Cheated");
 
                     resetChange();
@@ -640,40 +748,48 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            bool PaymentService::stop(int aError, const QString &aErrorMessage) {
+            bool PaymentService::stop(int aError, const QString &aErrorMessage)
+            {
                 return mPaymentService->stopPayment(getActivePaymentID(), aError, aErrorMessage);
             }
 
             //------------------------------------------------------------------------------
-            bool PaymentService::cancel() {
+            bool PaymentService::cancel()
+            {
                 return mPaymentService->cancelPayment(getActivePaymentID());
             }
 
             //------------------------------------------------------------------------------
-            double PaymentService::getChangeAmount() {
+            double PaymentService::getChangeAmount()
+            {
                 return mPaymentService->getChangeAmount();
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::useChange() {
+            void PaymentService::useChange()
+            {
                 mPaymentService->moveChangeToPayment(getActivePaymentID());
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::useChangeBack() {
+            void PaymentService::useChangeBack()
+            {
                 mPaymentService->movePaymentToChange(getActivePaymentID());
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::resetChange() {
+            void PaymentService::resetChange()
+            {
                 mPaymentService->resetChange();
             }
 
             //------------------------------------------------------------------------------
-            QObject *PaymentService::getPaymentNotes() {
+            QObject *PaymentService::getPaymentNotes()
+            {
                 ScriptArray *notes = new ScriptArray(this);
 
-                foreach (const SNote &note, mPaymentService->getPaymentNotes(getActivePaymentID())) {
+                foreach (const SNote &note, mPaymentService->getPaymentNotes(getActivePaymentID()))
+                {
                     notes->append(new Note(note, notes));
                 }
 
@@ -681,12 +797,16 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QObject *PaymentService::notesFromBalance(const PPSDK::SBalance &aBalance) {
+            QObject *PaymentService::notesFromBalance(const PPSDK::SBalance &aBalance)
+            {
                 ScriptArray *notes = new ScriptArray(this);
 
-                foreach (const SBalance::SAmounts &amounts, aBalance.detailedSums) {
-                    foreach (const SBalance::SAmounts::SAmount &amount, amounts.amounts) {
-                        foreach (QString serial, amount.serials.split(",")) {
+                foreach (const SBalance::SAmounts &amounts, aBalance.detailedSums)
+                {
+                    foreach (const SBalance::SAmounts::SAmount &amount, amounts.amounts)
+                    {
+                        foreach (QString serial, amount.serials.split(","))
+                        {
                             SNote note(amounts.type, amount.value.toDouble(), amounts.currency, serial);
                             notes->append(new Note(note, notes));
                         }
@@ -697,21 +817,25 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QObject *PaymentService::getBalanceNotes() {
+            QObject *PaymentService::getBalanceNotes()
+            {
                 return notesFromBalance(mPaymentService->getBalance());
             }
 
             //------------------------------------------------------------------------------
-            QObject *PaymentService::getLastEncashmentNotes() {
+            QObject *PaymentService::getLastEncashmentNotes()
+            {
                 return notesFromBalance(mPaymentService->getLastEncashment().balance);
             }
 
             //------------------------------------------------------------------------------
-            QString PaymentService::currentStep() {
+            QString PaymentService::currentStep()
+            {
                 qint64 providerId = getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong();
                 SProvider provider = mPaymentService->getProvider(providerId);
 
-                if (provider.processor.type == CMultistage::Type) {
+                if (provider.processor.type == CMultistage::Type)
+                {
                     QString step = getParameter(CMultistage::Step).toString();
 
                     return step.isEmpty() ? "0" : step;
@@ -721,9 +845,11 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::reset() {
+            void PaymentService::reset()
+            {
                 // Установить шаг на первый
-                if (currentStep() != "0") {
+                if (currentStep() != "0")
+                {
                     setParameter(CMultistage::Step, "");
                     setParameter(CMultistage::History, "");
                 }
@@ -735,25 +861,31 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            bool PaymentService::isFinalStep() {
+            bool PaymentService::isFinalStep()
+            {
                 return (getParameter(CMultistage::Step).toString() == "FINAL_STEP");
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::setExternalCommissions(const QVariantList &aCommissions) {
+            void PaymentService::setExternalCommissions(const QVariantList &aCommissions)
+            {
                 mDealerSettings->setExternalCommissions(PPSDK::Commissions::fromVariant(aCommissions));
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::resetExternalCommissions() {
+            void PaymentService::resetExternalCommissions()
+            {
                 mDealerSettings->resetExternalCommissions();
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::stepBack() {
-                if (currentStep() != "0") {
+            void PaymentService::stepBack()
+            {
+                if (currentStep() != "0")
+                {
                     QStringList history = getParameter(CMultistage::History).toString().split(";", Qt::SkipEmptyParts);
-                    if (!history.isEmpty()) {
+                    if (!history.isEmpty())
+                    {
                         setParameter(CMultistage::Step, history.takeLast());
                         setParameter(CMultistage::History, history.join(";"));
                     }
@@ -761,9 +893,11 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            bool PaymentService::loadFieldsForStep(TProviderFields &aFields) {
+            bool PaymentService::loadFieldsForStep(TProviderFields &aFields)
+            {
                 QString step = currentStep();
-                if (step != "0") {
+                if (step != "0")
+                {
                     aFields = SProvider::json2Fields(getParameter(CMultistage::StepFields.arg(step)).toString());
 
                     return true;
@@ -773,10 +907,12 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            QStringList PaymentService::findPayments(const QDate &aDate, const QString &aPhoneNumber) {
+            QStringList PaymentService::findPayments(const QDate &aDate, const QString &aPhoneNumber)
+            {
                 QStringList result;
 
-                foreach (auto id, mPaymentService->findPayments(aDate, aPhoneNumber)) {
+                foreach (auto id, mPaymentService->findPayments(aDate, aPhoneNumber))
+                {
                     result << QString::number(id);
                 }
 
@@ -784,24 +920,29 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            bool PaymentService::convert(const QString &aTargetType) {
+            bool PaymentService::convert(const QString &aTargetType)
+            {
                 return mPaymentService->convertPayment(mPaymentService->getActivePayment(), aTargetType);
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::setForcePayOffline(bool aForcePayOffline) {
+            void PaymentService::setForcePayOffline(bool aForcePayOffline)
+            {
                 mForcePayOffline = aForcePayOffline;
             }
 
             //------------------------------------------------------------------------------
-            bool isEmptyRequiredResponseFields(const SProvider &aProvider) {
+            bool isEmptyRequiredResponseFields(const SProvider &aProvider)
+            {
                 int count = 0;
 
-                foreach (auto f, aProvider.processor.requests["CHECK"].responseFields) {
+                foreach (auto f, aProvider.processor.requests["CHECK"].responseFields)
+                {
                     count = f.required ? count + 1 : count;
                 }
 
-                foreach (auto f, aProvider.processor.requests["PAY"].responseFields) {
+                foreach (auto f, aProvider.processor.requests["PAY"].responseFields)
+                {
                     count = f.required ? count + 1 : count;
                 }
 
@@ -809,10 +950,13 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            PPSDK::SProvider PaymentService::updateSkipCheckFlag(SProvider aProvider) {
-                if (!aProvider.processor.payOnline && mForcePayOffline) {
+            PPSDK::SProvider PaymentService::updateSkipCheckFlag(SProvider aProvider)
+            {
+                if (!aProvider.processor.payOnline && mForcePayOffline)
+                {
                     // Изменяем параметр проверки платежа для возможности проведения его в оффлайне
-                    if (!mCore->getNetworkService()->isConnected(true) && !aProvider.processor.skipCheck) {
+                    if (!mCore->getNetworkService()->isConnected(true) && !aProvider.processor.skipCheck)
+                    {
                         aProvider.processor.skipCheck = isEmptyRequiredResponseFields(aProvider);
                     }
                 }
@@ -821,14 +965,18 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::onStepCompleted(qint64 aPayment, int aStep, bool aError) {
-                if (aStep == PPSDK::EPaymentStep::DataCheck && aError) {
+            void PaymentService::onStepCompleted(qint64 aPayment, int aStep, bool aError)
+            {
+                if (aStep == PPSDK::EPaymentStep::DataCheck && aError)
+                {
                     auto provider = updateSkipCheckFlag(
                         mPaymentService->getProvider(getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong()));
 
-                    if (mForcePayOffline && isEmptyRequiredResponseFields(provider) && !provider.processor.payOnline) {
+                    if (mForcePayOffline && isEmptyRequiredResponseFields(provider) && !provider.processor.payOnline)
+                    {
                         // проверка на сетевую ошибку, константа далеко закопана в проекте
-                        if (getParameter(PPSDK::CPayment::Parameters::ServerError).toInt() == -1) {
+                        if (getParameter(PPSDK::CPayment::Parameters::ServerError).toInt() == -1)
+                        {
                             emit stepCompleted(aPayment, aStep, false);
 
                             return;
@@ -840,16 +988,19 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::addProviderProvider(QWeakPointer<IProviderProvider> aProvider) {
+            void PaymentService::addProviderProvider(QWeakPointer<IProviderProvider> aProvider)
+            {
                 mProviderProviders << aProvider;
             }
 
             //------------------------------------------------------------------------------
-            QVariantMap PaymentService::getStatistic() {
+            QVariantMap PaymentService::getStatistic()
+            {
                 QVariantMap statistic;
                 QMapIterator<qint64, unsigned> i(mPaymentService->getStatistic());
 
-                while (i.hasNext()) {
+                while (i.hasNext())
+                {
                     i.next();
                     statistic.insert(QString::number(i.key()), i.value());
                 }
@@ -858,7 +1009,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void PaymentService::checkStatus() {
+            void PaymentService::checkStatus()
+            {
                 PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
                     mCore->getSettingsService()->getAdapter(CAdapterNames::TerminalAdapter));
 
@@ -874,11 +1026,13 @@ namespace SDK {
 
                 quint32 deltaTime = 0;
 
-                if (query && query->first()) {
+                if (query && query->first())
+                {
                     deltaTime = qAbs(QDateTime::currentDateTime().secsTo(query->value(0).toDateTime()));
                 }
 
-                foreach (SDK::PaymentProcessor::SBlockByNote note, notes) {
+                foreach (SDK::PaymentProcessor::SBlockByNote note, notes)
+                {
                     QString queryStr =
                         QString(
                             "SELECT COUNT(*) FROM `payment_note` WHERE ((NOT `ejection`) OR (`ejection` IS NULL)) AND "
@@ -888,7 +1042,8 @@ namespace SDK {
 
                     QSharedPointer<IDatabaseQuery> query(db->createAndExecQuery(queryStr));
 
-                    if (query && query->first() && query->value(0).toUInt() > note.repeat) {
+                    if (query && query->first() && query->value(0).toUInt() > note.repeat)
+                    {
                         setExternalParameter(PPSDK::CPayment::Parameters::Cheated,
                                              PPSDK::EPaymentCheatedType::NotesCount);
 

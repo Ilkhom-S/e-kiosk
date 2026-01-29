@@ -7,7 +7,8 @@ using namespace SDK::Driver;
 using namespace ProtocolUtils;
 
 //--------------------------------------------------------------------------------
-AFPFR::AFPFR() {
+AFPFR::AFPFR()
+{
     using namespace SDK::Driver::IOPort::COM;
 
     // данные порта
@@ -33,11 +34,13 @@ AFPFR::AFPFR() {
 }
 
 //--------------------------------------------------------------------------------
-QStringList AFPFR::getModelList() {
+QStringList AFPFR::getModelList()
+{
     QList<CAFPFR::Models::SData> modelData = CAFPFR::Models::CData().data().values();
     QStringList result;
 
-    foreach (auto data, modelData) {
+    foreach (auto data, modelData)
+    {
         result << data.name;
     }
 
@@ -45,15 +48,19 @@ QStringList AFPFR::getModelList() {
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::getFRData(const CAFPFR::FRInfo::SData &aInfo, CAFPFR::TData &aData) {
+bool AFPFR::getFRData(const CAFPFR::FRInfo::SData &aInfo, CAFPFR::TData &aData)
+{
     QString log = QString("data by index %1 (%2)").arg(aInfo.index).arg(aInfo.name);
     CAFPFR::TAnswerTypes answerTypes = CAFPFR::Requests::Data[CAFPFR::Commands::GetFRData].answerTypes;
     answerTypes.removeLast();
 
-    if (!processCommand(CAFPFR::Commands::GetFRData, aInfo.index, &aData, answerTypes + aInfo.answerTypes)) {
+    if (!processCommand(CAFPFR::Commands::GetFRData, aInfo.index, &aData, answerTypes + aInfo.answerTypes))
+    {
         toLog(LogLevel::Error, mDeviceName + ": Failed to get " + log);
         return false;
-    } else if (aInfo.index != aData[0].toInt()) {
+    }
+    else if (aInfo.index != aData[0].toInt())
+    {
         toLog(LogLevel::Error,
               mDeviceName +
                   QString(": Invalid data index in answer = %1 at the request of %2").arg(aData[0].toInt()).arg(log));
@@ -66,10 +73,12 @@ bool AFPFR::getFRData(const CAFPFR::FRInfo::SData &aInfo, CAFPFR::TData &aData) 
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::getLastFiscalizationData(int aField, QVariant &aData) {
+bool AFPFR::getLastFiscalizationData(int aField, QVariant &aData)
+{
     CAFPFR::TData data;
 
-    if (!processCommand(CAFPFR::Commands::GetLastFiscalizationData, aField, &data)) {
+    if (!processCommand(CAFPFR::Commands::GetLastFiscalizationData, aField, &data))
+    {
         return false;
     }
 
@@ -79,10 +88,12 @@ bool AFPFR::getLastFiscalizationData(int aField, QVariant &aData) {
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::updateParameters() {
+bool AFPFR::updateParameters()
+{
     processDeviceData();
 
-    if (!mIsOnline) {
+    if (!mIsOnline)
+    {
         return true;
     }
 
@@ -90,11 +101,13 @@ bool AFPFR::updateParameters() {
 
     QVariant data;
 
-    if (!getLastFiscalizationData(CFR::FiscalFields::TaxSystemsReg, data) || !checkTaxSystems(char(data.toInt()))) {
+    if (!getLastFiscalizationData(CFR::FiscalFields::TaxSystemsReg, data) || !checkTaxSystems(char(data.toInt())))
+    {
         return false;
     }
 
-    if (!getLastFiscalizationData(CFR::FiscalFields::AgentFlagsReg, data) || !checkAgentFlags(char(data.toInt()))) {
+    if (!getLastFiscalizationData(CFR::FiscalFields::AgentFlagsReg, data) || !checkAgentFlags(char(data.toInt())))
+    {
         return false;
     }
 
@@ -104,8 +117,10 @@ bool AFPFR::updateParameters() {
                                         << CFR::FiscalFields::LegalOwner << CFR::FiscalFields::PayOffAddress
                                         << CFR::FiscalFields::PayOffPlace;
 
-    foreach (auto field, fields) {
-        if (!getLastFiscalizationData(field, data)) {
+    foreach (auto field, fields)
+    {
+        if (!getLastFiscalizationData(field, data))
+        {
             return false;
         }
 
@@ -121,13 +136,16 @@ bool AFPFR::updateParameters() {
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::loadSectionNames() {
+bool AFPFR::loadSectionNames()
+{
     TSectionNames sectionNames;
 
-    for (int i = 1; i <= CAFPFR::SectionAmount; ++i) {
+    for (int i = 1; i <= CAFPFR::SectionAmount; ++i)
+    {
         QVariant data;
 
-        if (!getFRParameter(CAFPFR::FRParameters::SectionName(i), data)) {
+        if (!getFRParameter(CAFPFR::FRParameters::SectionName(i), data))
+        {
             toLog(LogLevel::Error, mDeviceName + QString(": Failed to get name for %1 section").arg(i));
             return false;
         }
@@ -135,7 +153,8 @@ bool AFPFR::loadSectionNames() {
         sectionNames.insert(i, data.toString());
     }
 
-    if (sectionNames.isEmpty()) {
+    if (sectionNames.isEmpty())
+    {
         toLog(LogLevel::Error, mDeviceName + ": Failed to get section names due to they are not exist");
         return false;
     }
@@ -146,7 +165,8 @@ bool AFPFR::loadSectionNames() {
 }
 
 //--------------------------------------------------------------------------------
-void AFPFR::processDeviceData() {
+void AFPFR::processDeviceData()
+{
     using namespace CAFPFR::EAnswerTypes;
 
     CAFPFR::TData FRData;
@@ -162,10 +182,12 @@ void AFPFR::processDeviceData() {
     if (getFRData(CAFPFR::FRInfo::FFDFS, FRData))
         mFFDFS = EFFD::Enum(FRData[1].toInt());
 
-    if (getFRData(CAFPFR::FRInfo::Firmware, FRData)) {
+    if (getFRData(CAFPFR::FRInfo::Firmware, FRData))
+    {
         QString data = FRData[0].toString();
 
-        if (data.size() >= 4) {
+        if (data.size() >= 4)
+        {
             data = data.insert(1, ASCII::Dot).insert(3, ASCII::Dot).insert(5, ASCII::Dot);
         }
 
@@ -174,21 +196,25 @@ void AFPFR::processDeviceData() {
         mOldFirmware = DeviceUtils::isComplexFirmwareOld(data, mModelData.firmware);
     }
 
-    if (getFRData(CAFPFR::FRInfo::FirmwareDate, FRData)) {
+    if (getFRData(CAFPFR::FRInfo::FirmwareDate, FRData))
+    {
         setDeviceParameter(CDeviceData::Date, FRData[0].toDate().toString(CFR::DateLogFormat), CDeviceData::Firmware);
     }
 
-    if (getFRData(CAFPFR::FRInfo::TotalPaySum, FRData)) {
+    if (getFRData(CAFPFR::FRInfo::TotalPaySum, FRData))
+    {
         setDeviceParameter(CDeviceData::FR::TotalPaySum, FRData[0].toDouble());
     }
 
-    if (getFRData(CAFPFR::FRInfo::LastRegDate, FRData)) {
+    if (getFRData(CAFPFR::FRInfo::LastRegDate, FRData))
+    {
         setDeviceParameter(CDeviceData::FR::LastRegistrationDate, FRData[0].toDate().toString(CFR::DateLogFormat));
     }
 
     CAFPFR::TData answerData;
 
-    if (processCommand(CAFPFR::Commands::GetFSStatus, &answerData)) {
+    if (processCommand(CAFPFR::Commands::GetFSStatus, &answerData))
+    {
         mFiscalized = answerData[0].toInt() == CAFPFR::FSData::FiscalMode;
         setDeviceParameter(CDeviceData::FR::Session,
                            answerData[0].toInt() ? CDeviceData::Values::Opened : CDeviceData::Values::Closed);
@@ -217,10 +243,12 @@ void AFPFR::processDeviceData() {
 }
 
 //--------------------------------------------------------------------------------
-QDateTime AFPFR::getDateTime() {
+QDateTime AFPFR::getDateTime()
+{
     CAFPFR::TData answerData;
 
-    if (processCommand(CAFPFR::Commands::GetFRDateTime, &answerData)) {
+    if (processCommand(CAFPFR::Commands::GetFRDateTime, &answerData))
+    {
         return QDateTime(answerData[0].toDate(), answerData[1].toTime());
     }
 
@@ -228,11 +256,13 @@ QDateTime AFPFR::getDateTime() {
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::getFRParameter(const CAFPFR::FRParameters::SData &aData, QVariant &aValue) {
+bool AFPFR::getFRParameter(const CAFPFR::FRParameters::SData &aData, QVariant &aValue)
+{
     CAFPFR::TData commandData = CAFPFR::TData() << aData.number << aData.index;
     CAFPFR::TData answerData;
 
-    if (!processCommand(CAFPFR::Commands::GetFRParameter, commandData, &answerData, aData.answerType)) {
+    if (!processCommand(CAFPFR::Commands::GetFRParameter, commandData, &answerData, aData.answerType))
+    {
         toLog(LogLevel::Error, mDeviceName + ": Failed to get " + aData.log());
         return false;
     }
@@ -243,12 +273,15 @@ bool AFPFR::getFRParameter(const CAFPFR::FRParameters::SData &aData, QVariant &a
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::setFRParameter(const CAFPFR::FRParameters::SData &aData, QVariant aValue) {
+bool AFPFR::setFRParameter(const CAFPFR::FRParameters::SData &aData, QVariant aValue)
+{
     if ((aData.bit != CAFPFR::FRParameters::NoBit) &&
-        ((aData.answerType == CAFPFR::EAnswerTypes::Int) || (aData.answerType == CAFPFR::EAnswerTypes::FInt))) {
+        ((aData.answerType == CAFPFR::EAnswerTypes::Int) || (aData.answerType == CAFPFR::EAnswerTypes::FInt)))
+    {
         QVariant value;
 
-        if (!getFRParameter(aData, value)) {
+        if (!getFRParameter(aData, value))
+        {
             return false;
         }
 
@@ -261,14 +294,16 @@ bool AFPFR::setFRParameter(const CAFPFR::FRParameters::SData &aData, QVariant aV
 
         aValue = data;
 
-        if (aValue == value) {
+        if (aValue == value)
+        {
             return true;
         }
     }
 
     CAFPFR::TData commandData = CAFPFR::TData() << aData.number << aData.index << aValue;
 
-    if (!processCommand(CAFPFR::Commands::SetFRParameter, commandData)) {
+    if (!processCommand(CAFPFR::Commands::SetFRParameter, commandData))
+    {
         toLog(LogLevel::Error,
               mDeviceName + QString(": Failed to set %1 = %2").arg(aData.log()).arg(aValue.toString()));
         return false;
@@ -278,10 +313,12 @@ bool AFPFR::setFRParameter(const CAFPFR::FRParameters::SData &aData, QVariant aV
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::isConnected() {
+bool AFPFR::isConnected()
+{
     CAFPFR::TData FRData;
 
-    if (!getFRData(CAFPFR::FRInfo::ModelId, FRData)) {
+    if (!getFRData(CAFPFR::FRInfo::ModelId, FRData))
+    {
         return false;
     }
 
@@ -290,7 +327,8 @@ bool AFPFR::isConnected() {
     mVerified = mModelData.verified;
     mDeviceName = mModelData.name;
 
-    if (mDeviceName == CAFPFR::Models::Default) {
+    if (mDeviceName == CAFPFR::Models::Default)
+    {
         toLog(LogLevel::Error, mDeviceName + ": Unknown model Id = " + modelId);
     }
 
@@ -300,47 +338,55 @@ bool AFPFR::isConnected() {
 }
 
 //--------------------------------------------------------------------------------
-TResult AFPFR::processCommand(char aCommand, CAFPFR::TData *aAnswer) {
+TResult AFPFR::processCommand(char aCommand, CAFPFR::TData *aAnswer)
+{
     return processCommand(aCommand, CAFPFR::TData(), aAnswer);
 }
 
 //--------------------------------------------------------------------------------
-TResult AFPFR::processCommand(char aCommand, const QVariant &aCommandData, CAFPFR::TData *aAnswer) {
+TResult AFPFR::processCommand(char aCommand, const QVariant &aCommandData, CAFPFR::TData *aAnswer)
+{
     return processCommand(aCommand, CAFPFR::TData() << aCommandData, aAnswer);
 }
 
 //--------------------------------------------------------------------------------
-TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, CAFPFR::TData *aAnswer) {
+TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, CAFPFR::TData *aAnswer)
+{
     return processCommand(aCommand, aCommandData, aAnswer, CAFPFR::TAnswerTypes());
 }
 
 //--------------------------------------------------------------------------------
 TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, CAFPFR::TData *aAnswer,
-                              CAFPFR::EAnswerTypes::Enum aAnswerType) {
+                              CAFPFR::EAnswerTypes::Enum aAnswerType)
+{
     return processCommand(aCommand, aCommandData, aAnswer, CAFPFR::TAnswerTypes() << aAnswerType);
 }
 
 //--------------------------------------------------------------------------------
 TResult AFPFR::processCommand(char aCommand, const QVariant &aCommandData, CAFPFR::TData *aAnswer,
-                              CAFPFR::EAnswerTypes::Enum aAnswerType) {
+                              CAFPFR::EAnswerTypes::Enum aAnswerType)
+{
     return processCommand(aCommand, CAFPFR::TData() << aCommandData, aAnswer, CAFPFR::TAnswerTypes() << aAnswerType);
 }
 
 //--------------------------------------------------------------------------------
 TResult AFPFR::processCommand(char aCommand, const QVariant &aCommandData, CAFPFR::TData *aAnswer,
-                              const CAFPFR::TAnswerTypes &aAnswerTypes) {
+                              const CAFPFR::TAnswerTypes &aAnswerTypes)
+{
     return processCommand(aCommand, CAFPFR::TData() << aCommandData, aAnswer, aAnswerTypes);
 }
 
 //--------------------------------------------------------------------------------
 TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, CAFPFR::TData *aAnswer,
-                              const CAFPFR::TAnswerTypes &aAnswerTypes) {
+                              const CAFPFR::TAnswerTypes &aAnswerTypes)
+{
     mProtocol.setPort(mIOPort);
     mProtocol.setLog(mLog);
 
     QByteArray commandData;
 
-    foreach (auto dataItem, aCommandData) {
+    foreach (auto dataItem, aCommandData)
+    {
         QVariant::Type type = dataItem.type();
         QByteArray data;
 
@@ -362,7 +408,8 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
 
     mLastCommandResult = mProtocol.processCommand(commandData, answer, CAFPFR::Requests::Data[aCommand].timeout);
 
-    if (!mLastCommandResult) {
+    if (!mLastCommandResult)
+    {
         return mLastCommandResult;
     }
 
@@ -370,7 +417,8 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
     QByteArray errorData = answer.left(2);
     char error = char(errorData.toUShort(&OK, 16));
 
-    if (!OK) {
+    if (!OK)
+    {
         toLog(LogLevel::Error, mDeviceName + QString(": Failed to parse error = 0x%1").arg(errorData.toHex().data()));
         return false;
     }
@@ -379,12 +427,15 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
     mLastCommand = QByteArray(1, aCommand);
     QList<QByteArray> answerData = answer.mid(2).split(CAFPFR::Separator);
 
-    if (answer.endsWith(CAFPFR::Separator)) {
+    if (answer.endsWith(CAFPFR::Separator))
+    {
         answerData.removeLast();
     }
 
-    if (!mLastError) {
-        if (aAnswer) {
+    if (!mLastError)
+    {
+        if (aAnswer)
+        {
             aAnswer->clear();
 
             int answerSize = answerData.size();
@@ -392,30 +443,36 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
             CAFPFR::TAnswerTypes answerTypes = requestData.answerTypes;
             int size = requestData.answerTypes.size();
 
-            if (!aAnswerTypes.isEmpty()) {
+            if (!aAnswerTypes.isEmpty())
+            {
                 answerTypes = aAnswerTypes;
                 size = aAnswerTypes.size();
             }
 
-            if (answerSize < size) {
+            if (answerSize < size)
+            {
                 toLog(LogLevel::Error,
                       mDeviceName + QString(": Wrong answer quantity of parts = %1, need = %2").arg(size).arg(size));
                 return CommandResult::Answer;
             }
 
-            for (int i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i)
+            {
                 QByteArray part = answerData[i].simplified();
                 int answerType = answerTypes[i];
 
-                switch (answerType) {
+                switch (answerType)
+                {
                     case CAFPFR::EAnswerTypes::Unknown:
                         *aAnswer << part;
                         break;
                     case CAFPFR::EAnswerTypes::String:
                         *aAnswer << mCodec->toUnicode(part);
                         break;
-                    case CAFPFR::EAnswerTypes::FString: {
-                        if (part.isEmpty()) {
+                    case CAFPFR::EAnswerTypes::FString:
+                    {
+                        if (part.isEmpty())
+                        {
                             toLog(
                                 LogLevel::Error,
                                 mDeviceName +
@@ -427,10 +484,12 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
 
                         break;
                     }
-                    case CAFPFR::EAnswerTypes::Date: {
+                    case CAFPFR::EAnswerTypes::Date:
+                    {
                         QDate result = QDate::fromString(part.insert(4, "20"), CAFPFR::DateFormat);
 
-                        if (!result.isValid()) {
+                        if (!result.isValid())
+                        {
                             toLog(
                                 LogLevel::Error,
                                 mDeviceName +
@@ -442,10 +501,12 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
 
                         break;
                     }
-                    case CAFPFR::EAnswerTypes::Time: {
+                    case CAFPFR::EAnswerTypes::Time:
+                    {
                         QTime result = QTime::fromString(part, CAFPFR::TimeFormat);
 
-                        if (!result.isValid()) {
+                        if (!result.isValid())
+                        {
                             toLog(
                                 LogLevel::Error,
                                 mDeviceName +
@@ -458,9 +519,12 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
                         break;
                     }
                     case CAFPFR::EAnswerTypes::Int:
-                    case CAFPFR::EAnswerTypes::FInt: {
-                        if (part.isEmpty()) {
-                            if (answerType == CAFPFR::EAnswerTypes::FInt) {
+                    case CAFPFR::EAnswerTypes::FInt:
+                    {
+                        if (part.isEmpty())
+                        {
+                            if (answerType == CAFPFR::EAnswerTypes::FInt)
+                            {
                                 toLog(
                                     LogLevel::Error,
                                     mDeviceName +
@@ -475,7 +539,8 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
 
                         QRegularExpression regExp("^[0-9]+$");
 
-                        if (regExp.match(part).capturedStart() == -1) {
+                        if (regExp.match(part).capturedStart() == -1)
+                        {
                             toLog(
                                 LogLevel::Error,
                                 mDeviceName +
@@ -487,10 +552,12 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
 
                         break;
                     }
-                    case CAFPFR::EAnswerTypes::Double: {
+                    case CAFPFR::EAnswerTypes::Double:
+                    {
                         QRegularExpression regExp("^[0-9\\.]+$");
 
-                        if (!part.isEmpty() && (regExp.match(part).capturedStart() == -1)) {
+                        if (!part.isEmpty() && (regExp.match(part).capturedStart() == -1))
+                        {
                             toLog(LogLevel::Error,
                                   mDeviceName + QString(": Failed to parse double of answer part [%1] = %2")
                                                     .arg(i)
@@ -502,7 +569,8 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
 
                         break;
                     }
-                    default: {
+                    default:
+                    {
                         toLog(LogLevel::Error,
                               mDeviceName + QString(": Failed to parse answer part [%1] = %2 due to unknown type %3")
                                                 .arg(i)
@@ -519,16 +587,19 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
 
     toLog(LogLevel::Error, mDeviceName + ": Error: " + mErrorData->value(mLastError).description);
 
-    if (!answerData.isEmpty()) {
+    if (!answerData.isEmpty())
+    {
         QStringList logData;
 
-        for (int i = 0; i < answerData.size(); ++i) {
+        for (int i = 0; i < answerData.size(); ++i)
+        {
             logData << mCodec->toUnicode(answerData[i]);
         }
 
         logData.removeAll("");
 
-        if (!logData.isEmpty()) {
+        if (!logData.isEmpty())
+        {
             QString log = logData.join("\n1C\n").remove("\r");
             logData = log.split("\n");
             logData.removeAll("");
@@ -536,15 +607,18 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
         }
     }
 
-    if (!isErrorUnprocessed(aCommand, error)) {
+    if (!isErrorUnprocessed(aCommand, error))
+    {
         setErrorFlags();
     }
 
-    if (!mProcessingErrors.isEmpty() && (mProcessingErrors.last() == mLastError)) {
+    if (!mProcessingErrors.isEmpty() && (mProcessingErrors.last() == mLastError))
+    {
         return CommandResult::Device;
     }
 
-    if (isErrorUnprocessed(aCommand, error) || !processAnswer(aCommand, error)) {
+    if (isErrorUnprocessed(aCommand, error) || !processAnswer(aCommand, error))
+    {
         mLastError = error;
         mLastCommand = QByteArray(1, aCommand);
 
@@ -553,7 +627,8 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
 
     TResult result = processCommand(aCommand, aCommandData, aAnswer, aAnswerTypes);
 
-    if (result) {
+    if (result)
+    {
         mProcessingErrors.pop_back();
     }
 
@@ -561,25 +636,32 @@ TResult AFPFR::processCommand(char aCommand, const CAFPFR::TData &aCommandData, 
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::processAnswer(char aCommand, char aError) {
-    switch (aError) {
-        case CAFPFR::Errors::NeedZReport: {
+bool AFPFR::processAnswer(char aCommand, char aError)
+{
+    switch (aError)
+    {
+        case CAFPFR::Errors::NeedZReport:
+        {
             mProcessingErrors.append(aError);
 
             return execZReport(true) && openFRSession();
         }
-        case CAFPFR::Errors::WrongState: {
+        case CAFPFR::Errors::WrongState:
+        {
             mProcessingErrors.append(aError);
 
-            if (aCommand == CAFPFR::Commands::CancelDocument) {
+            if (aCommand == CAFPFR::Commands::CancelDocument)
+            {
                 return false;
             }
 
-            if (getDocumentState() == EDocumentState::Opened) {
+            if (getDocumentState() == EDocumentState::Opened)
+            {
                 return processCommand(CAFPFR::Commands::CancelDocument);
             }
         }
-        case CAFPFR::Errors::UnknownCommand: {
+        case CAFPFR::Errors::UnknownCommand:
+        {
             mOldFirmware = mOldFirmware || (aCommand == CAFPFR::Commands::GetFRData);
 
             break;
@@ -590,8 +672,10 @@ bool AFPFR::processAnswer(char aCommand, char aError) {
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::performFiscal(const QStringList &aReceipt, const SPaymentData &aPaymentData, quint32 *aFDNumber) {
-    if ((getDocumentState() == EDocumentState::Opened) && !processCommand(CAFPFR::Commands::CancelDocument)) {
+bool AFPFR::performFiscal(const QStringList &aReceipt, const SPaymentData &aPaymentData, quint32 *aFDNumber)
+{
+    if ((getDocumentState() == EDocumentState::Opened) && !processCommand(CAFPFR::Commands::CancelDocument))
+    {
         return false;
     }
 
@@ -599,7 +683,8 @@ bool AFPFR::performFiscal(const QStringList &aReceipt, const SPaymentData &aPaym
     char taxSystem = char(aPaymentData.taxSystem);
 
     if ((taxSystem != ETaxSystems::None) && (mTaxSystems.size() != 1) &&
-        !processCommand(CAFPFR::Commands::SetTaxSystem, taxSystem)) {
+        !processCommand(CAFPFR::Commands::SetTaxSystem, taxSystem))
+    {
         toLog(LogLevel::Error, mDeviceName + QString(": Failed to set taxation system %1 (%2)")
                                                  .arg(toHexLog(taxSystem))
                                                  .arg(CFR::TaxSystems[taxSystem]));
@@ -609,7 +694,8 @@ bool AFPFR::performFiscal(const QStringList &aReceipt, const SPaymentData &aPaym
     // флаг агента
     char agentFlag = char(aPaymentData.agentFlag);
 
-    if (!processCommand(CAFPFR::Commands::SetAgentFlag, agentFlag)) {
+    if (!processCommand(CAFPFR::Commands::SetAgentFlag, agentFlag))
+    {
         toLog(
             LogLevel::Error,
             mDeviceName +
@@ -624,55 +710,68 @@ bool AFPFR::performFiscal(const QStringList &aReceipt, const SPaymentData &aPaym
 #define CHECK_AFP_FF(aField)                                                                                           \
     setFRParameter(CAFPFR::FRParameters::aField, mFFEngine.getConfigParameter(CFiscalSDK::aField))
 
-    if (isNotPrinting() && !CHECK_AFP_FF(SenderMail)) {
+    if (isNotPrinting() && !CHECK_AFP_FF(SenderMail))
+    {
         return false;
     }
 
-    if (isBankAgent) {
+    if (isBankAgent)
+    {
         if (!CHECK_AFP_FF(TransferOperatorAddress) || !CHECK_AFP_FF(TransferOperatorINN) ||
             !CHECK_AFP_FF(TransferOperatorName) || !CHECK_AFP_FF(AgentOperation) ||
-            !CHECK_AFP_FF(TransferOperatorPhone)) {
+            !CHECK_AFP_FF(TransferOperatorPhone))
+        {
             return false;
         }
-    } else if (isPaymentAgent) {
-        if (!CHECK_AFP_FF(ProcessingPhone)) {
+    }
+    else if (isPaymentAgent)
+    {
+        if (!CHECK_AFP_FF(ProcessingPhone))
+        {
             return false;
         }
     }
 
-    if (isBankAgent || isPaymentAgent) {
-        if (!CHECK_AFP_FF(AgentPhone) || !CHECK_AFP_FF(ProviderPhone)) {
+    if (isBankAgent || isPaymentAgent)
+    {
+        if (!CHECK_AFP_FF(AgentPhone) || !CHECK_AFP_FF(ProviderPhone))
+        {
             return false;
         }
     }
 
     char FDType = CAFPFR::PayOffTypeData[aPaymentData.payOffType];
 
-    if (!processReceipt(aReceipt, false) || !openDocument(FDType)) {
+    if (!processReceipt(aReceipt, false) || !openDocument(FDType))
+    {
         return false;
     }
 
     bool result = true;
     ExitAction exitAction([&]() { processCommand(CAFPFR::Commands::CancelDocument); });
 
-    foreach (auto unitData, aPaymentData.unitDataList) {
+    foreach (auto unitData, aPaymentData.unitDataList)
+    {
         result = result && sale(unitData);
     }
 
     bool needSetUserContact = isNotPrinting() || mOperationModes.contains(EOperationModes::Internet);
     QVariant userContact = getConfigParameter(CFiscalSDK::UserContact);
 
-    if (needSetUserContact && !processCommand(CAFPFR::Commands::SetUserContact, userContact)) {
+    if (needSetUserContact && !processCommand(CAFPFR::Commands::SetUserContact, userContact))
+    {
         return false;
     }
 
     CAFPFR::TData data = CAFPFR::TData() << (aPaymentData.payType - 1) << getTotalAmount(aPaymentData) << "";
 
-    if (!result || !processCommand(CAFPFR::Commands::Total, data) || !closeDocument(true)) {
+    if (!result || !processCommand(CAFPFR::Commands::Total, data) || !closeDocument(true))
+    {
         return false;
     }
 
-    if (aFDNumber && processCommand(CAFPFR::Commands::GetFSStatus, &data)) {
+    if (aFDNumber && processCommand(CAFPFR::Commands::GetFSStatus, &data))
+    {
         *aFDNumber = data[8].toUInt();
     }
 
@@ -680,17 +779,20 @@ bool AFPFR::performFiscal(const QStringList &aReceipt, const SPaymentData &aPaym
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::getFiscalFields(quint32 aFDNumber, TFiscalPaymentData &aFPData, TComplexFiscalPaymentData &aPSData) {
+bool AFPFR::getFiscalFields(quint32 aFDNumber, TFiscalPaymentData &aFPData, TComplexFiscalPaymentData &aPSData)
+{
     CAFPFR::TData answer;
 
-    if (!processCommand(CAFPFR::Commands::GetFiscalTLVData, QVariant(aFDNumber), &answer)) {
+    if (!processCommand(CAFPFR::Commands::GetFiscalTLVData, QVariant(aFDNumber), &answer))
+    {
         return false;
     }
 
     QString rawData = answer[0].toString();
     QString log;
 
-    if (!checkBufferString(rawData, &log)) {
+    if (!checkBufferString(rawData, &log))
+    {
         toLog(LogLevel::Error, mDeviceName + ": " + log);
         return false;
     }
@@ -698,21 +800,25 @@ bool AFPFR::getFiscalFields(quint32 aFDNumber, TFiscalPaymentData &aFPData, TCom
     QByteArray data = getBufferFromString(rawData);
     int i = 0;
 
-    while ((i + 4) < data.size()) {
+    while ((i + 4) < data.size())
+    {
         CFR::STLV TLV;
 
-        auto getInt = [&data, &i](int aIndex, int aShift) -> int {
+        auto getInt = [&data, &i](int aIndex, int aShift) -> int
+        {
             int result = uchar(data[i + aIndex]);
             return result << (8 * aShift);
         };
         int field = getInt(0, 0) | getInt(1, 1);
         int size = getInt(2, 0) | getInt(3, 1);
 
-        if (!size) {
+        if (!size)
+        {
             toLog(LogLevel::Warning, mDeviceName + ": Mo data for " + mFFData.getTextLog(field));
         }
 
-        if (!mFFEngine.parseTLV(data.mid(i, size + 4), TLV)) {
+        if (!mFFEngine.parseTLV(data.mid(i, size + 4), TLV))
+        {
             return false;
         }
 
@@ -726,10 +832,12 @@ bool AFPFR::getFiscalFields(quint32 aFDNumber, TFiscalPaymentData &aFPData, TCom
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::sale(const SUnitData &aUnitData) {
+bool AFPFR::sale(const SUnitData &aUnitData)
+{
     QVariant section;
 
-    if (aUnitData.section != -1) {
+    if (aUnitData.section != -1)
+    {
         section = aUnitData.section;
     }
 
@@ -756,15 +864,21 @@ bool AFPFR::sale(const SUnitData &aUnitData) {
 }
 
 //--------------------------------------------------------------------------------
-EResult::Enum AFPFR::performCommand(TStatusCodes &aStatusCodes, char aCommand, CAFPFR::TData &aAnswerData) {
+EResult::Enum AFPFR::performCommand(TStatusCodes &aStatusCodes, char aCommand, CAFPFR::TData &aAnswerData)
+{
     TResult result = processCommand(aCommand, &aAnswerData);
 
-    if (result == CommandResult::Device) {
+    if (result == CommandResult::Device)
+    {
         int statusCode = getErrorStatusCode(mErrorData->value(mLastError).type);
         aStatusCodes.insert(statusCode);
-    } else if (result == CommandResult::Answer) {
+    }
+    else if (result == CommandResult::Answer)
+    {
         aStatusCodes.insert(DeviceStatusCode::Warning::OperationError);
-    } else if (result) {
+    }
+    else if (result)
+    {
         return EResult::OK;
     }
 
@@ -772,29 +886,39 @@ EResult::Enum AFPFR::performCommand(TStatusCodes &aStatusCodes, char aCommand, C
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::getStatus(TStatusCodes &aStatusCodes) {
+bool AFPFR::getStatus(TStatusCodes &aStatusCodes)
+{
     CAFPFR::TData answerData;
     EResult::Enum result = performCommand(aStatusCodes, CAFPFR::Commands::GetPrinterStatus, answerData);
 
-    if (result == EResult::Fail) {
+    if (result == EResult::Fail)
+    {
         return false;
-    } else if (result != EResult::Error) {
+    }
+    else if (result != EResult::Error)
+    {
         CAFPFR::Statuses::Printer.getSpecification(char(answerData[0].toInt()), aStatusCodes);
     }
 
     result = performCommand(aStatusCodes, CAFPFR::Commands::GetFRStatus, answerData);
 
-    if (result == EResult::Fail) {
+    if (result == EResult::Fail)
+    {
         return false;
-    } else if (result != EResult::Error) {
+    }
+    else if (result != EResult::Error)
+    {
         CAFPFR::Statuses::FR.getSpecification(char(answerData[0].toInt()), aStatusCodes);
     }
 
     result = performCommand(aStatusCodes, CAFPFR::Commands::GetOFDStatus, answerData);
 
-    if (result == EResult::Fail) {
+    if (result == EResult::Fail)
+    {
         return false;
-    } else if (result != EResult::Error) {
+    }
+    else if (result != EResult::Error)
+    {
         checkOFDNotSentCount(answerData[2].toInt(), aStatusCodes);
     }
 
@@ -802,16 +926,20 @@ bool AFPFR::getStatus(TStatusCodes &aStatusCodes) {
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::processReceipt(const QStringList &aReceipt, bool aProcessing) {
-    if (!isPrintingNeed(aReceipt)) {
+bool AFPFR::processReceipt(const QStringList &aReceipt, bool aProcessing)
+{
+    if (!isPrintingNeed(aReceipt))
+    {
         return true;
     }
 
-    if (!aProcessing) {
+    if (!aProcessing)
+    {
         return TSerialFRBase::processReceipt(aReceipt, false);
     }
 
-    if (!openDocument(CAFPFR::DocumentTypes::NonFiscal)) {
+    if (!openDocument(CAFPFR::DocumentTypes::NonFiscal))
+    {
         return false;
     }
 
@@ -822,11 +950,14 @@ bool AFPFR::processReceipt(const QStringList &aReceipt, bool aProcessing) {
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::printLine(const QByteArray &aString) {
+bool AFPFR::printLine(const QByteArray &aString)
+{
     uint tags = ASCII::NUL;
 
-    for (auto it = CAFPFR::Tags.data().begin(); it != CAFPFR::Tags.data().end(); ++it) {
-        if (mLineTags.contains(it.key())) {
+    for (auto it = CAFPFR::Tags.data().begin(); it != CAFPFR::Tags.data().end(); ++it)
+    {
+        if (mLineTags.contains(it.key()))
+        {
             tags |= uchar(it.value());
         }
     }
@@ -835,15 +966,18 @@ bool AFPFR::printLine(const QByteArray &aString) {
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::cut() {
+bool AFPFR::cut()
+{
     return true;
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::openDocument(char aType) {
+bool AFPFR::openDocument(char aType)
+{
     CAFPFR::TData commandData = CAFPFR::TData() << aType << "" << "" << "";
 
-    if (aType != CAFPFR::DocumentTypes::NonFiscal) {
+    if (aType != CAFPFR::DocumentTypes::NonFiscal)
+    {
         QString cashier = mFFEngine.getConfigParameter(CFiscalSDK::Cashier).toString();
         commandData[2] = mCodec->fromUnicode(cashier);
     }
@@ -852,15 +986,18 @@ bool AFPFR::openDocument(char aType) {
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::closeDocument(bool aProcessing) {
+bool AFPFR::closeDocument(bool aProcessing)
+{
     return processCommand(CAFPFR::Commands::CloseDocument, CAFPFR::TData() << !aProcessing);
 }
 
 //--------------------------------------------------------------------------------
-ESessionState::Enum AFPFR::getSessionState() {
+ESessionState::Enum AFPFR::getSessionState()
+{
     CAFPFR::TData answerData;
 
-    if (!processCommand(CAFPFR::Commands::GetFRStatus, &answerData)) {
+    if (!processCommand(CAFPFR::Commands::GetFRStatus, &answerData))
+    {
         return ESessionState::Error;
     }
 
@@ -875,10 +1012,12 @@ ESessionState::Enum AFPFR::getSessionState() {
 }
 
 //--------------------------------------------------------------------------------
-EDocumentState::Enum AFPFR::getDocumentState() {
+EDocumentState::Enum AFPFR::getDocumentState()
+{
     CAFPFR::TData answerData;
 
-    if (!processCommand(CAFPFR::Commands::GetFRStatus, &answerData)) {
+    if (!processCommand(CAFPFR::Commands::GetFRStatus, &answerData))
+    {
         return EDocumentState::Error;
     }
 
@@ -886,15 +1025,18 @@ EDocumentState::Enum AFPFR::getDocumentState() {
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::setNotPrintDocument(bool aEnabled, bool /*aZReport*/) {
+bool AFPFR::setNotPrintDocument(bool aEnabled, bool /*aZReport*/)
+{
     return setFRParameter(CAFPFR::FRParameters::NotPrintDocument, aEnabled);
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::openSession() {
+bool AFPFR::openSession()
+{
     QString cashier;
 
-    if (mOperatorPresence && !mFFEngine.checkCashier(cashier)) {
+    if (mOperatorPresence && !mFFEngine.checkCashier(cashier))
+    {
         return false;
     }
 
@@ -906,17 +1048,20 @@ bool AFPFR::openSession() {
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::processXReport() {
+bool AFPFR::processXReport()
+{
     return processCommand(CAFPFR::Commands::XReport);
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::performZReport(bool /*aPrintDeferredReports*/) {
+bool AFPFR::performZReport(bool /*aPrintDeferredReports*/)
+{
     return execZReport(false);
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::execZReport(bool aAuto) {
+bool AFPFR::execZReport(bool aAuto)
+{
     toLog(LogLevel::Normal, mDeviceName + QString(": Begin processing %1Z-report").arg(aAuto ? "auto-" : ""));
     ESessionState::Enum sessionState = getSessionState();
 
@@ -927,13 +1072,17 @@ bool AFPFR::execZReport(bool aAuto) {
 
     bool needCloseSession = sessionState == ESessionState::Expired;
 
-    if (aAuto) {
-        if (mOperatorPresence) {
+    if (aAuto)
+    {
+        if (mOperatorPresence)
+        {
             toLog(LogLevel::Error, mDeviceName + ": Failed to process auto-Z-report due to presence of the operator.");
             mNeedCloseSession = mNeedCloseSession || needCloseSession;
 
             return false;
-        } else if (!checkNotPrinting(aAuto, true)) {
+        }
+        else if (!checkNotPrinting(aAuto, true))
+        {
             mNeedCloseSession = mNeedCloseSession || needCloseSession;
 
             return false;
@@ -945,7 +1094,8 @@ bool AFPFR::execZReport(bool aAuto) {
     bool result = processCommand(CAFPFR::Commands::ZReport);
     mNeedCloseSession = getSessionState() == ESessionState::Expired;
 
-    if (!result) {
+    if (!result)
+    {
         toLog(LogLevel::Error, mDeviceName + ": error in processing Z-report");
         return false;
     }
@@ -958,15 +1108,18 @@ bool AFPFR::execZReport(bool aAuto) {
 }
 
 //--------------------------------------------------------------------------------
-double AFPFR::getAmountInCash() {
+double AFPFR::getAmountInCash()
+{
     CAFPFR::TData data;
 
     return getFRData(CAFPFR::FRInfo::TotalCash, data) ? data[0].toDouble() : -1;
 }
 
 //--------------------------------------------------------------------------------
-bool AFPFR::processPayout(double aAmount) {
-    if (!openDocument(CAFPFR::DocumentTypes::PayOut)) {
+bool AFPFR::processPayout(double aAmount)
+{
+    if (!openDocument(CAFPFR::DocumentTypes::PayOut))
+    {
         return false;
     }
 
@@ -977,12 +1130,14 @@ bool AFPFR::processPayout(double aAmount) {
 }
 
 //--------------------------------------------------------------------------------
-QVariantMap AFPFR::getSessionOutData() {
+QVariantMap AFPFR::getSessionOutData()
+{
     return QVariantMap();
 }
 
 //--------------------------------------------------------------------------------
-void AFPFR::setErrorFlags() {
+void AFPFR::setErrorFlags()
+{
 }
 
 //--------------------------------------------------------------------------------

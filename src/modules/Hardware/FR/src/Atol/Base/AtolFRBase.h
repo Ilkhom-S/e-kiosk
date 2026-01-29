@@ -9,10 +9,13 @@
 #include "../AtolModelData.h"
 #include "../AtolFRConstants.h"
 
-class AtolSeriesType {};
+class AtolSeriesType
+{
+};
 
 //--------------------------------------------------------------------------------
-class AtolFRBase : public TSerialFRBase {
+class AtolFRBase : public TSerialFRBase
+{
   public:
     typedef AtolSeriesType TSeriesType;
 
@@ -28,7 +31,8 @@ class AtolFRBase : public TSerialFRBase {
     virtual bool isConnected();
 
     /// Получить ключ модели для идентификации.
-    virtual CAtolFR::TModelKey getModelKey(const QByteArray & /*aAnswer*/) {
+    virtual CAtolFR::TModelKey getModelKey(const QByteArray & /*aAnswer*/)
+    {
         return CAtolFR::TModelKey();
     }
 
@@ -92,12 +96,14 @@ class AtolFRBase : public TSerialFRBase {
                                 QByteArray *aAnswer = nullptr);
 
     /// Выполнить команду.
-    virtual TResult performCommand(const QByteArray & /*aCommandData*/, QByteArray & /*aAnswer*/, int /*aTimeout*/) {
+    virtual TResult performCommand(const QByteArray & /*aCommandData*/, QByteArray & /*aAnswer*/, int /*aTimeout*/)
+    {
         return CommandResult::NoAnswer;
     }
 
     /// Войти в расширенный режим снятия Z-отчетов.
-    virtual bool enterExtendedMode() {
+    virtual bool enterExtendedMode()
+    {
         return true;
     }
 

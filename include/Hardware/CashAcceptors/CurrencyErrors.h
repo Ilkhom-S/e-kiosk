@@ -9,8 +9,10 @@
 #include "Hardware/CashAcceptors/CashAcceptorStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace ECurrencyError {
-    enum Enum {
+namespace ECurrencyError
+{
+    enum Enum
+    {
         OK = 0,        /// Нет ошибок.
         Loading,       /// Не прогрузили номиналы из девайса.
         Config,        /// Неизвестная валюта конфига.
@@ -20,9 +22,11 @@ namespace ECurrencyError {
         ParInhibitions /// Не установлены запрещения номиналов.
     };
 
-    class CSpecifications : public CSpecification<Enum, int> {
+    class CSpecifications : public CSpecification<Enum, int>
+    {
       public:
-        CSpecifications() {
+        CSpecifications()
+        {
             append(Loading, BillAcceptorStatusCode::Error::ParTableLoading);
             append(NoAvailable, BillAcceptorStatusCode::Error::NoParsAvailable);
             append(ParInhibitions, BillAcceptorStatusCode::Warning::ParInhibitions);

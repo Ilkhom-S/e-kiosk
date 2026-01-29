@@ -9,7 +9,8 @@
 using namespace SDK::PaymentProcessor::Humo;
 
 //---------------------------------------------------------------------------
-class PinGetCardListRequest : public Request {
+class PinGetCardListRequest : public Request
+{
   public:
     PinGetCardListRequest(const SDK::PaymentProcessor::SKeySettings &aKeySettings);
 };

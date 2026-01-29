@@ -35,7 +35,8 @@
 */
 
 //------------------------------------------------------------------------------
-class BarcodeProvider : public QQuickImageProvider {
+class BarcodeProvider : public QQuickImageProvider
+{
   public:
     BarcodeProvider();
     ~BarcodeProvider() {};

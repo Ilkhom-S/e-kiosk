@@ -11,11 +11,13 @@
 // System
 #include "../../common/PluginTestBase.h"
 
-class NativeBackendTest : public QObject {
+class NativeBackendTest : public QObject
+{
     Q_OBJECT
 
   public:
-    NativeBackendTest() : m_testBase("native_backendd.dll") {
+    NativeBackendTest() : m_testBase("native_backendd.dll")
+    {
     }
 
   private slots:
@@ -35,7 +37,8 @@ class NativeBackendTest : public QObject {
     PluginTestBase m_testBase;
 };
 
-void NativeBackendTest::testPluginExists() {
+void NativeBackendTest::testPluginExists()
+{
     // Test that the NativeBackend plugin DLL was built successfully
     QString pluginPath = "Debug/native_backendd.dll";
     QVERIFY(QFile::exists(pluginPath));
@@ -45,13 +48,15 @@ void NativeBackendTest::testPluginExists() {
     QVERIFY(pluginFile.size() > 0);
 }
 
-void NativeBackendTest::testPluginLoading() {
+void NativeBackendTest::testPluginLoading()
+{
     // Test loading the plugin factory
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
 }
 
-void NativeBackendTest::testFactoryInterface() {
+void NativeBackendTest::testFactoryInterface()
+{
     // Test factory interface methods
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -64,7 +69,8 @@ void NativeBackendTest::testFactoryInterface() {
     QVERIFY(!factory->getPluginList().isEmpty());
 }
 
-void NativeBackendTest::testPluginCreation() {
+void NativeBackendTest::testPluginCreation()
+{
     // Test creating a plugin instance
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -89,7 +95,8 @@ void NativeBackendTest::testPluginCreation() {
     factory->destroyPlugin(plugin);
 }
 
-void NativeBackendTest::testPluginInitialization() {
+void NativeBackendTest::testPluginInitialization()
+{
     // Test plugin configuration methods
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -120,7 +127,8 @@ void NativeBackendTest::testPluginInitialization() {
     factory->destroyPlugin(plugin);
 }
 
-void NativeBackendTest::testPluginLifecycle() {
+void NativeBackendTest::testPluginLifecycle()
+{
     // Test plugin interface methods
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);

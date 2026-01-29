@@ -16,7 +16,8 @@
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------
-class EncashmentServiceWindow : public EncashmentWindow {
+class EncashmentServiceWindow : public EncashmentWindow
+{
     Q_OBJECT
 
   public:

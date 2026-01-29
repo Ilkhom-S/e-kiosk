@@ -9,20 +9,27 @@
 // Project
 #include "Response.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Humo {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Humo
+        {
 
             //---------------------------------------------------------------------------
             Response::Response(const Request &aRequest, const QString &aResponseString)
                 : mResponseString(aResponseString), mError(ELocalError::NetworkError), mResult(EServerResult::Empty),
-                  mRequest(aRequest) {
+                  mRequest(aRequest)
+            {
                 QRegularExpression regexp("^(\\w+)=(.*)$");
 
-                foreach (auto line, mResponseString.split("\r\n")) {
+                foreach (auto line, mResponseString.split("\r\n"))
+                {
                     QRegularExpressionMatch match = regexp.match(line);
-                    if (match.hasMatch()) {
-                        if (match.capturedLength() > 1) {
+                    if (match.hasMatch())
+                    {
+                        if (match.capturedLength() > 1)
+                        {
                             addParameter(match.captured(1), match.captured(2));
                         }
                     }
@@ -30,49 +37,59 @@ namespace SDK {
             }
 
             //---------------------------------------------------------------------------
-            Response::~Response() {
+            Response::~Response()
+            {
             }
 
             //---------------------------------------------------------------------------
-            bool Response::isOk() {
+            bool Response::isOk()
+            {
                 return ((mError == EServerError::Ok) && (mResult == EServerResult::Ok));
             }
 
             //---------------------------------------------------------------------------
-            int Response::getError() const {
+            int Response::getError() const
+            {
                 return mError;
             }
 
             //---------------------------------------------------------------------------
-            int Response::getResult() const {
+            int Response::getResult() const
+            {
                 return mResult;
             }
 
             //---------------------------------------------------------------------------
-            const QString &Response::getErrorMessage() const {
+            const QString &Response::getErrorMessage() const
+            {
                 return mErrorMessage;
             }
 
             //---------------------------------------------------------------------------
-            QVariant Response::getParameter(const QString &aName) const {
+            QVariant Response::getParameter(const QString &aName) const
+            {
                 return mParameters.contains(aName) ? mParameters.value(aName) : QVariant();
             }
 
             //---------------------------------------------------------------------------
-            const QVariantMap &Response::getParameters() const {
+            const QVariantMap &Response::getParameters() const
+            {
                 return mParameters;
             }
 
             //---------------------------------------------------------------------------
-            const QString &Response::toString() const {
+            const QString &Response::toString() const
+            {
                 return mResponseString;
             }
 
             //---------------------------------------------------------------------------
-            QString Response::toLogString() const {
+            QString Response::toLogString() const
+            {
                 QStringList result;
 
-                for (auto it = getParameters().begin(); it != getParameters().end(); ++it) {
+                for (auto it = getParameters().begin(); it != getParameters().end(); ++it)
+                {
                     result << QString("%1 = \"%2\"").arg(it.key()).arg(it.value().toString());
                 }
 
@@ -80,26 +97,33 @@ namespace SDK {
             }
 
             //---------------------------------------------------------------------------
-            void Response::addParameter(const QString &aName, const QString &aValue) {
+            void Response::addParameter(const QString &aName, const QString &aValue)
+            {
                 mParameters[aName] = aValue;
 
-                if (aName == CResponse::Parameters::Error) {
+                if (aName == CResponse::Parameters::Error)
+                {
                     mError = static_cast<EServerError::Enum>(aValue.toInt());
-                } else if (aName == CResponse::Parameters::ErrorCode) {
+                }
+                else if (aName == CResponse::Parameters::ErrorCode)
+                {
                     mError = static_cast<EServerError::Enum>(aValue.toInt());
                 }
 
-                if (aName == CResponse::Parameters::Result) {
+                if (aName == CResponse::Parameters::Result)
+                {
                     mResult = static_cast<EServerResult::Enum>(aValue.toInt());
                 }
 
-                if (aName == CResponse::Parameters::ErrorMessage) {
+                if (aName == CResponse::Parameters::ErrorMessage)
+                {
                     mErrorMessage = aValue;
                 }
             }
 
             //---------------------------------------------------------------------------
-            const Request &Response::getRequest() const {
+            const Request &Response::getRequest() const
+            {
                 return mRequest;
             }
 

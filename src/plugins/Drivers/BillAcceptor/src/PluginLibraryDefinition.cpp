@@ -8,7 +8,8 @@
 // Project
 #include "PluginLibraryDefinition.h"
 
-BillAcceptorPluginFactory::BillAcceptorPluginFactory() {
+BillAcceptorPluginFactory::BillAcceptorPluginFactory()
+{
     mName = "BillAcceptor";
     mDescription = "BillAcceptor driver library, CCNet protocol";
     mAuthor = "Humo";

@@ -5,7 +5,8 @@
 #include <Hardware/Common/ProtocolBase.h>
 
 //--------------------------------------------------------------------------------
-class EBDSProtocol : public ProtocolBase {
+class EBDSProtocol : public ProtocolBase
+{
   public:
     EBDSProtocol();
 

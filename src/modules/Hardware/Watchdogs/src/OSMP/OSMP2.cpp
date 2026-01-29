@@ -3,7 +3,8 @@
 #include "OSMP2.h"
 
 //--------------------------------------------------------------------------------
-OSMP2::OSMP2() {
+OSMP2::OSMP2()
+{
     // Данные устройства.
     mDeviceName = "OSMP2 Watchdog";
     mData[EOSMPCommandId::IdentificationData] = "2.00";
@@ -13,7 +14,8 @@ OSMP2::OSMP2() {
 }
 
 //---------------------------------------------------------------------------
-bool OSMP2::getStatus(TStatusCodes &aStatusCodes) {
+bool OSMP2::getStatus(TStatusCodes &aStatusCodes)
+{
     // TODO: до окончания переписки с производителем
     /*
     QByteArray answer;
@@ -59,12 +61,15 @@ bool OSMP2::getStatus(TStatusCodes &aStatusCodes) {
 }
 
 //---------------------------------------------------------------------------
-void OSMP2::cleanStatusCodes(TStatusCodes &aStatusCodes) {
-    if (aStatusCodes.contains(WatchdogStatusCode::Error::UPSVoltageBlock)) {
+void OSMP2::cleanStatusCodes(TStatusCodes &aStatusCodes)
+{
+    if (aStatusCodes.contains(WatchdogStatusCode::Error::UPSVoltageBlock))
+    {
         aStatusCodes.remove(WatchdogStatusCode::Error::UPSVoltage);
     }
 
-    if (aStatusCodes.contains(WatchdogStatusCode::Error::PCVoltageBlock)) {
+    if (aStatusCodes.contains(WatchdogStatusCode::Error::PCVoltageBlock))
+    {
         aStatusCodes.remove(WatchdogStatusCode::Error::PCVoltage);
     }
 }

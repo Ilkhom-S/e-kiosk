@@ -8,7 +8,8 @@
 //--------------------------------------------------------------------------------
 typedef PollingDeviceBase<ProtoHID> TPollingHID;
 
-class ACR120 : public TPollingHID {
+class ACR120 : public TPollingHID
+{
   public:
     ACR120();
 

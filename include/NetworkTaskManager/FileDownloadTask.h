@@ -10,7 +10,8 @@
 #include "NetworkTask.h"
 
 //------------------------------------------------------------------------
-class FileDownloadTask : public NetworkTask {
+class FileDownloadTask : public NetworkTask
+{
     Q_OBJECT
 
   public:

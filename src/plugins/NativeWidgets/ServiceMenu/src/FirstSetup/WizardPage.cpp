@@ -5,7 +5,8 @@
 
 //------------------------------------------------------------------------
 WizardPageBase::WizardPageBase(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : ServiceWindowBase(aBackend), QFrame(aParent) {
+    : ServiceWindowBase(aBackend), QFrame(aParent)
+{
 }
 
 //------------------------------------------------------------------------

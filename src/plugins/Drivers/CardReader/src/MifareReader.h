@@ -10,7 +10,8 @@
 #include "PCSCReader.h"
 
 //------------------------------------------------------------------------------
-namespace CMifareReader {
+namespace CMifareReader
+{
     /// Запрос получения версии карты.
     const QByteArray GetVersionRequest = QByteArray::fromRawData("\x80\x60\x00\x00\x00", 5);
 
@@ -21,7 +22,8 @@ namespace CMifareReader {
 //------------------------------------------------------------------------------
 typedef USBDeviceBase<PortPollingDeviceBase<ProtoMifareReader>> TMifareReader;
 
-class MifareReader : public TMifareReader {
+class MifareReader : public TMifareReader
+{
     SET_INTERACTION_TYPE(System)
     SET_SERIES("PCSC")
 

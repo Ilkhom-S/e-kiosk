@@ -10,7 +10,8 @@
 #define WATCHSERVICE_TCP
 
 //---------------------------------------------------------------------------
-namespace CWatchService {
+namespace CWatchService
+{
     /// Название сервиса.
     const QString ServiceName = "Humo Watch Service";
 
@@ -30,7 +31,8 @@ namespace CWatchService {
     /// Время, после которого в случае отсутствия пингов, сторожевой сервис закроет клиента.
     const int MaxPingInterval = 60 * 1000; // msec
 
-    namespace Commands {
+    namespace Commands
+    {
         /// Команда пинга.
         const QString Ping = "ping";
         /// Команда активности экрана.
@@ -61,12 +63,14 @@ namespace CWatchService {
         const QString CloseLogs = "close_logs";
     } // namespace Commands
 
-    namespace Notification {
+    namespace Notification
+    {
         /// Уведомление о закрытии модуля.
         const QString ModuleClosed = "module_closed";
     } // namespace Notification
 
-    namespace Modules {
+    namespace Modules
+    {
         /// Сторожевой сервис.
         const QString WatchService = "guard";
         /// EKiosk.
@@ -79,7 +83,8 @@ namespace CWatchService {
         const QString PaymentProcessor = "payment_processor";
     } // namespace Modules
 
-    namespace Fields {
+    namespace Fields
+    {
         /// Модуль.
         const QString Module = "module";
         /// Цель.
@@ -92,8 +97,10 @@ namespace CWatchService {
         const QString Params = "params";
     } // namespace Fields
 
-    namespace States {
-        enum Enum {
+    namespace States
+    {
+        enum Enum
+        {
             Blocked = 0,      /// Модуль заблокирован
             ServiceOperation, /// Сервисная операция
             ValidatorFailure, /// Ошибка купюроприёмника

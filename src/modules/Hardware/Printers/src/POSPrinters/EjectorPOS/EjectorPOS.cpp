@@ -15,7 +15,8 @@ using namespace PrinterStatusCode;
 template class EjectorPOS<TSerialPrinterBase>;
 
 //--------------------------------------------------------------------------------
-template <class T> EjectorPOS<T>::EjectorPOS() {
+template <class T> EjectorPOS<T>::EjectorPOS()
+{
     // данные устройства
     this->mDeviceName = "POS Printer with ejector";
 
@@ -28,10 +29,12 @@ template <class T> EjectorPOS<T>::EjectorPOS() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void EjectorPOS<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
+template <class T> void EjectorPOS<T>::setDeviceConfiguration(const QVariantMap &aConfiguration)
+{
     this->setDeviceConfiguration(aConfiguration);
 
-    if (this->containsConfigParameter(CHardware::Printer::Settings::PresentationLength)) {
+    if (this->containsConfigParameter(CHardware::Printer::Settings::PresentationLength))
+    {
         int presentationLength =
             qMax(CEjectorPOS::MinPresentationLength,
                  this->getConfigParameter(CHardware::Printer::Settings::PresentationLength).toInt());
@@ -40,14 +43,17 @@ template <class T> void EjectorPOS<T>::setDeviceConfiguration(const QVariantMap 
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool EjectorPOS<T>::updateParameters() {
-    if (!this->updateParameters()) {
+template <class T> bool EjectorPOS<T>::updateParameters()
+{
+    if (!this->updateParameters())
+    {
         return false;
     }
 
     QString loop = this->getConfigParameter(CHardware::Printer::Settings::Loop).toString();
 
-    if (loop == CHardwareSDK::Values::Auto) {
+    if (loop == CHardwareSDK::Values::Auto)
+    {
         return true;
     }
 

@@ -5,7 +5,8 @@
 
 class SendRequest;
 
-class SendReceipt : public SendRequest {
+class SendReceipt : public SendRequest
+{
     Q_OBJECT
 
   public:

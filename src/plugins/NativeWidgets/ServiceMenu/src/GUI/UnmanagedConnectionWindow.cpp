@@ -9,10 +9,12 @@
 #include "SIPStyle.h"
 #include "UnmanagedConnectionWindow.h"
 
-UnmanagedConnectionWindow::UnmanagedConnectionWindow(QWidget *aParent) : QFrame(aParent) {
+UnmanagedConnectionWindow::UnmanagedConnectionWindow(QWidget *aParent) : QFrame(aParent)
+{
     setupUi(this);
 
-    foreach (QLineEdit *le, findChildren<QLineEdit *>()) {
+    foreach (QLineEdit *le, findChildren<QLineEdit *>())
+    {
         le->setStyle(new SIPStyle);
     }
 
@@ -32,7 +34,8 @@ UnmanagedConnectionWindow::UnmanagedConnectionWindow(QWidget *aParent) : QFrame(
 }
 
 //---------------------------------------------------------------------------
-void UnmanagedConnectionWindow::initialize(const QNetworkProxy &aProxy) {
+void UnmanagedConnectionWindow::initialize(const QNetworkProxy &aProxy)
+{
     leProxyAddress->setText(aProxy.hostName());
     leProxyPort->setText(QString::number(aProxy.port()));
     leProxyUser->setText(aProxy.user());
@@ -41,7 +44,8 @@ void UnmanagedConnectionWindow::initialize(const QNetworkProxy &aProxy) {
 }
 
 //---------------------------------------------------------------------------
-void UnmanagedConnectionWindow::toggleProxy(bool aEnabled) {
+void UnmanagedConnectionWindow::toggleProxy(bool aEnabled)
+{
     leProxyAddress->setEnabled(aEnabled);
     leProxyPort->setEnabled(aEnabled);
     leProxyUser->setEnabled(aEnabled);
@@ -54,7 +58,8 @@ void UnmanagedConnectionWindow::toggleProxy(bool aEnabled) {
 }
 
 //---------------------------------------------------------------------------
-QNetworkProxy UnmanagedConnectionWindow::getUserSelection() const {
+QNetworkProxy UnmanagedConnectionWindow::getUserSelection() const
+{
     QNetworkProxy proxy;
 
     proxy.setType(static_cast<QNetworkProxy::ProxyType>((cbProxyType->itemData(cbProxyType->currentIndex()).toInt())));
@@ -67,17 +72,20 @@ QNetworkProxy UnmanagedConnectionWindow::getUserSelection() const {
 }
 
 //---------------------------------------------------------------------------
-void UnmanagedConnectionWindow::onTextChanged(const QString & /*aText*/) {
+void UnmanagedConnectionWindow::onTextChanged(const QString & /*aText*/)
+{
     emit userSelectionChanged();
 }
 
 //---------------------------------------------------------------------------
-void UnmanagedConnectionWindow::onTestConnection() {
+void UnmanagedConnectionWindow::onTestConnection()
+{
     emit testConnection(getUserSelection());
 }
 
 //---------------------------------------------------------------------------
-void UnmanagedConnectionWindow::onProxyTypeChanged(int aIndex) {
+void UnmanagedConnectionWindow::onProxyTypeChanged(int aIndex)
+{
     toggleProxy(cbProxyType->itemData(aIndex).toInt() != QNetworkProxy::NoProxy);
     emit userSelectionChanged();
 }

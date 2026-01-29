@@ -5,9 +5,11 @@
 #include "Hardware/Printers/PrinterStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace FRStatusCode {
+namespace FRStatusCode
+{
     /// Предупреждения.
-    namespace Warning {
+    namespace Warning
+    {
         const int EKLZNearEnd = 250;                /// ЭКЛЗ близка к заполнению.
         const int FiscalMemoryNearEnd = 251;        /// Фискальная память близка к заполнению.
         const int NotFiscalized = 252;              /// ККМ не фискализирована.
@@ -29,7 +31,8 @@ namespace FRStatusCode {
     } // namespace Warning
 
     /// Ошибки.
-    namespace Error {
+    namespace Error
+    {
         const int FR = 270;                   /// Неизвестная ошибка фискальной доработки.
         const int EKLZ = 271;                 /// Ошибка ЭКЛЗ.
         const int FiscalCollapse = 272;       /// Глобальная ошибка фискальной части ФР, печать невозможна.

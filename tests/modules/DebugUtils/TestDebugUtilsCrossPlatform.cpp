@@ -12,11 +12,13 @@
 // System
 #include <DebugUtils/DebugUtils.h>
 
-class TestDebugUtilsCrossPlatform : public QObject {
+class TestDebugUtilsCrossPlatform : public QObject
+{
     Q_OBJECT
 
   private slots:
-    void initTestCase() {
+    void initTestCase()
+    {
         qDebug() << "Testing DebugUtils cross-platform compatibility";
         qDebug() << "Qt version:" << qVersion();
         qDebug() << "Boost version:" << BOOST_VERSION;
@@ -24,7 +26,8 @@ class TestDebugUtilsCrossPlatform : public QObject {
         qDebug() << "Build ABI:" << QSysInfo::buildAbi();
     }
 
-    void testPlatformDetection() {
+    void testPlatformDetection()
+    {
         // Test that the module correctly detects the platform
         QStringList stack;
         DumpCallstack(stack, nullptr);
@@ -53,15 +56,18 @@ class TestDebugUtilsCrossPlatform : public QObject {
 #endif
     }
 
-    void testBoostStacktraceDirectUsage() {
+    void testBoostStacktraceDirectUsage()
+    {
         // Test that we can use Boost.Stacktrace directly
-        try {
+        try
+        {
             auto st = boost::stacktrace::stacktrace();
             QVERIFY(st.size() > 0);
 
             // Convert to QStringList manually
             QStringList manualStack;
-            for (size_t i = 0; i < st.size(); ++i) {
+            for (size_t i = 0; i < st.size(); ++i)
+            {
                 const auto &frame = st[i];
                 QString frameStr = QString("0x%1 (%2)")
                                        .arg((quintptr)frame.address(), 0, 16)
@@ -71,13 +77,15 @@ class TestDebugUtilsCrossPlatform : public QObject {
 
             QVERIFY(manualStack.size() > 0);
             QVERIFY(manualStack.first().contains("0x"));
-
-        } catch (const std::exception &e) {
+        }
+        catch (const std::exception &e)
+        {
             QFAIL(QString("Boost.Stacktrace direct usage failed: %1").arg(e.what()).toUtf8());
         }
     }
 
-    void testStackTraceConsistencyAcrossPlatforms() {
+    void testStackTraceConsistencyAcrossPlatforms()
+    {
         QStringList stack;
         DumpCallstack(stack, nullptr);
 
@@ -87,8 +95,10 @@ class TestDebugUtilsCrossPlatform : public QObject {
 
         // Should contain memory addresses (format may vary by platform)
         bool hasAddress = false;
-        for (const QString &frame : stack) {
-            if (frame.contains("0x") || frame.contains("0X")) {
+        for (const QString &frame : stack)
+        {
+            if (frame.contains("0x") || frame.contains("0X"))
+            {
                 hasAddress = true;
                 break;
             }
@@ -96,21 +106,22 @@ class TestDebugUtilsCrossPlatform : public QObject {
 
         // Note: Some platforms might not show addresses in all cases
         // so this is more of a best-effort check
-        if (!hasAddress) {
+        if (!hasAddress)
+        {
             qDebug() << "No memory addresses found in stack trace (may be normal for some platforms)";
         }
     }
 
-    void testExceptionHandlerPlatformCompatibility() {
+    void testExceptionHandlerPlatformCompatibility()
+    {
         // Test that exception handler functions work on current platform
 #ifdef Q_OS_WIN
         qDebug() << "Testing Windows exception handler compatibility";
 
         // Should be able to get and set exception filter
         LPTOP_LEVEL_EXCEPTION_FILTER original = SetUnhandledExceptionFilter(nullptr);
-        LPTOP_LEVEL_EXCEPTION_FILTER testHandler = [](EXCEPTION_POINTERS *) -> LONG {
-            return EXCEPTION_CONTINUE_SEARCH;
-        };
+        LPTOP_LEVEL_EXCEPTION_FILTER testHandler = [](EXCEPTION_POINTERS *) -> LONG
+        { return EXCEPTION_CONTINUE_SEARCH; };
 
         SetUnhandledExceptionFilter(testHandler);
         LPTOP_LEVEL_EXCEPTION_FILTER current = SetUnhandledExceptionFilter(original);
@@ -130,7 +141,8 @@ class TestDebugUtilsCrossPlatform : public QObject {
 #endif
     }
 
-    void testBoostVersionCompatibility() {
+    void testBoostVersionCompatibility()
+    {
         // Test that we're using a compatible Boost version
         const int boostMajor = BOOST_VERSION / 100000;
         const int boostMinor = (BOOST_VERSION / 100) % 1000;
@@ -139,12 +151,14 @@ class TestDebugUtilsCrossPlatform : public QObject {
 
         // Should be Boost 1.90 or later (when stacktrace became stable)
         QVERIFY(boostMajor >= 1);
-        if (boostMajor == 1) {
+        if (boostMajor == 1)
+        {
             QVERIFY(boostMinor >= 74); // Stacktrace became stable in 1.74+
         }
     }
 
-    void testStackTraceFromSignalHandler() {
+    void testStackTraceFromSignalHandler()
+    {
         // Test that stack traces work even in signal handler context (simulated)
         QStringList normalStack;
         DumpCallstack(normalStack, nullptr);
@@ -153,10 +167,12 @@ class TestDebugUtilsCrossPlatform : public QObject {
         QStringList eventStack;
         bool done = false;
 
-        QTimer::singleShot(0, [&]() {
-            DumpCallstack(eventStack, nullptr);
-            done = true;
-        });
+        QTimer::singleShot(0,
+                           [&]()
+                           {
+                               DumpCallstack(eventStack, nullptr);
+                               done = true;
+                           });
 
         QTRY_VERIFY(done);
 
@@ -170,11 +186,13 @@ class TestDebugUtilsCrossPlatform : public QObject {
         QVERIFY(qAbs(normalStack.size() - eventStack.size()) <= tolerance);
     }
 
-    void testMemoryAllocationDuringStackTrace() {
+    void testMemoryAllocationDuringStackTrace()
+    {
         // Test that DumpCallstack doesn't cause issues with memory allocation
         QStringList *stacks = new QStringList[10];
 
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 10; ++i)
+        {
             DumpCallstack(stacks[i], nullptr);
             QVERIFY(stacks[i].size() > 0);
         }
@@ -185,7 +203,8 @@ class TestDebugUtilsCrossPlatform : public QObject {
         QVERIFY(true);
     }
 
-    void testStackTraceWithNullContext() {
+    void testStackTraceWithNullContext()
+    {
         // Test that passing nullptr context works
         QStringList stack;
         DumpCallstack(stack, nullptr);
@@ -193,12 +212,14 @@ class TestDebugUtilsCrossPlatform : public QObject {
         QVERIFY(stack.size() > 0);
     }
 
-    void testMultipleRapidCalls() {
+    void testMultipleRapidCalls()
+    {
         // Test rapid successive calls to ensure no state corruption
         const int numCalls = 50;
         QVector<QStringList> stacks(numCalls);
 
-        for (int i = 0; i < numCalls; ++i) {
+        for (int i = 0; i < numCalls; ++i)
+        {
             DumpCallstack(stacks[i], nullptr);
             QVERIFY(stacks[i].size() > 0);
 
@@ -208,12 +229,14 @@ class TestDebugUtilsCrossPlatform : public QObject {
 
         // All stacks should be similar in size (same call depth)
         int firstSize = stacks[0].size();
-        for (int i = 1; i < numCalls; ++i) {
+        for (int i = 1; i < numCalls; ++i)
+        {
             QVERIFY(qAbs(stacks[i].size() - firstSize) <= 2); // Allow small variations
         }
     }
 
-    void cleanupTestCase() {
+    void cleanupTestCase()
+    {
         qDebug() << "DebugUtils cross-platform tests completed successfully";
     }
 };

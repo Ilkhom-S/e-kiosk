@@ -11,13 +11,15 @@
 #include <QtCore/QVariantMap>
 #include <Common/QtHeadersEnd.h>
 
-class SystemInfo : public QThread {
+class SystemInfo : public QThread
+{
     Q_OBJECT
 
   private:
     QVariantMap sysInfo;
 
-    void getSystemInfo() {
+    void getSystemInfo()
+    {
         // "----------------- OS ----------------- ";
         QVariantMap osInfo = getWmicInfo(QString("os get caption, version, csname, csdversion, osarchitecture"));
 
@@ -41,7 +43,8 @@ class SystemInfo : public QThread {
 
         int ramCapacityTotal = 0;
 
-        for (auto &r : ramInfo.value("data").toList()) {
+        for (auto &r : ramInfo.value("data").toList())
+        {
             QVariantMap ram = r.toMap();
             QString manufacturer = ram.value("manufacturer").toString();
             QString speed = ram.value("speed").toString();
@@ -51,11 +54,13 @@ class SystemInfo : public QThread {
 
             QString divider = ramInfo.value("manufacturer").toString() != "" ? "|" : "";
 
-            if (!ramInfo.value("manufacturer").toString().contains(manufacturer)) {
+            if (!ramInfo.value("manufacturer").toString().contains(manufacturer))
+            {
                 ramInfo["manufacturer"] = ramInfo.value("manufacturer").toString() + divider + manufacturer;
             }
 
-            if (!ramInfo.value("speed").toString().contains(speed)) {
+            if (!ramInfo.value("speed").toString().contains(speed))
+            {
                 ramInfo["speed"] = ramInfo.value("speed").toString() + divider + speed;
             }
 
@@ -74,7 +79,8 @@ class SystemInfo : public QThread {
 
         QVariantMap diskInfo = getWmicInfo("diskdrive get model, size", true);
 
-        if (diskInfo.value("data").toList().count() > 0) {
+        if (diskInfo.value("data").toList().count() > 0)
+        {
             diskInfo = diskInfo.value("data").toList().at(0).toMap();
         }
 
@@ -91,7 +97,8 @@ class SystemInfo : public QThread {
         QVariantMap systemDisk;
         double freespace = 0;
 
-        for (auto &ld : lDiskInfo.value("data").toList()) {
+        for (auto &ld : lDiskInfo.value("data").toList())
+        {
             QVariantMap lDisk = ld.toMap();
             QString lDiskCaption = lDisk.value("caption").toString();
             auto size = lDisk.value("size").toDouble() / (1024 * 1024 * 1024);
@@ -102,7 +109,8 @@ class SystemInfo : public QThread {
             diskInfo["diskCaptions"] = diskInfo["diskCaptions"].toString() + divider + lDiskCaption.at(0);
 
             // system disk
-            if (lDiskCaption == QDir::rootPath().left(2)) {
+            if (lDiskCaption == QDir::rootPath().left(2))
+            {
                 systemDisk["caption"] = lDiskCaption;
                 systemDisk["size"] = QString::number(size, 'f', 1);
                 systemDisk["freespace"] = QString::number(lDiskFreeSpace, 'f', 1);
@@ -118,7 +126,8 @@ class SystemInfo : public QThread {
         sysInfo["system_disk"] = systemDisk;
     }
 
-    QVariantMap getWmicInfo(QString cmd, const bool getList = false) {
+    QVariantMap getWmicInfo(QString cmd, const bool getList = false)
+    {
 
         QProcess proc;
         QString args = QString("%1 /value").arg(cmd);
@@ -129,28 +138,37 @@ class SystemInfo : public QThread {
 
         QVariantMap info;
 
-        while (proc.waitForReadyRead()) {
-            while (proc.canReadLine()) {
+        while (proc.waitForReadyRead())
+        {
+            while (proc.canReadLine())
+            {
                 QByteArray output = proc.readAllStandardOutput();
                 QStringDecoder decoder("IBM866");
                 QString data = decoder(output);
 
                 //            qDebug() << data;
 
-                if (data.trimmed().contains("\r\r\n\r\r\n\r\r\n")) {
+                if (data.trimmed().contains("\r\r\n\r\r\n\r\r\n"))
+                {
                     QStringList dataList = data.trimmed().split("\r\r\n\r\r\n\r\r\n");
 
                     QVariantList list;
 
-                    for (auto &d : dataList) {
+                    for (auto &d : dataList)
+                    {
                         list.append(toMap(d));
                     }
 
                     info["data"] = list;
-                } else {
-                    if (getList) {
+                }
+                else
+                {
+                    if (getList)
+                    {
                         info["data"] = QVariantList() << toMap(data.trimmed());
-                    } else {
+                    }
+                    else
+                    {
                         info = toMap(data.trimmed());
                     }
                 }
@@ -162,12 +180,14 @@ class SystemInfo : public QThread {
         return info;
     }
 
-    QVariantMap toMap(QString data) {
+    QVariantMap toMap(QString data)
+    {
         QVariantMap map;
 
         QStringList dataList = data.trimmed().split("\r\r\n");
 
-        for (auto &d : dataList) {
+        for (auto &d : dataList)
+        {
             QStringList list = d.split("=");
             QString key = list.at(0).toLower();
             QString value = list.length() > 1 ? list.at(1) : "";
@@ -177,8 +197,10 @@ class SystemInfo : public QThread {
         return map;
     }
 
-    QString ramMemoryType(int type) {
-        switch (type) {
+    QString ramMemoryType(int type)
+    {
+        switch (type)
+        {
             case 20:
                 return "DDR";
             case 21:
@@ -197,7 +219,8 @@ class SystemInfo : public QThread {
     }
 
   protected:
-    void run() {
+    void run()
+    {
         getSystemInfo();
 
         emit emitSystemInfo(sysInfo);

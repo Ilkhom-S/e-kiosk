@@ -9,7 +9,8 @@
 // Project
 #include "KeysWizardPage.h"
 
-KeysWizardPage::KeysWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent) : WizardPageBase(aBackend, aParent) {
+KeysWizardPage::KeysWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent) : WizardPageBase(aBackend, aParent)
+{
     mKeysWindow = new KeysWindow(aBackend, this);
 
     connect(mKeysWindow, SIGNAL(beginGenerating()), SLOT(onBeginGenerating()));
@@ -23,7 +24,8 @@ KeysWizardPage::KeysWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent) :
 }
 
 //------------------------------------------------------------------------
-bool KeysWizardPage::initialize() {
+bool KeysWizardPage::initialize()
+{
     emit pageEvent("#can_proceed", false);
 
     auto tokenStatus = mBackend->getKeysManager()->tokenStatus();
@@ -34,12 +36,14 @@ bool KeysWizardPage::initialize() {
 }
 
 //------------------------------------------------------------------------
-bool KeysWizardPage::shutdown() {
+bool KeysWizardPage::shutdown()
+{
     return true;
 }
 
 //------------------------------------------------------------------------
-bool KeysWizardPage::activate() {
+bool KeysWizardPage::activate()
+{
     auto tokenStatus = mBackend->getKeysManager()->tokenStatus();
 
     mKeysWindow->initialize(tokenStatus.available, tokenStatus.initialized);
@@ -48,32 +52,39 @@ bool KeysWizardPage::activate() {
 }
 
 //------------------------------------------------------------------------
-bool KeysWizardPage::deactivate() {
+bool KeysWizardPage::deactivate()
+{
     return true;
 }
 
 //----------------------------------------------------------------------------
-void KeysWizardPage::onBeginGenerating() {
+void KeysWizardPage::onBeginGenerating()
+{
     GUI::MessageBox::wait(tr("#creating_keys"));
 
     mKeysWindow->doGenerate();
 }
 
 //----------------------------------------------------------------------------
-void KeysWizardPage::onEndGenerating() {
+void KeysWizardPage::onEndGenerating()
+{
     GUI::MessageBox::hide();
 
     // Сохраняем ключи
-    if (!mKeysWindow->save()) {
+    if (!mKeysWindow->save())
+    {
         GUI::MessageBox::critical(tr("#cannot_save_keys"));
         emit pageEvent("#can_proceed", false);
-    } else {
+    }
+    else
+    {
         emit pageEvent("#can_proceed", true);
     }
 }
 
 //----------------------------------------------------------------------------
-void KeysWizardPage::onError(QString aError) {
+void KeysWizardPage::onError(QString aError)
+{
     GUI::MessageBox::hide();
     GUI::MessageBox::critical(aError);
 

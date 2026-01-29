@@ -12,7 +12,8 @@
 template class CustomPrinter<TSerialPrinterBase>;
 
 //--------------------------------------------------------------------------------
-template <class T> CustomPrinter<T>::CustomPrinter() {
+template <class T> CustomPrinter<T>::CustomPrinter()
+{
     this->mParameters = POSPrinters::CommonParameters;
 
     // статусы ошибок
@@ -55,13 +56,15 @@ template <class T> CustomPrinter<T>::CustomPrinter() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> QStringList CustomPrinter<T>::getModelList() {
+template <class T> QStringList CustomPrinter<T>::getModelList()
+{
     return QStringList() << CCustomPrinter::Models::TG2480 << CCustomPrinter::Models::TG2460H
                          << CCustomPrinter::Models::TL80 << CCustomPrinter::Models::TL60;
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void CustomPrinter<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
+template <class T> void CustomPrinter<T>::setDeviceConfiguration(const QVariantMap &aConfiguration)
+{
     this->setDeviceConfiguration(aConfiguration);
 
     int lineSpacing = this->getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
@@ -71,13 +74,15 @@ template <class T> void CustomPrinter<T>::setDeviceConfiguration(const QVariantM
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool CustomPrinter<T>::printImageDefault(const QImage &aImage, const Tags::TTypes &aTags) {
+template <class T> bool CustomPrinter<T>::printImageDefault(const QImage &aImage, const Tags::TTypes &aTags)
+{
     int width = aImage.width();
     int height = aImage.height();
     int lines = qCeil(height / double(CCustomPrinter::LineHeight));
     int widthInBytes = qCeil(width / 8.0);
 
-    if (width > CCustomPrinter::MaxImageWidth) {
+    if (width > CCustomPrinter::MaxImageWidth)
+    {
         this->toLog(
             LogLevel::Warning,
             this->mDeviceName +
@@ -85,22 +90,28 @@ template <class T> bool CustomPrinter<T>::printImageDefault(const QImage &aImage
         return false;
     }
 
-    if (!this->mIOPort->write(CPOSPrinter::Command::SetLineSpacing(0))) {
+    if (!this->mIOPort->write(CPOSPrinter::Command::SetLineSpacing(0)))
+    {
         this->toLog(LogLevel::Error, this->mDeviceName + ": Failed to set null line spacing for printing the image");
         return false;
     }
 
     bool result = true;
 
-    for (int i = 0; i < lines; ++i) {
+    for (int i = 0; i < lines; ++i)
+    {
         QList<QByteArray> lineData;
 
-        for (int j = 0; j < CCustomPrinter::LineHeight; ++j) {
+        for (int j = 0; j < CCustomPrinter::LineHeight; ++j)
+        {
             int index = i * CCustomPrinter::LineHeight + j;
 
-            if (index < height) {
+            if (index < height)
+            {
                 lineData << QByteArray::fromRawData((const char *)aImage.scanLine(index), widthInBytes);
-            } else {
+            }
+            else
+            {
                 lineData << QByteArray(widthInBytes, ASCII::NUL);
             }
         }
@@ -110,12 +121,15 @@ template <class T> bool CustomPrinter<T>::printImageDefault(const QImage &aImage
         request.append(uchar(width % 256));
         request.append(uchar(width / 256));
 
-        for (int j = 0; j < width; ++j) {
+        for (int j = 0; j < width; ++j)
+        {
             QByteArray data(3, ASCII::NUL);
             char mask = 1 << (7 - (j % 8));
 
-            for (int k = 0; k < CCustomPrinter::LineHeight; ++k) {
-                if (lineData[k][j / 8] & mask) {
+            for (int k = 0; k < CCustomPrinter::LineHeight; ++k)
+            {
+                if (lineData[k][j / 8] & mask)
+                {
                     data[k / 8] = data[k / 8] | (1 << (7 - (k % 8)));
                 }
             }
@@ -123,7 +137,8 @@ template <class T> bool CustomPrinter<T>::printImageDefault(const QImage &aImage
             request.append(data);
         }
 
-        if (!this->mIOPort->write(request + ASCII::LF)) {
+        if (!this->mIOPort->write(request + ASCII::LF))
+        {
             result = false;
 
             break;
@@ -132,7 +147,8 @@ template <class T> bool CustomPrinter<T>::printImageDefault(const QImage &aImage
 
     int lineSpacing = this->getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
 
-    if (!this->mIOPort->write(CPOSPrinter::Command::SetLineSpacing(lineSpacing))) {
+    if (!this->mIOPort->write(CPOSPrinter::Command::SetLineSpacing(lineSpacing)))
+    {
         this->toLog(LogLevel::Error, this->mDeviceName + ": Failed to set line spacing after printing the image");
     }
 
@@ -141,10 +157,12 @@ template <class T> bool CustomPrinter<T>::printImageDefault(const QImage &aImage
 
 //--------------------------------------------------------------------------------
 
-template <class T> bool CustomPrinter<T>::printImage(const QImage &aImage, const Tags::TTypes &aTags) {
+template <class T> bool CustomPrinter<T>::printImage(const QImage &aImage, const Tags::TTypes &aTags)
+{
     int width = aImage.width();
 
-    if (width > CCustomPrinter::GAM::MaxImageWidth) {
+    if (width > CCustomPrinter::GAM::MaxImageWidth)
+    {
         this->toLog(LogLevel::Warning,
                     this->mDeviceName + QStringLiteral(": Image width > %1, so it cannot be printing properly")
                                             .arg(CCustomPrinter::GAM::MaxImageWidth));
@@ -159,7 +177,8 @@ template <class T> bool CustomPrinter<T>::printImage(const QImage &aImage, const
 
     int leftMargin = qFloor((CCustomPrinter::GAM::MaxImageWidth - width) / 2.0);
 
-    if (aTags.contains(Tags::Type::Center) && (leftMargin > 0)) {
+    if (aTags.contains(Tags::Type::Center) && (leftMargin > 0))
+    {
         // Формируем команду отступа: вставляем значение перед последним байтом-разделителем
         QByteArray marginValue = QByteArray::number(leftMargin);
         initializeGAM.insert(initializeGAM.size() - 1, marginValue);
@@ -170,14 +189,16 @@ template <class T> bool CustomPrinter<T>::printImage(const QImage &aImage, const
     QElapsedTimer timer;
     timer.start();
 
-    if (!this->mIOPort->write(initializeGAM)) {
+    if (!this->mIOPort->write(initializeGAM))
+    {
         this->toLog(LogLevel::Error, this->mDeviceName + QStringLiteral(": Failed to initialize GAM"));
         return false;
     }
 
     int widthInBytes = qCeil(width / 8.0);
 
-    for (int i = 0; i < aImage.height(); ++i) {
+    for (int i = 0; i < aImage.height(); ++i)
+    {
         // Qt 6: scanLine возвращает uchar*, приводим к const char* для QByteArray
         QByteArray data(reinterpret_cast<const char *>(aImage.scanLine(i)), widthInBytes);
 
@@ -187,13 +208,15 @@ template <class T> bool CustomPrinter<T>::printImage(const QImage &aImage, const
         // Вставляем длину данных в команду (индекс 3 согласно протоколу GAM)
         command.insert(3, QByteArray::number(data.size()));
 
-        if (!this->mIOPort->write(command)) {
+        if (!this->mIOPort->write(command))
+        {
             this->toLog(LogLevel::Error, this->mDeviceName + QStringLiteral(": Failed to send image data"));
             return false;
         }
     }
 
-    if (!this->mIOPort->write(CCustomPrinter::GAM::Commands::PrintImage)) {
+    if (!this->mIOPort->write(CCustomPrinter::GAM::Commands::PrintImage))
+    {
         this->toLog(LogLevel::Error, this->mDeviceName + QStringLiteral(": Failed to set resolution 204 dpi"));
         return false;
     }
@@ -211,7 +234,8 @@ template <class T> bool CustomPrinter<T>::printImage(const QImage &aImage, const
 
     pause -= elapsed;
 
-    if (pause > 0) {
+    if (pause > 0)
+    {
         SleepHelper::msleep(static_cast<int>(pause));
     }
 

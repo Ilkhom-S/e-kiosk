@@ -19,22 +19,29 @@
 #include <Hardware/FR/FFDataTypes.h>
 
 //---------------------------------------------------------------------------
-namespace CFR {
+namespace CFR
+{
     /// Сменилась ли ставка НДС с 18% на 20% в РФ.
-    inline bool isRFVAT20() {
+    inline bool isRFVAT20()
+    {
         return QDate::currentDate() >= QDate(2019, 1, 1);
     }
 } // namespace CFR
 
 //---------------------------------------------------------------------------
-namespace CFR {
-    namespace FiscalFields {
-        namespace Types {
+namespace CFR
+{
+    namespace FiscalFields
+    {
+        namespace Types
+        {
 #define ADD_FISCAL_TYPE(aType, aMinSize, ...) append(ETypes::aType, SData(aMinSize, #aType, __VA_ARGS__))
 
-            class CData : public CSpecification<ETypes::Enum, SData> {
+            class CData : public CSpecification<ETypes::Enum, SData>
+            {
               public:
-                CData() {
+                CData()
+                {
                     ADD_FISCAL_TYPE(String, 0);
                     ADD_FISCAL_TYPE(Byte, 1, true);
                     ADD_FISCAL_TYPE(ByteArray, 1);
@@ -60,7 +67,8 @@ namespace CFR {
         typedef QPair<TData, TDescriptionData> TAllData;
 
         //---------------------------------------------------------------------------
-        class Data : public CSpecification<int, SData> {
+        class Data : public CSpecification<int, SData>
+        {
           public:
             Data();
             void add(const TData &aData);
@@ -80,7 +88,8 @@ namespace CFR {
         };
 
 #define ADD_FISCAL_FIELD(aField, aName, aType, ...)                                                                    \
-    const int aName = []() -> int {                                                                                    \
+    const int aName = []() -> int                                                                                      \
+    {                                                                                                                  \
         CFR::FiscalFields::Data::process(                                                                              \
             aField, CFR::FiscalFields::SData(CFR::FiscalFields::ETypes::aType, CFiscalSDK::aName, __VA_ARGS__));       \
         return aField;                                                                                                 \
@@ -314,12 +323,14 @@ namespace CFR {
 
         //---------------------------------------------------------------------------
         // Список полей налогов.
-        class TaxAmountFields : public CFields {
+        class TaxAmountFields : public CFields
+        {
           public:
             TaxAmountFields()
                 : CFields(CFields() << CFR::FiscalFields::TaxAmount02 << CFR::FiscalFields::TaxAmount03
                                     << CFR::FiscalFields::TaxAmount04 << CFR::FiscalFields::TaxAmount05
-                                    << CFR::FiscalFields::TaxAmount06 << CFR::FiscalFields::TaxAmount07) {
+                                    << CFR::FiscalFields::TaxAmount06 << CFR::FiscalFields::TaxAmount07)
+            {
             }
         };
 

@@ -7,7 +7,8 @@
 // System
 #include <SysUtils/ISysUtils.h>
 
-qlonglong ISysUtils::verifyTrust(const QString &aFile) {
+qlonglong ISysUtils::verifyTrust(const QString &aFile)
+{
 #if defined(__APPLE__)
     // Use codesign to check signature
     QString cmd = QString("codesign -v --verify '%1' 2>&1").arg(aFile);
@@ -25,7 +26,8 @@ qlonglong ISysUtils::verifyTrust(const QString &aFile) {
 
 //---------------------------------------------------------------------------
 // Получить из сертификата информацию о подписчике (Linux: openssl, macOS: codesign)
-bool ISysUtils::getSignerInfo(const QString &aFile, SSignerInfo &aSigner) {
+bool ISysUtils::getSignerInfo(const QString &aFile, SSignerInfo &aSigner)
+{
 #if defined(__APPLE__)
     // Use codesign to get signer info
     QString cmd = QString("codesign -d --verbose=4 '%1' 2>&1").arg(aFile);
@@ -34,13 +36,15 @@ bool ISysUtils::getSignerInfo(const QString &aFile, SSignerInfo &aSigner) {
         return false;
     char buffer[512];
     QString output;
-    while (fgets(buffer, sizeof(buffer), fp)) {
+    while (fgets(buffer, sizeof(buffer), fp))
+    {
         output += QString::fromLocal8Bit(buffer);
     }
     pclose(fp);
     QRegularExpression nameRx("Authority=(.*)");
     QRegularExpressionMatch match = nameRx.match(output);
-    if (match.hasMatch()) {
+    if (match.hasMatch())
+    {
         aSigner.name = match.captured(1).trimmed();
         return true;
     }

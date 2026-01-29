@@ -6,7 +6,8 @@
 #include "Payment.h"
 
 //------------------------------------------------------------------------------
-class MultistagePayment : public Payment {
+class MultistagePayment : public Payment
+{
   public:
     MultistagePayment(PaymentFactory *aFactory);
 

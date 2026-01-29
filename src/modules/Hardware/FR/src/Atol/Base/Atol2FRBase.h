@@ -9,12 +9,14 @@
 #include "AtolFRBase.h"
 
 //--------------------------------------------------------------------------------
-class Atol2FRBase : public AtolFRBase {
+class Atol2FRBase : public AtolFRBase
+{
     SET_SERIES("ATOL2")
 
   protected:
     /// Выполнить команду.
-    virtual TResult performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout) {
+    virtual TResult performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout)
+    {
         mProtocol.setPort(mIOPort);
         mProtocol.setLog(mLog);
 

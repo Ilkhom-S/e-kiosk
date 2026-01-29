@@ -28,7 +28,8 @@
 #include "ServiceTags.h"
 
 NetworkServiceWindow::NetworkServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), ServiceWindowBase(aBackend), mBackend(aBackend), mDialupWindow(0), mUnmanagedWindow(0) {
+    : QWidget(aParent), ServiceWindowBase(aBackend), mBackend(aBackend), mDialupWindow(0), mUnmanagedWindow(0)
+{
     setupUi(this);
 
     mTypeButtonGroup.addButton(rbDialupLink);
@@ -39,19 +40,24 @@ NetworkServiceWindow::NetworkServiceWindow(ServiceMenuBackend *aBackend, QWidget
 }
 
 //------------------------------------------------------------------------
-bool NetworkServiceWindow::activate() {
+bool NetworkServiceWindow::activate()
+{
     return true;
 }
 
 //------------------------------------------------------------------------
-bool NetworkServiceWindow::deactivate() {
+bool NetworkServiceWindow::deactivate()
+{
     SDK::PaymentProcessor::SConnection connection;
 
-    if (rbUnmanagedLink->isChecked()) {
+    if (rbUnmanagedLink->isChecked())
+    {
         connection.name = "unmanaged connection";
         connection.type = EConnectionTypes::Unmanaged;
         connection.proxy = mUnmanagedWindow->getUserSelection();
-    } else if (rbDialupLink->isChecked()) {
+    }
+    else if (rbDialupLink->isChecked())
+    {
         connection.name = mDialupWindow->getUserSelection();
         connection.type = EConnectionTypes::Dialup;
     }
@@ -63,7 +69,8 @@ bool NetworkServiceWindow::deactivate() {
 }
 
 //------------------------------------------------------------------------
-bool NetworkServiceWindow::initialize() {
+bool NetworkServiceWindow::initialize()
+{
     connect(&mTaskWatcher, SIGNAL(finished()), SLOT(onTestFinished()));
 
     QVariantMap networkInfo;
@@ -101,9 +108,12 @@ bool NetworkServiceWindow::initialize() {
     swContainer->addWidget(mUnmanagedWindow);
 
     // Контролы переключения типа соединения
-    if (type == EConnectionTypes::Unmanaged) {
+    if (type == EConnectionTypes::Unmanaged)
+    {
         rbUnmanagedLink->click();
-    } else if (type == EConnectionTypes::Dialup) {
+    }
+    else if (type == EConnectionTypes::Dialup)
+    {
         rbDialupLink->click();
     }
 
@@ -111,23 +121,29 @@ bool NetworkServiceWindow::initialize() {
 }
 
 //------------------------------------------------------------------------
-bool NetworkServiceWindow::shutdown() {
+bool NetworkServiceWindow::shutdown()
+{
     mTaskWatcher.waitForFinished();
 
     return true;
 }
 
 //------------------------------------------------------------------------
-void NetworkServiceWindow::onChangeConnectionType(QAbstractButton *aButton) {
-    if (aButton == rbDialupLink) {
+void NetworkServiceWindow::onChangeConnectionType(QAbstractButton *aButton)
+{
+    if (aButton == rbDialupLink)
+    {
         swContainer->setCurrentWidget(mDialupWindow);
-    } else {
+    }
+    else
+    {
         swContainer->setCurrentWidget(mUnmanagedWindow);
     }
 }
 
 //------------------------------------------------------------------------
-void NetworkServiceWindow::onCreateDialupConnection(const QString &aConnection, const QString &aNetworkDevice) {
+void NetworkServiceWindow::onCreateDialupConnection(const QString &aConnection, const QString &aNetworkDevice)
+{
     SDK::PaymentProcessor::SConnection connection;
 
     connection.type = EConnectionTypes::Dialup;
@@ -136,7 +152,8 @@ void NetworkServiceWindow::onCreateDialupConnection(const QString &aConnection, 
     mBackend->getNetworkManager()->createDialupConnection(connection, aNetworkDevice);
 
     QVariantMap connections;
-    foreach (QString c, mBackend->getNetworkManager()->getRemoteConnections()) {
+    foreach (QString c, mBackend->getNetworkManager()->getRemoteConnections())
+    {
         connections.insert(c, 0);
     }
 
@@ -145,7 +162,8 @@ void NetworkServiceWindow::onCreateDialupConnection(const QString &aConnection, 
 }
 
 //------------------------------------------------------------------------
-void NetworkServiceWindow::onTestDialupConnection(const QString &aConnection) {
+void NetworkServiceWindow::onTestDialupConnection(const QString &aConnection)
+{
     SDK::PaymentProcessor::SConnection connection;
 
     connection.type = EConnectionTypes::Dialup;
@@ -159,7 +177,8 @@ void NetworkServiceWindow::onTestDialupConnection(const QString &aConnection) {
 }
 
 //------------------------------------------------------------------------
-void NetworkServiceWindow::onRemoveDialupConnection(const QString &aConnection) {
+void NetworkServiceWindow::onRemoveDialupConnection(const QString &aConnection)
+{
     SDK::PaymentProcessor::SConnection connection;
 
     connection.type = EConnectionTypes::Dialup;
@@ -168,7 +187,8 @@ void NetworkServiceWindow::onRemoveDialupConnection(const QString &aConnection) 
     mBackend->getNetworkManager()->removeDialupConnection(connection);
 
     QVariantMap connections;
-    foreach (QString c, mBackend->getNetworkManager()->getRemoteConnections()) {
+    foreach (QString c, mBackend->getNetworkManager()->getRemoteConnections())
+    {
         connections.insert(c, 0);
     }
 
@@ -177,7 +197,8 @@ void NetworkServiceWindow::onRemoveDialupConnection(const QString &aConnection) 
 }
 
 //---------------------------------------------------------------------------
-void NetworkServiceWindow::onTestUnmanagedConnection(QNetworkProxy aProxy) {
+void NetworkServiceWindow::onTestUnmanagedConnection(QNetworkProxy aProxy)
+{
     SDK::PaymentProcessor::SConnection connection;
 
     connection.name = "unmanaged connection";
@@ -201,7 +222,8 @@ void NetworkServiceWindow::onTestUnmanagedConnection(QNetworkProxy aProxy) {
 }
 
 //---------------------------------------------------------------------------
-void NetworkServiceWindow::onTestFinished() {
+void NetworkServiceWindow::onTestFinished()
+{
     GUI::MessageBox::hide();
     GUI::MessageBox::info(mTaskWatcher.result() ? tr("#connection_test_ok")
                                                 : tr("#connection_test_failed") + "\n" + mConnectionError);

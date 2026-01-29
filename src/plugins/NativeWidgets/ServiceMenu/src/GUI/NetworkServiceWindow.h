@@ -16,7 +16,8 @@
 #include "IServiceWindow.h"
 
 //------------------------------------------------------------------------
-class NetworkServiceWindow : public QWidget, public ServiceWindowBase, public Ui::NetworkServiceWindow {
+class NetworkServiceWindow : public QWidget, public ServiceWindowBase, public Ui::NetworkServiceWindow
+{
     Q_OBJECT
 
   public:

@@ -27,20 +27,23 @@
 class NetworkTaskManager;
 
 //---------------------------------------------------------------------------
-namespace Uniteller {
+namespace Uniteller
+{
     const quint16 DefaultPort = 10400;
     const int SocketTimeout = 5000;
     const char LogName[] = "Uniteller";
 } // namespace Uniteller
 
 //---------------------------------------------------------------------------
-namespace Uniteller {
+namespace Uniteller
+{
     class BaseResponse;
     typedef QSharedPointer<BaseResponse> BaseResponsePtr;
 
     //---------------------------------------------------------------------------
     /// API для работы с сервисом
-    class API : public QObject, public ILogable {
+    class API : public QObject, public ILogable
+    {
         Q_OBJECT
 
         API(ILog *aLog, SDK::PaymentProcessor::ICore *aCore, quint16 aPort = Uniteller::DefaultPort);
@@ -49,14 +52,16 @@ namespace Uniteller {
         static QSharedPointer<API> getInstance(ILog *aLog, SDK::PaymentProcessor::ICore *aCore,
                                                quint16 aPort = Uniteller::DefaultPort);
 
-        void setTerminalID(const QString &aTerminalID) {
+        void setTerminalID(const QString &aTerminalID)
+        {
             mTerminalID = aTerminalID;
         }
 
         bool isReady() const;
 
         /// Возвращает последнюю ошибку
-        int getLastError() const {
+        int getLastError() const
+        {
             return mLastError;
         }
 

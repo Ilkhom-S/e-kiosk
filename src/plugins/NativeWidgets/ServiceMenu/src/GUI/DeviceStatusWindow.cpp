@@ -9,16 +9,19 @@
 
 DeviceStatusWindow::DeviceStatusWindow(ServiceMenuBackend *aBackend, const QString &aConfigurationName,
                                        QWidget *aParent)
-    : DeviceSlot(aBackend, aConfigurationName) {
+    : DeviceSlot(aBackend, aConfigurationName)
+{
     setParent(aParent);
 }
 
 //------------------------------------------------------------------------------
-DeviceStatusWindow::~DeviceStatusWindow() {
+DeviceStatusWindow::~DeviceStatusWindow()
+{
 }
 
 //------------------------------------------------------------------------
-QWidget *DeviceStatusWindow::createWidget() {
+QWidget *DeviceStatusWindow::createWidget()
+{
     QFrame *widget = new QFrame(dynamic_cast<QWidget *>(parent()));
 
     ui.setupUi(widget);
@@ -36,19 +39,22 @@ QWidget *DeviceStatusWindow::createWidget() {
 }
 
 //------------------------------------------------------------------------------
-void DeviceStatusWindow::onRepaint() {
+void DeviceStatusWindow::onRepaint()
+{
     // no need repaint
 }
 
 //------------------------------------------------------------------------------
 void DeviceStatusWindow::updateDeviceStatus(const QString &aNewStatus, const QString &aStatusColor,
-                                            SDK::Driver::EWarningLevel::Enum /*aLevel*/) {
+                                            SDK::Driver::EWarningLevel::Enum /*aLevel*/)
+{
     ui.lblDeviceStatus->setText(aNewStatus);
     ui.lblDeviceModel->setStyleSheet("color:" + aStatusColor + ";");
     ui.lblDeviceStatus->setStyleSheet("color:" + aStatusColor + ";");
     ui.lblDeviceType->setStyleSheet("color:" + aStatusColor + ";");
 
-    if (!mDeviceTest.isNull()) {
+    if (!mDeviceTest.isNull())
+    {
         ui.btnRunTest->setEnabled(mDeviceTest->isReady());
     }
 }

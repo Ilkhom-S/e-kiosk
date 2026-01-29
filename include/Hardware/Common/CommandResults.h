@@ -11,7 +11,8 @@
 #include "CommandResultData.h"
 
 //--------------------------------------------------------------------------------
-namespace CommandResult {
+namespace CommandResult
+{
     // протокол
     const int OK = 0;        /// OK.
     const int Port = 1;      /// Не удалось послать посылку/получить ответ из-за ошибки порта.
@@ -33,8 +34,14 @@ namespace CommandResult {
 
 #define CORRECT(aResult) !CommandResult::ProtocolErrors.contains(aResult)
 
-namespace EResult {
-    enum Enum { OK, Fail, Error };
+namespace EResult
+{
+    enum Enum
+    {
+        OK,
+        Fail,
+        Error
+    };
 } // namespace EResult
 
 //--------------------------------------------------------------------------------

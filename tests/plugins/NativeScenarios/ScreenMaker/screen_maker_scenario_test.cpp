@@ -11,11 +11,13 @@
 // System
 #include "../../common/PluginTestBase.h"
 
-class ScreenMakerScenarioTest : public QObject {
+class ScreenMakerScenarioTest : public QObject
+{
     Q_OBJECT
 
   public:
-    ScreenMakerScenarioTest() : m_testBase("D:/plugins/Debug/screen_maker_scenariod.dll") {
+    ScreenMakerScenarioTest() : m_testBase("D:/plugins/Debug/screen_maker_scenariod.dll")
+    {
     }
 
   private slots:
@@ -30,7 +32,8 @@ class ScreenMakerScenarioTest : public QObject {
 };
 
 //---------------------------------------------------------------------------
-void ScreenMakerScenarioTest::testPluginExists() {
+void ScreenMakerScenarioTest::testPluginExists()
+{
     // Verify that the ScreenMaker plugin DLL exists at expected location
     QString pluginPath = "D:/plugins/Debug/screen_maker_scenariod.dll";
     QVERIFY2(QFile::exists(pluginPath), qPrintable(QString("Plugin DLL not found at: %1").arg(pluginPath)));
@@ -41,14 +44,16 @@ void ScreenMakerScenarioTest::testPluginExists() {
 }
 
 //---------------------------------------------------------------------------
-void ScreenMakerScenarioTest::testPluginLoading() {
+void ScreenMakerScenarioTest::testPluginLoading()
+{
     // Load the plugin factory using PluginTestBase
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY2(factory != nullptr, "Failed to load plugin factory");
 }
 
 //---------------------------------------------------------------------------
-void ScreenMakerScenarioTest::testFactoryInterface() {
+void ScreenMakerScenarioTest::testFactoryInterface()
+{
     // Test basic factory interface methods
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -65,7 +70,8 @@ void ScreenMakerScenarioTest::testFactoryInterface() {
 }
 
 //---------------------------------------------------------------------------
-void ScreenMakerScenarioTest::testMainScenarioPluginFactory() {
+void ScreenMakerScenarioTest::testMainScenarioPluginFactory()
+{
     // Test plugin factory
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -75,7 +81,8 @@ void ScreenMakerScenarioTest::testMainScenarioPluginFactory() {
 }
 
 //---------------------------------------------------------------------------
-void ScreenMakerScenarioTest::testMainScenarioBasicInterface() {
+void ScreenMakerScenarioTest::testMainScenarioBasicInterface()
+{
     // Test factory returns valid plugin list
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);

@@ -4,20 +4,32 @@
 
 //--------------------------------------------------------------------------------
 /// Режим работы ФР
-namespace EFRMode {
-    enum Enum { Fiscal, Printer };
+namespace EFRMode
+{
+    enum Enum
+    {
+        Fiscal,
+        Printer
+    };
 } // namespace EFRMode
 
 //--------------------------------------------------------------------------------
 /// Регион (для налоговых ставок).
-namespace ERegion {
-    enum Enum { RF, KZ };
+namespace ERegion
+{
+    enum Enum
+    {
+        RF,
+        KZ
+    };
 } // namespace ERegion
 
 //--------------------------------------------------------------------------------
 /// Типы ФР.
-namespace EFRType {
-    enum Enum {
+namespace EFRType
+{
+    enum Enum
+    {
         EKLZ,   // Старый ФР с ЭКЛЗ
         NoEKLZ, // Старый ФР без ЭКЛЗ (для ЕНВД)
         FS      // Онлайновый ФР с ФН
@@ -26,8 +38,10 @@ namespace EFRType {
 
 //--------------------------------------------------------------------------------
 /// Форматы ФФД.
-namespace EFFD {
-    enum Enum {
+namespace EFFD
+{
+    enum Enum
+    {
         Unknown = -1, // Неизвестная
         F10Beta,      // 1.0 Beta
         F10,          // 1.0

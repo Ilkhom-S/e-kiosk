@@ -16,8 +16,10 @@ template bool WorkingThreadProxy::invokeMethod<bool>(std::function<bool()> aMeth
 template QString WorkingThreadProxy::invokeMethod<QString>(std::function<QString()> aMethod);
 
 //-------------------------------------------------------------------------------
-WorkingThreadProxy::WorkingThreadProxy(QThread *aWorkingThread) : mWorkingThread(aWorkingThread) {
-    if (mWorkingThread) {
+WorkingThreadProxy::WorkingThreadProxy(QThread *aWorkingThread) : mWorkingThread(aWorkingThread)
+{
+    if (mWorkingThread)
+    {
         moveToThread(mWorkingThread);
     }
 
@@ -32,7 +34,8 @@ WorkingThreadProxy::WorkingThreadProxy(QThread *aWorkingThread) : mWorkingThread
 }
 
 //--------------------------------------------------------------------------------
-template <class T> T WorkingThreadProxy::invokeMethod(std::function<T()> aMethod) {
+template <class T> T WorkingThreadProxy::invokeMethod(std::function<T()> aMethod)
+{
     checkThreadStarted();
 
     T result;
@@ -43,46 +46,56 @@ template <class T> T WorkingThreadProxy::invokeMethod(std::function<T()> aMethod
 }
 
 //--------------------------------------------------------------------------------
-template <> void WorkingThreadProxy::invokeMethod(TVoidMethod aMethod) {
+template <> void WorkingThreadProxy::invokeMethod(TVoidMethod aMethod)
+{
     checkThreadStarted();
 
     isWorkingThread() ? onInvoke(aMethod) : emit invoke(aMethod);
 }
 
 //--------------------------------------------------------------------------------
-void WorkingThreadProxy::onInvoke(TVoidMethod aMethod) {
+void WorkingThreadProxy::onInvoke(TVoidMethod aMethod)
+{
     aMethod();
 }
 
 //--------------------------------------------------------------------------------
-void WorkingThreadProxy::onInvoke(TBoolMethod aMethod, bool *aResult) {
+void WorkingThreadProxy::onInvoke(TBoolMethod aMethod, bool *aResult)
+{
     *aResult = aMethod();
 }
 
 //--------------------------------------------------------------------------------
-void WorkingThreadProxy::onInvoke(TIntMethod aMethod, int *aResult) {
+void WorkingThreadProxy::onInvoke(TIntMethod aMethod, int *aResult)
+{
     *aResult = aMethod();
 }
 
 //--------------------------------------------------------------------------------
-void WorkingThreadProxy::onInvoke(TDoubleMethod aMethod, double *aResult) {
+void WorkingThreadProxy::onInvoke(TDoubleMethod aMethod, double *aResult)
+{
     *aResult = aMethod();
 }
 
 //--------------------------------------------------------------------------------
-void WorkingThreadProxy::onInvoke(TStringMethod aMethod, QString *aResult) {
+void WorkingThreadProxy::onInvoke(TStringMethod aMethod, QString *aResult)
+{
     *aResult = aMethod();
 }
 
 //--------------------------------------------------------------------------------
-bool WorkingThreadProxy::isWorkingThread() {
+bool WorkingThreadProxy::isWorkingThread()
+{
     return !mWorkingThread || (mWorkingThread == QThread::currentThread());
 }
 
 //--------------------------------------------------------------------------------
-void WorkingThreadProxy::checkThreadStarted() {
-    if (mWorkingThread) {
-        if (!mWorkingThread->isRunning()) {
+void WorkingThreadProxy::checkThreadStarted()
+{
+    if (mWorkingThread)
+    {
+        if (!mWorkingThread->isRunning())
+        {
             connect(mWorkingThread, SIGNAL(started()), this, SLOT(checkThreadStarted()), Qt::UniqueConnection);
             mWorkingThread->start();
 

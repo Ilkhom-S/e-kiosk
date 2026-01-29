@@ -9,7 +9,8 @@
 #include "../AtolFRBase.h"
 
 //--------------------------------------------------------------------------------
-class Atol3FRBase : public AtolFRBase {
+class Atol3FRBase : public AtolFRBase
+{
     SET_SERIES("ATOL3")
 
     Atol3FRBase();

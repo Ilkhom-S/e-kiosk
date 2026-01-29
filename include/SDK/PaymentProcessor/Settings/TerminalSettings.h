@@ -22,23 +22,28 @@
 #include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>
 #include <SDK/PaymentProcessor/Connection/Connection.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
-        struct SDatabaseSettings {
+        struct SDatabaseSettings
+        {
             QString host;
             QString name;
             QString user;
             QString password;
             int port;
 
-            SDatabaseSettings() : port(0) {
+            SDatabaseSettings() : port(0)
+            {
             }
         };
 
         //---------------------------------------------------------------------------
-        struct SKeySettings {
+        struct SKeySettings
+        {
             bool isValid;
             int id; /// -1 - root key, -100 - invalid value
             int engine;
@@ -52,24 +57,28 @@ namespace SDK {
             QString secretPassword; /// Кодовая фраза.
             QString description;    /// Поле для заметок
 
-            SKeySettings() : isValid(false), id(-100), engine(0), serialNumber(0), bankSerialNumber(0) {
+            SKeySettings() : isValid(false), id(-100), engine(0), serialNumber(0), bankSerialNumber(0)
+            {
             }
         };
 
         //----------------------------------------------------------------------------
-        struct SCurrencySettings {
+        struct SCurrencySettings
+        {
             int id;                         /// Идентификатор валюты по ISO.
             QString code;                   /// Международное имя валюты ISO.
             QString name;                   /// Имя валюты в текущей локализации.
             QList<Currency::Nominal> coins; /// Список всех существующих номиналов монет
             QList<Currency::Nominal> notes; /// Список всех существующих номиналов купюр
 
-            SCurrencySettings() : id(-1) {
+            SCurrencySettings() : id(-1)
+            {
             }
         };
 
         //----------------------------------------------------------------------------
-        struct SAppEnvironment {
+        struct SAppEnvironment
+        {
             QString userDataPath;
             QString contentPath;
             QString interfacePath;
@@ -78,21 +87,32 @@ namespace SDK {
         };
 
         //----------------------------------------------------------------------------
-        struct SBlockByNote {
+        struct SBlockByNote
+        {
             quint32 nominal;
             quint32 interval;
             quint32 repeat;
 
-            SBlockByNote() : nominal(0), interval(0), repeat(0) {
+            SBlockByNote() : nominal(0), interval(0), repeat(0)
+            {
             }
             explicit SBlockByNote(quint32 aNominal, quint32 aInterval, quint32 aRepeat)
-                : nominal(aNominal), interval(aInterval), repeat(aRepeat) {
+                : nominal(aNominal), interval(aInterval), repeat(aRepeat)
+            {
             }
         };
 
         //----------------------------------------------------------------------------
-        struct SCommonSettings {
-            typedef enum { ValidatorError = 1, PrinterError, CardReaderError, AccountBalance, Penetration } BlockReason;
+        struct SCommonSettings
+        {
+            typedef enum
+            {
+                ValidatorError = 1,
+                PrinterError,
+                CardReaderError,
+                AccountBalance,
+                Penetration
+            } BlockReason;
 
             QSet<BlockReason> _blockOn;
             QList<SBlockByNote> blockNotes; /// Блокировка по номиналам
@@ -116,25 +136,32 @@ namespace SDK {
             SCommonSettings()
                 : blockCheatedPayment(false), autoEncashment(false), minPar(10), skipCheckWhileNetworkError(false),
                   isValid(true), disableAmountOverflow(false), penetrationEventLevel(EEventType::OK),
-                  printFailedReceipts(true), randomReceiptsID(false), enableBlankFiscalData(false) {
+                  printFailedReceipts(true), randomReceiptsID(false), enableBlankFiscalData(false)
+            {
                 _blockOn << ValidatorError << PrinterError << CardReaderError;
             }
 
-            void setBlockOn(BlockReason aReason, bool aBlock) {
-                if (aBlock) {
+            void setBlockOn(BlockReason aReason, bool aBlock)
+            {
+                if (aBlock)
+                {
                     _blockOn << aReason;
-                } else {
+                }
+                else
+                {
                     _blockOn.remove(aReason);
                 }
             }
 
-            bool blockOn(BlockReason aReason) const {
+            bool blockOn(BlockReason aReason) const
+            {
                 return _blockOn.contains(aReason);
             }
         };
 
         //----------------------------------------------------------------------------
-        struct SMonitoringSettings {
+        struct SMonitoringSettings
+        {
             QUrl url;
             QUrl restUrl;
             int heartbeatTimeout;
@@ -144,17 +171,21 @@ namespace SDK {
             QStringList cleanupItems;
             QStringList cleanupExclude;
 
-            SMonitoringSettings() : heartbeatTimeout(10), restCheckTimeout(30), restLimit(0) {
+            SMonitoringSettings() : heartbeatTimeout(10), restCheckTimeout(30), restLimit(0)
+            {
             }
 
-            bool isBlockByAccountBalance() const {
+            bool isBlockByAccountBalance() const
+            {
                 return restLimit > 0 && restUrl.isValid();
             }
         };
 
         //----------------------------------------------------------------------------
-        struct SServiceMenuPasswords {
-            SServiceMenuPasswords() : operatorId(0) {
+        struct SServiceMenuPasswords
+        {
+            SServiceMenuPasswords() : operatorId(0)
+            {
             }
 
             int operatorId;
@@ -163,15 +194,18 @@ namespace SDK {
         };
 
         //----------------------------------------------------------------------------
-        struct SServiceMenuSettings {
+        struct SServiceMenuSettings
+        {
             bool allowAnyKeyPair; // Разрешаем генерировать ключи с произвольным номером пары
 
-            SServiceMenuSettings() : allowAnyKeyPair(false) {
+            SServiceMenuSettings() : allowAnyKeyPair(false)
+            {
             }
         };
 
         //----------------------------------------------------------------------------
-        namespace CServiceMenuPasswords {
+        namespace CServiceMenuPasswords
+        {
             const char Service[] = "service_password";
             const char Screen[] = "screen_password";
             const char Collection[] = "collection_password";
@@ -179,7 +213,8 @@ namespace SDK {
         } // namespace CServiceMenuPasswords
 
         //----------------------------------------------------------------------------
-        class TerminalSettings : public ISettingsAdapter, public ILogable {
+        class TerminalSettings : public ISettingsAdapter, public ILogable
+        {
           public:
             TerminalSettings(TPtree &aProperties);
             ~TerminalSettings();

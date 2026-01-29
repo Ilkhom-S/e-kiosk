@@ -15,9 +15,11 @@
 #include "ATData.h"
 
 //--------------------------------------------------------------------------------
-namespace CATGSMModem {
+namespace CATGSMModem
+{
     /// Таймауты, [мс]
-    namespace Timeouts {
+    namespace Timeouts
+    {
         const int ResetConnection = 3000; /// Переустановка соединения
         const int Connection = 60000;     /// Установка связи с GSM сетью
         const int Default = 200;          /// По умолчанию для команд
@@ -25,25 +27,29 @@ namespace CATGSMModem {
         const int SMS = 5000;             /// Забирание SMS
         const int Config = 300;           /// Получение конфигурации
 
-        namespace SimCom {
+        namespace SimCom
+        {
             const int Config = 1000; /// Получение конфигурации
             const int USSD = 5000;   /// USSD-запрос
         } // namespace SimCom
 
-        namespace Siemens {
+        namespace Siemens
+        {
             const int CellInfo = 1000; /// Инфо о статусе регистрации в сети
         } // namespace Siemens
     } // namespace Timeouts
 
     /// Задержки, [мс]
-    namespace Pauses {
+    namespace Pauses
+    {
         const int AnswerAttempt = 25;    /// Между попытками получения ответа на команду
         const int Answer = 100;          /// После получения/неполучения ответа на команду
         const int BalanceAttempt = 1000; /// Между попытками запроса баланса.
         const int BalanceData = 100;     /// При чтении данных при запросе баланса.
         const int Message = 3000;        /// Перед приходом уведомления об отправке сообщения.
 
-        namespace ZTE {
+        namespace ZTE
+        {
             const int USSDAttempt = 100; /// Между попытками USSD-запроса.
         } // namespace ZTE
     } // namespace Pauses
@@ -55,21 +61,26 @@ namespace CATGSMModem {
     const int BalanceAttempts = 10;
 
     /// Параметры запроса данных SIM-карты
-    struct SSIMRequestInfo {
+    struct SSIMRequestInfo
+    {
         QString name;
         QString regexpData;
         bool swapCharPair;
 
-        SSIMRequestInfo() : swapCharPair(false) {
+        SSIMRequestInfo() : swapCharPair(false)
+        {
         }
         SSIMRequestInfo(const QString &aName, const QString &aRegexpData, bool aSwapCharPair)
-            : name(aName), regexpData(aRegexpData), swapCharPair(aSwapCharPair) {
+            : name(aName), regexpData(aRegexpData), swapCharPair(aSwapCharPair)
+        {
         }
     };
 
-    class CSIMRequestInfo : public CSpecification<QByteArray, SSIMRequestInfo> {
+    class CSIMRequestInfo : public CSpecification<QByteArray, SSIMRequestInfo>
+    {
       public:
-        CSIMRequestInfo() {
+        CSIMRequestInfo()
+        {
             add(AT::Commands::IMEI, CDeviceData::Modems::IMEI);
             add(AT::Commands::IMSI, CDeviceData::Modems::IMSI);
             add(AT::Commands::CNUM, CDeviceData::Modems::SIMNumber);
@@ -78,10 +89,12 @@ namespace CATGSMModem {
             add(AT::Commands::ZTE::SIMID, CDeviceData::Modems::SIMId, "\\w{6,24}", true);
         }
 
-        QStringList getDeviceDataKeys() {
+        QStringList getDeviceDataKeys()
+        {
             QStringList result;
 
-            foreach (const SSIMRequestInfo &aInfo, mBuffer) {
+            foreach (const SSIMRequestInfo &aInfo, mBuffer)
+            {
                 result << aInfo.name;
             }
 
@@ -94,7 +107,8 @@ namespace CATGSMModem {
 
       private:
         void add(const QByteArray &aCommand, const QString &aName, const QString &aRegexpData = "\\d+",
-                 bool aSwapCharPair = false) {
+                 bool aSwapCharPair = false)
+        {
             append(aCommand, SSIMRequestInfo(aName, aRegexpData, aSwapCharPair));
         }
     };

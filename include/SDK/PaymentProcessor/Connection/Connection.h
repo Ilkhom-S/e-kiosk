@@ -11,19 +11,23 @@
 // SDK
 #include "SDK/PaymentProcessor/Connection/ConnectionTypes.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //----------------------------------------------------------------------------
         /// Константы соединения.
-        namespace CConnection {
+        namespace CConnection
+        {
             // Интервал между пингами (в минутах) по умолчанию.
             const int DefaultCheckInterval = 15;
         } // namespace CConnection
 
         //----------------------------------------------------------------------------
         /// Шаблон соединения.
-        struct SConnectionTemplate {
+        struct SConnectionTemplate
+        {
             QString name;
             QString initString;
             QString phone;
@@ -35,13 +39,15 @@ namespace SDK {
 
         //----------------------------------------------------------------------------
         /// Структура соединения.
-        struct SConnection {
+        struct SConnection
+        {
             /// Тип списка URL.
             /// Тип списка URL.
             typedef QList<QUrl> TUrlList;
 
             /// Конструктор.
-            SConnection() {
+            SConnection()
+            {
                 type = EConnectionTypes::Unknown;
                 checkInterval = CConnection::DefaultCheckInterval;
                 proxy = QNetworkProxy(QNetworkProxy::NoProxy);
@@ -60,7 +66,8 @@ namespace SDK {
             int checkInterval;
 
             /// Оператор сравнения.
-            bool operator==(const SConnection &aCopy) const {
+            bool operator==(const SConnection &aCopy) const
+            {
                 return type == aCopy.type && name == aCopy.name && proxy == aCopy.proxy &&
                        checkInterval == aCopy.checkInterval;
             }

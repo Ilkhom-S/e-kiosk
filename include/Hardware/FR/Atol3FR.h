@@ -6,7 +6,8 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола KKM.
-class Atol3FRProtocol : public ProtocolBase {
+class Atol3FRProtocol : public ProtocolBase
+{
   public:
     Atol3FRProtocol();
 

@@ -10,14 +10,17 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний принтера Citizen PPU-231.
-namespace CCitizenPPU231 {
+namespace CCitizenPPU231
+{
     /// Максимальное количество символов в строке.
     const int LineSize = 48;
 
     /// Статусы.
-    class CStatuses : public CSpecification<int, int> {
+    class CStatuses : public CSpecification<int, int>
+    {
       public:
-        CStatuses() {
+        CStatuses()
+        {
             append(0, PrinterStatusCode::Warning::PaperNearEnd);
             append(2, PrinterStatusCode::Error::PaperEnd);
             append(4, DeviceStatusCode::Error::NotAvailable);
@@ -28,7 +31,8 @@ namespace CCitizenPPU231 {
 
     //--------------------------------------------------------------------------------
     /// Штрих-коды.
-    namespace Barcode {
+    namespace Barcode
+    {
         const char CodeSystem128 = '\x07'; /// Система штрих-кода - CODE128.
         const char Code128Spec = 'B';      /// Cпецификация (уточнение, подвид) системы Code128.
         const char Postfix = ASCII::NUL;   /// Постфикс.
@@ -39,9 +43,11 @@ namespace CCitizenPPU231 {
 
     //----------------------------------------------------------------------------
     /// Теги.
-    class TagEngine : public Tags::Engine {
+    class TagEngine : public Tags::Engine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             QByteArray prefix("\x1B\x21");
 
             appendCommon(Tags::Type::Bold, prefix, "\x08");

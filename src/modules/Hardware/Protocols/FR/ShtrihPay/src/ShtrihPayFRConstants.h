@@ -6,7 +6,8 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний устройств на протоколе Shtrih.
-namespace CShtrihPayFR {
+namespace CShtrihPayFR
+{
     /// Префикс.
     const char Prefix = ASCII::STX;
 
@@ -23,7 +24,8 @@ namespace CShtrihPayFR {
     const int MaxServiceRequests = 3;
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Дефолтный чтения ответа.
         const int DefaultAnswer = 3150;
 

@@ -9,10 +9,13 @@
 #include <Hardware/CashAcceptors/Models.h>
 
 //--------------------------------------------------------------------------------
-namespace CCCNet {
-    class ModelData : public CSpecification<QString, SBaseModelData> {
+namespace CCCNet
+{
+    class ModelData : public CSpecification<QString, SBaseModelData>
+    {
       public:
-        ModelData() {
+        ModelData()
+        {
             add("BB", Models::CashcodeG200);
 
             add("GX", Models::CashcodeGX, true);
@@ -35,7 +38,8 @@ namespace CCCNet {
         }
 
       private:
-        void add(const QString &aId, const QString &aName, bool aUpdatable = false) {
+        void add(const QString &aId, const QString &aName, bool aUpdatable = false)
+        {
             append(aId, SBaseModelData(aName, true, aUpdatable));
         }
     };

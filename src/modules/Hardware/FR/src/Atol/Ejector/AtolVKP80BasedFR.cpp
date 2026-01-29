@@ -10,12 +10,14 @@ template class AtolVKP80BasedFR<Atol3OnlineFRBase>;
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
-template <class T> AtolVKP80BasedFR<T>::AtolVKP80BasedFR() : mEjectorMode(0) {
+template <class T> AtolVKP80BasedFR<T>::AtolVKP80BasedFR() : mEjectorMode(0)
+{
     mEjectorSettings = CEjectorAtolFR::SData(CEjectorAtolFR::InitReceipt, '\x20', '\xE0', '\x30');
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void AtolVKP80BasedFR<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
+template <class T> void AtolVKP80BasedFR<T>::setDeviceConfiguration(const QVariantMap &aConfiguration)
+{
     AtolEjectorFR::setDeviceConfiguration(aConfiguration);
 
     mEjectorSettings.receipt = CEjectorAtolFR::InitReceipt;
@@ -26,7 +28,8 @@ template <class T> void AtolVKP80BasedFR<T>::setDeviceConfiguration(const QVaria
 
     int presentationLength = getConfigParameter(PresentationLength).toInt();
 
-    if (containsConfigParameter(PresentationLength)) {
+    if (containsConfigParameter(PresentationLength))
+    {
         if (presentationLength < CAtolVKP80BasedFR::MinPresentationLength)
             presentationLength = CAtolVKP80BasedFR::MinPresentationLength;
         if (presentationLength > CAtolVKP80BasedFR::MaxPresentationLength)
@@ -43,12 +46,15 @@ template <class T> void AtolVKP80BasedFR<T>::setDeviceConfiguration(const QVaria
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool AtolVKP80BasedFR<T>::setEjectorMode(char aEjectorMode) {
-    if (aEjectorMode == mEjectorMode) {
+template <class T> bool AtolVKP80BasedFR<T>::setEjectorMode(char aEjectorMode)
+{
+    if (aEjectorMode == mEjectorMode)
+    {
         return true;
     }
 
-    if (AtolEjectorFR::setEjectorMode(aEjectorMode)) {
+    if (AtolEjectorFR::setEjectorMode(aEjectorMode))
+    {
         mEjectorMode = aEjectorMode;
 
         return true;
@@ -58,13 +64,16 @@ template <class T> bool AtolVKP80BasedFR<T>::setEjectorMode(char aEjectorMode) {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool AtolVKP80BasedFR<T>::getCommonStatus(TStatusCodes &aStatusCodes) {
+template <class T> bool AtolVKP80BasedFR<T>::getCommonStatus(TStatusCodes &aStatusCodes)
+{
     int count = 0;
 
-    do {
+    do
+    {
         aStatusCodes.clear();
 
-        if (!AtolEjectorFR<T>::getCommonStatus(aStatusCodes)) {
+        if (!AtolEjectorFR<T>::getCommonStatus(aStatusCodes))
+        {
             return false;
         }
 
@@ -72,7 +81,8 @@ template <class T> bool AtolVKP80BasedFR<T>::getCommonStatus(TStatusCodes &aStat
         if (aStatusCodes.contains(PrinterStatusCode::Error::Temperature) &&
             (aStatusCodes.contains(PrinterStatusCode::Error::PaperEnd) ||
              aStatusCodes.contains(PrinterStatusCode::Error::PrintingHead) ||
-             aStatusCodes.contains(PrinterStatusCode::Error::Cutter))) {
+             aStatusCodes.contains(PrinterStatusCode::Error::Cutter)))
+        {
             aStatusCodes.remove(PrinterStatusCode::Error::Temperature);
         }
 
@@ -83,10 +93,13 @@ template <class T> bool AtolVKP80BasedFR<T>::getCommonStatus(TStatusCodes &aStat
         // ошибка отрезчика
         if (!mPrinterCollapse && !mProcessingErrors.contains(CAtolFR::Errors::NoPaper) &&
             !mStatusCollection.contains(PrinterStatusCode::Error::Temperature) &&
-            aStatusCodes.contains(PrinterStatusCode::Error::Temperature)) {
+            aStatusCodes.contains(PrinterStatusCode::Error::Temperature))
+        {
             toLog(LogLevel::Normal, "Trying to reinitializing printer #" + QString::number(count));
             reInitPrinter();
-        } else {
+        }
+        else
+        {
             break;
         }
     } while (++count < CAtolVKP80BasedFR::MaxReInitPrinterCount);
@@ -95,10 +108,12 @@ template <class T> bool AtolVKP80BasedFR<T>::getCommonStatus(TStatusCodes &aStat
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool AtolVKP80BasedFR<T>::reInitPrinter() {
+template <class T> bool AtolVKP80BasedFR<T>::reInitPrinter()
+{
     bool result = true;
 
-    if (!processCommand(CAtolFR::Commands::PrinterAccess, CAtolVKP80BasedFR::ReInitialization::Data)) {
+    if (!processCommand(CAtolFR::Commands::PrinterAccess, CAtolVKP80BasedFR::ReInitialization::Data))
+    {
         toLog(LogLevel::Error, "Failed to reinitialize printer");
         result = false;
     }
@@ -110,7 +125,8 @@ template <class T> bool AtolVKP80BasedFR<T>::reInitPrinter() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool AtolVKP80BasedFR<T>::processReceipt(const QStringList &aReceipt, bool aProcessing) {
+template <class T> bool AtolVKP80BasedFR<T>::processReceipt(const QStringList &aReceipt, bool aProcessing)
+{
     // TODO: проверить необходимость реализации печати картинки
     char ejectorMode =
         mEjectorSettings.receipt | (char(mPrintingMode == EPrintingModes::Continuous) * mEjectorSettings.nextMask);
@@ -122,7 +138,8 @@ template <class T> bool AtolVKP80BasedFR<T>::processReceipt(const QStringList &a
 //--------------------------------------------------------------------------------
 template <class T>
 bool AtolVKP80BasedFR<T>::performFiscal(const QStringList &aReceipt, const SPaymentData &aPaymentData,
-                                        quint32 *aFDNumber) {
+                                        quint32 *aFDNumber)
+{
     char ejectorMode =
         mEjectorSettings.receipt | (char(mPrintingMode == EPrintingModes::Continuous) * mEjectorSettings.nextMask);
     setEjectorMode(ejectorMode);
@@ -131,32 +148,37 @@ bool AtolVKP80BasedFR<T>::performFiscal(const QStringList &aReceipt, const SPaym
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool AtolVKP80BasedFR<T>::processPayout(double aAmount) {
+template <class T> bool AtolVKP80BasedFR<T>::processPayout(double aAmount)
+{
     setEjectorMode(mEjectorSettings.receipt);
 
     return AtolEjectorFR<T>::processPayout(aAmount);
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool AtolVKP80BasedFR<T>::processXReport() {
+template <class T> bool AtolVKP80BasedFR<T>::processXReport()
+{
     setEjectorMode(mEjectorSettings.receipt);
 
     return AtolEjectorFR<T>::processXReport();
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool AtolVKP80BasedFR<T>::performZReport(bool aPrintDeferredReports) {
+template <class T> bool AtolVKP80BasedFR<T>::performZReport(bool aPrintDeferredReports)
+{
     setEjectorMode(mEjectorSettings.ZReport);
 
     return AtolEjectorFR<T>::performZReport(aPrintDeferredReports);
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool AtolVKP80BasedFR<T>::openDocument(EPayOffTypes::Enum aPayOffType) {
+template <class T> bool AtolVKP80BasedFR<T>::openDocument(EPayOffTypes::Enum aPayOffType)
+{
     bool result = AtolEjectorFR<T>::openDocument(aPayOffType);
     char ejectorMode = mEjectorSettings.receipt | CEjectorAtolFR::PushLastDocument;
 
-    if (mLocked && !setEjectorMode(ejectorMode)) {
+    if (mLocked && !setEjectorMode(ejectorMode))
+    {
         toLog(LogLevel::Error,
               "AtolEjectorFR: Failed to set receipt processing parameters for printing fiscal document on locked FR");
     }
@@ -165,7 +187,8 @@ template <class T> bool AtolVKP80BasedFR<T>::openDocument(EPayOffTypes::Enum aPa
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void AtolVKP80BasedFR<T>::cancelDocument(bool aDocumentIsOpened) {
+template <class T> void AtolVKP80BasedFR<T>::cancelDocument(bool aDocumentIsOpened)
+{
     setEjectorMode(mEjectorSettings.receipt);
 
     AtolEjectorFR<T>::cancelDocument(aDocumentIsOpened);

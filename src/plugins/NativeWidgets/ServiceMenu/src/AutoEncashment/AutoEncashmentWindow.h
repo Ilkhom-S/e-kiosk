@@ -19,7 +19,8 @@ class ServiceMenuBackend;
 class InputBox;
 
 //---------------------------------------------------------------------------
-class AutoEncashmentWindow : public EncashmentWindow {
+class AutoEncashmentWindow : public EncashmentWindow
+{
     Q_OBJECT
 
   public:

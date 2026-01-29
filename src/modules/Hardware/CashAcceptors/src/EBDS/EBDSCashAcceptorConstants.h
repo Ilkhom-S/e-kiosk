@@ -10,7 +10,8 @@
 #include "Hardware/CashAcceptors/CashAcceptorStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace CEBDS {
+namespace CEBDS
+{
     /// Таймаут после команды Reset, [мс].
     const int ResetTimeout = 8000;
 
@@ -40,7 +41,8 @@ namespace CEBDS {
     const int NominalCount = 50;
 
     /// Сообщения.
-    namespace Commands {
+    namespace Commands
+    {
         const char Host2Validator = 0x10;   /// Standard Host to Acceptor messages.
         const char Validator2Host = 0x20;   /// Standard Acceptor to Host messages.
         const char BookmarkSelected = 0x30; /// Bookmark selected.
@@ -65,9 +67,11 @@ namespace CEBDS {
         const char GetPar[] = "\x70\x02";      /// Получить номинал по индексу.
         const char SetInhibits[] = "\x70\x03"; /// Установить запрещения номиналов.
 
-        class SDescription : public CDescription<QByteArray> {
+        class SDescription : public CDescription<QByteArray>
+        {
           public:
-            SDescription() {
+            SDescription()
+            {
                 append(GetType, "type of validator");
                 append(GetSerialNumber, "serial of validator");
                 append(GetBootSoftVersion, "boot software version");
@@ -83,9 +87,11 @@ namespace CEBDS {
 
     //--------------------------------------------------------------------------------
     /// Спецификация статусов.
-    class DeviceCodeSpecification : public BitmapDeviceCodeSpecification {
+    class DeviceCodeSpecification : public BitmapDeviceCodeSpecification
+    {
       public:
-        DeviceCodeSpecification() {
+        DeviceCodeSpecification()
+        {
             addStatus(0, BillAcceptorStatusCode::BillOperation::Unknown, "", true);
             addStatus(1, BillAcceptorStatusCode::BillOperation::Accepting);
             addStatus(2, BillAcceptorStatusCode::BillOperation::Escrow);

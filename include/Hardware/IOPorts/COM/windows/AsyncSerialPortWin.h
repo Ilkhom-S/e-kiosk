@@ -35,14 +35,16 @@ typedef QMap<QString, QString> TIOPortDeviceData;
 //--------------------------------------------------------------------------------
 
 #define BOOL_CALL(aFunctionName, ...)                                                                                  \
-    [&]() -> bool {                                                                                                    \
+    [&]() -> bool                                                                                                      \
+    {                                                                                                                  \
         if (!checkReady())                                                                                             \
             return false;                                                                                              \
         return process(std::bind(&::aFunctionName, mPortHandle, __VA_ARGS__), #aFunctionName);                         \
     }()
 
 //--------------------------------------------------------------------------------
-class AsyncSerialPortWin : public IOPortBase {
+class AsyncSerialPortWin : public IOPortBase
+{
     SET_SERIES("COM")
 
     typedef std::function<BOOL()> TBOOLMethod;

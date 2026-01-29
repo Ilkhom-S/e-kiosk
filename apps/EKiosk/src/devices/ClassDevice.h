@@ -12,8 +12,10 @@
 #include "validators/ClassValidator.h"
 #include "watchdogs/watchdogs.h"
 
-namespace SearchDev {
-    enum ssTools {
+namespace SearchDev
+{
+    enum ssTools
+    {
         search_validator = 0,
         search_printer = 1,
         search_modem = 2,
@@ -26,7 +28,8 @@ namespace SearchDev {
     };
 } // namespace SearchDev
 
-class SearchDevices : public QThread {
+class SearchDevices : public QThread
+{
 
     Q_OBJECT
 
@@ -86,7 +89,8 @@ class SearchDevices : public QThread {
 
     bool debugger;
 
-    static void msleep(int ms) {
+    static void msleep(int ms)
+    {
         QThread::msleep(ms);
     }
     virtual void run();

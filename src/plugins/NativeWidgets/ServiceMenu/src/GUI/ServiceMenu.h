@@ -17,7 +17,8 @@
 #include "MainServiceWindow.h"
 
 //--------------------------------------------------------------------------
-class ServiceMenu : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem {
+class ServiceMenu : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem
+{
   public:
     ServiceMenu(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
     ~ServiceMenu();

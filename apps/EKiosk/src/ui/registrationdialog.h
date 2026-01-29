@@ -13,11 +13,13 @@
 #include "createdialupconnection.h"
 #include "keypud.h"
 
-namespace Ui {
+namespace Ui
+{
     class RegistrationDialog;
 }
 
-class RegistrationDialog : public QDialog {
+class RegistrationDialog : public QDialog
+{
     Q_OBJECT
 
   public:

@@ -6,7 +6,8 @@
 
 //--------------------------------------------------------------------------------
 /// Константы принтера Custom VKP-80.
-namespace CCustomVKP80 {
+namespace CCustomVKP80
+{
     /// Ожидание прихода XOn после XOff, [мс].
     const SWaitingData XOnWaiting = SWaitingData(100, 60 * 1000);
 
@@ -15,7 +16,8 @@ namespace CCustomVKP80 {
 } // namespace CCustomVKP80
 
 //--------------------------------------------------------------------------------
-template <class T> class CustomVKP80 : public EjectorPOS<T> {
+template <class T> class CustomVKP80 : public EjectorPOS<T>
+{
     SET_SUBSERIES("CustomVKP80")
 
   public:
@@ -33,9 +35,11 @@ template <class T> class CustomVKP80 : public EjectorPOS<T> {
 };
 
 //--------------------------------------------------------------------------------
-class LibUSBCustomVKP80 : public CustomVKP80<TLibUSBPrinterBase> {
+class LibUSBCustomVKP80 : public CustomVKP80<TLibUSBPrinterBase>
+{
   public:
-    LibUSBCustomVKP80() {
+    LibUSBCustomVKP80()
+    {
         this->mDetectingData->set(CUSBVendors::Custom, this->mDeviceName, 0x015d);
     }
 };

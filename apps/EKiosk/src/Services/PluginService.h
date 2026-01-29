@@ -29,7 +29,8 @@ class PluginService : public QObject,
                       public ILogable,
                       public SDK::PaymentProcessor::IService,
                       public SDK::PaymentProcessor::IServiceState,
-                      private SDK::Plugin::IKernel {
+                      private SDK::Plugin::IKernel
+{
     Q_OBJECT
 
   public:
@@ -109,7 +110,8 @@ class PluginService : public QObject,
 
     /// Возвращает загрузчик плагинов.
     using SDK::Plugin::IKernel::getPluginLoader;
-    virtual SDK::Plugin::IPluginLoader *getPluginLoader() const {
+    virtual SDK::Plugin::IPluginLoader *getPluginLoader() const
+    {
         return mPluginLoader;
     }
 

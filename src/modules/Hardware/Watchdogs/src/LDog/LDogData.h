@@ -5,7 +5,8 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CLDog {
+namespace CLDog
+{
     /// ACK.
     const char ACK = '\x50';
 
@@ -13,7 +14,8 @@ namespace CLDog {
     const char NAK = '\x80';
 
     /// Таймауты.
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Стартовый таймаут сброса ПК, [с].
         const ushort Start = 5 * 60;
 
@@ -25,7 +27,8 @@ namespace CLDog {
     } // namespace Timeouts
 
     /// Интервалы после подачи команд, [мс].
-    namespace Intervals {
+    namespace Intervals
+    {
         /// Ребут ПК/модема.
         const int PowerOff = Timeouts::PowerOff + 500;
 
@@ -38,7 +41,8 @@ namespace CLDog {
 
     //--------------------------------------------------------------------------------
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char RebootPC = 0x00;         /// Ребут ПК.
         const char ResetModem = 0x01;       /// Сброс модема.
         const char PCEnable = 0x03;         /// Запрос активности компа (сигнал об отсутствии зависания).
@@ -51,9 +55,11 @@ namespace CLDog {
         const char GetDeviceID = 0x11;      /// Запрос ИД платы.
         const char SetDeviceID = 0x12;      /// Установка ИД платы.
 
-        class CData : public CSpecification<char, bool> {
+        class CData : public CSpecification<char, bool>
+        {
           public:
-            CData() {
+            CData()
+            {
                 append(GetTimeouts, true);
                 append(GetChassisData, true);
                 append(GetRebootPCTime, true);

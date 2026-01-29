@@ -6,7 +6,8 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола KKM.
-class OSMPWDProtocol : public ProtocolBase {
+class OSMPWDProtocol : public ProtocolBase
+{
   public:
     /// Выполнить команду протокола.
     TResult processCommand(const QByteArray &aCommandData, QByteArray *aUnpackedData = nullptr);

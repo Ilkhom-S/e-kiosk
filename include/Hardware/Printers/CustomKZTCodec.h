@@ -10,9 +10,11 @@
 #include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-class CustomKZTCodec : public CodecBase {
+class CustomKZTCodec : public CodecBase
+{
   public:
-    CustomKZTCodec() {
+    CustomKZTCodec()
+    {
         mName = CHardware::Codepages::CustomKZT;
         mMIB = 3003;
 
@@ -20,8 +22,10 @@ class CustomKZTCodec : public CodecBase {
         QStringDecoder decoder(encoding.value_or(QStringConverter::Encoding::Latin1));
 
         // TODO
-        if (decoder.isValid()) {
-            for (uchar ch = uchar('\x80'); ch && (ch <= uchar('\xFF')); ++ch) {
+        if (decoder.isValid())
+        {
+            for (uchar ch = uchar('\x80'); ch && (ch <= uchar('\xFF')); ++ch)
+            {
                 QString value = decoder.decode(QByteArray(1, ch));
                 mData.add(ch, value);
             }

@@ -27,7 +27,8 @@
 
 //--------------------------------------------------------------------------------
 /// Общие константы ФР.
-namespace CFR {
+namespace CFR
+{
     /// Актуальный ФФД.
     const EFFD::Enum ActualFFD = EFFD::F105;
 
@@ -59,7 +60,8 @@ namespace CFR {
     const QDateTime ClosingSessionDTVAT20 = QDateTime(QDate(2018, 12, 31), QTime(23, 57));
 
     /// Формальная дата окончания ФН.
-    inline QString FSValidityDateOff(const QDate &aDate) {
+    inline QString FSValidityDateOff(const QDate &aDate)
+    {
         return aDate.addDays(-3).toString(CFR::DateLogFormat);
     }
 
@@ -67,22 +69,26 @@ namespace CFR {
     const int FS15ValidityDays = 470;
 
     /// Результаты запроса статуса.
-    namespace Result {
+    namespace Result
+    {
         const char Error[] = "__ERROR__"; /// Ошибка устройства, либо ответ неверно скомпонован.
         const char Fail[] = "__FAIL__";   /// Транспортная/протокольная ошибка.
     } // namespace Result
 
     /// ИНН.
-    namespace INN {
+    namespace INN
+    {
         /// Лицо и его размер.
-        namespace Person {
+        namespace Person
+        {
             const int Unknown = 0;  /// Неизвестное.
             const int Legal = 10;   /// Юридическое.
             const int Natural = 12; /// Физическое.
         } // namespace Person
 
         /// Коэффициенты контрольных чисел (КЧ)
-        namespace Factors {
+        namespace Factors
+        {
             const int Legal[] = {2, 4, 10, 3, 5, 9, 4, 6, 8};          /// Коэффициенты КЧ для ИНН юр. лица.
             const int Natural1[] = {7, 2, 4, 10, 3, 5, 9, 4, 6, 8};    /// Коэффициенты 1-го КЧ для ИНН физ. лица.
             const int Natural2[] = {3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8}; /// Коэффициенты 2-го КЧ для ИНН физ. лица.
@@ -93,20 +99,25 @@ namespace CFR {
     } // namespace INN
 
     /// Константные данные ФФД.
-    struct SFFDData {
+    struct SFFDData
+    {
         int maxUnitNameSize;
         QString description;
 
-        SFFDData() : maxUnitNameSize(0), description("unknown") {
+        SFFDData() : maxUnitNameSize(0), description("unknown")
+        {
         }
         SFFDData(int aMaxUnitNameSize, const QString &aDescription)
-            : maxUnitNameSize(aMaxUnitNameSize), description(aDescription) {
+            : maxUnitNameSize(aMaxUnitNameSize), description(aDescription)
+        {
         }
     };
 
-    class CFFD : public CSpecification<EFFD::Enum, SFFDData> {
+    class CFFD : public CSpecification<EFFD::Enum, SFFDData>
+    {
       public:
-        CFFD() {
+        CFFD()
+        {
             add(EFFD::F10Beta, 64, "1.0 Beta");
             add(EFFD::F10, 100, "1.0");
             add(EFFD::F105, 128, "1.05");
@@ -114,7 +125,8 @@ namespace CFR {
         }
 
       private:
-        void add(EFFD::Enum aFFD, int aMaxUnitNameSize, const QString &aDescription) {
+        void add(EFFD::Enum aFFD, int aMaxUnitNameSize, const QString &aDescription)
+        {
             append(aFFD, SFFDData(aMaxUnitNameSize, aDescription));
         }
     };
@@ -139,27 +151,35 @@ namespace CFR {
     const int OFDConnectionTimeout = 3 * 60;
 
     /// Смержить данные (СНО, флаги агента).
-    inline char joinData(const QList<char> &aData) {
+    inline char joinData(const QList<char> &aData)
+    {
         return std::accumulate(aData.begin(), aData.end(), ASCII::NUL,
                                [](char aResult, char aLocalData) -> char { return aResult | aLocalData; });
     }
 
     /// Преобразование байт-массива данных в формат ФФД
-    inline QString dataToString(const QByteArray &aData, int aBase, int aSize) {
+    inline QString dataToString(const QByteArray &aData, int aBase, int aSize)
+    {
         int index = -1;
-        while ((aData.size() > ++index) && !aData[index]) {
+        while ((aData.size() > ++index) && !aData[index])
+        {
         }
         int lastIndex = aData.indexOf(ASCII::NUL, index);
         QString data = QString(aData.mid(index, lastIndex - index)).simplified();
 
-        if (aBase != 10) {
+        if (aBase != 10)
+        {
             bool OK;
             qulonglong result = data.toULongLong(&OK, aBase);
 
             return OK ? QString("%1").arg(result, aSize, 10, QChar(ASCII::Zero)) : "";
-        } else if (QRegularExpression("^[0-9]+$").match(data).capturedStart() == -1) {
+        }
+        else if (QRegularExpression("^[0-9]+$").match(data).capturedStart() == -1)
+        {
             return "";
-        } else if (data.size() <= aSize) {
+        }
+        else if (data.size() <= aSize)
+        {
             return data.rightJustified(aSize, QChar(ASCII::Zero));
         }
 
@@ -168,16 +188,20 @@ namespace CFR {
         return data.mid(index);
     }
 
-    inline QString serialToString(const QByteArray &aData, int aBase = 10) {
+    inline QString serialToString(const QByteArray &aData, int aBase = 10)
+    {
         return dataToString(aData, aBase, 16);
     } /// Серийный номер ККТ (1013)
-    inline QString FSSerialToString(const QByteArray &aData, int aBase = 10) {
+    inline QString FSSerialToString(const QByteArray &aData, int aBase = 10)
+    {
         return dataToString(aData, aBase, 16);
     } /// Серийный номер ФН (1041)
-    inline QString RNMToString(const QByteArray &aData, int aBase = 10) {
+    inline QString RNMToString(const QByteArray &aData, int aBase = 10)
+    {
         return dataToString(aData, aBase, 16);
     } /// РНМ (1037)
-    inline QString INNToString(const QByteArray &aData, int aBase = 10) {
+    inline QString INNToString(const QByteArray &aData, int aBase = 10)
+    {
         return dataToString(aData, aBase, 10);
     } /// ИНН оператора перевода (1016)
 
@@ -193,13 +217,16 @@ namespace CFR {
     const int MinTLVSize = 4;
 
     /// TLV-структура
-    struct STLV {
+    struct STLV
+    {
         int field;
         QByteArray data;
 
-        STLV() : field(0) {
+        STLV() : field(0)
+        {
         }
-        STLV(int aField, const QByteArray &aData) : field(aField), data(aData) {
+        STLV(int aField, const QByteArray &aData) : field(aField), data(aData)
+        {
         }
     };
 
@@ -208,22 +235,28 @@ namespace CFR {
 
     //--------------------------------------------------------------------------------
     /// Налоги.
-    namespace Taxes {
-        struct SData {
+    namespace Taxes
+    {
+        struct SData
+        {
             int group;
             SDK::Driver::TVAT deviceVAT;
             QString description;
 
-            SData() : group(0) {
+            SData() : group(0)
+            {
             }
             SData(int aGroup, SDK::Driver::TVAT aDeviceVAT, const QString &aDescription = "")
-                : group(aGroup), deviceVAT(aDeviceVAT), description(aDescription) {
+                : group(aGroup), deviceVAT(aDeviceVAT), description(aDescription)
+            {
             }
         };
 
-        class Data : public CSpecification<SDK::Driver::TVAT, SData> {
+        class Data : public CSpecification<SDK::Driver::TVAT, SData>
+        {
           public:
-            void add(SDK::Driver::TVAT aVAT, int aGroup) {
+            void add(SDK::Driver::TVAT aVAT, int aGroup)
+            {
                 append(aVAT, SData(aGroup, aVAT));
             }
         };
@@ -232,8 +265,10 @@ namespace CFR {
     } // namespace Taxes
 
     /// Скорректировать ставку НДС с 18% на 20% в РФ.
-    inline void adjustRFVAT(Taxes::TData &aData) {
-        if (aData.contains(18) && isRFVAT20()) {
+    inline void adjustRFVAT(Taxes::TData &aData)
+    {
+        if (aData.contains(18) && isRFVAT20())
+        {
             aData.insert(20, aData[18]);
             aData[20].description.replace("18", "20");
             aData.remove(18);
@@ -242,19 +277,24 @@ namespace CFR {
 
     //--------------------------------------------------------------------------------
     /// Типы оплаты
-    struct SPayTypeData {
+    struct SPayTypeData
+    {
         char value;
         QString description;
 
-        SPayTypeData() : value(0) {
+        SPayTypeData() : value(0)
+        {
         }
-        SPayTypeData(int aValue, const QString &aDescription) : value(char(aValue)), description(aDescription) {
+        SPayTypeData(int aValue, const QString &aDescription) : value(char(aValue)), description(aDescription)
+        {
         }
     };
 
-    class CPayTypeDescription : public CDescription<SDK::Driver::EPayTypes::Enum> {
+    class CPayTypeDescription : public CDescription<SDK::Driver::EPayTypes::Enum>
+    {
       public:
-        CPayTypeDescription() {
+        CPayTypeDescription()
+        {
             using namespace SDK::Driver::EPayTypes;
 
             append(Cash, QString::fromUtf8("НАЛИЧНЫМИ"));
@@ -267,18 +307,22 @@ namespace CFR {
 
     static CPayTypeDescription PayTypeDescription;
 
-    class PayTypeData : public CSpecification<SDK::Driver::EPayTypes::Enum, SPayTypeData> {
+    class PayTypeData : public CSpecification<SDK::Driver::EPayTypes::Enum, SPayTypeData>
+    {
       public:
-        void add(SDK::Driver::EPayTypes::Enum aPayType, int aValue) {
+        void add(SDK::Driver::EPayTypes::Enum aPayType, int aValue)
+        {
             append(aPayType, SPayTypeData(aValue, PayTypeDescription[aPayType]));
         }
     };
 
     //--------------------------------------------------------------------------------
     /// Признак способа расчета (1214).
-    class CPayOffSubjectMethodTypes : public CDescription<char> {
+    class CPayOffSubjectMethodTypes : public CDescription<char>
+    {
       public:
-        CPayOffSubjectMethodTypes() {
+        CPayOffSubjectMethodTypes()
+        {
             using namespace SDK::Driver::EPayOffSubjectMethodTypes;
 
             append(Prepayment100, "ПРЕДОПЛАТА 100%");
@@ -295,9 +339,11 @@ namespace CFR {
 
     //--------------------------------------------------------------------------------
     /// Признак предмета расчета (1212).
-    class CPayOffSubjectTypes : public CDescription<char> {
+    class CPayOffSubjectTypes : public CDescription<char>
+    {
       public:
-        CPayOffSubjectTypes() {
+        CPayOffSubjectTypes()
+        {
             using namespace SDK::Driver::EPayOffSubjectTypes;
 
             append(Unit, "ТОВАР");
@@ -332,9 +378,11 @@ namespace CFR {
 
     //--------------------------------------------------------------------------------
     /// Типы систем налогообложения (1062, 1055)
-    class CTaxSystems : public CBitmapDescription<char> {
+    class CTaxSystems : public CBitmapDescription<char>
+    {
       public:
-        CTaxSystems() {
+        CTaxSystems()
+        {
             using namespace SDK::Driver::ETaxSystems;
 
             append(Main, "ОСН");
@@ -350,9 +398,11 @@ namespace CFR {
 
     //--------------------------------------------------------------------------------
     /// Признаки платежного агента (1057, 1222).
-    class CAgentFlags : public CBitmapDescription<char> {
+    class CAgentFlags : public CBitmapDescription<char>
+    {
       public:
-        CAgentFlags() {
+        CAgentFlags()
+        {
             using namespace SDK::Driver::EAgentFlags;
 
             append(BankAgent, "БАНК. ПЛ. АГЕНТ");
@@ -369,9 +419,11 @@ namespace CFR {
 
     //--------------------------------------------------------------------------------
     /// Причины перерегистрации (1101).
-    class CReregistrationCauses : public CBitmapDescription<char> {
+    class CReregistrationCauses : public CBitmapDescription<char>
+    {
       public:
-        CReregistrationCauses() {
+        CReregistrationCauses()
+        {
             append(1, "Замена ФН");
             append(2, "Замена ОФД");
             append(3, "Изменение реквизитов");
@@ -383,9 +435,11 @@ namespace CFR {
 
     //--------------------------------------------------------------------------------
     /// Спецификация флагов ФН.
-    class CFSFlagData : public CSpecification<char, int> {
+    class CFSFlagData : public CSpecification<char, int>
+    {
       public:
-        CFSFlagData() {
+        CFSFlagData()
+        {
             append('\x01', FRStatusCode::Error::FSEnd);
             append('\x02', FRStatusCode::Warning::FSNearEnd);
             append('\x04', FRStatusCode::Error::NeedOFDConnection); // память ФН переполнена (это не таймаут 30 суток)
@@ -398,9 +452,11 @@ namespace CFR {
 
     //--------------------------------------------------------------------------------
     /// Признаки расчета (1054).
-    class CPayOffTypes : public CDescription<char> {
+    class CPayOffTypes : public CDescription<char>
+    {
       public:
-        CPayOffTypes() {
+        CPayOffTypes()
+        {
             using namespace SDK::Driver::EPayOffTypes;
 
             append(Debit, "ПРИХОД");
@@ -414,32 +470,40 @@ namespace CFR {
 
     //--------------------------------------------------------------------------------
     /// Операция платежного агента (1044).
-    namespace AgentOperation {
+    namespace AgentOperation
+    {
         const char Payment[] = "Платеж";
         const char Payout[] = "Выдача наличных";
     } // namespace AgentOperation
 
     /// Банковский платежный агент?
-    inline bool isBankAgent(SDK::Driver::EAgentFlags::Enum aAgentFlag) {
+    inline bool isBankAgent(SDK::Driver::EAgentFlags::Enum aAgentFlag)
+    {
         return (aAgentFlag == SDK::Driver::EAgentFlags::BankAgent) ||
                (aAgentFlag == SDK::Driver::EAgentFlags::BankSubagent);
     }
 
     /// Обыкновенный платежный агент?
-    inline bool isPaymentAgent(SDK::Driver::EAgentFlags::Enum aAgentFlag) {
+    inline bool isPaymentAgent(SDK::Driver::EAgentFlags::Enum aAgentFlag)
+    {
         return (aAgentFlag == SDK::Driver::EAgentFlags::PaymentAgent) ||
                (aAgentFlag == SDK::Driver::EAgentFlags::PaymentSubagent);
     }
 
     //--------------------------------------------------------------------------------
     /// Ставка НДС (1199).
-    class CVATRates : public CDescription<char> {
+    class CVATRates : public CDescription<char>
+    {
       public:
-        CVATRates::CVATRates() {
-            if (isRFVAT20()) {
+        CVATRates::CVATRates()
+        {
+            if (isRFVAT20())
+            {
                 append(1, "НДС 20%");
                 append(3, "НДС 20/120");
-            } else {
+            }
+            else
+            {
                 append(1, "НДС 18%");
                 append(3, "НДС 18/118");
             }
@@ -455,9 +519,11 @@ namespace CFR {
 
     //--------------------------------------------------------------------------------
     /// ПФ ставок НДС.
-    class CVATTr : public CDescription<SDK::Driver::TVAT> {
+    class CVATTr : public CDescription<SDK::Driver::TVAT>
+    {
       public:
-        CVATTr::CVATTr() {
+        CVATTr::CVATTr()
+        {
             append(20, "НДС 20%");
             append(18, "НДС 18%");
             append(12, "НДС 12%");
@@ -470,9 +536,11 @@ namespace CFR {
 
     //--------------------------------------------------------------------------------
     /// Режимы работы.
-    class COperationModeData : public CSpecification<char, int> {
+    class COperationModeData : public CSpecification<char, int>
+    {
       public:
-        COperationModeData() : TrashMask('\x40') {
+        COperationModeData() : TrashMask('\x40')
+        {
 #define ADD_OPERATION_MODE(aName) append(SDK::Driver::EOperationModes::aName, CFR::FiscalFields::aName##Mode)
 
             ADD_OPERATION_MODE(Encryption);
@@ -490,29 +558,36 @@ namespace CFR {
     static COperationModeData OperationModeData;
 
     //---------------------------------------------------------------------------
-    class DealerDataManager {
+    class DealerDataManager
+    {
       public:
         DealerDataManager(DeviceConfigManager *aConfigManager, const QString &aKey)
-            : mPerformer(aConfigManager), mKey(aKey) {
-            if (mPerformer) {
+            : mPerformer(aConfigManager), mKey(aKey)
+        {
+            if (mPerformer)
+            {
                 QVariantMap configData = mPerformer->getConfigParameter(CHardware::ConfigData).toMap();
                 QString value = mPerformer->getConfigParameter(mKey).toString().simplified();
 
-                if (value.isEmpty()) {
+                if (value.isEmpty())
+                {
                     mData = value;
                 }
             }
         }
 
-        ~DealerDataManager() {
-            if (mPerformer && mData.isValid()) {
+        ~DealerDataManager()
+        {
+            if (mPerformer && mData.isValid())
+            {
                 QVariantMap configData = mPerformer->getConfigParameter(CHardware::ConfigData).toMap();
                 configData.insert(mKey, mData);
                 mPerformer->setConfigParameter(CHardware::ConfigData, configData);
             }
         }
 
-        void setValue(const QString &aValue) {
+        void setValue(const QString &aValue)
+        {
             mData = aValue;
         }
 

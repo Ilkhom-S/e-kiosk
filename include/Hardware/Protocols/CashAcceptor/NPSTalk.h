@@ -5,7 +5,8 @@
 #include <Hardware/Common/ProtocolBase.h>
 
 //--------------------------------------------------------------------------------
-namespace NPSTalk {
+namespace NPSTalk
+{
     const char Prefix = '\x55';  /// Префикс.
     const char Postfix = '\x5A'; /// Постфикс.
 
@@ -15,7 +16,8 @@ namespace NPSTalk {
 } // namespace NPSTalk
 
 //--------------------------------------------------------------------------------
-class NPSTalkProtocol : public ProtocolBase {
+class NPSTalkProtocol : public ProtocolBase
+{
   public:
     /// Установить адрес slave-устройства.
     void setAddress(uchar aAddress);

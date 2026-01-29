@@ -11,11 +11,13 @@
 // System
 #include "../../common/PluginTestBase.h"
 
-class Migrator3000ScenarioTest : public QObject {
+class Migrator3000ScenarioTest : public QObject
+{
     Q_OBJECT
 
   public:
-    Migrator3000ScenarioTest() : m_testBase("D:/plugins/Debug/migrator3000_scenariod.dll") {
+    Migrator3000ScenarioTest() : m_testBase("D:/plugins/Debug/migrator3000_scenariod.dll")
+    {
     }
 
   private slots:
@@ -36,7 +38,8 @@ class Migrator3000ScenarioTest : public QObject {
     PluginTestBase m_testBase;
 };
 
-void Migrator3000ScenarioTest::testPluginExists() {
+void Migrator3000ScenarioTest::testPluginExists()
+{
     // Test that the Migrator3000 plugin DLL was built successfully
     QString pluginPath = "D:/plugins/Debug/migrator3000_scenariod.dll";
     QVERIFY(QFile::exists(pluginPath));
@@ -46,13 +49,15 @@ void Migrator3000ScenarioTest::testPluginExists() {
     QVERIFY(pluginFile.size() > 0);
 }
 
-void Migrator3000ScenarioTest::testPluginLoading() {
+void Migrator3000ScenarioTest::testPluginLoading()
+{
     // Test loading the plugin factory
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
 }
 
-void Migrator3000ScenarioTest::testFactoryInterface() {
+void Migrator3000ScenarioTest::testFactoryInterface()
+{
     // Test factory interface methods
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -70,7 +75,8 @@ void Migrator3000ScenarioTest::testFactoryInterface() {
     QVERIFY(!factory->getPluginList().isEmpty());
 }
 
-void Migrator3000ScenarioTest::testMainScenarioPluginFactory() {
+void Migrator3000ScenarioTest::testMainScenarioPluginFactory()
+{
     // Test MainScenarioPlugin factory methods
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -93,7 +99,8 @@ void Migrator3000ScenarioTest::testMainScenarioPluginFactory() {
     // Plugin creation would require a valid IKernel and proper environment setup
 }
 
-void Migrator3000ScenarioTest::testMainScenarioBasicInterface() {
+void Migrator3000ScenarioTest::testMainScenarioBasicInterface()
+{
     // Test MainScenario basic interface methods
     // Note: MainScenario requires complex PPSDK dependencies, so we skip plugin instantiation
 

@@ -15,11 +15,14 @@
 #include <SDK/PaymentProcessor/Core/ICashAcceptorManager.h>
 #include <SDK/PaymentProcessor/Core/ICashDispenserManager.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        class IFundsService {
+        class IFundsService
+        {
           public:
             /// Получить интерфейс для работы с источниками денег.
             virtual ICashAcceptorManager *getAcceptor() const = 0;
@@ -28,7 +31,8 @@ namespace SDK {
             virtual ICashDispenserManager *getDispenser() const = 0;
 
           protected:
-            virtual ~IFundsService() {
+            virtual ~IFundsService()
+            {
             }
         };
 

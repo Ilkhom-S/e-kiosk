@@ -12,15 +12,18 @@
 #include <AdBackend/IDatabaseUtils.h>
 
 //------------------------------------------------------------------------
-namespace Ad {
+namespace Ad
+{
 
-    namespace CDatabaseUtils {
+    namespace CDatabaseUtils
+    {
         const QString LogName = "Ad";
     } // namespace CDatabaseUtils
 
     //------------------------------------------------------------------------
     /// Реализация базы данных.
-    class DatabaseUtils : public IDatabaseUtils, public ILogable {
+    class DatabaseUtils : public IDatabaseUtils, public ILogable
+    {
       public:
         DatabaseUtils(const QString &aWorkingDirectory, ILog *aLog);
         virtual ~DatabaseUtils();

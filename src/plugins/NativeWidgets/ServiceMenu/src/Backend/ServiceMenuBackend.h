@@ -18,13 +18,16 @@
 // Modules
 #include <Common/ILog.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class ICore;
         class INetworkService;
         class TerminalSettings;
     } // namespace PaymentProcessor
-    namespace Plugin {
+    namespace Plugin
+    {
         class IEnvironment;
         class IPlugin;
     } // namespace Plugin
@@ -37,13 +40,15 @@ class NetworkManager;
 class PaymentManager;
 
 //------------------------------------------------------------------------
-namespace CServiceMenuBackend {
+namespace CServiceMenuBackend
+{
     const QString LogName = "ServiceMenu";
     const int HeartbeatTimeout = 60 * 1000;
 } // namespace CServiceMenuBackend
 
 //------------------------------------------------------------------------
-class ServiceMenuBackend : public QObject {
+class ServiceMenuBackend : public QObject
+{
     Q_OBJECT
 
   public:
@@ -51,7 +56,8 @@ class ServiceMenuBackend : public QObject {
     ~ServiceMenuBackend();
 
   public:
-    enum AccessRights {
+    enum AccessRights
+    {
         Diagnostic,
         ViewLogs,
 
@@ -73,7 +79,15 @@ class ServiceMenuBackend : public QObject {
 
     typedef QSet<AccessRights> TAccessRights;
 
-    enum HandlerType { Info = 0, Hardware, Encashment, Payment, System, Keys };
+    enum HandlerType
+    {
+        Info = 0,
+        Hardware,
+        Encashment,
+        Payment,
+        System,
+        Keys
+    };
 
   public:
     /// Авторизация и получение прав доступа.
@@ -122,7 +136,8 @@ class ServiceMenuBackend : public QObject {
     bool hasAnyPassword() const;
 
     /// С какими правами зашли в сервисное меню
-    QString getUserRole() const {
+    QString getUserRole() const
+    {
         return mUserRole;
     }
 

@@ -7,13 +7,17 @@
 #include <QtCore/QMetaType>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //--------------------------------------------------------------------------------
         /// Общие состояния устройств - уровень тревожности.
-        namespace EWarningLevel {
-            enum Enum {
+        namespace EWarningLevel
+        {
+            enum Enum
+            {
                 OK,      /// Нет ошибок.
                 Warning, /// Предупреждение.
                 Error    /// Ошибка.

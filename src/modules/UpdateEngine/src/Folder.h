@@ -12,7 +12,8 @@
 
 //---------------------------------------------------------------------------
 /// Компонент для загрузки - индексный файл.
-class Folder : public Component {
+class Folder : public Component
+{
     Q_OBJECT
 
   public:

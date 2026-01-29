@@ -6,7 +6,8 @@
 #include "Hardware/Common/PortDeviceBase.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class PortPollingDeviceBase : public PortDeviceBase<PollingDeviceBase<T>> {
+template <class T> class PortPollingDeviceBase : public PortDeviceBase<PollingDeviceBase<T>>
+{
   public:
     /// Подключает и инициализует устройство. Обертка для вызова функционала в рабочем потоке.
     virtual void initialize();

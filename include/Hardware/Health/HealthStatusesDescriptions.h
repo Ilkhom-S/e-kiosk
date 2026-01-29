@@ -6,12 +6,15 @@
 #include "Hardware/Health/HealthStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace HealthStatusCode {
+namespace HealthStatusCode
+{
     /// Спецификации кодов состояний здоровья.
-    class CSpecifications : public DeviceStatusCode::CSpecifications {
+    class CSpecifications : public DeviceStatusCode::CSpecifications
+    {
       public:
         /// Конструктор.
-        CSpecifications() {
+        CSpecifications()
+        {
             /// Предупреждения.
             ADD_WARNING_STATUS(HDD0NearEnd, QCoreApplication::translate("HealthStatuses", "#hdd0_near_end"));
             ADD_WARNING_STATUS(HDD0Overheating, QCoreApplication::translate("HealthStatuses", "#hdd0_overheating"));

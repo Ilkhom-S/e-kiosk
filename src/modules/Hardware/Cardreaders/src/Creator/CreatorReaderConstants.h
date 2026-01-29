@@ -12,12 +12,14 @@
 #include "CreatorReaderDataTypes.h"
 
 //--------------------------------------------------------------------------------
-namespace CCreatorReader {
+namespace CCreatorReader
+{
     /// Разделитель прочитанных данных карты
     const char DataSeparator = '\x7E';
 
     /// Маркеры.
-    namespace Markers {
+    namespace Markers
+    {
         const char Command = 'C'; /// Команда.
         const char OK = 'P';      /// Ошибок нет.
         const char Error = 'N';   /// Ошибка.
@@ -25,7 +27,8 @@ namespace CCreatorReader {
 
     //--------------------------------------------------------------------------------
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char LockInitialize[] = "\x30\x30";                   /// Инициализация с блокировкой карты.
         const char UnLockInitialize[] = "\x30\x31";                 /// Инициализация с разблокировкой карты.
         const char GetSerialNumber[] = "\xA2\x30";                  /// Получение серийного номера.
@@ -43,7 +46,8 @@ namespace CCreatorReader {
 
     //--------------------------------------------------------------------------------
     /// Положение карты по отношению к кардридеру.
-    namespace CardPosition {
+    namespace CardPosition
+    {
         const int Unknown = -1;
 
         const int Ejected = 0;
@@ -55,15 +59,18 @@ namespace CCreatorReader {
 
     //--------------------------------------------------------------------------------
     /// Типы карт.
-    namespace CardTypes {
+    namespace CardTypes
+    {
         const int Unknown = 0; /// Неизвестен.
 
         namespace CardType = SDK::Driver::ECardType;
 
         /// Описатель для типов карт.
-        class CDescriptions : public CDescription<CardType::Enum> {
+        class CDescriptions : public CDescription<CardType::Enum>
+        {
           public:
-            CDescriptions() {
+            CDescriptions()
+            {
                 setDefault("Unknown");
 
                 append(CardType::MS, "Magnetic strip");
@@ -78,9 +85,11 @@ namespace CCreatorReader {
 
         //--------------------------------------------------------------------------------
         /// Описатель для IC-карт по типу CPU.
-        class CICCPUDescriptions : public CDescription<EICCPU::Enum> {
+        class CICCPUDescriptions : public CDescription<EICCPU::Enum>
+        {
           public:
-            CICCPUDescriptions() {
+            CICCPUDescriptions()
+            {
                 setDefault("Unknown");
 
                 append(EICCPU::Unknown, "Unknown");
@@ -93,9 +102,11 @@ namespace CCreatorReader {
 
         //--------------------------------------------------------------------------------
         /// Описатель для IC-карт.
-        class CICDescriptions : public CDescription<int> {
+        class CICDescriptions : public CDescription<int>
+        {
           public:
-            CICDescriptions() {
+            CICDescriptions()
+            {
                 setDefault("Unknown");
 
                 append(10, "T=0 CPU");
@@ -118,9 +129,11 @@ namespace CCreatorReader {
 
         //--------------------------------------------------------------------------------
         /// Описатель для RF-карт.
-        class CRFDescriptions : public CDescription<int> {
+        class CRFDescriptions : public CDescription<int>
+        {
           public:
-            CRFDescriptions() {
+            CRFDescriptions()
+            {
                 setDefault("Unknown");
 
                 append(10, "Mifare one S50");
@@ -136,9 +149,11 @@ namespace CCreatorReader {
 
     //--------------------------------------------------------------------------------
     /// Ошибки.
-    class CErrorDescriptions : public CDescription<int> {
+    class CErrorDescriptions : public CDescription<int>
+    {
       public:
-        CErrorDescriptions() {
+        CErrorDescriptions()
+        {
             setDefault("Unknown");
 
             append(0, "CM (Command Character) Error");
@@ -167,9 +182,11 @@ namespace CCreatorReader {
 
     //--------------------------------------------------------------------------------
     /// Ошибки чтения магнитной полосы карты.
-    class CMSErrorDescriptions : public CDescription<int> {
+    class CMSErrorDescriptions : public CDescription<int>
+    {
       public:
-        CMSErrorDescriptions() {
+        CMSErrorDescriptions()
+        {
             setDefault("Unknown");
 
             append(20, "Exclusive-or parity error");

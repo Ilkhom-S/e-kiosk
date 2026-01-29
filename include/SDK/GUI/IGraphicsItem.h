@@ -9,12 +9,15 @@
 #include <QtQuick/QQuickItem>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace GUI {
+namespace SDK
+{
+    namespace GUI
+    {
 
         //---------------------------------------------------------------------------
         /// Интерфейс для созданного движком графического объекта.
-        class IGraphicsItem {
+        class IGraphicsItem
+        {
           public:
             /// Вызывается перед отображением виджета.
             virtual void show() = 0;
@@ -50,9 +53,11 @@ namespace SDK {
 
         //---------------------------------------------------------------------------
         /// Deleter для smart-поинтера
-        class GraphicsItemDeleter {
+        class GraphicsItemDeleter
+        {
           public:
-            void operator()(IGraphicsItem *aGraphicsItem) {
+            void operator()(IGraphicsItem *aGraphicsItem)
+            {
                 delete aGraphicsItem;
             }
         };

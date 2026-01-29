@@ -13,22 +13,27 @@
 // Project
 #include "PaymentFactoryBase.h"
 
-namespace CPaymentFactory {
+namespace CPaymentFactory
+{
     const char LogName[] = "Ad";
 } // namespace CPaymentFactory
 
 //---------------------------------------------------------------------------
 // Конструктор базовой фабрики платежей
 PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mInitialized(false), mFactory(aFactory), mInstancePath(aInstancePath), mCore(0), mCryptEngine(0) {
-    try {
+    : mInitialized(false), mFactory(aFactory), mInstancePath(aInstancePath), mCore(0), mCryptEngine(0)
+{
+    try
+    {
         mCore = dynamic_cast<SDK::PaymentProcessor::ICore *>(
             mFactory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
         mCryptEngine = mCore->getCryptService()->getCryptEngine();
         mNetwork = mCore->getNetworkService()->getNetworkTaskManager();
 
         mInitialized = true;
-    } catch (const SDK::PaymentProcessor::ServiceIsNotImplemented &e) {
+    }
+    catch (const SDK::PaymentProcessor::ServiceIsNotImplemented &e)
+    {
         mInitialized = false;
 
         LOG(getLog(), LogLevel::Error, QString("Failed to initialize payment factory: %1.").arg(e.what()));
@@ -36,51 +41,60 @@ PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, cons
 }
 
 //------------------------------------------------------------------------------
-QVariantMap PaymentFactoryBase::getConfiguration() const {
+QVariantMap PaymentFactoryBase::getConfiguration() const
+{
     return mParameters;
 }
 
 //------------------------------------------------------------------------------
-void PaymentFactoryBase::setConfiguration(const QVariantMap &aParameters) {
+void PaymentFactoryBase::setConfiguration(const QVariantMap &aParameters)
+{
     mParameters = aParameters;
 }
 
 //------------------------------------------------------------------------------
-QString PaymentFactoryBase::getConfigurationName() const {
+QString PaymentFactoryBase::getConfigurationName() const
+{
     return mInstancePath;
 }
 
 //------------------------------------------------------------------------------
-bool PaymentFactoryBase::saveConfiguration() {
+bool PaymentFactoryBase::saveConfiguration()
+{
     // У плагина нет параметров
     return true;
 }
 
 //------------------------------------------------------------------------------
-bool PaymentFactoryBase::isReady() const {
+bool PaymentFactoryBase::isReady() const
+{
     return true;
 }
 
 //------------------------------------------------------------------------------
 bool PaymentFactoryBase::restorePayment(SDK::PaymentProcessor::IPayment *aPayment,
-                                        const QList<SDK::PaymentProcessor::IPayment::SParameter> &aParameters) {
+                                        const QList<SDK::PaymentProcessor::IPayment::SParameter> &aParameters)
+{
     return aPayment->restore(aParameters);
 }
 
 //------------------------------------------------------------------------------
-void PaymentFactoryBase::setSerializer(boost::function<bool(SDK::PaymentProcessor::IPayment *)> aSerializer) {
+void PaymentFactoryBase::setSerializer(boost::function<bool(SDK::PaymentProcessor::IPayment *)> aSerializer)
+{
     mSerializer = aSerializer;
 }
 
 //------------------------------------------------------------------------------
-bool PaymentFactoryBase::convertPayment(const QString & /*aTargetType*/,
-                                        SDK::PaymentProcessor::IPayment * /*aPayment*/) {
+bool PaymentFactoryBase::convertPayment(const QString & /*aTargetType*/, SDK::PaymentProcessor::IPayment * /*aPayment*/)
+{
     return false;
 }
 
 //------------------------------------------------------------------------------
-bool PaymentFactoryBase::savePayment(SDK::PaymentProcessor::IPayment *aPayment) {
-    if (mSerializer) {
+bool PaymentFactoryBase::savePayment(SDK::PaymentProcessor::IPayment *aPayment)
+{
+    if (mSerializer)
+    {
         return mSerializer(aPayment);
     }
 
@@ -88,22 +102,26 @@ bool PaymentFactoryBase::savePayment(SDK::PaymentProcessor::IPayment *aPayment) 
 }
 
 //------------------------------------------------------------------------------
-SDK::PaymentProcessor::ICore *PaymentFactoryBase::getCore() const {
+SDK::PaymentProcessor::ICore *PaymentFactoryBase::getCore() const
+{
     return mCore;
 }
 
 //------------------------------------------------------------------------------
-ILog *PaymentFactoryBase::getLog(const char *aLogName /*= nullptr*/) const {
+ILog *PaymentFactoryBase::getLog(const char *aLogName /*= nullptr*/) const
+{
     return mFactory->getLog(aLogName ? aLogName : CPaymentFactory::LogName);
 }
 
 //------------------------------------------------------------------------------
-ICryptEngine *PaymentFactoryBase::getCryptEngine() const {
+ICryptEngine *PaymentFactoryBase::getCryptEngine() const
+{
     return mCryptEngine;
 }
 
 //------------------------------------------------------------------------------
-NetworkTaskManager *PaymentFactoryBase::getNetworkTaskManager() const {
+NetworkTaskManager *PaymentFactoryBase::getNetworkTaskManager() const
+{
     return mNetwork;
 }
 

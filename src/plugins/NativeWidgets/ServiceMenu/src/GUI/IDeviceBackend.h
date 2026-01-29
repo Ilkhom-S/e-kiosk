@@ -10,8 +10,10 @@
 // Plugin SDK
 #include <SDK/Plugins/PluginParameters.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class ICore;
     } // namespace PaymentProcessor
 } // namespace SDK
@@ -19,7 +21,8 @@ namespace SDK {
 class HardwareManager;
 
 //------------------------------------------------------------------------
-class IDeviceBackend {
+class IDeviceBackend
+{
   public:
     /// Возвращает список поддерживаемых моделей, указанного типа.
     virtual QStringList getModels(const QString &aType) = 0;
@@ -35,7 +38,8 @@ class IDeviceBackend {
     virtual void toLog(const QString &aMessage) = 0;
 
   protected:
-    virtual ~IDeviceBackend() {
+    virtual ~IDeviceBackend()
+    {
     }
 };
 

@@ -140,7 +140,8 @@ static const unsigned short extensionLatin1Table[256] = {
 
         \sa QAtUtils::codec()
 */
-QGsmCodec::QGsmCodec(bool noLoss) {
+QGsmCodec::QGsmCodec(bool noLoss)
+{
     this->noLoss = noLoss;
 }
 
@@ -148,13 +149,15 @@ QGsmCodec::QGsmCodec(bool noLoss) {
         Destruct a GSM text codec.  This should not be used directly by
         application programs.
 */
-QGsmCodec::~QGsmCodec() {
+QGsmCodec::~QGsmCodec()
+{
 }
 
 /*!
         Returns the name of this codec.
 */
-QByteArray QGsmCodec::name() const {
+QByteArray QGsmCodec::name() const
+{
     if (noLoss)
         return QByteArray("gsm-noloss");
     else
@@ -164,7 +167,8 @@ QByteArray QGsmCodec::name() const {
 /*!
         Returns the MIB value associated with this codec.
 */
-int QGsmCodec::mibEnum() const {
+int QGsmCodec::mibEnum() const
+{
     if (noLoss)
         return 61237;
     else
@@ -181,7 +185,8 @@ int QGsmCodec::mibEnum() const {
 
         \sa singleToUnicode(), twoByteFromUnicode()
 */
-char QGsmCodec::singleFromUnicode(QChar c) {
+char QGsmCodec::singleFromUnicode(QChar c)
+{
     unsigned int ch = c.unicode();
     if (ch < 256)
         return (char)(latin1GSMTable[ch]);
@@ -200,7 +205,8 @@ char QGsmCodec::singleFromUnicode(QChar c) {
 
         \sa singleFromUnicode(), twoByteToUnicode()
 */
-QChar QGsmCodec::singleToUnicode(char ch) {
+QChar QGsmCodec::singleToUnicode(char ch)
+{
     return QChar((unsigned int)(gsmLatin1Table[((int)ch) & 0xFF]));
 }
 
@@ -211,7 +217,8 @@ QChar QGsmCodec::singleToUnicode(char ch) {
 
         \sa twoByteToUnicode()
 */
-unsigned short QGsmCodec::twoByteFromUnicode(QChar ch) {
+unsigned short QGsmCodec::twoByteFromUnicode(QChar ch)
+{
     unsigned short c = ch.unicode();
     if (c == 0x20AC) // Euro
         return 0x1b65;
@@ -229,12 +236,14 @@ unsigned short QGsmCodec::twoByteFromUnicode(QChar ch) {
 
         \sa twoByteFromUnicode()
 */
-QChar QGsmCodec::twoByteToUnicode(unsigned short ch) {
+QChar QGsmCodec::twoByteToUnicode(unsigned short ch)
+{
     if (ch < 256)
         return QChar(gsmLatin1Table[ch]);
     else if ((ch & 0xFF00) != 0x1B00)
         return QChar(0);
-    else {
+    else
+    {
         unsigned short mapping = extensionLatin1Table[ch & 0xFF];
         if (mapping != UUC)
             return QChar(mapping);
@@ -250,28 +259,37 @@ QChar QGsmCodec::twoByteToUnicode(unsigned short ch) {
 
         \sa convertFromUnicode()
 */
-QString QGsmCodec::convertToUnicode(const char *in, int length, ConverterState *state) const {
+QString QGsmCodec::convertToUnicode(const char *in, int length, ConverterState *state) const
+{
     QString str;
     unsigned short ch;
-    while (length > 0) {
-        if (*in == 0x1B) {
+    while (length > 0)
+    {
+        if (*in == 0x1B)
+        {
             // Two-byte GSM sequence.
             ++in;
             --length;
-            if (length <= 0) {
+            if (length <= 0)
+            {
                 if (state)
                     (state->invalidChars)++;
                 break;
             }
             ch = extensionLatin1Table[((int)(*in)) & 0xFF];
-            if (ch != UUC) {
+            if (ch != UUC)
+            {
                 str += QChar((unsigned int)ch);
-            } else {
+            }
+            else
+            {
                 str += QChar(gsmLatin1Table[((int)(*in)) & 0xFF]);
                 if (state)
                     (state->invalidChars)++;
             }
-        } else {
+        }
+        else
+        {
             ch = gsmLatin1Table[((int)(*in)) & 0xFF];
             if (ch != UUC)
                 str += QChar((unsigned int)ch);
@@ -291,31 +309,44 @@ QString QGsmCodec::convertToUnicode(const char *in, int length, ConverterState *
 
         \sa convertToUnicode()
 */
-QByteArray QGsmCodec::convertFromUnicode(const QChar *in, int length, ConverterState *state) const {
+QByteArray QGsmCodec::convertFromUnicode(const QChar *in, int length, ConverterState *state) const
+{
     QByteArray result;
     unsigned int unicode;
-    if (noLoss) {
-        while (length > 0) {
+    if (noLoss)
+    {
+        while (length > 0)
+        {
             unicode = (*in).unicode();
-            if (unicode == 0x20AC) { // Euro
+            if (unicode == 0x20AC)
+            { // Euro
                 result += (char)0x1B;
                 result += (char)0x65;
-            } else if (unicode < 256) {
+            }
+            else if (unicode < 256)
+            {
                 unsigned short code = latin1GSMNoLossTable[unicode];
-                if (code < 256) {
+                if (code < 256)
+                {
                     if (((char)code == GUC) && state)
                         (state->invalidChars)++;
                     result += (char)code;
-                } else {
+                }
+                else
+                {
                     result += (char)(code >> 8);
                     result += (char)code;
                 }
-            } else if (unicode >= 0x0390 && unicode <= 0x03AF) {
+            }
+            else if (unicode >= 0x0390 && unicode <= 0x03AF)
+            {
                 char c = (char)(greekGSMTable[unicode - 0x0390]);
                 result += c;
                 if (c == (char)GUC && unicode != 0x0394 && state)
                     (state->invalidChars)++;
-            } else {
+            }
+            else
+            {
                 result += (char)GUC;
                 if (state)
                     (state->invalidChars)++;
@@ -323,26 +354,39 @@ QByteArray QGsmCodec::convertFromUnicode(const QChar *in, int length, ConverterS
             ++in;
             --length;
         }
-    } else {
-        while (length > 0) {
+    }
+    else
+    {
+        while (length > 0)
+        {
             unicode = (*in).unicode();
-            if (unicode == 0x20AC) { // Euro
+            if (unicode == 0x20AC)
+            { // Euro
                 result += (char)0x1B;
                 result += (char)0x65;
-            } else if (unicode < 256) {
+            }
+            else if (unicode < 256)
+            {
                 unsigned short code = latin1GSMTable[unicode];
-                if (code < 256) {
+                if (code < 256)
+                {
                     result += (char)code;
-                } else {
+                }
+                else
+                {
                     result += (char)(code >> 8);
                     result += (char)code;
                 }
-            } else if (unicode >= 0x0390 && unicode <= 0x03AF) {
+            }
+            else if (unicode >= 0x0390 && unicode <= 0x03AF)
+            {
                 char c = (char)(greekGSMTable[unicode - 0x0390]);
                 result += c;
                 if (c == (char)GUC && unicode != 0x0394 && state)
                     (state->invalidChars)++;
-            } else {
+            }
+            else
+            {
                 result += (char)GUC;
                 if (state)
                     (state->invalidChars)++;

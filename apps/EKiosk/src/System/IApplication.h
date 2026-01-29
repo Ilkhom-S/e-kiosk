@@ -16,11 +16,13 @@ class IServiceManager;
 class ILog;
 
 //---------------------------------------------------------------------------
-class IApplication {
+class IApplication
+{
   public:
     //---------------------------------------------------------------------------
     // Структура с информацией о приложении
-    struct AppInfo {
+    struct AppInfo
+    {
         QString version;
         QString appName;
         QString configuration;
@@ -68,8 +70,10 @@ class IApplication {
 
     //---------------------------------------------------------------------------
     // Возвращает абсолютный путь из aPath
-    static QString toAbsolutePath(const QString &aPath) {
-        if (QDir(aPath).isAbsolute()) {
+    static QString toAbsolutePath(const QString &aPath)
+    {
+        if (QDir(aPath).isAbsolute())
+        {
             return QDir::cleanPath(aPath);
         }
         return QDir::cleanPath(QDir::currentPath() + QDir::separator() + aPath);
@@ -77,7 +81,8 @@ class IApplication {
 
     //---------------------------------------------------------------------------
     // Возвращает текущую рабочую папку
-    static QString getWorkingDirectory() {
+    static QString getWorkingDirectory()
+    {
         return QDir::currentPath();
     }
 };

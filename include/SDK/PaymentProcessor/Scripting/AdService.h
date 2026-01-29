@@ -10,21 +10,26 @@
 #include <QtCore/QVariantMap>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         class ICore;
 
-        namespace Scripting {
+        namespace Scripting
+        {
 
             /// Константы сервиса рекламы.
-            namespace CAdService {
+            namespace CAdService
+            {
                 const char DefaultBanner[] = "banner";
             } // namespace CAdService
 
             //------------------------------------------------------------------------------
             /// Прокси-класс для работы с рекламным контентом в скриптах.
-            class AdService : public QObject {
+            class AdService : public QObject
+            {
                 Q_OBJECT
 
                 Q_PROPERTY(QString receiptHeader READ getReceiptHeader CONSTANT)

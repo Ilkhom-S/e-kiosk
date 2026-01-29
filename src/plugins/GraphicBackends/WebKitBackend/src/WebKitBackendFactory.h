@@ -12,7 +12,8 @@
 
 //------------------------------------------------------------------------------
 /// Фабрика плагина WebKitBackend.
-class WebKitBackendFactory : public QObject, public SDK::Plugin::IPluginFactory {
+class WebKitBackendFactory : public QObject, public SDK::Plugin::IPluginFactory
+{
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "SDK.Plugin.PluginFactory")
     Q_INTERFACES(SDK::Plugin::IPluginFactory)

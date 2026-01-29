@@ -15,7 +15,8 @@ using namespace SDK::PaymentProcessor::Humo;
 class AdPayment;
 
 //---------------------------------------------------------------------------
-class AdPaymentRequest : public Request {
+class AdPaymentRequest : public Request
+{
   public:
     //---------------------------------------------------------------------------
     // Конструктор запроса оплаты

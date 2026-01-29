@@ -14,7 +14,8 @@
 #include "Hardware/Common/CommandResults.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class PortDeviceBase : public T {
+template <class T> class PortDeviceBase : public T
+{
   public:
     PortDeviceBase();
 
@@ -40,7 +41,8 @@ template <class T> class PortDeviceBase : public T {
     virtual bool processStatus(TStatusCodes &aStatusCodes);
 
     /// Проверить порт.
-    virtual bool checkPort() {
+    virtual bool checkPort()
+    {
         return false;
     }
 
@@ -59,7 +61,8 @@ template <class T> class PortDeviceBase : public T {
 
     /// Выполнить команду.
     virtual TResult execCommand(const QByteArray & /*aCommand*/, const QByteArray & /*aCommandData*/,
-                                QByteArray * /*aAnswer*/ = nullptr) {
+                                QByteArray * /*aAnswer*/ = nullptr)
+    {
         return CommandResult::Driver;
     }
 

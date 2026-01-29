@@ -19,13 +19,15 @@
 #include "AdRequests.h"
 
 //---------------------------------------------------------------------------
-class AdResponse : public SDK::PaymentProcessor::Humo::Response {
+class AdResponse : public SDK::PaymentProcessor::Humo::Response
+{
   public:
     AdResponse(const SDK::PaymentProcessor::Humo::Request &aRequest, const QString &aResponseString);
 };
 
 //---------------------------------------------------------------------------
-class AdGetChannelsResponse : public AdResponse {
+class AdGetChannelsResponse : public AdResponse
+{
   public:
     AdGetChannelsResponse(const SDK::PaymentProcessor::Humo::Request &aRequest, const QString &aResponseString);
 
@@ -34,7 +36,8 @@ class AdGetChannelsResponse : public AdResponse {
 };
 
 //---------------------------------------------------------------------------
-class AdGetChannelResponse : public AdGetChannelsResponse {
+class AdGetChannelResponse : public AdGetChannelsResponse
+{
   public:
     AdGetChannelResponse(const SDK::PaymentProcessor::Humo::Request &aRequest, const QString &aResponseString);
 

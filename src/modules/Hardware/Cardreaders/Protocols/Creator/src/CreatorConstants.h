@@ -11,7 +11,8 @@
 #include "Hardware/Common/ASCII.h"
 
 //--------------------------------------------------------------------------------
-namespace CCreator {
+namespace CCreator
+{
     /// Префикс.
     const char Prefix = '\xF2';
 
@@ -43,7 +44,8 @@ namespace CCreator {
     const int MaxRepeatCommandNAK = 3;
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Дефолтный для ожидания ответа на команду.
         const int DefaultAnswer = 1000;
 

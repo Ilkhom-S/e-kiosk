@@ -33,7 +33,8 @@ class IHardwareDatabaseUtils;
 class NetworkService : protected QThread,
                        public SDK::PaymentProcessor::INetworkService,
                        public ILogable,
-                       public SDK::PaymentProcessor::IService {
+                       public SDK::PaymentProcessor::IService
+{
     Q_OBJECT
 
   public:

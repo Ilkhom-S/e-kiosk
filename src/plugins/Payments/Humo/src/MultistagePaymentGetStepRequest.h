@@ -6,8 +6,10 @@
 #include "Payment.h"
 #include "PaymentRequest.h"
 
-namespace CMultistage {
-    namespace Protocol {
+namespace CMultistage
+{
+    namespace Protocol
+    {
         const QString Step = "STEP";
         const QString Fields = "FIELDS";
 
@@ -18,7 +20,8 @@ namespace CMultistage {
 using namespace SDK::PaymentProcessor::Humo;
 
 //---------------------------------------------------------------------------
-class MultistagePaymentGetStepRequest : public PaymentRequest {
+class MultistagePaymentGetStepRequest : public PaymentRequest
+{
   public:
     MultistagePaymentGetStepRequest(Payment *aPayment);
 };

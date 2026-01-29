@@ -19,8 +19,10 @@
 typedef std::function<void(const QString &, int, int)> TChangePerformingTimeout;
 
 /// Результаты выполнения задачи.
-namespace ETaskResult {
-    enum Enum {
+namespace ETaskResult
+{
+    enum Enum
+    {
         OK,       /// Задача выполнена, результат - ОК.
         Error,    /// Задача выполнена, результат - ошибка.
         Invalid,  /// Задача невыполнима (пустая).
@@ -28,7 +30,8 @@ namespace ETaskResult {
     };
 } // namespace ETaskResult
 
-struct STaskData {
+struct STaskData
+{
     TBoolMethod task;
     TVoidMethod forwardingTask;
     TChangePerformingTimeout changePerformingTimeout;
@@ -40,7 +43,8 @@ Q_DECLARE_METATYPE(STaskData);
 
 //--------------------------------------------------------------------------------
 /// Рабочий поток для класса-исполнителя.
-class SafePerformerThread : public QThread {
+class SafePerformerThread : public QThread
+{
     Q_OBJECT
 
   public:
@@ -61,7 +65,8 @@ class SafePerformerThread : public QThread {
 
 //--------------------------------------------------------------------------------
 /// Класс-исполнитель зависоноопасного функционала сторонних разработчиков. Синхронизация с логикой ТК не предусмотрена
-class SafePerformer : public QObject {
+class SafePerformer : public QObject
+{
     Q_OBJECT
 
   public:

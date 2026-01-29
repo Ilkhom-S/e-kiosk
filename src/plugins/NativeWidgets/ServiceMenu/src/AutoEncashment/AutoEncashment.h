@@ -16,7 +16,8 @@
 class ServiceMenuBackend;
 
 //--------------------------------------------------------------------------
-class AutoEncashment : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem {
+class AutoEncashment : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem
+{
   public:
     AutoEncashment(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
     ~AutoEncashment();
@@ -67,7 +68,8 @@ class AutoEncashment : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsIt
     virtual QQuickItem *getWidget() const;
 
     // возвращает нативный виджет.
-    virtual QWidget *getNativeWidget() const {
+    virtual QWidget *getNativeWidget() const
+    {
         return mAutoEncashmentWindow;
     }
 

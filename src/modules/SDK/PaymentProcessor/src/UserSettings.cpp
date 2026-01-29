@@ -13,35 +13,43 @@
 // Project
 #include "UserSettings.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
         UserSettings::UserSettings(TPtree &aProperties)
-            : mProperties(aProperties.get_child(CAdapterNames::UserAdapter, aProperties)) {
+            : mProperties(aProperties.get_child(CAdapterNames::UserAdapter, aProperties))
+        {
         }
 
         //---------------------------------------------------------------------------
-        UserSettings::~UserSettings() {
+        UserSettings::~UserSettings()
+        {
         }
 
         //---------------------------------------------------------------------------
-        bool UserSettings::isValid() const {
+        bool UserSettings::isValid() const
+        {
             return true;
         }
 
         //---------------------------------------------------------------------------
-        QString UserSettings::getAdapterName() {
+        QString UserSettings::getAdapterName()
+        {
             return CAdapterNames::UserAdapter;
         }
 
         //---------------------------------------------------------------------------
-        bool UserSettings::reportAllPayments() const {
+        bool UserSettings::reportAllPayments() const
+        {
             return mProperties.get<bool>("user.monitoring.report_all_payments", false);
         }
 
         //---------------------------------------------------------------------------
-        bool UserSettings::useStackerID() const {
+        bool UserSettings::useStackerID() const
+        {
             return mProperties.get<bool>("user.encashment.use_stacker_id", false);
         }
 

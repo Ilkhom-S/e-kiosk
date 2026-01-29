@@ -5,11 +5,13 @@
 #include <QtWidgets/QDialog>
 #include <Common/QtHeadersEnd.h>
 
-namespace Ui {
+namespace Ui
+{
     class SelectCategoryLogView;
 }
 
-class SelectCategoryLogView : public QDialog {
+class SelectCategoryLogView : public QDialog
+{
     Q_OBJECT
 
   public:

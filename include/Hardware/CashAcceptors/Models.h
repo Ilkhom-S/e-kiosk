@@ -3,10 +3,12 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-namespace CCCNet {
+namespace CCCNet
+{
     const QString Cashcode = "Cashcode";
 
-    namespace Models {
+    namespace Models
+    {
         const char CashcodeG200[] = "Cashcode G-200";
 
         const char CashcodeGX[] = "Cashcode GX";

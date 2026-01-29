@@ -24,7 +24,8 @@ namespace PPSDK = SDK::PaymentProcessor;
 using namespace PPSDK::Humo;
 
 //------------------------------------------------------------------------------
-class PaymentFactory : public PaymentFactoryBase {
+class PaymentFactory : public PaymentFactoryBase
+{
     Q_OBJECT
 
   public:

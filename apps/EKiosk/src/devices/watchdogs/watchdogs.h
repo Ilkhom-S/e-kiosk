@@ -10,7 +10,8 @@
 #include <QtSerialPort/QSerialPort>
 #include <Common/QtHeadersEnd.h>
 
-namespace COSMP1 {
+namespace COSMP1
+{
     /// Имя девайса
     const QString DeviceName = "OSMP1";
 
@@ -38,7 +39,8 @@ namespace COSMP1 {
     /// Постоянная основа для пакета
     const uchar PacketConst[3] = {0x4F, 0x53, 0x50};
 
-    namespace Commands {
+    namespace Commands
+    {
         /// Ребут компа
         const uchar RebootPC = 0xAE;
 
@@ -59,8 +61,10 @@ namespace COSMP1 {
     }; // namespace Commands
 }; // namespace COSMP1
 
-namespace WDProtocolCommands {
-    enum Enum {
+namespace WDProtocolCommands
+{
+    enum Enum
+    {
         /// Ребут компа
         RebootPC,
 
@@ -81,7 +85,8 @@ namespace WDProtocolCommands {
     };
 }; // namespace WDProtocolCommands
 
-class WatchDogs : public QThread {
+class WatchDogs : public QThread
+{
     Q_OBJECT
 
   public:
@@ -105,7 +110,8 @@ class WatchDogs : public QThread {
     // Печатаем в 16-ом коде
     void printDataToHex(const QByteArray &data);
     // задержка между некоторыми командами
-    static void msleep(int ms) {
+    static void msleep(int ms)
+    {
         QThread::msleep(ms);
     }
     bool sendCommand(QByteArray dataRequest, bool getResponse, int timeResponse, bool &respOk, QByteArray &dataResponse,

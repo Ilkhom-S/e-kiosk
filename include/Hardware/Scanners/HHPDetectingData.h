@@ -5,13 +5,16 @@
 #include <Hardware/Common/USBDeviceModelData.h>
 
 //--------------------------------------------------------------------------------
-namespace CHHP {
+namespace CHHP
+{
     /// Имя устройства по умолчанию.
     const char DefaultName[] = "Unknown HHP USB HID Device";
 
-    class DetectingData : public CUSBDevice::ProductData {
+    class DetectingData : public CUSBDevice::ProductData
+    {
       public:
-        DetectingData() {
+        DetectingData()
+        {
             // TODO: добавить GUID-ы для авто поиска и работы с портом
 
             // add(0x0160, "IT5600");

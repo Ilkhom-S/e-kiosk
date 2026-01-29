@@ -11,9 +11,11 @@
 // Project
 #include "Ucs.h"
 
-namespace Ucs {
+namespace Ucs
+{
     //---------------------------------------------------------------------------
-    class BaseResponse {
+    class BaseResponse
+    {
       public:
         char mClass;
         char mCode;
@@ -25,18 +27,22 @@ namespace Ucs {
       public:
         BaseResponse(const BaseResponse &aResponse)
             : mClass(aResponse.mClass), mCode(aResponse.mCode), mTerminalID(aResponse.mTerminalID),
-              mData(aResponse.mData) {
+              mData(aResponse.mData)
+        {
         }
-        virtual ~BaseResponse() {
+        virtual ~BaseResponse()
+        {
         }
         static QSharedPointer<BaseResponse> createResponse(QByteArray &aResponseBuffer);
 
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return false;
         }
 
       protected:
-        BaseResponse() {
+        BaseResponse()
+        {
             mClass = mCode = 0;
         }
         BaseResponse(const QByteArray &aResponseBuffer);
@@ -45,10 +51,12 @@ namespace Ucs {
     typedef QSharedPointer<BaseResponse> BaseResponsePtr;
 
     //---------------------------------------------------------------------------
-    class ErrorResponse : public BaseResponse {
+    class ErrorResponse : public BaseResponse
+    {
       public:
         ErrorResponse(const BaseResponse &aResponse);
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 
@@ -57,10 +65,12 @@ namespace Ucs {
     };
 
     //---------------------------------------------------------------------------
-    class ConsoleResponse : public BaseResponse {
+    class ConsoleResponse : public BaseResponse
+    {
       public:
         ConsoleResponse(const BaseResponse &aResponse);
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 
@@ -71,10 +81,12 @@ namespace Ucs {
     };
 
     //---------------------------------------------------------------------------
-    class LoginResponse : public BaseResponse {
+    class LoginResponse : public BaseResponse
+    {
       public:
         LoginResponse(const BaseResponse &aResponse);
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 
@@ -90,10 +102,12 @@ namespace Ucs {
     };
 
     //---------------------------------------------------------------------------
-    class PrintLineResponse : public BaseResponse {
+    class PrintLineResponse : public BaseResponse
+    {
       public:
         PrintLineResponse(const BaseResponse &aResponse);
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 
@@ -102,11 +116,14 @@ namespace Ucs {
     };
 
     //---------------------------------------------------------------------------
-    class GetStateResponse : public BaseResponse {
+    class GetStateResponse : public BaseResponse
+    {
       public:
-        GetStateResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        GetStateResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 
@@ -116,21 +133,27 @@ namespace Ucs {
     };
 
     //---------------------------------------------------------------------------
-    class InitialResponse : public BaseResponse {
+    class InitialResponse : public BaseResponse
+    {
       public:
-        InitialResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        InitialResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
     };
 
     //---------------------------------------------------------------------------
-    class BreakResponse : public BaseResponse {
+    class BreakResponse : public BaseResponse
+    {
       public:
-        BreakResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        BreakResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 
@@ -138,27 +161,34 @@ namespace Ucs {
     };
 
     //---------------------------------------------------------------------------
-    class PINRequiredResponse : public BaseResponse {
+    class PINRequiredResponse : public BaseResponse
+    {
       public:
-        PINRequiredResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        PINRequiredResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
     };
 
     //---------------------------------------------------------------------------
-    class OnlineRequiredResponse : public BaseResponse {
+    class OnlineRequiredResponse : public BaseResponse
+    {
       public:
-        OnlineRequiredResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        OnlineRequiredResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
     };
 
     //---------------------------------------------------------------------------
-    class AuthResponse : public BaseResponse {
+    class AuthResponse : public BaseResponse
+    {
       public:
         Operation::Enum mOperation;
         quint32 mTransactionSum;
@@ -174,7 +204,8 @@ namespace Ucs {
 
       public:
         AuthResponse(const BaseResponse &aResponse);
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 
@@ -183,30 +214,38 @@ namespace Ucs {
     };
 
     //---------------------------------------------------------------------------
-    class EncashmentResponse : public BaseResponse {
+    class EncashmentResponse : public BaseResponse
+    {
       public:
-        EncashmentResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        EncashmentResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
     };
 
     //---------------------------------------------------------------------------
-    class HoldResponse : public BaseResponse {
+    class HoldResponse : public BaseResponse
+    {
       public:
-        HoldResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        HoldResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
     };
 
     //---------------------------------------------------------------------------
-    class MessageResponse : public BaseResponse {
+    class MessageResponse : public BaseResponse
+    {
       public:
         MessageResponse(const BaseResponse &aResponse);
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 

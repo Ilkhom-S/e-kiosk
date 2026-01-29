@@ -18,11 +18,14 @@
 #include <Common/ILogable.h>
 #include <Common/PropertyTree.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //----------------------------------------------------------------------------
-        class Directory : public ISettingsAdapter, public ILogable {
+        class Directory : public ISettingsAdapter, public ILogable
+        {
           public:
             Directory(TPtree &aProperties);
             ~Directory();

@@ -2,8 +2,10 @@
 
 #pragma once
 
-namespace ExitCode {
-    enum Enum {
+namespace ExitCode
+{
+    enum Enum
+    {
         NoError = 0,         /// Выход без ошибок.
         NoRequiredParameter, /// Отсутствуют необходимые параметры (напр. командной
                              /// строки).

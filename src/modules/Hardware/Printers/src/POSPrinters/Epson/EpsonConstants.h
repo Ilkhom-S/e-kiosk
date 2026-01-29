@@ -12,8 +12,10 @@
 #include "Hardware/Common/ASCII.h"
 
 //--------------------------------------------------------------------------------
-namespace CEpsonEUT400 {
-    namespace Command {
+namespace CEpsonEUT400
+{
+    namespace Command
+    {
         const char GetVersion[] = "\x1D\x49\x41";      /// Получение версии прошивки.
         const char GetFont[] = "\x1D\x49\x45";         /// Получение установленного шрифта.
         const char GetMemorySize[] = "\x1D\x49\x72";   /// Получение размера установленной памяти.
@@ -35,7 +37,8 @@ namespace CEpsonEUT400 {
     } // namespace Command
 
     /// Работа с мemory-switch (MSW)
-    namespace MemorySwitch {
+    namespace MemorySwitch
+    {
         /// Префикс
         const char Prefix[] = "\x37\x21";
 
@@ -73,9 +76,11 @@ namespace CEpsonEUT400 {
         const int TimeoutReading = 500;
     } // namespace MemorySwitch
 
-    class CFontType : public CDescription<QString> {
+    class CFontType : public CDescription<QString>
+    {
       public:
-        CFontType() {
+        CFontType()
+        {
             append("", "Only alphanumeric and Katakana");
             append("KANJI.JAPANESE", "Japanese (JIS X0208-90)");
             append("CHINA.GB2312", "Simplified Chinese (GB2312-80)");
@@ -85,9 +90,11 @@ namespace CEpsonEUT400 {
         }
     };
 
-    class CMemorySize : public CSpecification<char, int> {
+    class CMemorySize : public CSpecification<char, int>
+    {
       public:
-        CMemorySize() {
+        CMemorySize()
+        {
             append('\x80', 0);
             append('\x84', 4);
             append('\x88', 8);

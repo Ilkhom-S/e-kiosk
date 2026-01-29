@@ -7,19 +7,23 @@
 #include <QtCore/QStringList>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace GUI {
+namespace SDK
+{
+    namespace GUI
+    {
 
         //---------------------------------------------------------------------------
         /// Интерфейс хоста, использующего графический движок и предоставляющий доступ к
         /// различным сервисам.
-        class IGraphicsHost {
+        class IGraphicsHost
+        {
           public:
             /// Возвращает список имеющихся интерфейсов
             virtual QStringList getInterfacesName() const = 0;
 
             /// Возвращает указатель на сервис с именем aInterface.
-            template <class T> T *getInterface(const QString &aInterface) {
+            template <class T> T *getInterface(const QString &aInterface)
+            {
                 return reinterpret_cast<T *>(getInterface(aInterface));
             }
 
@@ -28,7 +32,8 @@ namespace SDK {
             /// которую должен реализовать потомок этого интерфейса.
             virtual void *getInterface(const QString &aInterface) = 0;
 
-            virtual ~IGraphicsHost() {
+            virtual ~IGraphicsHost()
+            {
             }
         };
 

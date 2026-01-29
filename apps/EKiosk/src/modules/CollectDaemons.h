@@ -3,17 +3,20 @@
 // Project
 #include "SendRequest.h"
 
-struct Bill {
+struct Bill
+{
     int face;
     int value = 0;
 };
 
-struct Coin {
+struct Coin
+{
     int face;
     int value = 0;
 };
 
-struct NominalData {
+struct NominalData
+{
     QString billCurrency;
     QString coinCurrency;
 
@@ -26,13 +29,15 @@ struct NominalData {
     double coinSum = 0;
     double coinDivider = 100;
 
-    static NominalData fromVariant(const QVariantMap &v) {
+    static NominalData fromVariant(const QVariantMap &v)
+    {
         NominalData nominalData;
         nominalData.billCurrency = v.value("bill_currency").toString();
         nominalData.coinCurrency = v.value("coin_currency").toString();
 
         auto bills = v.value("bills").toList();
-        for (auto &b : bills) {
+        for (auto &b : bills)
+        {
             Bill bill;
             bill.face = b.toInt();
             bill.value = 0;
@@ -41,7 +46,8 @@ struct NominalData {
         }
 
         auto coins = v.value("coins").toList();
-        for (auto &c : coins) {
+        for (auto &c : coins)
+        {
             Coin coin;
             coin.face = c.toInt();
             coin.value = 0;
@@ -52,11 +58,13 @@ struct NominalData {
         return nominalData;
     }
 
-    void calculateTotal() {
+    void calculateTotal()
+    {
         billCount = 0;
         billSum = 0.0;
 
-        for (auto &b : bills) {
+        for (auto &b : bills)
+        {
             billCount += b.value;
             billSum += b.face * b.value;
         }
@@ -64,7 +72,8 @@ struct NominalData {
         coinCount = 0;
         coinSum = 0.0;
 
-        for (auto &b : coins) {
+        for (auto &b : coins)
+        {
             coinCount += b.value;
             coinSum += b.face * b.value;
         }
@@ -73,7 +82,8 @@ struct NominalData {
 
 class SendRequest;
 
-class CollectDaemons : public SendRequest {
+class CollectDaemons : public SendRequest
+{
     Q_OBJECT
 
   public:

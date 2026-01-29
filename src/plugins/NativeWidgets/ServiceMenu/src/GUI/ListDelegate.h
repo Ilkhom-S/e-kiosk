@@ -7,14 +7,18 @@
 #include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-class ListDelegate : public QItemDelegate {
+class ListDelegate : public QItemDelegate
+{
   public:
-    ListDelegate(QObject *aParent = 0) {
+    ListDelegate(QObject *aParent = 0)
+    {
         Q_UNUSED(aParent);
     }
 
-    virtual void paint(QPainter *aPainter, const QStyleOptionViewItem &aOption, const QModelIndex &aIndex) const {
-        if (aOption.state & QStyle::State_Selected) {
+    virtual void paint(QPainter *aPainter, const QStyleOptionViewItem &aOption, const QModelIndex &aIndex) const
+    {
+        if (aOption.state & QStyle::State_Selected)
+        {
             aPainter->fillRect(aOption.rect, aOption.palette.color(QPalette::Highlight));
         }
 
@@ -24,7 +28,8 @@ class ListDelegate : public QItemDelegate {
         QRect r = aOption.rect;
         aPainter->drawText(r.left(), r.top(), r.width(), r.height(), Qt::AlignLeft | Qt::AlignTop, title, &r);
 
-        if (!description.isEmpty()) {
+        if (!description.isEmpty())
+        {
             QFont font;
             QFont oldFont = aPainter->font();
 
@@ -40,11 +45,13 @@ class ListDelegate : public QItemDelegate {
         }
     }
 
-    virtual QSize sizeHint(const QStyleOptionViewItem &aOption, const QModelIndex &aIndex) const {
+    virtual QSize sizeHint(const QStyleOptionViewItem &aOption, const QModelIndex &aIndex) const
+    {
         QString description = aIndex.data(Qt::UserRole + 1).toString();
         QSize size = QItemDelegate::sizeHint(aOption, aIndex);
 
-        if (!description.isEmpty()) {
+        if (!description.isEmpty())
+        {
             size.setHeight(static_cast<int>(size.height() * 1.6));
         }
 

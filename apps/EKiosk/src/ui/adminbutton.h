@@ -5,11 +5,13 @@
 #include <QtWidgets/QWidget>
 #include <Common/QtHeadersEnd.h>
 
-namespace Ui {
+namespace Ui
+{
     class AdminButton;
 }
 
-class AdminButton : public QWidget {
+class AdminButton : public QWidget
+{
     Q_OBJECT
 
   public:

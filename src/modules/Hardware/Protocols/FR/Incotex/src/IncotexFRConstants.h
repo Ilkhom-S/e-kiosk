@@ -6,8 +6,10 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний устройств на протоколе Incotex.
-namespace CIncotexFR {
-    namespace Constants {
+namespace CIncotexFR
+{
+    namespace Constants
+    {
         /// Управляющие символы.
         const char CAN = ASCII::ENQ;
 
@@ -42,7 +44,8 @@ namespace CIncotexFR {
         const int EKLZStatusRequest = 318;
 
         /// Длина некоторых полей документа.
-        namespace Length {
+        namespace Length
+        {
             const int Operation = 1;        /// Фискальная операция.
             const int ElementsQuantity = 3; /// Количество передаваемых реквизитов.
             const int X = 2;                /// Позиция X реквизита.
@@ -55,7 +58,8 @@ namespace CIncotexFR {
             const int FRParameter = 3; /// Номер параметра ФР.
 
             /// Нефискальные строки.
-            namespace ElementData {
+            namespace ElementData
+            {
                 const int Default = 41;    /// По умолчанию для ПФД.
                 const int Encashment = 40; /// Инкассация.
             } // namespace ElementData
@@ -63,7 +67,8 @@ namespace CIncotexFR {
     } // namespace Constants
 
     /// Позиции.
-    namespace Positions {
+    namespace Positions
+    {
         /// Команда, позиция с начала посылки.
         const int Command = 1;
 
@@ -81,7 +86,8 @@ namespace CIncotexFR {
     } // namespace Positions
 
     /// Фискальные данные.
-    namespace FiscalData {
+    namespace FiscalData
+    {
         /// Тип операции - Продажа.
         const uchar Sale = 0;
 
@@ -92,7 +98,8 @@ namespace CIncotexFR {
         const uchar ElementsQuantity = 16;
 
         /// Реквизиты (некоторые, часто используемые).
-        namespace Elements {
+        namespace Elements
+        {
             const char KKMNumber = 0;      /// Номер ККМ.
             const char DocumentCap1 = 1;   /// Строка 1 шапки чека.
             const char DocumentCap2 = 2;   /// Строка 2 шапки чека.
@@ -113,7 +120,8 @@ namespace CIncotexFR {
         } // namespace Elements
 
         /// Флаги операций и реквизитов.
-        namespace Flags {
+        namespace Flags
+        {
             /// Закрыть документ.
             const uchar CloseDocument = 0x04;
 
@@ -132,7 +140,8 @@ namespace CIncotexFR {
     } // namespace FiscalData
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Дефолтный таймаут для чтения символов.
         const int Default = 200;
 
@@ -144,7 +153,8 @@ namespace CIncotexFR {
     } // namespace Timeouts
 
     /// Коды команд.
-    namespace Commands {
+    namespace Commands
+    {
         const char Sale = '\x53';
         const char Report = '\x5F';
         const char GetStatus = '\x44';
@@ -159,20 +169,25 @@ namespace CIncotexFR {
     } // namespace Commands
 
     /// Регистры - не все, используемые.
-    namespace Registers {
+    namespace Registers
+    {
         const int SumInCash = 11;
     } // namespace Registers
 
-    namespace Errors {
+    namespace Errors
+    {
         /// Коды обрабатываемых ошибок.
-        namespace Codes {
+        namespace Codes
+        {
             const unsigned short CashierNotRegistered = 0x000D;
             const unsigned short NeedCloseSession = 0x0002;
         } // namespace Codes
 
-        class CDescriptions : public CDescription<unsigned short> {
+        class CDescriptions : public CDescription<unsigned short>
+        {
           public:
-            CDescriptions() {
+            CDescriptions()
+            {
                 setDefault("Неизвестная");
 
                 append(0x0001, "Ошибка в фискальных данных, аппарат блокирован");
@@ -244,7 +259,8 @@ namespace CIncotexFR {
     } // namespace Errors
 
     /// Структура, в которую парсится ответ. На разные команды в ответе приходят разные данные.
-    struct SUnpackedData : SUnpackedDataBase {
+    struct SUnpackedData : SUnpackedDataBase
+    {
         unsigned char command;
         unsigned short commandResult;
 
@@ -271,13 +287,16 @@ namespace CIncotexFR {
         SUnpackedData()
             : command(0), commandResult(0), FiscalMemoryNearEnd(false), FiscalMemoryEnd(false), EKLZNearEnd(false),
               EKLZError(false), TechnoMode(false), PrinterError(false), CutterOff(false), PaperEnd(false),
-              OfflineError(false), Register(0) {
+              OfflineError(false), Register(0)
+        {
         }
     };
 
     /// Ответ.
-    namespace Answer {
-        namespace Identification {
+    namespace Answer
+    {
+        namespace Identification
+        {
             /// Названия модели - "MSTAR-TK".
             const QByteArray MStarTKModel = "\x4D\x53\x54\x41\x52\x2D\x54\x4B";
 
@@ -286,7 +305,8 @@ namespace CIncotexFR {
         } // namespace Identification
 
         /// Секции в сплит-посылке для разных ответов.
-        namespace Sections {
+        namespace Sections
+        {
             /// Команда.
             const int Command = 0;
 
@@ -319,7 +339,8 @@ namespace CIncotexFR {
         } // namespace Sections
 
         /// Номера битов ошибок.
-        namespace Errors {
+        namespace Errors
+        {
             /// Статусы ККМ.
             const int FiscalMemoryNearEnd = 5;
             const int FiscalMemoryEnd = 6;

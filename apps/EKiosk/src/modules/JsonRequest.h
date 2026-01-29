@@ -11,12 +11,14 @@
 #include <QtNetwork/QNetworkReply>
 #include <Common/QtHeadersEnd.h>
 
-enum Method {
+enum Method
+{
     GET = 0,
     POST = 1,
 };
 
-class JsonRequest : public QObject {
+class JsonRequest : public QObject
+{
     Q_OBJECT
 
   public:

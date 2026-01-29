@@ -11,7 +11,8 @@
 #include "GUI/IServiceWindow.h"
 
 //------------------------------------------------------------------------
-class WizardPageBase : public QFrame, public ServiceWindowBase {
+class WizardPageBase : public QFrame, public ServiceWindowBase
+{
     Q_OBJECT
 
   public:

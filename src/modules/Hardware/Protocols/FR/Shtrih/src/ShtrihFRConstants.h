@@ -6,7 +6,8 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний устройств на протоколе Shtrih.
-namespace CShtrihFR {
+namespace CShtrihFR
+{
     /// Префикс.
     const char Prefix = ASCII::STX;
 
@@ -26,7 +27,8 @@ namespace CShtrihFR {
     const char Trash = '\xFF';
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Дефолтный чтения ответа.
         const int DefaultAnswer = 3150;
 

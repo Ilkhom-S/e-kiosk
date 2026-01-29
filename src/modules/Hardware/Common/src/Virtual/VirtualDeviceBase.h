@@ -12,7 +12,8 @@
 #include "Hardware/Common/DeviceBase.h"
 
 //---------------------------------------------------------------------------------------------
-template <class T> class VirtualDeviceBase : public T {
+template <class T> class VirtualDeviceBase : public T
+{
     SET_SERIES("Virtual")
 
   public:

@@ -10,7 +10,8 @@
 // Modules
 #include <Hardware/Common/ProtocolBase.h>
 
-namespace CPuloon {
+namespace CPuloon
+{
     /// Размер данных о выдаваемом предмете.
     const int ItemDataSize = 3;
 } // namespace CPuloon
@@ -18,7 +19,8 @@ namespace CPuloon {
 typedef QList<QByteArray> TAnswerList;
 
 //--------------------------------------------------------------------------------
-class Puloon : public ProtocolBase {
+class Puloon : public ProtocolBase
+{
   public:
     /// Выполнить команду.
     TResult processCommand(const QByteArray &aCommandData, TAnswerList &aAnswerList, int aTimeout) const;

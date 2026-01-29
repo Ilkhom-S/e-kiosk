@@ -4,7 +4,8 @@
 
 //---------------------------------------------------------------------------
 /// Константы для печати чеков.
-namespace CPrintConstants {
+namespace CPrintConstants
+{
     const char *const BankName = "BANK_NAME";
     const char *const BankBik = "BANK_BIK";
     const char *const BankInn = "BANK_INN";
@@ -40,7 +41,8 @@ namespace CPrintConstants {
     const char *const ReceiptNumber = "RECEIPT_NUMBER";
     const char *const NoFiscal = "NO_FISCAL";
 
-    namespace KKM {
+    namespace KKM
+    {
         const char *const TaxSystem = "TAXSYSTEM";                 // система налогообложения (СНО)
         const char *const DateTimeStamp = "KKM_DATETIME_STAMP";    // дата и время получения фискального документа
         const char *const SerialNumber = "KKM_SERIAL_NUMBER";      // серийный номер фискальника (заводской номер ККТ)

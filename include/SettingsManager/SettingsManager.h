@@ -23,7 +23,8 @@
 typedef QMap<QString, QString> TConfigFileMap;
 
 //---------------------------------------------------------------------------
-struct SSettingsSource {
+struct SSettingsSource
+{
     QString configFileName;
     QString adapterName;
     QString symlinkName;
@@ -33,7 +34,8 @@ struct SSettingsSource {
     explicit SSettingsSource(const QString &aFileName, const QString &aAdapterName, bool aReadOnly);
     explicit SSettingsSource(const QString &aFileName, const QString &aAdapterName, const char *aSymlinkName);
 
-    bool isSymlink() const {
+    bool isSymlink() const
+    {
         return !symlinkName.isEmpty();
     }
 
@@ -42,7 +44,8 @@ struct SSettingsSource {
 };
 
 //---------------------------------------------------------------------------
-class SettingsManager : public ILogable {
+class SettingsManager : public ILogable
+{
   public:
     SettingsManager(const QString &aConfigPath);
     ~SettingsManager();

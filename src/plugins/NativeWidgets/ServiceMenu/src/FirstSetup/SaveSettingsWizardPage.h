@@ -11,7 +11,8 @@
 #include "WizardPage.h"
 
 //---------------------------------------------------------------------------
-class SaveSettingsWizardPage : public WizardPageBase, protected Ui::SaveSettingsWizardPage {
+class SaveSettingsWizardPage : public WizardPageBase, protected Ui::SaveSettingsWizardPage
+{
     Q_OBJECT
 
   public:

@@ -15,11 +15,13 @@
 #include "ShtrihFRDataTypes.h"
 
 //--------------------------------------------------------------------------------
-namespace CShtrihFR {
+namespace CShtrihFR
+{
     typedef QList<int> TIds;
 
     /// Параметры моделей.
-    namespace Models {
+    namespace Models
+    {
         /// Модели по умолчанию.
         const char Default[] = "Shtrih FR";
         const char RetractorDefault[] = "Shtrih retractor FR";
@@ -28,7 +30,8 @@ namespace CShtrihFR {
         const char OnlineRetractorDefault[] = "Shtrih retractor online FR";
 
         /// ИД моделей.
-        namespace ID {
+        namespace ID
+        {
             const int NoModel = 0x7FFF;
 
             /// Старые.
@@ -71,7 +74,8 @@ namespace CShtrihFR {
         } // namespace ID
 
         /// Данные моделей.
-        class CData : public CSpecification<int, SModelData> {
+        class CData : public CSpecification<int, SModelData>
+        {
           public:
             CData();
 
@@ -97,8 +101,10 @@ namespace CShtrihFR {
     append(Models::ID::aModel, SFields(TFields() << aFields, TTables() << aTables));
 
     /// Параметры ФР.
-    namespace FRParameters {
-        class CFields : public CSpecification<int, SFields> {
+    namespace FRParameters
+    {
+        class CFields : public CSpecification<int, SFields>
+        {
           public:
             CFields() //                                 0    1     2     3     4    5     6     7     8     9    10 11
                       //                                 12    13    14    15    16    17    18    19    20

@@ -10,13 +10,15 @@
 #include "Component.h"
 
 //---------------------------------------------------------------------------
-namespace CPackage {
+namespace CPackage
+{
     const int PostActionTimeout = 120; // Таймаут работы post-action
 } // namespace CPackage
 
 //---------------------------------------------------------------------------
 /// Компонент дистрибутива - набор файлов.
-class Package : public Component {
+class Package : public Component
+{
     Q_OBJECT
 
   public:

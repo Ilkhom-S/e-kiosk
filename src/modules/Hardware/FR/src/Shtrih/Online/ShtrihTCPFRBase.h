@@ -5,9 +5,11 @@
 #include "Hardware/FR/PortFRBase.h"
 
 //--------------------------------------------------------------------------------
-class ShtrihTCPFRBase : public TTCPFRBase {
+class ShtrihTCPFRBase : public TTCPFRBase
+{
   public:
-    ShtrihTCPFRBase() {
+    ShtrihTCPFRBase()
+    {
         using namespace CHardwareSDK::Port;
 
         // данные порта

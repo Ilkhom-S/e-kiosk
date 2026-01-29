@@ -12,12 +12,16 @@
 #include <SDK/Drivers/FR/FiscalPrinterCommand.h>
 #include <SDK/Drivers/FR/FiscalDataTypes.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         /// Состояние документа.
-        namespace EDocumentState {
-            enum Enum {
+        namespace EDocumentState
+        {
+            enum Enum
+            {
                 Error,  /// Ошибка определения.
                 Opened, /// Открыт.
                 Closed  /// Закрыт.
@@ -25,7 +29,8 @@ namespace SDK {
         } // namespace EDocumentState
 
         //--------------------------------------------------------------------------------
-        class IFiscalPrinter : public IPrinter {
+        class IFiscalPrinter : public IPrinter
+        {
           public:
             /// Сигнал об закрытии смены.
             static const char *FRSessionClosedSignal; // = SIGNAL(FRSessionClosed(const QVariantMap &));
@@ -69,7 +74,8 @@ namespace SDK {
             virtual bool canProcessZBuffer() = 0;
 
           protected:
-            virtual ~IFiscalPrinter() {
+            virtual ~IFiscalPrinter()
+            {
             }
         };
 

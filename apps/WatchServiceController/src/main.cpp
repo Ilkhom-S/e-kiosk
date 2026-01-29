@@ -21,7 +21,8 @@
 #include "WatchServiceController.h"
 #include <singleapplication.h>
 
-int main(int aArgc, char *aArgv[]) {
+int main(int aArgc, char *aArgv[])
+{
 
     // Enable crash diagnostics and stack trace logging
     SetUnhandledExceptionsHandler(nullptr);
@@ -33,11 +34,13 @@ int main(int aArgc, char *aArgv[]) {
     QString locale = QLocale::system().name();
     QString qmFile = QString("WatchServiceController_%1.qm").arg(locale);
     QString qmPath = QDir(QApplication::applicationDirPath()).absoluteFilePath("locale/" + qmFile);
-    if (translator.load(qmPath)) {
+    if (translator.load(qmPath))
+    {
         QApplication::installTranslator(&translator);
     }
 
-    if (!application.isPrimaryInstance()) {
+    if (!application.isPrimaryInstance())
+    {
         // notify running instance and exit
         application.getQtApplication().sendMessage("Instance!!!");
         LOG(application.getLog(), LogLevel::Warning, "Another instance is already running.");

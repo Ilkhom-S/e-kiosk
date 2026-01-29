@@ -10,7 +10,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------------
-class Translator : public QObject {
+class Translator : public QObject
+{
     Q_OBJECT
 
     Q_PROPERTY(QString language READ getLanguage NOTIFY languageChanged);

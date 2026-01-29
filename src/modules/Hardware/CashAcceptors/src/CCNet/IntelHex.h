@@ -17,7 +17,8 @@
 #include "Hardware/Common/ASCII.h"
 
 //--------------------------------------------------------------------------------
-namespace CIntelHex {
+namespace CIntelHex
+{
     /// Разделители записей в ssf-файле.
     const char Separator1[] = "\r\n";
     const char Separator2[] = "\n";
@@ -31,9 +32,12 @@ namespace CIntelHex {
 } // namespace CIntelHex
 
 //--------------------------------------------------------------------------------
-namespace IntelHex {
-    namespace EType {
-        enum Enum {
+namespace IntelHex
+{
+    namespace EType
+    {
+        enum Enum
+        {
             NoType = -1,
             DataBlock = 0,
             EndOfFile,
@@ -44,15 +48,18 @@ namespace IntelHex {
         };
     } // namespace EType
 
-    struct SRecordData {
+    struct SRecordData
+    {
         EType::Enum type;
         ushort address;
         QByteArray data;
 
-        SRecordData() : type(EType::NoType), address(0) {
+        SRecordData() : type(EType::NoType), address(0)
+        {
         }
         SRecordData(EType::Enum aType, ushort aAddress, const QByteArray &aData)
-            : type(aType), address(aAddress), data(aData) {
+            : type(aType), address(aAddress), data(aData)
+        {
         }
     };
 

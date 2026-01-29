@@ -7,10 +7,12 @@
 #include <QtCore/QUuid>
 #include <Common/QtHeadersEnd.h>
 
-namespace CBITS {
+namespace CBITS
+{
 
     //---------------------------------------------------------------------------
-    enum EJobStates {
+    enum EJobStates
+    {
         EJobStateQueued = 0,
         EJobStateConnecting = 1,
         EJobStateTransferring = 2,
@@ -24,25 +26,35 @@ namespace CBITS {
     };
 
     //---------------------------------------------------------------------------
-    enum EFileStates {
+    enum EFileStates
+    {
         EFileStateTransferring = 9,
         EFileStateTransferred = 6,
         EFileStateUnknown = 15,
     };
 
-    enum EJobPriority { FOREGROUND = 0, HIGH, NORMAL, LOW };
+    enum EJobPriority
+    {
+        FOREGROUND = 0,
+        HIGH,
+        NORMAL,
+        LOW
+    };
 
     //-------------------------------------------------------------------------------------------------
-    struct SJobProgress {
+    struct SJobProgress
+    {
         quint64 bytesTotal;
         quint64 bytesTransferred;
         quint32 filesTotal;
         quint32 filesTransferred;
 
-        SJobProgress() : bytesTotal(0), bytesTransferred(0), filesTotal(0), filesTransferred(0) {
+        SJobProgress() : bytesTotal(0), bytesTransferred(0), filesTotal(0), filesTransferred(0)
+        {
         }
 
-        QString toString() const {
+        QString toString() const
+        {
             return QString("%1/%2 bytes in %3/%4 files")
                 .arg(bytesTransferred)
                 .arg(bytesTotal)
@@ -52,27 +64,33 @@ namespace CBITS {
     };
 
     //-------------------------------------------------------------------------------------------------
-    class SJob {
+    class SJob
+    {
       public:
-        SJob() {
+        SJob()
+        {
             mState = EJobStateUnknown;
             mMinRetryDelay = 0;
             mNoProgressTimeout = 0;
         }
 
-        bool isComplete() const {
+        bool isComplete() const
+        {
             return mState == EJobStateTransferred || mState == EJobStateAcknowledged;
         }
 
-        bool isFatal() const {
+        bool isFatal() const
+        {
             return mState == EJobStateError || mState == EJobStateCancelled;
         }
 
-        bool inProgress() const {
+        bool inProgress() const
+        {
             return !isComplete() && !isFatal();
         }
 
-        QString toString() const {
+        QString toString() const
+        {
             return QString("UUID: %1. Name: '%2'. Dscr: %3. State: %4. Progress: %5. MinRetryDelay: %6. "
                            "NoProgressTimeout: %7.")
                 .arg(mGuidID.toString())

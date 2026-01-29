@@ -22,21 +22,25 @@
 // System
 #include "../ConstantData.h"
 
-struct NominalPar {
+struct NominalPar
+{
     int index;
     int nominal;
     QString currency;
 };
 
-namespace ValidatorConstants {
+namespace ValidatorConstants
+{
     //    const int CCNetSm_CharTimeOut           =   50;
     //    const int CCNetSm_AfterRequestTimeOut   =   200;
 }
 
-namespace ValidatorCommands {
+namespace ValidatorCommands
+{
     Q_NAMESPACE
 
-    enum Enum {
+    enum Enum
+    {
         Reset = 1,
         GetNominalTable = 2,
         SetNominalTable = 3,
@@ -65,8 +69,10 @@ namespace ValidatorCommands {
 }; // namespace ValidatorCommands
 
 /// Коды ошибок абстрактного валидатора
-namespace ValidatorErrors {
-    enum Enum {
+namespace ValidatorErrors
+{
+    enum Enum
+    {
         /// Всё окей, ошибок нет
         OK = 0,
         /// Валидатор не доступен
@@ -161,13 +167,20 @@ namespace ValidatorErrors {
     };
 } // namespace ValidatorErrors
 
-namespace VStatus {
-    namespace Success {
-        enum S { Ok = 0 };
+namespace VStatus
+{
+    namespace Success
+    {
+        enum S
+        {
+            Ok = 0
+        };
     } // namespace Success
 
-    namespace Errors {
-        enum E {
+    namespace Errors
+    {
+        enum E
+        {
             StackerJammed = 1,
             BadStackerPosition = 2,
             StackerFull = 3,
@@ -199,8 +212,10 @@ namespace VStatus {
         };
     } // namespace Errors
 
-    namespace Warning {
-        enum {
+    namespace Warning
+    {
+        enum
+        {
             PreviouslyBillInHead = 30,
             Operation = 31,
             Insertion = 32,
@@ -235,7 +250,8 @@ namespace VStatus {
     } // namespace Warning
 } // namespace VStatus
 
-class BaseValidatorDevices : public QThread {
+class BaseValidatorDevices : public QThread
+{
 
   public:
     BaseValidatorDevices(QObject *parent = 0);
@@ -258,7 +274,8 @@ class BaseValidatorDevices : public QThread {
     // Печатаем в 16-ом коде
     void printDataToHex(const QByteArray &data);
     // задержка между некоторыми командами
-    static void msleep(int ms) {
+    static void msleep(int ms)
+    {
         QThread::msleep(ms);
     }
     bool sendCommand(QByteArray dataRequest, bool getResponse, int timeResponse, QByteArray &dataResponse,

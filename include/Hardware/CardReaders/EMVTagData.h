@@ -5,12 +5,15 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CEMVTags {
+namespace CEMVTags
+{
     const int MSREquivalentData = 0xDFEF4D;
 
-    class CData : public CDescription<int> {
+    class CData : public CDescription<int>
+    {
       public:
-        CData() {
+        CData()
+        {
             append(0x42, "Issuer Identification Number (IIN)");
             append(0x4F, "Application Identifier (ADF Name)");
             append(0x50, "Application Label");

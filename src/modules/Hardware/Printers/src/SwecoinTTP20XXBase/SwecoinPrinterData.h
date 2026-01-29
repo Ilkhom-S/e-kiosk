@@ -13,7 +13,8 @@
 #include "Hardware/Printers/Tags.h"
 
 //--------------------------------------------------------------------------------
-namespace CSwecoinPrinter {
+namespace CSwecoinPrinter
+{
     const int Pause = 500;                  /// Таймаут порта после инициализации.
     const int MaxReadIdTimeout = 10 * 1000; /// Максимальный таймаут для чтения ответа на команду получения Id.
     const int MinReadIdTimeout = 2 * 1000;  /// Минимальный таймаут для чтения данных на команду получения Id.
@@ -21,7 +22,8 @@ namespace CSwecoinPrinter {
     const char UnknownModelName[] = "Unknown Swecoin Printer"; /// Имя принтера по умолчанию.
 
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char Initialize[] = "\x1B\x40";       /// Инициализация.
         const char SetParameter[] = "\x1B\x26\x50"; /// Часть команды установки параметра.
         const char GetData[] = "\x1B\x05";          /// Часть команды получения данных об устройстве.
@@ -33,9 +35,11 @@ namespace CSwecoinPrinter {
 
     //----------------------------------------------------------------------------
     /// Статусы.
-    class CStatuses : public CSpecification<char, int> {
+    class CStatuses : public CSpecification<char, int>
+    {
       public:
-        CStatuses() {
+        CStatuses()
+        {
             // TODO: влияет ли BM error на печать, если BM сенсор включен? Разобраться с index error - что это и зачем
             // это.
             append('\x01', PrinterStatusCode::Error::PaperJam);
@@ -62,9 +66,11 @@ namespace CSwecoinPrinter {
 
     //----------------------------------------------------------------------------
     /// Теги.
-    class TagEngine : public Tags::Engine {
+    class TagEngine : public Tags::Engine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             appendSingle(Tags::Type::Bold, "\x1B\x42", "\x01");
             appendSingle(Tags::Type::Italic, "\x1B\x69", "\x01");
             appendSingle(Tags::Type::UnderLine, "\x1B\x75", "\x01");
@@ -77,31 +83,38 @@ namespace CSwecoinPrinter {
     /// Данные устройства.
     typedef std::function<QString(QByteArray)> THandler;
 
-    struct SDeviceParameters {
+    struct SDeviceParameters
+    {
         int size;
         THandler handler;
         QString description;
 
-        SDeviceParameters() : size(0) {
+        SDeviceParameters() : size(0)
+        {
         }
         SDeviceParameters(int aSize, const QString &aDescription, THandler aHandler)
-            : size(aSize), handler(aHandler), description(aDescription) {
+            : size(aSize), handler(aHandler), description(aDescription)
+        {
         }
     };
 
     typedef QMap<char, SDeviceParameters> TDeviceParameters;
 
-    class CDeviceParameters : public CSpecification<char, SDeviceParameters> {
+    class CDeviceParameters : public CSpecification<char, SDeviceParameters>
+    {
       public:
-        CDeviceParameters() {
-            auto processData = [](const QByteArray &aAnswer, int aDigits) -> QString {
+        CDeviceParameters()
+        {
+            auto processData = [](const QByteArray &aAnswer, int aDigits) -> QString
+            {
                 QString result;
                 for (int i = 0; i < aAnswer.size(); ++i)
                     result += QString("%1").arg(uint(aAnswer[i]), aDigits, 10, QChar(ASCII::Zero));
                 return result;
             };
             auto processDigit = [&](const QByteArray &aAnswer) -> QString { return processData(aAnswer, 3); };
-            THandler processFloat = [&](const QByteArray &aAnswer) -> QString {
+            THandler processFloat = [&](const QByteArray &aAnswer) -> QString
+            {
                 return QString("%1")
                     .arg(processData(aAnswer, 2).toInt() / 100.0, 5, 'f', 2, QChar(ASCII::Space))
                     .simplified();

@@ -5,15 +5,18 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CKasbiPrinters {
+namespace CKasbiPrinters
+{
     const char Auto = '\x00';    /// Автоопределение.
     const char Virtual = '\xFE'; /// Печать в никуда.
 
     const char Default[] = "Auto"; /// По умолчанию.
 
-    class CModels : public CDescription<char> {
+    class CModels : public CDescription<char>
+    {
       public:
-        CModels() {
+        CModels()
+        {
             append(0, "Auto");
             append(1, "Custom VKP-80");
             append(2, "Custom TG-2480");
@@ -25,7 +28,8 @@ namespace CKasbiPrinters {
             append(Virtual, "Virtual");
         }
 
-        QStringList getNames() {
+        QStringList getNames()
+        {
             QStringList result = data().values();
             result.removeAll(value(Auto));
             result.removeAll(value(Virtual));

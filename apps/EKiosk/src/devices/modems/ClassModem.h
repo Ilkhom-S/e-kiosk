@@ -10,7 +10,8 @@
 
 class ATProtocol;
 
-class ClassModem : public QThread {
+class ClassModem : public QThread
+{
 
     Q_OBJECT
 
@@ -51,7 +52,8 @@ class ClassModem : public QThread {
     QString command;
     QStringList smsIdIn;
 
-    static void msleep(int ms) {
+    static void msleep(int ms)
+    {
         QThread::msleep(ms);
     }
     virtual void run();

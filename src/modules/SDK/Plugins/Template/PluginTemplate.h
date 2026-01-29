@@ -16,7 +16,8 @@
 
 //------------------------------------------------------------------------------
 /// Пример реализации плагина с функциональностью "Hello World".
-class Plugin : public QObject, public SDK::Plugin::IPlugin, public ILogable {
+class Plugin : public QObject, public SDK::Plugin::IPlugin, public ILogable
+{
     Q_OBJECT
 
   public:

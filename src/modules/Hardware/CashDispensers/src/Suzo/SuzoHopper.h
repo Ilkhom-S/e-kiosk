@@ -9,24 +9,29 @@
 #include "Hardware/Dispensers/PortDispenser.h"
 
 //--------------------------------------------------------------------------------
-namespace CSuzo {
+namespace CSuzo
+{
     /// Статус выдачи монет.
-    struct SStatus {
+    struct SStatus
+    {
         uchar Id;
         int remains;
         int paid;
         int unpaid;
 
-        SStatus() : Id(0), remains(0), paid(0), unpaid(0) {
+        SStatus() : Id(0), remains(0), paid(0), unpaid(0)
+        {
         }
         SStatus(char aId, int aRemains, int aPaid, int aUnpaid)
-            : Id(uchar(aId)), remains(uchar(aRemains)), paid(uchar(aPaid)), unpaid(uchar(aUnpaid)) {
+            : Id(uchar(aId)), remains(uchar(aRemains)), paid(uchar(aPaid)), unpaid(uchar(aUnpaid))
+        {
         }
     };
 } // namespace CSuzo
 
 //--------------------------------------------------------------------------------
-class SuzoHopper : public CCTalkDeviceBase<PortDispenser> {
+class SuzoHopper : public CCTalkDeviceBase<PortDispenser>
+{
     SET_SUBSERIES("Suzo")
 
   public:

@@ -3,7 +3,8 @@
 #pragma once
 
 //---------------------------------------------------------------------------
-namespace CPluginParameters {
+namespace CPluginParameters
+{
     /// Общие константы.
     const char PPVersion[] = "e_kiosk_version";
 } // namespace CPluginParameters

@@ -13,7 +13,8 @@
 #include <SDK/PaymentProcessor/Core/DatabaseConstants.h>
 
 //---------------------------------------------------------------------------
-class IHardwareDatabaseUtils {
+class IHardwareDatabaseUtils
+{
   public:
     /// Список статусов устройства для мониторинга.
     typedef QMap<QString, QPair<SDK::Driver::EWarningLevel::Enum, QString>> TDeviceStatusMap;
@@ -51,7 +52,8 @@ class IHardwareDatabaseUtils {
                                  const QString &aStatusString) = 0;
 
   protected:
-    virtual ~IHardwareDatabaseUtils() {
+    virtual ~IHardwareDatabaseUtils()
+    {
     }
 };
 

@@ -5,7 +5,8 @@
 
 class SendRequest;
 
-class GetBalanceAgent : public SendRequest {
+class GetBalanceAgent : public SendRequest
+{
     Q_OBJECT
 
   public:

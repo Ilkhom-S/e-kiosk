@@ -32,24 +32,28 @@ namespace PPSDK = SDK::PaymentProcessor;
 //---------------------------------------------------------------------------
 IdleScenario::IdleScenario(IApplication *aApplication)
     : Scenario("Idle", aApplication->getLog()), mApplication(aApplication), mCommand(Command::None), mActive(false),
-      mNoGui(false), mInterfaceLockedTimer(0) {
+      mNoGui(false), mInterfaceLockedTimer(0)
+{
     mApplication->getCore()->getEventService()->subscribe(this, SLOT(onEvent(const SDK::PaymentProcessor::Event &)));
 }
 
 //---------------------------------------------------------------------------
-IdleScenario::~IdleScenario() {
+IdleScenario::~IdleScenario()
+{
     // Показываем маскирующий экран.
     auto watchServiceClient = TerminalService::instance(mApplication)->getClient();
     watchServiceClient->showSplashScreen();
 }
 
 //---------------------------------------------------------------------------
-bool IdleScenario::initialize(const QList<GUI::SScriptObject> & /*aScriptObjects*/) {
+bool IdleScenario::initialize(const QList<GUI::SScriptObject> & /*aScriptObjects*/)
+{
     return true;
 }
 
 //---------------------------------------------------------------------------
-void IdleScenario::start(const QVariantMap &aContext) {
+void IdleScenario::start(const QVariantMap &aContext)
+{
     mNoGui = aContext.value("no_gui").toBool();
 
     QString startScenario = mApplication->getArguments().value("-start_scenario").toString();
@@ -58,18 +62,24 @@ void IdleScenario::start(const QVariantMap &aContext) {
     toLog(LogLevel::Debug, QString("start_scenario=%1, args=%2").arg(startScenario).arg(args));
 
     QVariantMap parameters;
-    if (!startScenario.isEmpty()) {
+    if (!startScenario.isEmpty())
+    {
         parameters.insert("name", startScenario);
         parameters.insert("args", args);
 
         EventService::instance(mApplication)->sendEvent(PPSDK::EEventType::StartScenario, parameters);
-    } else {
+    }
+    else
+    {
         // Показываем экран блокировки
         GUIService::instance(mApplication)->show("SplashScreen", QVariantMap());
 
-        if (!mNoGui) {
+        if (!mNoGui)
+        {
             updateState(CGUISignals::StartGUI, QVariantMap());
-        } else {
+        }
+        else
+        {
             EventService::instance(mApplication)->sendEvent(PPSDK::Event(PPSDK::EEventType::PauseGraphics));
             toLog(LogLevel::Normal, QString("DISABLED GUI by interface.ini"));
         }
@@ -83,20 +93,26 @@ void IdleScenario::start(const QVariantMap &aContext) {
 }
 
 //---------------------------------------------------------------------------
-void IdleScenario::pause() {
+void IdleScenario::pause()
+{
     mActive = false;
 
-    if (mNoGui) {
+    if (mNoGui)
+    {
         EventService::instance(mApplication)->sendEvent(PPSDK::Event(PPSDK::EEventType::StartGraphics));
     }
 }
 
 //---------------------------------------------------------------------------
-void IdleScenario::resume(const QVariantMap & /*aContext*/) {
-    if (!mNoGui) {
+void IdleScenario::resume(const QVariantMap & /*aContext*/)
+{
+    if (!mNoGui)
+    {
         // Показываем экран блокировки
         GUIService::instance(mApplication)->show("SplashScreen", QVariantMap());
-    } else {
+    }
+    else
+    {
         EventService::instance(mApplication)->sendEvent(PPSDK::Event(PPSDK::EEventType::PauseGraphics));
     }
 
@@ -106,28 +122,35 @@ void IdleScenario::resume(const QVariantMap & /*aContext*/) {
 }
 
 //---------------------------------------------------------------------------
-void IdleScenario::signalTriggered(const QString &aSignal, const QVariantMap &aArguments) {
+void IdleScenario::signalTriggered(const QString &aSignal, const QVariantMap &aArguments)
+{
     updateState(aSignal, aArguments);
 }
 
 //---------------------------------------------------------------------------
-bool IdleScenario::canStop() {
+bool IdleScenario::canStop()
+{
     return true;
 }
 
 //---------------------------------------------------------------------------
-QString IdleScenario::getState() const {
+QString IdleScenario::getState() const
+{
     return QString("main");
 }
 
 //---------------------------------------------------------------------------
-void IdleScenario::onTimeout() {
+void IdleScenario::onTimeout()
+{
 }
 
 //---------------------------------------------------------------------------
-void IdleScenario::execCommand() {
-    switch (mCommand) {
-        case Command::Autoencashment: {
+void IdleScenario::execCommand()
+{
+    switch (mCommand)
+    {
+        case Command::Autoencashment:
+        {
             // Запускаем автоинкассацию.
             QVariantMap parameters;
             parameters["name"] = "autoencashment";
@@ -140,17 +163,20 @@ void IdleScenario::execCommand() {
 }
 
 //---------------------------------------------------------------------------
-void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParameters) {
+void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParameters)
+{
     auto guiService = GUIService::instance(mApplication);
 
     // Запускаем сервисное меню.
-    if (aSignal == CGUISignals::ScreenPasswordUpdated) {
+    if (aSignal == CGUISignals::ScreenPasswordUpdated)
+    {
         QString sequence = aParameters.value("password").toString();
         auto password =
             SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>()->getServiceMenuPasswords();
 
         if (QCryptographicHash::hash(sequence.toLatin1(), QCryptographicHash::Md5).toHex().toLower() ==
-            password.passwords[PPSDK::CServiceMenuPasswords::Screen].toLower()) {
+            password.passwords[PPSDK::CServiceMenuPasswords::Screen].toLower())
+        {
             QVariantMap parameters;
             parameters["name"] = "service_menu";
             EventService::instance(mApplication)->sendEvent(PPSDK::EEventType::StartScenario, parameters);
@@ -160,7 +186,8 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
     }
 
     // Проверяем наличие необработанной команды.
-    if (mCommand != Command::None) {
+    if (mCommand != Command::None)
+    {
         execCommand();
         return;
     }
@@ -174,34 +201,37 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
     QStringList faultyCashDeviceNames;
     QStringList cashDeviceNames;
 
-    foreach (const QString &name, faultyDeviceNames) {
-        if (cashAcceptors.contains(name.section('.', 2, 2))) {
+    foreach (const QString &name, faultyDeviceNames)
+    {
+        if (cashAcceptors.contains(name.section('.', 2, 2)))
+        {
             faultyCashDeviceNames << name;
         }
     }
 
     QStringList fullDeviceList = terminalService->getDeviceNames();
 
-    foreach (const QString &name, fullDeviceList) {
-        if (cashAcceptors.contains(name.section('.', 2, 2))) {
+    foreach (const QString &name, fullDeviceList)
+    {
+        if (cashAcceptors.contains(name.section('.', 2, 2)))
+        {
             cashDeviceNames << name;
         }
     }
 
-    auto notHaveDevice = [&fullDeviceList](const QString &aDeviceType) -> bool {
-        return std::find_if(fullDeviceList.begin(), fullDeviceList.end(), [&](const QString &aConfigName) -> bool {
-                   return aConfigName.section('.', 2, 2) == aDeviceType;
-               }) == fullDeviceList.end();
+    auto notHaveDevice = [&fullDeviceList](const QString &aDeviceType) -> bool
+    {
+        return std::find_if(fullDeviceList.begin(), fullDeviceList.end(), [&](const QString &aConfigName) -> bool
+                            { return aConfigName.section('.', 2, 2) == aDeviceType; }) == fullDeviceList.end();
     };
 
     bool hasValidatorError = QSet<QString>(cashDeviceNames.begin(), cashDeviceNames.end()) ==
                              QSet<QString>(faultyCashDeviceNames.begin(), faultyCashDeviceNames.end());
 
-    auto findFaultyDeviceType = [&faultyDeviceNames](const QString &aDeviceType) -> bool {
-        return std::find_if(faultyDeviceNames.begin(), faultyDeviceNames.end(),
-                            [&](const QString &aConfigName) -> bool {
-                                return aConfigName.section('.', 2, 2) == aDeviceType;
-                            }) != faultyDeviceNames.end();
+    auto findFaultyDeviceType = [&faultyDeviceNames](const QString &aDeviceType) -> bool
+    {
+        return std::find_if(faultyDeviceNames.begin(), faultyDeviceNames.end(), [&](const QString &aConfigName) -> bool
+                            { return aConfigName.section('.', 2, 2) == aDeviceType; }) != faultyDeviceNames.end();
     };
 
     bool hasPrinterError = findFaultyDeviceType(SDK::Driver::CComponents::Printer) ||
@@ -218,8 +248,10 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
     QVariantMap parameters;
 
     // Обновляем значки на экране блокировки.
-    auto insertParam = [&parameters](const QString &aKey, bool aValue) {
-        if (aValue) {
+    auto insertParam = [&parameters](const QString &aKey, bool aValue)
+    {
+        if (aValue)
+        {
             parameters.insert(aKey, aValue);
         }
     };
@@ -245,8 +277,10 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
     guiService->notify("SplashScreen", parameters);
 
     // Удаляем из списка блокировок, если ошибка в настройках указана как некритичная
-    auto removeIfNotCritical = [&parameters](const QString &aKey, bool aValue) {
-        if (!aValue) {
+    auto removeIfNotCritical = [&parameters](const QString &aKey, bool aValue)
+    {
+        if (!aValue)
+        {
             parameters.remove(aKey);
         }
     };
@@ -256,7 +290,8 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
     removeIfNotCritical("cardreader_failure", settings.blockOn(PPSDK::SCommonSettings::CardReaderError));
     removeIfNotCritical("account_balance_failure", settings.blockOn(PPSDK::SCommonSettings::AccountBalance));
 
-    if (parameters.isEmpty()) {
+    if (parameters.isEmpty())
+    {
         // Критичных ошибок нет. Запускаем главное меню.
         guiService->disable(false);
 
@@ -264,7 +299,8 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
         EventService::instance(mApplication)
             ->sendEvent(SDK::PaymentProcessor::Event(SDK::PaymentProcessor::EEventType::OK, getName(), "OK"));
 
-        if (mInterfaceLockedTimer) {
+        if (mInterfaceLockedTimer)
+        {
             killTimer(mInterfaceLockedTimer);
             mInterfaceLockedTimer = 0;
 
@@ -273,11 +309,14 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
 
         terminalService->setTerminalError(PPSDK::ETerminalError::InterfaceLocked, false);
         toLog(LogLevel::Normal, QString("GUI unlocked."));
-    } else {
+    }
+    else
+    {
         toLog(LogLevel::Error, QString("GUI locked by: %1.").arg(QStringList(parameters.keys()).join(",")));
 
         // Создаём отложенное выставление сигнала о блокировке интерфейса
-        if (mInterfaceLockedTimer == 0 && !terminalService->isTerminalError(PPSDK::ETerminalError::InterfaceLocked)) {
+        if (mInterfaceLockedTimer == 0 && !terminalService->isTerminalError(PPSDK::ETerminalError::InterfaceLocked))
+        {
             mInterfaceLockedTimer = startTimer(1 * 60 * 1000);
 
             toLog(LogLevel::Normal, "Interface lock timer started.");
@@ -286,10 +325,12 @@ void IdleScenario::updateState(const QString &aSignal, const QVariantMap &aParam
 }
 
 //---------------------------------------------------------------------------
-void IdleScenario::onEvent(const PPSDK::Event &aEvent) {
+void IdleScenario::onEvent(const PPSDK::Event &aEvent)
+{
     bool processed = true;
 
-    switch (aEvent.getType()) {
+    switch (aEvent.getType())
+    {
         case PPSDK::EEventType::Autoencashment:
             mCommand = Command::Autoencashment;
             break;
@@ -299,10 +340,14 @@ void IdleScenario::onEvent(const PPSDK::Event &aEvent) {
     }
 
     // Если команду невозможно выполнить в текущем сценарии - забудем о ней R.I.P.
-    if (processed) {
-        if (GUIService::instance(mApplication)->canDisable()) {
+    if (processed)
+    {
+        if (GUIService::instance(mApplication)->canDisable())
+        {
             GUIService::instance(mApplication)->disable(true);
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Warning,
                   QString("Can't execute IdleScenario command '%1'.")
                       .arg(metaObject()->enumerator(metaObject()->indexOfEnumerator("Command")).valueToKey(mCommand)));
@@ -313,8 +358,10 @@ void IdleScenario::onEvent(const PPSDK::Event &aEvent) {
 }
 
 //---------------------------------------------------------------------------
-void IdleScenario::timerEvent(QTimerEvent *aEvent) {
-    if (aEvent && aEvent->timerId() == mInterfaceLockedTimer) {
+void IdleScenario::timerEvent(QTimerEvent *aEvent)
+{
+    if (aEvent && aEvent->timerId() == mInterfaceLockedTimer)
+    {
         toLog(LogLevel::Normal, "Interface lock timer triggered.");
 
         killTimer(mInterfaceLockedTimer);

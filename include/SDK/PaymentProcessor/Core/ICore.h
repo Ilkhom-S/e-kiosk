@@ -15,23 +15,28 @@
 #include <QtCore/QSet>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
         /// Интерфейсы ядра.
-        namespace CInterfaces {
+        namespace CInterfaces
+        {
             const char ICore[] = "SDK::PaymentProcessor::ICore";
         } // namespace CInterfaces
 
         //------------------------------------------------------------------------------
         /// Этот тип исключений выбрасывается ядром и всеми его дочерними сервисами, если запрошенный сервис
         /// не реализован.
-        class ServiceIsNotImplemented : public std::runtime_error {
+        class ServiceIsNotImplemented : public std::runtime_error
+        {
           public:
             /// Конструктор.
             ServiceIsNotImplemented(const QString &aServiceName)
-                : std::runtime_error(QString("%1 is not implemented").arg(aServiceName).toLatin1().constData()) {
+                : std::runtime_error(QString("%1 is not implemented").arg(aServiceName).toLatin1().constData())
+            {
             }
         };
 
@@ -54,7 +59,8 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         /// Интерфейс ядра модуля проведения платежей. Предоставляет доступ к основным подсистемам.
-        class ICore : public QObject {
+        class ICore : public QObject
+        {
             Q_OBJECT
 
           public:
@@ -114,7 +120,8 @@ namespace SDK {
 
           protected:
             /// Деструктор.
-            virtual ~ICore() {
+            virtual ~ICore()
+            {
             }
         };
 

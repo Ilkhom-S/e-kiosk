@@ -5,9 +5,11 @@
 #include "Hardware/Common/CodecBase.h"
 
 //---------------------------------------------------------------------------
-class AtolTextCodec : public CodecBase {
+class AtolTextCodec : public CodecBase
+{
   public:
-    AtolTextCodec() {
+    AtolTextCodec()
+    {
         mName = CHardware::Codepages::ATOL;
         mMIB = 3002;
         mMinValueActive = 0;

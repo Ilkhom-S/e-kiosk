@@ -9,17 +9,21 @@
 #include <QtCore/QPair>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
         /// Интерфейс для тестирования устройств.
-        class IDeviceTest : public QObject {
+        class IDeviceTest : public QObject
+        {
             Q_OBJECT
 
           public:
             /// Деструктор.
-            virtual ~IDeviceTest() {
+            virtual ~IDeviceTest()
+            {
             }
 
             /// Возвращает имена и описания тестов.

@@ -5,7 +5,8 @@
 #include "Hardware/Common/ProtocolBase.h"
 
 //--------------------------------------------------------------------------------
-class AFPFRProtocol : public ProtocolBase {
+class AFPFRProtocol : public ProtocolBase
+{
   public:
     AFPFRProtocol();
 

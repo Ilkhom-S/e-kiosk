@@ -15,24 +15,28 @@
 // Project
 #include "KeyboardWindow.h"
 
-KeyboardWindow::KeyboardWindow(QWidget *parent) : QWidget(parent), mShifted(false), mAltMode(false) {
+KeyboardWindow::KeyboardWindow(QWidget *parent) : QWidget(parent), mShifted(false), mAltMode(false)
+{
     ui.setupUi(this);
 
     connect(ui.KEY_SHIFT, SIGNAL(clicked()), this, SLOT(onShiftClicked()));
     connect(ui.KEY_LANG, SIGNAL(clicked()), this, SLOT(onLanguageClicked()));
 
     QList<QToolButton *> padButtons = this->findChildren<QToolButton *>();
-    foreach (QToolButton *button, padButtons) {
+    foreach (QToolButton *button, padButtons)
+    {
         connect(button, SIGNAL(clicked()), SLOT(onButtonClicked()));
     }
 }
 
 //---------------------------------------------------------------------------
-KeyboardWindow::~KeyboardWindow() {
+KeyboardWindow::~KeyboardWindow()
+{
 }
 
 //---------------------------------------------------------------------------
-void KeyboardWindow::initialize() {
+void KeyboardWindow::initialize()
+{
     // lat
     mKeyMap["KEY_BACKSPACE"] = VirtualButton(Qt::Key_Backspace, "", Qt::Key_Backspace, "");
     mKeyMap["KEY_ENTER"] = VirtualButton(Qt::Key_Enter, "", Qt::Key_Enter, "");
@@ -147,12 +151,15 @@ void KeyboardWindow::initialize() {
 }
 
 //---------------------------------------------------------------------------
-void KeyboardWindow::shutdown() {
+void KeyboardWindow::shutdown()
+{
 }
 
 //---------------------------------------------------------------------------
-void KeyboardWindow::onButtonClicked() {
-    if (sender()->objectName() == "KEY_ENTER") {
+void KeyboardWindow::onButtonClicked()
+{
+    if (sender()->objectName() == "KEY_ENTER")
+    {
         hide();
     }
 
@@ -164,14 +171,21 @@ void KeyboardWindow::onButtonClicked() {
 }
 
 //---------------------------------------------------------------------------
-void KeyboardWindow::updateKeys() {
+void KeyboardWindow::updateKeys()
+{
     QList<QToolButton *> padButtons = this->findChildren<QToolButton *>();
-    foreach (QToolButton *button, padButtons) {
-        if (button->objectName() == "KEY_LANG") {
+    foreach (QToolButton *button, padButtons)
+    {
+        if (button->objectName() == "KEY_LANG")
+        {
             button->setText(mAltMode ? "LAT" : "RUS");
-        } else if (button->objectName() == "KEY_7" && mShifted) {
+        }
+        else if (button->objectName() == "KEY_7" && mShifted)
+        {
             button->setText("&&");
-        } else {
+        }
+        else
+        {
             button->setText(
                 (mAltMode ? mAltKeyMap[button->objectName()] : mKeyMap[button->objectName()]).getText(mShifted));
         }
@@ -179,7 +193,8 @@ void KeyboardWindow::updateKeys() {
 }
 
 //---------------------------------------------------------------------------
-void KeyboardWindow::mousePressEvent(QMouseEvent * /*aEvent*/) {
+void KeyboardWindow::mousePressEvent(QMouseEvent * /*aEvent*/)
+{
     // Блокируем дальнейшее прохождение кликов
     return;
 }

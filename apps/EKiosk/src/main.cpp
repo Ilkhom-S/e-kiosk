@@ -10,12 +10,14 @@
 // Project
 #include "mainwindow.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     QApplication qtApp(argc, argv);
 
     BasicApplication app(QString(), QString(), argc, argv);
 
-    if (!app.isPrimaryInstance()) {
+    if (!app.isPrimaryInstance())
+    {
         return 1;
     }
 
@@ -24,7 +26,8 @@ int main(int argc, char *argv[]) {
 
     QFileInfo fi(fileName);
 
-    if (fi.fileName().toLower() != "ekiosk.exe") {
+    if (fi.fileName().toLower() != "ekiosk.exe")
+    {
         return 0;
     }
 
@@ -32,13 +35,15 @@ int main(int argc, char *argv[]) {
 
     // Если sheller не запущен, то запускаем
     // DEPRECATED: we migrate to guard instead of this
-    if (!w.hasProcess(sheller)) {
+    if (!w.hasProcess(sheller))
+    {
         QProcess::startDetached(sheller, QStringList());
     }
 
     w.testMode = app.isTestMode();
 
-    if (!w.testMode) {
+    if (!w.testMode)
+    {
         qtApp.setOverrideCursor(Qt::BlankCursor);
     }
 

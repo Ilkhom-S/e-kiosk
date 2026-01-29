@@ -8,22 +8,26 @@
 // System
 #include <DebugUtils/DebugUtils.h>
 
-class TestDebugUtilsPerformance : public QObject {
+class TestDebugUtilsPerformance : public QObject
+{
     Q_OBJECT
 
   private slots:
-    void initTestCase() {
+    void initTestCase()
+    {
         qDebug() << "Running DebugUtils performance tests";
     }
 
-    void testDumpCallstackPerformance() {
+    void testDumpCallstackPerformance()
+    {
         // Test that stack dumping is reasonably fast
         QElapsedTimer timer;
 
         const int iterations = 100;
         qint64 totalTime = 0;
 
-        for (int i = 0; i < iterations; ++i) {
+        for (int i = 0; i < iterations; ++i)
+        {
             QStringList stack;
             timer.start();
             DumpCallstack(stack, nullptr);
@@ -40,12 +44,14 @@ class TestDebugUtilsPerformance : public QObject {
         QVERIFY(averageTime < 50.0); // Allow some margin for slower systems
     }
 
-    void testDumpCallstackMemoryUsage() {
+    void testDumpCallstackMemoryUsage()
+    {
         // Test that repeated calls don't leak memory significantly
         const int iterations = 1000;
         QStringList stacks[10]; // Keep some stacks in memory
 
-        for (int i = 0; i < iterations; ++i) {
+        for (int i = 0; i < iterations; ++i)
+        {
             DumpCallstack(stacks[i % 10], nullptr);
             QVERIFY(stacks[i % 10].size() > 0);
         }
@@ -54,7 +60,8 @@ class TestDebugUtilsPerformance : public QObject {
         QVERIFY(true);
     }
 
-    void testConcurrentDumpCallstack() {
+    void testConcurrentDumpCallstack()
+    {
         // Test that multiple threads can dump stacks concurrently
         const int numThreads = 5;
         const int callsPerThread = 20;
@@ -62,15 +69,18 @@ class TestDebugUtilsPerformance : public QObject {
         QVector<QThread *> threads;
         QVector<bool> completed(numThreads, false);
 
-        for (int i = 0; i < numThreads; ++i) {
+        for (int i = 0; i < numThreads; ++i)
+        {
             QThread *thread = new QThread;
             threads.append(thread);
 
             thread->start();
             QMetaObject::invokeMethod(
                 thread,
-                [i, &completed, callsPerThread]() {
-                    for (int j = 0; j < callsPerThread; ++j) {
+                [i, &completed, callsPerThread]()
+                {
+                    for (int j = 0; j < callsPerThread; ++j)
+                    {
                         QStringList stack;
                         DumpCallstack(stack, nullptr);
                         QVERIFY(stack.size() > 0);
@@ -87,7 +97,8 @@ class TestDebugUtilsPerformance : public QObject {
         QTRY_VERIFY(std::all_of(completed.begin(), completed.end(), [](bool b) { return b; }));
 
         // Clean up threads
-        for (QThread *thread : threads) {
+        for (QThread *thread : threads)
+        {
             thread->quit();
             thread->wait();
             delete thread;
@@ -96,7 +107,8 @@ class TestDebugUtilsPerformance : public QObject {
         QVERIFY(true);
     }
 
-    void testDumpCallstackScalability() {
+    void testDumpCallstackScalability()
+    {
         // Test performance with deeper call stacks
         QStringList results;
 
@@ -130,7 +142,8 @@ class TestDebugUtilsPerformance : public QObject {
         QVERIFY(deepStackTime < 100); // Less than 100ms even for deep stacks
     }
 
-    void testExceptionHandlerPerformance() {
+    void testExceptionHandlerPerformance()
+    {
         // Test that setting exception handlers is fast
         QElapsedTimer timer;
 
@@ -140,7 +153,8 @@ class TestDebugUtilsPerformance : public QObject {
 #endif
 
         timer.start();
-        for (int i = 0; i < iterations; ++i) {
+        for (int i = 0; i < iterations; ++i)
+        {
 #ifdef Q_OS_WIN
             handlers[i] = SetUnhandledExceptionFilter(nullptr);
 #endif
@@ -149,7 +163,8 @@ class TestDebugUtilsPerformance : public QObject {
 
         // Restore original handler
 #ifdef Q_OS_WIN
-        if (iterations > 0) {
+        if (iterations > 0)
+        {
             SetUnhandledExceptionFilter(handlers[0]);
         }
 #endif
@@ -161,7 +176,8 @@ class TestDebugUtilsPerformance : public QObject {
         QVERIFY(averageTime < 10.0);
     }
 
-    void cleanupTestCase() {
+    void cleanupTestCase()
+    {
         qDebug() << "DebugUtils performance tests completed";
     }
 };

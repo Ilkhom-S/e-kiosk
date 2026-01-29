@@ -19,7 +19,8 @@
 // Project
 #include "SplashScreen.h"
 
-namespace CUpdaterApp {
+namespace CUpdaterApp
+{
     /// таймаут выхода с ошибкой, если не дождались закрытия client.exe
     const int ErrorExitTimeout = 15 * 60 * 1000;
 
@@ -31,14 +32,17 @@ namespace CUpdaterApp {
 
     const long BITSErrorRestartTimeout = 3 * 60; // 3 минуты
 
-    typedef enum {
+    typedef enum
+    {
         Download, // закачиваем обновления
         Deploy,   // устанавливаем обновления
         Finish    // окончание обновления
     } State;
 
-    namespace ExitCode {
-        enum Enum {
+    namespace ExitCode
+    {
+        enum Enum
+        {
             NoError = 0,         /// Выход без ошибок.
             ErrorRunFromTempDir, /// Ошибка запуска из временной папки
             NoWatchService,      /// Отсутствует соединение с WatchService
@@ -58,7 +62,8 @@ namespace CUpdaterApp {
 } // namespace CUpdaterApp
 
 //---------------------------------------------------------------------------
-class UpdaterApp : public QObject, public BasicQtApplication<SafeQApplication> {
+class UpdaterApp : public QObject, public BasicQtApplication<SafeQApplication>
+{
     Q_OBJECT
 
   public:

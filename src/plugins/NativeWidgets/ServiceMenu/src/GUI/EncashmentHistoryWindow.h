@@ -12,7 +12,8 @@
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------
-class EncashmentHistoryWindow : public QWidget, protected Ui_EncashmentHistoryWindow {
+class EncashmentHistoryWindow : public QWidget, protected Ui_EncashmentHistoryWindow
+{
     Q_OBJECT
 
   public:

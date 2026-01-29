@@ -8,18 +8,29 @@
 #include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------------
-class Log {
+class Log
+{
   public:
-    enum LogLevel { Debug, Normal, Warning, Error };
+    enum LogLevel
+    {
+        Debug,
+        Normal,
+        Warning,
+        Error
+    };
 
-    Log(LogLevel aLevel) : mLevel(aLevel) {
+    Log(LogLevel aLevel) : mLevel(aLevel)
+    {
     }
 
-    ~Log() {
+    ~Log()
+    {
         QObject *logger = initialize();
 
-        if (logger) {
-            switch (mLevel) {
+        if (logger)
+        {
+            switch (mLevel)
+            {
                 case Debug:
                     QMetaObject::invokeMethod(logger, "debug", Q_ARG(const QString &, mMessage));
                     break;
@@ -33,8 +44,11 @@ class Log {
                     QMetaObject::invokeMethod(logger, "error", Q_ARG(const QString &, mMessage));
                     break;
             }
-        } else {
-            switch (mLevel) {
+        }
+        else
+        {
+            switch (mLevel)
+            {
                 case Debug:
                     qDebug() << mMessage;
                     break;
@@ -49,17 +63,20 @@ class Log {
         }
     }
 
-    static QObject *initialize(QObject *aApplication = nullptr) {
+    static QObject *initialize(QObject *aApplication = nullptr)
+    {
         static QObject *application = nullptr;
 
-        if (aApplication) {
+        if (aApplication)
+        {
             application = aApplication;
         }
 
         return application ? application->property("log").value<QObject *>() : nullptr;
     }
 
-    Log &operator<<(const QString &aString) {
+    Log &operator<<(const QString &aString)
+    {
         mMessage.append(aString);
         return *this;
     }

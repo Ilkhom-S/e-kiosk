@@ -2,12 +2,15 @@
 
 #pragma once
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //--------------------------------------------------------------------------------
         /// Константы фискального регистратора.
-        namespace CFiscalPrinter {
+        namespace CFiscalPrinter
+        {
             /// Серийный номер.
             const char Serial[] = "serial";
             /// Регистрационный номер.

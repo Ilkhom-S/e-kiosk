@@ -12,7 +12,8 @@
 //--------------------------------------------------------------------------------
 typedef CCTalkAcceptorBase<CoinAcceptorBase> TCCTalkCoinAcceptorBase;
 
-class CCTalkCoinAcceptorBase : public TCCTalkCoinAcceptorBase {
+class CCTalkCoinAcceptorBase : public TCCTalkCoinAcceptorBase
+{
   public:
     CCTalkCoinAcceptorBase();
 

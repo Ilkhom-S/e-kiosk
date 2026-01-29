@@ -10,7 +10,8 @@
 #include "changepassword.h"
 #include "ui_changepassword.h"
 
-ChangePassword::ChangePassword(QWidget *parent) : QDialog(parent), ui(new Ui::ChangePassword) {
+ChangePassword::ChangePassword(QWidget *parent) : QDialog(parent), ui(new Ui::ChangePassword)
+{
     ui->setupUi(this);
 
     QRegularExpressionValidator *secLoginRegValidator =
@@ -33,16 +34,19 @@ ChangePassword::ChangePassword(QWidget *parent) : QDialog(parent), ui(new Ui::Ch
     connect(ui->btn_cancel, SIGNAL(clicked()), SLOT(btncancel_clc()));
 }
 
-ChangePassword::~ChangePassword() {
+ChangePassword::~ChangePassword()
+{
     delete ui;
 }
-void ChangePassword::btnok_clc() {
+void ChangePassword::btnok_clc()
+{
 
     QString login = ui->newLogin->text().trimmed();
     QString password = ui->newPassword->text().trimmed();
     QString password2 = ui->RepeatPass->text().trimmed();
 
-    if (ui->newLogin->text().isEmpty() || ui->newPassword->text().isEmpty() || ui->RepeatPass->text().isEmpty()) {
+    if (ui->newLogin->text().isEmpty() || ui->newPassword->text().isEmpty() || ui->RepeatPass->text().isEmpty())
+    {
         QMessageBox msgBox(this);
         msgBox.setWindowTitle("Ошибка!!!");
         msgBox.setText("Заполните все поля!");
@@ -52,14 +56,17 @@ void ChangePassword::btnok_clc() {
         return;
     }
 
-    if (password != password2) {
+    if (password != password2)
+    {
         QMessageBox msgBox2(this);
         msgBox2.setWindowTitle("Ошибка!!!");
         msgBox2.setText("Пароль несовпадает!");
         msgBox2.setIcon(QMessageBox::Critical);
         msgBox2.setWindowFlags(Qt::WindowStaysOnTopHint);
         msgBox2.exec();
-    } else {
+    }
+    else
+    {
         QMessageBox msgBox3(this);
 
         msgBox3.setWindowTitle("Успешно!!!");
@@ -78,14 +85,16 @@ void ChangePassword::btnok_clc() {
     }
 }
 
-void ChangePassword::btncancel_clc() {
+void ChangePassword::btncancel_clc()
+{
     this->close();
     ui->newLogin->clear();
     ui->newPassword->clear();
     ui->RepeatPass->clear();
 }
 
-void ChangePassword::sendCharacter(QChar character) {
+void ChangePassword::sendCharacter(QChar character)
+{
     QPointer<QWidget> w = focusWidget();
 
     if (!w)
@@ -94,19 +103,23 @@ void ChangePassword::sendCharacter(QChar character) {
     int un = character.unicode();
 
     QString a = QString(character);
-    if (un == 15405) {
+    if (un == 15405)
+    {
         un = Qt::Key_Backspace;
         a = "";
     }
-    if (un == 15934) {
+    if (un == 15934)
+    {
         un = Qt::Key_Tab;
         a = "";
     }
-    if (un == 15917) {
+    if (un == 15917)
+    {
         un = Qt::Key_Enter;
         a = "";
     }
-    if (un == 15420) {
+    if (un == 15420)
+    {
         return;
     }
 

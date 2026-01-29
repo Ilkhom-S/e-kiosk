@@ -14,44 +14,60 @@
 #include <SDK/Drivers/FR/FiscalDataTypes.h>
 
 //--------------------------------------------------------------------------------
-namespace CShtrihFR {
+namespace CShtrihFR
+{
     /// Структура для распарсивания данных по прошивкам.
-    struct SSoftInfo {
+    struct SSoftInfo
+    {
         QString version; /// Версия прошивки (формата x.y).
         ushort build;    /// Номер сборки.
         QDate date;      /// Дата.
     };
 
     /// Типы регистров ФР Штрих.
-    namespace ERegisterType {
-        enum Enum { Unknown, Money, Operational };
+    namespace ERegisterType
+    {
+        enum Enum
+        {
+            Unknown,
+            Money,
+            Operational
+        };
     } // namespace ERegisterType
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Дефолтный таймаут чтения.
         const int Default = 3500;
     } // namespace Timeouts
 
     /// Команды.
-    namespace Commands {
-        struct SData {
+    namespace Commands
+    {
+        struct SData
+        {
             int timeout;
             bool password;
 
-            SData() : timeout(Timeouts::Default), password(true) {
+            SData() : timeout(Timeouts::Default), password(true)
+            {
             }
-            SData(int aTimeout, bool aPassword) : timeout(aTimeout), password(aPassword) {
+            SData(int aTimeout, bool aPassword) : timeout(aTimeout), password(aPassword)
+            {
             }
         };
 
-        class Data : public CSpecification<QByteArray, SData> {
+        class Data : public CSpecification<QByteArray, SData>
+        {
           public:
-            void add(const QByteArray &aCode, int aTimeout = Timeouts::Default, bool aPassword = true) {
+            void add(const QByteArray &aCode, int aTimeout = Timeouts::Default, bool aPassword = true)
+            {
                 append(aCode, SData(aTimeout, aPassword));
             }
 
-            void add(char aCode, int aTimeout = Timeouts::Default, bool aPassword = true) {
+            void add(char aCode, int aTimeout = Timeouts::Default, bool aPassword = true)
+            {
                 add(QByteArray(1, aCode), aTimeout, aPassword);
             }
         };
@@ -59,7 +75,8 @@ namespace CShtrihFR {
 
     /// Данные моделей.
     // TODO: докрутить наличие датчиков
-    struct SModelData {
+    struct SModelData
+    {
         QString id;
         QString name;
         bool verified;
@@ -73,24 +90,28 @@ namespace CShtrihFR {
         SModelData(const QString &aId, const QString &aName, bool aVerified, bool aEjector, int aZBufferSize, int aFeed,
                    const QDate &aDate, int aBuild, int aLinePrintingTimeout)
             : id(aId), name(aName), ejector(aEjector), ZBufferSize(aZBufferSize), verified(aVerified), feed(aFeed),
-              date(aDate), build(aBuild), linePrintingTimeout(aLinePrintingTimeout) {
+              date(aDate), build(aBuild), linePrintingTimeout(aLinePrintingTimeout)
+        {
         }
 
         SModelData()
             : verified(false), ejector(false), ZBufferSize(0), feed(0), date(QDate::currentDate()), build(0),
-              linePrintingTimeout(0) {
+              linePrintingTimeout(0)
+        {
         }
     };
 
     typedef QPair<uchar, ERegisterType::Enum> TRegisterId;
 
     /// Таблицы для программирования (некоторые, используемые).
-    namespace Tables {
+    namespace Tables
+    {
         const char Modes = 1;
     } // namespace Tables
 
     /// Параметры ФР.
-    namespace FRParameters {
+    namespace FRParameters
+    {
         const int NA = -1; /// Not Available, параметр недоступен.
 
         /// Полная отрезка.
@@ -99,21 +120,26 @@ namespace CShtrihFR {
         /// Неполная отрезка.
         const char PartialCutting = 0x02;
 
-        struct SData {
+        struct SData
+        {
             int field;
             int table;
             QString description;
 
-            SData() : field(NA), table(0) {
+            SData() : field(NA), table(0)
+            {
             }
             SData(int aField, int aTable, const QString &aDescription = "")
-                : field(aField), table(aTable), description(aDescription) {
+                : field(aField), table(aTable), description(aDescription)
+            {
             }
 
-            QString log(char aSeries) const {
+            QString log(char aSeries) const
+            {
                 QString result = QString("field %1-%2-%3").arg(table).arg(uchar(aSeries)).arg(field);
 
-                if (!description.isEmpty()) {
+                if (!description.isEmpty())
+                {
                     result += QString(" (%1)").arg(description);
                 }
 
@@ -126,7 +152,8 @@ namespace CShtrihFR {
         typedef QList<int> TTables;
 
         /// Параметры системных таблиц.
-        struct SFields {
+        struct SFields
+        {
             SData autoNulling;
             SData documentCapEnable;
             SData printOnControlTape;
@@ -149,37 +176,44 @@ namespace CShtrihFR {
             SData leftReceiptTimeout;
             SData loop;
 
-            SFields(const TFields &aFields) {
+            SFields(const TFields &aFields)
+            {
                 TData data;
 
-                for (int i = 0; i < aFields.size(); ++i) {
+                for (int i = 0; i < aFields.size(); ++i)
+                {
                     data << SData(aFields[i], Tables::Modes);
                 }
 
                 add(data);
             }
 
-            SFields(const TFields &aFields, const TTables &aTables) {
+            SFields(const TFields &aFields, const TTables &aTables)
+            {
                 TData data;
                 int size = qMin(aFields.size(), aTables.size());
 
-                for (int i = 0; i < size; ++i) {
+                for (int i = 0; i < size; ++i)
+                {
                     data << SData(aFields[i], aTables[i]);
                 }
 
                 add(data);
             }
 
-            SFields() : mMaxNADescriptionSize(0) {
+            SFields() : mMaxNADescriptionSize(0)
+            {
             }
 
             /// Получить максимальный размер описания отсутствующего в системных таблицах конкретного ФР поля.
-            int getMaxNADescriptionSize() {
+            int getMaxNADescriptionSize()
+            {
                 return mMaxNADescriptionSize;
             }
 
           private:
-            void add(const TData &aData) {
+            void add(const TData &aData)
+            {
 #define ADD_SHTRIH_FIELD(aIndex, aName)                                                                                \
     if (aData.size() > aIndex)                                                                                         \
         aName = aData[aIndex];                                                                                         \

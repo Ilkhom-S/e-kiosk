@@ -3,12 +3,14 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-namespace CAtol3FR {
+namespace CAtol3FR
+{
     /// Последний TId.
     const char LastTId = '\xDF';
 
     /// Состояния.
-    namespace States {
+    namespace States
+    {
         const char Pending = '\xA1';    /// Помещено в буфер, ждем.
         const char InProgress = '\xA2'; /// Исполняется.
         const char Result = '\xA3';     /// Исполнено, ошибок нет.
@@ -20,7 +22,8 @@ namespace CAtol3FR {
     } // namespace States
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// На единичное ожидание ответа.
         const int WaitForAnswer = 500;
     } // namespace Timeouts

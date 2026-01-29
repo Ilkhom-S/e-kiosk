@@ -5,7 +5,8 @@
 #include <Hardware/CashAcceptors/CCNetCashAcceptorBase.h>
 
 //--------------------------------------------------------------------------------
-class CCNetCreator : public CCNetCashAcceptorBase {
+class CCNetCreator : public CCNetCashAcceptorBase
+{
     SET_SUBSERIES("Creator")
 
   public:

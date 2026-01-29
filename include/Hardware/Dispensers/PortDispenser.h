@@ -6,9 +6,11 @@
 #include "Hardware/Dispensers/SerialDispenser.h"
 
 //--------------------------------------------------------------------------------
-class PortDispenser : public TSerialDispenser {
+class PortDispenser : public TSerialDispenser
+{
   public:
-    PortDispenser() {
+    PortDispenser()
+    {
         mIOMessageLogging = ELoggingType::None;
         mMaxBadAnswers = 2;
         mPollingInterval = CDispensers::IdlingPollingInterval;

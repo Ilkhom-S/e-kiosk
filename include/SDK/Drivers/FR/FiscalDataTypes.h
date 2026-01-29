@@ -10,13 +10,17 @@
 #include <QtCore/QMetaType>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //--------------------------------------------------------------------------------
         /// Состояние сессии.
-        namespace ESessionState {
-            enum Enum {
+        namespace ESessionState
+        {
+            enum Enum
+            {
                 Error,  /// Ошибка определения.
                 Opened, /// Открыта.
                 Closed, /// Закрыта.
@@ -26,14 +30,17 @@ namespace SDK {
 
         //--------------------------------------------------------------------------------
         /// Структура описателя фискальных тегов.
-        struct SFiscalFieldData {
+        struct SFiscalFieldData
+        {
             QString translationPF;
             bool isMoney;
 
-            SFiscalFieldData() : isMoney(false) {
+            SFiscalFieldData() : isMoney(false)
+            {
             }
             SFiscalFieldData(const QString &aTranslationPF, bool aIsMoney)
-                : translationPF(aTranslationPF), isMoney(aIsMoney) {
+                : translationPF(aTranslationPF), isMoney(aIsMoney)
+            {
             }
         };
 
@@ -41,14 +48,22 @@ namespace SDK {
         typedef QMap<QString, SFiscalFieldData> TFiscalFieldData;
 
         //--------------------------------------------------------------------------------
-        namespace EFiscalAmount {
-            enum Enum { Payment, Commission, ProcessingCommission };
+        namespace EFiscalAmount
+        {
+            enum Enum
+            {
+                Payment,
+                Commission,
+                ProcessingCommission
+            };
         } // namespace EFiscalAmount
 
         //--------------------------------------------------------------------------------
         /// Системы налогообложения - СНО (1062 в ФР, 1055 в чеке).
-        namespace ETaxSystems {
-            enum Enum {
+        namespace ETaxSystems
+        {
+            enum Enum
+            {
                 None = 0x00,                         /// Отсутствует
                 Main = 0x01,                         /// Общая
                 SimplifiedIncome = 0x02,             /// Упрощенная доход
@@ -64,8 +79,10 @@ namespace SDK {
 
         //--------------------------------------------------------------------------------
         /// Признаки агента (1057 в ФР, 1222 в чеке).
-        namespace EAgentFlags {
-            enum Enum {
+        namespace EAgentFlags
+        {
+            enum Enum
+            {
                 None = 0x00,            /// Отсутствует
                 BankAgent = 0x01,       /// Банковский агент
                 BankSubagent = 0x02,    /// Банковский субагент
@@ -82,8 +99,10 @@ namespace SDK {
 
         //--------------------------------------------------------------------------------
         /// Средства оплаты.
-        namespace EPayTypes {
-            enum Enum {
+        namespace EPayTypes
+        {
+            enum Enum
+            {
                 None,        /// Отсутствует
                 Cash,        /// Наличными
                 EMoney,      /// Электронными
@@ -95,8 +114,10 @@ namespace SDK {
 
         //--------------------------------------------------------------------------------
         /// Признак способа расчета (1214).
-        namespace EPayOffSubjectMethodTypes {
-            enum Enum {
+        namespace EPayOffSubjectMethodTypes
+        {
+            enum Enum
+            {
                 None = 0,       /// Отсутствует
                 Prepayment100,  /// Предоплата 100%
                 Prepayment,     /// Предоплата
@@ -110,8 +131,10 @@ namespace SDK {
 
         //--------------------------------------------------------------------------------
         /// Признак предмета расчета (1212).
-        namespace EPayOffSubjectTypes {
-            enum Enum {
+        namespace EPayOffSubjectTypes
+        {
+            enum Enum
+            {
                 None = 0,           /// Отсутствует
                 Unit,               /// Товар
                 ExciseUnit,         /// Подакцизный товар
@@ -138,8 +161,10 @@ namespace SDK {
 
         //--------------------------------------------------------------------------------
         /// Признак расчета (1054).
-        namespace EPayOffTypes {
-            enum Enum {
+        namespace EPayOffTypes
+        {
+            enum Enum
+            {
                 None = 0,  /// Отсутствует
                 Debit,     /// Приход
                 DebitBack, /// Возврат прихода
@@ -150,8 +175,10 @@ namespace SDK {
 
         //--------------------------------------------------------------------------------
         /// Режим работы.
-        namespace EOperationModes {
-            enum Enum {
+        namespace EOperationModes
+        {
+            enum Enum
+            {
                 None = 0x00,           /// Отсутствует
                 Encryption = 0x01,     /// Шифрование
                 Autonomous = 0x02,     /// Автономный режим
@@ -173,7 +200,8 @@ namespace SDK {
 
         /*   !!!!!!!!!!!!!!  НЕ забываем обновить метод FiscalProtocol::createRequest и parseRequestJsonDoc */
 
-        struct SUnitData {
+        struct SUnitData
+        {
             TSum sum;                                                /// Сумма платежа.
             TVAT VAT;                                                /// НДС (value added tax).
             QString name;                                            /// Локализованное название платежа (товар).
@@ -184,13 +212,15 @@ namespace SDK {
 
             SUnitData()
                 : sum(0), VAT(0), payOffSubjectType(EPayOffSubjectTypes::None),
-                  payOffSubjectMethodType(EPayOffSubjectMethodTypes::None), section(-1) {
+                  payOffSubjectMethodType(EPayOffSubjectMethodTypes::None), section(-1)
+            {
             }
             SUnitData(double aSum, TVAT aVAT, const QString &aName, const QString &aProviderINN,
                       EPayOffSubjectTypes::Enum aPayOffSubjectType, int aSection = -1,
                       EPayOffSubjectMethodTypes::Enum aPayOffSubjectMethodType = EPayOffSubjectMethodTypes::Full)
                 : sum(aSum), VAT(aVAT), name(aName), providerINN(aProviderINN), payOffSubjectType(aPayOffSubjectType),
-                  payOffSubjectMethodType(aPayOffSubjectMethodType), section(aSection) {
+                  payOffSubjectMethodType(aPayOffSubjectMethodType), section(aSection)
+            {
             }
         };
 
@@ -198,7 +228,8 @@ namespace SDK {
 
         /// Фискальные данные платежа  !!!!!!!!!!!!!!  НЕ забываем обновить метод FiscalProtocol::createRequest и
         /// parseRequestJsonDoc
-        struct SPaymentData {
+        struct SPaymentData
+        {
             TUnitDataList unitDataList;    /// Список данных товара
             EPayOffTypes::Enum payOffType; /// Признак расчета
             EPayTypes::Enum payType;       /// Тип оплаты
@@ -208,16 +239,19 @@ namespace SDK {
 
             SPaymentData()
                 : payOffType(EPayOffTypes::None), payType(EPayTypes::None), taxSystem(ETaxSystems::None),
-                  agentFlag(EAgentFlags::None) {
+                  agentFlag(EAgentFlags::None)
+            {
             }
             SPaymentData(const TUnitDataList &aUnitDataList, EPayOffTypes::Enum aPayOffType,
                          EPayTypes::Enum aPayType = EPayTypes::None, ETaxSystems::Enum aTaxSystem = ETaxSystems::None,
                          EAgentFlags::Enum aAgentFlag = EAgentFlags::None)
                 : payOffType(aPayOffType), unitDataList(aUnitDataList), taxSystem(aTaxSystem), payType(aPayType),
-                  agentFlag(aAgentFlag) {
+                  agentFlag(aAgentFlag)
+            {
             }
 
-            bool back() const {
+            bool back() const
+            {
                 return (payOffType == EPayOffTypes::DebitBack) || (payOffType == EPayOffTypes::Credit);
             }
         };

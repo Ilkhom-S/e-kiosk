@@ -5,7 +5,8 @@
 #include "Hardware/CashDevices/CCTalkDeviceConstants.h"
 
 //--------------------------------------------------------------------------------
-namespace CCCTalk {
+namespace CCCTalk
+{
     /// Маска для сортировщика по умолчанию (использовать предустановленные настройки).
     const char DefaultSorterMask = '\xFF';
 

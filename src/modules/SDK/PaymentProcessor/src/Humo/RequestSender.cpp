@@ -30,19 +30,24 @@
 
 using namespace std::placeholders;
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Humo {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Humo
+        {
 
             //---------------------------------------------------------------------------
-            namespace CRequestSender {
+            namespace CRequestSender
+            {
                 const int DefaultKeyPair = 0;
             } // namespace CRequestSender
 
             //---------------------------------------------------------------------------
             RequestSender::RequestSender(NetworkTaskManager *aNetwork, ICryptEngine *aCryptEngine)
                 : mNetwork(aNetwork), mCryptEngine(aCryptEngine), mKeyPair(CRequestSender::DefaultKeyPair),
-                  mOnlySecureConnection(true) {
+                  mOnlySecureConnection(true)
+            {
 #if defined(_DEBUG) || defined(DEBUG_INFO)
                 mOnlySecureConnection = false;
 #endif // _DEBUG || DEBUG_INFO
@@ -56,58 +61,70 @@ namespace SDK {
             }
 
             //---------------------------------------------------------------------------
-            RequestSender::~RequestSender() {
+            RequestSender::~RequestSender()
+            {
             }
 
             //---------------------------------------------------------------------------
-            void RequestSender::setNetworkTaskManager(NetworkTaskManager *aNetwork) {
+            void RequestSender::setNetworkTaskManager(NetworkTaskManager *aNetwork)
+            {
                 mNetwork = aNetwork;
             }
 
             //---------------------------------------------------------------------------
-            void RequestSender::setResponseCreator(const TResponseCreator &aResponseCreator) {
+            void RequestSender::setResponseCreator(const TResponseCreator &aResponseCreator)
+            {
                 mResponseCreator = aResponseCreator;
             }
 
             //---------------------------------------------------------------------------
-            void RequestSender::setRequestEncoder(const TRequestEncoder &aRequestEncoder) {
+            void RequestSender::setRequestEncoder(const TRequestEncoder &aRequestEncoder)
+            {
                 mRequestEncoder = aRequestEncoder;
             }
 
             //---------------------------------------------------------------------------
-            void RequestSender::setResponseDecoder(const TResponseDecoder &aResponseDecoder) {
+            void RequestSender::setResponseDecoder(const TResponseDecoder &aResponseDecoder)
+            {
                 mResponseDecoder = aResponseDecoder;
             }
 
             //---------------------------------------------------------------------------
-            void RequestSender::setRequestSigner(const TRequestSigner &aRequestSigner) {
+            void RequestSender::setRequestSigner(const TRequestSigner &aRequestSigner)
+            {
                 mRequestSigner = aRequestSigner;
             }
 
             //---------------------------------------------------------------------------
-            void RequestSender::setResponseVerifier(const TResponseVerifier &aResponseVerifier) {
+            void RequestSender::setResponseVerifier(const TResponseVerifier &aResponseVerifier)
+            {
                 mResponseVerifier = aResponseVerifier;
             }
 
             //---------------------------------------------------------------------------
-            void RequestSender::setRequestModifier(const TRequestModifier &aRequestModifier) {
+            void RequestSender::setRequestModifier(const TRequestModifier &aRequestModifier)
+            {
                 mRequestModifier = aRequestModifier;
             }
 
             //---------------------------------------------------------------------------
-            void RequestSender::setCryptKeyPair(int aKeyPair) {
+            void RequestSender::setCryptKeyPair(int aKeyPair)
+            {
                 mKeyPair = aKeyPair;
             }
 
             //---------------------------------------------------------------------------
-            void RequestSender::setOnlySecureConnectionEnabled(bool aOnlySecure) {
+            void RequestSender::setOnlySecureConnectionEnabled(bool aOnlySecure)
+            {
                 mOnlySecureConnection = aOnlySecure;
             }
 
             //---------------------------------------------------------------------------
             Response *RequestSender::request(NetworkTask::Type aType, const QUrl &aUrl, Request &aRequest,
-                                             ESignatureType aSignatureType, ESendError &aError, int aTimeout) {
-                if (aUrl.scheme().toLower() == "http" && mOnlySecureConnection) {
+                                             ESignatureType aSignatureType, ESendError &aError, int aTimeout)
+            {
+                if (aUrl.scheme().toLower() == "http" && mOnlySecureConnection)
+                {
                     aError = HttpIsNotSupported;
 
                     return 0;
@@ -115,7 +132,8 @@ namespace SDK {
 
                 aError = Ok;
 
-                if (mNetwork.isNull()) {
+                if (mNetwork.isNull())
+                {
                     aError = NoNetworkInterfaceSpecified;
 
                     return 0;
@@ -124,13 +142,15 @@ namespace SDK {
                 // Подставляем серийный номер пары ключа в каждый запрос.
                 QString keyPairSerial = mCryptEngine->getKeyPairSerialNumber(mKeyPair);
 
-                if (keyPairSerial.isEmpty()) {
+                if (keyPairSerial.isEmpty())
+                {
                     aError = ClientCryptError;
 
                     return 0;
                 }
 
-                if (aSignatureType == Solid) {
+                if (aSignatureType == Solid)
+                {
                     aRequest.addParameter("ACCEPT_KEYS", keyPairSerial);
                 }
 
@@ -146,36 +166,45 @@ namespace SDK {
                 QByteArray signedRequest;
                 QByteArray detachedSignature;
 
-                if (!mRequestEncoder(aRequest.toString(), std::ref(encodedRequest))) {
+                if (!mRequestEncoder(aRequest.toString(), std::ref(encodedRequest)))
+                {
                     aError = EncodeError;
 
                     return 0;
                 }
 
                 if (!mRequestSigner(encodedRequest, std::ref(signedRequest), aSignatureType,
-                                    std::ref(detachedSignature))) {
+                                    std::ref(detachedSignature)))
+                {
                     aError = ClientCryptError;
 
                     return 0;
                 }
 
-                if (aSignatureType == Solid) {
+                if (aSignatureType == Solid)
+                {
                     signedRequest = "inputmessage=" + signedRequest;
 
                     auto rawParameters = aRequest.getParameters(true);
-                    foreach (auto name, rawParameters.keys()) {
+                    foreach (auto name, rawParameters.keys())
+                    {
                         signedRequest += ("\n" + name + "=" + rawParameters.value(name).toString()).toUtf8();
                     }
-                } else if (aSignatureType == Detached) {
+                }
+                else if (aSignatureType == Detached)
+                {
                     task->getRequestHeader().insert("X-signature", detachedSignature);
                     task->getRequestHeader().insert("X-humo-accepted-keys", keyPairSerial.toLatin1());
-                } else {
+                }
+                else
+                {
                     aError = UnknownSignatureType;
 
                     return 0;
                 }
 
-                if (!mRequestModifier(aRequest, std::ref(task->getRequestHeader()), std::ref(signedRequest))) {
+                if (!mRequestModifier(aRequest, std::ref(task->getRequestHeader()), std::ref(signedRequest)))
+                {
                     aError = RequestModifyError;
 
                     return 0;
@@ -187,7 +216,8 @@ namespace SDK {
 
                 task->waitForFinished();
 
-                if (task->getError() != NetworkTask::NoError) {
+                if (task->getError() != NetworkTask::NoError)
+                {
                     aError = NetworkError;
 
                     return 0;
@@ -196,7 +226,8 @@ namespace SDK {
                 QByteArray signedResponseData = task->getDataStream()->takeAll();
 
                 // Проверим на запакованные данные
-                if (task->getResponseHeader()["Content-Type"] == "application/x-gzip") {
+                if (task->getResponseHeader()["Content-Type"] == "application/x-gzip")
+                {
                     signedResponseData =
                         qUncompress((const uchar *)signedResponseData.data(), signedResponseData.size());
                 }
@@ -205,18 +236,21 @@ namespace SDK {
                 QByteArray responseSignature;
                 QString responseData;
 
-                if (aSignatureType == Detached) {
+                if (aSignatureType == Detached)
+                {
                     responseSignature = QByteArray::fromPercentEncoding(task->getResponseHeader()["X-signature"]);
                 }
 
                 if (!mResponseVerifier(signedResponseData, std::ref(encodedResponseData), aSignatureType,
-                                       responseSignature)) {
+                                       responseSignature))
+                {
                     aError = ServerCryptError;
 
                     return 0;
                 }
 
-                if (!mResponseDecoder(encodedResponseData, std::ref(responseData))) {
+                if (!mResponseDecoder(encodedResponseData, std::ref(responseData)))
+                {
                     aError = DecodeError;
 
                     return 0;
@@ -227,30 +261,35 @@ namespace SDK {
 
             //---------------------------------------------------------------------------
             Response *RequestSender::get(const QUrl &aUrl, Request &aRequest, ESignatureType aSignatureType,
-                                         ESendError &aError, int aTimeout) {
+                                         ESendError &aError, int aTimeout)
+            {
                 return request(NetworkTask::Get, aUrl, aRequest, aSignatureType, aError, aTimeout);
             }
 
             //---------------------------------------------------------------------------
             Response *RequestSender::post(const QUrl &aUrl, Request &aRequest, ESignatureType aSignatureType,
-                                          ESendError &aError, int aTimeout) {
+                                          ESendError &aError, int aTimeout)
+            {
                 return request(NetworkTask::Post, aUrl, aRequest, aSignatureType, aError, aTimeout);
             }
 
             //---------------------------------------------------------------------------
-            Response *RequestSender::defaultResponseCreator(const Request &aRequest, const QString &aData) {
+            Response *RequestSender::defaultResponseCreator(const Request &aRequest, const QString &aData)
+            {
                 return new Response(aRequest, aData);
             }
 
             //---------------------------------------------------------------------------
-            bool RequestSender::defaultRequestEncoder(const QString &aRequest, QByteArray &aEncodedRequest) {
+            bool RequestSender::defaultRequestEncoder(const QString &aRequest, QByteArray &aEncodedRequest)
+            {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 QStringEncoder encoder(QStringConverter::System, QStringConverter::Flag::Default);
                 aEncodedRequest = encoder.encode(aRequest);
                 return encoder.hasError() == false;
 #else
                 QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
-                if (!codec) {
+                if (!codec)
+                {
                     return false;
                 }
 
@@ -260,14 +299,16 @@ namespace SDK {
             }
 
             //---------------------------------------------------------------------------
-            bool RequestSender::defaultResponseDecoder(const QByteArray &aResponse, QString &aDecodedResponse) {
+            bool RequestSender::defaultResponseDecoder(const QByteArray &aResponse, QString &aDecodedResponse)
+            {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 QStringDecoder decoder(QStringConverter::System, QStringConverter::Flag::Default);
                 aDecodedResponse = decoder.decode(aResponse);
                 return decoder.hasError() == false;
 #else
                 QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
-                if (!codec) {
+                if (!codec)
+                {
                     return false;
                 }
 
@@ -278,27 +319,37 @@ namespace SDK {
 
             //---------------------------------------------------------------------------
             bool RequestSender::defaultRequestSigner(const QByteArray &aRequest, QByteArray &aSignedRequest,
-                                                     ESignatureType aSignatureType, QByteArray &aSignature) {
+                                                     ESignatureType aSignatureType, QByteArray &aSignature)
+            {
                 QString error;
 
-                switch (aSignatureType) {
-                    case Solid: {
-                        if (mCryptEngine->sign(mKeyPair, aRequest, aSignedRequest, error)) {
+                switch (aSignatureType)
+                {
+                    case Solid:
+                    {
+                        if (mCryptEngine->sign(mKeyPair, aRequest, aSignedRequest, error))
+                        {
                             aSignedRequest = aSignedRequest.toPercentEncoding();
 
                             return true;
-                        } else {
+                        }
+                        else
+                        {
                             return false;
                         }
                     }
 
-                    case Detached: {
-                        if (mCryptEngine->signDetach(mKeyPair, aRequest, aSignature, error)) {
+                    case Detached:
+                    {
+                        if (mCryptEngine->signDetach(mKeyPair, aRequest, aSignature, error))
+                        {
                             aSignedRequest = aRequest;
                             aSignature = aSignature.toPercentEncoding();
 
                             return true;
-                        } else {
+                        }
+                        else
+                        {
                             return false;
                         }
                     }
@@ -310,18 +361,24 @@ namespace SDK {
 
             //---------------------------------------------------------------------------
             bool RequestSender::defaultResponseVerifier(const QByteArray &aSignedResponse, QByteArray &aResponse,
-                                                        ESignatureType aSignatureType, const QByteArray &aSignature) {
+                                                        ESignatureType aSignatureType, const QByteArray &aSignature)
+            {
                 QString error;
 
-                switch (aSignatureType) {
+                switch (aSignatureType)
+                {
                     case Solid:
                         return mCryptEngine->verify(mKeyPair, aSignedResponse, aResponse, error);
-                    case Detached: {
-                        if (mCryptEngine->verifyDetach(mKeyPair, aSignedResponse, aSignature, error)) {
+                    case Detached:
+                    {
+                        if (mCryptEngine->verifyDetach(mKeyPair, aSignedResponse, aSignature, error))
+                        {
                             aResponse = aSignedResponse;
 
                             return true;
-                        } else {
+                        }
+                        else
+                        {
                             return false;
                         }
                     }
@@ -333,13 +390,16 @@ namespace SDK {
 
             //---------------------------------------------------------------------------
             bool RequestSender::defaultRequestModifier(Request & /*aRequest*/, NetworkTask::TByteMap & /*aHeaders*/,
-                                                       QByteArray & /*aEncodedAndSignedData*/) {
+                                                       QByteArray & /*aEncodedAndSignedData*/)
+            {
                 return true;
             }
 
             //---------------------------------------------------------------------------
-            QString RequestSender::translateError(ESendError aError) {
-                switch (aError) {
+            QString RequestSender::translateError(ESendError aError)
+            {
+                switch (aError)
+                {
                     case Ok:
                         return "ok";
                     case NetworkError:

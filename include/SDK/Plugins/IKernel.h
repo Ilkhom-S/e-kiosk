@@ -14,14 +14,17 @@
 // SDK
 #include "IExternalInterface.h"
 
-namespace SDK {
-    namespace Plugin {
+namespace SDK
+{
+    namespace Plugin
+    {
 
         class IPluginLoader;
 
         //------------------------------------------------------------------------------
         /// Интерфейс ядра.
-        class IKernel {
+        class IKernel
+        {
           public:
             /// Возвращает логгер.
             virtual ILog *getLog(const QString &aName = "") const = 0;

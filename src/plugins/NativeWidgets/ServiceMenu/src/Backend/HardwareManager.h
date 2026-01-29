@@ -15,19 +15,23 @@
 // Project
 #include "IConfigManager.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class ICore;
     } // namespace PaymentProcessor
 
-    namespace Plugin {
+    namespace Plugin
+    {
         class IEnvironment;
         class IPlugin;
     } // namespace Plugin
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class HardwareManager : public QObject, public IConfigManager {
+class HardwareManager : public QObject, public IConfigManager
+{
     Q_OBJECT
 
   public:

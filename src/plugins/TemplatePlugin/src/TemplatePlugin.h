@@ -12,7 +12,8 @@
 
 /// Реализация плагина TemplatePlugin.
 /// Демонстрирует базовую структуру плагина EKiosk.
-class Q_DECL_EXPORT TemplatePlugin : public QObject, public SDK::Plugin::IPlugin {
+class Q_DECL_EXPORT TemplatePlugin : public QObject, public SDK::Plugin::IPlugin
+{
     Q_OBJECT
 
   public:

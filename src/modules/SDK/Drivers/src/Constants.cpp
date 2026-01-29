@@ -13,8 +13,10 @@
 #include <SDK/Drivers/IHID.h>
 #include <SDK/Drivers/IWatchdog.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         const char *IDevice::StatusSignal = SIGNAL(status(SDK::Driver::EWarningLevel::Enum, const QString &, int));
         const char *IDevice::InitializedSignal = SIGNAL(initialized());

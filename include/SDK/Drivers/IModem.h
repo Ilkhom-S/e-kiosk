@@ -11,12 +11,16 @@
 // SDK
 #include <SDK/Drivers/IDevice.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
-        namespace GSM {
+        namespace GSM
+        {
             /// Описание структуры полученного SMS сообщения
-            struct SSMS {
+            struct SSMS
+            {
                 QString from;   /// Отправитель
                 QDateTime date; /// Время получения
                 QString text;   /// Содержимое SMS
@@ -24,7 +28,8 @@ namespace SDK {
         } // namespace GSM
 
         //--------------------------------------------------------------------------------
-        class IModem : public IDevice {
+        class IModem : public IDevice
+        {
           public:
             /// Сброс.
             virtual bool reset() = 0;
@@ -53,7 +58,8 @@ namespace SDK {
             virtual bool takeMessages(TMessages &aMessages) = 0;
 
           protected:
-            virtual ~IModem() {
+            virtual ~IModem()
+            {
             }
         };
 

@@ -22,7 +22,8 @@ typedef QList<char> TAgentFlags;
 typedef QList<char> TOperationModes;
 
 //--------------------------------------------------------------------------------
-class FFEngine : public DeviceConfigManager, public DeviceLogManager {
+class FFEngine : public DeviceConfigManager, public DeviceLogManager
+{
   public:
     FFEngine(ILog *aLog);
 

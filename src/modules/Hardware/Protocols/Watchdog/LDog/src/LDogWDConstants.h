@@ -10,7 +10,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-namespace CLDogWD {
+namespace CLDogWD
+{
     /// Адрес платы.
     const char Address = '\x10';
 
@@ -35,7 +36,8 @@ namespace CLDogWD {
                                              << TReplaceData('\x0D', MaskedPostfix);
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Чтение ответа.
         const ushort Answer = 2000;
     } // namespace Timeouts

@@ -5,7 +5,8 @@
 #include <Hardware/Common/ProtocolBase.h>
 
 //--------------------------------------------------------------------------------
-class ID003Protocol : public ProtocolBase {
+class ID003Protocol : public ProtocolBase
+{
   public:
     /// Выполнить команду протокола.
     TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData);

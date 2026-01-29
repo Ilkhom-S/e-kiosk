@@ -7,13 +7,17 @@
 #include <QtCore/QObject>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
         /// Возможные статусы платежа.
-        namespace EPaymentStatus {
-            enum Enum {
+        namespace EPaymentStatus
+        {
+            enum Enum
+            {
                 DispensedChange = -4, /// Сдача, выданная вручную, по заявлению клиента
                 LostChange = -3,      /// Неизрасходованная сдача
                 Cheated = -2,         /// Попытка мошенничества с БД терминала
@@ -29,12 +33,14 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         /// Список шагов платежа.
-        class EPaymentStep : public QObject {
+        class EPaymentStep : public QObject
+        {
             Q_OBJECT
             Q_ENUMS(Enum)
 
           public:
-            enum Enum {
+            enum Enum
+            {
                 DataCheck = 0, /// Проверка данных.
                 Pay,           /// Создание транзакции платежа.
                 Status,        /// Запрос статуса платежа.
@@ -45,8 +51,10 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         /// Список типов мошенничества.
-        namespace EPaymentCheatedType {
-            enum Enum {
+        namespace EPaymentCheatedType
+        {
+            enum Enum
+            {
                 CashAcceptor = 1, /// Манипуляции с купюроприёмником.
                 NotesCount,       /// Подозрительное кол-во купюр.
             };

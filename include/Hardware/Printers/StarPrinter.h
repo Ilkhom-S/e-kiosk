@@ -6,7 +6,8 @@
 #include <Hardware/Printers/StarMemorySwitches.h>
 
 //--------------------------------------------------------------------------------
-class StarPrinter : public TSerialPrinterBase {
+class StarPrinter : public TSerialPrinterBase
+{
     SET_SERIES("STAR")
 
   public:

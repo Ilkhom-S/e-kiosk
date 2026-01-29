@@ -26,7 +26,8 @@ typedef QMap<int, TKeyPair> TKeyPairList;
 
 //---------------------------------------------------------------------------
 /// Реализация криптодвижка, основанная на библиотеке libipriv.
-class CryptEngine : public ICryptEngine {
+class CryptEngine : public ICryptEngine
+{
   public:
     CryptEngine();
 

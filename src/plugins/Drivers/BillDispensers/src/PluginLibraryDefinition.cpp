@@ -8,7 +8,8 @@
 // Project
 #include "PluginLibraryDefinition.h"
 
-BillDispenserPluginFactory::BillDispenserPluginFactory() {
+BillDispenserPluginFactory::BillDispenserPluginFactory()
+{
     mName = "BillDispenser";
     mDescription = "BillDispenser driver library";
     mAuthor = "Humo";

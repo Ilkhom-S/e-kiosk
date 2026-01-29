@@ -15,7 +15,8 @@ class DeviceSlot;
 class EditorPane;
 
 //------------------------------------------------------------------------
-class HardwareServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::HardwareServiceWindow {
+class HardwareServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::HardwareServiceWindow
+{
     Q_OBJECT
 
   public:

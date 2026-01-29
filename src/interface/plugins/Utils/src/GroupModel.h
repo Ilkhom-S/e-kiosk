@@ -15,7 +15,8 @@ class Item;
 class ItemObject;
 
 //------------------------------------------------------------------------------
-class GroupModel : public QAbstractListModel {
+class GroupModel : public QAbstractListModel
+{
     Q_OBJECT
 
     Q_PROPERTY(int count READ rowCount NOTIFY rowCountChanged)
@@ -26,7 +27,8 @@ class GroupModel : public QAbstractListModel {
     Q_PROPERTY(QStringList elementFilter READ getElementFilter WRITE setElementFilter)
     Q_PROPERTY(quint16 maxNameLength READ getMaxNameLength)
 
-    enum EntryRoles {
+    enum EntryRoles
+    {
         IdRole = Qt::UserRole + 1,
         NameRole,
         TitleRole,
@@ -139,7 +141,8 @@ class GroupModel : public QAbstractListModel {
 };
 
 //------------------------------------------------------------------------------
-class Item {
+class Item
+{
   public:
     Item(const QDomNode &aNode);
 
@@ -166,7 +169,8 @@ class Item {
 };
 
 //------------------------------------------------------------------------------
-class ItemObject : public QObject {
+class ItemObject : public QObject
+{
     Q_OBJECT
 
     Q_PROPERTY(qint64 id READ getId)

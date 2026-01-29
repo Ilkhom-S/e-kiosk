@@ -5,9 +5,11 @@
 #include "Hardware/FR/PortFRBase.h"
 
 //--------------------------------------------------------------------------------
-class ShtrihSerialFRBase : public TSerialFRBase {
+class ShtrihSerialFRBase : public TSerialFRBase
+{
   public:
-    ShtrihSerialFRBase() {
+    ShtrihSerialFRBase()
+    {
         using namespace SDK::Driver::IOPort::COM;
 
         // данные порта

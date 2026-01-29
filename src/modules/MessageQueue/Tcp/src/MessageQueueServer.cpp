@@ -4,25 +4,29 @@
 // Project
 #include "MessageQueueServer.h"
 
-MessageQueueServer::MessageQueueServer(const QString &aQueueName) {
+MessageQueueServer::MessageQueueServer(const QString &aQueueName)
+{
     m_log = ILog::getInstance(CIMessageQueueServer::DefaultLog);
 
     m_queueName = aQueueName;
 }
 
 //----------------------------------------------------------------------------
-MessageQueueServer::MessageQueueServer(const QString &aQueueName, ILog *aLog) {
+MessageQueueServer::MessageQueueServer(const QString &aQueueName, ILog *aLog)
+{
     m_log = aLog;
 
     m_queueName = aQueueName;
 }
 
 //----------------------------------------------------------------------------
-MessageQueueServer::~MessageQueueServer() {
+MessageQueueServer::~MessageQueueServer()
+{
 }
 
 //----------------------------------------------------------------------------
-bool MessageQueueServer::init() {
+bool MessageQueueServer::init()
+{
     if (!connect(&m_disconnectSignalMapper, SIGNAL(mapped(QObject *)), this, SLOT(onSocketDisconnected(QObject *))) ||
         !connect(&m_readyReadSignalMapper, SIGNAL(mapped(QObject *)), this, SLOT(onSocketReadyRead(QObject *))))
         return false;
@@ -34,24 +38,30 @@ bool MessageQueueServer::init() {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::stop() {
+void MessageQueueServer::stop()
+{
     QTcpServer::close();
 }
 
 //----------------------------------------------------------------------------
-bool MessageQueueServer::subscribeOnMessageReceived(QObject *aObject) {
+bool MessageQueueServer::subscribeOnMessageReceived(QObject *aObject)
+{
     return connect(this, SIGNAL(onMessageReceived(QByteArray)), aObject, SLOT(onMessageReceived(QByteArray)));
 }
 
 //----------------------------------------------------------------------------
-bool MessageQueueServer::subscribeOnDisconnected(QObject *aObject) {
+bool MessageQueueServer::subscribeOnDisconnected(QObject *aObject)
+{
     return connect(this, SIGNAL(onDisconnected()), aObject, SLOT(onDisconnected()));
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::sendMessage(const QByteArray &aMessage) {
-    foreach (QTcpSocket *socket, m_sockets.keys()) {
-        if (socket->state() == QTcpSocket::ConnectedState) {
+void MessageQueueServer::sendMessage(const QByteArray &aMessage)
+{
+    foreach (QTcpSocket *socket, m_sockets.keys())
+    {
+        if (socket->state() == QTcpSocket::ConnectedState)
+        {
             socket->write(aMessage + '\0');
             socket->flush();
         }
@@ -59,7 +69,8 @@ void MessageQueueServer::sendMessage(const QByteArray &aMessage) {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::incomingConnection(int aSocketDescriptor) {
+void MessageQueueServer::incomingConnection(int aSocketDescriptor)
+{
     LOG(m_log, LogLevel::Normal,
         QString("New incoming connection... Socket with descriptor %1 has been connected.").arg(aSocketDescriptor));
 
@@ -76,12 +87,14 @@ void MessageQueueServer::incomingConnection(int aSocketDescriptor) {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::onSocketDisconnected(QObject *aObject) {
+void MessageQueueServer::onSocketDisconnected(QObject *aObject)
+{
     emit onDisconnected();
 
     QTcpSocket *socket = dynamic_cast<QTcpSocket *>(aObject);
 
-    if (socket) {
+    if (socket)
+    {
         LOG(m_log, LogLevel::Normal,
             QString("Socket with descriptor %1 has been disconnected.").arg(m_sockets[socket]));
 
@@ -93,14 +106,17 @@ void MessageQueueServer::onSocketDisconnected(QObject *aObject) {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::onSocketReadyRead(QObject *aObject) {
+void MessageQueueServer::onSocketReadyRead(QObject *aObject)
+{
     QTcpSocket *socket = dynamic_cast<QTcpSocket *>(aObject);
-    if (!socket) {
+    if (!socket)
+    {
         LOG(m_log, LogLevel::Error, "Wrong object was passed to onSocketReadyRead slot...");
         return;
     }
 
-    while (socket->bytesAvailable() > 0) {
+    while (socket->bytesAvailable() > 0)
+    {
         QByteArray newData = socket->readAll();
 
         quintptr socketDescriptor = socket->socketDescriptor();
@@ -110,9 +126,11 @@ void MessageQueueServer::onSocketReadyRead(QObject *aObject) {
 }
 
 //----------------------------------------------------------------------------
-QByteArray MessageQueueServer::parseInputBuffer(QByteArray aBuffer) {
+QByteArray MessageQueueServer::parseInputBuffer(QByteArray aBuffer)
+{
     int messageEnd = aBuffer.indexOf('\0');
-    while (messageEnd != -1) {
+    while (messageEnd != -1)
+    {
         QByteArray newMessageData = aBuffer.left(messageEnd);
 
         aBuffer = aBuffer.right(aBuffer.size() - messageEnd - 1);

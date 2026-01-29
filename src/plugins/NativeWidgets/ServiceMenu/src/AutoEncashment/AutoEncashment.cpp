@@ -18,15 +18,18 @@
 // Project
 #include "AutoEncashment.h"
 
-namespace CAutoEncashment {
+namespace CAutoEncashment
+{
     const QString PluginName = "AutoEncashment";
 } // namespace CAutoEncashment
 
 //--------------------------------------------------------------------------
-namespace {
+namespace
+{
 
     /// Конструктор плагина.
-    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+    {
         return new AutoEncashment(aFactory, aInstancePath);
     }
 
@@ -38,20 +41,25 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application, SDK::PaymentProcess
 
 //--------------------------------------------------------------------------
 AutoEncashment::AutoEncashment(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mMainWidget(0), mEnvironment(aFactory), mInstancePath(aInstancePath), mAutoEncashmentWindow(0), mIsReady(false) {
+    : mMainWidget(0), mEnvironment(aFactory), mInstancePath(aInstancePath), mAutoEncashmentWindow(0), mIsReady(false)
+{
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
         mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
-    if (core) {
+    if (core)
+    {
         mBackend = QSharedPointer<ServiceMenuBackend>(
             new ServiceMenuBackend(mEnvironment, mEnvironment->getLog(CServiceMenuBackend::LogName)));
-    } else {
+    }
+    else
+    {
         mEnvironment->getLog("ServiceMenu")->write(LogLevel::Error, "Failed to get ICore");
     }
 
     mIsReady = core != 0;
 
-    if (mIsReady) {
+    if (mIsReady)
+    {
         mMainWidget = new QGraphicsProxyWidget();
 
         mAutoEncashmentWindow = new AutoEncashmentWindow(mBackend.data());
@@ -73,83 +81,100 @@ AutoEncashment::AutoEncashment(SDK::Plugin::IEnvironment *aFactory, const QStrin
 }
 
 //--------------------------------------------------------------------------
-AutoEncashment::~AutoEncashment() {
-    if (mMainWidget) {
+AutoEncashment::~AutoEncashment()
+{
+    if (mMainWidget)
+    {
         mAutoEncashmentWindow->shutdown();
         mMainWidget->deleteLater();
     }
 }
 
 //--------------------------------------------------------------------------
-QString AutoEncashment::getPluginName() const {
+QString AutoEncashment::getPluginName() const
+{
     return CAutoEncashment::PluginName;
 }
 
 //--------------------------------------------------------------------------
-QVariantMap AutoEncashment::getConfiguration() const {
+QVariantMap AutoEncashment::getConfiguration() const
+{
     return mParameters;
 }
 
 //--------------------------------------------------------------------------
-void AutoEncashment::setConfiguration(const QVariantMap &aParameters) {
+void AutoEncashment::setConfiguration(const QVariantMap &aParameters)
+{
     mParameters = aParameters;
 }
 
 //--------------------------------------------------------------------------
-QString AutoEncashment::getConfigurationName() const {
+QString AutoEncashment::getConfigurationName() const
+{
     return mInstancePath;
 }
 
 //--------------------------------------------------------------------------
-bool AutoEncashment::saveConfiguration() {
+bool AutoEncashment::saveConfiguration()
+{
     return true;
 }
 
 //--------------------------------------------------------------------------
-bool AutoEncashment::isReady() const {
+bool AutoEncashment::isReady() const
+{
     return mIsReady;
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashment::show() {
+void AutoEncashment::show()
+{
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashment::hide() {
+void AutoEncashment::hide()
+{
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashment::notify(const QString & /*aReason*/, const QVariantMap & /*aParameters*/) {
+void AutoEncashment::notify(const QString & /*aReason*/, const QVariantMap & /*aParameters*/)
+{
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashment::reset(const QVariantMap & /*aParameters*/) {
-    if (mAutoEncashmentWindow) {
+void AutoEncashment::reset(const QVariantMap & /*aParameters*/)
+{
+    if (mAutoEncashmentWindow)
+    {
         mAutoEncashmentWindow->shutdown();
         mAutoEncashmentWindow->initialize();
     }
 }
 
 //---------------------------------------------------------------------------
-QQuickItem *AutoEncashment::getWidget() const {
+QQuickItem *AutoEncashment::getWidget() const
+{
     // return mMainWidget;
     // FIXME
     return nullptr;
 }
 
 //---------------------------------------------------------------------------
-QVariantMap AutoEncashment::getContext() const {
+QVariantMap AutoEncashment::getContext() const
+{
     // TODO
     return QVariantMap();
 }
 
 //---------------------------------------------------------------------------
-bool AutoEncashment::isValid() const {
+bool AutoEncashment::isValid() const
+{
     return mMainWidget != 0;
 }
 
 //---------------------------------------------------------------------------
-QString AutoEncashment::getError() const {
+QString AutoEncashment::getError() const
+{
     return QString();
 }
 

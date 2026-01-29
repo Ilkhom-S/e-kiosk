@@ -16,13 +16,16 @@
 // Project
 #include "API.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class DealerSettings;
     } // namespace PaymentProcessor
 } // namespace SDK
 
-namespace {
+namespace
+{
     const char *ParamRuntimePath = "ucs_runtime_path";
 } // namespace
 
@@ -30,7 +33,8 @@ namespace {
 class UcsChargeProvider : public QObject,
                           public SDK::PaymentProcessor::IChargeProvider,
                           public SDK::Plugin::IPlugin,
-                          public ILogable {
+                          public ILogable
+{
     Q_OBJECT
 
   public:

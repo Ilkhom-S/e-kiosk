@@ -5,8 +5,10 @@
 #include "Hardware/CashAcceptors/ModelData.h"
 
 //--------------------------------------------------------------------------------
-namespace CV2e {
-    namespace Models {
+namespace CV2e
+{
+    namespace Models
+    {
         const char Aurora[] = "GPT Aurora";
         const char Falcon[] = "GPT Falcon";
         const char Argus[] = "GPT Argus";
@@ -14,7 +16,8 @@ namespace CV2e {
 
     typedef QSet<QString> TModelKeys;
 
-    class ModelData : public CSpecification<TModelKeys, SBaseModelData> {
+    class ModelData : public CSpecification<TModelKeys, SBaseModelData>
+    {
       public:
         ModelData();
         SBaseModelData getData(const QString &aKey);

@@ -6,19 +6,33 @@
 #include <QtCore/QString>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace Driver {
-        namespace IOPort {
-            namespace COM {
+namespace SDK
+{
+    namespace Driver
+    {
+        namespace IOPort
+        {
+            namespace COM
+            {
 
                 //--------------------------------------------------------------------------------
                 /// Настройки чётности.
-                namespace EParity {
-                    enum Enum { No, Odd, Even, Mark, Space };
+                namespace EParity
+                {
+                    enum Enum
+                    {
+                        No,
+                        Odd,
+                        Even,
+                        Mark,
+                        Space
+                    };
 
                     /// Преобразовать в строку.
-                    inline static const char *EnumToString(int aParity) {
-                        switch (aParity) {
+                    inline static const char *EnumToString(int aParity)
+                    {
+                        switch (aParity)
+                        {
                             case No:
                                 return "no";
                             case Odd:
@@ -37,11 +51,19 @@ namespace SDK {
 
                 //--------------------------------------------------------------------------------
                 /// Управление линией DTR.
-                namespace EDTRControl {
-                    enum Enum { Disable, Enable, Handshake };
+                namespace EDTRControl
+                {
+                    enum Enum
+                    {
+                        Disable,
+                        Enable,
+                        Handshake
+                    };
 
-                    inline static const char *EnumToString(int aDTR) {
-                        switch (aDTR) {
+                    inline static const char *EnumToString(int aDTR)
+                    {
+                        switch (aDTR)
+                        {
                             case Disable:
                                 return "Disable";
                             case Enable:
@@ -56,12 +78,21 @@ namespace SDK {
 
                 //--------------------------------------------------------------------------------
                 /// Управление линией RTS.
-                namespace ERTSControl {
-                    enum Enum { Disable, Enable, Handshake, Toggle };
+                namespace ERTSControl
+                {
+                    enum Enum
+                    {
+                        Disable,
+                        Enable,
+                        Handshake,
+                        Toggle
+                    };
 
                     /// Преобразовать в строку.
-                    inline static const char *EnumToString(int aRTS) {
-                        switch (aRTS) {
+                    inline static const char *EnumToString(int aRTS)
+                    {
+                        switch (aRTS)
+                        {
                             case Disable:
                                 return "Disable";
                             case Enable:
@@ -78,8 +109,10 @@ namespace SDK {
 
                 //--------------------------------------------------------------------------------
                 /// Скорость обмена данными.
-                namespace EBaudRate {
-                    enum Enum {
+                namespace EBaudRate
+                {
+                    enum Enum
+                    {
                         BR4800 = 4800,
                         BR9600 = 9600,
                         BR14400 = 14400,
@@ -90,8 +123,10 @@ namespace SDK {
                     };
 
                     /// Преобразовать в строку.
-                    inline static const char *EnumToString(int aBaudRate) {
-                        switch (aBaudRate) {
+                    inline static const char *EnumToString(int aBaudRate)
+                    {
+                        switch (aBaudRate)
+                        {
                             case BR4800:
                                 return "4800";
                             case BR9600:
@@ -114,12 +149,20 @@ namespace SDK {
 
                 //--------------------------------------------------------------------------------
                 /// Количество стоповых бит.
-                namespace EStopBits {
-                    enum Enum { One, One5, Two };
+                namespace EStopBits
+                {
+                    enum Enum
+                    {
+                        One,
+                        One5,
+                        Two
+                    };
 
                     /// Преобразовать в строку.
-                    inline static const char *EnumToString(int aBaudRate) {
-                        switch (aBaudRate) {
+                    inline static const char *EnumToString(int aBaudRate)
+                    {
+                        switch (aBaudRate)
+                        {
                             case One:
                                 return "1";
                             case One5:
@@ -134,8 +177,10 @@ namespace SDK {
 
                 //--------------------------------------------------------------------------------
                 /// Параметры COM-порта.
-                namespace EParameters {
-                    enum Enum {
+                namespace EParameters
+                {
+                    enum Enum
+                    {
                         BaudRate, /// Скорость передачи данных.
                         StopBits, /// Количество стоповых бит.
                         Parity,   /// Схема контроля четности.
@@ -147,8 +192,10 @@ namespace SDK {
                     };
 
                     /// Преобразовать в строку.
-                    inline static const char *EnumToString(int aParameter) {
-                        switch (aParameter) {
+                    inline static const char *EnumToString(int aParameter)
+                    {
+                        switch (aParameter)
+                        {
                             case BaudRate:
                                 return "baud rate";
                             case StopBits:
@@ -168,8 +215,10 @@ namespace SDK {
                 } // namespace EParameters
 
                 /// Описание параметра.
-                inline static QString parameterDescription(int aParameter, int aValue) {
-                    switch (aParameter) {
+                inline static QString parameterDescription(int aParameter, int aValue)
+                {
+                    switch (aParameter)
+                    {
                         case EParameters::BaudRate:
                             return EBaudRate::EnumToString(aValue);
                         case EParameters::StopBits:

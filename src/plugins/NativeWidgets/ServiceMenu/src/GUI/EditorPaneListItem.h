@@ -9,7 +9,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------
-class EditorPaneListItemDelegate : public QStyledItemDelegate {
+class EditorPaneListItemDelegate : public QStyledItemDelegate
+{
     Q_OBJECT
 
   public:
@@ -17,13 +18,20 @@ class EditorPaneListItemDelegate : public QStyledItemDelegate {
 };
 
 //------------------------------------------------------------------------
-class EditorPaneListItem : public QListWidgetItem {
+class EditorPaneListItem : public QListWidgetItem
+{
   public:
-    enum DataRole { ParameterName = Qt::UserRole + 1, ParameterValue };
+    enum DataRole
+    {
+        ParameterName = Qt::UserRole + 1,
+        ParameterValue
+    };
 
-    EditorPaneListItem() {
+    EditorPaneListItem()
+    {
     }
-    virtual ~EditorPaneListItem() {
+    virtual ~EditorPaneListItem()
+    {
     }
 
     virtual QVariant data(int aRole) const;

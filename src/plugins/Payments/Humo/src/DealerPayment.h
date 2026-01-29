@@ -15,7 +15,8 @@
 #include "DealerLocalData.h"
 
 //------------------------------------------------------------------------------
-class DealerPayment : public Payment {
+class DealerPayment : public Payment
+{
   public:
     DealerPayment(PaymentFactory *aFactory);
 

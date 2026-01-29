@@ -2,11 +2,15 @@
 
 #pragma once
 
-namespace SDK {
-    namespace Driver {
-        namespace CAllHardware {
+namespace SDK
+{
+    namespace Driver
+    {
+        namespace CAllHardware
+        {
             /// Фискальные реквизиты.
-            namespace FiscalFields {
+            namespace FiscalFields
+            {
                 /// Наименование фискального документа.
                 const char FDName[] = "fd_name"; // 1000 (Наименование фискального документа).
                 /// Телефон или электронный адрес покупателя.
@@ -156,7 +160,8 @@ namespace SDK {
                 const char TaxAmount07[] = "tax_amount_07"; // 1107 (Сумма НДС чека по расчетной ставке 10/110).
 
                 // Значения.
-                namespace Values {
+                namespace Values
+                {
                     /// ФФД маркер отсутствия данных.
                     const char NoData[] = "none";
                 } // namespace Values

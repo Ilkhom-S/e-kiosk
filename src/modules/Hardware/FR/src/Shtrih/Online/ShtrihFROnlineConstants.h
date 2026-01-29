@@ -9,7 +9,8 @@
 #include "../ShtrihFRConstants.h"
 
 //--------------------------------------------------------------------------------
-namespace CShtrihOnlineFR {
+namespace CShtrihOnlineFR
+{
     /// Формат представления даты [активизации] ФН в ответе на длинный запрос статуса ФН.
     const char DateFormat[] = "yyyyMMdd";
 
@@ -23,7 +24,8 @@ namespace CShtrihOnlineFR {
     const char SDNotConnected = '\xFE';
 
     /// Минимальные даты прошивкок, начиная с которых возможно выполнение определенного функционала.
-    namespace MinFWDate {
+    namespace MinFWDate
+    {
         /// Снятие Z-отчетов в буфер.
         const QDate ZBuffer = QDate(2017, 6, 29);
 
@@ -38,7 +40,8 @@ namespace CShtrihOnlineFR {
     const char FiscalTaxData[] = "\xFF\xFF\xFF\xFF\xFF";
 
     /// Сервисные команды (параметры).
-    namespace Service {
+    namespace Service
+    {
         /// Cофтварная перезагрузка.
         const QByteArray Reboot = QByteArray::fromRawData("\xF3\x00\x00\x00\x00", 5);
 
@@ -83,7 +86,8 @@ namespace CShtrihOnlineFR {
     const int NotPrintDocumentPause = 150;
 
     /// Маски для парсинга режимо работы.
-    namespace OperationModeMask {
+    namespace OperationModeMask
+    {
         const char ExcisableUnitMode = '\x01'; // Торговля подакцизными товарами (1207).
         const char GamblingMode = '\x02';      // Проведение азартных игр (1193).
         const char LotteryMode = '\x04';       // Проведение лотереи (1126).
@@ -91,7 +95,8 @@ namespace CShtrihOnlineFR {
     } // namespace OperationModeMask
 
     /// Параметры ФР.
-    namespace FRParameters {
+    namespace FRParameters
+    {
         using namespace CShtrihFR::FRParameters;
 
         const SData Cashier = SData(2, 2);                /// Кассир по умолчанию (сисадмин).
@@ -122,7 +127,8 @@ namespace CShtrihOnlineFR {
         const SData QRCode = SData(8, 24);                /// Формировать QR-код (средствами ФР, а не принтера).
 
         /// Параметры автообновления.
-        namespace FirmwareUpdating {
+        namespace FirmwareUpdating
+        {
             const SData Working = SData(1, 23);  /// Работать/не работать с сервером.
             const SData Interval = SData(3, 23); /// Период опроса сервера.
             const SData Enabling = SData(5, 23); /// Включить/выключить.
@@ -130,7 +136,8 @@ namespace CShtrihOnlineFR {
         } // namespace FirmwareUpdating
 
         /// Параметры SD-карты.
-        namespace SD {
+        namespace SD
+        {
             const SData Status = SData(1, 14);      /// Статус.
             const SData ClusterSize = SData(2, 14); /// Размер кластера.
             const SData TotalSize = SData(3, 14);   /// Общий размер.
@@ -144,7 +151,8 @@ namespace CShtrihOnlineFR {
     } // namespace FRParameters
 
     /// Параметры автообновления.
-    namespace FirmwareUpdating {
+    namespace FirmwareUpdating
+    {
         const int Working = 1;    /// Работать с сервером автообновления.
         const int Interval = 600; /// Интервал опроса сервера автообновления, [c].
         const int Enabling = 1;   /// Разрешить автообновление.
@@ -152,12 +160,14 @@ namespace CShtrihOnlineFR {
     } // namespace FirmwareUpdating
 
     /// Коды команд.
-    namespace Commands {
+    namespace Commands
+    {
         const char GetPrinterStatus = '\xD1'; /// Получить статус принтера.
         const char Service = '\xFE';          /// Сервисная команда.
 
         /// Коды команд ФН.
-        namespace FS {
+        namespace FS
+        {
             const char GetStatus[] = "\xFF\x01";             /// Получить статус ФН.
             const char GetNumber[] = "\xFF\x02";             /// Получить номер ФН.
             const char GetValidity[] = "\xFF\x03";           /// Получить срок действия ФН.
@@ -178,15 +188,18 @@ namespace CShtrihOnlineFR {
     } // namespace Commands
 
     /// Коды ошибок (некоторых).
-    namespace Errors {
+    namespace Errors
+    {
         const char WrongFSState = '\x02';      /// Неверное состояние ФН.
         const char NoRequiedDataInFS = '\x08'; /// Нет запрошенных данных.
         const char FSOfflineEnd = '\x14';      /// ФН Исчерпан ресурс хранения.
         const char NeedZReport = '\x16';       /// ФН Продолжительность смены более 24 часов.
 
-        class Data : public FRError::Data {
+        class Data : public FRError::Data
+        {
           public:
-            Data() {
+            Data()
+            {
                 using namespace FRError;
 
                 add('\x01', "Неизвестная команда, неверный формат посылки или неизвестные параметры");

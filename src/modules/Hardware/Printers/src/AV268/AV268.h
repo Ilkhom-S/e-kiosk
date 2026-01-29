@@ -5,10 +5,17 @@
 #include "Hardware/Printers/PortPrintersBase.h"
 
 //--------------------------------------------------------------------------------
-class AV268 : public TSerialPrinterBase {
+class AV268 : public TSerialPrinterBase
+{
     SET_SERIES("SysFuture")
 
-    enum Enum { Simple, Extended, Plus, Unknown };
+    enum Enum
+    {
+        Simple,
+        Extended,
+        Plus,
+        Unknown
+    };
 
   public:
     AV268();

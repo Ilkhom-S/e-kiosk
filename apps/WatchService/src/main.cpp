@@ -8,23 +8,27 @@
 #include "WatchService.h"
 #include <singleapplication.h>
 
-namespace CWatchService {
+namespace CWatchService
+{
     const QString Name = "WatchService";
 } // namespace CWatchService
 
 //----------------------------------------------------------------------------
-void qtMessageHandler(QtMsgType /*aType*/, const QMessageLogContext & /*aContext*/, const QString &aMessage) {
+void qtMessageHandler(QtMsgType /*aType*/, const QMessageLogContext & /*aContext*/, const QString &aMessage)
+{
     static ILog *log = ILog::getInstance("QtMessages");
 
     log->write(LogLevel::Normal, aMessage);
 }
 
 //----------------------------------------------------------------------------
-int main(int aArgc, char *aArgv[]) {
+int main(int aArgc, char *aArgv[])
+{
     BasicQtApplication<SingleApplication> application(CWatchService::Name, Humo::getVersion(), aArgc, aArgv);
 
     // Если сервис уже запущен выходим.
-    if (!application.isPrimaryInstance()) {
+    if (!application.isPrimaryInstance())
+    {
         application.getQtApplication().sendMessage("Instance!!!");
         LOG(application.getLog(), LogLevel::Warning, "Another instance is already running.");
 

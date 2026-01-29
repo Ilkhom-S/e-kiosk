@@ -18,7 +18,8 @@ class QSqlDatabase;
 class IPayment;
 
 //---------------------------------------------------------------------------
-namespace CMySqlDatabaseProxy {
+namespace CMySqlDatabaseProxy
+{
     const QString DriverName = "QMYSQL";
     const QString DefaultLog = "MySql";
     const QString DateFormat = "yyyy-MM-dd hh:mm:ss";
@@ -30,7 +31,8 @@ namespace CMySqlDatabaseProxy {
 } // namespace CMySqlDatabaseProxy
 
 //---------------------------------------------------------------------------
-class MySqlDatabaseProxy : public IDatabaseProxy {
+class MySqlDatabaseProxy : public IDatabaseProxy
+{
     friend class IDatabaseProxy;
 
   public:

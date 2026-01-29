@@ -13,7 +13,8 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------------
-AdRequest::AdRequest(SDK::PaymentProcessor::ICore *aCore) {
+AdRequest::AdRequest(SDK::PaymentProcessor::ICore *aCore)
+{
     PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
         aCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 
@@ -23,24 +24,28 @@ AdRequest::AdRequest(SDK::PaymentProcessor::ICore *aCore) {
 }
 
 //------------------------------------------------------------------------------
-AdGetChannelsRequest::AdGetChannelsRequest(PPSDK::ICore *aCore) : AdRequest(aCore) {
+AdGetChannelsRequest::AdGetChannelsRequest(PPSDK::ICore *aCore) : AdRequest(aCore)
+{
     addParameter(Ad::Parameters::RequestType, Ad::Requests::ChannelList);
 }
 
 //------------------------------------------------------------------------------
-AdGetChannelRequest::AdGetChannelRequest(PPSDK::ICore *aCore, const QString &aName) : AdRequest(aCore) {
+AdGetChannelRequest::AdGetChannelRequest(PPSDK::ICore *aCore, const QString &aName) : AdRequest(aCore)
+{
     addParameter(Ad::Parameters::RequestType, Ad::Requests::Channel);
     addParameter(Ad::Parameters::Channel, aName);
 }
 
 //------------------------------------------------------------------------------
 AdStatisticRequest::AdStatisticRequest(PPSDK::ICore *aCore, const QList<Ad::SStatisticRecord> aStatistic)
-    : AdRequest(aCore) {
+    : AdRequest(aCore)
+{
     addParameter(Ad::Parameters::RequestType, Ad::Requests::Statistics);
 
     QStringList statList;
 
-    foreach (auto stat, aStatistic) {
+    foreach (auto stat, aStatistic)
+    {
         statList
             << QString("%1;%2;%3").arg(stat.date.toString(Ad::Parameters::DateFormat)).arg(stat.id).arg(stat.duration);
     }

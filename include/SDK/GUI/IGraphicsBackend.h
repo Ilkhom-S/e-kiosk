@@ -15,13 +15,16 @@
 #include <SDK/GUI/GraphicsItemInfo.h>
 #include <SDK/GUI/IGraphicsItem.h>
 
-namespace SDK {
-    namespace GUI {
+namespace SDK
+{
+    namespace GUI
+    {
 
         //---------------------------------------------------------------------------
         /// Интерфейс графического бэкэнда. Реализуется плагинами и
         /// используется графическим движком.
-        class IGraphicsBackend {
+        class IGraphicsBackend
+        {
           public:
             /// Инициализация.
             virtual bool initialize(IGraphicsEngine *aEngine) = 0;
@@ -43,7 +46,8 @@ namespace SDK {
             virtual QList<GraphicsItemInfo> getItemList() = 0;
 
           protected:
-            virtual ~IGraphicsBackend() {
+            virtual ~IGraphicsBackend()
+            {
             }
         };
 

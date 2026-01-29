@@ -13,20 +13,26 @@
 // Project
 #include <Hardware/Watchdogs/ProtoWatchdog.h>
 
-namespace CWatchdogs {
-    struct SSensorData {
+namespace CWatchdogs
+{
+    struct SSensorData
+    {
         int statusCode;
         QString action;
 
-        SSensorData() {
+        SSensorData()
+        {
         }
-        SSensorData(int aStatusCode, const QString &aAction) : statusCode(aStatusCode), action(aAction) {
+        SSensorData(int aStatusCode, const QString &aAction) : statusCode(aStatusCode), action(aAction)
+        {
         }
     };
 
-    class CSensorData : public CSpecification<QString, SSensorData> {
+    class CSensorData : public CSpecification<QString, SSensorData>
+    {
       public:
-        CSensorData() {
+        CSensorData()
+        {
 #define ADD_SENSOR_DATA(aSensor)                                                                                       \
     append(CHardware::Watchdog::Sensor::aSensor,                                                                       \
            SSensorData(WatchdogStatusCode::Warning::aSensor, CHardware::Watchdog::Sensor::Action::aSensor))
@@ -39,9 +45,11 @@ namespace CWatchdogs {
 
     static CSensorData SensorData;
 
-    class CSensorActionData : public CSpecification<QString, SDK::Driver::EWatchdogStatus::Enum> {
+    class CSensorActionData : public CSpecification<QString, SDK::Driver::EWatchdogStatus::Enum>
+    {
       public:
-        CSensorActionData() {
+        CSensorActionData()
+        {
 #define ADD_SENSOR_ACTION(aAction)                                                                                     \
     append(CHardware::Watchdog::Sensor::ActionValue::aAction, SDK::Driver::EWatchdogStatus::aAction)
 
@@ -56,7 +64,8 @@ namespace CWatchdogs {
 //----------------------------------------------------------------------------
 typedef SerialDeviceBase<PortPollingDeviceBase<ProtoWatchdog>> TWatchdogBase;
 
-class WatchdogBase : public TWatchdogBase {
+class WatchdogBase : public TWatchdogBase
+{
   public:
     WatchdogBase();
 

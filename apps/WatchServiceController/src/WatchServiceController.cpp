@@ -18,13 +18,15 @@
 // Project
 #include "WatchServiceController.h"
 
-namespace CWatchServiceController {
+namespace CWatchServiceController
+{
     const int CheckTimeout = 3 * 1000;
 } // namespace CWatchServiceController
 
 //----------------------------------------------------------------------------
 WatchServiceController::WatchServiceController()
-    : mClient(createWatchServiceClient(CWatchService::Modules::WatchServiceController)), mLastCommand(Unknown) {
+    : mClient(createWatchServiceClient(CWatchService::Modules::WatchServiceController)), mLastCommand(Unknown)
+{
     connect(&mTimer, SIGNAL(timeout()), SLOT(onCheck()));
 
     mClient->subscribeOnDisconnected(this);
@@ -74,13 +76,16 @@ WatchServiceController::WatchServiceController()
 }
 
 //----------------------------------------------------------------------------
-WatchServiceController::~WatchServiceController() {
+WatchServiceController::~WatchServiceController()
+{
     LOG(getLog(), LogLevel::Normal, "WatchServiceController stopped.");
 }
 
 //----------------------------------------------------------------------------
-ILog *WatchServiceController::getLog() {
-    if (BasicApplication::getInstance()) {
+ILog *WatchServiceController::getLog()
+{
+    if (BasicApplication::getInstance())
+    {
         return BasicApplication::getInstance()->getLog();
     }
 
@@ -88,22 +93,29 @@ ILog *WatchServiceController::getLog() {
 }
 
 //----------------------------------------------------------------------------
-void WatchServiceController::onCheck() {
-    if (!mClient->isConnected()) {
+void WatchServiceController::onCheck()
+{
+    if (!mClient->isConnected())
+    {
         mLastCommand = Unknown;
 
         mClient->start();
     }
 
-    if (mClient->isConnected()) {
+    if (mClient->isConnected())
+    {
         mIcon.setIcon(QIcon(":/icons/tray.png"));
-        foreach (auto action, mStartServiceActions) {
+        foreach (auto action, mStartServiceActions)
+        {
             action->setEnabled(false);
         }
         mStopServiceAction->setEnabled(true);
-    } else {
+    }
+    else
+    {
         mIcon.setIcon(QIcon(":/icons/tray_stopped.png"));
-        foreach (auto action, mStartServiceActions) {
+        foreach (auto action, mStartServiceActions)
+        {
             action->setEnabled(true);
         }
         mStopServiceAction->setEnabled(false);
@@ -113,56 +125,69 @@ void WatchServiceController::onCheck() {
 }
 
 //----------------------------------------------------------------------------
-void WatchServiceController::onDisconnected() {
+void WatchServiceController::onDisconnected()
+{
     onCheck();
 }
 
 //----------------------------------------------------------------------------
-void WatchServiceController::onCloseCommandReceived() {
-    if (mLastCommand != Stop) {
+void WatchServiceController::onCloseCommandReceived()
+{
+    if (mLastCommand != Stop)
+    {
         LOG(getLog(), LogLevel::Normal, "Close tray by command from watch service.");
 
         QCoreApplication::instance()->quit();
-    } else {
+    }
+    else
+    {
         LOG(getLog(), LogLevel::Normal, "Ignore close command, because I initiate it.");
     }
 }
 
 //----------------------------------------------------------------------------
-void WatchServiceController::onStartServiceClicked(const QString &aArguments) {
+void WatchServiceController::onStartServiceClicked(const QString &aArguments)
+{
     LOG(getLog(), LogLevel::Normal, QString("User say: start service. %1").arg(aArguments));
 
     mLastCommand = Start;
 
-    if (!mClient->isConnected()) {
+    if (!mClient->isConnected())
+    {
         QString path = QDir::cleanPath(QDir::toNativeSeparators(BasicApplication::getInstance()->getWorkingDirectory() +
                                                                 QDir::separator() + "guard.exe"));
 
         QStringList parameters;
 
-        if (!aArguments.isEmpty()) {
+        if (!aArguments.isEmpty())
+        {
             parameters << QString("-client_options=%1").arg(aArguments);
         }
 
         QProcess::startDetached(path, parameters, BasicApplication::getInstance()->getWorkingDirectory());
-    } else {
+    }
+    else
+    {
         mClient->restartService(QStringList());
     }
 }
 
 //----------------------------------------------------------------------------
-void WatchServiceController::onStopServiceClicked() {
+void WatchServiceController::onStopServiceClicked()
+{
     LOG(getLog(), LogLevel::Normal, "User say: stop service.");
 
     mLastCommand = Stop;
 
-    if (mClient->isConnected()) {
+    if (mClient->isConnected())
+    {
         mClient->stopService();
     }
 }
 
 //----------------------------------------------------------------------------
-void WatchServiceController::onCloseIconClicked() {
+void WatchServiceController::onCloseIconClicked()
+{
     QMessageBox msgBox(tr("#exit"), tr("#confirm_close_trayicon"), QMessageBox::Question, 0, 0, 0, 0,
                        Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint | Qt::WindowStaysOnTopHint);
 
@@ -172,17 +197,20 @@ void WatchServiceController::onCloseIconClicked() {
     msgBox.addButton(tr("#no"), QMessageBox::NoRole);
 
     msgBox.exec();
-    if (msgBox.clickedButton() == yesButton) {
+    if (msgBox.clickedButton() == yesButton)
+    {
         QCoreApplication::instance()->quit();
     }
 }
 
 //----------------------------------------------------------------------------
-void WatchServiceController::onTrayIconActivated(QSystemTrayIcon::ActivationReason aReason) {
+void WatchServiceController::onTrayIconActivated(QSystemTrayIcon::ActivationReason aReason)
+{
     onCheck();
 
     // Вызываем контекстнео меню по нажатию левой кнопки мыши
-    if (aReason == QSystemTrayIcon::Trigger) {
+    if (aReason == QSystemTrayIcon::Trigger)
+    {
         mMenu.popup(QCursor::pos());
         mMenu.activateWindow();
     }

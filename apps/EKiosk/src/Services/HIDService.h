@@ -21,7 +21,8 @@
 class IApplication;
 
 //---------------------------------------------------------------------------
-class HIDService : public SDK::PaymentProcessor::IHIDService, public SDK::PaymentProcessor::IService, private ILogable {
+class HIDService : public SDK::PaymentProcessor::IHIDService, public SDK::PaymentProcessor::IService, private ILogable
+{
     Q_OBJECT
 
   public:

@@ -18,7 +18,8 @@ const QString TestFile = "test.bin";
 
 //------------------------------------------------------------------------
 /// Класс для тестирования менеджера сетевых запросов.
-class NetworkTaskManagerTestClass : public QObject {
+class NetworkTaskManagerTestClass : public QObject
+{
     Q_OBJECT
 
   public:

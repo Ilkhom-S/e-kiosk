@@ -6,7 +6,8 @@
 #include "Hardware/FR/PayPrinters.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class PayFRBase : public ShtrihRetractorFRLite<T> {
+template <class T> class PayFRBase : public ShtrihRetractorFRLite<T>
+{
   public:
     PayFRBase();
 

@@ -11,8 +11,10 @@
 // Modules
 #include <Common/ILog.h>
 
-namespace SDK {
-    namespace Plugin {
+namespace SDK
+{
+    namespace Plugin
+    {
 
         class IKernel;
         class IPluginLoader;
@@ -20,7 +22,8 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         /// Интерфейс среды, в которой работают плагины.
-        class IEnvironment {
+        class IEnvironment
+        {
           public:
             /// Возвращает лог приложения.
             virtual ILog *getLog(const QString &aName) = 0;

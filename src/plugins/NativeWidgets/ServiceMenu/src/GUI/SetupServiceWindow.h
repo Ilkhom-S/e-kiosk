@@ -11,7 +11,8 @@
 #include "IServiceWindow.h"
 
 //------------------------------------------------------------------------
-class SetupServiceWindow : public QFrame, public ServiceWindowBase, public Ui::SetupServiceWindow {
+class SetupServiceWindow : public QFrame, public ServiceWindowBase, public Ui::SetupServiceWindow
+{
     Q_OBJECT
 
   public:

@@ -9,9 +9,12 @@
 // Project
 #include "Responses.h"
 
-namespace Uniteller {
-    BaseResponsePtr BaseResponse::createResponse(QByteArray &aResponseBuffer) {
-        if (aResponseBuffer.size() < 14) {
+namespace Uniteller
+{
+    BaseResponsePtr BaseResponse::createResponse(QByteArray &aResponseBuffer)
+    {
+        if (aResponseBuffer.size() < 14)
+        {
             return QSharedPointer<BaseResponse>(nullptr);
         }
 
@@ -22,15 +25,18 @@ namespace Uniteller {
 
         bool ok = true;
         int dataLength = QString::fromLatin1(aResponseBuffer.mid(12, 2)).toInt(&ok, 16);
-        if (ok && dataLength) {
+        if (ok && dataLength)
+        {
             response.mData = aResponseBuffer.mid(14, dataLength);
         }
 
         aResponseBuffer.remove(0, 14 + dataLength);
 
-        switch (response.mClass) {
+        switch (response.mClass)
+        {
             case Uniteller::Class::Session:
-                switch (response.mCode) {
+                switch (response.mCode)
+                {
                     case Uniteller::Login::CodeResponse:
                         return QSharedPointer<BaseResponse>(new LoginResponse(response));
                     case Uniteller::PrintLine::Code:
@@ -43,7 +49,8 @@ namespace Uniteller {
                 break;
 
             case Uniteller::Class::Accept:
-                switch (response.mCode) {
+                switch (response.mCode)
+                {
                     case Uniteller::Initial::CodeResponse:
                         return QSharedPointer<BaseResponse>(new InitialResponse(response));
                     case Uniteller::Sell::PinReqired:
@@ -56,14 +63,16 @@ namespace Uniteller {
                 break;
 
             case Uniteller::Class::AuthResponse:
-                switch (response.mCode) {
+                switch (response.mCode)
+                {
                     case Uniteller::Auth::Response:
                         return QSharedPointer<BaseResponse>(new AuthResponse(response));
                 }
                 break;
 
             case Uniteller::Class::Diagnostic:
-                switch (response.mCode) {
+                switch (response.mCode)
+                {
                     case Uniteller::State::CodeResponse:
                         return QSharedPointer<BaseResponse>(new GetStateResponse(response));
                 }
@@ -74,12 +83,15 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    ErrorResponse::ErrorResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+    ErrorResponse::ErrorResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+    {
     }
 
     //---------------------------------------------------------------------------
-    QString ErrorResponse::getError() const {
-        if (mData.size() >= 2) {
+    QString ErrorResponse::getError() const
+    {
+        if (mData.size() >= 2)
+        {
             return QString::fromLatin1(mData.left(2));
         }
 
@@ -87,8 +99,10 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    QString ErrorResponse::getErrorMessage() const {
-        if (mData.size() > 2) {
+    QString ErrorResponse::getErrorMessage() const
+    {
+        if (mData.size() > 2)
+        {
             return QString::fromLatin1(mData.mid(2));
         }
 
@@ -96,27 +110,33 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    PrintLineResponse::PrintLineResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+    PrintLineResponse::PrintLineResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+    {
     }
 
     //---------------------------------------------------------------------------
-    bool PrintLineResponse::isLast() const {
+    bool PrintLineResponse::isLast() const
+    {
         return mData.size() > 0 && mData[0] == '1';
     }
 
     //---------------------------------------------------------------------------
-    QString PrintLineResponse::getText() const {
+    QString PrintLineResponse::getText() const
+    {
         return (mData.size() > 1) ? QTextCodec::codecForName("Windows-1251")->toUnicode(mData.mid(1)) : "";
     }
 
     //---------------------------------------------------------------------------
-    bool GetStateResponse::isLast() const {
+    bool GetStateResponse::isLast() const
+    {
         return mData.size() > 0 && mData[0] == '1';
     }
 
     //---------------------------------------------------------------------------
-    int GetStateResponse::state() const {
-        if (mData.size() > 2) {
+    int GetStateResponse::state() const
+    {
+        if (mData.size() > 2)
+        {
             return QString::fromLatin1(mData.mid(1, 2)).toInt(nullptr, 16);
         }
 
@@ -124,12 +144,14 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    QString GetStateResponse::getName() const {
+    QString GetStateResponse::getName() const
+    {
         return QString::fromLatin1(mData.mid(3));
     }
 
     //---------------------------------------------------------------------------
-    DeviceEvent::Enum DeviceEventResponse::event() const {
+    DeviceEvent::Enum DeviceEventResponse::event() const
+    {
         const QByteArray eventCode = mData.mid(2, 2);
 
         if (eventCode == "PE")
@@ -145,13 +167,16 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    char DeviceEventResponse::keyCode() const {
+    char DeviceEventResponse::keyCode() const
+    {
         return (mData.size() >= 5) ? mData[4] : 0;
     }
 
     //---------------------------------------------------------------------------
-    KeyCode::Enum DeviceEventResponse::key() const {
-        switch (keyCode()) {
+    KeyCode::Enum DeviceEventResponse::key() const
+    {
+        switch (keyCode())
+        {
             case 'T':
                 return KeyCode::Timeout;
             case 'N':
@@ -168,23 +193,28 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    bool BreakResponse::isComplete() const {
+    bool BreakResponse::isComplete() const
+    {
         return mData.size() && mData[0] == '0';
     }
 
     //---------------------------------------------------------------------------
-    AuthResponse::AuthResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+    AuthResponse::AuthResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+    {
         int index = 0;
 
-        auto readTo1B = [&](QString &aString, QTextCodec *aCodec) {
-            for (; mData.size() > index && mData.at(index) != 0x1b; index++) {
+        auto readTo1B = [&](QString &aString, QTextCodec *aCodec)
+        {
+            for (; mData.size() > index && mData.at(index) != 0x1b; index++)
+            {
                 char c = mData.at(index);
                 aString.append(aCodec ? aCodec->toUnicode(&c, 1).at(0) : c);
             }
             index++;
         };
 
-        if (mData.size()) {
+        if (mData.size())
+        {
             mOperation = static_cast<Uniteller::Operation::Enum>(mData.at(index));
             index++;
             mTransactionSumm = QString::fromLatin1(mData.mid(index, 12)).toUInt();
@@ -208,12 +238,14 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    bool AuthResponse::isOK() const {
+    bool AuthResponse::isOK() const
+    {
         return mResponse == "00";
     }
 
     //---------------------------------------------------------------------------
-    QString AuthResponse::toString() const {
+    QString AuthResponse::toString() const
+    {
         return mCardLabel + "|" + mMessage;
     }
 

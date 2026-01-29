@@ -3,10 +3,12 @@
 // System
 #include <ScenarioEngine/Scenario.h>
 
-namespace GUI {
+namespace GUI
+{
 
     //---------------------------------------------------------------------------
-    Scenario::Scenario(const QString &aName, ILog *aLog) : mName(aName), mDefaultTimeout(0) {
+    Scenario::Scenario(const QString &aName, ILog *aLog) : mName(aName), mDefaultTimeout(0)
+    {
         setLog(aLog);
         connect(&mTimeoutTimer, SIGNAL(timeout()), SLOT(onTimeout()));
 
@@ -14,32 +16,40 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    Scenario::~Scenario() {
+    Scenario::~Scenario()
+    {
     }
 
     //---------------------------------------------------------------------------
-    QString Scenario::getName() const {
+    QString Scenario::getName() const
+    {
         return mName;
     }
 
     //---------------------------------------------------------------------------
-    void Scenario::resetTimeout() {
-        if (mTimeoutTimer.interval() > 0) {
+    void Scenario::resetTimeout()
+    {
+        if (mTimeoutTimer.interval() > 0)
+        {
             mTimeoutTimer.start();
         }
     }
 
     //---------------------------------------------------------------------------
-    void Scenario::setStateTimeout(int aSec) {
-        if (aSec > 0) {
+    void Scenario::setStateTimeout(int aSec)
+    {
+        if (aSec > 0)
+        {
             mTimeoutTimer.setInterval(aSec * 1000);
             mTimeoutTimer.start();
         }
     }
 
     //---------------------------------------------------------------------------
-    void Scenario::setLog(ILog *aLog) {
-        if (!getLog()) {
+    void Scenario::setLog(ILog *aLog)
+    {
+        if (!getLog())
+        {
             ILogable::setLog(aLog);
         }
     }

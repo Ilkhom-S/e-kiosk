@@ -20,7 +20,8 @@
 #include "UnmanagedWizardPage.h"
 
 UnmanagedWizardPage::UnmanagedWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : WizardPageBase(aBackend, aParent), mConnectionWindow(new UnmanagedConnectionWindow) {
+    : WizardPageBase(aBackend, aParent), mConnectionWindow(new UnmanagedConnectionWindow)
+{
     mConnectionWindow->setParent(this);
     setLayout(new QHBoxLayout(this));
     layout()->setSpacing(0);
@@ -33,7 +34,8 @@ UnmanagedWizardPage::UnmanagedWizardPage(ServiceMenuBackend *aBackend, QWidget *
 }
 
 //------------------------------------------------------------------------
-bool UnmanagedWizardPage::initialize() {
+bool UnmanagedWizardPage::initialize()
+{
     mConnectionSettings[CServiceTags::ConnectionType] = EConnectionTypes::Unmanaged;
     mConnectionSettings[CServiceTags::Connection] = "unmanaged connection";
 
@@ -41,15 +43,18 @@ bool UnmanagedWizardPage::initialize() {
     mBackend->getNetworkManager()->getNetworkInfo(result);
 
     // Заполняем хосты для пинга и временные интервалы
-    foreach (const QString &param, result.keys()) {
-        if (param.contains(CServiceTags::CheckHost) || (param == CServiceTags::CheckInterval)) {
+    foreach (const QString &param, result.keys())
+    {
+        if (param.contains(CServiceTags::CheckHost) || (param == CServiceTags::CheckInterval))
+        {
             mStaticParameters.insert(param, result[param]);
         }
     }
 
     QNetworkProxy proxy(QNetworkProxy::NoProxy);
 
-    if (result.contains(CServiceTags::ProxyType)) {
+    if (result.contains(CServiceTags::ProxyType))
+    {
         proxy.setType(QNetworkProxy::ProxyType(result[CServiceTags::ProxyType].toInt()));
         proxy.setHostName(result[CServiceTags::ProxyAddress].toString());
         proxy.setPort(static_cast<quint16>(result[CServiceTags::ProxyPort].toUInt()));
@@ -65,19 +70,22 @@ bool UnmanagedWizardPage::initialize() {
 }
 
 //------------------------------------------------------------------------
-bool UnmanagedWizardPage::shutdown() {
+bool UnmanagedWizardPage::shutdown()
+{
     mTaskWatcher.waitForFinished();
 
     return true;
 }
 
 //------------------------------------------------------------------------
-bool UnmanagedWizardPage::activate() {
+bool UnmanagedWizardPage::activate()
+{
     return true;
 }
 
 //------------------------------------------------------------------------
-bool UnmanagedWizardPage::deactivate() {
+bool UnmanagedWizardPage::deactivate()
+{
     SDK::PaymentProcessor::SConnection connection;
 
     connection.name = "unmanaged connection";
@@ -85,7 +93,8 @@ bool UnmanagedWizardPage::deactivate() {
 
     QNetworkProxy proxy(QNetworkProxy::NoProxy);
 
-    if (mConnectionSettings.contains(CServiceTags::ProxyType)) {
+    if (mConnectionSettings.contains(CServiceTags::ProxyType))
+    {
         proxy.setType(QNetworkProxy::ProxyType(mConnectionSettings[CServiceTags::ProxyType].toInt()));
         proxy.setHostName(mConnectionSettings[CServiceTags::ProxyAddress].toString());
         proxy.setPort(static_cast<quint16>(mConnectionSettings[CServiceTags::ProxyPort].toUInt()));
@@ -101,12 +110,14 @@ bool UnmanagedWizardPage::deactivate() {
 }
 
 //---------------------------------------------------------------------------
-void UnmanagedWizardPage::onUserSelectionChanged() {
+void UnmanagedWizardPage::onUserSelectionChanged()
+{
     emit pageEvent("#can_proceed", false);
 }
 
 //---------------------------------------------------------------------------
-void UnmanagedWizardPage::onTestConnection(QNetworkProxy aProxy) {
+void UnmanagedWizardPage::onTestConnection(QNetworkProxy aProxy)
+{
     SDK::PaymentProcessor::SConnection connection;
 
     connection.name = "unmanaged connection";
@@ -126,19 +137,23 @@ void UnmanagedWizardPage::onTestConnection(QNetworkProxy aProxy) {
 
     GUI::MessageBox::wait(tr("#testing_connection"));
 
-    mTaskWatcher.setFuture(QtConcurrent::run([this]() {
-        QString errorMessage;
-        return mBackend->getNetworkManager()->testConnection(errorMessage);
-    }));
+    mTaskWatcher.setFuture(QtConcurrent::run(
+        [this]()
+        {
+            QString errorMessage;
+            return mBackend->getNetworkManager()->testConnection(errorMessage);
+        }));
 }
 
 //---------------------------------------------------------------------------
-void UnmanagedWizardPage::onTestFinished() {
+void UnmanagedWizardPage::onTestFinished()
+{
     GUI::MessageBox::hide();
     GUI::MessageBox::info(mTaskWatcher.result() ? tr("#connection_test_ok") : tr("#connection_test_failed"));
 
     // сохраняем в mConnectionSettings хорошие настройки прокси
-    if (mTaskWatcher.result()) {
+    if (mTaskWatcher.result())
+    {
         auto proxy = mBackend->getNetworkManager()->getConnection().proxy;
 
         mConnectionSettings[CServiceTags::ProxyType] = proxy.type();

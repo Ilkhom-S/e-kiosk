@@ -7,12 +7,14 @@
 
 //------------------------------------------------------------------------
 /// Класс GUI приложения, обрабатывающий исключения в обработчике событий.
-class SafeQApplication : public SingleApplication {
+class SafeQApplication : public SingleApplication
+{
     Q_OBJECT
 
   public:
     /// Конструктор.
-    SafeQApplication(int &aArgc, char **aArgv) : SingleApplication(aArgc, aArgv) {
+    SafeQApplication(int &aArgc, char **aArgv) : SingleApplication(aArgc, aArgv)
+    {
     }
 
   public:

@@ -19,15 +19,18 @@
 
 #include "../GUI/PaymentInfo.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class ICore;
         class IPrinterService;
     } // namespace PaymentProcessor
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class PaymentManager : public QObject {
+class PaymentManager : public QObject
+{
     Q_OBJECT
 
   public:

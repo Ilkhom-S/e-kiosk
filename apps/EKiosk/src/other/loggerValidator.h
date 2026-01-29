@@ -12,9 +12,14 @@
 #include <QtCore/QTimer>
 #include <Common/QtHeadersEnd.h>
 
-enum LoggerMessageType { Query = 0, Response = 1 };
+enum LoggerMessageType
+{
+    Query = 0,
+    Response = 1
+};
 
-class LoggerValidator : public QThread {
+class LoggerValidator : public QThread
+{
     Q_OBJECT
 
   public:
@@ -22,7 +27,8 @@ class LoggerValidator : public QThread {
     QStringList lstLoging;
     QString account;
 
-    LoggerValidator() {
+    LoggerValidator()
+    {
         writeTimer = new QTimer();
         writeTimer->setInterval(1000);
         connect(writeTimer, SIGNAL(timeout()), this, SLOT(start()));
@@ -30,7 +36,8 @@ class LoggerValidator : public QThread {
         QFile info;
 
         QString fileInit = "logvalidator";
-        if (!info.exists(fileInit)) {
+        if (!info.exists(fileInit))
+        {
             // Тут надо создать папку
             QDir dir;
             dir.mkpath(fileInit);
@@ -39,7 +46,8 @@ class LoggerValidator : public QThread {
         writeTimer->start();
     }
 
-    void setLogingText(int state, QByteArray data, QString text) {
+    void setLogingText(int state, QByteArray data, QString text)
+    {
 
         QString answer;
         QString time = QDateTime::currentDateTime().toString("HH:mm:ss:zzz");
@@ -47,12 +55,14 @@ class LoggerValidator : public QThread {
         baTmp.clear();
         baTmp = data.toHex().toUpper();
 
-        for (int i = 0; i < baTmp.size(); i += 2) {
+        for (int i = 0; i < baTmp.size(); i += 2)
+        {
             answer += QString(" %1%2").arg(baTmp.at(i)).arg(baTmp.at(i + 1));
         }
 
         QString stateInfo = "";
-        switch (state) {
+        switch (state)
+        {
             case LoggerMessageType::Query:
                 stateInfo = "  запрос  ";
                 break;
@@ -67,14 +77,16 @@ class LoggerValidator : public QThread {
         lstLoging << time + stateInfo + " - " + answer + text;
     }
 
-    virtual void run() {
+    virtual void run()
+    {
         this->writeText();
         return;
     }
 
   private slots:
 
-    void writeText() {
+    void writeText()
+    {
 
         QString str_date = QDate::currentDate().toString("yyyy-MM-dd");
 
@@ -83,12 +95,14 @@ class LoggerValidator : public QThread {
 
         QFile info;
 
-        if (!info.exists(fileByDate)) {
+        if (!info.exists(fileByDate))
+        {
             QDir dir;
             dir.mkpath(fileByDate);
         }
 
-        if (lstLoging.count() > 0) {
+        if (lstLoging.count() > 0)
+        {
             bool debugger = false;
 
             QString fileNameLocal = fileByDate + "/" + account + ".txt";
@@ -97,14 +111,19 @@ class LoggerValidator : public QThread {
             QFile fileLogLocal(fileNameLocal);
 
             // Локальные данные
-            if (fileLogLocal.exists()) {
-                if (!fileLogLocal.open(QIODevice::Append | QIODevice::Text)) {
+            if (fileLogLocal.exists())
+            {
+                if (!fileLogLocal.open(QIODevice::Append | QIODevice::Text))
+                {
                     if (debugger)
                         qDebug() << "error open file log QIODevice::Append";
                     return;
                 }
-            } else {
-                if (!fileLogLocal.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            }
+            else
+            {
+                if (!fileLogLocal.open(QIODevice::WriteOnly | QIODevice::Text))
+                {
                     if (debugger)
                         qDebug() << "error open file log QIODevice::WriteOnly";
                     return;

@@ -18,7 +18,8 @@ Variant) - образы купюр, уникальные для каждого �
 */
 
 //--------------------------------------------------------------------------------
-class EBDSCashAcceptor : public TSerialCashAcceptor {
+class EBDSCashAcceptor : public TSerialCashAcceptor
+{
     SET_SERIES("EBDS")
 
   public:

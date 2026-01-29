@@ -9,12 +9,15 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace Currency {
+namespace Currency
+{
     const char NoCurrencyCode[] = "XXX";
 
-    class Codes : public CSpecification<QString, int> {
+    class Codes : public CSpecification<QString, int>
+    {
       public:
-        Codes(int aDefault = NoCurrency) : CSpecification(aDefault) {
+        Codes(int aDefault = NoCurrency) : CSpecification(aDefault)
+        {
             append("RUB", RUB);
             append("RUR", RUR);
             append("RUS", RUB);
@@ -43,12 +46,14 @@ namespace Currency {
             append("IRR", IRR);
         }
 
-        bool isAccorded(int aCurrency1, int aCurrency2) {
+        bool isAccorded(int aCurrency1, int aCurrency2)
+        {
             return ((aCurrency1 != NoCurrency) && (aCurrency1 == aCurrency2)) ||
                    ((aCurrency1 == RUB) && (aCurrency2 == RUR)) || ((aCurrency1 == RUR) && (aCurrency2 == RUB));
         }
 
-        bool isAccorded(const QString &aCode, int aCurrency) {
+        bool isAccorded(const QString &aCode, int aCurrency)
+        {
             return isAccorded(value(aCode), aCurrency);
         }
     };

@@ -5,7 +5,8 @@
 
 class SendRequest;
 
-class CheckOnline : public SendRequest {
+class CheckOnline : public SendRequest
+{
     Q_OBJECT
 
   public:

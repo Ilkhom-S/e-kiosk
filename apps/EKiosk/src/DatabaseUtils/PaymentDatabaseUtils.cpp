@@ -30,25 +30,29 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-namespace CDatabaseUtils {
+namespace CDatabaseUtils
+{
     const int StorePaymentMonths = 2;
     const int CountPaymentsThreshold = 3000;
 } // namespace CDatabaseUtils
 
 //---------------------------------------------------------------------------
-qint64 DatabaseUtils::createDummyPayment() {
+qint64 DatabaseUtils::createDummyPayment()
+{
     QMutexLocker lock(&mAccessMutex);
 
     long id(-1);
 
-    if (!mDatabase.execDML("INSERT INTO `payment` DEFAULT VALUES", id)) {
+    if (!mDatabase.execDML("INSERT INTO `payment` DEFAULT VALUES", id))
+    {
         LOG(mPaymentLog, LogLevel::Error, "Failed to create dummy payment.");
 
         return id;
     }
 
     QScopedPointer<IDatabaseQuery> query(mDatabase.execQuery("SELECT COUNT(*), MAX(`id`) FROM `payment`"));
-    if (!query || !query->first()) {
+    if (!query || !query->first())
+    {
         LOG(mPaymentLog, LogLevel::Error, "Failed to get dummy payment id.");
 
         return id;
@@ -58,13 +62,15 @@ qint64 DatabaseUtils::createDummyPayment() {
 }
 
 //---------------------------------------------------------------------------
-qint64 DatabaseUtils::getPaymentByInitialSession(const QString &aInitialSession) {
+qint64 DatabaseUtils::getPaymentByInitialSession(const QString &aInitialSession)
+{
     QMutexLocker lock(&mAccessMutex);
 
     QString strQuery = "SELECT `id` FROM `payment` WHERE `initial_session` = :session";
 
     QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(strQuery));
-    if (!query) {
+    if (!query)
+    {
         LOG(mPaymentLog, LogLevel::Error,
             QString("Failed to find payment by session: %1. Failed to prepare query.").arg(aInitialSession));
 
@@ -73,7 +79,8 @@ qint64 DatabaseUtils::getPaymentByInitialSession(const QString &aInitialSession)
 
     query->bindValue(":session", aInitialSession);
 
-    if (query->exec() && query->first()) {
+    if (query->exec() && query->first())
+    {
         return query->value(0).toLongLong();
     }
 
@@ -81,16 +88,19 @@ qint64 DatabaseUtils::getPaymentByInitialSession(const QString &aInitialSession)
 }
 
 //---------------------------------------------------------------------------
-TPaymentParameters DatabaseUtils::getPaymentParameters(qint64 aId) {
+TPaymentParameters DatabaseUtils::getPaymentParameters(qint64 aId)
+{
     QMap<qint64, TPaymentParameters> parameters = getPaymentParameters(QList<qint64>() << aId);
 
     return parameters[aId];
 }
 
 //---------------------------------------------------------------------------
-QMap<qint64, TPaymentParameters> DatabaseUtils::getPaymentParameters(const QList<qint64> &aIds) {
+QMap<qint64, TPaymentParameters> DatabaseUtils::getPaymentParameters(const QList<qint64> &aIds)
+{
     QStringList ids;
-    foreach (qint64 id, aIds) {
+    foreach (qint64 id, aIds)
+    {
         ids << QString::number(id);
     }
 
@@ -105,19 +115,24 @@ QMap<qint64, TPaymentParameters> DatabaseUtils::getPaymentParameters(const QList
             .arg(ids.join(","));
 
     QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(strQuery));
-    if (!query) {
+    if (!query)
+    {
         LOG(mPaymentLog, LogLevel::Error,
             QString("Payment %1. Failed to create query for main data.").arg(ids.join(",")));
 
         return result;
     }
 
-    if (!query->exec()) {
+    if (!query->exec())
+    {
         LOG(mPaymentLog, LogLevel::Error, QString("Payment %1. Failed to load main data.").arg(ids.join(",")));
 
         return result;
-    } else {
-        for (query->first(); query->isValid(); query->next()) {
+    }
+    else
+    {
+        for (query->first(); query->isValid(); query->next())
+        {
             qint64 id = query->value(13).toLongLong();
 
             result[id] << PPSDK::IPayment::SParameter(PPSDK::CPayment::Parameters::ID, id)
@@ -142,7 +157,8 @@ QMap<qint64, TPaymentParameters> DatabaseUtils::getPaymentParameters(const QList
                        "`fk_payment_id` in (%1)")
                    .arg(ids.join(","));
     query.reset(mDatabase.createQuery(strQuery));
-    if (!query) {
+    if (!query)
+    {
         LOG(mPaymentLog, LogLevel::Error,
             QString("Payment %1. Failed to create query for additional data.").arg(ids.join(",")));
 
@@ -150,13 +166,17 @@ QMap<qint64, TPaymentParameters> DatabaseUtils::getPaymentParameters(const QList
         return result;
     }
 
-    if (!query->exec()) {
+    if (!query->exec())
+    {
         LOG(mPaymentLog, LogLevel::Error, QString("Payment %1. Failed to load additional data.").arg(ids.join(",")));
 
         result.clear();
         return result;
-    } else {
-        for (query->first(); query->isValid(); query->next()) {
+    }
+    else
+    {
+        for (query->first(); query->isValid(); query->next())
+        {
             result[query->value(3).toLongLong()] << PPSDK::IPayment::SParameter(
                 query->value(0).toString(), query->value(1), false, query->value(2).toInt() ? true : false,
                 query->value(4).toInt() ? true : false);
@@ -167,10 +187,12 @@ QMap<qint64, TPaymentParameters> DatabaseUtils::getPaymentParameters(const QList
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::savePayment(PPSDK::IPayment *aPayment, const QString &aSignature) {
+bool DatabaseUtils::savePayment(PPSDK::IPayment *aPayment, const QString &aSignature)
+{
     QMutexLocker lock(&mAccessMutex);
 
-    if (!aPayment) {
+    if (!aPayment)
+    {
         LOG(mPaymentLog, LogLevel::Error, "Failed to save payment. No payment specified.");
 
         return false;
@@ -178,14 +200,16 @@ bool DatabaseUtils::savePayment(PPSDK::IPayment *aPayment, const QString &aSigna
 
     DatabaseTransaction transaction(&mDatabase);
 
-    if (!transaction) {
+    if (!transaction)
+    {
         LOG(mPaymentLog, LogLevel::Error,
             QString("Payment %1. Failed to save. Failed to start db transaction.").arg(aPayment->getID()));
 
         return false;
     }
 
-    try {
+    try
+    {
         QString strQuery =
             "UPDATE `payment` SET `create_date` = :creation_date, `last_update` = :last_update, `type` = :type, "
             "`initial_session` = :initial_session, `session` = :session, `server_status` = :server_result, "
@@ -195,7 +219,8 @@ bool DatabaseUtils::savePayment(PPSDK::IPayment *aPayment, const QString &aSigna
             ":receipt_printed WHERE `id` = :id";
 
         QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(strQuery));
-        if (!query) {
+        if (!query)
+        {
             throw QString("failed to create query for main data");
         }
 
@@ -221,7 +246,8 @@ bool DatabaseUtils::savePayment(PPSDK::IPayment *aPayment, const QString &aSigna
         query->bindValue(":receipt_printed",
                          aPayment->getParameter(PPSDK::CPayment::Parameters::ReceiptPrinted).value.toBool() ? 1 : 0);
 
-        if (!query->exec()) {
+        if (!query->exec())
+        {
             throw QString("failed to save main data");
         }
 
@@ -238,12 +264,15 @@ bool DatabaseUtils::savePayment(PPSDK::IPayment *aPayment, const QString &aSigna
         strQuery = "INSERT OR REPLACE INTO `payment_param` (`name`, `value`, `type`, `fk_payment_id`, `external`) "
                    "VALUES (:name, :value, :type, :id, :external)";
 
-        foreach (const PPSDK::IPayment::SParameter &parameter, aPayment->serialize()) {
-            if (!savedParameters.contains(parameter.name)) {
+        foreach (const PPSDK::IPayment::SParameter &parameter, aPayment->serialize())
+        {
+            if (!savedParameters.contains(parameter.name))
+            {
                 query->clear();
 
                 query.reset(mDatabase.createQuery(strQuery));
-                if (!query) {
+                if (!query)
+                {
                     throw QString("failed to save parameter %2, failed to create query")
                         .arg(aPayment->getID())
                         .arg(parameter.name);
@@ -255,16 +284,20 @@ bool DatabaseUtils::savePayment(PPSDK::IPayment *aPayment, const QString &aSigna
                 query->bindValue(":id", aPayment->getID());
                 query->bindValue(":external", parameter.external ? 1 : 0);
 
-                if (!query->exec()) {
+                if (!query->exec())
+                {
                     throw QString("failed to save parameter %2").arg(aPayment->getID()).arg(parameter.name);
                 }
             }
         }
 
-        if (!transaction.commit()) {
+        if (!transaction.commit())
+        {
             throw QString("failed to commit transaction");
         }
-    } catch (QString &error) {
+    }
+    catch (QString &error)
+    {
         LOG(mPaymentLog, LogLevel::Error, QString("Payment %1. Failed to save: %2.").arg(aPayment->getID()).arg(error));
 
         return false;
@@ -274,22 +307,26 @@ bool DatabaseUtils::savePayment(PPSDK::IPayment *aPayment, const QString &aSigna
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::addPaymentNote(qint64 aPayment, const SDK::PaymentProcessor::SNote &aNote) {
+bool DatabaseUtils::addPaymentNote(qint64 aPayment, const SDK::PaymentProcessor::SNote &aNote)
+{
     return addPaymentNote(aPayment, QList<SDK::PaymentProcessor::SNote>() << aNote);
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::addPaymentNote(qint64 aPayment, const QList<SDK::PaymentProcessor::SNote> &aNotes) {
+bool DatabaseUtils::addPaymentNote(qint64 aPayment, const QList<SDK::PaymentProcessor::SNote> &aNotes)
+{
     QMutexLocker lock(&mAccessMutex);
 
     LOG(mPaymentLog, LogLevel::Normal, QString("Payment %1. Adding %2 notes.").arg(aPayment).arg(aNotes.size()));
 
     DatabaseTransaction transaction(&mDatabase);
 
-    if (transaction) {
+    if (transaction)
+    {
         double totalAmount = 0;
 
-        foreach (const SDK::PaymentProcessor::SNote &note, aNotes) {
+        foreach (const SDK::PaymentProcessor::SNote &note, aNotes)
+        {
             totalAmount += note.nominal.toDouble();
 
             QString strQuery = "INSERT INTO `payment_note` (`nominal`, `date`, `type`, `serial`, `currency`, "
@@ -297,7 +334,8 @@ bool DatabaseUtils::addPaymentNote(qint64 aPayment, const QList<SDK::PaymentProc
 
             QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(strQuery));
 
-            if (!query) {
+            if (!query)
+            {
                 LOG(mPaymentLog, LogLevel::Error,
                     QString("Payment %1. Failed to begin new amount addition. Amount %2.")
                         .arg(aPayment)
@@ -312,13 +350,15 @@ bool DatabaseUtils::addPaymentNote(qint64 aPayment, const QList<SDK::PaymentProc
             query->bindValue(":currency", note.currency);
             query->bindValue(":id", aPayment);
 
-            if (!query->exec()) {
+            if (!query->exec())
+            {
                 LOG(mPaymentLog, LogLevel::Error,
                     QString("Payment %1. Failed to add new amount: %2.").arg(aPayment).arg(note.nominal.toString()));
             }
         }
 
-        if (transaction.commit()) {
+        if (transaction.commit())
+        {
             LOG(mPaymentLog, LogLevel::Normal,
                 QString("Payment %1. Added total amount %2.").arg(aPayment).arg(totalAmount));
             return true;
@@ -330,17 +370,20 @@ bool DatabaseUtils::addPaymentNote(qint64 aPayment, const QList<SDK::PaymentProc
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::addChangeNote(const QString &aSession, const QList<SDK::PaymentProcessor::SNote> &aNotes) {
+bool DatabaseUtils::addChangeNote(const QString &aSession, const QList<SDK::PaymentProcessor::SNote> &aNotes)
+{
     QMutexLocker lock(&mAccessMutex);
 
     LOG(mPaymentLog, LogLevel::Normal, QString("Change from %1. Dispensed %2 notes.").arg(aSession).arg(aNotes.size()));
 
     DatabaseTransaction transaction(&mDatabase);
 
-    if (transaction) {
+    if (transaction)
+    {
         double totalAmount = 0;
 
-        foreach (const SDK::PaymentProcessor::SNote &note, aNotes) {
+        foreach (const SDK::PaymentProcessor::SNote &note, aNotes)
+        {
             totalAmount += note.nominal.toDouble();
 
             QString strQuery = "INSERT INTO `dispensed_note` (`nominal`, `date`, `type`, `serial`, `currency`, "
@@ -348,7 +391,8 @@ bool DatabaseUtils::addChangeNote(const QString &aSession, const QList<SDK::Paym
 
             QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(strQuery));
 
-            if (!query) {
+            if (!query)
+            {
                 LOG(mPaymentLog, LogLevel::Error,
                     QString("Change from %1. Failed to begin add dispensed note. Amount %2.")
                         .arg(aSession)
@@ -363,7 +407,8 @@ bool DatabaseUtils::addChangeNote(const QString &aSession, const QList<SDK::Paym
             query->bindValue(":currency", note.currency);
             query->bindValue(":id", aSession);
 
-            if (!query->exec()) {
+            if (!query->exec())
+            {
                 LOG(mPaymentLog, LogLevel::Error,
                     QString("Change from %1. Failed to add dispensed note: %2.")
                         .arg(aSession)
@@ -371,7 +416,8 @@ bool DatabaseUtils::addChangeNote(const QString &aSession, const QList<SDK::Paym
             }
         }
 
-        if (transaction.commit()) {
+        if (transaction.commit())
+        {
             LOG(mPaymentLog, LogLevel::Normal,
                 QString("Change from %1. Added dispensed amount %2.").arg(aSession).arg(totalAmount));
             return true;
@@ -383,7 +429,8 @@ bool DatabaseUtils::addChangeNote(const QString &aSession, const QList<SDK::Paym
 }
 
 //---------------------------------------------------------------------------
-QList<qint64> DatabaseUtils::getPaymentQueue() {
+QList<qint64> DatabaseUtils::getPaymentQueue()
+{
     QMutexLocker lock(&mAccessMutex);
 
     QList<qint64> result;
@@ -396,7 +443,8 @@ QList<qint64> DatabaseUtils::getPaymentQueue() {
 
     QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(strQuery));
 
-    if (!query) {
+    if (!query)
+    {
         return result;
     }
 
@@ -405,11 +453,13 @@ QList<qint64> DatabaseUtils::getPaymentQueue() {
     query->bindValue(":status_error", PPSDK::EPaymentStatus::ProcessError);
     query->bindValue(":date", QDateTime::currentDateTime().toString(CIDatabaseProxy::DateFormat));
 
-    if (!query->exec() || !query->first()) {
+    if (!query->exec() || !query->first())
+    {
         return result;
     }
 
-    do {
+    do
+    {
         result << query->value(0).toLongLong();
     } while (query->next());
 
@@ -417,18 +467,21 @@ QList<qint64> DatabaseUtils::getPaymentQueue() {
 }
 
 //---------------------------------------------------------------------------
-PPSDK::SBalance DatabaseUtils::getBalance() {
+PPSDK::SBalance DatabaseUtils::getBalance()
+{
     QMutexLocker lock(&mAccessMutex);
 
     PPSDK::SBalance result;
     result.isValid = true;
 
-    try {
+    try
+    {
         // 1. Вытаскиваем дату последней инкассации, она будет у нас начальной.
         QString queryStr = "SELECT `id`, `date` FROM `encashment` ORDER BY `id` DESC LIMIT 1";
 
         QScopedPointer<IDatabaseQuery> query(mDatabase.execQuery(queryStr));
-        if (!query || !query->first()) {
+        if (!query || !query->first())
+        {
             throw QString("no first encashment record, database is damaged");
         }
 
@@ -441,13 +494,15 @@ PPSDK::SBalance DatabaseUtils::getBalance() {
                        .arg(PPSDK::EAmountType::EMoney);
 
         query.reset(mDatabase.execQuery(queryStr));
-        if (!query) {
+        if (!query)
+        {
             throw QString("failed to select eMoney payments");
         }
 
         QStringList eMoneyPayments;
 
-        for (query->first(); query->isValid(); query->next()) {
+        for (query->first(); query->isValid(); query->next())
+        {
             eMoneyPayments << query->value(0).toString();
         }
 
@@ -460,17 +515,20 @@ PPSDK::SBalance DatabaseUtils::getBalance() {
                            .arg(PPSDK::EAmountType::EMoney);
 
             query.reset(mDatabase.execQuery(queryStr));
-            if (!query) {
+            if (!query)
+            {
                 throw QString("failed to calculate notes");
             }
 
             QMap<PPSDK::EAmountType::Enum, PPSDK::SBalance::SAmounts> amounts;
             double totalAmount = 0.0;
 
-            for (query->first(); query->isValid(); query->next()) {
+            for (query->first(); query->isValid(); query->next())
+            {
                 PPSDK::EAmountType::Enum type = static_cast<PPSDK::EAmountType::Enum>(query->value(0).toInt());
 
-                if (!amounts.contains(type)) {
+                if (!amounts.contains(type))
+                {
                     amounts[type].type = type;
                 }
 
@@ -490,17 +548,20 @@ PPSDK::SBalance DatabaseUtils::getBalance() {
                                "GROUP BY `type`, `nominal` ORDER BY `type` ASC, `nominal` DESC");
 
             query.reset(mDatabase.execQuery(queryStr));
-            if (!query) {
+            if (!query)
+            {
                 throw QString("failed to calculate dispensed notes");
             }
 
             QMap<PPSDK::EAmountType::Enum, PPSDK::SBalance::SAmounts> amounts;
             double totalAmount = 0.0;
 
-            for (query->first(); query->isValid(); query->next()) {
+            for (query->first(); query->isValid(); query->next())
+            {
                 PPSDK::EAmountType::Enum type = static_cast<PPSDK::EAmountType::Enum>(query->value(0).toInt());
 
-                if (!amounts.contains(type)) {
+                if (!amounts.contains(type))
+                {
                     amounts[type].type = type;
                 }
 
@@ -516,14 +577,17 @@ PPSDK::SBalance DatabaseUtils::getBalance() {
             queryStr = QString("SELECT `date`, `type`, `nominal`, `currency`, `session_id` FROM `dispensed_note` WHERE "
                                "((NOT `reported`) OR (`reported` IS NULL))");
             query.reset(mDatabase.execQuery(queryStr));
-            if (!query) {
+            if (!query)
+            {
                 throw QString("failed to select dispensed notes");
             }
 
             QStringList notes;
-            for (query->first(); query->isValid(); query->next()) {
+            for (query->first(); query->isValid(); query->next())
+            {
                 QStringList noteInfo;
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 5; i++)
+                {
                     noteInfo << query->value(i).toString();
                 }
 
@@ -540,18 +604,22 @@ PPSDK::SBalance DatabaseUtils::getBalance() {
                    "BY P.`id` ASC LIMIT 1)";
 
         query.reset(mDatabase.execQuery(queryStr));
-        if (!query) {
+        if (!query)
+        {
             throw QString("failed to get first payment after last encashment");
         }
 
-        if (query->first()) {
-            do {
+        if (query->first())
+        {
+            do
+            {
                 qint64 paymentId = query->value(0).toLongLong();
                 PPSDK::EPaymentStatus::Enum paymentStatus =
                     static_cast<PPSDK::EPaymentStatus::Enum>(query->value(2).toInt());
                 result.payments << paymentId;
 
-                if (paymentStatus != PPSDK::EPaymentStatus::LostChange && !query->value(1).toBool()) {
+                if (paymentStatus != PPSDK::EPaymentStatus::LostChange && !query->value(1).toBool())
+                {
                     result.notPrintedPayments << paymentId;
                 }
             } while (query->next());
@@ -565,14 +633,16 @@ PPSDK::SBalance DatabaseUtils::getBalance() {
                                "AND `fk_payment_id` NOT IN (%1)")
                            .arg(eMoneyPayments.join(","));
             query.reset(mDatabase.createQuery(queryStr));
-            if (!query) {
+            if (!query)
+            {
                 throw QString("failed to calculate fee amount (prepare query error).");
             }
 
             query->bindValue(":name", PPSDK::CPayment::Parameters::Fee);
             query->bindValue(":first_payment", result.payments.first());
 
-            if (!query->exec() || !query->first()) {
+            if (!query->exec() || !query->first())
+            {
                 throw QString("failed to calculate encashment fee amount.");
             }
 
@@ -586,7 +656,8 @@ PPSDK::SBalance DatabaseUtils::getBalance() {
                        "(SELECT `id` FROM `payment` WHERE `id` >= :first_payment AND `status` = :status)";
 
             query.reset(mDatabase.createQuery(queryStr));
-            if (!query) {
+            if (!query)
+            {
                 throw QString("failed to calculate processed amount (prepare query error).");
             }
 
@@ -594,13 +665,16 @@ PPSDK::SBalance DatabaseUtils::getBalance() {
             query->bindValue(":first_payment", result.payments.first());
             query->bindValue(":status", PPSDK::EPaymentStatus::Completed);
 
-            if (!query->exec() || !query->first()) {
+            if (!query->exec() || !query->first())
+            {
                 throw QString("failed to calculate processed amount.");
             }
 
             result.processed = query->value(0).toString().isEmpty() ? QString::number(0) : query->value(0).toString();
         }
-    } catch (QString &error) {
+    }
+    catch (QString &error)
+    {
         LOG(mLog, LogLevel::Error, QString("Failed to get terminal balance: %1.").arg(error));
 
         return PPSDK::SBalance();
@@ -610,17 +684,23 @@ PPSDK::SBalance DatabaseUtils::getBalance() {
 }
 
 //---------------------------------------------------------------------------
-QList<qint64> DatabaseUtils::getPayments(const QSet<SDK::PaymentProcessor::EPaymentStatus::Enum> &aStates) {
+QList<qint64> DatabaseUtils::getPayments(const QSet<SDK::PaymentProcessor::EPaymentStatus::Enum> &aStates)
+{
     QList<qint64> result;
 
-    try {
+    try
+    {
         QString queryStr;
 
-        if (aStates.empty()) {
+        if (aStates.empty())
+        {
             queryStr = "SELECT `id` FROM `payment`";
-        } else {
+        }
+        else
+        {
             QStringList statuses;
-            foreach (auto s, aStates) {
+            foreach (auto s, aStates)
+            {
                 statuses << QString::number(s);
             }
 
@@ -628,14 +708,18 @@ QList<qint64> DatabaseUtils::getPayments(const QSet<SDK::PaymentProcessor::EPaym
         }
 
         QScopedPointer<IDatabaseQuery> query(mDatabase.execQuery(queryStr));
-        if (!query) {
+        if (!query)
+        {
             throw QString("failed to get payment list");
         }
 
-        for (query->first(); query->isValid(); query->next()) {
+        for (query->first(); query->isValid(); query->next())
+        {
             result << query->value(0).toLongLong();
         }
-    } catch (QString &error) {
+    }
+    catch (QString &error)
+    {
         LOG(mLog, LogLevel::Error, QString("Failed to get payments list: %1.").arg(error));
     }
 
@@ -643,24 +727,30 @@ QList<qint64> DatabaseUtils::getPayments(const QSet<SDK::PaymentProcessor::EPaym
 }
 
 //---------------------------------------------------------------------------
-QList<qint64> DatabaseUtils::findPayments(const QDate &aDate, const QString &aPhoneNumber) {
+QList<qint64> DatabaseUtils::findPayments(const QDate &aDate, const QString &aPhoneNumber)
+{
     QList<qint64> result;
 
     QString queryStr = QString("select distinct(p.[id]) from payment p, payment_param pp "
                                "where p.[id] = pp.[fk_payment_id] and pp.[value] = '%1'")
                            .arg(aPhoneNumber);
 
-    if (aDate.isValid() && !aDate.isNull()) {
+    if (aDate.isValid() && !aDate.isNull())
+    {
         queryStr +=
             QString(" AND p.create_date between '%1 00:00:00' AND '%1 59:59:59'").arg(aDate.toString("yyyy-MM-dd"));
     }
 
     QScopedPointer<IDatabaseQuery> query(mDatabase.execQuery(queryStr));
-    if (query) {
-        for (query->first(); query->isValid(); query->next()) {
+    if (query)
+    {
+        for (query->first(); query->isValid(); query->next())
+        {
             result << query->value(0).toLongLong();
         }
-    } else {
+    }
+    else
+    {
         LOG(mLog, LogLevel::Error, "Failed to find payments.");
     }
 
@@ -668,8 +758,10 @@ QList<qint64> DatabaseUtils::findPayments(const QDate &aDate, const QString &aPh
 }
 
 //---------------------------------------------------------------------------
-void DatabaseUtils::fillEncashmentReport(PPSDK::SEncashment &aEncashment) {
-    foreach (qint64 payment, aEncashment.balance.payments) {
+void DatabaseUtils::fillEncashmentReport(PPSDK::SEncashment &aEncashment)
+{
+    foreach (qint64 payment, aEncashment.balance.payments)
+    {
         QList<PPSDK::IPayment::SParameter> parameters = getPaymentParameters(payment);
 
         QStringList report;
@@ -692,7 +784,8 @@ void DatabaseUtils::fillEncashmentReport(PPSDK::SEncashment &aEncashment) {
         auto provider = settings->getProvider(
             PPSDK::IPayment::parameterByName(PPSDK::CPayment::Parameters::Provider, parameters).value.toLongLong());
 
-        for (auto &field : provider.fields) {
+        for (auto &field : provider.fields)
+        {
             auto parameter = PPSDK::IPayment::parameterByName(field.id, parameters);
 
             providerFields << QString("%1:%2").arg(field.id).arg(parameter.crypted ? "**CRYPTED**"
@@ -705,21 +798,25 @@ void DatabaseUtils::fillEncashmentReport(PPSDK::SEncashment &aEncashment) {
         QScopedPointer<IDatabaseQuery> query(
             mDatabase.createQuery("SELECT `nominal`, COUNT(*), `type` FROM `payment_note` "
                                   "WHERE `fk_payment_id` = :id GROUP BY `nominal`, `type` ORDER BY `nominal` DESC"));
-        if (!query) {
+        if (!query)
+        {
             throw QString("failed to prepare notes for payment %1.").arg(payment);
         }
 
         query->bindValue(":id", payment);
 
-        if (!query->exec()) {
+        if (!query->exec())
+        {
             throw QString("failed to get notes for payment %1.").arg(payment);
         }
 
         QStringList notes;
         QStringList coins;
 
-        for (query->first(); query->isValid(); query->next()) {
-            switch (query->value(2).toInt()) {
+        for (query->first(); query->isValid(); query->next())
+        {
+            switch (query->value(2).toInt())
+            {
                 case PPSDK::EAmountType::Coin:
                     coins << QString("%1:%2").arg(query->value(0).toString()).arg(query->value(1).toString());
                     break;
@@ -737,7 +834,8 @@ void DatabaseUtils::fillEncashmentReport(PPSDK::SEncashment &aEncashment) {
 }
 
 //---------------------------------------------------------------------------
-PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParameters) {
+PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParameters)
+{
     LOG(mLog, LogLevel::Normal, "Starting encashment:");
 
     QMutexLocker lock(&mAccessMutex);
@@ -749,13 +847,15 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
     result.balance = getBalance();
     result.parameters = aParameters;
 
-    if (!result.balance.isValid) {
+    if (!result.balance.isValid)
+    {
         LOG(mLog, LogLevel::Error, "Failed to load current encashment info.");
 
         return PPSDK::SEncashment();
     }
 
-    if (result.balance.payments.isEmpty()) {
+    if (result.balance.payments.isEmpty())
+    {
         LOG(mLog, LogLevel::Error, "Cannot perform encashment without payments.");
         return PPSDK::SEncashment();
     }
@@ -764,12 +864,14 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
 
     DatabaseTransaction transaction(&mDatabase);
 
-    if (!transaction) {
+    if (!transaction)
+    {
         LOG(mLog, LogLevel::Error, "Failed to start database transaction before encashment.");
         return PPSDK::SEncashment();
     }
 
-    try {
+    try
+    {
         // 1. Строим отчёт по платежам, входящим в инкассацию.
         fillEncashmentReport(result);
 
@@ -781,18 +883,22 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
                            "VALUES(:date, :amount, :fee, :processed, :report, :notes, :coins, :dispenser_report)";
 
         QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(strQuery));
-        if (!query) {
+        if (!query)
+        {
             throw QString("failed to add encashment record (prepare query error).");
         }
 
         // Формируем списки купюр и монет.
         QStringList notes, coins;
 
-        foreach (auto &bal, result.balance.detailedSums) {
-            for (auto &amount : bal.amounts) {
+        foreach (auto &bal, result.balance.detailedSums)
+        {
+            for (auto &amount : bal.amounts)
+            {
                 auto elem = QString("%1:%2").arg(amount.value.toString()).arg(amount.count);
 
-                switch (bal.type) {
+                switch (bal.type)
+                {
                     case PPSDK::EAmountType::Bill:
                         notes << elem;
                         break;
@@ -813,7 +919,8 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
         query->bindValue(":notes", notes.join("|"));
         query->bindValue(":coins", coins.join("|"));
 
-        if (!query->exec()) {
+        if (!query->exec())
+        {
             throw QString("failed to add encashment record.");
         }
 
@@ -825,7 +932,8 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
                        .arg(result.balance.payments.first());
 
         query.reset(mDatabase.execQuery(strQuery));
-        if (!query) {
+        if (!query)
+        {
             throw QString("failed to update notes ejection date.");
         }
 
@@ -836,13 +944,15 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
                        .arg(result.date.toString(CIDatabaseProxy::DateFormat));
 
         query.reset(mDatabase.execQuery(strQuery));
-        if (!query) {
+        if (!query)
+        {
             throw QString("failed to update dispensed notes reported date.");
         }
 
         // 4. Получаем номер инкассации.
         query.reset(mDatabase.execQuery("SELECT MAX(`id`) FROM `encashment`"));
-        if (!query || !query->first()) {
+        if (!query || !query->first())
+        {
             throw QString("cannot get encashment id.");
         }
 
@@ -853,11 +963,13 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
             QString("INSERT INTO `encashment_param`(`fk_encashment_id`, `name`, `value`) VALUES(:id, :name, :value)")));
         query->bindValue(":id", result.id);
 
-        foreach (auto name, result.parameters.keys()) {
+        foreach (auto name, result.parameters.keys())
+        {
             query->bindValue(":name", name);
             query->bindValue(":value", result.parameters.value(name).toString());
 
-            if (!query->exec()) {
+            if (!query->exec())
+            {
                 throw QString("failed to add encashment param record.");
             }
         }
@@ -865,10 +977,13 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
         // 6. Применяем изменения в БД.
         LOG(mLog, LogLevel::Normal, " - committing data;");
 
-        if (!transaction.commit()) {
+        if (!transaction.commit())
+        {
             throw QString("failed to commit encashment data.");
         }
-    } catch (QString &error) {
+    }
+    catch (QString &error)
+    {
         LOG(mLog, LogLevel::Error, QString("Encashment error: %1").arg(error));
 
         return PPSDK::SEncashment();
@@ -880,7 +995,8 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
 }
 
 //---------------------------------------------------------------------------
-QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int aCount) {
+QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int aCount)
+{
     QMutexLocker lock(&mAccessMutex);
 
     QMap<int, PPSDK::SEncashment> result;
@@ -894,13 +1010,15 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
 
     QScopedPointer<IDatabaseQuery> query(mDatabase.execQuery(queryStr));
 
-    if (!query || !query->first()) {
+    if (!query || !query->first())
+    {
         LOG(mLog, LogLevel::Error, QString("no first encashment record, database is damaged"));
 
         return result.values();
     }
 
-    for (; query->isValid(); query->next()) {
+    for (; query->isValid(); query->next())
+    {
         PPSDK::SEncashment encashment;
 
         encashment.id = query->value(0).toInt();
@@ -920,7 +1038,8 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
             queryStr = "SELECT `date` FROM `encashment` WHERE `id` = :id";
             QScopedPointer<IDatabaseQuery> q(mDatabase.createQuery(queryStr));
 
-            if (!q) {
+            if (!q)
+            {
                 LOG(mLog, LogLevel::Error, QString("failed to get previous encashment date"));
 
                 break;
@@ -928,8 +1047,10 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
 
             q->bindValue(":id", encashment.id - 1);
 
-            if (q->exec() && q->first()) {
-                if (q->isValid()) {
+            if (q->exec() && q->first())
+            {
+                if (q->isValid())
+                {
                     encashment.balance.lastEncashmentId = encashment.id;
                     encashment.balance.lastEncashmentDate = q->value(0).toDateTime();
                 }
@@ -943,7 +1064,8 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
                        "GROUP BY `type`, `nominal` ORDER BY `type` ASC, `nominal` DESC";
             QScopedPointer<IDatabaseQuery> q(mDatabase.createQuery(queryStr));
 
-            if (!q) {
+            if (!q)
+            {
                 LOG(mLog, LogLevel::Error, QString("failed to calculate notes"));
 
                 break;
@@ -951,13 +1073,16 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
 
             q->bindValue(":ejection", encashment.date.toString(CIDatabaseProxy::DateFormat));
 
-            if (q->exec() && q->first()) {
+            if (q->exec() && q->first())
+            {
                 QMap<PPSDK::EAmountType::Enum, PPSDK::SBalance::SAmounts> amounts;
 
-                for (; q->isValid(); q->next()) {
+                for (; q->isValid(); q->next())
+                {
                     PPSDK::EAmountType::Enum type = static_cast<PPSDK::EAmountType::Enum>(q->value(0).toInt());
 
-                    if (!amounts.contains(type)) {
+                    if (!amounts.contains(type))
+                    {
                         amounts[type].type = type;
                     }
 
@@ -965,27 +1090,32 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
                         q->value(1).toDouble(), q->value(2).toInt(), q->value(3).toString());
                 }
 
-                if (!amounts.isEmpty()) {
+                if (!amounts.isEmpty())
+                {
                     encashment.balance.detailedSums = amounts.values();
                 }
             }
         }
 
         // 4. Если платежи нашей инкассации успели уже забекапить
-        if (encashment.balance.detailedSums.isEmpty()) {
+        if (encashment.balance.detailedSums.isEmpty())
+        {
             QMap<PPSDK::EAmountType::Enum, PPSDK::SBalance::SAmounts> amounts;
 
-            foreach (auto note, notes) {
+            foreach (auto note, notes)
+            {
                 amounts[PPSDK::EAmountType::Bill].amounts << PPSDK::SBalance::SAmounts::SAmount(
                     note.section(':', 0, 0).toDouble(), note.section(':', 1, 1).toInt(), "");
             }
 
-            foreach (auto coin, coins) {
+            foreach (auto coin, coins)
+            {
                 amounts[PPSDK::EAmountType::Coin].amounts << PPSDK::SBalance::SAmounts::SAmount(
                     coin.section(':', 0, 0).toDouble(), coin.section(':', 1, 1).toInt(), "");
             }
 
-            if (!amounts.isEmpty()) {
+            if (!amounts.isEmpty())
+            {
                 encashment.balance.detailedSums = amounts.values();
             }
         }
@@ -997,7 +1127,8 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
                        "GROUP BY `type`, `nominal` ORDER BY `type` ASC, `nominal` DESC";
             QScopedPointer<IDatabaseQuery> q(mDatabase.createQuery(queryStr));
 
-            if (!q) {
+            if (!q)
+            {
                 LOG(mLog, LogLevel::Error, QString("failed to calculate notes"));
 
                 break;
@@ -1005,13 +1136,16 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
 
             q->bindValue(":reported", encashment.date.toString(CIDatabaseProxy::DateFormat));
 
-            if (q->exec() && q->first()) {
+            if (q->exec() && q->first())
+            {
                 QMap<PPSDK::EAmountType::Enum, PPSDK::SBalance::SAmounts> amounts;
 
-                for (; q->isValid(); q->next()) {
+                for (; q->isValid(); q->next())
+                {
                     PPSDK::EAmountType::Enum type = static_cast<PPSDK::EAmountType::Enum>(q->value(0).toInt());
 
-                    if (!amounts.contains(type)) {
+                    if (!amounts.contains(type))
+                    {
                         amounts[type].type = type;
                     }
 
@@ -1019,7 +1153,8 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
                         q->value(1).toDouble(), q->value(2).toInt(), q->value(3).toString());
                 }
 
-                if (!amounts.isEmpty()) {
+                if (!amounts.isEmpty())
+                {
                     encashment.balance.dispensedSums = amounts.values();
                 }
             }
@@ -1031,7 +1166,8 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
                        "AND PN.`ejection` = :ejection ORDER BY P.`id`";
             QScopedPointer<IDatabaseQuery> q(mDatabase.createQuery(queryStr));
 
-            if (!q) {
+            if (!q)
+            {
                 LOG(mLog, LogLevel::Error,
                     QString("failed get payment list for last encashment (prepare query error)."));
 
@@ -1040,8 +1176,10 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
 
             q->bindValue(":ejection", encashment.date.toString(CIDatabaseProxy::DateFormat));
 
-            if (q->exec() && q->first()) {
-                do {
+            if (q->exec() && q->first())
+            {
+                do
+                {
                     encashment.balance.payments << q->value(0).toLongLong();
                 } while (q->next());
             }
@@ -1052,7 +1190,8 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
             queryStr = "SELECT `name`, `value` FROM `encashment_param` WHERE `fk_encashment_id` = :id";
             QScopedPointer<IDatabaseQuery> q(mDatabase.createQuery(queryStr));
 
-            if (!q) {
+            if (!q)
+            {
                 LOG(mLog, LogLevel::Error,
                     QString("failed get encashment params for encashment (prepare query error)."));
 
@@ -1061,8 +1200,10 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
 
             q->bindValue(":id", encashment.id);
 
-            if (q->exec() && q->first()) {
-                do {
+            if (q->exec() && q->first())
+            {
+                do
+                {
                     encashment.parameters.insert(q->value(0).toString(), q->value(1).toString());
                 } while (q->next());
             }
@@ -1078,7 +1219,8 @@ QList<SDK::PaymentProcessor::SEncashment> DatabaseUtils::getLastEncashments(int 
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::backupOldPayments() {
+bool DatabaseUtils::backupOldPayments()
+{
     LOG(mLog, LogLevel::Normal, "Exporting old payments...");
 
     QDateTime date = QDateTime::currentDateTime().addMonths(-CDatabaseUtils::StorePaymentMonths);
@@ -1087,7 +1229,8 @@ bool DatabaseUtils::backupOldPayments() {
 
     PPSDK::SBalance balance = getBalance();
 
-    if (balance.isValid && (date > balance.lastEncashmentDate)) {
+    if (balance.isValid && (date > balance.lastEncashmentDate))
+    {
         date = balance.lastEncashmentDate;
     }
 
@@ -1095,7 +1238,8 @@ bool DatabaseUtils::backupOldPayments() {
         "SELECT COUNT(*) FROM `payment` WHERE strftime('%s%f', `create_date`) <= strftime('%s%f', :date)";
 
     QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(strQuery));
-    if (!query) {
+    if (!query)
+    {
         LOG(mLog, LogLevel::Error, "Failed to read old payments count (query prepare error).");
 
         return false;
@@ -1103,13 +1247,15 @@ bool DatabaseUtils::backupOldPayments() {
 
     query->bindValue(":date", date.toString(CIDatabaseProxy::DateFormat));
 
-    if (!query->exec() || !query->first()) {
+    if (!query->exec() || !query->first())
+    {
         LOG(mLog, LogLevel::Error, "Failed to read old payment count.");
 
         return false;
     }
 
-    if (query->value(0).toLongLong() < CDatabaseUtils::CountPaymentsThreshold) {
+    if (query->value(0).toLongLong() < CDatabaseUtils::CountPaymentsThreshold)
+    {
         LOG(mLog, LogLevel::Normal,
             QString("There are less than %1 old payments. No need to backup.")
                 .arg(CDatabaseUtils::CountPaymentsThreshold));
@@ -1125,7 +1271,8 @@ bool DatabaseUtils::backupOldPayments() {
         "`priority`, `step`, `currency`, `signature`, `receipt_printed` FROM `payment` WHERE strftime('%s%f', "
         "`create_date`) <= strftime('%s%f', :date)";
 
-    if (!query->prepare(strQuery)) {
+    if (!query->prepare(strQuery))
+    {
         LOG(mLog, LogLevel::Error, "Failed to read old payments (query prepare error).");
 
         return false;
@@ -1133,13 +1280,15 @@ bool DatabaseUtils::backupOldPayments() {
 
     query->bindValue(":date", date.toString(CIDatabaseProxy::DateFormat));
 
-    if (!query->exec()) {
+    if (!query->exec())
+    {
         LOG(mLog, LogLevel::Error, "Failed to read old payments.");
 
         return false;
     }
 
-    if (!query->first()) {
+    if (!query->first())
+    {
         LOG(mLog, LogLevel::Normal, "No old payments.");
 
         return true;
@@ -1148,7 +1297,8 @@ bool DatabaseUtils::backupOldPayments() {
     QDomDocument xml;
     xml.appendChild(xml.createElement("payments"));
 
-    for (query->first(); query->isValid(); query->next()) {
+    for (query->first(); query->isValid(); query->next())
+    {
         QDomElement element(xml.createElement("payment"));
 
         element.setAttribute("id", query->value(0).toString());
@@ -1175,7 +1325,8 @@ bool DatabaseUtils::backupOldPayments() {
         strQuery = "SELECT `name`, `value` FROM `payment_param` WHERE `fk_payment_id` = :id";
 
         QScopedPointer<IDatabaseQuery> paramsQuery(mDatabase.createQuery(strQuery));
-        if (!paramsQuery) {
+        if (!paramsQuery)
+        {
             LOG(mLog, LogLevel::Error, "Failed to load params while backuping payment.");
 
             continue;
@@ -1183,8 +1334,10 @@ bool DatabaseUtils::backupOldPayments() {
 
         paramsQuery->bindValue(":id", query->value(0));
 
-        if (paramsQuery->exec()) {
-            for (paramsQuery->first(); paramsQuery->isValid(); paramsQuery->next()) {
+        if (paramsQuery->exec())
+        {
+            for (paramsQuery->first(); paramsQuery->isValid(); paramsQuery->next())
+            {
                 QDomElement param = xml.createElement("param");
 
                 param.setAttribute("name", paramsQuery->value(0).toString());
@@ -1198,14 +1351,16 @@ bool DatabaseUtils::backupOldPayments() {
     QString filePath = mApplication->getWorkingDirectory() + "/backup";
 
     QDir dir(filePath);
-    if (!dir.mkpath(filePath)) {
+    if (!dir.mkpath(filePath))
+    {
         LOG(mLog, LogLevel::Warning, "Failed to create backup path. Using root directory.");
 
         filePath = mApplication->getWorkingDirectory();
     }
 
     QFile file(filePath + QString("/payments_before_%1.xml").arg(date.toString("yyyy.MM.dd")));
-    if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
+    if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate))
+    {
         LOG(mLog, LogLevel::Error, "Failed to open file for payment backup.");
 
         return false;
@@ -1221,7 +1376,8 @@ bool DatabaseUtils::backupOldPayments() {
                    .arg(date.toString(CIDatabaseProxy::DateFormat));
 
     query.reset(mDatabase.execQuery(strQuery));
-    if (!query) {
+    if (!query)
+    {
         LOG(mLog, LogLevel::Error, "Failed to delete payment records.");
 
         return false;
@@ -1230,7 +1386,8 @@ bool DatabaseUtils::backupOldPayments() {
     // Удаляем параметры платежей
     query.reset(
         mDatabase.execQuery("DELETE FROM `payment_param` WHERE `fk_payment_id` NOT IN(SELECT `id` FROM `payment`)"));
-    if (!query) {
+    if (!query)
+    {
         LOG(mLog, LogLevel::Error, "Failed to delete payment params records.");
 
         return false;
@@ -1239,7 +1396,8 @@ bool DatabaseUtils::backupOldPayments() {
     // Удаляем купюры
     query.reset(mDatabase.execQuery(
         "DELETE FROM `payment_note` WHERE `fk_payment_id` NOT IN(SELECT `id` FROM `payment`) AND `ejection` NOT NULL"));
-    if (!query) {
+    if (!query)
+    {
         LOG(mLog, LogLevel::Error, "Failed to delete payment params records.");
 
         return false;
@@ -1255,16 +1413,21 @@ bool DatabaseUtils::backupOldPayments() {
 }
 
 //---------------------------------------------------------------------------
-void DatabaseUtils::removePayment(qint64 aPayment) {
+void DatabaseUtils::removePayment(qint64 aPayment)
+{
     QMutexLocker lock(&mAccessMutex);
 
     LOG(mPaymentLog, LogLevel::Error, QString("Payment %1. Deleting.").arg(aPayment));
 
-    auto execSql = [&](const QString &aQuery) -> bool {
+    auto execSql = [&](const QString &aQuery) -> bool
+    {
         QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(aQuery));
-        if (!query) {
+        if (!query)
+        {
             return false;
-        } else {
+        }
+        else
+        {
             query->bindValue(":id", aPayment);
         }
 
@@ -1273,7 +1436,8 @@ void DatabaseUtils::removePayment(qint64 aPayment) {
     };
 
     if (execSql("DELETE FROM `payment_param` WHERE `fk_payment_id` = :id") &&
-        execSql("DELETE FROM `payment` WHERE `id` = :id")) {
+        execSql("DELETE FROM `payment` WHERE `id` = :id"))
+    {
         return;
     }
 
@@ -1281,7 +1445,8 @@ void DatabaseUtils::removePayment(qint64 aPayment) {
 }
 
 //---------------------------------------------------------------------------
-QList<PPSDK::SNote> DatabaseUtils::getPaymentNotes(qint64 aPaymentId) {
+QList<PPSDK::SNote> DatabaseUtils::getPaymentNotes(qint64 aPaymentId)
+{
     QMutexLocker lock(&mAccessMutex);
 
     QList<PPSDK::SNote> notes;
@@ -1290,21 +1455,28 @@ QList<PPSDK::SNote> DatabaseUtils::getPaymentNotes(qint64 aPaymentId) {
         "SELECT `nominal`, `type`, `serial`, `currency` FROM `payment_note` WHERE `fk_payment_id` = :id";
 
     QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(queryString));
-    if (query) {
+    if (query)
+    {
         query->bindValue(":id", aPaymentId);
 
-        if (query->exec()) {
-            for (query->first(); query->isValid(); query->next()) {
+        if (query->exec())
+        {
+            for (query->first(); query->isValid(); query->next())
+            {
                 PPSDK::SNote note(static_cast<PPSDK::EAmountType::Enum>(query->value(1).toInt()),
                                   query->value(0).toDouble(), query->value(3).toInt(), query->value(2).toString());
 
                 notes.append(note);
             }
-        } else {
+        }
+        else
+        {
             LOG(mLog, LogLevel::Error,
                 QString("Failed to execute note parameters query. PaymentID = %1").arg(aPaymentId));
         }
-    } else {
+    }
+    else
+    {
         LOG(mLog, LogLevel::Error, "Failed to load params while backuping payment.");
     }
 
@@ -1312,11 +1484,13 @@ QList<PPSDK::SNote> DatabaseUtils::getPaymentNotes(qint64 aPaymentId) {
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::suspendPayment(qint64 aPayment, int aMinutes) {
+bool DatabaseUtils::suspendPayment(qint64 aPayment, int aMinutes)
+{
     QString strQuery = "UPDATE `payment` SET `next_try_date` = :next_try_date WHERE `id` = :id";
 
     QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(strQuery));
-    if (!query) {
+    if (!query)
+    {
         LOG(mLog, LogLevel::Error, "failed to create query for main data");
         return false;
     }
@@ -1325,7 +1499,8 @@ bool DatabaseUtils::suspendPayment(qint64 aPayment, int aMinutes) {
                      QDateTime::currentDateTime().addSecs(aMinutes * 60).toString(CIDatabaseProxy::DateFormat));
     query->bindValue(":id", aPayment);
 
-    if (!query->exec()) {
+    if (!query->exec())
+    {
         LOG(mLog, LogLevel::Error, "failed to blacklist payment");
         return false;
     }
@@ -1334,20 +1509,28 @@ bool DatabaseUtils::suspendPayment(qint64 aPayment, int aMinutes) {
 }
 
 //---------------------------------------------------------------------------
-QMap<qint64, quint32> DatabaseUtils::getStatistic() const {
+QMap<qint64, quint32> DatabaseUtils::getStatistic() const
+{
     QMap<qint64, quint32> result;
 
     QScopedPointer<IDatabaseQuery> query(
         mDatabase.createQuery("SELECT `operator`, count(*) FROM `payment` GROUP BY `operator`;"));
-    if (query) {
-        if (query->exec()) {
-            for (query->first(); query->isValid(); query->next()) {
+    if (query)
+    {
+        if (query->exec())
+        {
+            for (query->first(); query->isValid(); query->next())
+            {
                 result.insert(query->value(0).toLongLong(), query->value(1).toUInt());
             }
-        } else {
+        }
+        else
+        {
             LOG(mLog, LogLevel::Error, "Failed to execute payment statistic query.");
         }
-    } else {
+    }
+    else
+    {
         LOG(mLog, LogLevel::Error, "Failed to load payment statistic.");
     }
 

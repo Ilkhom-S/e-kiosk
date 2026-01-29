@@ -1,18 +1,21 @@
 // Project
 #include "UserDaemons.h"
 
-UserDaemons::UserDaemons(QObject *parent) : SendRequest(parent) {
+UserDaemons::UserDaemons(QObject *parent) : SendRequest(parent)
+{
     senderName = "USER_DAEMONS";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
     connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 }
 
-void UserDaemons::resendRequest() {
+void UserDaemons::resendRequest()
+{
     emit emit_UserData("---");
 }
 
-void UserDaemons::setDataNote(const QDomNode &domElement) {
+void UserDaemons::setDataNote(const QDomNode &domElement)
+{
     resultCode = false;
     getData = false;
     balance = "";
@@ -20,7 +23,8 @@ void UserDaemons::setDataNote(const QDomNode &domElement) {
     // Парсим данные
     parcerNote(domElement);
 
-    if (balance != "") {
+    if (balance != "")
+    {
         // Тут отправляем сигнал с балансом
         emit this->emit_UserData(balance);
         return;
@@ -29,17 +33,22 @@ void UserDaemons::setDataNote(const QDomNode &domElement) {
     emit emit_UserData("---");
 }
 
-void UserDaemons::parcerNote(const QDomNode &domElement) {
+void UserDaemons::parcerNote(const QDomNode &domElement)
+{
     QDomNode domNode = domElement.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
             QDomElement domElement = domNode.toElement();
             QString strTag = domElement.tagName();
 
             // Данные о дилере
-            if (strTag == "info") {
-                if (domElement.attribute("result", "") == "0") {
+            if (strTag == "info")
+            {
+                if (domElement.attribute("result", "") == "0")
+                {
                     balance = domElement.attribute("balance", "");
                 }
             }
@@ -50,7 +59,8 @@ void UserDaemons::parcerNote(const QDomNode &domElement) {
     }
 }
 
-void UserDaemons::sendUserDataRequest(QString account, QString prvId) {
+void UserDaemons::sendUserDataRequest(QString account, QString prvId)
+{
     QString header_xml = getHeaderRequest(Request::Type::GetAbonentInfo);
 
     QString footer_xml = getFooterRequest();

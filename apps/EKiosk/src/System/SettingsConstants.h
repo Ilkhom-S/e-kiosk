@@ -8,7 +8,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-namespace CSettings {
+namespace CSettings
+{
     //---------------------------------------------------------------------------
     // Путь к плагинам
     const char PluginsPath[] = "common/plugins_path";

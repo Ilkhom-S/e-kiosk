@@ -13,11 +13,14 @@ class IRegistry;
 
 //--------------------------------------------------------------------------------
 /// Параметры порта.
-namespace PortParameters {
+namespace PortParameters
+{
     //--------------------------------------------------------------------------------
     /// Скорость передачи данных.
-    namespace BaudRate {
-        enum Enum {
+    namespace BaudRate
+    {
+        enum Enum
+        {
             BR110 = 110,
             BR300 = 300,
             BR600 = 600,
@@ -36,8 +39,10 @@ namespace PortParameters {
         };
 
         /// Преобразовать в строку.
-        inline static const char *toString(Enum aValue) {
-            switch (aValue) {
+        inline static const char *toString(Enum aValue)
+        {
+            switch (aValue)
+            {
                 case BR110:
                     return "110";
                 case BR300:
@@ -76,12 +81,19 @@ namespace PortParameters {
 
     //--------------------------------------------------------------------------------
     /// Стоповые биты.
-    namespace StopBits {
-        enum Enum { One, Two };
+    namespace StopBits
+    {
+        enum Enum
+        {
+            One,
+            Two
+        };
 
         /// Преобразовать в строку.
-        inline static const char *toString(Enum aValue) {
-            switch (aValue) {
+        inline static const char *toString(Enum aValue)
+        {
+            switch (aValue)
+            {
                 case One:
                     return "1";
                 case Two:
@@ -94,12 +106,21 @@ namespace PortParameters {
 
     //--------------------------------------------------------------------------------
     /// Чётность.
-    namespace Parity {
-        enum Enum { PNo, PEven, POdd, PSpace };
+    namespace Parity
+    {
+        enum Enum
+        {
+            PNo,
+            PEven,
+            POdd,
+            PSpace
+        };
 
         /// Преобразовать в строку.
-        inline static const char *toString(Enum aValue) {
-            switch (aValue) {
+        inline static const char *toString(Enum aValue)
+        {
+            switch (aValue)
+            {
                 case PNo:
                     return "no";
                 case PEven:
@@ -116,12 +137,20 @@ namespace PortParameters {
 
     //--------------------------------------------------------------------------------
     /// Управление DTR.
-    namespace DTR {
-        enum Enum { Disable, Enable, Handshake };
+    namespace DTR
+    {
+        enum Enum
+        {
+            Disable,
+            Enable,
+            Handshake
+        };
 
         /// Преобразовать в строку.
-        inline static const char *toString(Enum aValue) {
-            switch (aValue) {
+        inline static const char *toString(Enum aValue)
+        {
+            switch (aValue)
+            {
                 case Disable:
                     return "disable";
                 case Enable:
@@ -136,12 +165,20 @@ namespace PortParameters {
 
     //--------------------------------------------------------------------------------
     /// Управление RTS.
-    namespace RTS {
-        enum Enum { Disable, Enable, Handshake };
+    namespace RTS
+    {
+        enum Enum
+        {
+            Disable,
+            Enable,
+            Handshake
+        };
 
         /// Преобразовать в строку.
-        inline static const char *toString(Enum aValue) {
-            switch (aValue) {
+        inline static const char *toString(Enum aValue)
+        {
+            switch (aValue)
+            {
                 case Disable:
                     return "disable";
                 case Enable:
@@ -157,7 +194,8 @@ namespace PortParameters {
 
 //--------------------------------------------------------------------------------
 /// Параметры COM-порта.
-struct SComPortParameters {
+struct SComPortParameters
+{
     int portNumber = 0;
     PortParameters::BaudRate::Enum baudRate = PortParameters::BaudRate::BR9600;
     PortParameters::StopBits::Enum stopBits = PortParameters::StopBits::One;
@@ -168,7 +206,8 @@ struct SComPortParameters {
 
 //--------------------------------------------------------------------------------
 /// Базовый класс для COM-портов.
-class ComPortBase {
+class ComPortBase
+{
   public:
     ComPortBase() = default;
     virtual ~ComPortBase() = default;

@@ -13,17 +13,23 @@
 #include <SDK/PaymentProcessor/Core/IGUIService.h>
 #include <SDK/PaymentProcessor/Scripting/GUIService.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Scripting {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
-            GUIService::GUIService(ICore *aCore) : mCore(aCore), mGUIService(mCore->getGUIService()) {
+            GUIService::GUIService(ICore *aCore) : mCore(aCore), mGUIService(mCore->getGUIService())
+            {
             }
 
             //------------------------------------------------------------------------------
-            bool GUIService::show(const QString &aWidget, const QVariantMap &aParameters) {
-                if (mTopWidgetName != aWidget) {
+            bool GUIService::show(const QString &aWidget, const QVariantMap &aParameters)
+            {
+                if (mTopWidgetName != aWidget)
+                {
                     mTopWidgetName = aWidget;
 
                     emit topSceneChange();
@@ -33,57 +39,68 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            bool GUIService::showPopup(const QString &aWidget, const QVariantMap &aParameters) {
+            bool GUIService::showPopup(const QString &aWidget, const QVariantMap &aParameters)
+            {
                 return mGUIService->showPopup(aWidget, aParameters);
             }
 
             //------------------------------------------------------------------------------
-            bool GUIService::hidePopup(const QVariantMap &aParameters) {
+            bool GUIService::hidePopup(const QVariantMap &aParameters)
+            {
                 return mGUIService->hidePopup(aParameters);
             }
 
             //------------------------------------------------------------------------------
-            void GUIService::notify(const QString &aEvent, const QVariantMap &aParameters) {
+            void GUIService::notify(const QString &aEvent, const QVariantMap &aParameters)
+            {
                 return mGUIService->notify(aEvent, aParameters);
             }
 
             //------------------------------------------------------------------------------
-            void GUIService::reset() {
+            void GUIService::reset()
+            {
                 mGUIService->reset();
             }
 
             //------------------------------------------------------------------------------
-            void GUIService::reload(const QVariantMap &aParams) {
+            void GUIService::reload(const QVariantMap &aParams)
+            {
                 emit skinReload(aParams);
             }
 
             //------------------------------------------------------------------------------
-            QString GUIService::getTopScene() const {
+            QString GUIService::getTopScene() const
+            {
                 return mTopWidgetName;
             }
 
             //------------------------------------------------------------------------------
-            QVariantMap GUIService::getParametersUI() const {
+            QVariantMap GUIService::getParametersUI() const
+            {
                 return mGUIService->getUiSettings("ui");
             }
 
             //------------------------------------------------------------------------------
-            QVariantMap GUIService::getParametersAd() const {
+            QVariantMap GUIService::getParametersAd() const
+            {
                 return mGUIService->getUiSettings("ad");
             }
 
             //------------------------------------------------------------------------------
-            bool GUIService::isDisabled() const {
+            bool GUIService::isDisabled() const
+            {
                 return mGUIService->isDisabled();
             }
 
             //------------------------------------------------------------------------------
-            int GUIService::getWidth() const {
+            int GUIService::getWidth() const
+            {
                 return mGUIService->getScreenSize(0).width();
             }
 
             //------------------------------------------------------------------------------
-            int GUIService::getHeight() const {
+            int GUIService::getHeight() const
+            {
                 return mGUIService->getScreenSize(0).height();
             }
 

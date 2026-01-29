@@ -3,9 +3,11 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-namespace CCashAcceptor {
+namespace CCashAcceptor
+{
     /// Таймауты.
-    namespace Timeout {
+    namespace Timeout
+    {
         /// Включение/выключение на прием купюр.
         const int SetEnable = 1000;
 

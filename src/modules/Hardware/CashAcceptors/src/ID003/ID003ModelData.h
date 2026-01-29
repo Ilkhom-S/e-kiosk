@@ -5,9 +5,11 @@
 #include "Hardware/CashAcceptors/ModelData.h"
 
 //--------------------------------------------------------------------------------
-namespace CID003 {
+namespace CID003
+{
     /// Модели
-    namespace Models {
+    namespace Models
+    {
         const char GPTAurora[] = "GPT Aurora";
         const char JCMIPRO[] = "JCM IPRO";
         const char JCMUBA[] = "JCM UBA";
@@ -17,12 +19,14 @@ namespace CID003 {
 
     /// Подтип протокола. Разделение чисто символическое, связано с лицензированием пользования протокола ID003.
     /// По подтипу можно сделать вывод о фирме, которая его реализовала в девайсе.
-    namespace ProtocolData {
+    namespace ProtocolData
+    {
         const char GPTAurora[] = "ID003 GPT"; /// Id GPT на ID003.
 
         /// Подтип протокола. Разделение чисто символическое, связано с лицензированием пользования протоколом ID003.
         /// По подтипу можно сделать вывод о фирме, которая его реализовала в девайсе.
-        namespace Alias {
+        namespace Alias
+        {
             const char ID003[] = "ID003";       /// ID003 (JCM).
             const char ID003Ext[] = "External"; /// ID003 (JCM, расширенная идентификация).
             const char BDP[] = "BDP";           /// BDP (Cashcode).
@@ -34,7 +38,8 @@ namespace CID003 {
         const QString IdLexeme = QString("(%1*)").arg(Lexeme);
 
         /// Класс для перебора регулярок для парсинга ответа на запрос идентификации.
-        class CIdentification : public CDescription<QString> {
+        class CIdentification : public CDescription<QString>
+        {
           public:
             CIdentification();
         };
@@ -44,26 +49,32 @@ namespace CID003 {
     const int NewJCMModelDataCount = 3;
 
     //--------------------------------------------------------------------------------
-    class BaseModelData : public CSpecification<QString, SBaseModelData> {
+    class BaseModelData : public CSpecification<QString, SBaseModelData>
+    {
       public:
-        void add(const QString &aId, const QString &aName, bool aVerified = false) {
+        void add(const QString &aId, const QString &aName, bool aVerified = false)
+        {
             append(aId, SBaseModelData(aName, aVerified));
         }
     };
 
     //--------------------------------------------------------------------------------
-    struct SModelData : public SBaseModelData {
+    struct SModelData : public SBaseModelData
+    {
         QString type;
         BaseModelData models;
 
-        SModelData() {
+        SModelData()
+        {
         }
-        SModelData(const QString &aName, bool aVerified) : SBaseModelData(aName, aVerified) {
+        SModelData(const QString &aName, bool aVerified) : SBaseModelData(aName, aVerified)
+        {
         }
         SModelData(const QString &aDefaultName, const QString &aType);
     };
 
-    class ModelData : public CSpecification<char, SModelData> {
+    class ModelData : public CSpecification<char, SModelData>
+    {
       public:
         ModelData();
         SBaseModelData getData(char aCode, const QString &aNumber, const QString &aStackerType);

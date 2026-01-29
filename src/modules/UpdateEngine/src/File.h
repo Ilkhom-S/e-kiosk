@@ -9,9 +9,11 @@
 #include <Common/QtHeadersEnd.h>
 
 /// Структура описывает параметры файла обновления
-class File {
+class File
+{
   public:
-    typedef enum {
+    typedef enum
+    {
         OK,                 // уже скачан, качать не нужно
         NotFullyDownloaded, // нужно докачать
         Error               // нужно удалить и качать заново
@@ -27,21 +29,26 @@ class File {
     Result verify(const QString &aTempFilePath);
 
   public:
-    const QString &name() const {
+    const QString &name() const
+    {
         return mName;
     }
-    const QString &url() const {
+    const QString &url() const
+    {
         return mUrl;
     }
-    const QString &hash() const {
+    const QString &hash() const
+    {
         return mHash;
     }
-    qint64 size() const {
+    qint64 size() const
+    {
         return mSize;
     }
 
     // Возвращает корневую папку файла, или само имя файла
-    QString dir() const {
+    QString dir() const
+    {
         return QDir::fromNativeSeparators(mName).split("/").at(0);
     }
 
@@ -52,7 +59,8 @@ class File {
     QString mUrl;  // Опциональный параметр - адрес для скачивания
 };
 
-inline uint qHash(const File &aFile) {
+inline uint qHash(const File &aFile)
+{
     uint h1 = qHash(aFile.name());
     uint h2 = qHash(aFile.hash());
     return ((h1 << 16) | (h1 >> 16)) ^ h2;

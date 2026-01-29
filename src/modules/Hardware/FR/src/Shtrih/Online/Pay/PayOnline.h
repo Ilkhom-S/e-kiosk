@@ -5,7 +5,8 @@
 #include "PayFRBase.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class PayOnline : public PayFRBase<T> {
+template <class T> class PayOnline : public PayFRBase<T>
+{
     SET_SUBSERIES("PayOnline")
 
   public:

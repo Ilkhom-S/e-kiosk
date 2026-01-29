@@ -14,34 +14,41 @@
 // Mock objects
 #include "MockObjects.h"
 
-class PluginTestBase {
+class PluginTestBase
+{
 
   public:
-    PluginTestBase(const QString &pluginPath) : mPluginPath(pluginPath) {
+    PluginTestBase(const QString &pluginPath) : mPluginPath(pluginPath)
+    {
     }
 
     // Load plugin and return factory
-    SDK::Plugin::IPluginFactory *loadPluginFactory() {
-        if (mLoader.isLoaded()) {
+    SDK::Plugin::IPluginFactory *loadPluginFactory()
+    {
+        if (mLoader.isLoaded())
+        {
             return mFactory;
         }
 
         mLoader.setFileName(mPluginPath);
         QObject *rootObject = mLoader.instance();
 
-        if (!rootObject) {
+        if (!rootObject)
+        {
             qWarning() << "Failed to load plugin:" << mLoader.errorString();
             return nullptr;
         }
 
         mFactory = qobject_cast<SDK::Plugin::IPluginFactory *>(rootObject);
-        if (!mFactory) {
+        if (!mFactory)
+        {
             qWarning() << "Plugin does not implement IPluginFactory";
             return nullptr;
         }
 
         // Initialize with mock kernel
-        if (!mFactory->initialize(&mMockKernel, QFileInfo(mPluginPath).absolutePath())) {
+        if (!mFactory->initialize(&mMockKernel, QFileInfo(mPluginPath).absolutePath()))
+        {
             qWarning() << "Failed to initialize plugin factory";
             return nullptr;
         }
@@ -50,12 +57,14 @@ class PluginTestBase {
     }
 
     // Get mock kernel for advanced testing
-    MockKernel &getMockKernel() {
+    MockKernel &getMockKernel()
+    {
         return mMockKernel;
     }
 
     // Get mock plugin loader
-    MockPluginLoader *getMockPluginLoader() {
+    MockPluginLoader *getMockPluginLoader()
+    {
         return mMockKernel.getMockPluginLoader();
     }
 

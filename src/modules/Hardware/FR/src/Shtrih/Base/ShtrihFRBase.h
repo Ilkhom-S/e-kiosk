@@ -5,7 +5,8 @@
 #include "ProtoShtrihFR.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class ShtrihFRBase : public ProtoShtrihFR<T> {
+template <class T> class ShtrihFRBase : public ProtoShtrihFR<T>
+{
   public:
     ShtrihFRBase();
 

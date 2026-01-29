@@ -26,7 +26,8 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-namespace CAutoEncashmentWindow {
+namespace CAutoEncashmentWindow
+{
     // Максимальное время бездействия в окне авто инкассации.
     const int AutoEncashmentIdleTimeout = 2 * 60 * 1000; // 2 минуты.
 
@@ -36,7 +37,8 @@ namespace CAutoEncashmentWindow {
 
 //---------------------------------------------------------------------------
 AutoEncashmentWindow::AutoEncashmentWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : EncashmentWindow(aBackend, aParent) {
+    : EncashmentWindow(aBackend, aParent)
+{
     ui.setupUi(this);
 
     ui.lbCurrentDate->setText(QDateTime::currentDateTime().toString("dd/MM/yyyy, hh:mm"));
@@ -65,11 +67,13 @@ AutoEncashmentWindow::AutoEncashmentWindow(ServiceMenuBackend *aBackend, QWidget
 }
 
 //---------------------------------------------------------------------------
-AutoEncashmentWindow::~AutoEncashmentWindow() {
+AutoEncashmentWindow::~AutoEncashmentWindow()
+{
 }
 
 //---------------------------------------------------------------------------
-bool AutoEncashmentWindow::initialize() {
+bool AutoEncashmentWindow::initialize()
+{
     mBackend->getTerminalInfo(mTerminalInfo);
 
     ui.lbTerminalNumber->setText(tr("#terminal_number") + mTerminalInfo[CServiceTags::TerminalNumber].toString());
@@ -85,14 +89,16 @@ bool AutoEncashmentWindow::initialize() {
 }
 
 //---------------------------------------------------------------------------
-bool AutoEncashmentWindow::shutdown() {
+bool AutoEncashmentWindow::shutdown()
+{
     deactivate();
 
     return true;
 }
 
 //---------------------------------------------------------------------------
-bool AutoEncashmentWindow::activate() {
+bool AutoEncashmentWindow::activate()
+{
     connect(mBackend->getHardwareManager(),
             SIGNAL(deviceStatusChanged(const QString &, const QString &, const QString &,
                                        SDK::Driver::EWarningLevel::Enum)),
@@ -106,7 +112,8 @@ bool AutoEncashmentWindow::activate() {
 }
 
 //---------------------------------------------------------------------------
-bool AutoEncashmentWindow::deactivate() {
+bool AutoEncashmentWindow::deactivate()
+{
     disconnect(mBackend->getHardwareManager(),
                SIGNAL(deviceStatusChanged(const QString &, const QString &, const QString &,
                                           SDK::Driver::EWarningLevel::Enum)),
@@ -119,7 +126,8 @@ bool AutoEncashmentWindow::deactivate() {
 
 //------------------------------------------------------------------------
 void AutoEncashmentWindow::onDeviceStatusChanged(const QString &aConfigName, const QString &aStatusString,
-                                                 const QString &aStatusColor, SDK::Driver::EWarningLevel::Enum aLevel) {
+                                                 const QString &aStatusColor, SDK::Driver::EWarningLevel::Enum aLevel)
+{
     Q_UNUSED(aConfigName);
     Q_UNUSED(aStatusString);
     Q_UNUSED(aStatusColor);
@@ -129,7 +137,8 @@ void AutoEncashmentWindow::onDeviceStatusChanged(const QString &aConfigName, con
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::updateUI() {
+void AutoEncashmentWindow::updateUI()
+{
     ui.btnEncashment->setEnabled(true);
 
     ui.btnEncashmentAndZReport->setEnabled(mBackend->getHardwareManager()->isFiscalPrinterPresent(true));
@@ -139,18 +148,21 @@ void AutoEncashmentWindow::updateUI() {
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onEncashment() {
+void AutoEncashmentWindow::onEncashment()
+{
     mEncashmentWithZReport = false;
 
     doEncashment();
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onTestPrinter() {
+void AutoEncashmentWindow::onTestPrinter()
+{
     auto paymentManager = mBackend->getPaymentManager();
     bool isPrinterOK = paymentManager->canPrint(PPSDK::CReceiptType::Encashment);
 
-    if (!isPrinterOK) {
+    if (!isPrinterOK)
+    {
         GUI::MessageBox::warning(tr("#printer_failed"));
 
         return;
@@ -160,14 +172,16 @@ void AutoEncashmentWindow::onTestPrinter() {
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onEncashmentAndZReport() {
+void AutoEncashmentWindow::onEncashmentAndZReport()
+{
     mEncashmentWithZReport = true;
 
     doEncashment();
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onEnterServiceMenu() {
+void AutoEncashmentWindow::onEnterServiceMenu()
+{
     mIdleTimer.stop();
 
     QVariantMap params;
@@ -178,17 +192,20 @@ void AutoEncashmentWindow::onEnterServiceMenu() {
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onShowHistory() {
+void AutoEncashmentWindow::onShowHistory()
+{
     ui.stackedWidget->setCurrentIndex(1);
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onBack() {
+void AutoEncashmentWindow::onBack()
+{
     ui.stackedWidget->setCurrentIndex(0);
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onExit() {
+void AutoEncashmentWindow::onExit()
+{
     mIdleTimer.stop();
 
     QVariantMap params;
@@ -199,13 +216,16 @@ void AutoEncashmentWindow::onExit() {
 }
 
 //------------------------------------------------------------------------
-void AutoEncashmentWindow::onDateTimeRefresh() {
+void AutoEncashmentWindow::onDateTimeRefresh()
+{
     ui.lbCurrentDate->setText(QDateTime::currentDateTime().toString("dd/MM/yyyy, hh:mm"));
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onIdleTimeout() {
-    if (mInputBox) {
+void AutoEncashmentWindow::onIdleTimeout()
+{
+    if (mInputBox)
+    {
         mInputBox->deleteLater();
         mInputBox = nullptr;
     }
@@ -218,8 +238,10 @@ void AutoEncashmentWindow::onIdleTimeout() {
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onPanelChanged(int aIndex) {
-    if (aIndex != 1) {
+void AutoEncashmentWindow::onPanelChanged(int aIndex)
+{
+    if (aIndex != 1)
+    {
         return;
     }
 

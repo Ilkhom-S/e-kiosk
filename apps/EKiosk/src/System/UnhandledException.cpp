@@ -17,7 +17,8 @@
 
 //---------------------------------------------------------------------------
 // Обработчик для Windows-реализации
-LONG WINAPI MyUnhandledExceptionFilter(_EXCEPTION_POINTERS *aExceptionInfo) {
+LONG WINAPI MyUnhandledExceptionFilter(_EXCEPTION_POINTERS *aExceptionInfo)
+{
     QStringList stack;
     DumpCallstack(stack, aExceptionInfo->ContextRecord);
 
@@ -30,7 +31,8 @@ LONG WINAPI MyUnhandledExceptionFilter(_EXCEPTION_POINTERS *aExceptionInfo) {
 }
 
 //---------------------------------------------------------------------------
-void PurecallHandler(void) {
+void PurecallHandler(void)
+{
     QStringList stack;
     DumpCallstack(stack, nullptr);
 
@@ -46,7 +48,8 @@ void PurecallHandler(void) {
 
 //---------------------------------------------------------------------------
 // Инициализация фильтра необработанных исключений
-void CatchUnhandledExceptions() {
+void CatchUnhandledExceptions()
+{
 #ifdef Q_OS_WIN32
     SetUnhandledExceptionsHandler(MyUnhandledExceptionFilter);
 #endif

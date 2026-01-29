@@ -19,7 +19,8 @@
 
 //--------------------------------------------------------------------------------
 /// Константы системного принтера.
-namespace CSystemPrinter {
+namespace CSystemPrinter
+{
     /// Тег конца строки.
     const char BRtag[] = "<br>";
 
@@ -31,9 +32,11 @@ namespace CSystemPrinter {
 
     //----------------------------------------------------------------------------
     /// Теги.
-    class TagEngine : public Tags::Engine {
+    class TagEngine : public Tags::Engine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             appendSingle(Tags::Type::Italic, "", "<i>", "</i>");
             appendSingle(Tags::Type::Bold, "", "<b>", "</b>");
             appendSingle(Tags::Type::UnderLine, "", "<u>", "</u>");
@@ -43,7 +46,8 @@ namespace CSystemPrinter {
 } // namespace CSystemPrinter
 
 //--------------------------------------------------------------------------------
-class SystemPrinter : public PrinterBase<PollingDeviceBase<ProtoPrinter>> {
+class SystemPrinter : public PrinterBase<PollingDeviceBase<ProtoPrinter>>
+{
   public:
     SystemPrinter();
 

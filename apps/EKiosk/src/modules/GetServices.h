@@ -5,7 +5,8 @@
 
 class SendRequest;
 
-class GetServices : public SendRequest {
+class GetServices : public SendRequest
+{
     Q_OBJECT
 
   public:

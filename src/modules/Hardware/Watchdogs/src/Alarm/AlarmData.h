@@ -5,14 +5,16 @@
 #include "Hardware/Watchdogs/WatchdogStatusCodes.h"
 
 //----------------------------------------------------------------------------
-namespace CAlarm {
+namespace CAlarm
+{
     /// Модель.
     char Model[] = "Alarm";
 
     /// Таймаут по умолчанию, [мс].
     const int DefaultTimeout = 1000;
 
-    namespace Commands {
+    namespace Commands
+    {
         const char Ping = '\x88'; // Сброс таймера. Необходимо проводить не реже 1 раза в 63 сек. Остановить нельзя,
                                   // поэтому не используется.
         const char ResetModem = '\x84'; // Ребут модема.
@@ -23,9 +25,11 @@ namespace CAlarm {
     typedef QPair<uchar, uchar> TInterval;
 
     /// Спецификация состояний сенсоров.
-    class CCommandIntervals : public CSpecification<char, TInterval> {
+    class CCommandIntervals : public CSpecification<char, TInterval>
+    {
       public:
-        CCommandIntervals() {
+        CCommandIntervals()
+        {
             append('\xC0', TInterval(0xC0, 0xC7));
             append('\x80', TInterval(0x00, 0x1F));
         }
@@ -33,9 +37,11 @@ namespace CAlarm {
 
     //--------------------------------------------------------------------------------
     /// Спецификация состояний сенсоров.
-    class CSensorCodeSpecification : public CSpecification<int, int> {
+    class CSensorCodeSpecification : public CSpecification<int, int>
+    {
       public:
-        CSensorCodeSpecification() {
+        CSensorCodeSpecification()
+        {
             append(0, WatchdogStatusCode::Warning::Safe);
             append(1, WatchdogStatusCode::Warning::UpperUnit);
             append(2, WatchdogStatusCode::Warning::LowerUnit);

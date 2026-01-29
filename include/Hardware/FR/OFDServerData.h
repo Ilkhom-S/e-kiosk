@@ -15,24 +15,29 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CHardware {
+namespace CHardware
+{
     const QRegularExpression regExps[] = {
         QRegularExpression("^[0-9a-z\\-\\_\\.]+\\.(ru|com|net)$"),
         QRegularExpression("^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$"),
         QRegularExpression("^[0-9]{4,5}$"),
     };
 
-    template <int aIndex> struct SData {
+    template <int aIndex> struct SData
+    {
         QString value;
         bool valid;
 
-        SData() : valid(false) {
+        SData() : valid(false)
+        {
         }
-        SData(const QString &aValue) {
+        SData(const QString &aValue)
+        {
             value = aValue.toLower();
             valid = regExps[aIndex].match(value).capturedStart() != -1;
 
-            if (valid && aIndex) {
+            if (valid && aIndex)
+            {
                 QStringList data = value.split(ASCII::Dot);
                 valid = std::find_if(data.begin(), data.end(),
                                      [](const QString &aData) -> bool { return aData.toInt(); }) != data.end();
@@ -44,29 +49,36 @@ namespace CHardware {
     typedef SData<1> SIP;
     typedef SData<2> SPort;
 
-    struct SAddress {
+    struct SAddress
+    {
         SURL URL;
         SIP IP;
         SPort port;
 
-        SAddress() {
+        SAddress()
+        {
         }
-        SAddress(const QString &aURl, const QString &aIP, const QString &aPort) : URL(aURl), IP(aIP), port(aPort) {
+        SAddress(const QString &aURl, const QString &aIP, const QString &aPort) : URL(aURl), IP(aIP), port(aPort)
+        {
         }
 
-        bool valid() {
+        bool valid()
+        {
             return port.valid && (URL.valid || IP.valid);
         }
     };
 
-    struct SOFDData {
+    struct SOFDData
+    {
         SAddress address;
         SAddress testAddress;
     };
 
-    class OFDData : public CSpecification<QString, SOFDData> {
+    class OFDData : public CSpecification<QString, SOFDData>
+    {
       public:
-        OFDData() {
+        OFDData()
+        {
             add("1-OFD", "k-server.1-ofd.ru", "91.107.114.11", 7777, "kkm-server-test.1-ofd.ru", "95.213.230.112",
                 7777);
             add("Taxcom", "f1.taxcom.ru", "193.0.214.11", 7777, "f1test.taxcom.ru", "193.0.214.11", 7778);
@@ -89,7 +101,8 @@ namespace CHardware {
 
       private:
         void add(const QString &aName, const QString &aURL, const QString &aIP, int aPort, const QString &aTestURL,
-                 const QString &aTestIP, int aTestPort) {
+                 const QString &aTestIP, int aTestPort)
+        {
             SOFDData OFDData;
             OFDData.address = SAddress(aURL, aIP, QString::number(aPort));
             OFDData.testAddress = SAddress(aTestURL, aTestIP, QString::number(aTestPort));
@@ -97,7 +110,8 @@ namespace CHardware {
             append(aName, OFDData);
         }
 
-        void add(const QString &aName, const QString &aURL, const QString &aIP, int aPort) {
+        void add(const QString &aName, const QString &aURL, const QString &aIP, int aPort)
+        {
             SOFDData OFDData;
             OFDData.address = SAddress(aURL, aIP, QString::number(aPort));
 

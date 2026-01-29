@@ -14,17 +14,20 @@
 #include "Utils.h"
 #include "UtilsPlugin.h"
 
-void UtilsPlugin::registerTypes(const char * /*aUri*/) {
+void UtilsPlugin::registerTypes(const char * /*aUri*/)
+{
 }
 
 //------------------------------------------------------------------------------
-void UtilsPlugin::initializeEngine(QQmlEngine *aEngine, const char * /*aUri*/) {
+void UtilsPlugin::initializeEngine(QQmlEngine *aEngine, const char * /*aUri*/)
+{
     QObject *application = aEngine->rootContext()->contextProperty("Core").value<QObject *>();
     QString logoPath = ".";
     QString userLogoPath = ".";
     QString interfacePath = ".";
 
-    if (application) {
+    if (application)
+    {
         Log::initialize(application);
 
         logoPath = application->property("environment")

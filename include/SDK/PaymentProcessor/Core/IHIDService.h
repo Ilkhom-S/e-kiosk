@@ -8,11 +8,14 @@
 #include <QtCore/QVariant>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        class IHIDService : public QObject {
+        class IHIDService : public QObject
+        {
             Q_OBJECT
 
           public:
@@ -36,7 +39,8 @@ namespace SDK {
             void ejected();
 
           protected:
-            virtual ~IHIDService() {
+            virtual ~IHIDService()
+            {
             }
         };
 

@@ -5,7 +5,8 @@
 #include "Hardware/Common/ASCII.h"
 
 //--------------------------------------------------------------------------------
-namespace CSparkFR {
+namespace CSparkFR
+{
     /// Префикс.
     const char Prefix = ASCII::STX;
 

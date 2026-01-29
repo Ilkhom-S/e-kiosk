@@ -15,14 +15,18 @@
 #include <SDK/Drivers/WarningLevel.h>
 #include <SDK/Drivers/PrintingModes.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
         class IPrinter;
     } // namespace Driver
-    namespace PaymentProcessor {
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        class IPrinterService : public QObject {
+        class IPrinterService : public QObject
+        {
             Q_OBJECT
 
           public:
@@ -59,7 +63,8 @@ namespace SDK {
             void receiptPrinted(int aJobIndex, bool aErrorHappened);
 
           protected:
-            virtual ~IPrinterService() {
+            virtual ~IPrinterService()
+            {
             }
         };
 

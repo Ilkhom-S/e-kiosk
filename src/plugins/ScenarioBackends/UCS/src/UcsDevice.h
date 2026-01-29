@@ -24,7 +24,8 @@
 // Project
 #include "API.h"
 
-namespace Ucs {
+namespace Ucs
+{
     const char ModelName[] = "UCS";
 } // namespace Ucs
 
@@ -32,23 +33,28 @@ namespace Ucs {
 class UcsDevice : public QObject,
                   public SDK::Driver::ICardReader,
                   private SDK::Driver::SingleDetectingIterator,
-                  public ILogable {
+                  public ILogable
+{
     Q_OBJECT
 
   public:
     UcsDevice();
     ~UcsDevice();
 
-    static QString getDeviceType() {
+    static QString getDeviceType()
+    {
         return SDK::Driver::CComponents::CardReader;
     }
-    static QString getInteractionType() {
+    static QString getInteractionType()
+    {
         return SDK::Driver::CInteractionTypes::External;
     }
-    static QString getSeries() {
+    static QString getSeries()
+    {
         return Ucs::ModelName;
     }
-    static QString getSubSeries() {
+    static QString getSubSeries()
+    {
         return "";
     }
 

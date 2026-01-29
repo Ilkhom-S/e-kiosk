@@ -7,12 +7,15 @@
 #include <QtCore/QObject>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace GUI {
+namespace SDK
+{
+    namespace GUI
+    {
 
         //------------------------------------------------------------------------------
         /// Константы для параметров диалоговых окон.
-        namespace CMessageBox {
+        namespace CMessageBox
+        {
             const QString SceneName = "MessageBox";
             const QString Popup = "popup";
             const QString Icon = "icon";
@@ -28,7 +31,8 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         /// Параметры для диалоговых окон.
-        class MessageBoxParams : public QObject {
+        class MessageBoxParams : public QObject
+        {
             Q_OBJECT
 
             Q_ENUMS(Enum);
@@ -38,19 +42,34 @@ namespace SDK {
 
           public:
             /// Перечисление для типов кнопок и иконок.
-            enum Enum { NoButton, OK, Cancel, NoIcon, Info, Warning, Critical, Wait, Question, Text };
+            enum Enum
+            {
+                NoButton,
+                OK,
+                Cancel,
+                NoIcon,
+                Info,
+                Warning,
+                Critical,
+                Wait,
+                Question,
+                Text
+            };
 
           public:
             /// Возвращает имя свойства иконки.
-            QString getIcon() const {
+            QString getIcon() const
+            {
                 return CMessageBox::Icon;
             }
             /// Возвращает имя свойства текста.
-            QString getText() const {
+            QString getText() const
+            {
                 return CMessageBox::TextMessage;
             }
             /// Возвращает имя свойства кнопки.
-            QString getButton() const {
+            QString getButton() const
+            {
                 return CMessageBox::Button;
             }
         };

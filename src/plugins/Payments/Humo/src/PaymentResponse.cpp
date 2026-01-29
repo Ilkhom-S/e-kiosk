@@ -22,17 +22,22 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
 PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aResponseString)
-    : Response(aRequest, aResponseString) {
+    : Response(aRequest, aResponseString)
+{
     // Добавляем параметры, прописанные в конфиге как входящие, в свойства платежа, связанного с запросом.
     const PaymentRequest *request = dynamic_cast<const PaymentRequest *>(&aRequest);
 
-    if (request) {
+    if (request)
+    {
         setLog(request->getPayment()->getPaymentFactory()->getLog());
 
-        if (request->getPayment()->getProviderSettings().processor.requests.contains(request->getName())) {
+        if (request->getPayment()->getProviderSettings().processor.requests.contains(request->getName()))
+        {
             auto getFieldCodec =
-                [](const SProvider::SProcessingTraits::SRequest::SResponseField &aField) -> QStringDecoder {
-                switch (aField.codepage) {
+                [](const SProvider::SProcessingTraits::SRequest::SResponseField &aField) -> QStringDecoder
+            {
+                switch (aField.codepage)
+                {
                     case SProvider::SProcessingTraits::SRequest::SResponseField::Utf8:
                         return QStringDecoder(QStringDecoder::Utf8);
 
@@ -43,9 +48,11 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
 
             auto convertFieldValue =
                 [&getFieldCodec](const SProvider::SProcessingTraits::SRequest::SResponseField &aField,
-                                 const QVariant &aValue) -> QVariant {
+                                 const QVariant &aValue) -> QVariant
+            {
                 QStringDecoder decoder = getFieldCodec(aField);
-                switch (aField.encoding) {
+                switch (aField.encoding)
+                {
                     case SProvider::SProcessingTraits::SRequest::SResponseField::Url:
                         return QString(decoder.decode(QByteArray::fromPercentEncoding(aValue.toString().toLatin1())));
 
@@ -57,27 +64,32 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
                 }
             };
 
-            foreach (
-                auto field,
-                request->getPayment()->getProviderSettings().processor.requests[request->getName()].responseFields) {
+            foreach (auto field,
+                     request->getPayment()->getProviderSettings().processor.requests[request->getName()].responseFields)
+            {
                 QVariant value = getParameter(field.name);
 
                 // проверка наличия поля в ответе
-                if (!value.isValid()) {
+                if (!value.isValid())
+                {
                     // В платеже может сохраниться значение поля от предыдущего запроса. Сбросим.
                     request->getPayment()->setParameter(Payment::SParameter(field.name, QString(), true));
 
-                    if (field.required) {
+                    if (field.required)
+                    {
                         toLog(LogLevel::Error, QString("Payment %1. Can't find expected param '%2' in server response.")
                                                    .arg(request->getPayment()->getID())
                                                    .arg(field.name));
 
-                        if (!getError() || getError() == ELocalError::NetworkError) {
+                        if (!getError() || getError() == ELocalError::NetworkError)
+                        {
                             // Добавляем ошибку, если другой нет
                             addParameter(CResponse::Parameters::Error,
                                          QString::number(ELocalError::AbsentExpectedParam));
                         }
-                    } else {
+                    }
+                    else
+                    {
                         toLog(LogLevel::Warning,
                               QString("Payment %1. Can't find optional param '%2' in server response.")
                                   .arg(request->getPayment()->getID())
@@ -90,7 +102,8 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
                 QString valueString = value.toString();
 
                 // Поле может быть зашифровано, проверяем.
-                if (field.crypted) {
+                if (field.crypted)
+                {
                     ICryptEngine *cryptEngine = request->getPayment()->getPaymentFactory()->getCryptEngine();
 
                     QByteArray decryptedValue;
@@ -98,11 +111,14 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
                     QString error;
 
                     if (cryptEngine->decrypt(request->getPayment()->getProviderSettings().processor.keyPair,
-                                             valueString.toLatin1(), decryptedValue, error)) {
+                                             valueString.toLatin1(), decryptedValue, error))
+                    {
                         mCryptedFields << field.name;
 
                         valueString = QString::fromLatin1(decryptedValue);
-                    } else {
+                    }
+                    else
+                    {
                         toLog(LogLevel::Error, QString("Payment %1. Failed to decrypt parameter %2. Error: %3.")
                                                    .arg(request->getPayment()->getID())
                                                    .arg(field.name)
@@ -110,12 +126,15 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
                     }
 
                     request->getPayment()->setParameter(Payment::SParameter(field.name, valueString, true, true));
-                } else {
+                }
+                else
+                {
                     auto convertedValue = convertFieldValue(field, value);
                     request->getPayment()->setParameter(Payment::SParameter(field.name, convertedValue, true));
 
                     // Единственное поле из стандартного протокола, которое может быть перекодировано.
-                    if (field.name == CResponse::Parameters::ErrorMessage) {
+                    if (field.name == CResponse::Parameters::ErrorMessage)
+                    {
                         addParameter(field.name, convertedValue.toString());
                     }
                 }
@@ -129,9 +148,11 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
                            << QPair<QString, QString>("GATEWAY_IN", PPSDK::CPayment::Parameters::MNPGatewayIn)
                            << QPair<QString, QString>("GATEWAY_OUT", PPSDK::CPayment::Parameters::MNPGatewayOut);
 
-        foreach (auto parameter, protocolParameters) {
+        foreach (auto parameter, protocolParameters)
+        {
             QVariant value = getParameter(parameter.first);
-            if (value.isValid()) {
+            if (value.isValid())
+            {
                 request->getPayment()->setParameter(Payment::SParameter(parameter.second, value, true));
             }
         }
@@ -139,11 +160,13 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
 }
 
 //---------------------------------------------------------------------------
-QString PaymentResponse::toLogString() const {
+QString PaymentResponse::toLogString() const
+{
     QStringList result;
 
     // Значения зашифрованных полей мы должны скрывать.
-    for (auto it = getParameters().begin(); it != getParameters().end(); ++it) {
+    for (auto it = getParameters().begin(); it != getParameters().end(); ++it)
+    {
         result << QString("%1 = \"%2\"")
                       .arg(it.key())
                       .arg(mCryptedFields.contains(it.key()) ? "**CRYPTED**" : it.value().toString());

@@ -22,11 +22,13 @@
 #include "PinGetCardListResponse.h"
 #include "PinPayment.h"
 
-namespace CPaymentFactory {
+namespace CPaymentFactory
+{
     const char PluginName[] = "HumoPayments";
 } // namespace CPaymentFactory
 
-namespace CProcessorType {
+namespace CProcessorType
+{
     const QString Humo = "humo";
     const QString HumoPin = "humo_pin";
     const QString Dealer = "dealer";
@@ -34,10 +36,12 @@ namespace CProcessorType {
 } // namespace CProcessorType
 
 //------------------------------------------------------------------------------
-namespace {
+namespace
+{
 
     /// Конструктор экземпляра плагина.
-    SDK::Plugin::IPlugin *CreatePaymentFactory(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+    SDK::Plugin::IPlugin *CreatePaymentFactory(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+    {
         return new PaymentFactory(aFactory, aInstancePath);
     }
 
@@ -49,41 +53,54 @@ namespace {
 
 //------------------------------------------------------------------------------
 PaymentFactory::PaymentFactory(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : PaymentFactoryBase(aFactory, aInstancePath), mPinLoader(0) {
+    : PaymentFactoryBase(aFactory, aInstancePath), mPinLoader(0)
+{
 }
 
 //------------------------------------------------------------------------------
-QString PaymentFactory::getPluginName() const {
+QString PaymentFactory::getPluginName() const
+{
     return CPaymentFactory::PluginName;
 }
 
 //------------------------------------------------------------------------------
-bool PaymentFactory::initialize() {
+bool PaymentFactory::initialize()
+{
     mPinLoader = new PinLoader(this);
     return true;
 }
 
 //------------------------------------------------------------------------------
-void PaymentFactory::shutdown() {
+void PaymentFactory::shutdown()
+{
     delete mPinLoader;
     mPinLoader = 0;
 }
 
 //------------------------------------------------------------------------------
-QStringList PaymentFactory::getSupportedPaymentTypes() const {
+QStringList PaymentFactory::getSupportedPaymentTypes() const
+{
     return QStringList() << CProcessorType::Humo << CProcessorType::HumoPin << CProcessorType::Dealer
                          << CProcessorType::Multistage;
 }
 
 //------------------------------------------------------------------------------
-SDK::PaymentProcessor::IPayment *PaymentFactory::createPayment(const QString &aType) {
-    if (aType.toLower() == CProcessorType::Humo) {
+SDK::PaymentProcessor::IPayment *PaymentFactory::createPayment(const QString &aType)
+{
+    if (aType.toLower() == CProcessorType::Humo)
+    {
         return new Payment(this);
-    } else if (aType.toLower() == CProcessorType::HumoPin) {
+    }
+    else if (aType.toLower() == CProcessorType::HumoPin)
+    {
         return new PinPayment(this);
-    } else if (aType.toLower() == CProcessorType::Dealer) {
+    }
+    else if (aType.toLower() == CProcessorType::Dealer)
+    {
         return new DealerPayment(this);
-    } else if (aType.toLower() == CProcessorType::Multistage) {
+    }
+    else if (aType.toLower() == CProcessorType::Multistage)
+    {
         return new MultistagePayment(this);
     }
 
@@ -91,27 +108,39 @@ SDK::PaymentProcessor::IPayment *PaymentFactory::createPayment(const QString &aT
 }
 
 //------------------------------------------------------------------------------
-void PaymentFactory::releasePayment(SDK::PaymentProcessor::IPayment *aPayment) {
+void PaymentFactory::releasePayment(SDK::PaymentProcessor::IPayment *aPayment)
+{
     delete dynamic_cast<Payment *>(aPayment);
 }
 
 //------------------------------------------------------------------------------
-PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider &aProvider) {
-    if (aProvider.processor.type == CProcessorType::HumoPin) {
+PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider &aProvider)
+{
+    if (aProvider.processor.type == CProcessorType::HumoPin)
+    {
         return mPinLoader->getProviderSpecification(aProvider);
-    } else if (aProvider.processor.type == CProcessorType::Humo) {
+    }
+    else if (aProvider.processor.type == CProcessorType::Humo)
+    {
         return aProvider;
-    } else if (aProvider.processor.type == CProcessorType::Dealer) {
+    }
+    else if (aProvider.processor.type == CProcessorType::Dealer)
+    {
         return aProvider;
-    } else if (aProvider.processor.type == CProcessorType::Multistage) {
+    }
+    else if (aProvider.processor.type == CProcessorType::Multistage)
+    {
         return aProvider;
-    } else {
+    }
+    else
+    {
         return PPSDK::SProvider();
     }
 }
 
 //------------------------------------------------------------------------------
-QList<SPinCard> PaymentFactory::getPinCardList(qint64 aProvider) {
+QList<SPinCard> PaymentFactory::getPinCardList(qint64 aProvider)
+{
     return mPinLoader ? mPinLoader->getPinCardList(aProvider) : QList<SPinCard>();
 }
 

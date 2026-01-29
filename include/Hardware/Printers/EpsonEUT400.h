@@ -5,7 +5,8 @@
 #include <Hardware/Printers/PortPOSPrinters.h>
 
 //--------------------------------------------------------------------------------
-class EpsonEUT400 : public TSerialPOSPrinter {
+class EpsonEUT400 : public TSerialPOSPrinter
+{
     SET_SUBSERIES("EpsonEUT400")
 
   public:

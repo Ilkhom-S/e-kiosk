@@ -5,7 +5,8 @@
 #include "Hardware/Common/ASCII.h"
 
 //--------------------------------------------------------------------------------
-namespace CV2e {
+namespace CV2e
+{
     /// Первый байт при упаковке данных.
     const char Prefix = ASCII::STX;
 

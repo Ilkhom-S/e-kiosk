@@ -17,12 +17,14 @@
 #include "../GUI/MessageBox/MessageBox.h"
 
 //------------------------------------------------------------------------
-namespace CMessageBox {
+namespace CMessageBox
+{
     extern const int WaitWindowTimeout; // 3 секунды - defined in GUI/MessageBox.h
 } // namespace CMessageBox
 
 //------------------------------------------------------------------------
-class MessageBox : public QObject {
+class MessageBox : public QObject
+{
     Q_OBJECT
 
   public:
@@ -62,10 +64,12 @@ class MessageBox : public QObject {
     void updatePopup(const QVariantMap &aParameters);
     void setReceiver(QObject *aReceiver);
     void emitPopupSignal(const QVariantMap &aParameters);
-    void startWaitTimer() {
+    void startWaitTimer()
+    {
         mWaitTimer.start(CMessageBox::WaitWindowTimeout);
     }
-    void stopWaitTimer() {
+    void stopWaitTimer()
+    {
         mWaitTimer.stop();
     }
 
@@ -77,10 +81,12 @@ class MessageBox : public QObject {
 
   private:
     MessageBox(SDK::PaymentProcessor::IGUIService *aGUIService);
-    ~MessageBox() {
+    ~MessageBox()
+    {
     }
 
-    static MessageBox *getInstance() {
+    static MessageBox *getInstance()
+    {
         return mInstance;
     }
 

@@ -9,7 +9,8 @@
 #include "IDTechCallbacks.h"
 
 //------------------------------------------------------------------------------
-void logMessageHotplugOut(int, int) {
+void logMessageHotplugOut(int, int)
+{
     qDebug() << __FUNCTION_NAME__;
 
     /**
@@ -21,7 +22,8 @@ void logMessageHotplugOut(int, int) {
 }
 
 //------------------------------------------------------------------------------
-void logSendingMessageOut(unsigned char *, int) {
+void logSendingMessageOut(unsigned char *, int)
+{
     qDebug() << __FUNCTION_NAME__;
 
     /**
@@ -31,7 +33,8 @@ void logSendingMessageOut(unsigned char *, int) {
 }
 
 //------------------------------------------------------------------------------
-void logReadingMessageOut(unsigned char *, int) {
+void logReadingMessageOut(unsigned char *, int)
+{
     qDebug() << __FUNCTION_NAME__;
 
     /**
@@ -41,7 +44,8 @@ void logReadingMessageOut(unsigned char *, int) {
 }
 
 //------------------------------------------------------------------------------
-void getEMVDataPOut(int, int, unsigned char *, int, IDTTransactionData *, EMV_Callback *, int) {
+void getEMVDataPOut(int, int, unsigned char *, int, IDTTransactionData *, EMV_Callback *, int)
+{
     qDebug() << __FUNCTION_NAME__;
 
     /**
@@ -51,7 +55,8 @@ void getEMVDataPOut(int, int, unsigned char *, int, IDTTransactionData *, EMV_Ca
 }
 
 //------------------------------------------------------------------------------
-void getMSRCardDataOut(int, IDTMSRData) {
+void getMSRCardDataOut(int, IDTMSRData)
+{
     qDebug() << __FUNCTION_NAME__;
 
     /**
@@ -61,7 +66,8 @@ void getMSRCardDataOut(int, IDTMSRData) {
 }
 
 //------------------------------------------------------------------------------
-void getMSRCardDataPOut(int, IDTMSRData *) {
+void getMSRCardDataPOut(int, IDTMSRData *)
+{
     qDebug() << __FUNCTION_NAME__;
 
     /**
@@ -97,7 +103,8 @@ void getCTLSCardDataPOut(
 }
 
 //------------------------------------------------------------------------------
-void getPinpadDataPOut(int, IDTPINData *) {
+void getPinpadDataPOut(int, IDTPINData *)
+{
     qDebug() << __FUNCTION_NAME__;
 
     /**
@@ -107,7 +114,8 @@ void getPinpadDataPOut(int, IDTPINData *) {
 }
 
 //------------------------------------------------------------------------------
-void getUpdatingStatusOut(int, int, int, int, int) {
+void getUpdatingStatusOut(int, int, int, int, int)
+{
     qDebug() << __FUNCTION_NAME__;
 
     /**

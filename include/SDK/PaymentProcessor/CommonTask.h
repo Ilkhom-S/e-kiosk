@@ -14,13 +14,16 @@
 #include "ITask.h"
 
 //------------------------------------------------------------------------------
-namespace SDK {
+namespace SDK
+{
 
     //------------------------------------------------------------------------------
-    namespace PaymentProcessor {
+    namespace PaymentProcessor
+    {
 
         /// База задачи для планировщика.
-        class CommonTask : public ITask {
+        class CommonTask : public ITask
+        {
           public:
             /// Тип условия выполнения задачи.
             typedef boost::function<bool(const ITask::TContext &)> TCondition;
@@ -29,15 +32,18 @@ namespace SDK {
 
             /// Конструктор.
             CommonTask(TCondition aCondition, TMethod aMethod, bool aIsThread = false)
-                : mCondition(aCondition), mMethod(aMethod), mIsThread(aIsThread) {
+                : mCondition(aCondition), mMethod(aMethod), mIsThread(aIsThread)
+            {
             }
 
             /// Деструктор.
-            virtual ~CommonTask() {
+            virtual ~CommonTask()
+            {
             }
 
             /// ITask: Предикат возвращает true, если задача может быть выполнена в данный момент.
-            virtual bool isReady(TContext &aContext) {
+            virtual bool isReady(TContext &aContext)
+            {
                 aContext[TaskContext::LastActivation] = mLastActivation;
 
                 bool result = mCondition(aContext);
@@ -48,12 +54,14 @@ namespace SDK {
             }
 
             /// ITask: Возвращает true, если задача должна выполняться в отдельном потоке.
-            virtual bool isThread() const {
+            virtual bool isThread() const
+            {
                 return mIsThread;
             }
 
             /// ITask: Рабочая процедура задачи.
-            virtual void run() {
+            virtual void run()
+            {
                 mLastActivation = QDateTime::currentDateTime();
 
                 mMethod();

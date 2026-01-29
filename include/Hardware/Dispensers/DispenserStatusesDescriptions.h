@@ -6,10 +6,13 @@
 #include "Hardware/Dispensers/DispenserStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace DispenserStatusCode {
-    class CSpecifications : public DeviceStatusCode::CSpecifications {
+namespace DispenserStatusCode
+{
+    class CSpecifications : public DeviceStatusCode::CSpecifications
+    {
       public:
-        CSpecifications() {
+        CSpecifications()
+        {
             ADD_OK_STATUS(SingleMode, "");
             ADD_OK_STATUS(Locked, "");
 

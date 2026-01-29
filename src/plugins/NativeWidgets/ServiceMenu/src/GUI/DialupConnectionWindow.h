@@ -8,7 +8,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-class DialupConnectionWindow : public QWidget, protected Ui::DialupConnectionWindow {
+class DialupConnectionWindow : public QWidget, protected Ui::DialupConnectionWindow
+{
     Q_OBJECT
 
   public:

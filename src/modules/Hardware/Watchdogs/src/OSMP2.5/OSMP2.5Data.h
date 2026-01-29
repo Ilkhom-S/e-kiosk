@@ -8,7 +8,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //----------------------------------------------------------------------------
-namespace COSMP25 {
+namespace COSMP25
+{
     /// Тег модели для идентификации.
     const char ModelTag[] = "2.5.";
 
@@ -40,7 +41,8 @@ namespace COSMP25 {
     const int PCWakingUpLag = 5;
 
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char GetVersion = '\x00';           /// Версия
         const char SerialNumber = '\x01';         /// Серийный номер
         const char ResetModem = '\x02';           /// Сброс модема

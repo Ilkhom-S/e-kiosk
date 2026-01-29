@@ -5,14 +5,19 @@
 IDatabaseProxy *g_databaseProxy = 0;
 
 //---------------------------------------------------------------------------
-IDatabaseProxy *IDatabaseProxy::getInstance(IDatabaseQueryChecker *aErrorChecker, Type aType) {
-    try {
-        if (!g_databaseProxy) {
-            if (!aErrorChecker) {
+IDatabaseProxy *IDatabaseProxy::getInstance(IDatabaseQueryChecker *aErrorChecker, Type aType)
+{
+    try
+    {
+        if (!g_databaseProxy)
+        {
+            if (!aErrorChecker)
+            {
                 return nullptr;
             }
 
-            switch (aType) {
+            switch (aType)
+            {
                 case MySql:
                     g_databaseProxy = new MySqlDatabaseProxy();
                     break;
@@ -27,15 +32,19 @@ IDatabaseProxy *IDatabaseProxy::getInstance(IDatabaseQueryChecker *aErrorChecker
         }
 
         return g_databaseProxy;
-    } catch (...) {
+    }
+    catch (...)
+    {
     }
 
     return 0;
 }
 
 //---------------------------------------------------------------------------
-void IDatabaseProxy::freeInstance(IDatabaseProxy *aProxy) {
-    if (g_databaseProxy) {
+void IDatabaseProxy::freeInstance(IDatabaseProxy *aProxy)
+{
+    if (g_databaseProxy)
+    {
         delete aProxy;
         g_databaseProxy = 0;
     }

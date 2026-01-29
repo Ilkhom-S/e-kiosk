@@ -9,7 +9,8 @@
 #include <Hardware/Watchdogs/ShtrihConstants.h>
 
 //--------------------------------------------------------------------------------
-class Shtrih : public WatchdogBase {
+class Shtrih : public WatchdogBase
+{
     SET_SERIES("Shtrih")
 
   public:

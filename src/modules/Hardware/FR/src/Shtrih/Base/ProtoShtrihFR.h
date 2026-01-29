@@ -13,7 +13,8 @@
 #include "../ModelData.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class ProtoShtrihFR : public T {
+template <class T> class ProtoShtrihFR : public T
+{
     SET_SERIES("Shtrih")
 
   public:
@@ -82,7 +83,8 @@ template <class T> class ProtoShtrihFR : public T {
     virtual void checkSalesName(QString &aName);
 
     /// Установить флаги по ошибке в ответе.
-    virtual void setErrorFlags() {
+    virtual void setErrorFlags()
+    {
     }
 
     /// Печать Z отчета.

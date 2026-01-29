@@ -10,7 +10,8 @@
 #include <Hardware/FR/FRBase.h>
 
 //--------------------------------------------------------------------------------
-template <class T> class PortFRBase : public FRBase<T> {
+template <class T> class PortFRBase : public FRBase<T>
+{
   public:
     PortFRBase();
 
@@ -65,13 +66,16 @@ template <class T> class PortFRBase : public FRBase<T> {
     virtual bool isErrorUnprocessed(const QByteArray &aCommand, char aError);
 
     /// Буфер обрабатываемых ошибок.
-    class ErrorBuffer : public QList<char> {
+    class ErrorBuffer : public QList<char>
+    {
       public:
-        void removeLast() {
+        void removeLast()
+        {
             if (!isEmpty())
                 QList::removeLast();
         }
-        void pop_back() {
+        void pop_back()
+        {
             if (!isEmpty())
                 QList::pop_back();
         }
@@ -95,18 +99,23 @@ template <class T> class PortFRBase : public FRBase<T> {
     /// Данные необрабатываемых ошибок.
     typedef QSet<char> TErrors;
 
-    class UnprocessedErrorData : public CSpecification<QByteArray, TErrors> {
+    class UnprocessedErrorData : public CSpecification<QByteArray, TErrors>
+    {
       public:
-        void add(char aCommand, char aError) {
+        void add(char aCommand, char aError)
+        {
             data()[QByteArray(1, aCommand)].insert(aError);
         }
-        void add(const QByteArray &aCommand, char aError) {
+        void add(const QByteArray &aCommand, char aError)
+        {
             data()[aCommand].insert(aError);
         }
-        void add(char aCommand, const TErrors &aErrors) {
+        void add(char aCommand, const TErrors &aErrors)
+        {
             append(QByteArray(1, aCommand), aErrors);
         }
-        void add(const QByteArray &aCommand, const TErrors &aErrors) {
+        void add(const QByteArray &aCommand, const TErrors &aErrors)
+        {
             append(aCommand, aErrors);
         }
     };

@@ -16,12 +16,15 @@
 #include <SDK/Plugins/IPlugin.h>
 #include <SDK/Plugins/PluginParameters.h>
 
-namespace SDK {
-    namespace Plugin {
+namespace SDK
+{
+    namespace Plugin
+    {
 
         //------------------------------------------------------------------------------
         /// Интерфейс фабрики плагинов.
-        class IPluginFactory {
+        class IPluginFactory
+        {
           public:
             /// Инициализирует библиотеку.
             virtual bool initialize(IKernel *aKernel, const QString &aDirectory) = 0;

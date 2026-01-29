@@ -4,11 +4,14 @@
 
 #include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        class ISettingsService {
+        class ISettingsService
+        {
           public:
             /// Получить адаптер настроек.
             virtual ISettingsAdapter *getAdapter(const QString &aAdapterName) = 0;
@@ -17,7 +20,8 @@ namespace SDK {
             virtual bool saveConfiguration() = 0;
 
           protected:
-            virtual ~ISettingsService() {
+            virtual ~ISettingsService()
+            {
             }
         };
 

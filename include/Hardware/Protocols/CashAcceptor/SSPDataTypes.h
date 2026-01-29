@@ -3,18 +3,23 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-namespace CSSP {
+namespace CSSP
+{
     /// Таймаут для ожидания ответа по умолчанию, [мс].
     const int DefaultTimeout = 200;
 
-    namespace Commands {
-        struct SData {
+    namespace Commands
+    {
+        struct SData
+        {
             int timeout;
             bool setSync;
 
-            SData() : timeout(DefaultTimeout), setSync(false) {
+            SData() : timeout(DefaultTimeout), setSync(false)
+            {
             }
-            SData(int aTimeout, bool aSetSync) : timeout(aTimeout), setSync(aSetSync) {
+            SData(int aTimeout, bool aSetSync) : timeout(aTimeout), setSync(aSetSync)
+            {
             }
         };
     } // namespace Commands

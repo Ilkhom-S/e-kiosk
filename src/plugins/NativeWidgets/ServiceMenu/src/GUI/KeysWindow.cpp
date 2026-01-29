@@ -25,10 +25,12 @@
 #include "SIPStyle.h"
 #include "ServiceTags.h"
 
-KeysWindow::KeysWindow(ServiceMenuBackend *aBackend, QWidget *aParent) : QFrame(aParent), mBackend(aBackend) {
+KeysWindow::KeysWindow(ServiceMenuBackend *aBackend, QWidget *aParent) : QFrame(aParent), mBackend(aBackend)
+{
     setupUi(this);
 
-    foreach (QLineEdit *le, findChildren<QLineEdit *>()) {
+    foreach (QLineEdit *le, findChildren<QLineEdit *>())
+    {
         le->setStyle(new SIPStyle);
     }
 
@@ -41,21 +43,26 @@ KeysWindow::KeysWindow(ServiceMenuBackend *aBackend, QWidget *aParent) : QFrame(
 }
 
 //------------------------------------------------------------------------
-KeysWindow::~KeysWindow() {
-    if (mGenerateTaskWatcher.isRunning()) {
+KeysWindow::~KeysWindow()
+{
+    if (mGenerateTaskWatcher.isRunning())
+    {
         mGenerateTaskWatcher.waitForFinished();
     }
 }
 
 //------------------------------------------------------------------------
-void KeysWindow::initialize(bool aHasRuToken, bool aRutokenOK) {
+void KeysWindow::initialize(bool aHasRuToken, bool aRutokenOK)
+{
     swPages->setCurrentWidget(wGeneratePage);
 
-    foreach (QLineEdit *le, findChildren<QLineEdit *>()) {
+    foreach (QLineEdit *le, findChildren<QLineEdit *>())
+    {
         le->setEnabled(!aHasRuToken || (aHasRuToken && aRutokenOK));
     }
 
-    foreach (QPushButton *pb, findChildren<QPushButton *>()) {
+    foreach (QPushButton *pb, findChildren<QPushButton *>())
+    {
         pb->setEnabled(!aHasRuToken || (aHasRuToken && aRutokenOK));
     }
 
@@ -64,8 +71,10 @@ void KeysWindow::initialize(bool aHasRuToken, bool aRutokenOK) {
 }
 
 //------------------------------------------------------------------------
-bool KeysWindow::save() {
-    if (mGenerateTaskWatcher.isRunning()) {
+bool KeysWindow::save()
+{
+    if (mGenerateTaskWatcher.isRunning())
+    {
         return false;
     }
 
@@ -73,35 +82,43 @@ bool KeysWindow::save() {
 }
 
 //------------------------------------------------------------------------
-void KeysWindow::doGenerate() {
+void KeysWindow::doGenerate()
+{
     mGenerateTaskWatcher.setFuture(QtConcurrent::run(
         boost::bind(&KeysManager::generateKey, mBackend->getKeysManager(), boost::ref(mTaskParameters))));
 }
 
 //------------------------------------------------------------------------
-void KeysWindow::onCreateButtonClicked() {
+void KeysWindow::onCreateButtonClicked()
+{
     SetStyleSheet(login, login->text().isEmpty() ? CKeysWindow::WarningStyleSheet : CKeysWindow::DefaultStyleSheet);
     SetStyleSheet(password,
                   password->text().isEmpty() ? CKeysWindow::WarningStyleSheet : CKeysWindow::DefaultStyleSheet);
 
-    if (login->text().isEmpty() || password->text().isEmpty()) {
+    if (login->text().isEmpty() || password->text().isEmpty())
+    {
         return;
     }
 
     QString keyPair = sbKeypairNumber->text();
     bool rewriteExistNumber = true;
 
-    if (cbKeypairChange->checkState() == Qt::Checked && !keyPair.isEmpty()) {
+    if (cbKeypairChange->checkState() == Qt::Checked && !keyPair.isEmpty())
+    {
         int num = keyPair.toInt();
 
-        if (mBackend->getKeysManager()->getLoadedKeys().contains(num)) {
+        if (mBackend->getKeysManager()->getLoadedKeys().contains(num))
+        {
             rewriteExistNumber = MessageBox::question(tr("#keypair_already_exist"));
         }
-    } else {
+    }
+    else
+    {
         keyPair = "0";
     }
 
-    if (!rewriteExistNumber) {
+    if (!rewriteExistNumber)
+    {
         return;
     }
 
@@ -116,7 +133,8 @@ void KeysWindow::onCreateButtonClicked() {
 }
 
 //------------------------------------------------------------------------
-void KeysWindow::onRepeatButtonClicked() {
+void KeysWindow::onRepeatButtonClicked()
+{
     login->clear();
     password->clear();
 
@@ -124,13 +142,16 @@ void KeysWindow::onRepeatButtonClicked() {
 }
 
 //------------------------------------------------------------------------
-void KeysWindow::onCheckedKeyPairChanged(int aState) {
+void KeysWindow::onCheckedKeyPairChanged(int aState)
+{
     frameKeyPair->setEnabled(aState > 0);
 }
 
 //------------------------------------------------------------------------
-void KeysWindow::onGenerateTaskFinished() {
-    if (mGenerateTaskWatcher.result()) {
+void KeysWindow::onGenerateTaskFinished()
+{
+    if (mGenerateTaskWatcher.result())
+    {
         lbAp->setText(mBackend->getKeysManager()->getAP());
         lbSd->setText(mBackend->getKeysManager()->getSD());
         lbOp->setText(mBackend->getKeysManager()->getOP());
@@ -138,7 +159,9 @@ void KeysWindow::onGenerateTaskFinished() {
         swPages->setCurrentWidget(wResultsPage);
 
         emit endGenerating();
-    } else {
+    }
+    else
+    {
         emit error(mTaskParameters[CServiceTags::Error].toString());
     }
 }

@@ -11,7 +11,8 @@
 #include "AtolDataTypes.h"
 
 //--------------------------------------------------------------------------------
-namespace CAtolFR {
+namespace CAtolFR
+{
     /// Количество товара.
     const int GoodsCountByte = 1;
 
@@ -32,7 +33,8 @@ namespace CAtolFR {
     const char LongReportMask = '\xE4';
 
     /// Флаги выполнения фискальных операций.
-    namespace FiscalFlags {
+    namespace FiscalFlags
+    {
         const char ExecutionMode = '\x00';  /// Режим выполнения операций.
         const char CashChecking = '\x00';   /// Проверять денежную наличность.
         const char TaxForPosition = '\x00'; /// Налог на позицию.
@@ -69,20 +71,23 @@ namespace CAtolFR {
     const char SessionDTFormat[] = "ddMMyyyyhhmmss";
 
     /// Подсистемы ФР, имеющие свой софт - константы для запроса версий софта.
-    namespace FRSubSystems {
+    namespace FRSubSystems
+    {
         const char FR = 0x01; /// Фискальная плата.
         const char FM = 0x02; /// Фискальная память.
         const char BL = 0x03; /// Загрузчик.
     } // namespace FRSubSystems
 
     /// Типы отчетов без гашения.
-    namespace Balances {
+    namespace Balances
+    {
         /// Тип отчета без гашения - X-отчет.
         const char XReport = '\x01';
     } // namespace Balances
 
     /// Таймауты чтения, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// После окончания печати нефискального чека, чтобы принтер не захлебнулся командами, не начал отрезать по
         /// напечатанному и пр.
         const int EndNotFiscalPrint = 500;
@@ -100,9 +105,11 @@ namespace CAtolFR {
         const int XReportPoll = 500;
     } // namespace Timeouts
 
-    class CPayOffTypeData : public CSpecification<SDK::Driver::EPayOffTypes::Enum, char> {
+    class CPayOffTypeData : public CSpecification<SDK::Driver::EPayOffTypes::Enum, char>
+    {
       public:
-        CPayOffTypeData() {
+        CPayOffTypeData()
+        {
             using namespace SDK::Driver;
 
             append(EPayOffTypes::Debit, 1);
@@ -115,7 +122,8 @@ namespace CAtolFR {
     static CPayOffTypeData PayOffTypeData;
 
     /// Тип оплаты.
-    namespace PaymentSource {
+    namespace PaymentSource
+    {
         const char Cash = 1;  /// Наличные.
         const char Type2 = 2; /// Типы 2..4 - пользовательские.
         const char Type3 = 3;
@@ -124,16 +132,19 @@ namespace CAtolFR {
 
     //------------------------------------------------------------------------------------------------
     /// Теги.
-    class TagEngine : public Tags::Engine {
+    class TagEngine : public Tags::Engine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             appendSingle(Tags::Type::DoubleWidth, "", "\x09");
         }
     };
 
     //------------------------------------------------------------------------------------------------
     /// Коды команд.
-    namespace Commands {
+    namespace Commands
+    {
         /// Команды получения информации об устройстве.
         const char GetModelInfo = '\xA5';    /// Получить инфо о модели ФР.
         const char GetSoftInfo = '\x9D';     /// Получить инфо о ПО девайса (ФР, ФП, загрузчик).
@@ -164,14 +175,16 @@ namespace CAtolFR {
     } // namespace Commands
 
     /// Коды состояний, возвращаемых в байте флагов на команду 3Fh.
-    namespace States {
+    namespace States
+    {
         const char Fiscalized = 0x01;    /// Признак фискализированности ККМ.
         const char SessionOpened = 0x02; /// Признак открытой смены.
         const char CoverIsOpened = 0x20; /// Признак открытия крышки ККМ.
     } // namespace States
 
     /// Ошибки.
-    namespace Errors {
+    namespace Errors
+    {
         const char EnterToModeIsLocked = '\x1E';   /// Вход в режим заблокирован.
         const char BadModeForCommand = '\x66';     /// Команда не может быть выполнена в текущем режиме.
         const char NoPaper = '\x67';               /// Нет бумаги. Может означать все, что угодно.
@@ -186,9 +199,11 @@ namespace CAtolFR {
         const char PrinterHeadOverheat = '\xD1';   /// Перегрев головки принтера.
     } // namespace Errors
 
-    class CShortFlags : public CSpecification<char, int> {
+    class CShortFlags : public CSpecification<char, int>
+    {
       public:
-        CShortFlags() {
+        CShortFlags()
+        {
             append('\x01', PrinterStatusCode::Error::PaperEnd);
             append('\x02', PrinterStatusCode::Error::PrinterFRNotAvailable);
             append('\x04', PrinterStatusCode::Error::PrintingHead);
@@ -201,7 +216,8 @@ namespace CAtolFR {
 
     static CShortFlags ShortFlags;
 
-    namespace FRParameters {
+    namespace FRParameters
+    {
         const SData TaxType = SData(2, 1, 11);
         const SData PrintSectionName = SData(2, 1, 15);
         const SData ReportMode = SData(2, 1, 18);
@@ -218,22 +234,27 @@ namespace CAtolFR {
         const SData PrintNotFiscalData = SData(2, 1, 51);
         const SData PrintingSettings = SData(2, 1, 55);
 
-        inline SData DocumentCap(int aSeries) {
+        inline SData DocumentCap(int aSeries)
+        {
             return SData(6, ushort(aSeries), 1);
         }
-        inline SData SectionName(int aSeries) {
+        inline SData SectionName(int aSeries)
+        {
             return SData(7, ushort(aSeries), 1);
         }
-        inline SData Tax(int aSeries) {
+        inline SData Tax(int aSeries)
+        {
             return SData(8, ushort(aSeries), 1);
         }
-        inline SData TaxDescription(int aSeries) {
+        inline SData TaxDescription(int aSeries)
+        {
             return SData(13, ushort(aSeries), 1);
         }
     } // namespace FRParameters
 
     /// Регистры
-    namespace Registers {
+    namespace Registers
+    {
         const char PaymentAmount[] = "amount of payments";
         const char PaymentCount[] = "count of successful payments";
         const char MoneyInCash[] = "money in cash";
@@ -245,7 +266,8 @@ namespace CAtolFR {
     } // namespace Registers
 
     /// Режимы.
-    namespace InnerModes {
+    namespace InnerModes
+    {
         const char NoMode = '\xFF';
         const char Choice = '\x00';
         const char Register = '\x01';
@@ -258,7 +280,8 @@ namespace CAtolFR {
     } // namespace InnerModes
 
     /// Подрежимы.
-    namespace InnerSubmodes {
+    namespace InnerSubmodes
+    {
         const char NoSubmode = '\xFF';
         const char EnterDate = '\x05';
         const char EnterTime = '\x06';
@@ -268,7 +291,8 @@ namespace CAtolFR {
     } // namespace InnerSubmodes
 
     /// Пользователи. По умолчанию пароль для входа в режим совпадает с номером пользователя.
-    namespace Users {
+    namespace Users
+    {
         const uchar Admin = 0x29;
         const uchar SysAdmin = 0x30;
     } // namespace Users
@@ -276,10 +300,12 @@ namespace CAtolFR {
     /// Данные языковых таблиц.
     typedef QMap<uchar, QString> TLanguages;
 
-    struct SLanguages {
+    struct SLanguages
+    {
         TLanguages mLanguages;
 
-        SLanguages() {
+        SLanguages()
+        {
             mLanguages.insert(0, "Russian");
             mLanguages.insert(1, "Armenian");
             mLanguages.insert(2, "Moldavian");
@@ -303,7 +329,8 @@ namespace CAtolFR {
             mLanguages.insert(20, "Finnish");
         }
 
-        QString operator[](const uchar languageKey) const {
+        QString operator[](const uchar languageKey) const
+        {
             return mLanguages.contains(languageKey) ? mLanguages[languageKey] : "Unknown";
         }
     };

@@ -17,15 +17,18 @@ class QWebEngineView;
 #include <QtMultimedia/QSoundEffect>
 #include <QtSql/QSqlDatabase>
 
-namespace Lang {
+namespace Lang
+{
     const QString RU = "ru";
     const QString TJ = "tj";
     const QString UZ = "uz";
     const QString EN = "en";
 } // namespace Lang
 
-namespace PageIn {
-    enum page {
+namespace PageIn
+{
+    enum page
+    {
         Main = 0,
         SelectGroup = 1,
         CheckPay = 2,
@@ -38,7 +41,8 @@ namespace PageIn {
         Information = 9,
     };
 
-    enum sec {
+    enum sec
+    {
         sMain = 0,
         sSelectGroup = 60000,
         sCheckPay = 150000,
@@ -52,12 +56,14 @@ namespace PageIn {
     };
 } // namespace PageIn
 
-namespace ConstData {
+namespace ConstData
+{
 
     const QString companyName = "Humo";
     const QString version = "3.2.3";
 
-    namespace Path {
+    namespace Path
+    {
         const QString Config = "assets/config/";
         const QString Font = "assets/fonts/";
         const QString Sound = "assets/sound/";
@@ -65,7 +71,8 @@ namespace ConstData {
         const QString Nominals = "assets/nominals/";
     } // namespace Path
 
-    namespace FileName {
+    namespace FileName
+    {
         const QString StyleQSS = "style.qss";
         const QString Settings = "settings.ini";
         const QString DBName = "database.db";
@@ -73,7 +80,8 @@ namespace ConstData {
     } // namespace FileName
 } // namespace ConstData
 
-namespace Sound {
+namespace Sound
+{
     const QString sGetOperator = "01.wav";
     const QString sInputNumber = "02.wav";
     const QString sInputMoney = "03.wav";
@@ -83,7 +91,8 @@ namespace Sound {
     const QString sGetCategory = "07.wav";
 } // namespace Sound
 
-namespace Ui {
+namespace Ui
+{
     class MainPageLoader;
 } // namespace Ui
 
@@ -92,7 +101,8 @@ namespace Ui {
 //     POST  = 2,
 // };
 
-class MainPageLoader : public QWidget {
+class MainPageLoader : public QWidget
+{
     Q_OBJECT
 
   public:

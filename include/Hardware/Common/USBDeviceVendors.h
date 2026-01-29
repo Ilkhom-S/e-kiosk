@@ -5,12 +5,16 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CUSBVendors {
-    class Data : public CStaticSpecification<QString, quint16> {};
+namespace CUSBVendors
+{
+    class Data : public CStaticSpecification<QString, quint16>
+    {
+    };
 
 #define ADD_USB_VENDOR(aName, aVID)                                                                                    \
     const char aName[] = #aName;                                                                                       \
-    namespace VID {                                                                                                    \
+    namespace VID                                                                                                      \
+    {                                                                                                                  \
         const quint16 aName = CUSBVendors::Data::process(#aName, aVID).value(#aName);                                  \
     }
 

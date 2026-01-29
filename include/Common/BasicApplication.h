@@ -26,7 +26,8 @@ class SingleApplication; // forward declaration
 //--------------------------------------------------------------------------------
 /// Класс абстрактного приложения. Реализует полезные функции (загрузка
 /// конфигурации).
-class BasicApplication {
+class BasicApplication
+{
   public:
     /// Конструктор инициализирует имя и версию приложения и принимает
     /// аргументы командной строки (для распознавания `test` режимов и пр.)
@@ -93,36 +94,45 @@ class BasicApplication {
 //---------------------------------------------------------------------------
 /// Класс приложения, основанного на QCoreApplication/QApplication/QSingleApplication. Вдобавок к базе загружает
 /// локализацию.
-template <class T> class BasicQtApplication : public BasicApplication {
+template <class T> class BasicQtApplication : public BasicApplication
+{
   public:
     /// Тип Qt приложения. Может быть QCoreApplication/QApplication/QSingleApplication.
     typedef T TApplication;
 
     BasicQtApplication(const QString &aName, const QString &aVersion, int &aArgumentCount, char **aArguments);
-    virtual ~BasicQtApplication() override {
+    virtual ~BasicQtApplication() override
+    {
     }
 
     /// Возвращает true, если это первичный экземпляр приложения.
-    virtual bool isPrimaryInstance() const override {
-        if (std::is_same<T, SingleApplication>::value) {
+    virtual bool isPrimaryInstance() const override
+    {
+        if (std::is_same<T, SingleApplication>::value)
+        {
             return static_cast<const SingleApplication &>(mQtApplication).isPrimary();
-        } else {
+        }
+        else
+        {
             return BasicApplication::isPrimaryInstance();
         }
     }
 
     /// Запускает цикл обработки событий.
-    int exec() {
+    int exec()
+    {
         return mQtApplication.exec();
     }
 
     /// Возвращает аргументы командной строки.
-    QStringList getArguments() const {
+    QStringList getArguments() const
+    {
         return mQtApplication.arguments();
     }
 
     /// Возвращает экземпляр Qt приложения.
-    TApplication &getQtApplication() {
+    TApplication &getQtApplication()
+    {
         return mQtApplication;
     }
 
@@ -138,21 +148,26 @@ template <typename T>
 BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &aVersion, int &aArgumentCount,
                                           char **aArguments)
     : BasicApplication(aName, aVersion, aArgumentCount, aArguments, !std::is_same<T, SingleApplication>::value),
-      mQtApplication(aArgumentCount, aArguments) {
+      mQtApplication(aArgumentCount, aArguments)
+{
     mQtApplication.setApplicationName(aName);
     mQtApplication.setApplicationVersion(aVersion);
 
     QFileInfo fileInfo(mQtApplication.applicationFilePath());
     QDir translations(getWorkingDirectory(), QString("%1_*.qm").arg(fileInfo.baseName()));
 
-    if (translations.count()) {
+    if (translations.count())
+    {
         QString translation = translations.entryInfoList().first().absoluteFilePath();
         mTranslator.reset(new QTranslator(&mQtApplication));
 
-        if (mTranslator->load(translation)) {
+        if (mTranslator->load(translation))
+        {
             mQtApplication.installTranslator(mTranslator.data());
             getLog()->write(LogLevel::Normal, QString("Translation %1 loaded.").arg(translation));
-        } else {
+        }
+        else
+        {
             getLog()->write(LogLevel::Warning, QString("Failed to load translation %1.").arg(translation));
         }
     }

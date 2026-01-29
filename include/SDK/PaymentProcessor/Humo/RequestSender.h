@@ -20,23 +20,32 @@
 
 class ICryptEngine;
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Humo {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Humo
+        {
 
             class Request;
             class Response;
 
             //---------------------------------------------------------------------------
-            class RequestSender : public QObject {
+            class RequestSender : public QObject
+            {
                 Q_OBJECT
 
               public:
                 /// Способ запроса к серверу.
-                enum ERequestType { Get = 0, Post };
+                enum ERequestType
+                {
+                    Get = 0,
+                    Post
+                };
 
                 /// Описание результатов отправки.
-                enum ESendError {
+                enum ESendError
+                {
                     /// Ошибок нет.
                     Ok = 0,
                     /// Сетевая ошибка.
@@ -60,7 +69,8 @@ namespace SDK {
                 };
 
                 /// Способ подписывания запроса.
-                enum ESignatureType {
+                enum ESignatureType
+                {
                     /// Запрос "оборачивается" подписью.
                     Solid = 0,
                     /// Подпись передаётся в http заголовке.

@@ -22,7 +22,8 @@
 namespace PrinterSettings = CHardware::Printer::Settings;
 
 //--------------------------------------------------------------------------------
-SystemPrinter::SystemPrinter() {
+SystemPrinter::SystemPrinter()
+{
     // данные устройства
     mDeviceName = "System printer";
     setConfigParameter(CHardware::Printer::NeedSeparating, false);
@@ -34,39 +35,46 @@ SystemPrinter::SystemPrinter() {
 }
 
 //--------------------------------------------------------------------------------
-bool SystemPrinter::isConnected() {
+bool SystemPrinter::isConnected()
+{
     return mPrinter.isValid();
 }
 
 //--------------------------------------------------------------------------------
-bool SystemPrinter::updateParameters() {
-    if (mPrinter.printerName().isEmpty()) {
+bool SystemPrinter::updateParameters()
+{
+    if (mPrinter.printerName().isEmpty())
+    {
         return true;
     }
 
     mDeviceName = QStringLiteral("System printer (%1)").arg(mPrinter.printerName());
     QVariantMap deviceData = ISysUtils::getPrinterData(mPrinter.printerName());
 
-    for (auto it = deviceData.begin(); it != deviceData.end(); ++it) {
+    for (auto it = deviceData.begin(); it != deviceData.end(); ++it)
+    {
         setDeviceParameter(it.key(), it.value());
     }
 
     QString name = deviceData[CDeviceData::Name].toString();
 
-    if (name.contains(QStringLiteral("VKP80 II"), Qt::CaseInsensitive)) {
+    if (name.contains(QStringLiteral("VKP80 II"), Qt::CaseInsensitive))
+    {
         setConfigParameter(CHardwareSDK::Printer::LineSize, 44);
         setConfigParameter(PrinterSettings::LeftMargin, 1);
         setConfigParameter(PrinterSettings::RightMargin, 1);
     }
 
-    if (name.contains(QStringLiteral("TG2480-H"), Qt::CaseInsensitive)) {
+    if (name.contains(QStringLiteral("TG2480-H"), Qt::CaseInsensitive))
+    {
         setConfigParameter(CHardwareSDK::Printer::LineSize, 40);
         setConfigParameter(PrinterSettings::LeftMargin, 0);
         setConfigParameter(PrinterSettings::RightMargin, 0);
     }
 
     QString errorMessage;
-    if (!ISysUtils::setPrintingQueuedMode(mPrinter.printerName(), errorMessage)) {
+    if (!ISysUtils::setPrintingQueuedMode(mPrinter.printerName(), errorMessage))
+    {
         toLog(LogLevel::Warning, QStringLiteral("Failed to change printing queued mode, ") + errorMessage);
     }
 
@@ -74,26 +82,33 @@ bool SystemPrinter::updateParameters() {
 }
 
 //--------------------------------------------------------------------------------
-bool SystemPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
+bool SystemPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt)
+{
     QStringList receipt;
 
-    for (const auto &lexemeCollection : aLexemeReceipt) {
-        for (const auto &lexemes : lexemeCollection) {
+    for (const auto &lexemeCollection : aLexemeReceipt)
+    {
+        for (const auto &lexemes : lexemeCollection)
+        {
             QVariant line;
 
-            for (auto lexeme : lexemes) {
-                if (lexeme.tags.contains(Tags::Type::Image)) {
+            for (auto lexeme : lexemes)
+            {
+                if (lexeme.tags.contains(Tags::Type::Image))
+                {
                     QByteArray data = QByteArray::fromBase64(lexeme.data.toLatin1());
                     QImage image = QImage::fromData(data, "png");
 
-                    if (!image.isNull()) {
+                    if (!image.isNull())
+                    {
                         // Рефакторинг QMatrix -> QTransform (Qt 6 совместимо)
                         QTransform transform;
                         transform.scale(CSystemPrinter::ImageScalingFactor, CSystemPrinter::ImageScalingFactor);
                         image = image.transformed(transform);
 
                         QBuffer buffer;
-                        if (!image.isNull() && image.save(&buffer, "png")) {
+                        if (!image.isNull() && image.save(&buffer, "png"))
+                        {
                             lexeme.data = buffer.data().toBase64();
                         }
                     }
@@ -107,11 +122,13 @@ bool SystemPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
     QRegularExpression nonSpaceRegex(QStringLiteral("[^ ]"));
     QRegularExpression endSpaceRegex(QStringLiteral(" +$"));
 
-    for (int i = 0; i < receipt.size(); ++i) {
+    for (int i = 0; i < receipt.size(); ++i)
+    {
         QRegularExpressionMatch match = nonSpaceRegex.match(receipt[i]);
         int index = match.hasMatch() ? static_cast<int>(match.capturedStart()) : -1;
 
-        if (index > 0) {
+        if (index > 0)
+        {
             receipt[i] = receipt[i].replace(0, index, QStringLiteral("&nbsp;").repeated(index));
         }
         // Замена QRegExp на QRegularExpression
@@ -135,7 +152,8 @@ bool SystemPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
 
     QStringList textParameters;
     // Qt 6: families() теперь статический метод класса QFontDatabase
-    if (QFontDatabase::families().contains(QStringLiteral("Terminal"))) {
+    if (QFontDatabase::families().contains(QStringLiteral("Terminal")))
+    {
         // textParameters << "font-family: Terminal";
     }
 
@@ -153,25 +171,30 @@ bool SystemPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
 }
 
 //--------------------------------------------------------------------------------
-bool SystemPrinter::getStatus(TStatusCodes &aStatusCodes) {
+bool SystemPrinter::getStatus(TStatusCodes &aStatusCodes)
+{
     using namespace SDK::Driver;
 
-    if (!isConnected()) {
+    if (!isConnected())
+    {
         return false;
     }
 
-    if (mPrinter.printerState() == QPrinter::Error) {
+    if (mPrinter.printerState() == QPrinter::Error)
+    {
         aStatusCodes.insert(DeviceStatusCode::Error::Unknown);
     }
 
     TStatusGroupNames groupNames;
     ISysUtils::getPrinterStatus(mPrinter.printerName(), aStatusCodes, groupNames);
 
-    if (mLastStatusesNames != groupNames) {
+    if (mLastStatusesNames != groupNames)
+    {
         mLastStatusesNames = groupNames;
         TStatusCollection statuses;
 
-        for (int statusCode : aStatusCodes) {
+        for (int statusCode : aStatusCodes)
+        {
             statuses[mStatusCodesSpecification->value(statusCode).warningLevel].insert(statusCode);
         }
 
@@ -183,15 +206,19 @@ bool SystemPrinter::getStatus(TStatusCodes &aStatusCodes) {
 
         QString log = QStringLiteral("Device codes has changed:");
 
-        for (auto it = mLastStatusesNames.begin(); it != mLastStatusesNames.end(); ++it) {
+        for (auto it = mLastStatusesNames.begin(); it != mLastStatusesNames.end(); ++it)
+        {
             // Явно упаковываем значение в QVariant через статический метод
             QVariant val = QVariant::fromValue(it.value());
             QStringList statusNames;
 
             // 2. Явное извлечение данных (Qt 6 стиль)
-            if (val.canConvert<QStringList>()) {
+            if (val.canConvert<QStringList>())
+            {
                 statusNames = val.toStringList();
-            } else {
+            }
+            else
+            {
                 // Извлекаем QSet через шаблон value<T>().
                 // В Qt 6 это безопасный способ получить доступ к кастомным типам в QVariant.
                 QSet<QString> statusSet = val.value<QSet<QString>>();

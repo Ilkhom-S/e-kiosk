@@ -11,7 +11,8 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
 MultistagePaymentGetStepRequest::MultistagePaymentGetStepRequest(Payment *aPayment)
-    : PaymentRequest(aPayment, CPayment::Requests::GetStep) {
+    : PaymentRequest(aPayment, CPayment::Requests::GetStep)
+{
     clear();
 
     MultistagePayment *payment = dynamic_cast<MultistagePayment *>(aPayment);
@@ -27,10 +28,13 @@ MultistagePaymentGetStepRequest::MultistagePaymentGetStepRequest(Payment *aPayme
 
     addParameter(CMultistage::Protocol::Step, payment->currentStep());
 
-    auto addFields = [&](const PPSDK::TProviderFields &aFields) {
-        foreach (auto field, aFields) {
+    auto addFields = [&](const PPSDK::TProviderFields &aFields)
+    {
+        foreach (auto field, aFields)
+        {
             PPSDK::IPayment::SParameter fieldValue = payment->getParameter(field.id);
-            if (fieldValue.value.isValid()) {
+            if (fieldValue.value.isValid())
+            {
                 addParameter(field.id, fieldValue.value);
             }
         }
@@ -40,7 +44,8 @@ MultistagePaymentGetStepRequest::MultistagePaymentGetStepRequest(Payment *aPayme
     addFields(payment->getProviderSettings().fields);
 
     // заполняем поля от предыдущих шагов
-    foreach (auto step, payment->getHistory()) {
+    foreach (auto step, payment->getHistory())
+    {
         addFields(payment->getFieldsForStep(step));
     }
 

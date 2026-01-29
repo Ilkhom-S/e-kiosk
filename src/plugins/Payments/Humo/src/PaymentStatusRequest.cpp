@@ -5,7 +5,8 @@
 #include "PaymentStatusRequest.h"
 
 //---------------------------------------------------------------------------
-PaymentStatusRequest::PaymentStatusRequest(Payment *aPayment) : PaymentRequest(aPayment, CPayment::Requests::Status) {
+PaymentStatusRequest::PaymentStatusRequest(Payment *aPayment) : PaymentRequest(aPayment, CPayment::Requests::Status)
+{
     clear();
 
     addParameter("SD", aPayment->getKeySettings().sd);

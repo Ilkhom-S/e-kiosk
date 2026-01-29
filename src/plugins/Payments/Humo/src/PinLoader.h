@@ -24,7 +24,8 @@ namespace PPSDK = SDK::PaymentProcessor;
 using namespace PPSDK::Humo;
 
 //------------------------------------------------------------------------------
-class PinLoader : public QObject, public ILogable {
+class PinLoader : public QObject, public ILogable
+{
     Q_OBJECT
 
   public:
@@ -66,25 +67,30 @@ class PinLoader : public QObject, public ILogable {
     QMutex mPinMutex;
 
     /// Список загруженных пинов для оператора
-    struct SProviderPins {
+    struct SProviderPins
+    {
         PPSDK::SProvider provider;
         QList<SPinCard> pins;
         QDateTime lastLoad;
 
-        SProviderPins() {
+        SProviderPins()
+        {
             init();
         }
 
-        SProviderPins(const PPSDK::SProvider &aProvider) : provider(aProvider) {
+        SProviderPins(const PPSDK::SProvider &aProvider) : provider(aProvider)
+        {
             init();
         }
 
         SProviderPins(const PPSDK::SProvider &aProvider, const QList<SPinCard> &aPins)
-            : provider(aProvider), pins(aPins) {
+            : provider(aProvider), pins(aPins)
+        {
             init();
         }
 
-        void init() {
+        void init()
+        {
             // Для Pin провайдеров всегда должен быть онлайн и включена проверка номера
             provider.processor.payOnline = true;
             provider.processor.skipCheck = false;

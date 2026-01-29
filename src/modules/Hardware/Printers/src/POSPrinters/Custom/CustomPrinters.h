@@ -12,8 +12,10 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний принтеров Custom.
-namespace CCustomPrinter {
-    namespace Models {
+namespace CCustomPrinter
+{
+    namespace Models
+    {
         const char TG2480[] = "Custom TG2480";
         const char TG2480H[] = "Custom TG2480H";
         const char TG2460H[] = "Custom TG2460H";
@@ -32,18 +34,21 @@ namespace CCustomPrinter {
 
     //----------------------------------------------------------------------------
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char PrintImage[] = "\x1B\x2A"; /// Печать изображения.
     } // namespace Commands
 
     //----------------------------------------------------------------------------
     /// GAM (Graphics advanced mode).
-    namespace GAM {
+    namespace GAM
+    {
         /// Максимальная ширина печатаемой части изображения, [пикс] (1 пикс == 1 бит).
         const int MaxImageWidth = 638;
 
         /// Получить время печати картинки, [мс].
-        inline qint64 getImagePause(const QImage &aImage, const SDK::Driver::TPortParameters &aPortParameters) {
+        inline qint64 getImagePause(const QImage &aImage, const SDK::Driver::TPortParameters &aPortParameters)
+        {
             int baudrate = aPortParameters[SDK::Driver::IOPort::COM::EParameters::BaudRate];
             int size =
                 21 + aImage.height() *
@@ -53,7 +58,8 @@ namespace CCustomPrinter {
         }
 
         /// Команды.
-        namespace Commands {
+        namespace Commands
+        {
             const char SetPageLength[] = "\x1B\x26\x6C\x30\x52"; /// Установить длину страницы = 0. По размеру?
             const char SetResolution204[] = "\x1B\x2A\x74\x32\x30\x34\x52"; /// Установить разрешение 240 dpi.
             const char SetNoCompression[] = "\x1B\x2A\x62\x30\x4D";         /// Отменить сжатие изображения.
@@ -65,7 +71,8 @@ namespace CCustomPrinter {
 } // namespace CCustomPrinter
 
 //--------------------------------------------------------------------------------
-template <class T> class CustomPrinter : public POSPrinter<T> {
+template <class T> class CustomPrinter : public POSPrinter<T>
+{
     SET_SUBSERIES("Custom")
 
   public:

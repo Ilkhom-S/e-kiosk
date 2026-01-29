@@ -9,7 +9,8 @@
 #include "../ShtrihFRConstants.h"
 
 //--------------------------------------------------------------------------------
-namespace CShtrihFRBase {
+namespace CShtrihFRBase
+{
     /// Запрашивать сумму записей ФП после последней перерегистрации.
     const char TotalFMSumType = 1;
 
@@ -17,7 +18,8 @@ namespace CShtrihFRBase {
     const qulonglong NoINN = 0xFFFFFFFFFFFF;
 
     /// Коды команд.
-    namespace Commands {
+    namespace Commands
+    {
         /// Фискальные операции.
         const char EKLZActivizationTotal = '\xBB'; /// Получить итоги активизации ЭКЛЗ.
         const char GetEKLZReportData = '\xB3';     /// Получить данные отчета ЭКЛЗ.
@@ -25,9 +27,11 @@ namespace CShtrihFRBase {
     } // namespace Commands
 
     /// Коды статусов ЭКЛЗ - спецификация ЭКЛЗ!
-    class EKLZStatusDescriptions : public CSpecification<char, int> {
+    class EKLZStatusDescriptions : public CSpecification<char, int>
+    {
       public:
-        EKLZStatusDescriptions() {
+        EKLZStatusDescriptions()
+        {
             append('\x01', FRStatusCode::Error::EKLZ);
             append('\x02', FRStatusCode::Error::EKLZ);
             append('\x03', FRStatusCode::Error::EKLZ);
@@ -45,13 +49,16 @@ namespace CShtrihFRBase {
     static EKLZStatusDescriptions EKLZStatusDescription;
 
     /// Коды ошибок.
-    namespace Errors {
+    namespace Errors
+    {
         const char FMInDataEntryMode = '\x06';  /// ФП в режиме вывода данных.
         const char CannotSetModeTable = '\xC7'; /// Поле не редактируется в данном режиме
 
-        class Data : public FRError::Data {
+        class Data : public FRError::Data
+        {
           public:
-            Data() {
+            Data()
+            {
                 using namespace FRError;
 
                 add('\x01', "Неисправен накопитель ФП 1, ФП 2 или часы", EType::FM);
@@ -225,7 +232,8 @@ namespace CShtrihFRBase {
     } // namespace Errors
 
     /// Коды статусов (некоторых).
-    namespace Statuses {
+    namespace Statuses
+    {
         const ushort EKLZExists = 0x0020;      /// ЭКЛЗ (0 – нет, 1 – есть).
         const ushort LeftHeadSensor = 0x1000;  /// Отказ левого датчика принтера.
         const ushort RightHeadSensor = 0x2000; /// Отказ правого датчика принтера.

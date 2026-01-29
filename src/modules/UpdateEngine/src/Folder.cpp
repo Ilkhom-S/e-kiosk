@@ -23,15 +23,18 @@
 
 Folder::Folder(const QString &aName, const QString &aVersion, const TFileList &aFiles, const QStringList &aPostActions,
                const QString &aURL)
-    : Component(aName, aVersion, aFiles, aPostActions, aURL) {
+    : Component(aName, aVersion, aFiles, aPostActions, aURL)
+{
 }
 
 //---------------------------------------------------------------------------
-QList<NetworkTask *> Folder::download(const QString &aBaseURL, const TFileList &aExceptions) {
+QList<NetworkTask *> Folder::download(const QString &aBaseURL, const TFileList &aExceptions)
+{
     QList<NetworkTask *> tasks;
 
     // Формируем список загружаемых файлов.
-    foreach (auto fileInfo, getFiles()) {
+    foreach (auto fileInfo, getFiles())
+    {
         if (aExceptions.contains(fileInfo))
             continue;
 
@@ -41,12 +44,14 @@ QList<NetworkTask *> Folder::download(const QString &aBaseURL, const TFileList &
         // Создаем директорию назначения.
         QString dstPath = fileInfo.name().section("/", 0, -2);
 
-        if (!dstPath.isEmpty() && !QDir(getTemporaryFolder()).mkpath(dstPath)) {
+        if (!dstPath.isEmpty() && !QDir(getTemporaryFolder()).mkpath(dstPath))
+        {
             throw Exception(ECategory::Application, ESeverity::Major, 0,
                             QString("Failed to create destination folder %1.").arg(dstFilePath));
         }
 
-        switch (fileInfo.verify(dstFilePath)) {
+        switch (fileInfo.verify(dstFilePath))
+        {
             case File::OK: // качать не нужно
                 Log(LogLevel::Normal,
                     QString("File '%1' already downloaded into temp folder. Skip download.").arg(fileInfo.name()));
@@ -67,7 +72,8 @@ QList<NetworkTask *> Folder::download(const QString &aBaseURL, const TFileList &
     }
 
     // Добавляем в список исполняемые файлы для post-actionов.
-    foreach (auto actionFile, getPostActions()) {
+    foreach (auto actionFile, getPostActions())
+    {
         QString fileURL = getURL(actionFile, aBaseURL);
         auto task = new FileDownloadTask(fileURL, getTemporaryFolder() + "/" + actionFile);
         tasks.append(task);
@@ -77,39 +83,51 @@ QList<NetworkTask *> Folder::download(const QString &aBaseURL, const TFileList &
 }
 
 //---------------------------------------------------------------------------
-void Folder::ensureTargetDirectory(const QString &targetDir, const QString &targetFileName) {
+void Folder::ensureTargetDirectory(const QString &targetDir, const QString &targetFileName)
+{
     QDir r(targetDir);
 
     QString path = QFileInfo(targetFileName).path();
 
-    if (!path.isEmpty() && !r.exists(path)) {
+    if (!path.isEmpty() && !r.exists(path))
+    {
         r.mkpath(path);
     }
 }
 
 //---------------------------------------------------------------------------
-void Folder::deploy(const TFileList &aFiles, const QString &aDestination) noexcept(false) {
+void Folder::deploy(const TFileList &aFiles, const QString &aDestination) noexcept(false)
+{
     // Копируем файлы в директорию назначения.
-    foreach (auto file, getFiles().intersect(aFiles)) {
+    foreach (auto file, getFiles().intersect(aFiles))
+    {
         Log(LogLevel::Normal, QString("Deploying file %1...").arg(file.name()));
 
         QString srcFileName = getTemporaryFolder() + "/" + file.name();
         QString destinationFileName = aDestination + "/" + file.name();
 
-        if (optional() && QFile(srcFileName).size() <= 0) {
+        if (optional() && QFile(srcFileName).size() <= 0)
+        {
             Log(LogLevel::Warning, QString("Skip optional file %1...").arg(file.name()));
-        } else {
-            if (QFile::exists(destinationFileName)) {
-                if (mSkipExisting) {
+        }
+        else
+        {
+            if (QFile::exists(destinationFileName))
+            {
+                if (mSkipExisting)
+                {
                     continue;
                 }
 
                 QFile::remove(destinationFileName);
-            } else {
+            }
+            else
+            {
                 ensureTargetDirectory(aDestination, file.name());
             }
 
-            if (!QFile::copy(srcFileName, destinationFileName)) {
+            if (!QFile::copy(srcFileName, destinationFileName))
+            {
                 throw Exception(ECategory::Application, ESeverity::Major, 0,
                                 QString("Failed to copy file %1.").arg(file.name()));
             }
@@ -118,20 +136,24 @@ void Folder::deploy(const TFileList &aFiles, const QString &aDestination) noexce
 }
 
 //---------------------------------------------------------------------------
-void Folder::applyPostActions(const QString &aWorkingDir) noexcept(false) {
+void Folder::applyPostActions(const QString &aWorkingDir) noexcept(false)
+{
     // Выполняем post-actionы.
-    foreach (auto action, getPostActions()) {
+    foreach (auto action, getPostActions())
+    {
         QProcess runAction;
 
         runAction.start(getTemporaryFolder() + "/" + action, QStringList() << aWorkingDir);
 
         // TODO: возможно стоит сделать ограничение по времени, которое отводится на работу процесса. Сейчас по
         // умолчанию 30 секунд.
-        if (!runAction.waitForFinished()) {
+        if (!runAction.waitForFinished())
+        {
             throw Exception(ECategory::Application, ESeverity::Major, 0, QString("Failed to start %1.").arg(action));
         }
 
-        if (runAction.exitCode() != 0) {
+        if (runAction.exitCode() != 0)
+        {
             throw Exception(ECategory::Application, ESeverity::Major, 0,
                             QString("Process %1 exited with error. Code %2.").arg(action).arg(runAction.exitCode()));
         }

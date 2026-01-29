@@ -8,14 +8,18 @@
 // Project
 #include "StackWalker.h"
 
-class QStackWalker : protected StackWalker {
+class QStackWalker : protected StackWalker
+{
   public:
-    QStackWalker() {
+    QStackWalker()
+    {
     }
-    virtual ~QStackWalker() {
+    virtual ~QStackWalker()
+    {
     }
 
-    inline QStringList getCallstack(void *aContext) {
+    inline QStringList getCallstack(void *aContext)
+    {
         mCallstack.clear();
 
         StackWalker::ShowCallstack(GetCurrentThread(), static_cast<CONTEXT *>(aContext));
@@ -24,31 +28,40 @@ class QStackWalker : protected StackWalker {
     }
 
   protected:
-    virtual void OnCallstackEntry(CallstackEntryType eType, struct CallstackEntry &entry) {
+    virtual void OnCallstackEntry(CallstackEntryType eType, struct CallstackEntry &entry)
+    {
         CHAR buffer[STACKWALK_MAX_NAMELEN];
 
-        if ((eType != lastEntry) && (entry.offset != 0)) {
-            if (entry.name[0] == 0) {
+        if ((eType != lastEntry) && (entry.offset != 0))
+        {
+            if (entry.name[0] == 0)
+            {
                 strcpy_s(entry.name, "(function-name not available)");
             }
 
-            if (entry.undName[0] != 0) {
+            if (entry.undName[0] != 0)
+            {
                 strcpy_s(entry.name, entry.undName);
             }
 
-            if (entry.undFullName[0] != 0) {
+            if (entry.undFullName[0] != 0)
+            {
                 strcpy_s(entry.name, entry.undFullName);
             }
 
-            if (entry.lineFileName[0] == 0) {
+            if (entry.lineFileName[0] == 0)
+            {
                 strcpy_s(entry.lineFileName, "(filename not available)");
-                if (entry.moduleName[0] == 0) {
+                if (entry.moduleName[0] == 0)
+                {
                     strcpy_s(entry.moduleName, "module-name not available");
                 }
 
                 _snprintf_s(buffer, STACKWALK_MAX_NAMELEN, "%p (%s:%p): %s: %s", (LPVOID)entry.offset, entry.moduleName,
                             (LPVOID)(entry.offset - entry.baseOfImage), entry.lineFileName, entry.name);
-            } else {
+            }
+            else
+            {
                 _snprintf_s(buffer, STACKWALK_MAX_NAMELEN, "%s (%d): %s", entry.lineFileName, entry.lineNumber,
                             entry.name);
             }

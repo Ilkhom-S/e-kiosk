@@ -7,14 +7,17 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний принтеров GeBE.
-namespace CGeBE {
+namespace CGeBE
+{
     /// Max число символов, передаваемых на печать за раз.
     const int LineSize = 28;
 
     /// Статусы.
-    class CStatuses : public CSpecification<char, int> {
+    class CStatuses : public CSpecification<char, int>
+    {
       public:
-        CStatuses() {
+        CStatuses()
+        {
             append('H', PrinterStatusCode::Error::PrintingHead);
             append('P', PrinterStatusCode::Error::PaperEnd);
             append('Z', PrinterStatusCode::Warning::PaperNearEnd);
@@ -34,7 +37,8 @@ namespace CGeBE {
     static CStatuses Statuses;
 
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char Initialize[] = "\x1B\x40";           /// Инициализация.
         const char SetFont[] = "\x1B\x50\x31";          /// Установить шрифт.
         const char SetLeftAlign[] = "\x1B\x4E\x01\xA0"; /// Установить выравнивание слева.
@@ -42,9 +46,11 @@ namespace CGeBE {
     } // namespace Commands
 
     /// Теги.
-    class TagEngine : public Tags::Engine {
+    class TagEngine : public Tags::Engine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             appendSingle(Tags::Type::UnderLine, "\x1B\x4C", "\x31", "\x30");
             appendSingle(Tags::Type::DoubleWidth, "\x1B\x57", "\x31", "\x30");
             appendSingle(Tags::Type::DoubleHeight, "\x1B\x48", "\x31", "\x30");

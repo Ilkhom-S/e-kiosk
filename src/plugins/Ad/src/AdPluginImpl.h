@@ -18,7 +18,8 @@
 //---------------------------------------------------------------------------
 // Note: Adopted from original TerminalClient Ad plugin implementation
 // Platform-specific: Compatible with Qt5/Qt6 for kiosk advertisement management
-class AdPluginImpl : public QObject, public SDK::Plugin::IPlugin {
+class AdPluginImpl : public QObject, public SDK::Plugin::IPlugin
+{
     Q_OBJECT
 
   public:

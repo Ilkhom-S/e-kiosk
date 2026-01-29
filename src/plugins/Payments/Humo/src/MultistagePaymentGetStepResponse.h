@@ -6,7 +6,8 @@
 #include "PaymentResponse.h"
 
 //---------------------------------------------------------------------------
-class MultistagePaymentGetStepResponse : public PaymentResponse {
+class MultistagePaymentGetStepResponse : public PaymentResponse
+{
   public:
     MultistagePaymentGetStepResponse(const Request &aRequest, const QString &aResponseString);
 

@@ -32,18 +32,21 @@ using SDK::PaymentProcessor::Humo::Response;
 
 class FileDownloadTask;
 
-namespace Ad {
+namespace Ad
+{
 
     class DatabaseUtils;
     struct Campaign;
 
     //------------------------------------------------------------------------
-    namespace CClient {
+    namespace CClient
+    {
         const QString LogName = "Ad";
     } // namespace CClient
 
     //------------------------------------------------------------------------
-    class Client : public QObject, protected ILogable {
+    class Client : public QObject, protected ILogable
+    {
         Q_OBJECT
 
       public:

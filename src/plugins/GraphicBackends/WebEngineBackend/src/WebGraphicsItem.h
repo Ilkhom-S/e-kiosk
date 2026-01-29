@@ -23,7 +23,8 @@
 /// Графический элемент для отображения веб-контента с использованием Qt WebEngine.
 /// Предоставляет интерфейс для создания и управления веб-виджетами в графической системе EKiosk.
 /// Поддерживает JavaScript взаимодействие, локальное хранилище и интеграцию с платежной системой.
-class WebGraphicsItem : public QObject, public SDK::GUI::IGraphicsItem, protected ILogable {
+class WebGraphicsItem : public QObject, public SDK::GUI::IGraphicsItem, protected ILogable
+{
     Q_OBJECT
 
   public:

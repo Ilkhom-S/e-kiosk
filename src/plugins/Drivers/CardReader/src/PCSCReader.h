@@ -24,7 +24,8 @@
 #include "Hardware/Common/BaseStatusTypes.h"
 
 //--------------------------------------------------------------------------------
-class PCSCReader : public QObject, public ILogable {
+class PCSCReader : public QObject, public ILogable
+{
   public:
     PCSCReader();
     ~PCSCReader();

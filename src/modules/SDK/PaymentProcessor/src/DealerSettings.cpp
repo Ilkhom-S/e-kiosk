@@ -25,28 +25,34 @@
 // Project
 #include "DealerSettings.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         typedef boost::property_tree::basic_ptree<std::string, std::string> TPtreeOperators;
 
         //---------------------------------------------------------------------------
         DealerSettings::DealerSettings(TPtree &aProperties)
             : mProperties(aProperties.get_child(CAdapterNames::DealerAdapter, aProperties)),
-              mProvidersLock(QReadWriteLock::Recursive), mIsValid(false) {
+              mProvidersLock(QReadWriteLock::Recursive), mIsValid(false)
+        {
         }
 
         //---------------------------------------------------------------------------
-        DealerSettings::~DealerSettings() {
+        DealerSettings::~DealerSettings()
+        {
         }
 
         //---------------------------------------------------------------------------
-        QString DealerSettings::getAdapterName() {
+        QString DealerSettings::getAdapterName()
+        {
             return CAdapterNames::DealerAdapter;
         }
 
         //---------------------------------------------------------------------------
-        void DealerSettings::initialize() {
+        void DealerSettings::initialize()
+        {
             bool r1 = loadProviders();
             bool r2 = loadCommissions();
             bool r3 = loadPersonalSettings();
@@ -55,7 +61,8 @@ namespace SDK {
 
             // Проверяем наличие групп.
             static const TPtree emptyTree;
-            if (mProperties.get_child("groups", emptyTree).empty()) {
+            if (mProperties.get_child("groups", emptyTree).empty())
+            {
                 mIsValid = false;
             }
 
@@ -63,20 +70,24 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        inline QString &encodeLTGT(QString &value) {
+        inline QString &encodeLTGT(QString &value)
+        {
             return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
         }
 
         //---------------------------------------------------------------------------
-        inline QString &encodeQUOT(QString &value) {
+        inline QString &encodeQUOT(QString &value)
+        {
             return value.replace("\"", "&quot;");
         }
 
         //---------------------------------------------------------------------------
-        bool DealerSettings::loadOperatorsXML(const QString &aFileName) {
+        bool DealerSettings::loadOperatorsXML(const QString &aFileName)
+        {
             QFile inputFile(aFileName);
 
-            if (!inputFile.open(QIODevice::ReadOnly)) {
+            if (!inputFile.open(QIODevice::ReadOnly))
+            {
                 toLog(LogLevel::Error, QString("Failed to open file: %1.").arg(aFileName));
                 return false;
             }
@@ -92,52 +103,67 @@ namespace SDK {
 
             QXmlStreamReader xmlReader(&inputFile);
 
-            while (!xmlReader.atEnd()) {
+            while (!xmlReader.atEnd())
+            {
                 QXmlStreamReader::TokenType token = xmlReader.readNext();
 
-                switch (token) {
+                switch (token)
+                {
                     // Встретили открывающий тег.
-                    case QXmlStreamReader::StartElement: {
+                    case QXmlStreamReader::StartElement:
+                    {
                         tags << xmlReader.name().toString().toLower();
 
                         bool isOP = (tags.top() == "operator");
 
-                        if (isOP) {
+                        if (isOP)
+                        {
                             op = "<?xml version=\"1.0\" encoding=\"utf-8\"?><operator version=\"" +
                                  QString::number(operatorsVersion, 'f').toStdString() + "\"";
 
                             opID = 0;
                             processing.clear();
                             cids.clear();
-                        } else {
+                        }
+                        else
+                        {
                             op += "<" + tags.top().toLatin1();
                         }
 
                         // Обрабатываем список атрибутов, если такие имеются.
                         QXmlStreamAttributes attributes = xmlReader.attributes();
 
-                        if (!attributes.isEmpty()) {
+                        if (!attributes.isEmpty())
+                        {
                             QMap<QString, QString> attrs;
 
-                            foreach (const QXmlStreamAttribute &attribute, attributes) {
+                            foreach (const QXmlStreamAttribute &attribute, attributes)
+                            {
                                 QString value = attribute.value().toString();
                                 attrs[attribute.name().toString().toLower()].swap(encodeQUOT(value));
                             }
 
-                            if (tags.top() == "operators") {
+                            if (tags.top() == "operators")
+                            {
                                 operatorsVersion = attrs.value("version", "0").toDouble();
-                            } else if (isOP) {
+                            }
+                            else if (isOP)
+                            {
                                 opID = attrs.value("id").toLongLong();
 
-                                if (operatorsVersion < 2.0) {
+                                if (operatorsVersion < 2.0)
+                                {
                                     cids << attrs.value("cid").toLongLong();
                                 }
-                            } else if (tags.top() == "processor") {
+                            }
+                            else if (tags.top() == "processor")
+                            {
                                 // Процессинг вида тип_процессинга#имя является алиасом для стандартных типов
                                 processing = attrs.value("type").split("#").takeFirst();
                             }
 
-                            foreach (auto name, attrs.keys()) {
+                            foreach (auto name, attrs.keys())
+                            {
                                 op += " " + name.toLatin1() + "=\"" + attrs.value(name).toUtf8() + "\"";
                             }
                         }
@@ -148,21 +174,28 @@ namespace SDK {
                     }
 
                     // Текст внутри тегов.
-                    case QXmlStreamReader::Characters: {
-                        if (!xmlReader.isWhitespace()) {
+                    case QXmlStreamReader::Characters:
+                    {
+                        if (!xmlReader.isWhitespace())
+                        {
                             QString text = xmlReader.text().toString();
                             op += encodeLTGT(text).toUtf8();
 
-                            if (operatorsVersion >= 2.0) {
-                                if (tags.size() > 2 && tags.at(tags.size() - 2) == "operator") {
-                                    if (tags.top() == "cid") {
+                            if (operatorsVersion >= 2.0)
+                            {
+                                if (tags.size() > 2 && tags.at(tags.size() - 2) == "operator")
+                                {
+                                    if (tags.top() == "cid")
+                                    {
                                         cids << xmlReader.text().toString().toLongLong();
                                     }
                                 }
                             }
 
-                            if (tags.top() == "tt_list") {
-                                foreach (auto cid, xmlReader.text().toString().split(",")) {
+                            if (tags.top() == "tt_list")
+                            {
+                                foreach (auto cid, xmlReader.text().toString().split(","))
+                                {
                                     cids << cid.trimmed().toLongLong();
                                 }
                             }
@@ -172,17 +205,23 @@ namespace SDK {
                     }
 
                     // Встретили закрывающий тег.
-                    case QXmlStreamReader::EndElement: {
+                    case QXmlStreamReader::EndElement:
+                    {
                         QString key = xmlReader.name().toString().toLower();
 
-                        if (key == "operator") {
+                        if (key == "operator")
+                        {
                             op += "</operator>";
 
-                            if (mProviderRawBuffer.contains(opID)) {
+                            if (mProviderRawBuffer.contains(opID))
+                            {
                                 // qDebug() << "Skip existing operator " << opID;
-                            } else {
+                            }
+                            else
+                            {
                                 mProviderRawBuffer[opID].swap(op);
-                                foreach (qint64 cid, cids) {
+                                foreach (qint64 cid, cids)
+                                {
                                     mProviderGateways.insert(cid, opID);
                                 }
                                 // operatorsProcessing[opID].swap(processing);
@@ -195,7 +234,9 @@ namespace SDK {
                             op.reserve(4096);
                             processing.clear();
                             opID = 0;
-                        } else {
+                        }
+                        else
+                        {
                             op += "</" + key.toStdString() + ">";
                         }
 
@@ -204,7 +245,8 @@ namespace SDK {
                     }
 
                     // Ошибка в формате документа.
-                    case QXmlStreamReader::Invalid: {
+                    case QXmlStreamReader::Invalid:
+                    {
                         toLog(LogLevel::Error, QString("'%1' parsing error: %2, line %3, column %4.")
                                                    .arg(aFileName)
                                                    .arg(xmlReader.errorString())
@@ -224,7 +266,8 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        bool DealerSettings::loadProviders() {
+        bool DealerSettings::loadProviders()
+        {
             const TPtree emptyTree;
 
             toLog(LogLevel::Normal, "Loading providers.");
@@ -232,8 +275,10 @@ namespace SDK {
             QElapsedTimer elapsed;
             elapsed.start();
 
-            BOOST_FOREACH (const TPtree::value_type &operators, mProperties.get_child("", emptyTree)) {
-                if (operators.first != "operators") {
+            BOOST_FOREACH (const TPtree::value_type &operators, mProperties.get_child("", emptyTree))
+            {
+                if (operators.first != "operators")
+                {
                     continue;
                 }
 
@@ -252,10 +297,12 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        void loadProviderEnumItems(SProviderField::TEnumItems &aItemList, const TPtreeOperators &aTree) {
+        void loadProviderEnumItems(SProviderField::TEnumItems &aItemList, const TPtreeOperators &aTree)
+        {
             auto searchBounds = aTree.equal_range("item");
 
-            for (auto itemIt = searchBounds.first; itemIt != searchBounds.second; ++itemIt) {
+            for (auto itemIt = searchBounds.first; itemIt != searchBounds.second; ++itemIt)
+            {
                 SProviderField::SEnumItem item;
 
                 auto attr = itemIt->second.get_child("<xmlattr>");
@@ -270,34 +317,41 @@ namespace SDK {
                 aItemList << item;
             }
 
-            std::stable_sort(
-                aItemList.begin(), aItemList.end(),
-                [](const SProviderField::SEnumItem &a, const SProviderField::SEnumItem &b) { return a.sort < b.sort; });
+            std::stable_sort(aItemList.begin(), aItemList.end(),
+                             [](const SProviderField::SEnumItem &a, const SProviderField::SEnumItem &b)
+                             { return a.sort < b.sort; });
         }
 
         //---------------------------------------------------------------------------
-        bool DealerSettings::loadProvidersFromBuffer(const std::string &aBuffer, SProvider &aProvider) {
+        bool DealerSettings::loadProvidersFromBuffer(const std::string &aBuffer, SProvider &aProvider)
+        {
             TPtreeOperators operators;
             const TPtreeOperators emptyTree;
 
-            try {
+            try
+            {
                 std::stringstream stream(aBuffer);
 
                 boost::property_tree::read_xml(stream, operators);
-            } catch (boost::property_tree::xml_parser_error &e) {
+            }
+            catch (boost::property_tree::xml_parser_error &e)
+            {
                 toLog(LogLevel::Error, QString("XML parser error: %1.").arg(QString::fromStdString(e.message())));
 
                 return false;
             }
 
-            BOOST_FOREACH (const auto &value, operators.get_child("", emptyTree)) {
-                try {
+            BOOST_FOREACH (const auto &value, operators.get_child("", emptyTree))
+            {
+                try
+                {
                     double operatorsVersion = value.second.get<double>("<xmlattr>.version", 0);
                     aProvider.id = value.second.get<qint64>("<xmlattr>.id");
                     aProvider.cid = value.second.get<qint64>("<xmlattr>.cid", -1);
 
                     // Для совместимости с operators.xml version=2.0
-                    if (operatorsVersion >= 2.0) {
+                    if (operatorsVersion >= 2.0)
+                    {
                         aProvider.cid = value.second.get<qint64>("cid", -1);
 
                         QString terminalShow = value.second.get<QString>("terminal_show", "1").trimmed();
@@ -306,13 +360,15 @@ namespace SDK {
                         QString enabled = value.second.get<QString>("enabled", "1").trimmed();
                         enabled = enabled.isEmpty() ? "1" : enabled;
 
-                        if (terminalShow.toInt() == 0 || enabled.toInt() == 0) {
+                        if (terminalShow.toInt() == 0 || enabled.toInt() == 0)
+                        {
                             return false;
                         }
                     }
 
                     QString ttList = value.second.get<QString>("tt_list", QString());
-                    foreach (auto cid, ttList.split(",", Qt::SkipEmptyParts)) {
+                    foreach (auto cid, ttList.split(",", Qt::SkipEmptyParts))
+                    {
                         aProvider.ttList.insert(cid.trimmed().toLongLong());
                     }
 
@@ -330,7 +386,8 @@ namespace SDK {
 
                     // Проверяем корректность лимитов.
                     if (aProvider.limits.min.isEmpty() ||
-                        (aProvider.limits.system.isEmpty() && aProvider.limits.max.isEmpty())) {
+                        (aProvider.limits.system.isEmpty() && aProvider.limits.max.isEmpty()))
+                    {
                         throw std::runtime_error(
                             QString("operator %1: unspecified max or min limit").arg(aProvider.id).toStdString());
                     }
@@ -343,7 +400,8 @@ namespace SDK {
                     aProvider.processor.type = processorBranchAttr.get<QString>("type");
                     aProvider.processor.keyPair = processorBranchAttr.get<int>("keys", 0);
                     aProvider.processor.clientCard = processorBranchAttr.get<int>("client_card", 0);
-                    if (!aProvider.processor.clientCard) {
+                    if (!aProvider.processor.clientCard)
+                    {
                         // читаем атрибут по старому пути, если не нашли его в разделе processor
                         aProvider.processor.clientCard = value.second.get<int>("client_card", 0);
                     }
@@ -359,7 +417,8 @@ namespace SDK {
 
                     auto requests = processorBranch.equal_range("request");
 
-                    for (auto requestIt = requests.first; requestIt != requests.second; ++requestIt) {
+                    for (auto requestIt = requests.first; requestIt != requests.second; ++requestIt)
+                    {
                         SProvider::SProcessingTraits::SRequest request;
 
                         request.url = requestIt->second.get<QString>("url");
@@ -367,7 +426,8 @@ namespace SDK {
                         // Отправляемые поля
                         auto searchBounds = requestIt->second.equal_range("request_property");
 
-                        for (auto fieldIt = searchBounds.first; fieldIt != searchBounds.second; ++fieldIt) {
+                        for (auto fieldIt = searchBounds.first; fieldIt != searchBounds.second; ++fieldIt)
+                        {
                             SProvider::SProcessingTraits::SRequest::SField field;
 
                             auto attr = fieldIt->second.get_child("<xmlattr>");
@@ -377,11 +437,16 @@ namespace SDK {
                             field.crypted = attr.get<bool>("crypted", field.crypted);
 
                             QString algorithm = attr.get<QString>("algorithm", "ipriv").toLower();
-                            if (algorithm == "md5") {
+                            if (algorithm == "md5")
+                            {
                                 field.algorithm = SProvider::SProcessingTraits::SRequest::SField::Md5;
-                            } else if (algorithm == "sha1") {
+                            }
+                            else if (algorithm == "sha1")
+                            {
                                 field.algorithm = SProvider::SProcessingTraits::SRequest::SField::Sha1;
-                            } else if (algorithm == "sha256") {
+                            }
+                            else if (algorithm == "sha256")
+                            {
                                 field.algorithm = SProvider::SProcessingTraits::SRequest::SField::Sha256;
                             }
 
@@ -391,7 +456,8 @@ namespace SDK {
                         // Ожидаемые поля
                         searchBounds = requestIt->second.equal_range("receive_property");
 
-                        for (auto fieldIt = searchBounds.first; fieldIt != searchBounds.second; ++fieldIt) {
+                        for (auto fieldIt = searchBounds.first; fieldIt != searchBounds.second; ++fieldIt)
+                        {
                             SProvider::SProcessingTraits::SRequest::SResponseField field;
 
                             auto attr = fieldIt->second.get_child("<xmlattr>");
@@ -410,7 +476,8 @@ namespace SDK {
                             request;
                     }
 
-                    BOOST_FOREACH (const auto &fieldIt, value.second.get_child("fields")) {
+                    BOOST_FOREACH (const auto &fieldIt, value.second.get_child("fields"))
+                    {
                         SProviderField field;
 
                         auto attr = fieldIt.second.get_child("<xmlattr>");
@@ -442,31 +509,40 @@ namespace SDK {
                         field.dependency = fieldIt.second.get<QString>("dependency", QString());
 
                         QString externalDataHandler = fieldIt.second.get<QString>("on_external_data", QString());
-                        if (!externalDataHandler.isEmpty()) {
+                        if (!externalDataHandler.isEmpty())
+                        {
                             aProvider.externalDataHandler = externalDataHandler;
                         }
 
                         loadProviderEnumItems(field.enumItems, fieldIt.second.get_child("enum", emptyTree));
 
                         auto security = fieldIt.second.get_child("security", emptyTree);
-                        if (!security.empty()) {
+                        if (!security.empty())
+                        {
                             field.security.insert(SProviderField::SecuritySubsystem::Default,
                                                   security.get<QString>("<xmlattr>.hidemask", QString()));
 
-                            if (field.security.value(SProviderField::SecuritySubsystem::Default, "").isEmpty()) {
+                            if (field.security.value(SProviderField::SecuritySubsystem::Default, "").isEmpty())
+                            {
                                 throw std::runtime_error("empty security@hideMask attribute");
                             }
 
-                            BOOST_FOREACH (auto subSystem, security.get_child("", emptyTree)) {
-                                if (subSystem.first == "printer") {
+                            BOOST_FOREACH (auto subSystem, security.get_child("", emptyTree))
+                            {
+                                if (subSystem.first == "printer")
+                                {
                                     field.security.insert(
                                         SProviderField::SecuritySubsystem::Printer,
                                         subSystem.second.get<QString>("<xmlattr>.hidemask", QString()));
-                                } else if (subSystem.first == "logger") {
+                                }
+                                else if (subSystem.first == "logger")
+                                {
                                     field.security.insert(
                                         SProviderField::SecuritySubsystem::Log,
                                         subSystem.second.get<QString>("<xmlattr>.hidemask", QString()));
-                                } else if (subSystem.first == "display") {
+                                }
+                                else if (subSystem.first == "display")
+                                {
                                     field.security.insert(
                                         SProviderField::SecuritySubsystem::Display,
                                         subSystem.second.get<QString>("<xmlattr>.hidemask", QString()));
@@ -481,17 +557,23 @@ namespace SDK {
                                      [](const SProviderField &a, const SProviderField &b) { return a.sort < b.sort; });
 
                     // Типы и параметры чеков
-                    BOOST_FOREACH (const auto &receiptIt, value.second.get_child("receipts", emptyTree)) {
-                        if (receiptIt.first == "parameter") {
+                    BOOST_FOREACH (const auto &receiptIt, value.second.get_child("receipts", emptyTree))
+                    {
+                        if (receiptIt.first == "parameter")
+                        {
                             aProvider.receiptParameters.insert(
                                 receiptIt.second.get<QString>("<xmlattr>.name"),
                                 receiptIt.second.get<QString>("<xmlattr>.value", QString()));
-                        } else if (receiptIt.first == "receipt") {
+                        }
+                        else if (receiptIt.first == "receipt")
+                        {
                             aProvider.receipts.insert(receiptIt.second.get<QString>("<xmlattr>.type"),
                                                       receiptIt.second.get<QString>("<xmlattr>.template", QString()));
                         }
                     }
-                } catch (std::runtime_error &error) {
+                }
+                catch (std::runtime_error &error)
+                {
                     toLog(LogLevel::Error, QString("Failed to load provider (id:%1, cid:%2). Error: %3.")
                                                .arg(aProvider.id)
                                                .arg(aProvider.cid)
@@ -507,46 +589,60 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        void DealerSettings::disableProvider(qint64 aId) {
+        void DealerSettings::disableProvider(qint64 aId)
+        {
             QWriteLocker locker(&mProvidersLock);
 
             mProviders.remove(aId);
             mProviderRawBuffer.remove(aId);
             mProvidersProcessingIndex.remove(mProvidersProcessingIndex.key(aId), aId);
 
-            foreach (auto cid, mProviderGateways.keys()) {
+            foreach (auto cid, mProviderGateways.keys())
+            {
                 mProviderGateways.remove(cid, aId);
             }
         }
 
         //----------------------------------------------------------------------------
-        bool DealerSettings::loadCommissions() {
-            try {
+        bool DealerSettings::loadCommissions()
+        {
+            try
+            {
                 const TPtree emptyTree;
 
                 toLog(LogLevel::Normal, "Loading commissions.");
 
-                BOOST_FOREACH (const TPtree::value_type &commissions, mProperties.get_child("", emptyTree)) {
-                    if (commissions.first != "commissions") {
+                BOOST_FOREACH (const TPtree::value_type &commissions, mProperties.get_child("", emptyTree))
+                {
+                    if (commissions.first != "commissions")
+                    {
                         continue;
                     }
 
-                    if (!mCommissions.isValid()) {
+                    if (!mCommissions.isValid())
+                    {
                         mCommissions = Commissions::fromSettings(commissions.second);
-                    } else {
+                    }
+                    else
+                    {
                         mCommissions.appendFromSettings(commissions.second);
                     }
                 }
-            } catch (std::runtime_error &error) {
+            }
+            catch (std::runtime_error &error)
+            {
                 toLog(LogLevel::Error, QString("Failed to load commissions. Error: %1.").arg(error.what()));
                 return false;
             }
 
-            try {
+            try
+            {
                 toLog(LogLevel::Normal, "Loading customers.");
 
-                BOOST_FOREACH (const TPtree::value_type &value, mProperties.get_child("customers")) {
-                    if (value.first == "<xmlattr>") {
+                BOOST_FOREACH (const TPtree::value_type &value, mProperties.get_child("customers"))
+                {
+                    if (value.first == "<xmlattr>")
+                    {
                         continue;
                     }
 
@@ -558,19 +654,24 @@ namespace SDK {
 
                     std::pair<TPtree::const_assoc_iterator, TPtree::const_assoc_iterator> searchBounds =
                         operatorSettings.equal_range("field");
-                    for (TPtree::const_assoc_iterator it = searchBounds.first; it != searchBounds.second; ++it) {
+                    for (TPtree::const_assoc_iterator it = searchBounds.first; it != searchBounds.second; ++it)
+                    {
                         customer.addValue(it->second.get<QString>("<xmlattr>.value").trimmed());
                     }
 
-                    if (!customer.blocked) {
+                    if (!customer.blocked)
+                    {
                         customer.commissions = Commissions::fromSettings(operatorSettings);
                     }
 
-                    if (!customer.isEmpty()) {
+                    if (!customer.isEmpty())
+                    {
                         mCustomers << customer;
                     }
                 }
-            } catch (std::runtime_error &error) {
+            }
+            catch (std::runtime_error &error)
+            {
                 toLog(LogLevel::Error, QString("Failed to load customers. Error: %1.").arg(error.what()));
             }
 
@@ -578,10 +679,12 @@ namespace SDK {
         }
 
         //----------------------------------------------------------------------------
-        bool DealerSettings::loadPersonalSettings() {
+        bool DealerSettings::loadPersonalSettings()
+        {
             toLog(LogLevel::Normal, "Loading personal settings.");
 
-            try {
+            try
+            {
                 TPtree &branch = mProperties.get_child("config.dealer");
 
                 mPersonalSettings.pointName = branch.get("point_name", QString());
@@ -610,12 +713,15 @@ namespace SDK {
                 const TPtree emptyTree;
 
                 BOOST_FOREACH (const TPtree::value_type &parameter,
-                               mProperties.get_child("config.printing.parameters", emptyTree)) {
+                               mProperties.get_child("config.printing.parameters", emptyTree))
+                {
                     mPersonalSettings.mPrintingParameters.insert(
                         QString::fromStdString(parameter.first).toUpper(),
                         parameter.second.get_value(QString()).replace("\\n", "\n"));
                 }
-            } catch (std::runtime_error &error) {
+            }
+            catch (std::runtime_error &error)
+            {
                 toLog(LogLevel::Error, QString("Failed to load personal settings : %1.").arg(error.what()));
                 return false;
             }
@@ -624,22 +730,28 @@ namespace SDK {
         }
 
         //----------------------------------------------------------------------------
-        SProvider DealerSettings::getProvider(qint64 aId) {
-            if (mProviderRawBuffer.contains(aId)) {
+        SProvider DealerSettings::getProvider(qint64 aId)
+        {
+            if (mProviderRawBuffer.contains(aId))
+            {
                 QWriteLocker locker(&mProvidersLock);
 
                 SProvider provider;
-                if (loadProvidersFromBuffer(mProviderRawBuffer[aId], provider)) {
+                if (loadProvidersFromBuffer(mProviderRawBuffer[aId], provider))
+                {
                     mProviders.insert(aId, provider);
                     mProviderRawBuffer.remove(aId);
-                } else {
+                }
+                else
+                {
                     toLog(LogLevel::Error, QString("Error parse provider %1 from buffer.").arg(aId));
                 }
             }
 
             QReadLocker locker(&mProvidersLock);
 
-            if (mProviders.contains(aId)) {
+            if (mProviders.contains(aId))
+            {
                 SProvider provider = mProviders.value(aId);
 
                 // Лимиты из описания оператора могут быть переопределены снаружи
@@ -657,20 +769,24 @@ namespace SDK {
         }
 
         //----------------------------------------------------------------------------
-        SProvider DealerSettings::getMNPProvider(qint64 aId, qint64 aCidIn, qint64 aCidOut) {
+        SProvider DealerSettings::getMNPProvider(qint64 aId, qint64 aCidIn, qint64 aCidOut)
+        {
             auto provider = getProvider(aId);
 
-            if (aCidIn == 0 && aCidOut == 0) {
+            if (aCidIn == 0 && aCidOut == 0)
+            {
                 return provider;
             }
 
-            if (aCidOut && (provider.cid == aCidOut || provider.ttList.contains(aCidOut))) {
+            if (aCidOut && (provider.cid == aCidOut || provider.ttList.contains(aCidOut)))
+            {
                 return provider;
             }
 
             auto providers = getProvidersByCID(aCidOut);
 
-            if (providers.isEmpty() && aCidIn > 0) {
+            if (providers.isEmpty() && aCidIn > 0)
+            {
                 providers = getProvidersByCID(aCidIn);
             }
 
@@ -678,10 +794,12 @@ namespace SDK {
         }
 
         //----------------------------------------------------------------------------
-        QList<SProvider> DealerSettings::getProvidersByCID(qint64 aCid) {
+        QList<SProvider> DealerSettings::getProvidersByCID(qint64 aCid)
+        {
             QList<SProvider> providers;
 
-            foreach (auto id, mProviderGateways.values(aCid)) {
+            foreach (auto id, mProviderGateways.values(aCid))
+            {
                 providers << getProvider(id);
             }
 
@@ -689,65 +807,76 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        const QList<qint64> DealerSettings::getProviders(const QString &aProcessingType) {
+        const QList<qint64> DealerSettings::getProviders(const QString &aProcessingType)
+        {
             return mProvidersProcessingIndex.values(aProcessingType);
         }
 
         //---------------------------------------------------------------------------
-        QStringList DealerSettings::getProviderProcessingTypes() {
+        QStringList DealerSettings::getProviderProcessingTypes()
+        {
             return QStringList(mProvidersProcessingIndex.keys().begin(), mProvidersProcessingIndex.keys().end());
         }
 
         //---------------------------------------------------------------------------
-        void DealerSettings::setExternalLimits(qint64 aProviderId, double aMinExternalLimit, double aMaxExternalLimit) {
+        void DealerSettings::setExternalLimits(qint64 aProviderId, double aMinExternalLimit, double aMaxExternalLimit)
+        {
             SProvider provider = getProvider(aProviderId);
 
-            if (!provider.isNull()) {
+            if (!provider.isNull())
+            {
                 mProviders[aProviderId].limits.externalMin = QString::number(aMinExternalLimit);
                 mProviders[aProviderId].limits.externalMax = QString::number(aMaxExternalLimit);
             }
         }
 
         //---------------------------------------------------------------------------
-        const SPersonalSettings &DealerSettings::getPersonalSettings() const {
+        const SPersonalSettings &DealerSettings::getPersonalSettings() const
+        {
             return mPersonalSettings;
         }
 
         //---------------------------------------------------------------------------
-        DealerSettings::TCustomers::iterator DealerSettings::findCustomer(const QVariantMap &aParameters) {
+        DealerSettings::TCustomers::iterator DealerSettings::findCustomer(const QVariantMap &aParameters)
+        {
             QSet<QString> parametersValueSet;
 
-            foreach (auto value, aParameters.values()) {
+            foreach (auto value, aParameters.values())
+            {
                 parametersValueSet << value.toString();
             }
 
-            auto isItRightCustomer = [&](const SCustomer &aCustomer) -> bool {
-                return aCustomer.contains(parametersValueSet);
-            };
+            auto isItRightCustomer = [&](const SCustomer &aCustomer) -> bool
+            { return aCustomer.contains(parametersValueSet); };
 
             return std::find_if(mCustomers.begin(), mCustomers.end(), isItRightCustomer);
         }
 
         //---------------------------------------------------------------------------
-        void DealerSettings::setExternalCommissions(const Commissions &aCommissions) {
+        void DealerSettings::setExternalCommissions(const Commissions &aCommissions)
+        {
             mExternalCommissions = aCommissions;
         }
 
         //---------------------------------------------------------------------------
-        void DealerSettings::resetExternalCommissions() {
+        void DealerSettings::resetExternalCommissions()
+        {
             mExternalCommissions.clear();
         }
 
         //---------------------------------------------------------------------------
-        bool DealerSettings::isCustomerAllowed(const QVariantMap &aParameters) {
+        bool DealerSettings::isCustomerAllowed(const QVariantMap &aParameters)
+        {
             TCustomers::iterator it = findCustomer(aParameters);
 
             return it == mCustomers.end() ? true : !it->blocked;
         }
 
         //---------------------------------------------------------------------------
-        TCommissions DealerSettings::getCommissions(qint64 aProvider, const QVariantMap &aParameters) {
-            if (mExternalCommissions.isValid() && mExternalCommissions.contains(aProvider)) {
+        TCommissions DealerSettings::getCommissions(qint64 aProvider, const QVariantMap &aParameters)
+        {
+            if (mExternalCommissions.isValid() && mExternalCommissions.contains(aProvider))
+            {
                 return mExternalCommissions.getCommissions(aProvider);
             }
 
@@ -759,8 +888,10 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        Commission DealerSettings::getCommission(qint64 aProvider, const QVariantMap &aParameters, double aSum) {
-            if (mExternalCommissions.isValid() && mExternalCommissions.contains(aProvider)) {
+        Commission DealerSettings::getCommission(qint64 aProvider, const QVariantMap &aParameters, double aSum)
+        {
+            if (mExternalCommissions.isValid() && mExternalCommissions.contains(aProvider))
+            {
                 return mExternalCommissions.getCommission(aProvider, aSum);
             }
 
@@ -772,8 +903,10 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        ProcessingCommission DealerSettings::getProcessingCommission(qint64 aProvider) {
-            if (mExternalCommissions.isValid() && mExternalCommissions.contains(aProvider)) {
+        ProcessingCommission DealerSettings::getProcessingCommission(qint64 aProvider)
+        {
+            if (mExternalCommissions.isValid() && mExternalCommissions.contains(aProvider))
+            {
                 return mExternalCommissions.getProcessingCommission(aProvider);
             }
 
@@ -781,8 +914,10 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        int DealerSettings::getVAT(qint64 aProvider) {
-            if (mExternalCommissions.isValid() && mExternalCommissions.contains(aProvider)) {
+        int DealerSettings::getVAT(qint64 aProvider)
+        {
+            if (mExternalCommissions.isValid() && mExternalCommissions.contains(aProvider))
+            {
                 return mExternalCommissions.getVAT(aProvider);
             }
 
@@ -790,22 +925,32 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        QList<SProvider> DealerSettings::getProvidersByRange(QList<SRange> aRanges, QSet<qint64> aExclude) {
+        QList<SProvider> DealerSettings::getProvidersByRange(QList<SRange> aRanges, QSet<qint64> aExclude)
+        {
             QList<SProvider> providers;
 
-            foreach (SRange range, aRanges) {
-                if (!range.ids.isEmpty()) {
-                    foreach (qint64 id, range.ids) {
+            foreach (SRange range, aRanges)
+            {
+                if (!range.ids.isEmpty())
+                {
+                    foreach (qint64 id, range.ids)
+                    {
                         SProvider p = getProvider(id);
 
-                        if (!p.isNull()) {
+                        if (!p.isNull())
+                        {
                             providers << p;
                         }
                     }
-                } else {
-                    foreach (qint64 cid, range.cids) {
-                        foreach (const SProvider &p, getProvidersByCID(cid)) {
-                            if (!aExclude.contains(p.id)) {
+                }
+                else
+                {
+                    foreach (qint64 cid, range.cids)
+                    {
+                        foreach (const SProvider &p, getProvidersByCID(cid))
+                        {
+                            if (!aExclude.contains(p.id))
+                            {
                                 providers << p;
                             }
                         }
@@ -817,7 +962,8 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        bool DealerSettings::isValid() const {
+        bool DealerSettings::isValid() const
+        {
             return mIsValid;
         }
 

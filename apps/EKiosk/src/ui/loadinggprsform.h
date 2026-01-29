@@ -5,11 +5,13 @@
 #include <QtWidgets/QWidget>
 #include <Common/QtHeadersEnd.h>
 
-namespace Ui {
+namespace Ui
+{
     class LoadingGprsForm;
 }
 
-class LoadingGprsForm : public QWidget {
+class LoadingGprsForm : public QWidget
+{
     Q_OBJECT
 
   public:

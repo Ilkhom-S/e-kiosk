@@ -6,17 +6,21 @@
 #include <QtCore/QObject>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
         // Сделан в виде класса, чтобы получить метаданные.
-        class EEventType : public QObject {
+        class EEventType : public QObject
+        {
             Q_OBJECT
             Q_ENUMS(Enum)
 
           public:
-            enum Enum {
+            enum Enum
+            {
                 Unknown = 0, /// Неизвестный тип события.
 
                 TerminalLock,   /// Блокировка терминала.

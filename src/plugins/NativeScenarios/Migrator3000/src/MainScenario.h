@@ -23,8 +23,10 @@
 
 class IApplication;
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class ICore;
         class INetworkService;
         class ITerminalService;
@@ -33,21 +35,26 @@ namespace SDK {
         class TerminalSettings;
         class IDeviceService;
 
-        namespace Scripting {
+        namespace Scripting
+        {
             class Core;
         } // namespace Scripting
     } // namespace PaymentProcessor
 
-    namespace Plugin {
+    namespace Plugin
+    {
         class IEnvironment;
     } // namespace Plugin
 } // namespace SDK
 
-namespace Migrator3000 {
+namespace Migrator3000
+{
 
     //---------------------------------------------------------------------------
-    struct STerminal {
-        struct SConnection {
+    struct STerminal
+    {
+        struct SConnection
+        {
             QString type;
             QString name;
 
@@ -58,26 +65,31 @@ namespace Migrator3000 {
             QString proxy_type;
             size_t port;
 
-            SConnection() : port(0) {
+            SConnection() : port(0)
+            {
             }
 
-            bool isEmpty() {
+            bool isEmpty()
+            {
                 return name.isEmpty() && type.isEmpty();
             }
         };
 
-        struct SPort {
+        struct SPort
+        {
             size_t baud_rate;
             QString number;
             size_t parity;
             QString type;
             QString uuid;
 
-            SPort() : baud_rate(0), parity(0) {
+            SPort() : baud_rate(0), parity(0)
+            {
             }
         };
 
-        struct SDevice {
+        struct SDevice
+        {
             QString type;
             QString model;
             QString vendor;
@@ -88,11 +100,13 @@ namespace Migrator3000 {
 
             SPort port;
 
-            SDevice() : fiscal_mode(0) {
+            SDevice() : fiscal_mode(0)
+            {
             }
         };
 
-        bool isEmpty() {
+        bool isEmpty()
+        {
             return connection.isEmpty();
         }
 
@@ -103,7 +117,8 @@ namespace Migrator3000 {
     };
 
     //---------------------------------------------------------------------------
-    class MainScenario : public GUI::Scenario {
+    class MainScenario : public GUI::Scenario
+    {
         Q_OBJECT
 
       public:

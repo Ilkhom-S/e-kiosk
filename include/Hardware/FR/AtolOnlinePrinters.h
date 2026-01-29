@@ -5,16 +5,19 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CAtolOnlinePrinters {
+namespace CAtolOnlinePrinters
+{
     const char Trade = '\x01';  /// Принтер, на базе которого собран торговый ФР.
     const char Memory = '\x07'; /// Печать в никуда.
 
     const char Default[] = "Default";               /// По умолчанию.
     const char CitizenPPU700[] = "Citizen PPU-700"; /// Citizen PPU-700.
 
-    class CModels : public CDescription<char> {
+    class CModels : public CDescription<char>
+    {
       public:
-        CModels() {
+        CModels()
+        {
             append(1, "ATOL");
             append(2, "Custom VKP-80");
             append(3, "Citizen PPU-700");
@@ -27,7 +30,8 @@ namespace CAtolOnlinePrinters {
             append(10, "SNBC BK-T680");
         }
 
-        QStringList getNames() {
+        QStringList getNames()
+        {
             QStringList result = data().values();
             result.removeAll(value(Trade));
             result.removeAll(value(Memory));

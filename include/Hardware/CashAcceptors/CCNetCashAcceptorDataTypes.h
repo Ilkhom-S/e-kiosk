@@ -12,9 +12,11 @@
 #include <Hardware/Protocols/CashAcceptor/CCNetDataTypes.h>
 
 //--------------------------------------------------------------------------------
-namespace CCCNet {
+namespace CCCNet
+{
     /// Интервалы поллинга, [мс].
-    namespace PollingIntervals {
+    namespace PollingIntervals
+    {
         /// При выключении на прием денег.
         const int Disabled = 800;
 
@@ -22,16 +24,20 @@ namespace CCCNet {
         const int Enabled = 220;
     } // namespace PollingIntervals
 
-    namespace Commands {
+    namespace Commands
+    {
         /// Спецификация команд.
-        class Data : public CSpecification<QByteArray, SData> {
+        class Data : public CSpecification<QByteArray, SData>
+        {
           public:
-            Data() {
+            Data()
+            {
                 setDefault(SData(true, false, PollingIntervals::Enabled));
             }
 
             void add(const QByteArray &aCommand, bool aHostACK, int aTimeout = PollingIntervals::Enabled,
-                     bool aDeviceACK = false) {
+                     bool aDeviceACK = false)
+            {
                 append(aCommand, SData(aDeviceACK, aHostACK, aTimeout));
             }
         };

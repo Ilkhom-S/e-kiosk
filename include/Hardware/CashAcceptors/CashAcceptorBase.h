@@ -19,25 +19,30 @@ typedef QList<int> TStatusCodesHistory;
 typedef QList<TStatusCodesHistory> TStatusCodesHistoryList;
 
 //--------------------------------------------------------------------------------
-namespace CCashAcceptor {
+namespace CCashAcceptor
+{
     typedef StatusCache<SDK::Driver::ECashAcceptorStatus::Enum> TStatuses;
 
     /// Качественный описатель последнего состояния.
-    struct SStatusSpecification {
+    struct SStatusSpecification
+    {
         /// Уровень тревожности статуса.
         SDK::Driver::EWarningLevel::Enum warningLevel;
 
         /// Буфер статусов, сопряженных с статус-кодами.
         TStatuses statuses;
 
-        SStatusSpecification() : warningLevel(SDK::Driver::EWarningLevel::OK) {
+        SStatusSpecification() : warningLevel(SDK::Driver::EWarningLevel::OK)
+        {
         }
 
-        bool operator==(const SStatusSpecification &aStatusSpecification) const {
+        bool operator==(const SStatusSpecification &aStatusSpecification) const
+        {
             return (statuses == aStatusSpecification.statuses);
         }
 
-        bool operator!=(const SStatusSpecification &aStatusSpecification) const {
+        bool operator!=(const SStatusSpecification &aStatusSpecification) const
+        {
             return !operator==(aStatusSpecification);
         }
     };
@@ -49,7 +54,8 @@ namespace CCashAcceptor {
 typedef QList<SDK::Driver::SPar> TPars;
 
 //--------------------------------------------------------------------------------
-template <class T> class CashAcceptorBase : public T {
+template <class T> class CashAcceptorBase : public T
+{
   public:
     CashAcceptorBase();
 
@@ -73,7 +79,8 @@ template <class T> class CashAcceptorBase : public T {
     ECurrencyError::Enum processParTable();
 
     /// Загрузка таблицы номиналов из устройства.
-    virtual bool loadParTable() {
+    virtual bool loadParTable()
+    {
         return false;
     }
 
@@ -81,7 +88,8 @@ template <class T> class CashAcceptorBase : public T {
     virtual void cleanStatusCodes(TStatusCodes &aStatusCodes);
 
     /// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней логики.
-    virtual void cleanSpecificStatusCodes(TStatusCodes & /*aStatusCodes*/) {
+    virtual void cleanSpecificStatusCodes(TStatusCodes & /*aStatusCodes*/)
+    {
     }
 
     /// Ищет с конца совпадение истории статусов с куском истории статусов.

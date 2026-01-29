@@ -10,7 +10,8 @@
 class QByteArray;
 
 //------------------------------------------------------------------------
-class DataStream {
+class DataStream
+{
   public:
     DataStream(QIODevice *aDevice);
     virtual ~DataStream();

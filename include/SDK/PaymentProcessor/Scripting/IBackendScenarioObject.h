@@ -9,21 +9,27 @@
 #include <QtCore/QObjectList>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Scripting {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
             /// Интерфейс для объектов сценария бэкенда.
-            class IBackendScenarioObject : public QObject {
+            class IBackendScenarioObject : public QObject
+            {
                 Q_OBJECT
 
               public:
                 /// Конструктор.
-                IBackendScenarioObject(QObject *aParent = nullptr) : QObject(aParent) {
+                IBackendScenarioObject(QObject *aParent = nullptr) : QObject(aParent)
+                {
                 }
                 /// Деструктор.
-                virtual ~IBackendScenarioObject() {
+                virtual ~IBackendScenarioObject()
+                {
                 }
 
               public:

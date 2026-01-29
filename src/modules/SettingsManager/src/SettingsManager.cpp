@@ -25,31 +25,38 @@
 #include "SettingsManager.h"
 #include <fstream>
 
-SSettingsSource::SSettingsSource() : readOnly(true) {
+SSettingsSource::SSettingsSource() : readOnly(true)
+{
 }
 
 //---------------------------------------------------------------------------
 SSettingsSource::SSettingsSource(const QString &aFileName, const QString &aAdapterName, bool aReadOnly)
-    : configFileName(aFileName), adapterName(aAdapterName), readOnly(aReadOnly) {
+    : configFileName(aFileName), adapterName(aAdapterName), readOnly(aReadOnly)
+{
 }
 
 //---------------------------------------------------------------------------
 SSettingsSource::SSettingsSource(const QString &aFileName, const QString &aAdapterName, const char *aSymlinkName)
     : configFileName(aFileName), adapterName(aAdapterName), symlinkName(QString::fromLatin1(aSymlinkName)),
-      readOnly(true) {
+      readOnly(true)
+{
 }
 
 //---------------------------------------------------------------------------
-SettingsManager::SettingsManager(const QString &aConfigPath) : mConfigPath(aConfigPath) {
+SettingsManager::SettingsManager(const QString &aConfigPath) : mConfigPath(aConfigPath)
+{
 }
 
 //---------------------------------------------------------------------------
-SettingsManager::~SettingsManager() {
+SettingsManager::~SettingsManager()
+{
 }
 
 //---------------------------------------------------------------------------
-TPtree &SettingsManager::getProperties(const QString &aAdapterName) {
-    if (aAdapterName.isEmpty()) {
+TPtree &SettingsManager::getProperties(const QString &aAdapterName)
+{
+    if (aAdapterName.isEmpty())
+    {
         return mProperties;
     }
 
@@ -58,7 +65,8 @@ TPtree &SettingsManager::getProperties(const QString &aAdapterName) {
 }
 
 //---------------------------------------------------------------------------
-bool SettingsManager::isEqual(const SettingsManager &aManager) const {
+bool SettingsManager::isEqual(const SettingsManager &aManager) const
+{
     return mProperties == aManager.mProperties;
 }
 
@@ -69,8 +77,10 @@ bool SettingsManager::isEqual(const SettingsManager &aManager) const {
 // то значения из файлов, загруженных позже, будут добавлены в дерево свойств последними и могут переопределять
 // предыдущие при чтении. Таким образом, пользовательские настройки (user.ini) могут переопределять системные
 // (system.ini), если порядок загрузки соблюдён. Это обеспечивает гибкую иерархию конфигурации.
-bool SettingsManager::loadSettings(const QList<SSettingsSource> &aSettingSources) {
-    foreach (const SSettingsSource &source, aSettingSources) {
+bool SettingsManager::loadSettings(const QList<SSettingsSource> &aSettingSources)
+{
+    foreach (const SSettingsSource &source, aSettingSources)
+    {
         QElapsedTimer elapsed;
         elapsed.start();
 
@@ -82,13 +92,20 @@ bool SettingsManager::loadSettings(const QList<SSettingsSource> &aSettingSources
         // Проверяем наличие ветки.
         TPtree newBranch;
 
-        if (source.isSymlink()) {
+        if (source.isSymlink())
+        {
             newBranch.put(source.symlinkName.toStdString(), path.filePath().toStdWString());
-        } else if (!path.suffix().compare("xml", Qt::CaseInsensitive)) {
+        }
+        else if (!path.suffix().compare("xml", Qt::CaseInsensitive))
+        {
             readXML(path.filePath(), newBranch);
-        } else if (!path.suffix().compare("ini", Qt::CaseInsensitive)) {
+        }
+        else if (!path.suffix().compare("ini", Qt::CaseInsensitive))
+        {
             readINI(path.filePath(), newBranch);
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Error, QString("Usupported file extension %1.").arg(source.configFileName));
             continue;
         }
@@ -103,7 +120,8 @@ bool SettingsManager::loadSettings(const QList<SSettingsSource> &aSettingSources
                              : mProperties.push_back(std::make_pair(branchName, TPtree()))->second;
 
         // Сохраняем имена полей, которые были подгружены.
-        BOOST_FOREACH (TPtree::value_type &value, newBranch) {
+        BOOST_FOREACH (TPtree::value_type &value, newBranch)
+        {
             workingSource.fieldNames.append(QString::fromStdString(value.first));
 
             // Вставляем настройки в общую ветку.
@@ -123,19 +141,23 @@ bool SettingsManager::loadSettings(const QList<SSettingsSource> &aSettingSources
 }
 
 //---------------------------------------------------------------------------
-bool SettingsManager::saveSettings() {
+bool SettingsManager::saveSettings()
+{
     bool result = true;
 
     // Сохраняем все не readOnly настройки.
-    foreach (const SSettingsSource &source, mSettingSources) {
-        if (source.readOnly) {
+    foreach (const SSettingsSource &source, mSettingSources)
+    {
+        if (source.readOnly)
+        {
             continue;
         }
 
         // Составляем новое дерево из веток, подлежащих сохранению в данном файле.
         TPtree branchToSave;
 
-        foreach (const QString &fieldName, source.fieldNames) {
+        foreach (const QString &fieldName, source.fieldNames)
+        {
             QString path = source.adapterName + "." + fieldName;
 
             static TPtree emptyTreeForSave;
@@ -149,7 +171,8 @@ bool SettingsManager::saveSettings() {
         toLog(LogLevel::Normal, QString("Saving configuration file %1.").arg(path.filePath()));
 
         // Если не были указаны конкретные поля, сохраняем подветку с именем, совпадающим с именем файла.
-        if (source.fieldNames.empty()) {
+        if (source.fieldNames.empty())
+        {
             std::string branchName = path.baseName().toStdString();
             branchToSave.add_child(branchName,
                                    mProperties.get_child((source.adapterName + "." + path.baseName()).toStdString()));
@@ -158,29 +181,38 @@ bool SettingsManager::saveSettings() {
         // Здесь храним оригинальную конфигурацию
         TPtree originalBranch;
 
-        if (!path.suffix().compare("xml", Qt::CaseInsensitive)) {
+        if (!path.suffix().compare("xml", Qt::CaseInsensitive))
+        {
             readXML(path.filePath(), originalBranch);
 
-            if (originalBranch != branchToSave) {
+            if (originalBranch != branchToSave)
+            {
                 createBackup(path.filePath());
 
-                if (!writeXML(path.filePath(), branchToSave)) {
+                if (!writeXML(path.filePath(), branchToSave))
+                {
                     result = false;
                     continue;
                 }
             }
-        } else if (!path.suffix().compare("ini", Qt::CaseInsensitive)) {
+        }
+        else if (!path.suffix().compare("ini", Qt::CaseInsensitive))
+        {
             readINI(path.filePath(), originalBranch);
 
-            if (originalBranch != branchToSave) {
+            if (originalBranch != branchToSave)
+            {
                 createBackup(path.filePath());
 
-                if (!writeINI(path.filePath(), branchToSave)) {
+                if (!writeINI(path.filePath(), branchToSave))
+                {
                     result = false;
                     continue;
                 }
             }
-        } else {
+        }
+        else
+        {
             result = false;
             toLog(
                 LogLevel::Error,
@@ -193,10 +225,12 @@ bool SettingsManager::saveSettings() {
 }
 
 //---------------------------------------------------------------------------
-bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree) {
+bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree)
+{
     QFile inputFile(aFileName);
 
-    if (!inputFile.open(QIODevice::ReadOnly)) {
+    if (!inputFile.open(QIODevice::ReadOnly))
+    {
         toLog(LogLevel::Error, QString("Failed to open file: %1.").arg(aFileName));
         return false;
     }
@@ -206,12 +240,15 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree) {
     std::vector<boost::reference_wrapper<TPtree>> stack;
     boost::reference_wrapper<TPtree> current = boost::ref(aTree);
 
-    while (!xmlReader.atEnd()) {
+    while (!xmlReader.atEnd())
+    {
         QXmlStreamReader::TokenType token = xmlReader.readNext();
 
-        switch (token) {
+        switch (token)
+        {
             // Встетили открывающий тег.
-            case QXmlStreamReader::StartElement: {
+            case QXmlStreamReader::StartElement:
+            {
                 QString key = xmlReader.name().toString().toLower();
 
                 TPtree &newOne =
@@ -223,11 +260,13 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree) {
 
                 QXmlStreamAttributes attributes = xmlReader.attributes();
 
-                if (!attributes.isEmpty()) {
+                if (!attributes.isEmpty())
+                {
                     TPtree &attribTree =
                         boost::unwrap_ref(current).push_back(std::make_pair("<xmlattr>", TPtree()))->second;
 
-                    foreach (const QXmlStreamAttribute &attribute, attributes) {
+                    foreach (const QXmlStreamAttribute &attribute, attributes)
+                    {
                         attribTree.put(attribute.name().toString().toLower().toStdString(),
                                        attribute.value().toString().toStdWString());
                     }
@@ -237,8 +276,10 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree) {
             }
 
             // Текст внутри тегов.
-            case QXmlStreamReader::Characters: {
-                if (!xmlReader.isWhitespace()) {
+            case QXmlStreamReader::Characters:
+            {
+                if (!xmlReader.isWhitespace())
+                {
                     boost::unwrap_ref(current).put_value(xmlReader.text().toString());
                 }
 
@@ -246,7 +287,8 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree) {
             }
 
             // Встретили закрывающий тег.
-            case QXmlStreamReader::EndElement: {
+            case QXmlStreamReader::EndElement:
+            {
                 current = stack.back();
                 stack.pop_back();
 
@@ -254,7 +296,8 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree) {
             }
 
             // Ошибка в формате документа.
-            case QXmlStreamReader::Invalid: {
+            case QXmlStreamReader::Invalid:
+            {
                 aTree.clear();
 
                 toLog(LogLevel::Error, QString("'%1' parsing error: %2, line %3, column %4.")
@@ -272,10 +315,12 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree) {
 }
 
 //---------------------------------------------------------------------------
-bool SettingsManager::writeXML(const QString &aFileName, const TPtree &aTree) {
+bool SettingsManager::writeXML(const QString &aFileName, const TPtree &aTree)
+{
     QFile outputFile(aFileName);
 
-    if (!outputFile.open(QIODevice::WriteOnly)) {
+    if (!outputFile.open(QIODevice::WriteOnly))
+    {
         toLog(LogLevel::Error, QString("Failed to open file: %1.").arg(aFileName));
         return false;
     }
@@ -291,16 +336,25 @@ bool SettingsManager::writeXML(const QString &aFileName, const TPtree &aTree) {
 }
 
 //---------------------------------------------------------------------------
-void SettingsManager::writeXMLNode(QXmlStreamWriter &aWriter, const TPtree &aNode) {
-    BOOST_FOREACH (const TPtree::value_type &value, aNode) {
-        if (value.first == "<xmlattr>") {
-            BOOST_FOREACH (const TPtree::value_type &value, value.second) {
+void SettingsManager::writeXMLNode(QXmlStreamWriter &aWriter, const TPtree &aNode)
+{
+    BOOST_FOREACH (const TPtree::value_type &value, aNode)
+    {
+        if (value.first == "<xmlattr>")
+        {
+            BOOST_FOREACH (const TPtree::value_type &value, value.second)
+            {
                 aWriter.writeAttribute(QString::fromStdString(value.first), value.second.get_value<QString>());
             }
-        } else {
-            if (value.second.empty()) {
+        }
+        else
+        {
+            if (value.second.empty())
+            {
                 aWriter.writeTextElement(QString::fromStdString(value.first), value.second.get_value<QString>());
-            } else {
+            }
+            else
+            {
                 aWriter.writeStartElement(QString::fromStdString(value.first));
                 writeXMLNode(aWriter, value.second);
                 aWriter.writeEndElement();
@@ -310,13 +364,15 @@ void SettingsManager::writeXMLNode(QXmlStreamWriter &aWriter, const TPtree &aNod
 }
 
 //---------------------------------------------------------------------------
-bool SettingsManager::readINI(const QString &aFileName, TPtree &aTree) {
+bool SettingsManager::readINI(const QString &aFileName, TPtree &aTree)
+{
     QSettings iniFile(aFileName, QSettings::IniFormat);
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     iniFile.setIniCodec("UTF-8");
 #endif
 
-    foreach (QString key, iniFile.allKeys()) {
+    foreach (QString key, iniFile.allKeys())
+    {
         QString transformedKey(key);
         // Первой секцией добавляем имя файла, иначе нельзя будет определить куда записать новую секцию (ранее не
         // описанную в файле).
@@ -325,7 +381,8 @@ bool SettingsManager::readINI(const QString &aFileName, TPtree &aTree) {
 
         // Use typeId() which is available in both Qt5.15+ and Qt6
         // QMetaType::QStringList is available in both versions
-        switch (iniFile.value(key).typeId()) {
+        switch (iniFile.value(key).typeId())
+        {
             case QMetaType::QStringList:
                 aTree.add(transformedKey.toStdString(), iniFile.value(key).toStringList().join(","));
                 break;
@@ -340,7 +397,8 @@ bool SettingsManager::readINI(const QString &aFileName, TPtree &aTree) {
 }
 
 //---------------------------------------------------------------------------
-bool SettingsManager::writeINI(const QString &aFileName, const TPtree &aTree) {
+bool SettingsManager::writeINI(const QString &aFileName, const TPtree &aTree)
+{
     QSettings iniFile(aFileName, QSettings::IniFormat);
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     iniFile.setIniCodec("UTF-8");
@@ -349,11 +407,14 @@ bool SettingsManager::writeINI(const QString &aFileName, const TPtree &aTree) {
 
     static const TPtree emptyTree;
     foreach (const TPtree::value_type &value,
-             aTree.get_child(QFileInfo(aFileName).completeBaseName().toStdString(), emptyTree)) {
+             aTree.get_child(QFileInfo(aFileName).completeBaseName().toStdString(), emptyTree))
+    {
         iniFile.beginGroup(QString::fromStdString(value.first));
 
-        foreach (const TPtree::value_type &child, value.second) {
-            if (!child.second.empty()) {
+        foreach (const TPtree::value_type &child, value.second)
+        {
+            if (!child.second.empty())
+            {
                 toLog(LogLevel::Error, "Failed to write INI file: the tree has more then 2 level hierarchy.");
                 return false;
             }
@@ -368,7 +429,8 @@ bool SettingsManager::writeINI(const QString &aFileName, const TPtree &aTree) {
 }
 
 //---------------------------------------------------------------------------
-void SettingsManager::createBackup(const QString &aFilePath) {
+void SettingsManager::createBackup(const QString &aFilePath)
+{
     QString backupExt = QDateTime::currentDateTime().toString(".yyyy-MM-dd_hh-mm-ss") + "_backup";
 
     QFile::rename(aFilePath, aFilePath + backupExt);

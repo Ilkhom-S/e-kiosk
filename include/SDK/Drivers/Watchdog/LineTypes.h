@@ -2,12 +2,15 @@
 
 #pragma once
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //--------------------------------------------------------------------------------
         /// Состояния и статусы купюроприёмника.
-        namespace LineTypes {
+        namespace LineTypes
+        {
             const char BillAcceptor[] = "BillAcceptor";
             const char Printer[] = "Printer";
             const char Terminal[] = "Terminal";

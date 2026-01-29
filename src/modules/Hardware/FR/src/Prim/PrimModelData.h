@@ -15,10 +15,13 @@
 
 //--------------------------------------------------------------------------------
 /// Константы PrimFR протокола.
-namespace CPrimFR {
+namespace CPrimFR
+{
     /// Модели.
-    namespace Models {
-        enum Enum {
+    namespace Models
+    {
+        enum Enum
+        {
             Unknown = 0,
             PRIM_07K,
             PRIM_08TK,
@@ -39,14 +42,17 @@ namespace CPrimFR {
 
     typedef QSet<Models::Enum> TModels;
 
-    inline TModels CommonModels() {
+    inline TModels CommonModels()
+    {
         return TModels() << Models::Unknown << Models::PRIM_07K << Models::PRIM_08TK << Models::PRIM_09TK
                          << Models::PRIM_88TK << Models::AZIMUT_TMU950PK;
     }
 
-    class CModelNames : public CSpecification<QByteArray, Models::Enum> {
+    class CModelNames : public CSpecification<QByteArray, Models::Enum>
+    {
       public:
-        CModelNames() {
+        CModelNames()
+        {
             append("\x8F\x90\x88\x8C\x2D\x30\x37\x8A", Models::PRIM_07K);
             append("\x8F\x90\x88\x8C\x2D\x30\x38\x92\x8A", Models::PRIM_08TK);
             append("\x8F\x90\x88\x8C\x2D\x30\x39\x92\x8A", Models::PRIM_09TK);
@@ -68,18 +74,21 @@ namespace CPrimFR {
     typedef QMap<int, int> TStatusBitShifts;
     typedef QMap<int, TStatusBitShifts> TStatusData;
 
-    struct SModelParameters {
+    struct SModelParameters
+    {
         QString name;
         bool hasBuffer;
         int feed;
         TStatusData statusData;
         bool verified;
 
-        SModelParameters() : hasBuffer(false), feed(0), verified(false) {
+        SModelParameters() : hasBuffer(false), feed(0), verified(false)
+        {
         }
         SModelParameters(const QString &aName, bool aVerified, bool aHasBuffer, int aFeed,
                          const TStatusData &aStatusData)
-            : name(aName), hasBuffer(aHasBuffer), feed(aFeed), statusData(aStatusData), verified(aVerified) {
+            : name(aName), hasBuffer(aHasBuffer), feed(aFeed), statusData(aStatusData), verified(aVerified)
+        {
         }
     };
 
@@ -90,9 +99,11 @@ namespace CPrimFR {
     const char DefaultOnlineModelName[] = "PRIM Online FR";
 
     /// Описатель данных моделей.
-    class CModelData : public CSpecification<Models::Enum, SModelParameters> {
+    class CModelData : public CSpecification<Models::Enum, SModelParameters>
+    {
       public:
-        CModelData() {
+        CModelData()
+        {
             // PRIM default
             TStatusData statusData;
 
@@ -159,12 +170,15 @@ namespace CPrimFR {
 
     //----------------------------------------------------------------------------
     /// Параметры моделей.
-    inline QStringList getModelList(const TModels &aModels) {
+    inline QStringList getModelList(const TModels &aModels)
+    {
         QStringList models;
         CModelData modelData;
 
-        for (auto it = modelData.data().begin(); it != modelData.data().end(); ++it) {
-            if (aModels.contains(it.key()) && (it->name != DefaultModelName)) {
+        for (auto it = modelData.data().begin(); it != modelData.data().end(); ++it)
+        {
+            if (aModels.contains(it.key()) && (it->name != DefaultModelName))
+            {
                 models << it->name;
             }
         }

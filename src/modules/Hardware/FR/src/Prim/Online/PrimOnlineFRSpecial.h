@@ -6,23 +6,28 @@
 #include "../Presenter/PrimPresenterFR.h"
 
 //--------------------------------------------------------------------------------
-template <CPrimFR::Models::Enum T1, class T2> class PrimOnlineFRSpecial : public T2 {
+template <CPrimFR::Models::Enum T1, class T2> class PrimOnlineFRSpecial : public T2
+{
   public:
-    PrimOnlineFRSpecial() {
+    PrimOnlineFRSpecial()
+    {
         setInitialParameters();
     }
 
   protected:
     /// Установить начальные параметры.
-    void setInitialParameters() {
+    void setInitialParameters()
+    {
         mModel = T1;
         mModels = CPrimFR::TModels() << mModel;
         mDeviceName = CPrimFR::ModelData[mModel].name;
     }
 
     /// Попытка самоидентификации.
-    virtual bool isConnected() {
-        if (!T2::isConnected()) {
+    virtual bool isConnected()
+    {
+        if (!T2::isConnected())
+        {
             return false;
         }
 
@@ -30,7 +35,8 @@ template <CPrimFR::Models::Enum T1, class T2> class PrimOnlineFRSpecial : public
         mModelCompatibility = (processCommand(CPrimFR::Commands::SetEjectorAction, commandData) ==
                                CommandResult::Device) == (T1 == CPrimFR::Models::PRIM_21FA_Epson);
 
-        if (mModelCompatibility) {
+        if (mModelCompatibility)
+        {
             setInitialParameters();
         }
 

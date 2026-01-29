@@ -5,16 +5,26 @@
 #include <QtWidgets/QDialog>
 #include <Common/QtHeadersEnd.h>
 
-namespace IncashCmd {
-    enum In { doIncash = 1, interAdmin = 2, testPrint = 3, doNullingCheck = 4, closeThis = 5 };
+namespace IncashCmd
+{
+    enum In
+    {
+        doIncash = 1,
+        interAdmin = 2,
+        testPrint = 3,
+        doNullingCheck = 4,
+        closeThis = 5
+    };
 
 } // namespace IncashCmd
 
-namespace Ui {
+namespace Ui
+{
     class IncasaciyaForm;
 }
 
-class IncasaciyaForm : public QDialog {
+class IncasaciyaForm : public QDialog
+{
     Q_OBJECT
 
   public:

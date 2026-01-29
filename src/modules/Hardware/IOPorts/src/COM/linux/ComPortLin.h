@@ -11,12 +11,14 @@
 class SerialDevice;
 
 //-----------------------------------------------------------------------------
-namespace CComPortLin {
+namespace CComPortLin
+{
     const QString LogName = "ComPortLin";
 }; // namespace CComPortLin
 
 //-----------------------------------------------------------------------------
-class ComPortLin : public ComPortBase {
+class ComPortLin : public ComPortBase
+{
   public:
     ComPortLin(const QString &aFilePath);
     virtual ~ComPortLin();

@@ -22,7 +22,8 @@ typedef QList<int> TStatusCodesBuffer;
 
 //--------------------------------------------------------------------------------
 /// Общие константы устройств.
-namespace CDevice {
+namespace CDevice
+{
     /// Размер истории статусов.
     const int StatusCollectionHistoryCount = 10;
 
@@ -37,10 +38,14 @@ namespace CDevice {
 #define START_IN_WORKING_THREAD(aFunction)                                                                             \
     if ((!this->mOperatorPresence ||                                                                                   \
          (this->getConfigParameter(CHardware::CallingType) != CHardware::CallingTypes::Internal)) &&                   \
-        !this->isWorkingThread()) {                                                                                    \
-        if (this->mThread.isRunning()) {                                                                               \
+        !this->isWorkingThread())                                                                                      \
+    {                                                                                                                  \
+        if (this->mThread.isRunning())                                                                                 \
+        {                                                                                                              \
             QMetaObject::invokeMethod(this, #aFunction, Qt::QueuedConnection);                                         \
-        } else {                                                                                                       \
+        }                                                                                                              \
+        else                                                                                                           \
+        {                                                                                                              \
             this->connect(&this->mThread, SIGNAL(started()), this, SLOT(aFunction()), Qt::UniqueConnection);           \
             this->mThread.start();                                                                                     \
         }                                                                                                              \
@@ -48,7 +53,8 @@ namespace CDevice {
     }
 
 //--------------------------------------------------------------------------------
-template <class T> class DeviceBase : public T {
+template <class T> class DeviceBase : public T
+{
   public:
     DeviceBase();
 

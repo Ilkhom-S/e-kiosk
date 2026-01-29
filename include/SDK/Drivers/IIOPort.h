@@ -5,20 +5,33 @@
 // SDK
 #include <SDK/Drivers/IDevice.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         /// Параметры порта.
         typedef QMap<int, int> TPortParameters;
 
         /// Типы портов.
-        namespace EPortTypes {
-            enum Enum { Unknown, COM, VirtualCOM, COMEmulator, USB, TCP };
+        namespace EPortTypes
+        {
+            enum Enum
+            {
+                Unknown,
+                COM,
+                VirtualCOM,
+                COMEmulator,
+                USB,
+                TCP
+            };
         } // namespace EPortTypes
 
         /// Состояния портов. Если не OK - порт не работает.
-        namespace EPortState {
-            enum Enum {
+        namespace EPortState
+        {
+            enum Enum
+            {
                 OK = 0,
                 DriverError,    /// Ошибка 3d-party драйвера.
                 NoDevice,       /// Устройство не подключено, порт отсутствует.
@@ -32,7 +45,8 @@ namespace SDK {
         } // namespace EPortState
 
         //--------------------------------------------------------------------------------
-        class IIOPort : public IDevice {
+        class IIOPort : public IDevice
+        {
           public: // константы
             /// Таймаут чтения по умолчанию, [мс].
             static const unsigned int DefaultReadTimeout = 1000;
@@ -75,7 +89,8 @@ namespace SDK {
             virtual bool opened() = 0;
 
           protected:
-            virtual ~IIOPort() {
+            virtual ~IIOPort()
+            {
             }
         };
 

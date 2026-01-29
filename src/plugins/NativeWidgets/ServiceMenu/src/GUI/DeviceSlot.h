@@ -14,11 +14,14 @@
 #include <Common/ObjectPointer.h>
 #include <SDK/Drivers/WarningLevel.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class IDeviceTest;
     } // namespace PaymentProcessor
-    namespace Driver {
+    namespace Driver
+    {
         class IDevice;
     } // namespace Driver
 } // namespace SDK
@@ -30,12 +33,14 @@ class ServiceMenuBackend;
 /// Слот подключённого устройства. Хранит информацию о настройках устройства,
 /// текущем состоянии и умеет её визуализировать.
 
-class DeviceSlot : public QObject {
+class DeviceSlot : public QObject
+{
     Q_OBJECT
 
   public:
     /// Состояние связанного со слотом устройства.
-    enum State {
+    enum State
+    {
         Unknown = 0,  /// Статус устройства неизвестен
         Connected,    /// Устройство подключено
         Disconnected, /// Устройство не подключено

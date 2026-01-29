@@ -5,24 +5,28 @@
 #include "../AtolFRConstants.h"
 
 //--------------------------------------------------------------------------------
-namespace CAtolFRBase {
+namespace CAtolFRBase
+{
     /// Тип запроса ЭКЛЗ - итог документа.
     const char SessionResume = 0x01;
 
     /// Таймауты чтения, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Пауза между командами после ошибки ЭКЛЗ.
         const int EKLZErrorPause = 100;
     } // namespace Timeouts
 
     /// Запросы ЭКЛЗ - некоторые, используемые.
-    namespace EKLZRequests {
+    namespace EKLZRequests
+    {
         const char GetStatus = 0x07;    /// Запрос состояния ЭКЛЗ.
         const char GetRegNumber = 0x14; /// Запрос регистрационного номера ЭКЛЗ.
     } // namespace EKLZRequests
 
     /// Регистры
-    namespace Registers {
+    namespace Registers
+    {
         const char FreeReregistrations[] = "free reregistrations";
         const char FreeFMSessions[] = "free fiscal memory sessions";
         const char EKLZActivizationResources[] = "EKLZ activization resources";
@@ -32,7 +36,8 @@ namespace CAtolFRBase {
 
     //------------------------------------------------------------------------------------------------
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         /// Команды получения информации об устройстве.
         const char EKLZRequest = '\xAF';              /// Прямой запрос в ЭКЛЗ.
         const char GetSoftEKLZStatus = '\xAE';        /// Мягкий запрос состояния ЭКЛЗ (но нет нужных статусов).
@@ -42,9 +47,11 @@ namespace CAtolFRBase {
 
     //------------------------------------------------------------------------------------------------
     /// Ошибки.
-    namespace Errors {
+    namespace Errors
+    {
         /// Коды состояний ЭКЛЗ, возвращаемых в байте флагов на команду AFh.
-        namespace EKLZ {
+        namespace EKLZ
+        {
             const char NoError = '\x00'; /// Нет ошибок.
             const char Error = '\x03';   /// Авария ЭКЛЗ.
             const char CCError = '\x04'; /// Авария КС (Криптографического сопроцессора) ЭКЛЗ.
@@ -55,9 +62,11 @@ namespace CAtolFRBase {
         const char I2CInterface = '\xD2'; /// Ошибка обмена с ЭКЛЗ на уровне интерфейса I2C.
         const char EKLZOverflow = '\xD7'; /// Исчерпан временной ресурс ЭКЛЗ.
 
-        class Data : public FRError::Data {
+        class Data : public FRError::Data
+        {
           public:
-            Data() {
+            Data()
+            {
                 add('\x01', "Контрольная лента обработана без ошибок");
                 add('\x08', "Неверная цена (сумма)");
                 add('\x0A', "Неверное количество");
@@ -187,12 +196,14 @@ namespace CAtolFRBase {
     } // namespace Errors
 
     /// Структура для парсинга ответа на запросы ЭКЛЗ.
-    struct SEKLZData {
+    struct SEKLZData
+    {
         bool error;       /// Есть ли ошибка ЭКЛЗ.
         bool nearEnd;     /// ЭКЛЗ скоро кончится?
         qlonglong serial; /// Серийный номер ЭКЛЗ.
 
-        SEKLZData() : error(false), nearEnd(false), serial(0) {
+        SEKLZData() : error(false), nearEnd(false), serial(0)
+        {
         }
     };
 } // namespace CAtolFRBase

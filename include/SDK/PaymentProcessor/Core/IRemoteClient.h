@@ -9,15 +9,19 @@
 #include <QtCore/QFlags>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        class IRemoteClient : public QObject {
+        class IRemoteClient : public QObject
+        {
             Q_OBJECT
 
           public:
-            enum ECapability {
+            enum ECapability
+            {
                 /// Не поддерживаются никакие дополнительные функции.
                 None = 0x0,
 
@@ -52,7 +56,8 @@ namespace SDK {
             virtual bool useCapability(ECapability aCapability) = 0;
 
           protected:
-            virtual ~IRemoteClient() {
+            virtual ~IRemoteClient()
+            {
             }
         };
 

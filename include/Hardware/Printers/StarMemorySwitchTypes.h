@@ -2,8 +2,10 @@
 
 #pragma once
 
-namespace ESTARMemorySwitchTypes {
-    enum Enum {
+namespace ESTARMemorySwitchTypes
+{
+    enum Enum
+    {
         LoopHoldEjector,
         Chinese,
         ASB,

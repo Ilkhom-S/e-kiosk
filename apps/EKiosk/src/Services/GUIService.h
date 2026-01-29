@@ -24,7 +24,8 @@ class IApplication;
 class PluginService;
 class GuardService;
 
-namespace CGUIService {
+namespace CGUIService
+{
     const char LogName[] = "Interface";
     const char IntruderLogName[] = "Penetration";
     const char BackedObjectPrefix[] = "Backend$";
@@ -37,7 +38,8 @@ class GUIService : public QObject,
                    public SDK::PaymentProcessor::IGUIService,
                    public SDK::PaymentProcessor::IService,
                    public SDK::GUI::IGraphicsHost,
-                   private ILogable {
+                   private ILogable
+{
     Q_OBJECT
 
   public:
@@ -118,7 +120,8 @@ class GUIService : public QObject,
 
   public:
     /// Проверка возможность остановки графического интерфейса
-    bool canDisable() const {
+    bool canDisable() const
+    {
         return mScenarioEngine.canStop();
     }
 

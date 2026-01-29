@@ -16,7 +16,8 @@
 class ServiceMenuBackend;
 
 //--------------------------------------------------------------------------
-class FirstSetup : public virtual SDK::Plugin::IPlugin, public virtual SDK::GUI::IGraphicsItem {
+class FirstSetup : public virtual SDK::Plugin::IPlugin, public virtual SDK::GUI::IGraphicsItem
+{
   public:
     FirstSetup(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
     virtual ~FirstSetup();
@@ -66,7 +67,8 @@ class FirstSetup : public virtual SDK::Plugin::IPlugin, public virtual SDK::GUI:
     // Возвращает виджет.
     virtual QQuickItem *getWidget() const;
 
-    virtual QWidget *getNativeWidget() const {
+    virtual QWidget *getNativeWidget() const
+    {
         return mWizardFrame;
     }
 

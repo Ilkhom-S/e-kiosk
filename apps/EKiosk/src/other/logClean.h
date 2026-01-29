@@ -8,37 +8,48 @@
 #include <QtCore/QThread>
 #include <Common/QtHeadersEnd.h>
 
-class LogClean : public QThread {
+class LogClean : public QThread
+{
 
   private:
-    void removeTmpDir() {
+    void removeTmpDir()
+    {
         QDir _dir;
         QString parent_folder = _dir.absolutePath();
 
         QDirIterator directories(parent_folder, QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot);
-        while (directories.hasNext()) {
+        while (directories.hasNext())
+        {
             directories.next();
-            if (directories.filePath().contains("tmp_")) {
+            if (directories.filePath().contains("tmp_"))
+            {
                 removeDir(directories.filePath());
             }
         }
     }
 
-    bool removeDir(const QString &dirName) {
+    bool removeDir(const QString &dirName)
+    {
         bool result = true;
         QDir dir(dirName);
 
-        if (dir.exists(dirName)) {
+        if (dir.exists(dirName))
+        {
             Q_FOREACH (QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden |
                                                              QDir::AllDirs | QDir::Files,
-                                                         QDir::DirsFirst)) {
-                if (info.isDir()) {
+                                                         QDir::DirsFirst))
+            {
+                if (info.isDir())
+                {
                     result = removeDir(info.absoluteFilePath());
-                } else {
+                }
+                else
+                {
                     result = QFile::remove(info.absoluteFilePath());
                 }
 
-                if (!result) {
+                if (!result)
+                {
                     return result;
                 }
             }
@@ -48,7 +59,8 @@ class LogClean : public QThread {
         return result;
     }
 
-    void removeOldLogs() {
+    void removeOldLogs()
+    {
         QDir _dir("log");
         QString dirPath = _dir.absolutePath();
 
@@ -56,17 +68,22 @@ class LogClean : public QThread {
         removeFile(dirPath);
     }
 
-    bool removeFile(const QString &dirName) {
+    bool removeFile(const QString &dirName)
+    {
         bool result = true;
         QDir dir(dirName);
 
-        if (dir.exists(dirName)) {
-            Q_FOREACH (QFileInfo info, dir.entryInfoList(QDir::Files)) {
+        if (dir.exists(dirName))
+        {
+            Q_FOREACH (QFileInfo info, dir.entryInfoList(QDir::Files))
+            {
                 QDate _logDate = QDate::fromString(info.fileName().left(10), "dd.MM.yyyy");
-                if (_logDate < QDate::currentDate().addDays(-61)) {
+                if (_logDate < QDate::currentDate().addDays(-61))
+                {
                     result = QFile::remove(info.absoluteFilePath());
 
-                    if (!result) {
+                    if (!result)
+                    {
                         return result;
                     }
                 }
@@ -76,22 +93,29 @@ class LogClean : public QThread {
         return result;
     }
 
-    void removeOldValidatorLogs() {
+    void removeOldValidatorLogs()
+    {
         QDir _dir("ValidatorLog");
         QString dirPath = _dir.absolutePath();
 
         QDir dir(dirPath);
 
-        if (dir.exists(dirPath)) {
+        if (dir.exists(dirPath))
+        {
             Q_FOREACH (QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden |
                                                              QDir::AllDirs | QDir::Files,
-                                                         QDir::DirsFirst)) {
+                                                         QDir::DirsFirst))
+            {
                 QDate _logDate = QDate::fromString(info.fileName().left(10), "yyyy-MM-dd");
 
-                if (_logDate < QDate::currentDate().addDays(-61)) {
-                    if (info.isDir()) {
+                if (_logDate < QDate::currentDate().addDays(-61))
+                {
+                    if (info.isDir())
+                    {
                         removeDir(info.absoluteFilePath());
-                    } else {
+                    }
+                    else
+                    {
                         QFile::remove(info.absoluteFilePath());
                     }
                 }
@@ -100,7 +124,8 @@ class LogClean : public QThread {
     }
 
   protected:
-    void run() {
+    void run()
+    {
         // Удалим папки tmp updater-a
         removeTmpDir();
         msleep(1000);

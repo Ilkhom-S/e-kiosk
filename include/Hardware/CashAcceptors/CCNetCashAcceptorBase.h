@@ -11,7 +11,8 @@
 #include "CCNetCashAcceptorDataTypes.h"
 
 //--------------------------------------------------------------------------------
-class CCNetCashAcceptorBase : public TSerialCashAcceptor {
+class CCNetCashAcceptorBase : public TSerialCashAcceptor
+{
     SET_SERIES("CCNet")
 
   public:

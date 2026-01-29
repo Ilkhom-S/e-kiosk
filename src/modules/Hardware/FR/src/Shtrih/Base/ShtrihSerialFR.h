@@ -7,7 +7,8 @@
 //--------------------------------------------------------------------------------
 typedef ShtrihFRBase<ShtrihSerialFRBase> TShtrihSerialFRBase;
 
-class ShtrihSerialFR : public TShtrihSerialFRBase {
+class ShtrihSerialFR : public TShtrihSerialFRBase
+{
   public:
     ShtrihSerialFR();
 

@@ -5,7 +5,8 @@
 #include "Atol2FRBase.h"
 
 //--------------------------------------------------------------------------------
-class AtolSerialFR : public Atol2FRBase {
+class AtolSerialFR : public Atol2FRBase
+{
   public:
     AtolSerialFR();
 

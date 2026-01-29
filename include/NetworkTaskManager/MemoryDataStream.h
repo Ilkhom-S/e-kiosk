@@ -8,7 +8,8 @@ class QByteArray;
 class QString;
 
 //------------------------------------------------------------------------
-class MemoryDataStream : public DataStream {
+class MemoryDataStream : public DataStream
+{
   public:
     MemoryDataStream();
 

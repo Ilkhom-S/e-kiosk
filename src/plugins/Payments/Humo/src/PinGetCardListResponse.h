@@ -16,7 +16,8 @@
 using namespace SDK::PaymentProcessor::Humo;
 
 //---------------------------------------------------------------------------
-class PinGetCardListResponse : public Response {
+class PinGetCardListResponse : public Response
+{
   public:
     PinGetCardListResponse(const Request &aRequest, const QString &aResponseString);
 

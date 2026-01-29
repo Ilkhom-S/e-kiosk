@@ -17,7 +17,8 @@
 #include "Hardware/CashDevices/CCTalkDeviceConstants.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class CCTalkDeviceBase : public T {
+template <class T> class CCTalkDeviceBase : public T
+{
     SET_SERIES("ccTalk")
 
   public:

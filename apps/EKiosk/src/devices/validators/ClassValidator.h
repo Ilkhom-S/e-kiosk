@@ -4,14 +4,16 @@
 #include "dev/CCNetSM.h"
 #include "dev/EBDS.h"
 
-namespace ValidatorModel {
+namespace ValidatorModel
+{
     const QString CashCodeCCNET = "CashCode_CCNET";
     const QString MeiEBDS = "Mei";
 } // namespace ValidatorModel
 
 class CCNetSm;
 
-class ClassValidator : public QThread {
+class ClassValidator : public QThread
+{
     Q_OBJECT
 
   public:

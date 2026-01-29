@@ -49,7 +49,8 @@ class IApplication;
 class SchedulerService : public QObject,
                          public SDK::PaymentProcessor::ISchedulerService,
                          public SDK::PaymentProcessor::IService,
-                         private ILogable {
+                         private ILogable
+{
     Q_OBJECT
 
   public:
@@ -84,7 +85,8 @@ class SchedulerService : public QObject,
     virtual void resetParameters(const QSet<QString> &aParameters);
 
   private:
-    class Item {
+    class Item
+    {
       public:
         Item();
         Item(const QString &aName, const QSettings &aSettings, const QSettings &aUserSettings);
@@ -101,23 +103,29 @@ class SchedulerService : public QObject,
         /// Записываем в item результат выполнения таска
         void complete(bool aComplete);
 
-        QString name() const {
+        QString name() const
+        {
             return mName;
         }
-        QString type() const {
+        QString type() const
+        {
             return mType;
         }
-        QString params() const {
+        QString params() const
+        {
             return mParams;
         }
-        QDateTime lastExecute() const {
+        QDateTime lastExecute() const
+        {
             return mLastExecute;
         }
-        bool onlyOnce() const {
+        bool onlyOnce() const
+        {
             return mOnlyOnce;
         }
 
-        int failCount() const {
+        int failCount() const
+        {
             return mFailExecuteCounter;
         }
 

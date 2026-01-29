@@ -8,11 +8,14 @@
 #include <Common/ILogable.h>
 #include <Common/PropertyTree.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //----------------------------------------------------------------------------
-        class UserSettings : public ISettingsAdapter, public ILogable {
+        class UserSettings : public ISettingsAdapter, public ILogable
+        {
           public:
             UserSettings(TPtree &aProperties);
             virtual ~UserSettings();

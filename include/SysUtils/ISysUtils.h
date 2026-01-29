@@ -29,7 +29,8 @@ typedef QMap<QString, TStatusNames> TStatusGroupNames;
  * Provides static methods for OS-specific functions like system control,
  * process management, and string/file manipulations.
  */
-class ISysUtils {
+class ISysUtils
+{
   public:
     /// Перезагрузить систему. Возвращает код ошибки или 0 - в случае успеха.
     static int systemReboot();
@@ -69,24 +70,28 @@ class ISysUtils {
     /// Получить количество всех системных дескрипторов
     static bool getAllProcessHandleCount(quint64 &aCountOfHandles);
 
-    struct MemoryInfo {
+    struct MemoryInfo
+    {
         qint64 total;
         qint64 totalUsed;
         qint64 processUsed;
 
-        MemoryInfo() : total(0), totalUsed(0), processUsed(0) {
+        MemoryInfo() : total(0), totalUsed(0), processUsed(0)
+        {
         }
     };
 
     /// Получить количество памяти, используемое процессом
     static bool getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *aProcess = nullptr);
 
-    struct SSignerInfo {
+    struct SSignerInfo
+    {
         QString name;
         QString issuer;
         QString serial;
 
-        void clear() {
+        void clear()
+        {
             name.clear();
             issuer.clear();
             serial.clear();
@@ -104,13 +109,15 @@ class ISysUtils {
     static bool bringWindowToFront(const QString &aWindowTitle);
 
     /// Информация о процессе
-    struct SProcessInfo {
+    struct SProcessInfo
+    {
         quint64 id;
         QString path;
         quint64 memoryUsage;
         quint64 handlers;
 
-        SProcessInfo() : id(0), memoryUsage(0), handlers(0) {
+        SProcessInfo() : id(0), memoryUsage(0), handlers(0)
+        {
         }
     };
 

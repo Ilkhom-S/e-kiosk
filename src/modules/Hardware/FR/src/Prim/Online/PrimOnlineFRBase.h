@@ -5,7 +5,8 @@
 #include "../PrimFRBase.h"
 
 //--------------------------------------------------------------------------------
-class PrimOnlineFRBase : public PrimFRBase {
+class PrimOnlineFRBase : public PrimFRBase
+{
     SET_SERIES("PrimOnline")
 
   public:

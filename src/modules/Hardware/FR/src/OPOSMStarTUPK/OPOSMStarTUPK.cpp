@@ -36,7 +36,8 @@ using namespace SDK::Driver;
 #define STRING_CALL_NATIVE(aMethod, ...) mThreadProxy.invokeMethod<QString>(NATIVE_BIND(aMethod, QString, __VA_ARGS__))
 
 //--------------------------------------------------------------------------------
-OPOSMStarTUPK::OPOSMStarTUPK() : mNativeDriver(nullptr) {
+OPOSMStarTUPK::OPOSMStarTUPK() : mNativeDriver(nullptr)
+{
     // данные устройства
     mDeviceName = COPOSMStarTUPK::ModelName;
     mLineFeed = false;
@@ -64,10 +65,12 @@ OPOSMStarTUPK::OPOSMStarTUPK() : mNativeDriver(nullptr) {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::release() {
+bool OPOSMStarTUPK::release()
+{
     bool result = TPollingOPOSFR::release();
 
-    if (mNativeDriver) {
+    if (mNativeDriver)
+    {
         mNativeDriver = nullptr;
     }
 
@@ -75,54 +78,72 @@ bool OPOSMStarTUPK::release() {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::checkConnectionAbility() {
+bool OPOSMStarTUPK::checkConnectionAbility()
+{
     return mNativeDriver && TPollingOPOSFR::checkConnectionAbility();
 }
 
 //--------------------------------------------------------------------------------
-void OPOSMStarTUPK::initializeResources() {
+void OPOSMStarTUPK::initializeResources()
+{
     TPollingOPOSFR::initializeResources();
 
     if (mCOMInitialized && !mNativeDriver &&
-        FAILED(mDriver->queryInterface(QUuid(__uuidof(TNativeDriver)), (void **)&mNativeDriver))) {
+        FAILED(mDriver->queryInterface(QUuid(__uuidof(TNativeDriver)), (void **)&mNativeDriver)))
+    {
         toOPOS_LOG(LogLevel::Error, "Failed to query interface of the printer.");
         mNativeDriver = nullptr;
     }
 }
 
 //--------------------------------------------------------------------------------
-SOPOSResult OPOSMStarTUPK::processIntMethod(TIntMethod aMethod, const QString &aFunctionData) {
-    if (!mErrors.isEmpty() && (mErrors.last().function == aFunctionData)) {
+SOPOSResult OPOSMStarTUPK::processIntMethod(TIntMethod aMethod, const QString &aFunctionData)
+{
+    if (!mErrors.isEmpty() && (mErrors.last().function == aFunctionData))
+    {
         return OPOS::OPOS_E_FAILURE;
     }
 
     SOPOSResult result = TPollingOPOSFR::processIntMethod(aMethod, aFunctionData);
 
-    if (OPOS_SUCCESS(result)) {
-        foreach (const COPOSMStarTUPK::SErrorData &errorData, mErrors) {
-            if (errorData.function == aFunctionData) {
+    if (OPOS_SUCCESS(result))
+    {
+        foreach (const COPOSMStarTUPK::SErrorData &errorData, mErrors)
+        {
+            if (errorData.function == aFunctionData)
+            {
                 mErrors.removeAll(errorData);
             }
         }
-    } else if (!functionUse(mNotLogResult, aFunctionData)) {
-        if (result.extended) {
+    }
+    else if (!functionUse(mNotLogResult, aFunctionData))
+    {
+        if (result.extended)
+        {
             int error = QString("%1").arg(result.error, 4, 16, QChar(ASCII::Zero)).mid(1, 1).toInt(0, 16);
 
-            if (error == COPOSMStarTUPK::ExtendedErrors::FR::MemoryFlag) {
+            if (error == COPOSMStarTUPK::ExtendedErrors::FR::MemoryFlag)
+            {
                 mMemoryError = true;
             }
         }
 
-        if (!functionUse(COPOSMStarTUPK::NotProcessResult, aFunctionData)) {
+        if (!functionUse(COPOSMStarTUPK::NotProcessResult, aFunctionData))
+        {
             COPOSMStarTUPK::SErrorData errorData = COPOSMStarTUPK::SErrorData(aFunctionData, result.error);
 
-            if (!result.extended) {
+            if (!result.extended)
+            {
                 mErrors.append(errorData);
-            } else {
+            }
+            else
+            {
                 toOPOS_LOG(LogLevel::Normal, QString("Printer state is %1.").arg(INT_CALL_OPOS(PrinterState).error));
 
-                if (!mErrors.contains(errorData)) {
-                    auto repeatMethod = [&]() -> SOPOSResult {
+                if (!mErrors.contains(errorData))
+                {
+                    auto repeatMethod = [&]() -> SOPOSResult
+                    {
                         mErrors.removeLast();
                         toOPOS_LOG(LogLevel::Normal, QString("repeat previous method %1.").arg(aFunctionData));
                         return processIntMethod(aMethod, aFunctionData);
@@ -130,45 +151,54 @@ SOPOSResult OPOSMStarTUPK::processIntMethod(TIntMethod aMethod, const QString &a
 
                     mErrors.append(errorData);
 
-                    switch (result.error) {
-                        case OPOS::OPOS_EFPTR_DAY_END_REQUIRED: {
+                    switch (result.error)
+                    {
+                        case OPOS::OPOS_EFPTR_DAY_END_REQUIRED:
+                        {
                             toOPOS_LOG(LogLevel::Normal, "Going to perform Z-report to buffer.");
 
-                            if (execZReport(true)) {
+                            if (execZReport(true))
+                            {
                                 result = repeatMethod();
                             }
 
                             break;
                         }
                         //--------------------------------------------------------------------------------
-                        case COPOSMStarTUPK::ErrorCode::UserNotRegistered: {
+                        case COPOSMStarTUPK::ErrorCode::UserNotRegistered:
+                        {
                             toOPOS_LOG(LogLevel::Normal, "Going to user registering.");
 
-                            if (OPOS_SUCCESS(INT_CALL_OPOS(SetPOSID, "", ""))) {
+                            if (OPOS_SUCCESS(INT_CALL_OPOS(SetPOSID, "", "")))
+                            {
                                 result = repeatMethod();
                             }
 
                             break;
                         }
                         //--------------------------------------------------------------------------------
-                        case COPOSMStarTUPK::ErrorCode::TransactionInProgress: {
+                        case COPOSMStarTUPK::ErrorCode::TransactionInProgress:
+                        {
                             using namespace COPOSMStarTUPK::DirectIO;
 
                             toOPOS_LOG(LogLevel::Normal, "Going to reset printer.");
 
                             if (OPOS_SUCCESS(INT_CALL_OPOS(ResetPrinter)) &&
-                                (getDocumentState() == EDocumentState::Closed)) {
+                                (getDocumentState() == EDocumentState::Closed))
+                            {
                                 result = OPOS::OPOS_SUCCESS;
                             }
 
                             break;
                         }
                         //--------------------------------------------------------------------------------
-                        case OPOS::OPOS_EFPTR_WRONG_STATE: {
+                        case OPOS::OPOS_EFPTR_WRONG_STATE:
+                        {
                             toOPOS_LOG(LogLevel::Normal,
                                        "Going to checking document state and aborting the document, if it is need.");
 
-                            if ((getDocumentState() == EDocumentState::Opened) && abortDocument()) {
+                            if ((getDocumentState() == EDocumentState::Opened) && abortDocument())
+                            {
                                 result = repeatMethod();
                             }
 
@@ -184,8 +214,10 @@ SOPOSResult OPOSMStarTUPK::processIntMethod(TIntMethod aMethod, const QString &a
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::isConnected() {
-    if (!TPollingOPOSFR::isConnected()) {
+bool OPOSMStarTUPK::isConnected()
+{
+    if (!TPollingOPOSFR::isConnected())
+    {
         return false;
     }
 
@@ -197,8 +229,10 @@ bool OPOSMStarTUPK::isConnected() {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::updateParameters() {
-    if (!TOPOSFR::updateParameters()) {
+bool OPOSMStarTUPK::updateParameters()
+{
+    if (!TOPOSFR::updateParameters())
+    {
         return false;
     }
 
@@ -212,7 +246,8 @@ bool OPOSMStarTUPK::updateParameters() {
     QString regExpData = QString("%1\\.%1\\.%1").arg("[0-9]+");
     QRegularExpression regExp = QRegularExpression(regExpData);
 
-    if (regExp.match(deviceDescription).capturedStart() != -1) {
+    if (regExp.match(deviceDescription).capturedStart() != -1)
+    {
         QStringList firmware = regExp.capturedTexts();
         mFWVersion = firmware[0].remove(".").toInt();
     }
@@ -221,21 +256,27 @@ bool OPOSMStarTUPK::updateParameters() {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::checkTax(TVAT aVAT, CFR::Taxes::SData &aData) {
+bool OPOSMStarTUPK::checkTax(TVAT aVAT, CFR::Taxes::SData &aData)
+{
     QString canAutoCloseSession = getConfigParameter(CHardware::FR::CanAutoCloseSession).toString();
 
-    if (BOOL_CALL_OPOS(DayOpened)) {
-        if (canAutoCloseSession == CHardwareSDK::Values::Auto) {
+    if (BOOL_CALL_OPOS(DayOpened))
+    {
+        if (canAutoCloseSession == CHardwareSDK::Values::Auto)
+        {
             toLog(LogLevel::Normal, "Going to autoclosing session before checking the tax");
 
-            if (!execZReport(true)) {
+            if (!execZReport(true))
+            {
                 return false;
             }
 
             setConfigParameter(CHardware::FR::CanAutoCloseSession, CHardwareSDK::Values::NotUse);
 
             emit configurationChanged();
-        } else if (canAutoCloseSession == CHardwareSDK::Values::NotUse) {
+        }
+        else if (canAutoCloseSession == CHardwareSDK::Values::NotUse)
+        {
             toLog(LogLevel::Debug, "Don`t need to check the tax due to it was done earlier");
             return true;
         }
@@ -243,13 +284,15 @@ bool OPOSMStarTUPK::checkTax(TVAT aVAT, CFR::Taxes::SData &aData) {
 
     TVAT VAT;
 
-    if (!OPOS_SUCCESS(INT_CALL_OPOS(GetVatEntry, aData.group, 0, std::ref(VAT)))) {
+    if (!OPOS_SUCCESS(INT_CALL_OPOS(GetVatEntry, aData.group, 0, std::ref(VAT))))
+    {
         return false;
     }
 
     aData.deviceVAT = VAT;
 
-    if (VAT == aVAT) {
+    if (VAT == aVAT)
+    {
         return true;
     }
 
@@ -258,12 +301,14 @@ bool OPOSMStarTUPK::checkTax(TVAT aVAT, CFR::Taxes::SData &aData) {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::printLine(const QVariant &aLine) {
+bool OPOSMStarTUPK::printLine(const QVariant &aLine)
+{
     return OPOS_SUCCESS(INT_CALL_OPOS(PrintNormal, OPOS::FPTR_S_RECEIPT, aLine.toString()));
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::receiptProcessing() {
+bool OPOSMStarTUPK::receiptProcessing()
+{
     using namespace COPOSMStarTUPK::DirectIO;
 
     QString data = COPOSMStarTUPK::PrinterCommands::Feed;
@@ -276,8 +321,10 @@ bool OPOSMStarTUPK::receiptProcessing() {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::processReceipt(const QStringList &aReceipt, bool aProcessing) {
-    if (!isPrintingNeed(aReceipt)) {
+bool OPOSMStarTUPK::processReceipt(const QStringList &aReceipt, bool aProcessing)
+{
+    if (!isPrintingNeed(aReceipt))
+    {
         return true;
     }
 
@@ -285,13 +332,15 @@ bool OPOSMStarTUPK::processReceipt(const QStringList &aReceipt, bool aProcessing
     bool needCutting = aProcessing && ((mPrintingMode == EPrintingModes::None) || serviceOperation);
     setEnable(COPOSMStarTUPK::Parameters::AutoCutter, needCutting);
 
-    if (!OPOS_SUCCESS(INT_CALL_OPOS(BeginNonFiscal))) {
+    if (!OPOS_SUCCESS(INT_CALL_OPOS(BeginNonFiscal)))
+    {
         return false;
     }
 
     QStringList receipt = simplifyReceipt(aReceipt);
 
-    if (!TOPOSFR::processReceipt(receipt, false) || !OPOS_SUCCESS(INT_CALL_OPOS(EndNonFiscal))) {
+    if (!TOPOSFR::processReceipt(receipt, false) || !OPOS_SUCCESS(INT_CALL_OPOS(EndNonFiscal)))
+    {
         fixError(EFiscalPrinterCommand::Print, std::bind(&OPOSMStarTUPK::abortDocument, this));
 
         return false;
@@ -302,12 +351,15 @@ bool OPOSMStarTUPK::processReceipt(const QStringList &aReceipt, bool aProcessing
 
 //--------------------------------------------------------------------------------
 void OPOSMStarTUPK::postPollingAction(const TStatusCollection &aNewStatusCollection,
-                                      const TStatusCollection &aOldStatusCollection) {
+                                      const TStatusCollection &aOldStatusCollection)
+{
     if (!mLastHandledOperations.isEmpty() && aNewStatusCollection.isEmpty(EWarningLevel::Error) &&
-        aOldStatusCollection.isEmpty(EWarningLevel::Error)) {
+        aOldStatusCollection.isEmpty(EWarningLevel::Error))
+    {
         toOPOS_LOG(LogLevel::Normal, QString("Restore fixed operations (%1).").arg(mLastHandledOperations.size()));
 
-        for (int i = 0; i < mLastHandledOperations.size(); ++i) {
+        for (int i = 0; i < mLastHandledOperations.size(); ++i)
+        {
             mLastHandledOperations[i]();
         }
 
@@ -318,20 +370,25 @@ void OPOSMStarTUPK::postPollingAction(const TStatusCollection &aNewStatusCollect
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::getStatus(TStatusCodes &aStatusCodes) {
-    if (!checkConnectionAbility()) {
+bool OPOSMStarTUPK::getStatus(TStatusCodes &aStatusCodes)
+{
+    if (!checkConnectionAbility())
+    {
         aStatusCodes.insert(DeviceStatusCode::Error::ThirdPartyDriverFail);
         return true;
     }
 
     SOPOSResult result;
 
-    if (!checkHealth(aStatusCodes, result)) {
+    if (!checkHealth(aStatusCodes, result))
+    {
         return false;
     }
 
-    if (result.extended) {
-        switch (result.error) {
+    if (result.extended)
+    {
+        switch (result.error)
+        {
             case COPOSMStarTUPK::ExtendedErrors::Printer::Offline:
             case COPOSMStarTUPK::ExtendedErrors::Printer::Timeout:
             case COPOSMStarTUPK::ExtendedErrors::Printer::Unknown:
@@ -359,31 +416,41 @@ bool OPOSMStarTUPK::getStatus(TStatusCodes &aStatusCodes) {
 
     int ZReportSlots;
 
-    if (!getZBufferSlots(ZReportSlots, false)) {
+    if (!getZBufferSlots(ZReportSlots, false))
+    {
         aStatusCodes.insert(FRStatusCode::Error::ZBuffer);
-    } else if (!ZReportSlots) {
+    }
+    else if (!ZReportSlots)
+    {
         aStatusCodes.insert(FRStatusCode::Error::ZBufferOverflow);
-    } else if (ZReportSlots == 1) {
+    }
+    else if (ZReportSlots == 1)
+    {
         aStatusCodes.insert(FRStatusCode::Warning::ZBufferFull);
     }
 
-    if (BOOL_CALL_OPOS(CoverOpen)) {
+    if (BOOL_CALL_OPOS(CoverOpen))
+    {
         aStatusCodes.insert(DeviceStatusCode::Error::CoverIsOpened);
     }
 
-    if (BOOL_CALL_OPOS(RecNearEnd)) {
+    if (BOOL_CALL_OPOS(RecNearEnd))
+    {
         aStatusCodes.insert(Warning::PaperNearEnd);
     }
 
-    if (BOOL_CALL_OPOS(RecEmpty)) {
+    if (BOOL_CALL_OPOS(RecEmpty))
+    {
         aStatusCodes.insert(Error::PaperEnd);
     }
 
-    if (mFWVersion < COPOSMStarTUPK::MinRecommendedFirmware) {
+    if (mFWVersion < COPOSMStarTUPK::MinRecommendedFirmware)
+    {
         aStatusCodes.insert(DeviceStatusCode::Warning::Firmware);
     }
 
-    if (mMemoryError) {
+    if (mMemoryError)
+    {
         aStatusCodes.insert(DeviceStatusCode::Error::MemoryStorage);
     }
 
@@ -391,7 +458,8 @@ bool OPOSMStarTUPK::getStatus(TStatusCodes &aStatusCodes) {
 }
 
 //--------------------------------------------------------------------------------
-EDocumentState::Enum OPOSMStarTUPK::getDocumentState() {
+EDocumentState::Enum OPOSMStarTUPK::getDocumentState()
+{
     int state = INT_CALL_OPOS(PrinterState).error;
 
     bool result = (state == OPOS::FPTR_PS_NONFISCAL) || (state == OPOS::FPTR_PS_FISCAL_RECEIPT) ||
@@ -402,14 +470,17 @@ EDocumentState::Enum OPOSMStarTUPK::getDocumentState() {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::abortDocument() {
+bool OPOSMStarTUPK::abortDocument()
+{
     TStatusCollection lastStatusCollection = mStatusCollectionHistory.lastValue();
     bool noPaper = lastStatusCollection.contains(PrinterStatusCode::Error::PaperEnd);
 
     int state = INT_CALL_OPOS(PrinterState).error;
 
-    switch (state) {
-        case OPOS::FPTR_PS_NONFISCAL: {
+    switch (state)
+    {
+        case OPOS::FPTR_PS_NONFISCAL:
+        {
             toOPOS_LOG(LogLevel::Warning, "Aborting non-fiscal receipt.");
             QStringList text = QStringList() << QString::fromWCharArray(COPOSMStarTUPK::NonFiscalCancellation);
             processReceipt(text);
@@ -421,7 +492,8 @@ bool OPOSMStarTUPK::abortDocument() {
         case OPOS::FPTR_PS_FISCAL_RECEIPT_ENDING:
         case OPOS::FPTR_PS_FISCAL_RECEIPT:
         case OPOS::FPTR_PS_FISCAL_DOCUMENT:
-        case OPOS::FPTR_PS_FISCAL_RECEIPT_TOTAL: {
+        case OPOS::FPTR_PS_FISCAL_RECEIPT_TOTAL:
+        {
             toOPOS_LOG(LogLevel::Warning, "Aborting fiscal receipt.");
 
             setEnable(COPOSMStarTUPK::Parameters::AutoCutter, !noPaper);
@@ -437,17 +509,20 @@ bool OPOSMStarTUPK::abortDocument() {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::makeFiscal(const SPaymentData &aPaymentData) {
+bool OPOSMStarTUPK::makeFiscal(const SPaymentData &aPaymentData)
+{
     setEnable(COPOSMStarTUPK::Parameters::AutoCutter, true);
 
     VOID_CALL_OPOS(SetFiscalReceiptType, OPOS::FPTR_RT_SALES);
 
     bool result = OPOS_SUCCESS(INT_CALL_OPOS(BeginFiscalReceipt, true));
 
-    if (result) {
+    if (result)
+    {
         setEnable(COPOSMStarTUPK::Parameters::AutoCutter, true);
 
-        foreach (auto unitData, aPaymentData.unitDataList) {
+        foreach (auto unitData, aPaymentData.unitDataList)
+        {
             int nameSize = unitData.name.size();
             wchar_t *name = new wchar_t[nameSize + 1];
             memset(name, ASCII::NUL, sizeof(wchar_t) * (nameSize + 1));
@@ -459,14 +534,17 @@ bool OPOSMStarTUPK::makeFiscal(const SPaymentData &aPaymentData) {
             delete[] name;
         }
 
-        if (result) {
+        if (result)
+        {
             VOID_CALL_OPOS(SetCheckTotal, false);
 
             CY total(sum2CY(getTotalAmount(aPaymentData)));
 
             result = OPOS_SUCCESS(INT_CALL_NATIVE(PrintRecTotal, total, total, L"0")) &&
                      OPOS_SUCCESS(INT_CALL_OPOS(EndFiscalReceipt, false));
-        } else {
+        }
+        else
+        {
             abortDocument();
         }
     }
@@ -476,15 +554,18 @@ bool OPOSMStarTUPK::makeFiscal(const SPaymentData &aPaymentData) {
 
 //--------------------------------------------------------------------------------
 bool OPOSMStarTUPK::performFiscal(const QStringList &aReceipt, const SPaymentData &aPaymentData,
-                                  quint32 * /*aFDNumber*/) {
-    if (!processReceipt(aReceipt, false)) {
+                                  quint32 * /*aFDNumber*/)
+{
+    if (!processReceipt(aReceipt, false))
+    {
         return false;
     }
 
     TBoolMethod fiscal = std::bind(&OPOSMStarTUPK::makeFiscal, this, aPaymentData);
     bool result = complexFiscalDocument(fiscal, "fiscal document");
 
-    if (!result) {
+    if (!result)
+    {
         fixError(EFiscalPrinterCommand::Print, std::bind(&OPOSMStarTUPK::abortDocument, this));
     }
 
@@ -492,12 +573,14 @@ bool OPOSMStarTUPK::performFiscal(const QStringList &aReceipt, const SPaymentDat
 }
 
 //--------------------------------------------------------------------------------
-ESessionState::Enum OPOSMStarTUPK::getSessionState() {
+ESessionState::Enum OPOSMStarTUPK::getSessionState()
+{
     return BOOL_CALL_OPOS(DayOpened) ? ESessionState::Opened : ESessionState::Closed;
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::performZReport(bool aPrintDeferredReports) {
+bool OPOSMStarTUPK::performZReport(bool aPrintDeferredReports)
+{
     bool printZReport = execZReport(false);
     bool printDeferred = aPrintDeferredReports && printDeferredZReports();
 
@@ -507,18 +590,22 @@ bool OPOSMStarTUPK::performZReport(bool aPrintDeferredReports) {
 // TODO: попробовать сделать это в базовом классе фискальников. После того как там будет сделана фильтрация однотипных
 // однородных ошибок.
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::fixError(EFiscalPrinterCommand::Enum aCommand, TBoolMethod aFunction) {
+bool OPOSMStarTUPK::fixError(EFiscalPrinterCommand::Enum aCommand, TBoolMethod aFunction)
+{
     simplePoll();
 
-    if (isFiscalReady(false, aCommand)) {
+    if (isFiscalReady(false, aCommand))
+    {
         return false;
     }
 
-    if (aFunction) {
+    if (aFunction)
+    {
         mLastHandledOperations.append(aFunction);
     }
 
-    if (!mErrors.isEmpty()) {
+    if (!mErrors.isEmpty())
+    {
         mErrors.removeLast();
     }
 
@@ -526,11 +613,14 @@ bool OPOSMStarTUPK::fixError(EFiscalPrinterCommand::Enum aCommand, TBoolMethod a
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::execZReport(bool aAuto) {
-    if (aAuto) {
+bool OPOSMStarTUPK::execZReport(bool aAuto)
+{
+    if (aAuto)
+    {
         mNeedCloseSession = true;
 
-        if (mOperatorPresence) {
+        if (mOperatorPresence)
+        {
             toOPOS_LOG(LogLevel::Error, "Failed to process auto-Z-report due to presence of the operator.");
             return false;
         }
@@ -538,12 +628,14 @@ bool OPOSMStarTUPK::execZReport(bool aAuto) {
 
     toOPOS_LOG(LogLevel::Normal, "Performing Z-report.");
 
-    if (!BOOL_CALL_OPOS(DayOpened)) {
+    if (!BOOL_CALL_OPOS(DayOpened))
+    {
         toOPOS_LOG(LogLevel::Normal, "Failed to process Z-report due to the session is closed.");
         return false;
     }
 
-    if (!aAuto) {
+    if (!aAuto)
+    {
         setEnable(COPOSMStarTUPK::Parameters::AutoCutter, true);
     }
 
@@ -551,11 +643,13 @@ bool OPOSMStarTUPK::execZReport(bool aAuto) {
     bool success = OPOS_SUCCESS(INT_CALL_OPOS(PrintZReport));
     mNeedCloseSession = mNeedCloseSession && !success;
 
-    if (!success) {
+    if (!success)
+    {
         TBoolMethod command = std::bind(&OPOSMStarTUPK::execZReport, this, aAuto);
         TBoolMethod processing = std::bind(&OPOSMStarTUPK::receiptProcessing, this);
 
-        if (fixError(EFiscalPrinterCommand::Print, processing) && fixError(EFiscalPrinterCommand::ZReport, command)) {
+        if (fixError(EFiscalPrinterCommand::Print, processing) && fixError(EFiscalPrinterCommand::ZReport, command))
+        {
             return false;
         }
     }
@@ -564,7 +658,8 @@ bool OPOSMStarTUPK::execZReport(bool aAuto) {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::printDeferredZReports() {
+bool OPOSMStarTUPK::printDeferredZReports()
+{
     toOPOS_LOG(LogLevel::Normal, "Printing deferred Z-reports.");
 
     setEnable(COPOSMStarTUPK::Parameters::AutoCutter, false);
@@ -578,11 +673,13 @@ bool OPOSMStarTUPK::printDeferredZReports() {
     bool printDeferred = false;
     int ZReportSlots;
 
-    if (!getZBufferSlots(ZReportSlots, true)) {
+    if (!getZBufferSlots(ZReportSlots, true))
+    {
         int i = 0;
         bool result;
 
-        do {
+        do
+        {
             toOPOS_LOG(LogLevel::Normal, QString("Print %1 Z-report from buffer.").arg(++i));
 
             QString data;
@@ -590,26 +687,34 @@ bool OPOSMStarTUPK::printDeferredZReports() {
                 OPOS_SUCCESS(INT_CALL_OPOS(DirectIO, PrintZReport::Command, PrintZReport::Default, std::ref(data)));
         } while (result);
 
-        if (!result) {
+        if (!result)
+        {
             fixError(EFiscalPrinterCommand::Print, processing);
             fixError(EFiscalPrinterCommand::ZReport, command);
         }
 
         printDeferred = i > 1;
-    } else {
+    }
+    else
+    {
         toOPOS_LOG(LogLevel::Normal, QString("There are %1 filled slots in Z-report buffer.").arg(ZReportSlots));
 
-        for (int i = 0; i < ZReportSlots; ++i) {
+        for (int i = 0; i < ZReportSlots; ++i)
+        {
             QString data;
 
-            if (!OPOS_SUCCESS(INT_CALL_OPOS(DirectIO, PrintZReport::Command, PrintZReport::Default, std::ref(data)))) {
+            if (!OPOS_SUCCESS(INT_CALL_OPOS(DirectIO, PrintZReport::Command, PrintZReport::Default, std::ref(data))))
+            {
                 toOPOS_LOG(LogLevel::Error, QString("Failed to print %1 z-report from buffer.").arg(i + 1));
 
                 if (fixError(EFiscalPrinterCommand::Print, processing) &&
-                    fixError(EFiscalPrinterCommand::ZReport, command)) {
+                    fixError(EFiscalPrinterCommand::ZReport, command))
+                {
                     break;
                 }
-            } else {
+            }
+            else
+            {
                 printDeferred = true;
             }
         }
@@ -619,15 +724,18 @@ bool OPOSMStarTUPK::printDeferredZReports() {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::performXReport(const QStringList &aReceipt) {
+bool OPOSMStarTUPK::performXReport(const QStringList &aReceipt)
+{
     TBoolMethod printing = std::bind(&OPOSMStarTUPK::processReceipt, this, aReceipt, mNextReceiptProcessing);
     TBoolMethod XReport = std::bind(&OPOSMStarTUPK::processXReport, this);
     TBoolMethod command = std::bind(&OPOSMStarTUPK::complexFiscalDocument, this, XReport, "X-report");
 
     bool result = printing();
 
-    if (!result || !command()) {
-        if (result) {
+    if (!result || !command())
+    {
+        if (result)
+        {
             fixError(EFiscalPrinterCommand::Print, std::bind(&OPOSMStarTUPK::receiptProcessing, this));
         }
 
@@ -639,15 +747,18 @@ bool OPOSMStarTUPK::performXReport(const QStringList &aReceipt) {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::performEncashment(const QStringList &aReceipt, double aAmount) {
+bool OPOSMStarTUPK::performEncashment(const QStringList &aReceipt, double aAmount)
+{
     TBoolMethod printing = std::bind(&OPOSMStarTUPK::processReceipt, this, std::ref(aReceipt), mNextReceiptProcessing);
     TBoolMethod payout = std::bind(&OPOSMStarTUPK::processPayout, this, aAmount);
     TBoolMethod command = std::bind(&OPOSMStarTUPK::complexFiscalDocument, this, payout, "payout");
 
     bool result = printing();
 
-    if (!result || !command()) {
-        if (result) {
+    if (!result || !command())
+    {
+        if (result)
+        {
             fixError(EFiscalPrinterCommand::Print, std::bind(&OPOSMStarTUPK::abortDocument, this));
         }
 
@@ -659,18 +770,21 @@ bool OPOSMStarTUPK::performEncashment(const QStringList &aReceipt, double aAmoun
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::processXReport() {
+bool OPOSMStarTUPK::processXReport()
+{
     setEnable(COPOSMStarTUPK::Parameters::AutoCutter, true);
 
     return OPOS_SUCCESS(INT_CALL_OPOS(PrintXReport));
 }
 
 //--------------------------------------------------------------------------------
-double OPOSMStarTUPK::getAmountInCash() {
+double OPOSMStarTUPK::getAmountInCash()
+{
     using namespace COPOSMStarTUPK::DirectIO;
 
     QString data;
-    if (!OPOS_SUCCESS(INT_CALL_OPOS(DirectIO, GetData::Command, GetData::TotalEncash, std::ref(data)))) {
+    if (!OPOS_SUCCESS(INT_CALL_OPOS(DirectIO, GetData::Command, GetData::TotalEncash, std::ref(data))))
+    {
         return -1;
     }
 
@@ -681,17 +795,20 @@ double OPOSMStarTUPK::getAmountInCash() {
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::processPayout(double aAmount) {
+bool OPOSMStarTUPK::processPayout(double aAmount)
+{
     using namespace COPOSMStarTUPK::DirectIO;
 
     setEnable(COPOSMStarTUPK::Parameters::AutoCutter, true);
 
     VOID_CALL_OPOS(SetFiscalReceiptType, OPOS::FPTR_RT_CASH_OUT);
 
-    if (OPOS_SUCCESS(INT_CALL_NATIVE(BeginFiscalReceipt, true))) {
+    if (OPOS_SUCCESS(INT_CALL_NATIVE(BeginFiscalReceipt, true)))
+    {
         CY total(sum2CY(aAmount));
 
-        if (OPOS_SUCCESS(INT_CALL_NATIVE(PrintRecCash, total))) {
+        if (OPOS_SUCCESS(INT_CALL_NATIVE(PrintRecCash, total)))
+        {
             VOID_CALL_NATIVE(PutCheckTotal, false);
 
             return OPOS_SUCCESS(INT_CALL_NATIVE(PrintRecTotal, total, total, L"0")) &&
@@ -703,7 +820,8 @@ bool OPOSMStarTUPK::processPayout(double aAmount) {
 }
 
 //--------------------------------------------------------------------------------
-void OPOSMStarTUPK::setEnable(COPOSMStarTUPK::Parameters::Enum aParameter, bool aEnable) {
+void OPOSMStarTUPK::setEnable(COPOSMStarTUPK::Parameters::Enum aParameter, bool aEnable)
+{
     QSettings settings("SOFTWARE\\OLEforRetail\\ServiceOPOS\\FiscalPrinter\\MstarTK\\HID", QSettings::NativeFormat);
     COPOSMStarTUPK::Parameters::Data data = COPOSMStarTUPK::Parameters::Specification[aParameter];
 
@@ -711,14 +829,15 @@ void OPOSMStarTUPK::setEnable(COPOSMStarTUPK::Parameters::Enum aParameter, bool 
 }
 
 //--------------------------------------------------------------------------------
-bool OPOSMStarTUPK::getZBufferSlots(int &aSlots, bool aFilled) {
+bool OPOSMStarTUPK::getZBufferSlots(int &aSlots, bool aFilled)
+{
     using namespace COPOSMStarTUPK::DirectIO;
 
     QString data;
 
     if (OPOS_SUCCESS(INT_CALL_OPOS(DirectIO, GetData::Command,
-                                   aFilled ? GetData::FilledZBufferSlots : GetData::FreeZBufferSlots,
-                                   std::ref(data)))) {
+                                   aFilled ? GetData::FilledZBufferSlots : GetData::FreeZBufferSlots, std::ref(data))))
+    {
         aSlots = data.toInt();
 
         return true;
@@ -728,19 +847,22 @@ bool OPOSMStarTUPK::getZBufferSlots(int &aSlots, bool aFilled) {
 }
 
 //--------------------------------------------------------------------------------
-QString OPOSMStarTUPK::getErrorDescription() {
+QString OPOSMStarTUPK::getErrorDescription()
+{
     return STRING_CALL_OPOS(ErrorString);
 }
 
 //--------------------------------------------------------------------------------
-inline CY sum2CY(double arg) {
+inline CY sum2CY(double arg)
+{
     CY result = {qRound64(arg * 10000.0)};
 
     return result;
 }
 
 //--------------------------------------------------------------------------------
-QStringList OPOSMStarTUPK::getProfileNames() {
+QStringList OPOSMStarTUPK::getProfileNames()
+{
     return QStringList() << "mstartk";
 }
 

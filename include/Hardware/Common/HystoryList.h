@@ -9,19 +9,22 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-template <class T> class HistoryList : public QList<T> {
+template <class T> class HistoryList : public QList<T>
+{
   public:
     using QList<T>::size;
     using QList<T>::value;
     using QList<T>::removeFirst;
     using QList<T>::isEmpty;
 
-    HistoryList() : mSize(0), mLevel(0) {
+    HistoryList() : mSize(0), mLevel(0)
+    {
     }
 
     //--------------------------------------------------------------------------------
     /// Безопасно получить последний элемент или его заменяющий дефолтный. aLevel >= 1.
-    T lastValue(int aLevel = 1) const {
+    T lastValue(int aLevel = 1) const
+    {
         int index = qMin(size() - aLevel, size() - 1);
 
         return value(index);
@@ -29,13 +32,16 @@ template <class T> class HistoryList : public QList<T> {
 
     //--------------------------------------------------------------------------------
     /// Добавить элемент с контролем размера листа.
-    void append(const T &aItem) {
+    void append(const T &aItem)
+    {
         QList<T>::append(aItem);
 
-        while (mSize && (size() > mSize)) {
+        while (mSize && (size() > mSize))
+        {
             removeFirst();
 
-            if (mLevel && (mLevel < mSize)) {
+            if (mLevel && (mLevel < mSize))
+            {
                 mLevel--;
             }
         }
@@ -43,36 +49,44 @@ template <class T> class HistoryList : public QList<T> {
 
     //--------------------------------------------------------------------------------
     /// Установить размер листа.
-    void setSize(int aSize) {
+    void setSize(int aSize)
+    {
         mSize = aSize;
     }
 
     //--------------------------------------------------------------------------------
     /// Получить уровень обработанных элементов листа.
-    int getLevel() {
+    int getLevel()
+    {
         return mLevel;
     }
 
     //--------------------------------------------------------------------------------
     /// Обновить уровень обработанных элементов листа.
-    void updateLevel(bool aCorrectOnly = false) {
-        if (!aCorrectOnly || (mLevel > size())) {
+    void updateLevel(bool aCorrectOnly = false)
+    {
+        if (!aCorrectOnly || (mLevel > size()))
+        {
             mLevel = size();
         }
     }
 
     //--------------------------------------------------------------------------------
     /// Сделать последний элемент необработанным.
-    void checkLastUnprocessed() {
-        if (!isEmpty() && (mLevel >= size())) {
+    void checkLastUnprocessed()
+    {
+        if (!isEmpty() && (mLevel >= size()))
+        {
             mLevel = size() - 1;
         }
     }
 
     //--------------------------------------------------------------------------------
     /// Запомнить состояние как необработанное.
-    void saveLevel() {
-        if ((mLevel == mSize) && mSize) {
+    void saveLevel()
+    {
+        if ((mLevel == mSize) && mSize)
+        {
             mLevel--;
         }
     }

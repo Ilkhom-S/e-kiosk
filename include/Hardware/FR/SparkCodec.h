@@ -5,9 +5,11 @@
 #include <Hardware/Common/CodecBase.h>
 
 //---------------------------------------------------------------------------
-class SparkTextCodec : public CodecBase {
+class SparkTextCodec : public CodecBase
+{
   public:
-    SparkTextCodec() {
+    SparkTextCodec()
+    {
         mName = CHardware::Codepages::SPARK;
         mMIB = 3001;
 

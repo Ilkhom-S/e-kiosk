@@ -27,25 +27,30 @@
 #include <SDK/PaymentProcessor/Core/Event.h>
 #include <SDK/PaymentProcessor/Core/IEventService.h>
 
-class DrawAreaWindow : public QWidget {
+class DrawAreaWindow : public QWidget
+{
     Q_OBJECT
 
   public:
-    DrawAreaWindow(SDK::PaymentProcessor::ICore *aCore, const QRect &aRect) : mCore(aCore), mPressed(false) {
+    DrawAreaWindow(SDK::PaymentProcessor::ICore *aCore, const QRect &aRect) : mCore(aCore), mPressed(false)
+    {
         // setMinimumWidth(aRect.width()); setMinimumHeight(aRect.height());
         setGeometry(aRect);
         setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     }
 
   public:
-    void updateImage(const QImage &aImage) {
+    void updateImage(const QImage &aImage)
+    {
         mRects.clear();
         mImage = aImage;
     }
 
   public:
-    virtual void keyPressEvent(QKeyEvent *event) {
-        if (event->key() == Qt::Key_Return) {
+    virtual void keyPressEvent(QKeyEvent *event)
+    {
+        if (event->key() == Qt::Key_Return)
+        {
             QPainter painter;
 
             QPen pen;
@@ -70,31 +75,40 @@ class DrawAreaWindow : public QWidget {
         QWidget::keyPressEvent(event);
     }
 
-    virtual void mouseMoveEvent(QMouseEvent *aEvent) {
-        if (mPressed) {
+    virtual void mouseMoveEvent(QMouseEvent *aEvent)
+    {
+        if (mPressed)
+        {
             mCurrentPos = aEvent->pos();
             // update();
         }
     }
 
-    virtual void mousePressEvent(QMouseEvent *aEvent) {
-        if (aEvent->button() == Qt::LeftButton) {
+    virtual void mousePressEvent(QMouseEvent *aEvent)
+    {
+        if (aEvent->button() == Qt::LeftButton)
+        {
             mPressed = true;
             mStartPos = mCurrentPos = aEvent->pos();
-        } else if (aEvent->button() == Qt::RightButton && mRects.count() > 0) {
+        }
+        else if (aEvent->button() == Qt::RightButton && mRects.count() > 0)
+        {
             mRects.remove(mRects.count() - 1);
             update();
         }
     }
 
-    virtual void mouseReleaseEvent(QMouseEvent *aEvent) {
-        if (aEvent->button() == Qt::LeftButton) {
+    virtual void mouseReleaseEvent(QMouseEvent *aEvent)
+    {
+        if (aEvent->button() == Qt::LeftButton)
+        {
             mPressed = false;
             mRects.append(QRect(mStartPos, aEvent->pos()));
         }
     }
 
-    virtual void paintEvent(QPaintEvent * /*event*/) {
+    virtual void paintEvent(QPaintEvent * /*event*/)
+    {
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing, false);
 
@@ -115,24 +129,28 @@ class DrawAreaWindow : public QWidget {
         painter.setPen(pen);
         painter.drawRects(mRects);
 
-        if (mPressed) {
+        if (mPressed)
+        {
             painter.drawRect(QRect(mStartPos, mCurrentPos));
         }
 
         update();
     }
 
-    void closeEvent(QCloseEvent *event) {
+    void closeEvent(QCloseEvent *event)
+    {
         finishScenario();
     }
 
   private:
-    void finish() {
+    void finish()
+    {
         mRects.clear();
         finishScenario();
     }
 
-    void finishScenario() {
+    void finishScenario()
+    {
         QVariantMap params;
         params["signal"] = "finish";
 
@@ -155,24 +173,30 @@ class DrawAreaWindow : public QWidget {
 
 class IApplication;
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class ICore;
 
-        namespace Scripting {
+        namespace Scripting
+        {
             class Core;
         } // namespace Scripting
     } // namespace PaymentProcessor
 
-    namespace Plugin {
+    namespace Plugin
+    {
         class IEnvironment;
     } // namespace Plugin
 } // namespace SDK
 
-namespace ScreenMaker {
+namespace ScreenMaker
+{
 
     //---------------------------------------------------------------------------
-    class MainScenario : public GUI::Scenario {
+    class MainScenario : public GUI::Scenario
+    {
         Q_OBJECT
 
       public:

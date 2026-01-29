@@ -5,9 +5,11 @@
 #include "Hardware/Common/BaseStatus.h"
 
 //--------------------------------------------------------------------------------
-namespace HealthStatusCode {
+namespace HealthStatusCode
+{
     /// Предупреждения.
-    namespace Warning {
+    namespace Warning
+    {
         const int HDD0NearEnd = 310;     /// На HDD0 не хватает места.
         const int HDD0Overheating = 311; /// HDD0 перегрет.
         const int HDD0NearDead = 312;    /// HDD0 скоро выйдет из строя.
@@ -40,7 +42,8 @@ namespace HealthStatusCode {
     } // namespace Warning
 
     /// Ошибки.
-    namespace Error {
+    namespace Error
+    {
         const int HDD0End = 350;        /// На HDD0 критически не хватает места.
         const int HDD0Overheated = 351; /// HDD0 критически перегрет.
         const int HDD0Dead = 352;       /// HDD0 выходит из строя.

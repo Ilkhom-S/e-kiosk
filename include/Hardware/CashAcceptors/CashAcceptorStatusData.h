@@ -9,11 +9,13 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CCashAcceptor {
+namespace CCashAcceptor
+{
     typedef QSet<SDK::Driver::ECashAcceptorStatus::Enum> TStatusSet;
 
     /// Группы статусов.
-    namespace Set {
+    namespace Set
+    {
         using namespace SDK::Driver::ECashAcceptorStatus;
 
         const TStatusSet GeneralStatuses = TStatusSet() << OK << Warning << Error << MechanicFailure;
@@ -29,12 +31,15 @@ namespace CCashAcceptor {
     } // namespace Set
 
     /// Таблица соответствия спец. статусов обычным статусам.
-    namespace SpecialStatus {
+    namespace SpecialStatus
+    {
         using namespace SDK::Driver::ECashAcceptorStatus;
 
-        class CSpecifications : public CSpecification<Enum, Enum> {
+        class CSpecifications : public CSpecification<Enum, Enum>
+        {
           public:
-            CSpecifications() {
+            CSpecifications()
+            {
                 append(StackerFull, MechanicFailure);
                 append(StackerOpen, MechanicFailure);
                 append(Cheated, Warning);

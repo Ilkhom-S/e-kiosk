@@ -26,15 +26,18 @@
 class IApplication;
 class IHardwareDatabaseUtils;
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class IDeviceService;
         class IChargeProvider;
     } // namespace PaymentProcessor
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class CashAcceptorManager : public SDK::PaymentProcessor::ICashAcceptorManager, public ILogable {
+class CashAcceptorManager : public SDK::PaymentProcessor::ICashAcceptorManager, public ILogable
+{
     Q_OBJECT
 
   public:
@@ -97,14 +100,16 @@ class CashAcceptorManager : public SDK::PaymentProcessor::ICashAcceptorManager, 
     SDK::PaymentProcessor::IDeviceService *mDeviceService;
     bool mDisableAmountOverflow;
 
-    struct SPaymentData {
+    struct SPaymentData
+    {
         qint64 paymentId;
         SDK::PaymentProcessor::TPaymentAmount currentAmount;
         SDK::PaymentProcessor::TPaymentAmount maxAmount;
         QSet<SDK::Driver::ICashAcceptor *> validators;
         QSet<SDK::PaymentProcessor::IChargeProvider *> chargeProviders;
 
-        explicit SPaymentData(qint64 aPaymentId) : paymentId(aPaymentId), currentAmount(0.0), maxAmount(0.0) {
+        explicit SPaymentData(qint64 aPaymentId) : paymentId(aPaymentId), currentAmount(0.0), maxAmount(0.0)
+        {
         }
 
         bool maxAmountReached() const;

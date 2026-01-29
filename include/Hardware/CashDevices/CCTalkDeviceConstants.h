@@ -15,16 +15,19 @@
 #include "Hardware/CashDevices/CCTalkData.h"
 
 //--------------------------------------------------------------------------------
-namespace CCCTalk {
+namespace CCCTalk
+{
     /// ACK.
     const char ACK = '\x00';
 
     /// Пауза перед идентификацией.
     const int IdentificationPause = 100;
 
-    class CDeviceTypeIds : public CDescription<char> {
+    class CDeviceTypeIds : public CDescription<char>
+    {
       public:
-        CDeviceTypeIds() {
+        CDeviceTypeIds()
+        {
             append(Address::CoinAcceptor, "coinacceptor");
             append(Address::Hopper, "payout");
             append(Address::Hopper2, "payout");
@@ -36,7 +39,8 @@ namespace CCCTalk {
     static CDeviceTypeIds DeviceTypeIds;
 
     /// Команды.
-    namespace Command {
+    namespace Command
+    {
         /// Общие.
         const uchar SimplePoll = 254;   // FE
         const uchar VendorID = 246;     // F6
@@ -77,25 +81,37 @@ namespace CCCTalk {
         const uchar ModifyBillOperatingMode = 153;    // 99
         const uchar GetCurrencyRevision = 145;        // 91
 
-        namespace EAnswerType {
-            enum Enum { ACK, ASCII, Date, Data };
+        namespace EAnswerType
+        {
+            enum Enum
+            {
+                ACK,
+                ASCII,
+                Date,
+                Data
+            };
         } // namespace EAnswerType
 
-        struct SData {
+        struct SData
+        {
             EAnswerType::Enum type;
             const char *description;
             int size;
 
-            SData() : type(EAnswerType::ACK), description(""), size(1) {
+            SData() : type(EAnswerType::ACK), description(""), size(1)
+            {
             }
             SData(EAnswerType::Enum aType, const char *aDescription, int aSize)
-                : type(aType), description(aDescription), size(aSize) {
+                : type(aType), description(aDescription), size(aSize)
+            {
             }
         };
 
-        class CDescriptions : public CSpecification<char, SData> {
+        class CDescriptions : public CSpecification<char, SData>
+        {
           public:
-            CDescriptions() {
+            CDescriptions()
+            {
                 append(SimplePoll, EAnswerType::ACK, "perform simple poll");
                 append(VendorID, EAnswerType::ASCII, "get vendor ID");
                 append(DeviceTypeID, EAnswerType::ASCII, "get device type ID");
@@ -136,8 +152,10 @@ namespace CCCTalk {
             }
 
           protected:
-            void append(char aCommand, EAnswerType::Enum aType, const char *aDescription, int aSize = -1) {
-                switch (aType) {
+            void append(char aCommand, EAnswerType::Enum aType, const char *aDescription, int aSize = -1)
+            {
+                switch (aType)
+                {
                     case EAnswerType::ACK:
                         aSize = 1;
                         break;
@@ -159,48 +177,59 @@ namespace CCCTalk {
 
     //--------------------------------------------------------------------------------
     /// Ошибки.
-    struct SErrorData {
+    struct SErrorData
+    {
         int statusCode;
         const char *description;
         bool isRejected;
 
-        SErrorData() : statusCode(DeviceStatusCode::OK::Unknown), description(""), isRejected(false) {
+        SErrorData() : statusCode(DeviceStatusCode::OK::Unknown), description(""), isRejected(false)
+        {
         }
         SErrorData(int aStatusCode, const char *aDescription, bool aIsRejected)
-            : statusCode(aStatusCode), description(aDescription), isRejected(aIsRejected) {
+            : statusCode(aStatusCode), description(aDescription), isRejected(aIsRejected)
+        {
         }
     };
 
-    class ErrorDataBase : public CSpecification<uchar, SErrorData> {
+    class ErrorDataBase : public CSpecification<uchar, SErrorData>
+    {
       public:
-        ErrorDataBase() {
+        ErrorDataBase()
+        {
             setDefault(SErrorData(DeviceStatusCode::OK::Unknown, "unknown device code", false));
         }
 
       protected:
-        void add(uchar aError, int aStatusCode, bool aIsRejected = false, const char *aDescription = "") {
+        void add(uchar aError, int aStatusCode, bool aIsRejected = false, const char *aDescription = "")
+        {
             append(aError, SErrorData(aStatusCode, aDescription, aIsRejected));
         }
     };
 
     //--------------------------------------------------------------------------------
     /// Неисправности.
-    struct SFault {
+    struct SFault
+    {
         int statusCode;
         const char *description;
         const char *extraData;
 
-        SFault() : statusCode(DeviceStatusCode::OK::OK), description(""), extraData("") {
+        SFault() : statusCode(DeviceStatusCode::OK::OK), description(""), extraData("")
+        {
         }
         SFault(int aStatusCode, const char *aDescription, const char *aExtraData)
-            : statusCode(aStatusCode), description(aDescription), extraData(aExtraData) {
+            : statusCode(aStatusCode), description(aDescription), extraData(aExtraData)
+        {
         }
     };
 
     /// статусы от неподдерживаемых устройств - с комментариями - будут поддержаны при реализации этих устройств
-    class CFault : public CSpecification<uchar, SFault> {
+    class CFault : public CSpecification<uchar, SFault>
+    {
       public:
-        CFault() {
+        CFault()
+        {
             append(0, DeviceStatusCode::OK::OK);
             append(1, DeviceStatusCode::Error::MemoryStorage, "EEPROM checksum corrupted");
             append(2, BillAcceptorStatusCode::Reject::UserDefined, "Fault on inductive coils", "Coil number");
@@ -272,16 +301,20 @@ namespace CCCTalk {
             append(255, DeviceStatusCode::Error::Unknown, "Unspecified fault code", "Further information");
         }
 
-        QString getDescription(QByteArray &aError) const {
+        QString getDescription(QByteArray &aError) const
+        {
             uchar error = uchar(aError[0]);
             uchar extraData = uchar(aError[1]);
 
-            if (aError.isEmpty() || !mBuffer.contains(error) || (aError.size() > 2)) {
+            if (aError.isEmpty() || !mBuffer.contains(error) || (aError.size() > 2))
+            {
                 return "Unknown code";
             }
 
-            if ((aError.size() == 2) && !QString(mBuffer[error].extraData).isEmpty()) {
-                if (error == 35) {
+            if ((aError.size() == 2) && !QString(mBuffer[error].extraData).isEmpty())
+            {
+                if (error == 35)
+                {
                     return QString("%1, reason = %2")
                         .arg(mBuffer[error].description)
                         .arg((extraData == 1) ? "coin" : ((extraData == 2) ? "token" : "unknown"));
@@ -297,7 +330,8 @@ namespace CCCTalk {
         }
 
       protected:
-        void append(uchar aErrorCode, int aStatusCode, const char *aDescription = "", const char *aExtraData = "") {
+        void append(uchar aErrorCode, int aStatusCode, const char *aDescription = "", const char *aExtraData = "")
+        {
             mBuffer.insert(aErrorCode, SFault(aStatusCode, aDescription, aExtraData));
         }
     };

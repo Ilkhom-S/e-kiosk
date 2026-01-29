@@ -8,12 +8,15 @@
 #include <QtCore/QVariant>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace GUI {
+namespace SDK
+{
+    namespace GUI
+    {
 
         //---------------------------------------------------------------------------
         /// Интерфейс поставщика рекламы.
-        class IAdSource {
+        class IAdSource
+        {
           public:
             /// Получить содержимое рекламного контента
             virtual QString getContent(const QString &aName) const = 0;
@@ -22,7 +25,8 @@ namespace SDK {
             virtual void addEvent(const QString &aName, const QVariantMap &aParameters) = 0;
 
           protected:
-            virtual ~IAdSource() {
+            virtual ~IAdSource()
+            {
             }
         };
 

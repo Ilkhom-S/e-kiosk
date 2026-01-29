@@ -14,7 +14,8 @@
 #include "Hardware/Common/FunctionTypes.h"
 
 //--------------------------------------------------------------------------------
-class WorkingThreadProxy : public QObject {
+class WorkingThreadProxy : public QObject
+{
     Q_OBJECT
 
   public:
@@ -42,7 +43,8 @@ class WorkingThreadProxy : public QObject {
     void checkThreadStarted();
 
   protected:
-    WorkingThreadProxy() {
+    WorkingThreadProxy()
+    {
     }
 
     /// Из рабочего ли потока происходит вызов.

@@ -7,7 +7,8 @@
 #include "OPOSMStarTUPKData.h"
 
 //--------------------------------------------------------------------------------
-namespace COPOSMStarTUPK {
+namespace COPOSMStarTUPK
+{
     const char ModelName[] = "Multisoft MStar-TUP-K"; /// название модели.
     const char DeviceNameTag[] = "MSTAR-TUP-K";       /// Тег для идентификации.
     const char OPOSName[] = "mstartk";                /// OPOS-имя.
@@ -21,9 +22,11 @@ namespace COPOSMStarTUPK {
     const wchar_t NonFiscalCancellation[] = L"НЕФИСКАЛЬНЫЙ ДОКУМЕНТ АННУЛИРОВАН";
 
     /// Коды ошибочных статусов.
-    namespace ExtendedErrors {
+    namespace ExtendedErrors
+    {
         /// Для принтера.
-        namespace Printer {
+        namespace Printer
+        {
             const int Offline = 0x0401;      /// Offline-mode принтера.
             const int Timeout = 0x0402;      /// Превышен таймаут ожидания принтера.
             const int Unknown = 0x0405;      /// Общая ошибка принтера.
@@ -34,7 +37,8 @@ namespace COPOSMStarTUPK {
         } // namespace Printer
 
         /// Для ФР.
-        namespace FR {
+        namespace FR
+        {
             const int EKLZ = 0x0C00;   /// Общая ошибка ЭКЛЗ.
             const int NoEKLZ = 0x8C02; /// ЭКЛЗ отсутствует.
             const int MemoryFlag = 7;  /// Признак ошибки NAND-флэш.
@@ -42,21 +46,25 @@ namespace COPOSMStarTUPK {
     } // namespace ExtendedErrors
 
     /// Коды ошибок.
-    namespace ErrorCode {
+    namespace ErrorCode
+    {
         const int UserNotRegistered = 2310;     /// Кассир не зарегестрирован.
         const int TransactionInProgress = 2053; /// Транзакция в состоянии выполнения.
     } // namespace ErrorCode
 
     /// Коды ошибок.
-    namespace PrinterCommands {
+    namespace PrinterCommands
+    {
         const char Feed[] = "1b6103"; /// Промотка, количество строк для промотки по умолчанию.
         const char Cut[] = "1b6402";  /// Отрезка.
     } // namespace PrinterCommands
 
     /// Данные команд прямого доступа к принтеру.
-    namespace DirectIO {
+    namespace DirectIO
+    {
         /// Получение данных.
-        namespace GetData {
+        namespace GetData
+        {
             const int Command = 17;           /// Команда.
             const int TotalEncash = 2;        /// Сумма в кассе.
             const int FreeZBufferSlots = 3;   /// Количество свободных мест в Z-буфере.
@@ -64,19 +72,22 @@ namespace COPOSMStarTUPK {
         } // namespace GetData
 
         /// Печать Z-отчета.
-        namespace PrintZReport {
+        namespace PrintZReport
+        {
             const int Command = 10; /// Команда.
             const int Default = 0;  /// Обычная печать Z-отчета.
         } // namespace PrintZReport
 
         /// Прямой доступ к принтеру.
-        namespace Printer {
+        namespace Printer
+        {
             const int Command = 16; /// Команда.
             const int Default = 0;  /// Объект доступа - принтер.
         } // namespace Printer
 
         /// Перезагрузка через вочдог.
-        namespace Reboot {
+        namespace Reboot
+        {
             const int Command = 21;         /// Команда.
             const int Default = 0xAACCFFFE; /// Объект доступа - вочдог.
         } // namespace Reboot
@@ -84,10 +95,13 @@ namespace COPOSMStarTUPK {
 
     //----------------------------------------------------------------------------
     /// Параметры.
-    namespace Parameters {
-        class CSpecifications : public CSpecification<Enum, Data> {
+    namespace Parameters
+    {
+        class CSpecifications : public CSpecification<Enum, Data>
+        {
           public:
-            CSpecifications() {
+            CSpecifications()
+            {
                 append(AutoCutter, Data("CutterInfo", 0x82));
                 append(TaxesPrint, Data("PrintFlags", 0x01));
                 append(ZBuffer, Data("ZReportFlags", 0x200));
@@ -99,9 +113,11 @@ namespace COPOSMStarTUPK {
 
     //----------------------------------------------------------------------------
     /// Теги.
-    class TagEngine : public Tags::Engine {
+    class TagEngine : public Tags::Engine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             appendSingle(Tags::Type::Bold, "\x1B", "\x45", "\x46");
         }
     };

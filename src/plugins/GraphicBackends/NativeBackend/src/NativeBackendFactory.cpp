@@ -12,7 +12,8 @@
 #include "NativeBackend.h"
 #include "NativeBackendFactory.h"
 
-NativeBackendFactory::NativeBackendFactory() {
+NativeBackendFactory::NativeBackendFactory()
+{
     mModuleName = "native_backend";
     mName = "Native Backend";
     mDescription = "Native graphics backend for EKiosk";

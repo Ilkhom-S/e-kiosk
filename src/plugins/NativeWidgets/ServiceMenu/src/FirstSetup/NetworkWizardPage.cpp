@@ -5,8 +5,8 @@
 #include "NetworkWizardPage.h"
 
 //----------------------------------------------------------------------------
-NetworkWizardPage::NetworkWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : WizardPageBase(aBackend, aParent) {
+NetworkWizardPage::NetworkWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent) : WizardPageBase(aBackend, aParent)
+{
     setupUi(this);
 
     connect(btnUnmanaged, SIGNAL(clicked()), SLOT(onChooseUnmanaged()));
@@ -14,32 +14,38 @@ NetworkWizardPage::NetworkWizardPage(ServiceMenuBackend *aBackend, QWidget *aPar
 }
 
 //------------------------------------------------------------------------
-bool NetworkWizardPage::initialize() {
+bool NetworkWizardPage::initialize()
+{
     return true;
 }
 
 //------------------------------------------------------------------------
-bool NetworkWizardPage::shutdown() {
+bool NetworkWizardPage::shutdown()
+{
     return true;
 }
 
 //------------------------------------------------------------------------
-bool NetworkWizardPage::activate() {
+bool NetworkWizardPage::activate()
+{
     return true;
 }
 
 //------------------------------------------------------------------------
-bool NetworkWizardPage::deactivate() {
+bool NetworkWizardPage::deactivate()
+{
     return true;
 }
 
 //----------------------------------------------------------------------------
-void NetworkWizardPage::onChooseDialup() {
+void NetworkWizardPage::onChooseDialup()
+{
     emit pageEvent(CWizardContext::SetupDialup, true);
 }
 
 //----------------------------------------------------------------------------
-void NetworkWizardPage::onChooseUnmanaged() {
+void NetworkWizardPage::onChooseUnmanaged()
+{
     emit pageEvent(CWizardContext::SetupUnmanaged, true);
 }
 

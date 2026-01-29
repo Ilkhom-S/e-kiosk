@@ -6,7 +6,8 @@
 #include "Common/ConnectionBase.h"
 
 //--------------------------------------------------------------------------------
-class DialupConnection : public ConnectionBase {
+class DialupConnection : public ConnectionBase
+{
     Q_OBJECT
 
   public:

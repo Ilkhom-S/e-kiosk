@@ -5,7 +5,8 @@
 #include "Hardware/Common/USBDeviceModelData.h"
 
 //--------------------------------------------------------------------------------
-namespace CCreatorReader {
+namespace CCreatorReader
+{
     /// Название кардридера Creator по умолчанию.
     const char DefaultName[] = "Unknown Creator cardreader";
 

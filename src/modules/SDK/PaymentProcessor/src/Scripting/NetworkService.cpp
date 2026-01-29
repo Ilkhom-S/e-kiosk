@@ -29,14 +29,18 @@
 #include <NetworkTaskManager/NetworkTask.h>
 #include <NetworkTaskManager/NetworkTaskManager.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Scripting {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Scripting
+        {
 
             namespace PPSDK = SDK::PaymentProcessor;
 
             //---------------------------------------------------------------------------
-            namespace CRequest {
+            namespace CRequest
+            {
                 const QString SD = "SD";
                 const QString AP = "AP";
                 const QString OP = "OP";
@@ -44,21 +48,26 @@ namespace SDK {
             } // namespace CRequest
 
             //------------------------------------------------------------------------------
-            Request::Request(const QVariantMap &aRequestParameters) {
-                foreach (QString key, aRequestParameters.keys()) {
+            Request::Request(const QVariantMap &aRequestParameters)
+            {
+                foreach (QString key, aRequestParameters.keys())
+                {
                     addParameter(key, aRequestParameters.value(key).toString());
                 }
             }
 
             //------------------------------------------------------------------------------
             Response::Response(const SDK::PaymentProcessor::Humo::Request &aRequest, const QString &aResponseString)
-                : SDK::PaymentProcessor::Humo::Response(aRequest, aResponseString) {
+                : SDK::PaymentProcessor::Humo::Response(aRequest, aResponseString)
+            {
             }
 
             //------------------------------------------------------------------------------
             NetworkService::NetworkService(ICore *aCore)
-                : mCore(aCore), mCurrentTask(0), mNetworkService(aCore->getNetworkService()) {
-                if (mNetworkService) {
+                : mCore(aCore), mCurrentTask(0), mNetworkService(aCore->getNetworkService())
+            {
+                if (mNetworkService)
+                {
                     mTaskManager = mNetworkService->getNetworkTaskManager();
                     mRequestSender = QSharedPointer<PPSDK::Humo::RequestSender>(
                         new PPSDK::Humo::RequestSender(mTaskManager, mCore->getCryptService()->getCryptEngine()));
@@ -88,8 +97,10 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            NetworkService::~NetworkService() {
-                if (mTaskManager && mCurrentTask) {
+            NetworkService::~NetworkService()
+            {
+                if (mTaskManager && mCurrentTask)
+                {
                     disconnect(mCurrentTask, SIGNAL(onComplete()), this, SLOT(taskComplete()));
 
                     mTaskManager->removeTask(mCurrentTask);
@@ -100,8 +111,10 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void NetworkService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
-                switch (aEvent.getType()) {
+            void NetworkService::onEvent(const SDK::PaymentProcessor::Event &aEvent)
+            {
+                switch (aEvent.getType())
+                {
                     case SDK::PaymentProcessor::EEventType::ConnectionEstablished:
                     case SDK::PaymentProcessor::EEventType::ConnectionLost:
                         emit connectionStatus();
@@ -110,21 +123,26 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            bool NetworkService::isConnected() {
+            bool NetworkService::isConnected()
+            {
                 return mNetworkService->isConnected(true);
             }
 
             //------------------------------------------------------------------------------
-            int NetworkService::get(const QString & /*aUrl*/, const QString & /*aData*/) {
+            int NetworkService::get(const QString & /*aUrl*/, const QString & /*aData*/)
+            {
                 // TODO:
 
                 return 0;
             }
 
             //------------------------------------------------------------------------------
-            bool NetworkService::post(const QString &aUrl, const QString &aData) {
-                if (mTaskManager) {
-                    if (mCurrentTask) {
+            bool NetworkService::post(const QString &aUrl, const QString &aData)
+            {
+                if (mTaskManager)
+                {
+                    if (mCurrentTask)
+                    {
                         disconnect(mCurrentTask, SIGNAL(onComplete()), this, SLOT(taskComplete()));
 
                         mTaskManager->removeTask(mCurrentTask);
@@ -151,12 +169,16 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void NetworkService::taskComplete() {
-                if (mCurrentTask && (mCurrentTask->getError() == NetworkTask::NoError)) {
+            void NetworkService::taskComplete()
+            {
+                if (mCurrentTask && (mCurrentTask->getError() == NetworkTask::NoError))
+                {
                     emit complete(false, QString::fromUtf8(mCurrentTask->getDataStream()->takeAll()));
 
                     mCurrentTask->deleteLater();
-                } else {
+                }
+                else
+                {
                     emit complete(true, QString());
                 }
 
@@ -165,13 +187,16 @@ namespace SDK {
 
             //---------------------------------------------------------------------------
             SDK::PaymentProcessor::Humo::Response *
-            NetworkService::createResponse(const SDK::PaymentProcessor::Humo::Request &aRequest, const QString &aData) {
+            NetworkService::createResponse(const SDK::PaymentProcessor::Humo::Request &aRequest, const QString &aData)
+            {
                 return new Response(aRequest, aData);
             }
 
             //------------------------------------------------------------------------------
-            void NetworkService::sendRequest(const QString &aUrl, QVariantMap aParameters) {
-                if (mRequestSender.isNull()) {
+            void NetworkService::sendRequest(const QString &aUrl, QVariantMap aParameters)
+            {
+                if (mRequestSender.isNull())
+                {
                     // TODO
                     return;
                 }
@@ -181,7 +206,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            Response *NetworkService::sendRequestInternal(Request *aRequest, const QString &aUrl) {
+            Response *NetworkService::sendRequestInternal(Request *aRequest, const QString &aUrl)
+            {
                 PPSDK::Humo::RequestSender::ESendError error;
 
                 std::unique_ptr<SDK::PaymentProcessor::Humo::Response> response(
@@ -190,11 +216,13 @@ namespace SDK {
                 delete aRequest;
                 aRequest = nullptr;
 
-                if (response == nullptr) {
+                if (response == nullptr)
+                {
                     return nullptr;
                 }
 
-                if (!dynamic_cast<Response *>(response.get())) {
+                if (!dynamic_cast<Response *>(response.get()))
+                {
                     return nullptr;
                 }
 
@@ -202,7 +230,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void NetworkService::sendReceipt(const QString &aEmail, const QString &aContact) {
+            void NetworkService::sendReceipt(const QString &aEmail, const QString &aContact)
+            {
                 QVariantMap params;
                 params.insert("PAYER_EMAIL", aEmail);
                 params.insert("CONTACT", aContact);
@@ -213,33 +242,41 @@ namespace SDK {
 
                 QString fiscalResponse;
                 QVariantMap fiscalResult;
-                if (query && query->first()) {
+                if (query && query->first())
+                {
                     fiscalResponse = query->value(0).toString();
                 }
 
-                if (!fiscalResponse.isEmpty()) {
+                if (!fiscalResponse.isEmpty())
+                {
                     QJsonDocument doc = QJsonDocument::fromJson(fiscalResponse.toUtf8());
                     QVariantMap payment;
-                    if (doc.isObject()) {
+                    if (doc.isObject())
+                    {
                         QVariantMap root = doc.object().toVariantMap();
                         QVariant v = root.value("payment");
-                        if (v.metaType().id() == QMetaType::QVariantMap) {
+                        if (v.metaType().id() == QMetaType::QVariantMap)
+                        {
                             payment = v.toMap();
                         }
                     }
                     QVariantMap fiscalFieldData = payment.value("fiscal_field_data").toMap();
                     QVariantMap fiscalPaymentData = payment.value("fiscal_payment_data").toMap();
 
-                    if (!fiscalPaymentData.isEmpty() && !fiscalPaymentData.isEmpty()) {
-                        foreach (auto paymentData, fiscalPaymentData.keys()) {
+                    if (!fiscalPaymentData.isEmpty() && !fiscalPaymentData.isEmpty())
+                    {
+                        foreach (auto paymentData, fiscalPaymentData.keys())
+                        {
                             QString val = fiscalPaymentData.value(paymentData).toString();
-                            if (val.isEmpty()) {
+                            if (val.isEmpty())
+                            {
                                 continue;
                             }
 
                             QString tr = fiscalFieldData.value(paymentData).toMap().value("translation").toString();
 
-                            if (tr.isEmpty()) {
+                            if (tr.isEmpty())
+                            {
                                 continue;
                             }
 
@@ -252,7 +289,8 @@ namespace SDK {
                     mCore->getPrinterService()->loadReceipt(mCore->getPaymentService()->getActivePayment());
                 message.append("-----------------------------------");
 
-                foreach (auto key, fiscalResult.keys()) {
+                foreach (auto key, fiscalResult.keys())
+                {
                     message += QString("\n%1\t%2").arg(key, fiscalResult.value(key).toString());
                 }
 
@@ -270,10 +308,13 @@ namespace SDK {
 
             //------------------------------------------------------------------------------
             SDK::PaymentProcessor::Humo::Response *NetworkService::postRequest(const QString &aUrl,
-                                                                               QVariantMap &aRequestParameters) {
+                                                                               QVariantMap &aRequestParameters)
+            {
                 // Предохранимся
-                foreach (QString key, aRequestParameters.keys()) {
-                    if (key.toLower() == "amount" || key.toLower() == "amount_all") {
+                foreach (QString key, aRequestParameters.keys())
+                {
+                    if (key.toLower() == "amount" || key.toLower() == "amount_all")
+                    {
                         aRequestParameters.remove(key);
                     }
                 }
@@ -294,7 +335,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void NetworkService::onResponseFinished() {
+            void NetworkService::onResponseFinished()
+            {
                 std::unique_ptr<SDK::PaymentProcessor::Humo::Response> response(mResponseWatcher.result());
                 emit requestCompleted(response == nullptr
                                           ? QVariantMap()
@@ -302,7 +344,8 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void NetworkService::onResponseSendReceiptFinished() {
+            void NetworkService::onResponseSendReceiptFinished()
+            {
                 std::unique_ptr<SDK::PaymentProcessor::Humo::Response> response(mResponseSendReceiptWatcher.result());
                 emit sendReceiptComplete(response != nullptr && response->isOk());
             }

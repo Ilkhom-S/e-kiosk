@@ -8,11 +8,13 @@
 // Project
 #include "MemoryDataStream.h"
 
-MemoryDataStream::MemoryDataStream() : DataStream(new QBuffer()) {
+MemoryDataStream::MemoryDataStream() : DataStream(new QBuffer())
+{
 }
 
 //------------------------------------------------------------------------
-bool MemoryDataStream::clear() {
+bool MemoryDataStream::clear()
+{
     QBuffer *buf = dynamic_cast<QBuffer *>(m_stream.data());
 
     buf->close();

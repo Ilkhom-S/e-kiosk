@@ -14,47 +14,58 @@
 // Project
 #include "TerminalSettings.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
-        namespace CDefaults {
+        namespace CDefaults
+        {
             const char DefaultDatabaseName[] = "data.db";
             const int DefaultDatabasePort = 0;
         } // namespace CDefaults
 
         //---------------------------------------------------------------------------
-        QString TerminalSettings::getAdapterName() {
+        QString TerminalSettings::getAdapterName()
+        {
             return CAdapterNames::TerminalAdapter;
         }
 
         //---------------------------------------------------------------------------
         TerminalSettings::TerminalSettings(TPtree &aProperties)
-            : mProperties(aProperties.get_child(CAdapterNames::TerminalAdapter, aProperties)) {
+            : mProperties(aProperties.get_child(CAdapterNames::TerminalAdapter, aProperties))
+        {
         }
 
         //---------------------------------------------------------------------------
-        TerminalSettings::~TerminalSettings() {
+        TerminalSettings::~TerminalSettings()
+        {
         }
 
         //---------------------------------------------------------------------------
-        void TerminalSettings::initialize() {
+        void TerminalSettings::initialize()
+        {
             foreach (auto error,
-                     mProperties.get("config.terminal.critical_errors", QString()).split(",", Qt::SkipEmptyParts)) {
+                     mProperties.get("config.terminal.critical_errors", QString()).split(",", Qt::SkipEmptyParts))
+            {
                 bool ok = false;
                 int errorId = error.toInt(&ok);
 
-                if (ok) {
+                if (ok)
+                {
                     mCriticalErrors << errorId;
                 }
             }
         }
 
         //---------------------------------------------------------------------------
-        SConnection TerminalSettings::getConnection() const {
+        SConnection TerminalSettings::getConnection() const
+        {
             SConnection connection;
 
-            try {
+            try
+            {
                 connection.name = mProperties.get<QString>("terminal.connection.name");
 
                 QString type = mProperties.get<QString>("terminal.connection.type");
@@ -68,17 +79,25 @@ namespace SDK {
 
                 auto proxyType = mProperties.get<QString>("terminal.proxy.type", QString("none"));
 
-                if (proxyType == "http") {
+                if (proxyType == "http")
+                {
                     proxy.setType(QNetworkProxy::HttpProxy);
-                } else if (proxyType == "http_caching") {
+                }
+                else if (proxyType == "http_caching")
+                {
                     proxy.setType(QNetworkProxy::HttpCachingProxy);
-                } else if (proxyType == "socks5") {
+                }
+                else if (proxyType == "socks5")
+                {
                     proxy.setType(QNetworkProxy::Socks5Proxy);
-                } else {
+                }
+                else
+                {
                     proxy.setType(QNetworkProxy::NoProxy);
                 }
 
-                if (proxy.type() != QNetworkProxy::NoProxy) {
+                if (proxy.type() != QNetworkProxy::NoProxy)
+                {
                     proxy.setHostName(mProperties.get<QString>("terminal.proxy.host"));
                     proxy.setPort(mProperties.get<QString>("terminal.proxy.port").toUShort());
                     proxy.setPassword(mProperties.get("terminal.proxy.password", QString()));
@@ -86,7 +105,9 @@ namespace SDK {
                 }
 
                 connection.proxy = proxy;
-            } catch (std::exception &e) {
+            }
+            catch (std::exception &e)
+            {
                 toLog(LogLevel::Error, QString("Connection settings error: %1. Using defaults.").arg(e.what()));
             }
 
@@ -94,12 +115,14 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        void TerminalSettings::setConnection(const SConnection &aConnection) {
+        void TerminalSettings::setConnection(const SConnection &aConnection)
+        {
             mProperties.put("terminal.connection.name", aConnection.name);
             mProperties.put("terminal.connection.type",
                             (aConnection.type == EConnectionTypes::Dialup) ? "modem" : "unmanaged");
 
-            if (aConnection.proxy.type() != QNetworkProxy::NoProxy) {
+            if (aConnection.proxy.type() != QNetworkProxy::NoProxy)
+            {
                 mProperties.put("terminal.proxy.host", aConnection.proxy.hostName());
                 mProperties.put("terminal.proxy.password", aConnection.proxy.password());
                 mProperties.put("terminal.proxy.login", aConnection.proxy.user());
@@ -107,7 +130,8 @@ namespace SDK {
 
                 QString proxyType;
 
-                switch (aConnection.proxy.type()) {
+                switch (aConnection.proxy.type())
+                {
                     case QNetworkProxy::HttpCachingProxy:
                         proxyType = "http_caching";
                         break;
@@ -122,21 +146,29 @@ namespace SDK {
                 }
 
                 mProperties.put("terminal.proxy.type", proxyType);
-            } else {
-                try {
+            }
+            else
+            {
+                try
+                {
                     mProperties.get_child("terminal.proxy").clear();
-                } catch (std::exception &) {
+                }
+                catch (std::exception &)
+                {
                     // Ветвь не была найдена.
                 }
             }
         }
 
         //---------------------------------------------------------------------------
-        QList<IConnection::CheckUrl> TerminalSettings::getCheckHosts() const {
+        QList<IConnection::CheckUrl> TerminalSettings::getCheckHosts() const
+        {
             QList<IConnection::CheckUrl> hosts;
 
-            for (int i = 1;; i++) {
-                try {
+            for (int i = 1;; i++)
+            {
+                try
+                {
                     QUrl url = mProperties.get(QString("system.check_hosts.host%1").arg(i).toStdString(), QString());
                     QString response =
                         mProperties.get(QString("system.check_hosts.response%1").arg(i).toStdString(), QString());
@@ -145,7 +177,9 @@ namespace SDK {
                         break;
 
                     hosts << IConnection::CheckUrl(url, response);
-                } catch (std::exception &e) {
+                }
+                catch (std::exception &e)
+                {
                     toLog(LogLevel::Error, QString("Failed to parse check host. Error: %1.").arg(e.what()));
 
                     break;
@@ -156,7 +190,8 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        SDatabaseSettings TerminalSettings::getDatabaseSettings() const {
+        SDatabaseSettings TerminalSettings::getDatabaseSettings() const
+        {
             SDatabaseSettings databaseSettings;
 
             databaseSettings.name = mProperties.get("system.database.name", QString(CDefaults::DefaultDatabaseName));
@@ -169,12 +204,14 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        QStringList TerminalSettings::getDeviceList() const {
+        QStringList TerminalSettings::getDeviceList() const
+        {
             QStringList deviceList;
 
             static TPtree emptyTreeDeviceList;
             BOOST_FOREACH (const TPtree::value_type &value,
-                           mProperties.get_child("terminal.hardware", emptyTreeDeviceList)) {
+                           mProperties.get_child("terminal.hardware", emptyTreeDeviceList))
+            {
                 deviceList.append(value.second.get_value<QString>());
             }
 
@@ -182,11 +219,13 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        void TerminalSettings::setDeviceList(const QStringList &aHardware) {
+        void TerminalSettings::setDeviceList(const QStringList &aHardware)
+        {
             TPtree branch;
 
             int id = 0;
-            foreach (QString configName, aHardware) {
+            foreach (QString configName, aHardware)
+            {
                 branch.put(std::string("device") + boost::lexical_cast<std::string>(id), configName);
                 id++;
             }
@@ -195,7 +234,8 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        SMonitoringSettings TerminalSettings::getMonitoringSettings() const {
+        SMonitoringSettings TerminalSettings::getMonitoringSettings() const
+        {
             SMonitoringSettings settings;
 
             settings.url = QUrl(mProperties.get<QString>("system.monitoring.url", QString()));
@@ -207,14 +247,16 @@ namespace SDK {
 
             settings.cleanupItems =
                 mProperties.get<QString>("system.user_cleanup.remove", "").split(",", Qt::SkipEmptyParts);
-            for (QString &item : settings.cleanupItems) {
+            for (QString &item : settings.cleanupItems)
+            {
                 item = item.trimmed();
             }
             settings.cleanupItems.removeAll("");
 
             settings.cleanupExclude =
                 mProperties.get<QString>("system.user_cleanup.exclude", "").split(",", Qt::SkipEmptyParts);
-            for (QString &item : settings.cleanupExclude) {
+            for (QString &item : settings.cleanupExclude)
+            {
                 item = item.trimmed();
             }
             settings.cleanupExclude.removeAll("");
@@ -223,13 +265,17 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        QMap<int, SKeySettings> TerminalSettings::getKeys() const {
+        QMap<int, SKeySettings> TerminalSettings::getKeys() const
+        {
             QMap<int, SKeySettings> keys;
 
             static TPtree emptyTreeKeys;
-            BOOST_FOREACH (const TPtree::value_type &value, mProperties.get_child("keys", emptyTreeKeys)) {
-                try {
-                    if (value.first == "<xmlattr>") {
+            BOOST_FOREACH (const TPtree::value_type &value, mProperties.get_child("keys", emptyTreeKeys))
+            {
+                try
+                {
+                    if (value.first == "<xmlattr>")
+                    {
                         continue;
                     }
 
@@ -248,12 +294,17 @@ namespace SDK {
                     key.description = value.second.get<QString>("description", QString());
                     key.isValid = true;
 
-                    if (keys.contains(key.id)) {
+                    if (keys.contains(key.id))
+                    {
                         toLog(LogLevel::Error, QString("There is already a key with id = %1.").arg(key.id));
-                    } else {
+                    }
+                    else
+                    {
                         keys.insert(key.id, key);
                     }
-                } catch (std::exception &e) {
+                }
+                catch (std::exception &e)
+                {
                     toLog(LogLevel::Error, QString("Failed to load key data: %1.").arg(e.what()));
                 }
             }
@@ -262,8 +313,10 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        void TerminalSettings::setKey(const SKeySettings &aKey, bool aReplaceIfExists) {
-            auto applyConfig = [&](TPtree &aPair) {
+        void TerminalSettings::setKey(const SKeySettings &aKey, bool aReplaceIfExists)
+        {
+            auto applyConfig = [&](TPtree &aPair)
+            {
                 aPair.put("ap", aKey.ap);
                 aPair.put("sd", aKey.sd);
                 aPair.put("op", aKey.op);
@@ -277,26 +330,34 @@ namespace SDK {
             };
 
             static TPtree emptyTreeSetKey;
-            BOOST_FOREACH (TPtree::value_type &value, mProperties.get_child("keys", emptyTreeSetKey)) {
-                try {
-                    if (value.first == "<xmlattr>") {
+            BOOST_FOREACH (TPtree::value_type &value, mProperties.get_child("keys", emptyTreeSetKey))
+            {
+                try
+                {
+                    if (value.first == "<xmlattr>")
+                    {
                         continue;
                     }
 
-                    if (value.second.get<int>("<xmlattr>.id") == aKey.id) {
-                        if (aReplaceIfExists) {
+                    if (value.second.get<int>("<xmlattr>.id") == aKey.id)
+                    {
+                        if (aReplaceIfExists)
+                        {
                             // Перезаписываем существующий ключ.
                             applyConfig(value.second);
 
                             return;
                         }
                     }
-                } catch (std::exception &e) {
+                }
+                catch (std::exception &e)
+                {
                     toLog(LogLevel::Error, QString("setKey error: %1 .").arg(e.what()));
                 }
             }
 
-            if (aKey.isValid) {
+            if (aKey.isValid)
+            {
                 // Добавляем новую пару ключей.
                 TPtree pair;
 
@@ -308,31 +369,37 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        void TerminalSettings::cleanKeys() {
+        void TerminalSettings::cleanKeys()
+        {
             static TPtree emptyTreeCleanKeys;
             while (mProperties.get_child("keys", emptyTreeCleanKeys).erase("pair") > 0)
                 ;
         }
 
         //---------------------------------------------------------------------------
-        SCurrencySettings TerminalSettings::getCurrencySettings() const {
+        SCurrencySettings TerminalSettings::getCurrencySettings() const
+        {
             SCurrencySettings currencySettings;
             currencySettings.id = mProperties.get("system.currency.id", -1);
 
-            if (currencySettings.id != -1) {
+            if (currencySettings.id != -1)
+            {
                 currencySettings.code = mProperties.get("system.currency.code", QString());
                 currencySettings.name = mProperties.get("system.currency.name", QString());
 
-                if (currencySettings.code.isEmpty() || currencySettings.name.isEmpty()) {
+                if (currencySettings.code.isEmpty() || currencySettings.name.isEmpty())
+                {
                     toLog(LogLevel::Warning,
                           QString("For currency id = %1 code or name is not found.").arg(currencySettings.id));
                 }
 
-                foreach (auto coin, mProperties.get("system.currency.coins", QString()).split(",")) {
+                foreach (auto coin, mProperties.get("system.currency.coins", QString()).split(","))
+                {
                     currencySettings.coins << Currency::Nominal(coin.toDouble());
                 }
 
-                foreach (auto note, mProperties.get("system.currency.notes", QString()).split(",")) {
+                foreach (auto note, mProperties.get("system.currency.notes", QString()).split(","))
+                {
                     currencySettings.notes << Currency::Nominal(note.toInt());
                 }
             }
@@ -341,15 +408,18 @@ namespace SDK {
         }
 
         //----------------------------------------------------------------------------
-        const QSet<int> &TerminalSettings::getCriticalErrors() const {
+        const QSet<int> &TerminalSettings::getCriticalErrors() const
+        {
             return mCriticalErrors;
         }
 
         //---------------------------------------------------------------------------
-        QString TerminalSettings::getKeygenURL() const {
+        QString TerminalSettings::getKeygenURL() const
+        {
             QString url = mProperties.get("system.common.keygen_url", QString());
 
-            if (url.isEmpty()) {
+            if (url.isEmpty())
+            {
                 toLog(LogLevel::Error, "Keygen url is not set!");
             }
 
@@ -357,10 +427,12 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        QString TerminalSettings::getReceiptMailURL() const {
+        QString TerminalSettings::getReceiptMailURL() const
+        {
             QString url = mProperties.get("system.common.receipt_mail_url", QString());
 
-            if (url.isEmpty()) {
+            if (url.isEmpty())
+            {
                 toLog(LogLevel::Error, "Url for receipt mail is not set!");
             }
 
@@ -368,10 +440,12 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        QString TerminalSettings::getFeedbackURL() const {
+        QString TerminalSettings::getFeedbackURL() const
+        {
             QString url = mProperties.get("system.common.feedback_url", QString());
 
-            if (url.isEmpty()) {
+            if (url.isEmpty())
+            {
                 toLog(LogLevel::Error, "Url for feedback is not set!");
             }
 
@@ -379,12 +453,14 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        QVariantMap TerminalSettings::getChargeProviderAccess() const {
+        QVariantMap TerminalSettings::getChargeProviderAccess() const
+        {
             QVariantMap result;
 
             static TPtree emptyTreeChargeAccess;
             BOOST_FOREACH (const TPtree::value_type &value,
-                           mProperties.get_child("system.charge_access", emptyTreeChargeAccess)) {
+                           mProperties.get_child("system.charge_access", emptyTreeChargeAccess))
+            {
                 result.insert(QString::fromStdString(value.first), value.second.get_value<QString>().split(","));
             }
 
@@ -392,7 +468,8 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        SAppEnvironment TerminalSettings::getAppEnvironment() const {
+        SAppEnvironment TerminalSettings::getAppEnvironment() const
+        {
             SAppEnvironment environment;
 
             environment.userDataPath = mProperties.get("environment.user_data_path", QString());
@@ -405,7 +482,8 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        void TerminalSettings::setAppEnvironment(const SAppEnvironment &aEnv) {
+        void TerminalSettings::setAppEnvironment(const SAppEnvironment &aEnv)
+        {
             mProperties.put("environment.user_data_path", aEnv.userDataPath);
             mProperties.put("environment.content_path", aEnv.contentPath);
             mProperties.put("environment.interface_path", aEnv.interfacePath);
@@ -414,11 +492,13 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        SCommonSettings TerminalSettings::getCommonSettings() const {
+        SCommonSettings TerminalSettings::getCommonSettings() const
+        {
             SCommonSettings settings;
 
             static TPtree emptyTreeCommonSettings;
-            if (mProperties.get_child("config.hardware", emptyTreeCommonSettings).empty()) {
+            if (mProperties.get_child("config.hardware", emptyTreeCommonSettings).empty())
+            {
                 settings.isValid = false;
 
                 return settings;
@@ -445,26 +525,31 @@ namespace SDK {
 
             // Получаем минимальный разрешенный номинал.
             auto minNote = mProperties.get_optional<double>("config.hardware.validator_settings.min_note");
-            if (minNote.is_initialized()) {
+            if (minNote.is_initialized())
+            {
                 settings.minPar = minNote.get();
 
                 // Парсим список активированных купюр.
                 foreach (const QString &str, mProperties.get("config.hardware.validator_settings.notes", QString())
-                                                 .split(",", Qt::SkipEmptyParts)) {
+                                                 .split(",", Qt::SkipEmptyParts))
+                {
                     auto nominal = Currency::Nominal(str.toDouble());
 
-                    if (nominal >= settings.minPar) {
+                    if (nominal >= settings.minPar)
+                    {
                         settings.enabledParNotesList << nominal;
                         settings.enabledParCoinsList << nominal;
                     }
                 }
-            } else // Новый формат с раздельным указанием купюр и монет
+            }
+            else // Новый формат с раздельным указанием купюр и монет
             {
                 settings.minPar = 10000;
 
                 // Парсим список активированных монет.
                 foreach (auto str, mProperties.get("config.hardware.validator_settings.coins", QString())
-                                       .split(",", Qt::SkipEmptyParts)) {
+                                       .split(",", Qt::SkipEmptyParts))
+                {
                     auto nominal = Currency::Nominal(str.toDouble());
                     settings.minPar = qMin(nominal, settings.minPar);
                     settings.enabledParCoinsList << nominal;
@@ -472,7 +557,8 @@ namespace SDK {
 
                 // Парсим список активированных купюр.
                 foreach (auto str, mProperties.get("config.hardware.validator_settings.notes", QString())
-                                       .split(",", Qt::SkipEmptyParts)) {
+                                       .split(",", Qt::SkipEmptyParts))
+                {
                     auto nominal = Currency::Nominal(str.toInt());
                     settings.minPar = qMin(nominal, settings.minPar);
                     settings.enabledParNotesList.insert(nominal);
@@ -488,7 +574,8 @@ namespace SDK {
                                 mProperties.get("config.hardware.cardreader_settings.block_terminal_on_error", false));
             settings.setBlockOn(SCommonSettings::AccountBalance, getMonitoringSettings().isBlockByAccountBalance());
 
-            switch (mProperties.get("config.terminal.block_by_penetration", 0)) {
+            switch (mProperties.get("config.terminal.block_by_penetration", 0))
+            {
                 case 2:
                     settings.penetrationEventLevel = EEventType::Critical;
                     break;
@@ -502,8 +589,10 @@ namespace SDK {
 
             settings.setBlockOn(SCommonSettings::Penetration, settings.penetrationEventLevel == EEventType::Critical);
 
-            auto updateBlockNotes = [&settings](quint32 aNominal, quint32 aInterval, quint32 aRepeat) {
-                if (aInterval && aRepeat) {
+            auto updateBlockNotes = [&settings](quint32 aNominal, quint32 aInterval, quint32 aRepeat)
+            {
+                if (aInterval && aRepeat)
+                {
                     settings.blockNotes << SBlockByNote(aNominal, aInterval, aRepeat);
                 }
             };
@@ -513,9 +602,12 @@ namespace SDK {
 
             static TPtree emptyTreeBlockByNote;
             BOOST_FOREACH (const TPtree::value_type &notes,
-                           mProperties.get_child("config.terminal.block_by_note", emptyTreeBlockByNote)) {
-                BOOST_FOREACH (const TPtree::value_type &note, notes.second) {
-                    if (note.first == "<xmlattr>") {
+                           mProperties.get_child("config.terminal.block_by_note", emptyTreeBlockByNote))
+            {
+                BOOST_FOREACH (const TPtree::value_type &note, notes.second)
+                {
+                    if (note.first == "<xmlattr>")
+                    {
                         updateBlockNotes(note.second.get<int>("nominal"), note.second.get<int>("interval"),
                                          note.second.get<int>("repeat"));
                     }
@@ -529,7 +621,8 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        SServiceMenuPasswords TerminalSettings::getServiceMenuPasswords() const {
+        SServiceMenuPasswords TerminalSettings::getServiceMenuPasswords() const
+        {
             SServiceMenuPasswords passwords;
 
             passwords.phone = mProperties.get("config.service_menu.phone", QString());
@@ -539,11 +632,15 @@ namespace SDK {
                                                     CServiceMenuPasswords::Collection,
                                                     CServiceMenuPasswords::Technician};
 
-            for (size_t i = 0; i < passwordTypes.size(); i++) {
-                try {
+            for (size_t i = 0; i < passwordTypes.size(); i++)
+            {
+                try
+                {
                     passwords.passwords[passwordTypes[i]] =
                         mProperties.get<QString>((QString("config.service_menu.") + passwordTypes[i]).toStdString());
-                } catch (std::exception &e) {
+                }
+                catch (std::exception &e)
+                {
                     toLog(LogLevel::Error, QString("Error %1.").arg(e.what()));
                 }
             }
@@ -552,7 +649,8 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        SServiceMenuSettings TerminalSettings::getServiceMenuSettings() const {
+        SServiceMenuSettings TerminalSettings::getServiceMenuSettings() const
+        {
             SServiceMenuSettings settings;
 
             settings.allowAnyKeyPair = mProperties.get("config.service_menu.alloy_any_keypair", false);
@@ -561,7 +659,8 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        QString TerminalSettings::getPrinterForReceipt(const QString &aReceiptType) {
+        QString TerminalSettings::getPrinterForReceipt(const QString &aReceiptType)
+        {
             static TPtree emptyTreeReceipts;
             auto receipts = mProperties.get_child("terminal.receipts", emptyTreeReceipts);
             auto deviceAlias = receipts.get(aReceiptType.toStdString(), QString());
@@ -573,7 +672,8 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        bool TerminalSettings::isValid() const {
+        bool TerminalSettings::isValid() const
+        {
             QStringList configs = QStringList() << "environment"
                                                 << "keys"
                                                 << "terminal"
@@ -581,14 +681,17 @@ namespace SDK {
                                                 << "config";
             QStringList errorConfigs;
 
-            foreach (const QString &aConfig, configs) {
+            foreach (const QString &aConfig, configs)
+            {
                 static TPtree emptyTreeIsValid;
-                if (mProperties.get_child(aConfig.toStdString(), emptyTreeIsValid).empty()) {
+                if (mProperties.get_child(aConfig.toStdString(), emptyTreeIsValid).empty())
+                {
                     errorConfigs << aConfig;
                 }
             }
 
-            if (!errorConfigs.isEmpty()) {
+            if (!errorConfigs.isEmpty())
+            {
                 toLog(LogLevel::Error,
                       "Failed to validate configuration settings due to bad section(s): " + errorConfigs.join(", "));
                 return false;
@@ -598,12 +701,14 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        int TerminalSettings::getLogsMaxSize() const {
+        int TerminalSettings::getLogsMaxSize() const
+        {
             return mProperties.get("config.terminal.logs.<xmlattr>.max_size", 100);
         }
 
         //---------------------------------------------------------------------------
-        QStringList TerminalSettings::getUpdaterUrls() const {
+        QStringList TerminalSettings::getUpdaterUrls() const
+        {
             QStringList result;
 
             result << mProperties.get("system.updater.url", QString())
@@ -613,13 +718,16 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        QString TerminalSettings::getAdProfile() const {
+        QString TerminalSettings::getAdProfile() const
+        {
             return mProperties.get("config.terminal.ad.<xmlattr>.profile", QString());
         }
 
         //---------------------------------------------------------------------------
-        QTime TerminalSettings::autoUpdate() const {
-            if (mProperties.get<bool>("config.terminal.check_update", false)) {
+        QTime TerminalSettings::autoUpdate() const
+        {
+            if (mProperties.get<bool>("config.terminal.check_update", false))
+            {
                 return QTime::fromString(mProperties.get<QString>("config.terminal.check_update.<xmlattr>.start", ""),
                                          "hh:mm");
             }
@@ -628,7 +736,8 @@ namespace SDK {
         }
 
         //---------------------------------------------------------------------------
-        QString TerminalSettings::energySave() const {
+        QString TerminalSettings::energySave() const
+        {
             QStringList result = QStringList()
                                  << mProperties.get<QString>("config.hardware.energy_save.<xmlattr>.from", "")
                                  << mProperties.get<QString>("config.hardware.energy_save.<xmlattr>.till", "")

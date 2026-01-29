@@ -6,7 +6,8 @@
 #include "PaymentResponse.h"
 
 //---------------------------------------------------------------------------
-class PaymentStatusResponse : public PaymentResponse {
+class PaymentStatusResponse : public PaymentResponse
+{
   public:
     PaymentStatusResponse(const Request &aRequest, const QString &aResponseString);
 

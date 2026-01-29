@@ -8,17 +8,21 @@
 #include <QtCore/QVariantMap>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         class ICore;
         class IDeviceService;
 
-        namespace Scripting {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
             /// Прокси-класс для работы с оборудованием.
-            class DeviceService : public QObject {
+            class DeviceService : public QObject
+            {
                 Q_OBJECT
 
               public:

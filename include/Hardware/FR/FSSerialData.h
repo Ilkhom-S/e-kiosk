@@ -9,21 +9,26 @@
 #include <Hardware/FR/FRDataTypes.h>
 
 //--------------------------------------------------------------------------------
-namespace FS {
-    struct SData {
+namespace FS
+{
+    struct SData
+    {
         int expiration;   /// Срок годности.
         EFFD::Enum FFD;   /// "Родная" версия ФФД.
         QString provider; /// Поставщик.
         QString revision; /// Ревизия.
 
-        SData() : expiration(13), FFD(EFFD::F10) {
+        SData() : expiration(13), FFD(EFFD::F10)
+        {
         }
         SData(int aExpiration, EFFD::Enum aFFD, const QString &aProvider, const QString &aRevision)
-            : expiration(aExpiration), FFD(aFFD), provider(aProvider), revision(aRevision) {
+            : expiration(aExpiration), FFD(aFFD), provider(aProvider), revision(aRevision)
+        {
         }
     };
 
-    class CData : public CSpecification<QString, SData> {
+    class CData : public CSpecification<QString, SData>
+    {
       public:
         CData();
 

@@ -25,31 +25,37 @@
 
 namespace PP = SDK::PaymentProcessor;
 
-namespace CDatabaseService {
+namespace CDatabaseService
+{
     /// Максимальное кол-во ошибок базы, после которых терминал блокирует свою работу
     const int MaximumDatabaseErrors = 13;
 } // namespace CDatabaseService
 
 //---------------------------------------------------------------------------
-DatabaseService *DatabaseService::instance(IApplication *aApplication) {
+DatabaseService *DatabaseService::instance(IApplication *aApplication)
+{
     return static_cast<DatabaseService *>(aApplication->getCore()->getService(CServices::DatabaseService));
 }
 
 //---------------------------------------------------------------------------
 DatabaseService::DatabaseService(IApplication *aApplication)
-    : mApplication(aApplication), mDatabase(0), mErrorCounter(0) {
+    : mApplication(aApplication), mDatabase(0), mErrorCounter(0)
+{
 }
 
 //---------------------------------------------------------------------------
-DatabaseService::~DatabaseService() {
-    if (mDatabase) {
+DatabaseService::~DatabaseService()
+{
+    if (mDatabase)
+    {
         IDatabaseProxy::freeInstance(mDatabase);
         mDatabase = 0;
     }
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseService::initialize() {
+bool DatabaseService::initialize()
+{
     LOG(mApplication->getLog(), LogLevel::Normal, "Initializing database...");
 
     PP::TerminalSettings *terminalSettings =
@@ -57,7 +63,8 @@ bool DatabaseService::initialize() {
 
     // Инициализация базы данных.
     mDatabase = IDatabaseProxy::getInstance(this);
-    if (!mDatabase) {
+    if (!mDatabase)
+    {
         LOG(mApplication->getLog(), LogLevel::Error, "Can't get database proxy instance.");
         return false;
     }
@@ -75,11 +82,14 @@ bool DatabaseService::initialize() {
     bool integrityFailed = false;
     QStringList errorsList;
 
-    try {
-        for (int retryCount = 0; retryCount < 2; ++retryCount) {
+    try
+    {
+        for (int retryCount = 0; retryCount < 2; ++retryCount)
+        {
             // Подключаемся к БД.
             if (!mDatabase->open(dbSettings.name, dbSettings.user, dbSettings.password, dbSettings.host,
-                                 dbSettings.port)) {
+                                 dbSettings.port))
+            {
                 throw QString("cannot open database");
             }
 
@@ -89,7 +99,8 @@ bool DatabaseService::initialize() {
             integrityFailed = !mDatabase->checkIntegrity(errorsList) ||
                               errorsList.filter(QRegularExpression("*malformed*")).size() || !mDbUtils->initialize();
 
-            if (integrityFailed) {
+            if (integrityFailed)
+            {
                 LOG(mApplication->getLog(), LogLevel::Error,
                     "Failed check database integrity. Backup broken database and create new.");
 
@@ -109,7 +120,8 @@ bool DatabaseService::initialize() {
                 continue;
             }
 
-            if (retryCount && !integrityFailed) {
+            if (retryCount && !integrityFailed)
+            {
                 // Отмечаем статус устройства, что БД была восстановлена
                 EventService::instance(mApplication)
                     ->sendEvent(SDK::PaymentProcessor::Event(SDK::PaymentProcessor::EEventType::OK, getName(),
@@ -120,7 +132,9 @@ bool DatabaseService::initialize() {
             //  http://blog.niklasottosson.com/?p=852
             break;
         }
-    } catch (QString &error) {
+    }
+    catch (QString &error)
+    {
         LOG(mApplication->getLog(), LogLevel::Error, QString("Failed to initialize database manager: %1.").arg(error));
         return false;
     }
@@ -129,19 +143,23 @@ bool DatabaseService::initialize() {
 }
 
 //------------------------------------------------------------------------------
-void DatabaseService::finishInitialize() {
+void DatabaseService::finishInitialize()
+{
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseService::canShutdown() {
+bool DatabaseService::canShutdown()
+{
     return true;
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseService::shutdown() {
+bool DatabaseService::shutdown()
+{
     mDbUtils.clear();
 
-    if (mDatabase) {
+    if (mDatabase)
+    {
         IDatabaseProxy::freeInstance(mDatabase);
         mDatabase = 0;
     }
@@ -150,50 +168,59 @@ bool DatabaseService::shutdown() {
 }
 
 //---------------------------------------------------------------------------
-QString DatabaseService::getName() const {
+QString DatabaseService::getName() const
+{
     return CServices::DatabaseService;
 }
 
 //---------------------------------------------------------------------------
-const QSet<QString> &DatabaseService::getRequiredServices() const {
+const QSet<QString> &DatabaseService::getRequiredServices() const
+{
     static QSet<QString> requiredServices = QSet<QString>() << CServices::SettingsService << CServices::EventService;
 
     return requiredServices;
 }
 
 //---------------------------------------------------------------------------
-QVariantMap DatabaseService::getParameters() const {
+QVariantMap DatabaseService::getParameters() const
+{
     return QVariantMap();
 }
 
 //---------------------------------------------------------------------------
-void DatabaseService::resetParameters(const QSet<QString> &) {
+void DatabaseService::resetParameters(const QSet<QString> &)
+{
 }
 
 /// Выполнение запроса по строке.
-bool DatabaseService::execQuery(const QString &aQuery) {
+bool DatabaseService::execQuery(const QString &aQuery)
+{
     auto query = prepareQuery(aQuery);
 
     return execQuery(query);
 }
 
 //---------------------------------------------------------------------------
-QSharedPointer<IDatabaseQuery> DatabaseService::prepareQuery(const QString &aQuery) {
+QSharedPointer<IDatabaseQuery> DatabaseService::prepareQuery(const QString &aQuery)
+{
     auto queryDeleter = [&](IDatabaseQuery *aQuery) { mDbUtils->releaseQuery(aQuery); };
 
     return QSharedPointer<IDatabaseQuery>(mDbUtils->prepareQuery(aQuery), queryDeleter);
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseService::execQuery(QSharedPointer<IDatabaseQuery> aQuery) {
+bool DatabaseService::execQuery(QSharedPointer<IDatabaseQuery> aQuery)
+{
     return mDbUtils->execQuery(aQuery.data());
 }
 
 //---------------------------------------------------------------------------
-QSharedPointer<IDatabaseQuery> DatabaseService::createAndExecQuery(const QString &aQuery) {
+QSharedPointer<IDatabaseQuery> DatabaseService::createAndExecQuery(const QString &aQuery)
+{
     auto query = prepareQuery(aQuery);
 
-    if (execQuery(query)) {
+    if (execQuery(query))
+    {
         return query;
     }
 
@@ -201,8 +228,10 @@ QSharedPointer<IDatabaseQuery> DatabaseService::createAndExecQuery(const QString
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseService::isGood(bool aQueryResult) {
-    if (!aQueryResult && ++mErrorCounter >= CDatabaseService::MaximumDatabaseErrors) {
+bool DatabaseService::isGood(bool aQueryResult)
+{
+    if (!aQueryResult && ++mErrorCounter >= CDatabaseService::MaximumDatabaseErrors)
+    {
         const char message[] = "Database error counter has reached a limit value. Lock the terminal due to a DB error.";
         LOG(mApplication->getLog(), LogLevel::Error, message);
 
@@ -211,7 +240,8 @@ bool DatabaseService::isGood(bool aQueryResult) {
 
         static bool feedbackSent = false;
 
-        if (!feedbackSent) {
+        if (!feedbackSent)
+        {
             mApplication->getCore()->getTerminalService()->sendFeedback(CServices::DatabaseService, message);
 
             feedbackSent = true;

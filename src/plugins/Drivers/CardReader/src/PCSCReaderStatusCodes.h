@@ -15,11 +15,14 @@
 #include "Hardware/CardReaders/CardReaderStatusCodes.h"
 
 //------------------------------------------------------------------------------
-namespace CPCSCReader {
+namespace CPCSCReader
+{
     /// Статусы.
-    class CDeviceCodeSpecification : public DeviceCodeSpecificationBase<HRESULT> {
+    class CDeviceCodeSpecification : public DeviceCodeSpecificationBase<HRESULT>
+    {
       public:
-        CDeviceCodeSpecification() {
+        CDeviceCodeSpecification()
+        {
             appendStatus(SCARD_S_SUCCESS, DeviceStatusCode::OK::OK);
             appendStatus(SCARD_F_INTERNAL_ERROR, DeviceStatusCode::Error::Unknown,
                          "An internal consistency check failed");

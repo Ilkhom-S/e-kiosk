@@ -13,7 +13,8 @@
 #include "AtolOnlineFRConstants.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class AtolOnlineFRBase : public T {
+template <class T> class AtolOnlineFRBase : public T
+{
   public:
     AtolOnlineFRBase();
 
@@ -103,12 +104,14 @@ template <class T> class AtolOnlineFRBase : public T {
 };
 
 //--------------------------------------------------------------------------------
-class Atol2OnlineFRBase : public AtolOnlineFRBase<Atol2FRBase> {
+class Atol2OnlineFRBase : public AtolOnlineFRBase<Atol2FRBase>
+{
     SET_SERIES("ATOL2Online")
 };
 
 //--------------------------------------------------------------------------------
-class Atol3OnlineFRBase : public AtolOnlineFRBase<Atol3FRBase> {
+class Atol3OnlineFRBase : public AtolOnlineFRBase<Atol3FRBase>
+{
     SET_SERIES("ATOL3Online")
 };
 

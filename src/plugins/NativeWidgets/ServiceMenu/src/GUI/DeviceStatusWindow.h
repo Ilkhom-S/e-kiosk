@@ -13,7 +13,8 @@
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------------
-class DeviceStatusWindow : public DeviceSlot {
+class DeviceStatusWindow : public DeviceSlot
+{
     Q_OBJECT
 
   public:

@@ -6,7 +6,8 @@
 #include "Hardware/Common/DeviceCodeSpecification.h"
 
 //--------------------------------------------------------------------------------
-namespace CICTBase {
+namespace CICTBase
+{
     /// Таймаут после Reset-а, [мс].
     const int ResetTimeout = 200;
 
@@ -15,7 +16,8 @@ namespace CICTBase {
 
     //--------------------------------------------------------------------------------
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char ACK = '\x02';
         const char NAK = '\x0F';
         const char Reset = '\x30';
@@ -26,13 +28,15 @@ namespace CICTBase {
     } // namespace Commands
 
     /// Ответы.
-    namespace Answers {
+    namespace Answers
+    {
         const char Identification[] = "\x5E\x3E\x5E";
     } // namespace Answers
 
     //--------------------------------------------------------------------------------
     /// Состояния (на которые завязана логика протокола).
-    namespace States {
+    namespace States
+    {
         const char Idling = '\x3E';        /// Включен на прием купюр.
         const char Disabled = '\x5E';      /// Отключен для приема купюр.
         const char PowerUp[] = "\x80\x8F"; /// Включили питание.
@@ -42,9 +46,11 @@ namespace CICTBase {
 
     //--------------------------------------------------------------------------------
     /// Спецификация статусов.
-    class DeviceCodeSpecification : public CommonDeviceCodeSpecification {
+    class DeviceCodeSpecification : public CommonDeviceCodeSpecification
+    {
       public:
-        DeviceCodeSpecification() {
+        DeviceCodeSpecification()
+        {
             /// OK.
             appendStatus('\x5E', BillAcceptorStatusCode::Normal::Disabled);
             appendStatus('\x3E', BillAcceptorStatusCode::Normal::Enabled);
@@ -75,22 +81,26 @@ namespace CICTBase {
             appendStatus('\x28', BillAcceptorStatusCode::MechanicFailure::StackerMotor);
         }
 
-        virtual void getSpecification(const QByteArray &aBuffer, TDeviceCodeSpecifications &aSpecifications) {
+        virtual void getSpecification(const QByteArray &aBuffer, TDeviceCodeSpecifications &aSpecifications)
+        {
             QByteArray buffer(aBuffer);
 
-            while (!buffer.isEmpty()) {
+            while (!buffer.isEmpty())
+            {
                 CommonDeviceCodeSpecification::getSpecification(buffer, aSpecifications);
                 int size = (aBuffer.startsWith(States::PowerUp) || (aBuffer[0] == States::Escrow)) ? 2 : 1;
                 buffer.remove(0, size);
             }
         }
 
-        bool contains(char aCode) {
+        bool contains(char aCode)
+        {
             return mBuffer.contains(aCode);
         }
 
         // TODO: при рефакторинге - сделать статус PowerUp, завязать на статус-код и сделать фильтр 2-го уровня
-        bool isPowerUp(const QByteArray &aBuffer) {
+        bool isPowerUp(const QByteArray &aBuffer)
+        {
             return !aBuffer.isEmpty() && aBuffer.contains('\x80');
         }
     };

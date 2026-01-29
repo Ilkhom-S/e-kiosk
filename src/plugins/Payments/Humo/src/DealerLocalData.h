@@ -8,7 +8,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------------
-class DealerLocalData {
+class DealerLocalData
+{
   public:
     DealerLocalData();
 

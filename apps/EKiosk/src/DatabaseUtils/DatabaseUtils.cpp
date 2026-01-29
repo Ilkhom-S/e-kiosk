@@ -21,13 +21,15 @@
 // Project
 #include "DatabaseUtils.h"
 
-namespace CDatabaseUtils {
+namespace CDatabaseUtils
+{
     const QString EmptyDatabaseScript = ":/scripts/empty_db.sql";
     const QString DatabasePatchParam = "db_patch";
     const QString DatabaseUpdateParam = "db_update";
 
     // Список патчей базы
-    struct {
+    struct
+    {
         int version;
         QString Script;
     } Patches[] = {
@@ -41,39 +43,50 @@ namespace CDatabaseUtils {
 //---------------------------------------------------------------------------
 DatabaseUtils::DatabaseUtils(IDatabaseProxy &aProxy, IApplication *aApplication)
     : mDatabase(aProxy), mApplication(aApplication), mLog(aApplication->getLog()),
-      mPaymentLog(ILog::getInstance("Payments")), mAccessMutex(QRecursiveMutex()) {
+      mPaymentLog(ILog::getInstance("Payments")), mAccessMutex(QRecursiveMutex())
+{
 }
 
 //---------------------------------------------------------------------------
-DatabaseUtils::~DatabaseUtils() {
+DatabaseUtils::~DatabaseUtils()
+{
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::initialize() {
-    try {
-        if (!mDatabase.isConnected()) {
+bool DatabaseUtils::initialize()
+{
+    try
+    {
+        if (!mDatabase.isConnected())
+        {
             throw std::runtime_error("not connected.");
         }
 
-        if (!mDatabase.transaction()) {
+        if (!mDatabase.transaction())
+        {
             throw std::runtime_error("Cannot start database transaction.");
         }
 
         // Проверяем, созданы ли таблицы.
-        if (!databaseTableCount()) {
+        if (!databaseTableCount())
+        {
             updateDatabase(CDatabaseUtils::EmptyDatabaseScript);
             // после этого скрипта databasePatch() = 5
         }
 
-        for (int i = 0; i < sizeof(CDatabaseUtils::Patches) / sizeof(CDatabaseUtils::Patches[0]); i++) {
-            if (databasePatch() < CDatabaseUtils::Patches[i].version) {
+        for (int i = 0; i < sizeof(CDatabaseUtils::Patches) / sizeof(CDatabaseUtils::Patches[0]); i++)
+        {
+            if (databasePatch() < CDatabaseUtils::Patches[i].version)
+            {
                 LOG(mLog, LogLevel::Normal,
                     QString("Patch database to version %1.").arg(CDatabaseUtils::Patches[i].version));
 
                 updateDatabase(CDatabaseUtils::Patches[i].Script);
             }
         }
-    } catch (...) {
+    }
+    catch (...)
+    {
         EXCEPTION_FILTER(mLog);
 
         mDatabase.rollback();
@@ -81,7 +94,8 @@ bool DatabaseUtils::initialize() {
         return false;
     }
 
-    if (!mDatabase.commit()) {
+    if (!mDatabase.commit())
+    {
         LOG(mLog, LogLevel::Error, "Failed to commit changes to the terminal database.");
         return false;
     }
@@ -90,9 +104,11 @@ bool DatabaseUtils::initialize() {
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::updateDatabase(const QString &aSqlScriptName) {
+bool DatabaseUtils::updateDatabase(const QString &aSqlScriptName)
+{
     QFile ftemp(aSqlScriptName);
-    if (!ftemp.open(QIODevice::ReadOnly)) {
+    if (!ftemp.open(QIODevice::ReadOnly))
+    {
         throw std::runtime_error("Cannot open database script from resources.");
     }
 
@@ -101,7 +117,7 @@ bool DatabaseUtils::updateDatabase(const QString &aSqlScriptName) {
     // Удалим комментарии ("-- some comment") и ("/* many \n comment */").
     QRegularExpression rx("(\\/\\*.*\\*\\/|\\-\\-.*\\n)");
     ////////rx.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility // Removed for
-    ///Qt5/6 compatibility // Removed for Qt5/6 compatibility
+    /// Qt5/6 compatibility // Removed for Qt5/6 compatibility
     resSQL.replace(rx, "");
 
     // Удалим перевод строк с сохранением возможности писать ("CREATE\nTABLE")
@@ -112,12 +128,15 @@ bool DatabaseUtils::updateDatabase(const QString &aSqlScriptName) {
 
     long rowsAffected(0);
 
-    foreach (const QString &step, creatingSteps) {
-        if (step.trimmed().isEmpty()) {
+    foreach (const QString &step, creatingSteps)
+    {
+        if (step.trimmed().isEmpty())
+        {
             continue;
         }
 
-        if (!mDatabase.execDML(step, rowsAffected)) {
+        if (!mDatabase.execDML(step, rowsAffected))
+        {
             throw std::runtime_error("Cannot execute regular sql query.");
         }
     }
@@ -126,15 +145,18 @@ bool DatabaseUtils::updateDatabase(const QString &aSqlScriptName) {
 }
 
 //---------------------------------------------------------------------------
-int DatabaseUtils::databaseTableCount() const {
+int DatabaseUtils::databaseTableCount() const
+{
     QString queryMessage = "SELECT count(*) FROM sqlite_master WHERE type = 'table'";
     QScopedPointer<IDatabaseQuery> dbQuery(mDatabase.execQuery(queryMessage));
-    if (!dbQuery) {
+    if (!dbQuery)
+    {
         LOG(mLog, LogLevel::Error, "Failed to check database tables presence.");
         return 0;
     }
 
-    if (dbQuery->first()) {
+    if (dbQuery->first())
+    {
         return dbQuery->value(0).toInt();
     }
 
@@ -142,15 +164,18 @@ int DatabaseUtils::databaseTableCount() const {
 }
 
 //---------------------------------------------------------------------------
-int DatabaseUtils::databasePatch() const {
+int DatabaseUtils::databasePatch() const
+{
     QString queryMessage = "SELECT `value` FROM device_param WHERE `name` = 'db_patch'";
     QScopedPointer<IDatabaseQuery> dbQuery(mDatabase.execQuery(queryMessage));
-    if (!dbQuery) {
+    if (!dbQuery)
+    {
         LOG(mLog, LogLevel::Error, "Failed to check database patch version.");
         return 0;
     }
 
-    if (dbQuery->first()) {
+    if (dbQuery->first())
+    {
         return dbQuery->value(0).toInt();
     }
 
@@ -158,7 +183,8 @@ int DatabaseUtils::databasePatch() const {
 }
 
 //---------------------------------------------------------------------------
-IDatabaseQuery *DatabaseUtils::prepareQuery(const QString &aQuery) {
+IDatabaseQuery *DatabaseUtils::prepareQuery(const QString &aQuery)
+{
     QMutexLocker lock(&mAccessMutex);
 
     QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(aQuery));
@@ -167,10 +193,12 @@ IDatabaseQuery *DatabaseUtils::prepareQuery(const QString &aQuery) {
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::execQuery(IDatabaseQuery *aQuery) {
+bool DatabaseUtils::execQuery(IDatabaseQuery *aQuery)
+{
     QMutexLocker lock(&mAccessMutex);
 
-    if (aQuery) {
+    if (aQuery)
+    {
         return aQuery->exec();
     }
 
@@ -178,7 +206,8 @@ bool DatabaseUtils::execQuery(IDatabaseQuery *aQuery) {
 }
 
 //---------------------------------------------------------------------------
-void DatabaseUtils::releaseQuery(IDatabaseQuery *aQuery) {
+void DatabaseUtils::releaseQuery(IDatabaseQuery *aQuery)
+{
     QMutexLocker lock(&mAccessMutex);
 
     delete aQuery;

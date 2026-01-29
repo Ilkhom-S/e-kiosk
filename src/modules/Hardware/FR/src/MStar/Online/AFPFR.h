@@ -11,7 +11,8 @@
 #include "AFPFRDataTypes.h"
 
 //--------------------------------------------------------------------------------
-class AFPFR : public TSerialFRBase {
+class AFPFR : public TSerialFRBase
+{
     SET_SERIES("AFP")
 
   public:

@@ -1,6 +1,5 @@
 /* Реализация протокола с EFTPOS 3.0 компании Uniteller. */
 
-
 #include <numeric>
 
 // Qt
@@ -22,7 +21,8 @@
 
 namespace PPSDK = SDK::PaymentProcessor;
 
-namespace CUniteller {
+namespace CUniteller
+{
     const char *DefaultTerminalID = "0000000000";
     const int ReconnectTimeout = 5000;
     const int PollTimeout = 1000;
@@ -33,14 +33,16 @@ namespace CUniteller {
     static QStringList Host = QStringList() << "Host";
 } // namespace CUniteller
 
-namespace Uniteller {
+namespace Uniteller
+{
 
     //---------------------------------------------------------------------------
     API::API(ILog *aLog, SDK::PaymentProcessor::ICore *aCore, quint16 aPort)
         : mPort(aPort), mTerminalSettings(static_cast<PPSDK::TerminalSettings *>(
                             aCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))),
           mLoggedIn(false), mEnabled(false), mHaveContactlessReader(true), mLastError(0), mGetStateTimerID(0),
-          mLastReadyState(false) {
+          mLastReadyState(false)
+    {
         setLog(aLog);
 
         // TODO connect to mSocket signals
@@ -56,39 +58,46 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    void API::enable() {
+    void API::enable()
+    {
         mEnabled = true;
         doConnect();
     }
 
     //---------------------------------------------------------------------------
     QSharedPointer<API> API::getInstance(ILog *aLog, SDK::PaymentProcessor::ICore *aCore,
-                                         quint16 aPort /*= CUniteller::DefaultPort*/) {
+                                         quint16 aPort /*= CUniteller::DefaultPort*/)
+    {
         static QSharedPointer<API> gApi = QSharedPointer<API>(new API(aLog, aCore, aPort));
 
         return gApi;
     }
 
     //---------------------------------------------------------------------------
-    bool API::isReady() const {
+    bool API::isReady() const
+    {
         return mLoggedIn;
     }
 
     //---------------------------------------------------------------------------
-    void API::setupRuntimePath(const QString &aRuntimePath) {
+    void API::setupRuntimePath(const QString &aRuntimePath)
+    {
         mRuntimePath = aRuntimePath;
     }
 
     //---------------------------------------------------------------------------
-    void API::disable() {
+    void API::disable()
+    {
         mEnabled = false;
         mSocket.close();
         mSocket.waitForDisconnected(Uniteller::SocketTimeout);
     }
 
     //--------------------------------------------------------------------------------
-    void API::onCheckStateTimeout() {
-        if (mLastReadyState != isReady()) {
+    void API::onCheckStateTimeout()
+    {
+        if (mLastReadyState != isReady())
+        {
             mLastReadyState = isReady();
 
             emit state(mLastReadyState ? StatusCode::OK : StatusCode::Error, "Lost connection", true);
@@ -96,10 +105,12 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    void API::login() {
+    void API::login()
+    {
         mTerminalID = getUPID(mRuntimePath);
 
-        if (!mTerminalID.isEmpty()) {
+        if (!mTerminalID.isEmpty())
+        {
             toLog(LogLevel::Normal, QString("> Login. TerminalID: '%1'.").arg(mTerminalID));
 
             killTimer(mGetStateTimerID);
@@ -108,14 +119,18 @@ namespace Uniteller {
             mLoggedIn = false;
 
             send(makeRequest(Uniteller::Class::Session, Uniteller::Login::CodeRequest));
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Normal, QString("> Login failed. Try again..."));
         }
     }
 
     //---------------------------------------------------------------------------
-    void API::sell(double aAmount, const QString &aOrderID, const QString &aCategory) {
-        if (!isReady()) {
+    void API::sell(double aAmount, const QString &aOrderID, const QString &aCategory)
+    {
+        if (!isReady())
+        {
             // Сервис не готов к оплате, уходим
             emit error("0900");
 
@@ -130,13 +145,15 @@ namespace Uniteller {
 
         buffer.append(QString("%1").arg(qFloor((aAmount * 1000 + 0.001) / 10.0), 12, 10, QChar('0')).toLatin1());
 
-        if (!aOrderID.isEmpty()) {
+        if (!aOrderID.isEmpty())
+        {
             QByteArray order = aOrderID.toLatin1().right(20);
             order.insert(0, "00000000000000000000", 20 - order.size());
             buffer.append(order);
         }
 
-        if (!aCategory.isEmpty()) {
+        if (!aCategory.isEmpty())
+        {
             buffer.append('\x1b');
             buffer.append(aCategory.toLatin1());
             buffer.append('\x1b');
@@ -146,28 +163,33 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    void API::breakSell() {
+    void API::breakSell()
+    {
         toLog(LogLevel::Normal, "> Break sell.");
 
         send(makeRequest(Uniteller::Class::Session, Uniteller::Break::CodeRequest));
     }
 
     //---------------------------------------------------------------------------
-    void API::getState() {
+    void API::getState()
+    {
         toLog(LogLevel::Debug, "> Get state.");
 
         send(makeRequest(Uniteller::Class::Diagnostic, Uniteller::State::CodeRequest));
     }
 
     //---------------------------------------------------------------------------
-    void API::doConnect() {
-        if (mEnabled) {
+    void API::doConnect()
+    {
+        if (mEnabled)
+        {
             mSocket.connectToHost(QHostAddress::LocalHost, mPort);
         }
     }
 
     //---------------------------------------------------------------------------
-    void API::onConnected() {
+    void API::onConnected()
+    {
         toLog(LogLevel::Normal, "Connected.");
 
         // Проверка на залогиненность
@@ -175,7 +197,8 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    void API::onDisconnected() {
+    void API::onDisconnected()
+    {
         toLog(LogLevel::Normal, "Disconnected.");
 
         killTimer(mGetStateTimerID);
@@ -185,16 +208,20 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    void API::timerEvent(QTimerEvent *) {
-        if (mEnabled && !mLoggedIn) {
+    void API::timerEvent(QTimerEvent *)
+    {
+        if (mEnabled && !mLoggedIn)
+        {
             login();
         }
     }
 
     //---------------------------------------------------------------------------
-    void API::onError(QAbstractSocket::SocketError) {
+    void API::onError(QAbstractSocket::SocketError)
+    {
         QString e = mSocket.errorString();
-        if (mLastErrorString != e) {
+        if (mLastErrorString != e)
+        {
             mLastErrorString = e;
             toLog(LogLevel::Error, QString("Connection error: %1.").arg(mLastErrorString));
         }
@@ -204,15 +231,18 @@ namespace Uniteller {
         emit error(mSocket.errorString());
 
         // переподсоединяемся через 5 сек.
-        if (mEnabled) {
+        if (mEnabled)
+        {
             QTimer::singleShot(CUniteller::ReconnectTimeout, this, SLOT(doConnect()));
         }
     }
 
     //---------------------------------------------------------------------------
-    bool API::isErrorResponse(BaseResponsePtr aResponse) {
+    bool API::isErrorResponse(BaseResponsePtr aResponse)
+    {
         auto errorResponse = qSharedPointerDynamicCast<ErrorResponse, BaseResponse>(aResponse);
-        if (errorResponse) {
+        if (errorResponse)
+        {
             toLog(LogLevel::Error,
                   QString("< Error: 0x%1 (%2)").arg(errorResponse->getError()).arg(errorResponse->getErrorMessage()));
 
@@ -223,9 +253,11 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    bool API::isLoginResponse(BaseResponsePtr aResponse) {
+    bool API::isLoginResponse(BaseResponsePtr aResponse)
+    {
         auto loginResponse = qSharedPointerDynamicCast<LoginResponse, BaseResponse>(aResponse);
-        if (loginResponse) {
+        if (loginResponse)
+        {
             toLog(LogLevel::Normal, QString("< Login OK. TID: %1.").arg(loginResponse->mTerminalID));
 
             // корректно подсоединились к терминалу
@@ -242,14 +274,17 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    bool API::isPrintLineResponse(BaseResponsePtr aResponse) {
+    bool API::isPrintLineResponse(BaseResponsePtr aResponse)
+    {
         auto printLineResponse = qSharedPointerDynamicCast<PrintLineResponse, BaseResponse>(aResponse);
-        if (printLineResponse) {
+        if (printLineResponse)
+        {
             toLog(LogLevel::Normal, QString("< Print line: %1.").arg(printLineResponse->getText()));
 
             mCurrentReceipt << printLineResponse->getText();
 
-            if (printLineResponse->isLast()) {
+            if (printLineResponse->isLast())
+            {
                 emit print(mCurrentReceipt);
                 mCurrentReceipt.clear();
             }
@@ -259,10 +294,12 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    bool API::isGetStateResponse(BaseResponsePtr aResponse) {
+    bool API::isGetStateResponse(BaseResponsePtr aResponse)
+    {
         auto stateResponse = qSharedPointerDynamicCast<GetStateResponse, BaseResponse>(aResponse);
 
-        if (stateResponse) {
+        if (stateResponse)
+        {
             toLog(LogLevel::Debug, QString("< State: %1 - %2.")
                                        .arg(stateResponse->state(), 2, 16, QChar('0'))
                                        .arg(stateResponse->getName()));
@@ -271,25 +308,40 @@ namespace Uniteller {
 
             bool sendStatus = true;
 
-            if (CUniteller::Host.contains(name, Qt::CaseInsensitive)) {
+            if (CUniteller::Host.contains(name, Qt::CaseInsensitive))
+            {
                 // Проверяем только железки
-            } else if (CUniteller::CardReader.contains(name, Qt::CaseInsensitive)) {
+            }
+            else if (CUniteller::CardReader.contains(name, Qt::CaseInsensitive))
+            {
                 mDeviceState.insert("cardreader", stateResponse->state());
-            } else if (CUniteller::PinPad.contains(name, Qt::CaseInsensitive)) {
+            }
+            else if (CUniteller::PinPad.contains(name, Qt::CaseInsensitive))
+            {
                 mDeviceState.insert("pinpad", stateResponse->state());
-            } else if (CUniteller::ContactlessReader.contains(name, Qt::CaseInsensitive)) {
-                if (mHaveContactlessReader) {
+            }
+            else if (CUniteller::ContactlessReader.contains(name, Qt::CaseInsensitive))
+            {
+                if (mHaveContactlessReader)
+                {
                     mDeviceState.insert("contactlessreader", stateResponse->state());
-                } else {
+                }
+                else
+                {
                     sendStatus = false;
                 }
-            } else {
+            }
+            else
+            {
                 mDeviceState.insert(name.toLower(), stateResponse->state());
             }
 
-            if (sendStatus) {
+            if (sendStatus)
+            {
                 emit state(stateResponse->state(), stateResponse->getName(), stateResponse->isLast());
-            } else if (stateResponse->isLast()) {
+            }
+            else if (stateResponse->isLast())
+            {
                 // если статус последний нужно перепослать любой
                 emit state(mDeviceState.begin().value(), mDeviceState.begin().key(), true);
             }
@@ -299,9 +351,11 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    bool API::isInitialResponse(BaseResponsePtr aResponse) {
+    bool API::isInitialResponse(BaseResponsePtr aResponse)
+    {
         auto initialResponse = qSharedPointerDynamicCast<InitialResponse, BaseResponse>(aResponse);
-        if (initialResponse) {
+        if (initialResponse)
+        {
             toLog(LogLevel::Normal, "< Initial response: OK.");
 
             emit readyToCard();
@@ -311,9 +365,11 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    bool API::isDeviceEventResponse(BaseResponsePtr aResponse) {
+    bool API::isDeviceEventResponse(BaseResponsePtr aResponse)
+    {
         auto deviceEventResponse = qSharedPointerDynamicCast<DeviceEventResponse, BaseResponse>(aResponse);
-        if (deviceEventResponse) {
+        if (deviceEventResponse)
+        {
             toLog(LogLevel::Normal, QString("< Device event: %1 '%2'.")
                                         .arg(toString(deviceEventResponse->event()))
                                         .arg(deviceEventResponse->keyCode()));
@@ -325,14 +381,17 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    bool API::isBreakResponse(BaseResponsePtr aResponse) {
+    bool API::isBreakResponse(BaseResponsePtr aResponse)
+    {
         auto breakResponse = qSharedPointerDynamicCast<BreakResponse, BaseResponse>(aResponse);
-        if (breakResponse) {
+        if (breakResponse)
+        {
             toLog(breakResponse->isComplete() ? LogLevel::Normal : LogLevel::Error,
                   QString("< Break response: %1.").arg(breakResponse->isComplete() ? "OK" : "DENY"));
 
             // TODO - надо как-то реагировать на невозможность отмены транзакции!
-            if (breakResponse->isComplete()) {
+            if (breakResponse->isComplete())
+            {
                 emit breakComplete();
             }
         }
@@ -341,9 +400,11 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    bool API::isPINRequiredResponse(BaseResponsePtr aResponse) {
+    bool API::isPINRequiredResponse(BaseResponsePtr aResponse)
+    {
         auto pinRequiredResponse = qSharedPointerDynamicCast<PINRequiredResponse, BaseResponse>(aResponse);
-        if (pinRequiredResponse) {
+        if (pinRequiredResponse)
+        {
             toLog(LogLevel::Normal, "< PIN required.");
 
             emit pinRequired();
@@ -353,9 +414,11 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    bool API::isOnlineRequiredResponse(BaseResponsePtr aResponse) {
+    bool API::isOnlineRequiredResponse(BaseResponsePtr aResponse)
+    {
         auto onlineRequiredResponse = qSharedPointerDynamicCast<OnlineRequiredResponse, BaseResponse>(aResponse);
-        if (onlineRequiredResponse) {
+        if (onlineRequiredResponse)
+        {
             toLog(LogLevel::Normal, "< Online required.");
 
             emit onlineRequired();
@@ -365,15 +428,20 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    bool API::isAuthResponse(BaseResponsePtr aResponse) {
+    bool API::isAuthResponse(BaseResponsePtr aResponse)
+    {
         auto authResponse = qSharedPointerDynamicCast<AuthResponse, BaseResponse>(aResponse);
-        if (authResponse) {
+        if (authResponse)
+        {
             toLog(LogLevel::Normal, QString("< Auth response. %1.").arg(authResponse->toString()));
 
-            if (authResponse->isOK()) {
+            if (authResponse->isOK())
+            {
                 emit sellComplete(authResponse->mTransactionSumm / 100.0, authResponse->mCurrency, authResponse->mRRN,
                                   authResponse->mConfirmation);
-            } else {
+            }
+            else
+            {
                 emit error(authResponse->mMessage);
             }
         }
@@ -382,7 +450,8 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    void API::onReadyRead() {
+    void API::onReadyRead()
+    {
         QByteArray responseBuffer = mSocket.readAll();
 
         QList<std::function<bool(API &, BaseResponsePtr)>> responseHandlers;
@@ -392,16 +461,22 @@ namespace Uniteller {
                          << std::mem_fun_ref(&API::isBreakResponse) << std::mem_fun_ref(&API::isPINRequiredResponse)
                          << std::mem_fun_ref(&API::isOnlineRequiredResponse) << std::mem_fun_ref(&API::isAuthResponse);
 
-        while (!responseBuffer.isEmpty()) {
+        while (!responseBuffer.isEmpty())
+        {
             BaseResponsePtr response = BaseResponse::createResponse(responseBuffer);
 
-            if (!response->isValid()) {
+            if (!response->isValid())
+            {
                 toLog(LogLevel::Error, QString("Receive unknown packet from EFTPOS. Class='%1' Code='%2'")
                                            .arg(response->mClass)
                                            .arg(response->mCode));
-            } else {
-                foreach (auto handler, responseHandlers) {
-                    if (handler(*this, response)) {
+            }
+            else
+            {
+                foreach (auto handler, responseHandlers)
+                {
+                    if (handler(*this, response))
+                    {
                         break;
                     }
                 }
@@ -410,14 +485,16 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    QByteArray API::makeRequest(char aClass, char aCode, const QByteArray &aData) {
+    QByteArray API::makeRequest(char aClass, char aCode, const QByteArray &aData)
+    {
         QByteArray request;
 
         request.append(aClass);
         request.append(aCode);
         request.append(mTerminalID.toLatin1());
         QString dataLength = QString::number(aData.size(), 16);
-        if (dataLength.size() == 1) {
+        if (dataLength.size() == 1)
+        {
             dataLength.insert(0, '0');
         }
         request.append(dataLength.toLatin1());
@@ -427,13 +504,18 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    void API::send(const QByteArray &aRequest) {
-        if (!mSocket.isOpen()) {
+    void API::send(const QByteArray &aRequest)
+    {
+        if (!mSocket.isOpen())
+        {
             toLog(LogLevel::Error, "Error write. Socket not connected.");
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Debug, QString("Send command: %1").arg(QString::fromLatin1(aRequest)));
 
-            if (mSocket.write(aRequest) != aRequest.size()) {
+            if (mSocket.write(aRequest) != aRequest.size())
+            {
                 toLog(LogLevel::Error, QString("Error write data to socket. Error: %1").arg(mSocket.errorString()));
             }
         }

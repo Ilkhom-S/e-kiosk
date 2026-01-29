@@ -10,7 +10,8 @@
 #include "Hardware/FR/FRErrorDescription.h"
 
 //--------------------------------------------------------------------------------
-namespace CKasbiFR {
+namespace CKasbiFR
+{
     /// Минимальный размер распакованных данных.
     const int MinUnpackedAnswerSize = 1;
 
@@ -36,36 +37,42 @@ namespace CKasbiFR {
     const char LastFirmware[] = "1.0.25";
 
     /// Признак вывода на печать.
-    namespace Print {
+    namespace Print
+    {
         const char Yes = '\x00'; /// Печатать
         const char No = '\x01';  /// Не печатать
     } // namespace Print
 
     /// Таймауты чтения, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// По умолчанию.
         const int Default = 500;
     } // namespace Timeouts
 
     /// Данные ФН.
-    struct SFSData {
+    struct SFSData
+    {
         bool documentOpened;
         bool sessionOpened;
         char flags;
         qulonglong number;
         uint lastFDNumber;
 
-        SFSData() : documentOpened(false), sessionOpened(false), flags(ASCII::NUL), number(0), lastFDNumber(0) {
+        SFSData() : documentOpened(false), sessionOpened(false), flags(ASCII::NUL), number(0), lastFDNumber(0)
+        {
         }
         SFSData(bool aDocumentOpened, bool aSessionOpened, char aFlags, qulonglong aNumber, uint aLastFDNumber)
             : documentOpened(aDocumentOpened), sessionOpened(aSessionOpened), flags(aFlags), number(aNumber),
-              lastFDNumber(aLastFDNumber) {
+              lastFDNumber(aLastFDNumber)
+        {
         }
     };
 
     //------------------------------------------------------------------------------------------------
     /// Коды команд.
-    namespace Commands {
+    namespace Commands
+    {
         // Команды получения информации об устройстве
         const char GetStatus = '\x01';             /// Статус ККТ
         const char GetSerial = '\x02';             /// Серийный номер ККТ
@@ -103,9 +110,11 @@ namespace CKasbiFR {
         const char StartFiscalTLVData = '\x35';  /// Начать получение данных фискального документа в TLV-формате.
         const char GetFiscalTLVData = '\x36';    /// Получить данные фискального документа в TLV-формате.
 
-        class CData : public CSpecification<char, int> {
+        class CData : public CSpecification<char, int>
+        {
           public:
-            CData() {
+            CData()
+            {
                 append(CloseDocument, 5 * 1000);
                 append(EndXReport, 2 * 1000);
                 append(EndZReport, 60 * 1000);
@@ -119,9 +128,11 @@ namespace CKasbiFR {
         static CData Data;
     } // namespace Commands
 
-    class CStatuses : public CSpecification<char, int> {
+    class CStatuses : public CSpecification<char, int>
+    {
       public:
-        CStatuses() {
+        CStatuses()
+        {
             append(1, PrinterStatusCode::Error::PrinterFRNotAvailable);
             append(2, PrinterStatusCode::Error::PaperEnd);
             append(3, PrinterStatusCode::Error::PaperJam);
@@ -135,10 +146,13 @@ namespace CKasbiFR {
 
     //------------------------------------------------------------------------------------------------
     /// Фискальные реквизиты.
-    namespace FiscalFields {
-        class Data : public CSSpecification<int, CFR::FiscalFields::SData> {
+    namespace FiscalFields
+    {
+        class Data : public CSSpecification<int, CFR::FiscalFields::SData>
+        {
           public:
-            QString getTextLog(int aField) const {
+            QString getTextLog(int aField) const
+            {
                 return QString("fiscal field %1 (%2)").arg(aField).arg(value(aField).textKey.replace("_", " "));
             }
         };
@@ -163,7 +177,8 @@ namespace CKasbiFR {
 
     //------------------------------------------------------------------------------------------------
     /// Ошибки.
-    namespace Errors {
+    namespace Errors
+    {
         const char WrongFSState = '\x02';      /// Данная команда требует другого состояния ФН.
         const char NoRequiedDataInFS = '\x08'; /// Запрошенные данные отсутствуют в Архиве ФН.
         const char NeedZReport = '\x16';       /// Продолжительность смены более 24 часов.
@@ -174,9 +189,11 @@ namespace CKasbiFR {
         const char WrongVATForAgent =
             '\x58'; /// Данная ставка НДС недопустима для агента. Агент не является плательщиком НДС.
 
-        class Data : public FRError::Data {
+        class Data : public FRError::Data
+        {
           public:
-            Data() {
+            Data()
+            {
                 using namespace FRError;
 
                 add('\x01', "Неверный формат команды");
@@ -260,9 +277,11 @@ namespace CKasbiFR {
 
     //--------------------------------------------------------------------------------
     /// Теги.
-    class TagEngine : public Tags::Engine {
+    class TagEngine : public Tags::Engine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             set(Tags::Type::DoubleHeight);
             set(Tags::Type::DoubleWidth);
             set(Tags::Type::Italic);
@@ -272,9 +291,11 @@ namespace CKasbiFR {
     };
 
     /// Теги для обработки постфиксом команды.
-    class CTags : public CSpecification<Tags::Type::Enum, char> {
+    class CTags : public CSpecification<Tags::Type::Enum, char>
+    {
       public:
-        CTags() {
+        CTags()
+        {
             append(Tags::Type::Bold, '\x08');
             append(Tags::Type::DoubleHeight, '\x10');
             append(Tags::Type::DoubleWidth, '\x20');

@@ -9,7 +9,8 @@ class TokenWindow;
 class IServiceBackend;
 
 //------------------------------------------------------------------------
-class TokenWizardPage : public WizardPageBase {
+class TokenWizardPage : public WizardPageBase
+{
     Q_OBJECT
 
   public:

@@ -17,7 +17,8 @@
 
 //--------------------------------------------------------------------------------
 /// Базовый класс протокола FRProtocolBase.
-class FRProtocolBase : public DeviceProtocolBase<IFRProtocol> {
+class FRProtocolBase : public DeviceProtocolBase<IFRProtocol>
+{
   public:
     FRProtocolBase();
 

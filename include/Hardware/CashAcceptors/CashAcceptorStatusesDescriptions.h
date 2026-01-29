@@ -10,7 +10,8 @@
 #include "Hardware/CashAcceptors/CashAcceptorStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace BillAcceptorStatusCode {
+namespace BillAcceptorStatusCode
+{
 #define ADD_CA_STATUS_DATA(aStatusType, aStatusCode, aStatus, aWarninglevel, aDescription, aTranslation)               \
     append(aStatusType::aStatusCode,                                                                                   \
            SStatusCodeSpecification(SDK::Driver::EWarningLevel::aWarninglevel, aDescription, aTranslation,             \
@@ -42,9 +43,11 @@ namespace BillAcceptorStatusCode {
     mBuffer[DeviceStatusCode::aWarningLevel::aStatusCode].status = SDK::Driver::ECashAcceptorStatus::aStatus;
 #define SIMPLE_MODIFY_BASE_CA_STATUS(aStatusCode, aStatus) MODIFY_BASE_CA_STATUS(aStatusCode, aStatus, aStatus)
 
-    class CSpecifications : public DeviceStatusCode::CSpecifications {
+    class CSpecifications : public DeviceStatusCode::CSpecifications
+    {
       public:
-        CSpecifications() {
+        CSpecifications()
+        {
             /// Переделываем базовые статусы.
             /// Тип состояния - OK.
             SIMPLE_MODIFY_BASE_CA_STATUS(OK, OK);

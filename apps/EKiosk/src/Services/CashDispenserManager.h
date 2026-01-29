@@ -21,26 +21,32 @@
 class IApplication;
 class IHardwareDatabaseUtils;
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class IDeviceService;
     } // namespace PaymentProcessor
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class CashDispenserManager : public SDK::PaymentProcessor::ICashDispenserManager, public ILogable {
+class CashDispenserManager : public SDK::PaymentProcessor::ICashDispenserManager, public ILogable
+{
     Q_OBJECT
 
     /// Данные выдаваемых объектов.
-    struct SItemData {
+    struct SItemData
+    {
         SDK::Driver::IDispenser *dispenser;
         int unit;
         int count;
 
-        SItemData() : dispenser(nullptr), unit(0), count(0) {
+        SItemData() : dispenser(nullptr), unit(0), count(0)
+        {
         }
         SItemData(SDK::Driver::IDispenser *aDispenser, int aUnit, int aCount)
-            : dispenser(aDispenser), unit(aUnit), count(aCount) {
+            : dispenser(aDispenser), unit(aUnit), count(aCount)
+        {
         }
     };
 
@@ -48,17 +54,21 @@ class CashDispenserManager : public SDK::PaymentProcessor::ICashDispenserManager
     typedef QMap<int, TItemData> TItemDataSet;
     typedef TItemDataSet::iterator TItemDataSetIt;
 
-    struct SAmounts {
+    struct SAmounts
+    {
         SDK::PaymentProcessor::TPaymentAmount toDispensing; /// к выдаче
         SDK::PaymentProcessor::TPaymentAmount dispensed;    /// выданное
 
-        SAmounts() : toDispensing(0), dispensed(0) {
+        SAmounts() : toDispensing(0), dispensed(0)
+        {
         }
         SAmounts(SDK::PaymentProcessor::TPaymentAmount aToDispensing, SDK::PaymentProcessor::TPaymentAmount aDispensed)
-            : toDispensing(aToDispensing), dispensed(aDispensed) {
+            : toDispensing(aToDispensing), dispensed(aDispensed)
+        {
         }
 
-        SAmounts &operator+=(const SAmounts &aAmounts) {
+        SAmounts &operator+=(const SAmounts &aAmounts)
+        {
             toDispensing += aAmounts.toDispensing;
             dispensed += aAmounts.dispensed;
 

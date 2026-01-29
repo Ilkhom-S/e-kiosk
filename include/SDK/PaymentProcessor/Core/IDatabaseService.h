@@ -9,11 +9,14 @@
 
 class IDatabaseQuery;
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        class IDatabaseService {
+        class IDatabaseService
+        {
           public:
             /// Выполнение запроса по строке.
             virtual bool execQuery(const QString &aQuery) = 0;
@@ -28,7 +31,8 @@ namespace SDK {
             virtual bool execQuery(QSharedPointer<IDatabaseQuery> aQuery) = 0;
 
           protected:
-            virtual ~IDatabaseService() {
+            virtual ~IDatabaseService()
+            {
             }
         };
 

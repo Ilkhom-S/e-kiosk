@@ -37,7 +37,8 @@ class GUIService;
 class TerminalService : public QObject,
                         public SDK::PaymentProcessor::IService,
                         protected ILogable,
-                        public SDK::PaymentProcessor::ITerminalService {
+                        public SDK::PaymentProcessor::ITerminalService
+{
     Q_OBJECT
 
     /// Интервал между попытками восстановления конфигураций в минутах.

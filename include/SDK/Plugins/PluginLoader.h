@@ -19,12 +19,15 @@
 #include <SDK/Plugins/IPluginLoader.h>
 #include <SDK/Plugins/IPluginFactory.h>
 
-namespace SDK {
-    namespace Plugin {
+namespace SDK
+{
+    namespace Plugin
+    {
 
         //------------------------------------------------------------------------------
         /// Загрузчик плагинов.
-        class PluginLoader : public IPluginLoader {
+        class PluginLoader : public IPluginLoader
+        {
           public:
             PluginLoader(IKernel *aKernel);
             virtual ~PluginLoader();

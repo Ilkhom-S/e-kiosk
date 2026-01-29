@@ -3,14 +3,17 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-namespace IOPortStatusCode {
+namespace IOPortStatusCode
+{
     /// Предупреждения.
-    namespace Warning {
+    namespace Warning
+    {
         const int MismatchParameters = 100; /// Параметры порта установлены неверно.
     } // namespace Warning
 
     /// Ошибки.
-    namespace Error {
+    namespace Error
+    {
         const int NotSet = 120;        /// Порт не настроен.
         const int Busy = 121;          /// Порт занят.
         const int NotConfigured = 122; /// Порт неверно сконфигурирован.

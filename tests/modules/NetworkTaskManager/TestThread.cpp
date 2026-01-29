@@ -13,7 +13,8 @@
 #include "TestClass.h"
 #include "TestThread.h"
 
-TestThread::TestThread(NetworkTaskManager *aManager) {
+TestThread::TestThread(NetworkTaskManager *aManager)
+{
     moveToThread(this);
 
     m_manager = aManager;
@@ -21,13 +22,15 @@ TestThread::TestThread(NetworkTaskManager *aManager) {
 }
 
 //------------------------------------------------------------------------
-TestThread::~TestThread() {
+TestThread::~TestThread()
+{
     quit();
     wait();
 }
 
 //------------------------------------------------------------------------
-void TestThread::run() {
+void TestThread::run()
+{
     QString filePath = BasicApplication::getInstance()->getWorkingDirectory() + "/" + TestFile;
 
     // Remove existing file to ensure clean download
@@ -35,7 +38,8 @@ void TestThread::run() {
 
     FileDownloadTask task(TestUrl, filePath);
 
-    if (!connect(&task, SIGNAL(onComplete()), SLOT(onTaskComplete()))) {
+    if (!connect(&task, SIGNAL(onComplete()), SLOT(onTaskComplete())))
+    {
         return;
     }
 
@@ -45,7 +49,8 @@ void TestThread::run() {
 }
 
 //------------------------------------------------------------------------
-void TestThread::onTaskComplete() {
+void TestThread::onTaskComplete()
+{
     NetworkTask *task = dynamic_cast<NetworkTask *>(sender());
 
     m_taskComplete = (task->getError() == NetworkTask::NoError);
@@ -54,7 +59,8 @@ void TestThread::onTaskComplete() {
 }
 
 //------------------------------------------------------------------------
-bool TestThread::taskComplete() const {
+bool TestThread::taskComplete() const
+{
     return m_taskComplete;
 }
 

@@ -18,7 +18,8 @@
 #include "Log.h"
 #include "Skin.h"
 
-namespace CSkin {
+namespace CSkin
+{
     const char DefaultSkinName[] = "default";
     const char ParamSkinName[] = "skin_name";
     const char ParamProviderId[] = "provider_id";
@@ -27,10 +28,12 @@ namespace CSkin {
 //------------------------------------------------------------------------------
 Skin::Skin(const QObject *aApplication, const QString &aInterfacePath, const QString &aUserPath)
     : mName(CSkin::DefaultSkinName), mInterfacePath(aInterfacePath),
-      mGuiService(aApplication->property("graphics").value<QObject *>()) {
+      mGuiService(aApplication->property("graphics").value<QObject *>())
+{
     auto skinExist = [&](const QString &aName) -> bool { return QFile::exists(skinConfigFileName(aName)); };
 
-    auto getSkinName = [](const QString &aIniFile) -> QString {
+    auto getSkinName = [](const QString &aIniFile) -> QString
+    {
         QSettings settings(aIniFile, QSettings::IniFormat);
         settings.setIniCodec("UTF-8");
         settings.beginGroup("ui");
@@ -54,15 +57,18 @@ Skin::Skin(const QObject *aApplication, const QString &aInterfacePath, const QSt
     Log(Log::Normal) << QString("SET SKIN '%1'.").arg(mName);
 
     // Настройки брендирования
-    auto getProviderSkinName = [](const QString &aIniFile) -> QVariantMap {
+    auto getProviderSkinName = [](const QString &aIniFile) -> QVariantMap
+    {
         QSettings settings(aIniFile, QSettings::IniFormat);
         settings.setIniCodec("UTF-8");
         settings.beginGroup("skin");
 
         // Читаем конфигурацию скинов для конкретных операторов(оператор=имя_скина)
         QVariantMap skins;
-        foreach (auto const key, settings.allKeys()) {
-            foreach (QString provider, settings.value(key).toStringList()) {
+        foreach (auto const key, settings.allKeys())
+        {
+            foreach (QString provider, settings.value(key).toStringList())
+            {
                 skins.insert(provider, key);
             }
         }
@@ -78,34 +84,42 @@ Skin::Skin(const QObject *aApplication, const QString &aInterfacePath, const QSt
     // Зарегистрируем шрифты всех скинов
     QDirIterator dirEntry(QString("%1/skins").arg(mInterfacePath), QString("*.ttf*;*.otf").split(";"), QDir::Files,
                           QDirIterator::Subdirectories);
-    while (dirEntry.hasNext()) {
+    while (dirEntry.hasNext())
+    {
         dirEntry.next();
 
-        if (QFontDatabase::addApplicationFont(dirEntry.filePath()) == -1) {
+        if (QFontDatabase::addApplicationFont(dirEntry.filePath()) == -1)
+        {
             Log(Log::Error) << QString("Failed to add font '%1'.").arg(dirEntry.fileName());
         }
     }
 }
 
 //------------------------------------------------------------------------------
-bool Skin::loadSkinConfig() {
+bool Skin::loadSkinConfig()
+{
     // Загружаем настройки интерфейса.
     QFile json(skinConfigFileName(mName));
 
-    if (json.open(QIODevice::ReadOnly)) {
+    if (json.open(QIODevice::ReadOnly))
+    {
         QJsonParseError error;
         QJsonDocument result = QJsonDocument::fromJson(json.readAll(), &error);
 
-        if (QJsonParseError::NoError == error.error) {
+        if (QJsonParseError::NoError == error.error)
+        {
             QVariantMap config = result.object().toVariantMap();
             mConfig.clear();
 
-            foreach (QString key, config.keys()) {
-                if (!key.startsWith("color.") && !key.startsWith("font.")) {
+            foreach (QString key, config.keys())
+            {
+                if (!key.startsWith("color.") && !key.startsWith("font."))
+                {
                     QString path = mInterfacePath + QDir::separator() + "skins" + QDir::separator() + mName +
                                    QDir::separator() + config.value(key).toString();
 
-                    if (!QFile::exists(path)) {
+                    if (!QFile::exists(path))
+                    {
                         Log(Log::Debug) << QString("SkinProvider: failed to load texture '%1' from '%2'. Try loading "
                                                    "texture from 'default'.")
                                                .arg(key)
@@ -117,19 +131,25 @@ bool Skin::loadSkinConfig() {
                     QUrl url(path);
                     url.setScheme("file");
                     mConfig[key] = url.path();
-                } else {
+                }
+                else
+                {
                     mConfig[key] = config.value(key);
                 }
             }
 
             return true;
-        } else {
+        }
+        else
+        {
             Log(Log::Error) << QString("Skin: failed to parse skin config '%1(%2)': %3.")
                                    .arg(skinConfigFileName(mName))
                                    .arg(error.offset)
                                    .arg(error.errorString());
         }
-    } else {
+    }
+    else
+    {
         Log(Log::Error) << QString("Skin: failed to open skin config file '%1'.").arg(skinConfigFileName(mName));
     }
 
@@ -137,9 +157,11 @@ bool Skin::loadSkinConfig() {
 }
 
 //------------------------------------------------------------------------------
-QFont Skin::font(const QString &aFontName) const {
+QFont Skin::font(const QString &aFontName) const
+{
     QVariantMap::const_iterator it = mConfig.find(aFontName);
-    if (it != mConfig.end()) {
+    if (it != mConfig.end())
+    {
         QFont f;
         QVariantMap p = it->toMap();
 
@@ -156,25 +178,31 @@ QFont Skin::font(const QString &aFontName) const {
 }
 
 //------------------------------------------------------------------------------
-QString Skin::color(const QString &aColorName) const {
+QString Skin::color(const QString &aColorName) const
+{
     QVariantMap::const_iterator it = mConfig.find(aColorName);
-    if (it != mConfig.end()) {
+    if (it != mConfig.end())
+    {
         return it->toString();
-    } else {
+    }
+    else
+    {
         Log(Log::Error) << QString("Failed to load color '%1'.").arg(aColorName);
         return ("#FF00FF");
     }
 }
 
 //------------------------------------------------------------------------------
-QString Skin::image(const QString &aImageId) const {
+QString Skin::image(const QString &aImageId) const
+{
     QString scene = mGuiService->property("topScene").value<QString>();
     QString pathWithScene = QString("%1/%2").arg(scene).arg(aImageId);
 
     // Сначала ищем путь в виде текущая_сцена/имя_ресурса
     QVariantMap::const_iterator it = mConfig.find(pathWithScene);
 
-    if (it != mConfig.end()) {
+    if (it != mConfig.end())
+    {
         return it->toString();
     }
 
@@ -184,20 +212,24 @@ QString Skin::image(const QString &aImageId) const {
 }
 
 //------------------------------------------------------------------------------
-QString Skin::getName() const {
+QString Skin::getName() const
+{
     return mName;
 }
 
 //------------------------------------------------------------------------------
-QVariantMap Skin::getConfiguration() const {
+QVariantMap Skin::getConfiguration() const
+{
     return mConfig;
 }
 
 //------------------------------------------------------------------------------
-void Skin::reload(const QVariantMap &aParams) {
+void Skin::reload(const QVariantMap &aParams)
+{
     bool result = false;
 
-    if (!aParams.isEmpty()) {
+    if (!aParams.isEmpty())
+    {
         mPrevName = mName;
         QString providerId = aParams.value(CSkin::ParamProviderId).toString();
         mName = providerId.isEmpty() ? mName : mProviderSkinConfig.value(providerId).toString();
@@ -206,7 +238,8 @@ void Skin::reload(const QVariantMap &aParams) {
 
     // Пустые параметры - вернуть предыдущий скин
     // Если не удалось - загружаем предыдущий скин
-    if (aParams.isEmpty() || !result) {
+    if (aParams.isEmpty() || !result)
+    {
         mName = mPrevName;
         result = loadSkinConfig();
     }
@@ -215,11 +248,13 @@ void Skin::reload(const QVariantMap &aParams) {
 }
 
 //------------------------------------------------------------------------------
-bool Skin::needReload(const QVariantMap &aParams) const {
+bool Skin::needReload(const QVariantMap &aParams) const
+{
     QString pid = aParams.value(CSkin::ParamProviderId).toString();
     QString name = aParams.value(CSkin::ParamSkinName).toString();
 
-    if (pid.toInt() == -1) {
+    if (pid.toInt() == -1)
+    {
         return false;
     }
 
@@ -228,7 +263,8 @@ bool Skin::needReload(const QVariantMap &aParams) const {
 }
 
 //------------------------------------------------------------------------------
-QString Skin::skinConfigFileName(const QString &aName) const {
+QString Skin::skinConfigFileName(const QString &aName) const
+{
     return mInterfacePath + "/skins/" + aName + "/config.json";
 }
 

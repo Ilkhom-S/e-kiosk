@@ -15,11 +15,16 @@
 #include "ILog.h"
 
 //--------------------------------------------------------------------------------
-namespace {
-    void ExceptionFilter(const QString &file, const QString &function, int line, ILog *log, bool aThrow) {
-        try {
+namespace
+{
+    void ExceptionFilter(const QString &file, const QString &function, int line, ILog *log, bool aThrow)
+    {
+        try
+        {
             throw;
-        } catch (std::exception &ex) {
+        }
+        catch (std::exception &ex)
+        {
             LOG(log, LogLevel::Error,
                 QString("std::exception in file: %1 ,from function: %2, catch line: "
                         "%3, message: %4.")
@@ -27,28 +32,37 @@ namespace {
                     .arg(function)
                     .arg(line)
                     .arg(ex.what()));
-        } catch (...) {
+        }
+        catch (...)
+        {
             LOG(log, LogLevel::Error,
                 QString("Unknown Exception in file: %1 ,from function: %2, catch line: %3.")
                     .arg(file)
                     .arg(function)
                     .arg(line));
 
-            if (aThrow) {
+            if (aThrow)
+            {
                 throw;
             }
         }
     }
 
-    void ExceptionFilterCout(const QString &file, const QString &function, int line, const std::string &message) {
-        try {
+    void ExceptionFilterCout(const QString &file, const QString &function, int line, const std::string &message)
+    {
+        try
+        {
             std::cout << "message: " << message << std::endl;
             throw;
-        } catch (std::exception &ex) {
+        }
+        catch (std::exception &ex)
+        {
             std::cout << "std::exception in file: " << file.toStdString()
                       << ", from function: " << function.toStdString() << ", catch line: " << line
                       << ", message: " << ex.what() << std::endl;
-        } catch (...) {
+        }
+        catch (...)
+        {
             std::cout << "Unknown Exception in file: " << file.toStdString()
                       << ", from function: " << function.toStdString() << ", catch line: " << line << std::endl;
         }

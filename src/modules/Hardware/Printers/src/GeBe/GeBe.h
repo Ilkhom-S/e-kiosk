@@ -5,7 +5,8 @@
 #include "Hardware/Printers/PortPrintersBase.h"
 
 //--------------------------------------------------------------------------------
-class GeBe : public TSerialPrinterBase {
+class GeBe : public TSerialPrinterBase
+{
   public:
     GeBe();
 

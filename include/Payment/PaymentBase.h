@@ -22,8 +22,10 @@
 #include <SDK/PaymentProcessor/Payment/IPayment.h>
 
 //------------------------------------------------------------------------------
-namespace CPayment {
-    namespace Requests {
+namespace CPayment
+{
+    namespace Requests
+    {
         const char FakeCheck[] = "FAKE_CHECK";
         const char Check[] = "CHECK";
         const char Pay[] = "PAYMENT";
@@ -31,19 +33,24 @@ namespace CPayment {
         const char GetStep[] = "GETSTEP";
     } // namespace Requests
 
-    namespace Steps {
+    namespace Steps
+    {
         const int Init = 1;
         const int Pay = 2;
     } // namespace Steps
 } // namespace CPayment
 
 //------------------------------------------------------------------------------
-class PaymentBase : public SDK::PaymentProcessor::IPayment, public ILogable {
-    struct SParameterModifier {
-        SParameterModifier(const SParameter &aModifiedValue) : modifiedValue(aModifiedValue) {
+class PaymentBase : public SDK::PaymentProcessor::IPayment, public ILogable
+{
+    struct SParameterModifier
+    {
+        SParameterModifier(const SParameter &aModifiedValue) : modifiedValue(aModifiedValue)
+        {
         }
 
-        void operator()(SParameter &aParameter) {
+        void operator()(SParameter &aParameter)
+        {
             aParameter = modifiedValue;
         }
 

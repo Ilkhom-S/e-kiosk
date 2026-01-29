@@ -6,12 +6,14 @@
 #include "Payment.h"
 
 //------------------------------------------------------------------------------
-namespace CPin {
+namespace CPin
+{
     const char UIFieldName[] = "CARD";
 } // namespace CPin
 
 //------------------------------------------------------------------------------
-class PinPayment : public Payment {
+class PinPayment : public Payment
+{
   public:
     PinPayment(PaymentFactory *aFactory);
 

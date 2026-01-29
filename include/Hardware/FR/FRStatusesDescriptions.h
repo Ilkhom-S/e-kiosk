@@ -16,10 +16,13 @@
 #define ADD_FR_ERROR(aStatusCode, aTranslation) ADD_FR_STATUS(aStatusCode, aTranslation, Error)
 
 //--------------------------------------------------------------------------------
-namespace FRStatusCode {
-    class CSpecifications : public PrinterStatusCode::CSpecifications {
+namespace FRStatusCode
+{
+    class CSpecifications : public PrinterStatusCode::CSpecifications
+    {
       public:
-        CSpecifications() : mIsFiscal(true) {
+        CSpecifications() : mIsFiscal(true)
+        {
             /// Предупреждения.
             ADD_FR_WARNING(EKLZNearEnd, QCoreApplication::translate("FRStatuses", "#EKLZ_near_end"));
             ADD_FR_WARNING(FiscalMemoryNearEnd, QCoreApplication::translate("FRStatuses", "#FM_near_end"));
@@ -62,18 +65,22 @@ namespace FRStatusCode {
             ADD_FR_ERROR(Taxes, QCoreApplication::translate("FRStatuses", "#taxes"));
         }
 
-        TStatusCodes getFiscalStatusCodes() {
+        TStatusCodes getFiscalStatusCodes()
+        {
             return mFiscal;
         }
 
-        void setFiscal(bool aIsFiscal) {
+        void setFiscal(bool aIsFiscal)
+        {
             mIsFiscal = aIsFiscal;
         }
 
-        virtual SStatusCodeSpecification value(const int &aKey) const {
+        virtual SStatusCodeSpecification value(const int &aKey) const
+        {
             SStatusCodeSpecification result = mBuffer.value(aKey, mDefaultValue);
 
-            if (!mIsFiscal && mFiscal.contains(aKey)) {
+            if (!mIsFiscal && mFiscal.contains(aKey))
+            {
                 result.warningLevel = SDK::Driver::EWarningLevel::OK;
             }
 
@@ -88,14 +95,17 @@ namespace FRStatusCode {
 } // namespace FRStatusCode
 
 //--------------------------------------------------------------------------------
-inline TStatusCodes getFiscalStatusCodes(SDK::Driver::EWarningLevel::Enum warningLevel) {
+inline TStatusCodes getFiscalStatusCodes(SDK::Driver::EWarningLevel::Enum warningLevel)
+{
     static FRStatusCode::CSpecifications specification;
 
     TStatusCodes fiscalStatusCodes = specification.getFiscalStatusCodes();
     TStatusCodes result;
 
-    foreach (int statusCode, fiscalStatusCodes) {
-        if (specification[statusCode].warningLevel == warningLevel) {
+    foreach (int statusCode, fiscalStatusCodes)
+    {
+        if (specification[statusCode].warningLevel == warningLevel)
+        {
             result.insert(statusCode);
         }
     }
@@ -104,14 +114,17 @@ inline TStatusCodes getFiscalStatusCodes(SDK::Driver::EWarningLevel::Enum warnin
 }
 
 //--------------------------------------------------------------------------------
-inline TStatusCodes getErrorFRStatusCodes() {
+inline TStatusCodes getErrorFRStatusCodes()
+{
     static FRStatusCode::CSpecifications specification;
 
     QMap<int, SStatusCodeSpecification>::Iterator it = specification.data().begin();
     TStatusCodes result;
 
-    for (; it != specification.data().end(); ++it) {
-        if (it->warningLevel == SDK::Driver::EWarningLevel::Error) {
+    for (; it != specification.data().end(); ++it)
+    {
+        if (it->warningLevel == SDK::Driver::EWarningLevel::Error)
+        {
             result << it.key();
         }
     }

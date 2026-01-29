@@ -5,14 +5,18 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CPayPrinters {
-    struct SModelData {
+namespace CPayPrinters
+{
+    struct SModelData
+    {
         QString name;
         bool hasPNESensor;
 
-        SModelData() : hasPNESensor(false) {
+        SModelData() : hasPNESensor(false)
+        {
         }
-        SModelData(const QString &aName, bool aHasPNESensor) : name(aName), hasPNESensor(aHasPNESensor) {
+        SModelData(const QString &aName, bool aHasPNESensor) : name(aName), hasPNESensor(aHasPNESensor)
+        {
         }
     };
 
@@ -21,9 +25,11 @@ namespace CPayPrinters {
 
     const char Default[] = "Default"; /// По умолчанию.
 
-    class CModels : public CSpecification<uchar, SModelData> {
+    class CModels : public CSpecification<uchar, SModelData>
+    {
       public:
-        CModels() {
+        CModels()
+        {
             add(1, "Custom VKP-80/80II/80III");
             add(2, "Custom TG-2460");
             add(3, "Custom TG-2480");
@@ -44,11 +50,14 @@ namespace CPayPrinters {
             add(Virtual, "Virtual", false);
         }
 
-        QStringList getNames() {
+        QStringList getNames()
+        {
             QStringList result;
 
-            for (auto it = data().begin(); it != data().end(); ++it) {
-                if ((it.key() != Virtual)) {
+            for (auto it = data().begin(); it != data().end(); ++it)
+            {
+                if ((it.key() != Virtual))
+                {
                     result << it->name;
                 }
             }
@@ -59,7 +68,8 @@ namespace CPayPrinters {
         }
 
       private:
-        void add(uchar aId, const QString &aName, bool aHasPNESensor = true) {
+        void add(uchar aId, const QString &aName, bool aHasPNESensor = true)
+        {
             append(aId, SModelData(aName, aHasPNESensor));
         }
     };

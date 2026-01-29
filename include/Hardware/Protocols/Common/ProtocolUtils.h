@@ -14,13 +14,15 @@
 // Modules
 #include "Hardware/Common/ASCII.h"
 
-namespace CProtocolUtils {
+namespace CProtocolUtils
+{
     /// Регэксп для парсинга дампов в логах;
     const char LogRexExp[] = "\\{([0-9a-fA-F]+)\\}";
 } // namespace CProtocolUtils
 
 //--------------------------------------------------------------------------------
-namespace ProtocolUtils {
+namespace ProtocolUtils
+{
     /// Конвертировать число в hex-строку.
     template <class T> QString toHexLog(T aData);
 

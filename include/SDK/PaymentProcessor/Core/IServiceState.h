@@ -6,13 +6,17 @@
 #include <QtCore/QString>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
-        class IServiceState {
+        class IServiceState
+        {
           public:
-            virtual ~IServiceState() {
+            virtual ~IServiceState()
+            {
             }
 
           public:

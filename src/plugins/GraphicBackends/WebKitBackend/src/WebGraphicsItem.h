@@ -22,7 +22,8 @@
 
 //---------------------------------------------------------------------------
 /// Интерфейс для созданного движком графического объекта.
-class WebGraphicsItem : public QObject, public SDK::GUI::IGraphicsItem, protected ILogable {
+class WebGraphicsItem : public QObject, public SDK::GUI::IGraphicsItem, protected ILogable
+{
     Q_OBJECT
 
   public:
@@ -49,7 +50,8 @@ class WebGraphicsItem : public QObject, public SDK::GUI::IGraphicsItem, protecte
     /// Возвращает виджет.
     virtual QQuickItem *getWidget() const;
 
-    virtual QWidget *getNativeWidget() const {
+    virtual QWidget *getNativeWidget() const
+    {
         return nullptr;
     }
 

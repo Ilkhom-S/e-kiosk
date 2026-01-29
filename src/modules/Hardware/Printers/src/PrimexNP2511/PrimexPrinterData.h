@@ -10,9 +10,11 @@
 #include "Hardware/Printers/PrinterStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace CPrimexNP2511 {
+namespace CPrimexNP2511
+{
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char PrinterInfo[] = "\x1B\x73";
         const char GetStatus[] = "\x1B\x76";
         const char BackFeed[] = "\x1D\x4A";
@@ -23,7 +25,8 @@ namespace CPrimexNP2511 {
         const char AutoRetract[] = "\x1B\x72\x31\x3A"; // Через 1 минуту засасываем в ретрактор
 
         /// Команды для печати штрих-кода.
-        namespace BarCode {
+        namespace BarCode
+        {
             const char SetFont[] = "\x1D\x66";
             const char SetHeight[] = "\x1D\x68\x80";
             const char SetHRIPosition[] = "\x1D\x48\x02";
@@ -33,9 +36,11 @@ namespace CPrimexNP2511 {
     } // namespace Commands
 
     /// Статусы.
-    class CStatuses : public CSpecification<int, int> {
+    class CStatuses : public CSpecification<int, int>
+    {
       public:
-        CStatuses() {
+        CStatuses()
+        {
             append(0, PrinterStatusCode::Warning::PaperNearEnd);
             append(1, PrinterStatusCode::Error::PrintingHead);
             append(2, PrinterStatusCode::Error::PaperEnd);
@@ -56,9 +61,11 @@ namespace CPrimexNP2511 {
 
     //----------------------------------------------------------------------------
     /// Теги.
-    class TagEngine : public Tags::Engine {
+    class TagEngine : public Tags::Engine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             appendSingle(Tags::Type::Bold, "\x1B\x45", "\x01");
             appendSingle(Tags::Type::UnderLine, "\x1B\x2D", "\x01");
             appendCommon(Tags::Type::DoubleWidth, "\x1C\x21", "\x40");
@@ -68,22 +75,27 @@ namespace CPrimexNP2511 {
 
     //----------------------------------------------------------------------------
     /// Данные устройства.
-    struct SDeviceParameters {
+    struct SDeviceParameters
+    {
         int size;
         QString description;
 
-        SDeviceParameters() : size(0) {
+        SDeviceParameters() : size(0)
+        {
         }
-        SDeviceParameters(int aSize, const QString &aDescription) : size(aSize), description(aDescription) {
+        SDeviceParameters(int aSize, const QString &aDescription) : size(aSize), description(aDescription)
+        {
         }
     };
 
     typedef QMap<char, SDeviceParameters> TDeviceParameters;
     typedef QMap<char, SDeviceParameters>::iterator TDeviceParametersIt;
 
-    class CDeviceParameters : public CSpecification<char, SDeviceParameters> {
+    class CDeviceParameters : public CSpecification<char, SDeviceParameters>
+    {
       public:
-        CDeviceParameters() {
+        CDeviceParameters()
+        {
             append(ASCII::STX, SDeviceParameters(7, CDeviceData::ModelName));
             append(ASCII::ETX, SDeviceParameters(8, CDeviceData::Firmware));
             append(ASCII::EOT, SDeviceParameters(8, CDeviceData::BootFirmware));

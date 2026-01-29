@@ -16,7 +16,8 @@
 
 //--------------------------------------------------------------------------------
 /// Рабочий поток для класса-ожидателя.
-class ExpectorWorkingThread : public QThread {
+class ExpectorWorkingThread : public QThread
+{
     Q_OBJECT
 
   public:
@@ -43,7 +44,8 @@ class ExpectorWorkingThread : public QThread {
 
 //--------------------------------------------------------------------------------
 /// Класс-ожидатель.
-class PollingExpector : public QObject {
+class PollingExpector : public QObject
+{
     Q_OBJECT
 
   public:

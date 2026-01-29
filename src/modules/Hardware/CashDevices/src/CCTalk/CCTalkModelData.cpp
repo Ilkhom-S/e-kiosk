@@ -12,8 +12,10 @@
 #include "Hardware/CashDevices/CCTalkDeviceConstants.h"
 #include <Hardware/CashDevices/CCTalkModelData.h>
 
-namespace CCCTalk {
-    CVendorData::CVendorData() {
+namespace CCCTalk
+{
+    CVendorData::CVendorData()
+    {
         add("AES", "Aardvark Embedded Solutions Ltd", "AES");
         add("ALB", "Alberici");
         add("ANI", "AlfaNet informatika d.o.o", "AlfaNet");
@@ -40,23 +42,27 @@ namespace CCCTalk {
 
     //--------------------------------------------------------------------------------
     void CVendorData::add(const QString &aVendorID, const QString &aVendor, const QString &aShortVendor,
-                          bool aComplexEnabling) {
+                          bool aComplexEnabling)
+    {
         append(aVendorID, SVendorData(aVendor, aShortVendor, aComplexEnabling));
     }
 
     //--------------------------------------------------------------------------------
     void CModelDataBase::add(const QString &aVendorId, const QString &aModelId, uchar aFault, uchar aError,
-                             const QString &aModel) {
+                             const QString &aModel)
+    {
         data()[aVendorId].insert(aModelId, SModelData(aFault, aError, aModel, true));
     }
 
     //--------------------------------------------------------------------------------
-    void CModelDataBase::add(const QString &aVendorId, const QString &aModelId, const QString &aModel) {
+    void CModelDataBase::add(const QString &aVendorId, const QString &aModelId, const QString &aModel)
+    {
         data()[aVendorId].insert(aModelId, SModelData(0, 0, aModel, true));
     }
 
     //--------------------------------------------------------------------------------
-    QString CVendorData::getName(const QString &aId) {
+    QString CVendorData::getName(const QString &aId)
+    {
         QString vendorID = aId.simplified().toUpper();
         SVendorData &vendorData = data()[vendorID];
 
@@ -64,10 +70,12 @@ namespace CCCTalk {
     }
 
     //--------------------------------------------------------------------------------
-    QString CModelDataBase::getData(const QByteArray &aVendorID, const QByteArray &aModelID, SModelData &aModelData) {
+    QString CModelDataBase::getData(const QByteArray &aVendorID, const QByteArray &aModelID, SModelData &aModelData)
+    {
         QString vendorID = aVendorID.simplified().toUpper();
 
-        if (!VendorData.data().contains(vendorID)) {
+        if (!VendorData.data().contains(vendorID))
+        {
             return DefaultDeviceName;
         }
 
@@ -75,13 +83,17 @@ namespace CCCTalk {
         QString modelId = QString(aModelID).remove(QRegularExpression("[ \\-]+")).toLatin1();
         // TModelData modelData = ModelData[vendorID];
 
-        for (TModelDataIt it = data().begin(); it != data().end(); ++it) {
-            for (TModelData::iterator jt = it->begin(); jt != it->end(); ++jt) {
-                if (modelId.indexOf(jt.key()) != -1) {
+        for (TModelDataIt it = data().begin(); it != data().end(); ++it)
+        {
+            for (TModelData::iterator jt = it->begin(); jt != it->end(); ++jt)
+            {
+                if (modelId.indexOf(jt.key()) != -1)
+                {
                     aModelData = jt.value();
                     QString model = jt->model;
 
-                    if (model.isEmpty()) {
+                    if (model.isEmpty())
+                    {
                         model = jt.key();
                     }
 
@@ -94,22 +106,27 @@ namespace CCCTalk {
     }
 
     //--------------------------------------------------------------------------------
-    QStringList CModelDataBase::getModels(bool aComplexEnabling) {
+    QStringList CModelDataBase::getModels(bool aComplexEnabling)
+    {
         QStringList result;
         CVendorData vendorData;
 
-        for (TVendorDataIt it = vendorData.data().begin(); it != vendorData.data().end(); ++it) {
-            if (it->complexEnabling == aComplexEnabling) {
+        for (TVendorDataIt it = vendorData.data().begin(); it != vendorData.data().end(); ++it)
+        {
+            if (it->complexEnabling == aComplexEnabling)
+            {
                 QString vendorId = it.key();
                 QString vendor = vendorData.getName(vendorId);
 
                 // не будем использовать дефолтные девайсы
                 // result << QString("%1 %2").arg(vendor).arg(DeviceNamePostfix);
 
-                for (auto jt = data()[vendorId].begin(); jt != data()[vendorId].end(); ++jt) {
+                for (auto jt = data()[vendorId].begin(); jt != data()[vendorId].end(); ++jt)
+                {
                     QString model = jt->model;
 
-                    if (model.isEmpty()) {
+                    if (model.isEmpty())
+                    {
                         model = jt.key();
                     }
 

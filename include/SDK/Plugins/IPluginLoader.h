@@ -17,13 +17,16 @@
 #include <SDK/Plugins/IPlugin.h>
 #include <SDK/Plugins/PluginParameters.h>
 
-namespace SDK {
+namespace SDK
+{
 
-    namespace Plugin {
+    namespace Plugin
+    {
 
         //------------------------------------------------------------------------------
         /// Интерфейс загрузчика плагинов.
-        class IPluginLoader {
+        class IPluginLoader
+        {
           public:
             /// Добавляет каталог с плагинами.
             virtual int addDirectory(const QString &aDirectory) = 0;
@@ -56,7 +59,8 @@ namespace SDK {
             virtual bool destroyPluginPtr(const std::weak_ptr<IPlugin> &aPlugin) = 0;
 
           protected:
-            virtual ~IPluginLoader() {
+            virtual ~IPluginLoader()
+            {
             }
         };
 

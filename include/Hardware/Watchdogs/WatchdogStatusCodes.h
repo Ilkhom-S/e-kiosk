@@ -5,9 +5,11 @@
 #include "Hardware/Common/BaseStatus.h"
 
 //--------------------------------------------------------------------------------
-namespace WatchdogStatusCode {
+namespace WatchdogStatusCode
+{
     /// Предупреждения.
-    namespace Warning {
+    namespace Warning
+    {
         const int Door = 410;          /// Дверь.
         const int Safe = 411;          /// Сейф.
         const int UpperUnit = 412;     /// Верхний модуль.
@@ -19,7 +21,8 @@ namespace WatchdogStatusCode {
     } // namespace Warning
 
     /// Ошибки.
-    namespace Error {
+    namespace Error
+    {
         const int SensorBlock = 430;     /// Блок датчиков.
         const int Temperature = 431;     /// Датчик температуры.
         const int PCVoltageBlock = 432;  /// Блок контроля напряжения PC.

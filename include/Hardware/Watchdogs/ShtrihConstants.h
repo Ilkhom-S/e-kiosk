@@ -12,8 +12,10 @@
 #include <Hardware/Common/DeviceDataConstants.h>
 
 //--------------------------------------------------------------------------------
-namespace CShtrih {
-    namespace Constants {
+namespace CShtrih
+{
+    namespace Constants
+    {
         /// Префикс.
         const char Prefix = 2;
 
@@ -46,14 +48,17 @@ namespace CShtrih {
     } // namespace Constants
 
     /// Позиции составных частей ответа в пакете.
-    namespace Position {
-        namespace Bytes {
+    namespace Position
+    {
+        namespace Bytes
+        {
             const int Address = 2; /// Адрес устройства.
             const int Command = 4; /// Команда.
         } // namespace Bytes
 
         /// Позиции битов датчиков в байте флагов.
-        namespace Sensors {
+        namespace Sensors
+        {
             const int PowerControlLogic = 0;  /// Логика поддержки питания.
             const int AdvancedPowerLogic = 1; /// Расширенная логика анализа датчиков питания.
             const int Door = 2;               /// Дверь.
@@ -62,13 +67,15 @@ namespace CShtrih {
     } // namespace Position
 
     /// Позиции байтов в пакете.
-    namespace Sensors {
+    namespace Sensors
+    {
         const char Address = 2; /// Адрес устройства.
         const char Command = 4; /// Команда.
     } // namespace Sensors
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Дефолтный между запросом и ответом.
         const int Default = 300;
 
@@ -76,31 +83,39 @@ namespace CShtrih {
         const int Broadcast = 100;
     } // namespace Timeouts
 
-    namespace Devices {
-        struct SSoftInfo {
+    namespace Devices
+    {
+        struct SSoftInfo
+        {
             double version;
             double build;
             QDate date;
 
-            SSoftInfo() : version(0), build(0) {
+            SSoftInfo() : version(0), build(0)
+            {
             }
             SSoftInfo(double aVersion, double aBuild, const QDate &aDate)
-                : version(aVersion), build(aBuild), date(aDate) {
+                : version(aVersion), build(aBuild), date(aDate)
+            {
             }
         };
 
-        struct SData {
+        struct SData
+        {
             QString name;
             uchar address;
             qlonglong serial;
             SSoftInfo softInfo;
 
-            SData() : address(Constants::NoAddress), serial(0) {
+            SData() : address(Constants::NoAddress), serial(0)
+            {
             }
-            SData(const QString &aName, uchar aAddress) : name(aName), address(aAddress), serial(0) {
+            SData(const QString &aName, uchar aAddress) : name(aName), address(aAddress), serial(0)
+            {
             }
 
-            void setData(const QString &aName, uchar aAddress, qlonglong aSerial, const SSoftInfo &aSoftInfo) {
+            void setData(const QString &aName, uchar aAddress, qlonglong aSerial, const SSoftInfo &aSoftInfo)
+            {
                 name = aName;
                 address = aAddress;
                 serial = aSerial;
@@ -108,11 +123,18 @@ namespace CShtrih {
             }
         };
 
-        namespace Type {
-            enum Enum { General, CrossDevice, PowerInterrupter };
+        namespace Type
+        {
+            enum Enum
+            {
+                General,
+                CrossDevice,
+                PowerInterrupter
+            };
         } // namespace Type
 
-        namespace Name {
+        namespace Name
+        {
             const QString CrossDevice = "cross";
             const QString PowerInterrupter = "power";
         } // namespace Name
@@ -121,10 +143,12 @@ namespace CShtrih {
     typedef QMap<Devices::Type::Enum, Devices::SData> TDevicesData;
 
     /// Константы установок презентера и ретрактора.
-    struct SDevicesData {
+    struct SDevicesData
+    {
         TDevicesData devicesData;
 
-        SDevicesData() {
+        SDevicesData()
+        {
             using namespace CDeviceData::Watchdogs::Sub;
 
             devicesData.insert(Devices::Type::General, Devices::SData(All, Constants::BroadcastAddress));
@@ -132,32 +156,40 @@ namespace CShtrih {
             devicesData.insert(Devices::Type::PowerInterrupter, Devices::SData(PowerSupply, 0x55));
         }
 
-        const Devices::SData operator[](const Devices::Type::Enum aDeviceType) const {
+        const Devices::SData operator[](const Devices::Type::Enum aDeviceType) const
+        {
             return devicesData[aDeviceType];
         }
-        Devices::SData &operator[](const Devices::Type::Enum aDeviceType) {
+        Devices::SData &operator[](const Devices::Type::Enum aDeviceType)
+        {
             return devicesData[aDeviceType];
         }
     };
 
-    namespace Commands {
-        namespace General {
+    namespace Commands
+    {
+        namespace General
+        {
             const char Identification = '\x01'; /// Идентификация.
         } // namespace General
 
-        namespace CrossDevice {
+        namespace CrossDevice
+        {
             const char PollExtended = '\x76'; /// Длинный запрос статуса.
             const char PowerControl = '\x77'; /// Управление кнопками включения/выключения.
         } // namespace CrossDevice
 
-        namespace PowerInterrupter {
+        namespace PowerInterrupter
+        {
             const char PulseRelay = '\x78'; /// Импульс реле.
         } // namespace PowerInterrupter
 
         /// Описатель команд.
-        class CDescriptions : public CDescription<char> {
+        class CDescriptions : public CDescription<char>
+        {
           public:
-            CDescriptions() {
+            CDescriptions()
+            {
                 /// Общие команды.
                 append(General::Identification, "identification");
 
@@ -176,20 +208,25 @@ namespace CShtrih {
     typedef QList<QByteArray> TAnswersBuffer;
 
     /// Структура для распарсивания данных ответа; на разные команды в ответе приходят разные данные.
-    struct SUnpackedData {
+    struct SUnpackedData
+    {
         bool door;  /// Аларм двери.
         bool power; /// Аларм питания.
 
         QByteArray answer;
 
-        SUnpackedData() : door(false), power(false) {
+        SUnpackedData() : door(false), power(false)
+        {
         }
     };
 
-    namespace Errors {
-        class CDescriptions : public CDescription<char> {
+    namespace Errors
+    {
+        class CDescriptions : public CDescription<char>
+        {
           public:
-            CDescriptions() {
+            CDescriptions()
+            {
                 append('\x33', "Некорректные параметры в команде");
                 append('\x37', "Команда не поддерживается в данной реализации");
                 append('\x5D', "Таблица не определена");

@@ -29,21 +29,25 @@ namespace PPSDK = SDK::PaymentProcessor;
 namespace AdapterNames = PPSDK::CAdapterNames;
 
 //---------------------------------------------------------------------------
-SettingsService *SettingsService::instance(IApplication *aApplication) {
+SettingsService *SettingsService::instance(IApplication *aApplication)
+{
     return static_cast<SettingsService *>(aApplication->getCore()->getService(CServices::SettingsService));
 }
 
 //---------------------------------------------------------------------------
 SettingsService::SettingsService(IApplication *aApplication)
-    : mApplication(aApplication), mSettingsManager(nullptr), mRestoreConfiguration(false) {
+    : mApplication(aApplication), mSettingsManager(nullptr), mRestoreConfiguration(false)
+{
 }
 
 //---------------------------------------------------------------------------
-SettingsService::~SettingsService() {
+SettingsService::~SettingsService()
+{
 }
 
 //---------------------------------------------------------------------------
-bool SettingsService::initialize() {
+bool SettingsService::initialize()
+{
     mSettingsManager = new SettingsManager(mApplication->getUserDataPath());
 
     mSettingsManager->setLog(mApplication->getLog());
@@ -80,8 +84,10 @@ bool SettingsService::initialize() {
         << SSettingsSource("extensions.xml", AdapterNames::Extensions, true);
 
     // Загрузка всех operators.xml
-    foreach (auto file, QDir(mApplication->getUserDataPath())
-                            .entryInfoList(QStringList() << "operators*.xml", QDir::Files, QDir::Name)) {
+    foreach (
+        auto file,
+        QDir(mApplication->getUserDataPath()).entryInfoList(QStringList() << "operators*.xml", QDir::Files, QDir::Name))
+    {
         // Вставляем в property_tree как ссылку на файл
         settingsSources << SSettingsSource(file.filePath(), AdapterNames::DealerAdapter, "operators");
     }
@@ -135,8 +141,10 @@ bool SettingsService::initialize() {
 }
 
 //------------------------------------------------------------------------------
-void SettingsService::finishInitialize() {
-    if (mRestoreConfiguration) {
+void SettingsService::finishInitialize()
+{
+    if (mRestoreConfiguration)
+    {
         EventService::instance(mApplication)->sendEvent(PPSDK::EEventType::RestoreConfiguration, QVariant());
 
         mRestoreConfiguration = false;
@@ -144,13 +152,16 @@ void SettingsService::finishInitialize() {
 }
 
 //---------------------------------------------------------------------------
-bool SettingsService::canShutdown() {
+bool SettingsService::canShutdown()
+{
     return true;
 }
 
 //---------------------------------------------------------------------------
-bool SettingsService::shutdown() {
-    foreach (SDK::PaymentProcessor::ISettingsAdapter *adapter, mSettingsAdapters) {
+bool SettingsService::shutdown()
+{
+    foreach (SDK::PaymentProcessor::ISettingsAdapter *adapter, mSettingsAdapters)
+    {
         delete adapter;
     }
 
@@ -160,42 +171,50 @@ bool SettingsService::shutdown() {
 }
 
 //---------------------------------------------------------------------------
-QString SettingsService::getName() const {
+QString SettingsService::getName() const
+{
     return CServices::SettingsService;
 }
 
 //---------------------------------------------------------------------------
-const QSet<QString> &SettingsService::getRequiredServices() const {
+const QSet<QString> &SettingsService::getRequiredServices() const
+{
     static QSet<QString> requiredServices;
     return requiredServices;
 }
 
 //---------------------------------------------------------------------------
-QVariantMap SettingsService::getParameters() const {
+QVariantMap SettingsService::getParameters() const
+{
     return QVariantMap();
 }
 
 //---------------------------------------------------------------------------
-void SettingsService::resetParameters(const QSet<QString> &) {
+void SettingsService::resetParameters(const QSet<QString> &)
+{
 }
 
 //---------------------------------------------------------------------------
-SettingsManager *SettingsService::getSettingsManager() const {
+SettingsManager *SettingsService::getSettingsManager() const
+{
     return mSettingsManager;
 }
 
 //---------------------------------------------------------------------------
-SDK::PaymentProcessor::ISettingsAdapter *SettingsService::getAdapter(const QString &aAdapterName) {
+SDK::PaymentProcessor::ISettingsAdapter *SettingsService::getAdapter(const QString &aAdapterName)
+{
     return mSettingsAdapters.contains(aAdapterName) ? mSettingsAdapters[aAdapterName] : 0;
 }
 
 //---------------------------------------------------------------------------
-bool SettingsService::saveConfiguration() {
+bool SettingsService::saveConfiguration()
+{
     return mSettingsManager->saveSettings();
 }
 
 //---------------------------------------------------------------------------
-QList<SDK::PaymentProcessor::ISettingsAdapter *> SettingsService::enumerateAdapters() const {
+QList<SDK::PaymentProcessor::ISettingsAdapter *> SettingsService::enumerateAdapters() const
+{
     return mSettingsAdapters.values();
 }
 

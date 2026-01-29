@@ -26,7 +26,8 @@ using SDK::PaymentProcessor::SProvider;
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-PaymentRequest::PaymentRequest(Payment *aPayment, const QString &aName) : mPayment(aPayment), mName(aName) {
+PaymentRequest::PaymentRequest(Payment *aPayment, const QString &aName) : mPayment(aPayment), mName(aName)
+{
     addParameter("SD", aPayment->getKeySettings().sd);
     addParameter("AP", aPayment->getKeySettings().ap);
     addParameter("OP", aPayment->getKeySettings().op);
@@ -44,10 +45,13 @@ PaymentRequest::PaymentRequest(Payment *aPayment, const QString &aName) : mPayme
 }
 
 //---------------------------------------------------------------------------
-void PaymentRequest::addProviderParameters(const QString &aStep) {
+void PaymentRequest::addProviderParameters(const QString &aStep)
+{
     // Добавляем в платёж все external параметры
-    foreach (auto parameter, mPayment->getParameters()) {
-        if (parameter.external) {
+    foreach (auto parameter, mPayment->getParameters())
+    {
+        if (parameter.external)
+        {
             addParameter(parameter.name, parameter.value);
         }
     }
@@ -56,16 +60,19 @@ void PaymentRequest::addProviderParameters(const QString &aStep) {
 
     // Берём все внешние параметры для отправки на сервер и заменяем в них макросы на
     // значения параметров платежа.
-    if (provider.processor.requests.contains(aStep.toUpper())) {
+    if (provider.processor.requests.contains(aStep.toUpper()))
+    {
         foreach (const SProvider::SProcessingTraits::SRequest::SField &field,
-                 provider.processor.requests[aStep.toUpper()].requestFields) {
+                 provider.processor.requests[aStep.toUpper()].requestFields)
+        {
             QString value = field.value;
             bool needMask = false;
 
             QRegularExpression macroPattern("\\{(.+)\\}");
 
             QRegularExpressionMatch match = macroPattern.match(value);
-            while (match.capturedStart() != -1) {
+            while (match.capturedStart() != -1)
+            {
                 auto pp = mPayment->getParameter(match.captured(1));
                 value.replace(match.captured(0), pp.value.toString());
 
@@ -73,8 +80,10 @@ void PaymentRequest::addProviderParameters(const QString &aStep) {
                 match = macroPattern.match(value);
             }
 
-            if (field.crypted) {
-                switch (field.algorithm) {
+            if (field.crypted)
+            {
+                switch (field.algorithm)
+                {
                     case SProvider::SProcessingTraits::SRequest::SField::Md5:
                         value = QString::fromLatin1(
                             QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Md5).toHex());
@@ -95,16 +104,20 @@ void PaymentRequest::addProviderParameters(const QString &aStep) {
 #endif
                         break;
 
-                    default: {
+                    default:
+                    {
                         ICryptEngine *cryptEngine = mPayment->getPaymentFactory()->getCryptEngine();
 
                         QByteArray encryptedValue;
 
                         QString error;
 
-                        if (cryptEngine->encrypt(provider.processor.keyPair, value.toLatin1(), encryptedValue, error)) {
+                        if (cryptEngine->encrypt(provider.processor.keyPair, value.toLatin1(), encryptedValue, error))
+                        {
                             value = QString::fromLatin1(encryptedValue);
-                        } else {
+                        }
+                        else
+                        {
                             LOG(mPayment->getPaymentFactory()->getLog(), LogLevel::Error,
                                 QString("Payment %1. Failed to encrypt parameter %2. Error: %3.")
                                     .arg(mPayment->getID())
@@ -115,7 +128,9 @@ void PaymentRequest::addProviderParameters(const QString &aStep) {
                 }
 
                 addParameter(field.name, value, "**CRYPTED**");
-            } else if (needMask) {
+            }
+            else if (needMask)
+            {
                 // Создаем маскированную копию поля для журналирования
                 PPSDK::SecurityFilter filter(provider, PPSDK::SProviderField::SecuritySubsystem::Log);
 
@@ -123,9 +138,10 @@ void PaymentRequest::addProviderParameters(const QString &aStep) {
 
                 QRegularExpression macroPattern("\\{(.+)\\}");
                 ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
-                ///compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
+                /// compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
-                while (macroPattern.match(logValue).capturedStart() != -1) {
+                while (macroPattern.match(logValue).capturedStart() != -1)
+                {
                     QRegularExpressionMatch match = macroPattern.match(logValue);
                     logValue.replace(
                         match.captured(0),
@@ -133,7 +149,9 @@ void PaymentRequest::addProviderParameters(const QString &aStep) {
                 }
 
                 addParameter(field.name, value, logValue);
-            } else {
+            }
+            else
+            {
                 addParameter(field.name, value);
             }
         }
@@ -141,12 +159,14 @@ void PaymentRequest::addProviderParameters(const QString &aStep) {
 }
 
 //---------------------------------------------------------------------------
-Payment *PaymentRequest::getPayment() const {
+Payment *PaymentRequest::getPayment() const
+{
     return mPayment;
 }
 
 //---------------------------------------------------------------------------
-const QString &PaymentRequest::getName() const {
+const QString &PaymentRequest::getName() const
+{
     return mName;
 }
 

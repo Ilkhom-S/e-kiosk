@@ -3,14 +3,17 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-namespace ProtocolNames {
-    namespace CashDevice {
+namespace ProtocolNames
+{
+    namespace CashDevice
+    {
         const char CCTalk[] = "ccTalk";
         const char CCNet[] = "CCNet";
         const char SSP[] = "SSP";
     } // namespace CashDevice
 
-    namespace CashAcceptor {
+    namespace CashAcceptor
+    {
         const char NPSTalk[] = "NPSTalk";
         const char ID003[] = "ID003";
         const char EBDS[] = "EBDS";
@@ -18,7 +21,8 @@ namespace ProtocolNames {
         const char ICT[] = "ICT";
     } // namespace CashAcceptor
 
-    namespace FR {
+    namespace FR
+    {
         const char ATOL2[] = "ATOL2";
         const char ATOL3[] = "ATOL3";
         const char Shtrih[] = "Shtrih";
@@ -29,11 +33,13 @@ namespace ProtocolNames {
         const char Incotex[] = "Incotex";
     } // namespace FR
 
-    namespace Dispenser {
+    namespace Dispenser
+    {
         const char Puloon[] = "Puloon";
     } // namespace Dispenser
 
-    namespace Cardreader {
+    namespace Cardreader
+    {
         const char Creator[] = "Creator";
     } // namespace Cardreader
 } // namespace ProtocolNames

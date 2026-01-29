@@ -8,7 +8,8 @@ class QByteArray;
 class QString;
 
 //------------------------------------------------------------------------
-class FileDataStream : public DataStream {
+class FileDataStream : public DataStream
+{
   public:
     FileDataStream(const QString &aPath);
 

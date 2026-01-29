@@ -35,18 +35,25 @@ class DeviceManager;
 #pragma deprecated(overwriteDeviceStatus)
 
 /// Варианты момента создания устройства
-namespace EDeviceCreationOrder {
-    enum Enum { OnDemand, AtStart };
+namespace EDeviceCreationOrder
+{
+    enum Enum
+    {
+        OnDemand,
+        AtStart
+    };
 } // namespace EDeviceCreationOrder
 
 //------------------------------------------------------------------------------
 /// Реализация сервиса для работы с устройствами.
-class DeviceService : public SDK::PaymentProcessor::IDeviceService, public SDK::PaymentProcessor::IService {
+class DeviceService : public SDK::PaymentProcessor::IDeviceService, public SDK::PaymentProcessor::IService
+{
     Q_OBJECT
 
   public:
     /// структура - статус устройства
-    class Status : public SDK::PaymentProcessor::IDeviceStatus {
+    class Status : public SDK::PaymentProcessor::IDeviceStatus
+    {
       public:
         Status();
         Status(const Status &aStatus);

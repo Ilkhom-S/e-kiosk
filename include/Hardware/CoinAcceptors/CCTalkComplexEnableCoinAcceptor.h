@@ -11,14 +11,17 @@
 //--------------------------------------------------------------------------------
 typedef CCTalkComplexEnableAcceptor<CCTalkCoinAcceptorBase> TCCTalkComplexEnableAcceptor;
 
-class CCTalkComplexEnableCoinAcceptor : public TCCTalkComplexEnableAcceptor {
+class CCTalkComplexEnableCoinAcceptor : public TCCTalkComplexEnableAcceptor
+{
   public:
-    CCTalkComplexEnableCoinAcceptor() {
+    CCTalkComplexEnableCoinAcceptor()
+    {
         mModels = getModelList();
     }
 
     /// Возвращает список поддерживаемых устройств.
-    static QStringList getModelList() {
+    static QStringList getModelList()
+    {
         return CCCTalk::CoinAcceptor::CModelData().getModels(true);
     }
 };

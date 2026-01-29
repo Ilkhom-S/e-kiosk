@@ -16,7 +16,8 @@
 // System
 #include "MessageQueue/IMessageQueueServer.h"
 
-class MessageQueueServer : public QLocalServer, public IMessageQueueServer {
+class MessageQueueServer : public QLocalServer, public IMessageQueueServer
+{
     typedef QMap<QLocalSocket *, quintptr> TLocalSocketMap;
     typedef QMap<quintptr, QByteArray> TSocketBufferMap;
 

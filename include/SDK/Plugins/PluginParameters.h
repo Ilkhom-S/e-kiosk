@@ -11,21 +11,26 @@
 #include <QtCore/QStringList>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace Plugin {
+namespace SDK
+{
+    namespace Plugin
+    {
 
         //------------------------------------------------------------------------------
         /// Список имен параметров общих для любого плагина.
-        namespace Parameters {
+        namespace Parameters
+        {
             extern const char *Debug;     /// Режим отладки
             extern const char *Singleton; /// Плагин - единоличник
         } // namespace Parameters
 
         //------------------------------------------------------------------------------
         /// Описание параметра.
-        struct SPluginParameter {
+        struct SPluginParameter
+        {
             /// Возможные типы.
-            enum Type {
+            enum Type
+            {
                 Unknown = 0,
                 Bool,
                 Number,
@@ -35,15 +40,18 @@ namespace SDK {
             };
 
             /// Конструктор.
-            SPluginParameter() : type(Unknown), required(false), readOnly(false) {
+            SPluginParameter() : type(Unknown), required(false), readOnly(false)
+            {
             }
 
             SPluginParameter(const QString &aName, Type aType, bool aRequired, const QString &aTitle,
                              const QString &aDescription, const QVariant &aDefaultValue,
                              const QVariantMap &aPossibleValues = QVariantMap(), bool aReadOnly = false)
                 : type(aType), required(aRequired), readOnly(aReadOnly), name(aName), title(aTitle),
-                  description(aDescription), defaultValue(aDefaultValue), possibleValues(aPossibleValues) {
-                if (aType == Type::Bool) {
+                  description(aDescription), defaultValue(aDefaultValue), possibleValues(aPossibleValues)
+            {
+                if (aType == Type::Bool)
+                {
                     possibleValues.clear();
                     possibleValues.insert("true", true);
                     possibleValues.insert("false", false);
@@ -57,13 +65,16 @@ namespace SDK {
             SPluginParameter(const QString &aName, bool aRequired, const QString &aTitle, const QString &aDescription,
                              const QVariant &aDefaultValue, const QStringList &aPossibleValues, bool aReadOnly = false)
                 : type(Set), name(aName), required(aRequired), title(aTitle), description(aDescription),
-                  defaultValue(aDefaultValue), readOnly(aReadOnly) {
-                foreach (const QString &value, aPossibleValues) {
+                  defaultValue(aDefaultValue), readOnly(aReadOnly)
+            {
+                foreach (const QString &value, aPossibleValues)
+                {
                     possibleValues.insert(value, value);
                 }
             }
 
-            bool isValid() {
+            bool isValid()
+            {
                 return type && !name.isEmpty();
             }
 
@@ -85,9 +96,12 @@ namespace SDK {
         typedef QVector<SPluginParameter> TParameterList;
 
         /// Функция для поиска нужного параметра.
-        inline SPluginParameter findParameter(const QString &aName, const TParameterList &aParameters) {
-            foreach (const SPluginParameter &parameter, aParameters) {
-                if (parameter.name == aName) {
+        inline SPluginParameter findParameter(const QString &aName, const TParameterList &aParameters)
+        {
+            foreach (const SPluginParameter &parameter, aParameters)
+            {
+                if (parameter.name == aName)
+                {
                     return parameter;
                 }
             }

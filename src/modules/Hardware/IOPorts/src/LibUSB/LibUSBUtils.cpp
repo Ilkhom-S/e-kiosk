@@ -19,14 +19,17 @@
 
 using namespace ProtocolUtils;
 
-namespace LibUSBUtils {
+namespace LibUSBUtils
+{
     //--------------------------------------------------------------------------------
-    libusb_context *getContext(ILog *aLog) {
+    libusb_context *getContext(ILog *aLog)
+    {
         static SPData<libusb_context *> context;
 
         LIB_USB_CALL_LOG(aLog, libusb_setlocale, CLibUSBUtils::Locale);
 
-        if (!context && !LIB_USB_CALL_LOG(aLog, libusb_init, &context)) {
+        if (!context && !LIB_USB_CALL_LOG(aLog, libusb_init, &context))
+        {
             context = nullptr;
         }
 
@@ -34,10 +37,12 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    void releaseContext(ILog *aLog) {
+    void releaseContext(ILog *aLog)
+    {
         libusb_context *context = LibUSBUtils::getContext(aLog);
 
-        if (context) {
+        if (context)
+        {
             // если не удалять контекст - повторно он проинициализируется корректно. Если удалять - потом будет падать.
             // libusb_exit(context);
             context = nullptr;
@@ -45,21 +50,25 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    libusb_device **getDeviceList(ssize_t &aSize, bool aForce) {
+    libusb_device **getDeviceList(ssize_t &aSize, bool aForce)
+    {
         static SPData<libusb_device **> deviceList;
         static SPData<int> size;
 
-        if (deviceList && aForce) {
+        if (deviceList && aForce)
+        {
             // параметр булевский -> отпустить/держать параметры/контексты девайсов.
             // если не удалять устройство - повторно оно создастся корректно. Если удалять - потом будет падать.
             // libusb_free_device_list(deviceList, 1);
             deviceList = nullptr;
         }
 
-        if (!deviceList || aForce) {
+        if (!deviceList || aForce)
+        {
             libusb_context *context = getContext();
 
-            if (!context) {
+            if (!context)
+            {
                 return nullptr;
             }
 
@@ -74,17 +83,20 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    bool getDeviceList(TDeviceList &aList, bool aForce) {
+    bool getDeviceList(TDeviceList &aList, bool aForce)
+    {
         ssize_t size = 0;
         libusb_device **deviceList = getDeviceList(size, aForce);
 
-        if (!deviceList) {
+        if (!deviceList)
+        {
             return false;
         }
 
         aList.clear();
 
-        for (int i = 0; i < size; ++i) {
+        for (int i = 0; i < size; ++i)
+        {
             aList << deviceList[i];
         }
 
@@ -92,11 +104,13 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    void releaseDeviceList() {
+    void releaseDeviceList()
+    {
         ssize_t size = 0;
         libusb_device **deviceList = getDeviceList(size);
 
-        if (deviceList) {
+        if (deviceList)
+        {
             // параметр булевский -> отпустить/держать параметры/контексты девайсов.
             // если не удалять устройство - повторно оно создастся корректно. Если удалять - потом будет падать.
             // libusb_free_device_list(deviceList, 1);
@@ -105,46 +119,57 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    void addDescriptorData(libusb_device_handle *aHandle, uint8_t aDescriptor, QVariant &aData) {
+    void addDescriptorData(libusb_device_handle *aHandle, uint8_t aDescriptor, QVariant &aData)
+    {
         QVector<unsigned char> data;
         data.fill(ASCII::NUL, CLibUSBUtils::DescriptorDataSize);
         aData.clear();
 
         if (aDescriptor &&
-            libusb_get_string_descriptor_ascii(aHandle, aDescriptor, &data[0], CLibUSBUtils::DescriptorDataSize)) {
+            libusb_get_string_descriptor_ascii(aHandle, aDescriptor, &data[0], CLibUSBUtils::DescriptorDataSize))
+        {
             aData = ProtocolUtils::clean(QString((char *)data.data()));
         }
     }
 
     //--------------------------------------------------------------------------------
-    QString getPropertyLog(const QVariantMap &aData) {
+    QString getPropertyLog(const QVariantMap &aData)
+    {
         return getPropertyLog(CLibUSB::TDeviceDataList() << aData);
     }
 
     //--------------------------------------------------------------------------------
-    QString getPropertyLog(const CLibUSB::TDeviceDataList &aList, int aIndex) {
+    QString getPropertyLog(const CLibUSB::TDeviceDataList &aList, int aIndex)
+    {
         QString result;
 
-        for (int i = 0; i < aList.size(); ++i) {
+        for (int i = 0; i < aList.size(); ++i)
+        {
             const QVariantMap &data = aList[i];
             TDeviceData deviceData;
             QStringList complexKeys;
 
-            for (auto it = data.begin(); it != data.end(); ++it) {
-                if (it->typeId() == QMetaType::User) {
+            for (auto it = data.begin(); it != data.end(); ++it)
+            {
+                if (it->typeId() == QMetaType::User)
+                {
                     complexKeys << it.key();
                     CLibUSB::TDeviceDataList complexList = data[it.key()].value<CLibUSB::TDeviceDataList>();
-                } else {
+                }
+                else
+                {
                     deviceData.insert(it.key(), it->toString());
                 }
             }
 
             result += "\n" + DeviceUtils::getPartDeviceData(deviceData, true, aIndex);
 
-            for (int j = 0; j < complexKeys.size(); ++j) {
+            for (int j = 0; j < complexKeys.size(); ++j)
+            {
                 CLibUSB::TDeviceDataList complexList = data[complexKeys[j]].value<CLibUSB::TDeviceDataList>();
 
-                if (!complexList.isEmpty()) {
+                if (!complexList.isEmpty())
+                {
                     int index = aIndex;
                     result += "\n" + QString(aIndex, ASCII::TAB) + QString("%1 :").arg(complexKeys[j]);
                     result += getPropertyLog(complexList, ++aIndex);
@@ -157,15 +182,18 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    bool getDevicesProperties(CLibUSB::TDeviceProperties &aDeviceProperties, bool aForce) {
+    bool getDevicesProperties(CLibUSB::TDeviceProperties &aDeviceProperties, bool aForce)
+    {
         aDeviceProperties.clear();
         TDeviceList deviceList;
 
-        if (!getContext() || !getDeviceList(deviceList, aForce)) {
+        if (!getContext() || !getDeviceList(deviceList, aForce))
+        {
             return false;
         }
 
-        for (int i = 0; i < deviceList.size(); ++i) {
+        for (int i = 0; i < deviceList.size(); ++i)
+        {
             libusb_device *device = deviceList[i];
             aDeviceProperties.insert(device, getDevicesProperties(device));
         }
@@ -174,7 +202,8 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    CLibUSB::SDeviceProperties getDevicesProperties(libusb_device *aDevice) {
+    CLibUSB::SDeviceProperties getDevicesProperties(libusb_device *aDevice)
+    {
         CLibUSB::SDeviceProperties deviceProperties;
         QVariantMap &deviceData = deviceProperties.deviceData;
 
@@ -189,7 +218,8 @@ namespace LibUSBUtils {
 
         libusb_device_descriptor deviceDescriptor = {0};
 
-        if (LIB_USB_CALL_DEBUG(libusb_get_device_descriptor, aDevice, &deviceDescriptor)) {
+        if (LIB_USB_CALL_DEBUG(libusb_get_device_descriptor, aDevice, &deviceDescriptor))
+        {
             getDeviceDescriptorData(aDevice, deviceDescriptor, deviceProperties);
         }
 
@@ -198,7 +228,8 @@ namespace LibUSBUtils {
 
     //--------------------------------------------------------------------------------
     void getDeviceDescriptorData(libusb_device *aDevice, const libusb_device_descriptor &aDeviceDescriptor,
-                                 CLibUSB::SDeviceProperties &aDeviceProperties) {
+                                 CLibUSB::SDeviceProperties &aDeviceProperties)
+    {
         QVariantMap &deviceData = aDeviceProperties.deviceData;
 
         deviceData.insert(DeviceUSBData::Specification, doubleBCD2String(aDeviceDescriptor.bcdUSB));
@@ -229,7 +260,8 @@ namespace LibUSBUtils {
 
         libusb_device_handle *deviceHandle = nullptr;
 
-        if (LIB_USB_CALL_DEBUG(libusb_open, aDevice, &deviceHandle) && deviceHandle) {
+        if (LIB_USB_CALL_DEBUG(libusb_open, aDevice, &deviceHandle) && deviceHandle)
+        {
             addDescriptorData(deviceHandle, aDeviceDescriptor.iManufacturer, deviceData[DeviceUSBData::Vendor]);
             addDescriptorData(deviceHandle, aDeviceDescriptor.iProduct, deviceData[DeviceUSBData::Product]);
             addDescriptorData(deviceHandle, aDeviceDescriptor.iSerialNumber, deviceData[CDeviceData::SerialNumber]);
@@ -239,18 +271,22 @@ namespace LibUSBUtils {
 
         TLibUSBDataList configData = getConfigData(aDevice, aDeviceDescriptor);
 
-        if (!deviceData.contains(DeviceUSBData::ConfigAmount)) {
+        if (!deviceData.contains(DeviceUSBData::ConfigAmount))
+        {
             deviceData.insert(DeviceUSBData::ConfigAmount, configData.size());
         }
 
         deviceData.insert(DeviceUSBData::ConfigData, QVariant::fromValue<TLibUSBDataList>(configData));
 
-        if (deviceHandle && (aDeviceDescriptor.bcdUSB >= CLibUSBUtils::USB2_01)) {
+        if (deviceHandle && (aDeviceDescriptor.bcdUSB >= CLibUSBUtils::USB2_01))
+        {
             deviceData.insert(DeviceUSBData::BOSData, getBOSData(deviceHandle));
         }
 
-        for (auto it = deviceData.begin(); it != deviceData.end(); ++it) {
-            if (it->isNull()) {
+        for (auto it = deviceData.begin(); it != deviceData.end(); ++it)
+        {
+            if (it->isNull())
+            {
                 deviceData.remove((it++).key());
             }
         }
@@ -258,13 +294,16 @@ namespace LibUSBUtils {
         QVariantMap data(deviceData);
 
         if (getDataFromMap(data, DeviceUSBData::ConfigData) &&
-            getDataFromMap(data, DeviceUSBData::Config::InterfaceData)) {
+            getDataFromMap(data, DeviceUSBData::Config::InterfaceData))
+        {
             int endpointAmounts = data[DeviceUSBData::Config::Interface::EndpointAmount].toInt();
 
-            for (int i = 0; i < endpointAmounts; ++i) {
+            for (int i = 0; i < endpointAmounts; ++i)
+            {
                 namespace InterfaceData = DeviceUSBData::Config::Interface;
 
-                if (getDataFromMap(data, InterfaceData::EndpointData, false)) {
+                if (getDataFromMap(data, InterfaceData::EndpointData, false))
+                {
                     QVariantMap EPData = data[InterfaceData::EndpointData].value<CLibUSB::TDeviceDataList>()[i];
 
                     namespace EndpointData = DeviceUSBData::Config::Interface::Endpoint;
@@ -286,28 +325,35 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    QVariantMap getBOSData(libusb_device_handle *aDeviceHandle) {
+    QVariantMap getBOSData(libusb_device_handle *aDeviceHandle)
+    {
         QVariantMap result;
 
         struct libusb_bos_descriptor *BOS;
 
-        if (LIB_USB_CALL_DEBUG(libusb_get_bos_descriptor, aDeviceHandle, &BOS)) {
-            if (BOS->dev_capability[0]->bDevCapabilityType == LIBUSB_BT_USB_2_0_EXTENSION) {
+        if (LIB_USB_CALL_DEBUG(libusb_get_bos_descriptor, aDeviceHandle, &BOS))
+        {
+            if (BOS->dev_capability[0]->bDevCapabilityType == LIBUSB_BT_USB_2_0_EXTENSION)
+            {
                 libusb_usb_2_0_extension_descriptor *usb_2_0_extension;
 
                 if (LIB_USB_CALL_DEBUG(libusb_get_usb_2_0_extension_descriptor, getContext(), BOS->dev_capability[0],
-                                       &usb_2_0_extension)) {
+                                       &usb_2_0_extension))
+                {
                     result.insert(DeviceUSBData::BOS::Capability, "USB 2.0");
                     result.insert(DeviceUSBData::BOS::Capability2_0::Attributes,
                                   toHexLog(usb_2_0_extension->bmAttributes));
 
                     libusb_free_usb_2_0_extension_descriptor(usb_2_0_extension);
                 }
-            } else if (BOS->dev_capability[0]->bDevCapabilityType == LIBUSB_BT_SS_USB_DEVICE_CAPABILITY) {
+            }
+            else if (BOS->dev_capability[0]->bDevCapabilityType == LIBUSB_BT_SS_USB_DEVICE_CAPABILITY)
+            {
                 libusb_ss_usb_device_capability_descriptor *deviceCapability;
 
                 if (LIB_USB_CALL_DEBUG(libusb_get_ss_usb_device_capability_descriptor, getContext(),
-                                       BOS->dev_capability[0], &deviceCapability)) {
+                                       BOS->dev_capability[0], &deviceCapability))
+                {
                     result.insert(DeviceUSBData::BOS::Capability, "USB 3.0");
                     result.insert(DeviceUSBData::BOS::Capability3_0::Attributes,
                                   toHexLog(deviceCapability->bmAttributes));
@@ -329,13 +375,16 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    TLibUSBDataList getConfigData(libusb_device *aDevice, const libusb_device_descriptor &aDeviceDescriptor) {
+    TLibUSBDataList getConfigData(libusb_device *aDevice, const libusb_device_descriptor &aDeviceDescriptor)
+    {
         TLibUSBDataList result;
 
-        for (uint8_t i = 0; i < aDeviceDescriptor.bNumConfigurations; ++i) {
+        for (uint8_t i = 0; i < aDeviceDescriptor.bNumConfigurations; ++i)
+        {
             libusb_config_descriptor *config;
 
-            if (LIB_USB_CALL_DEBUG(libusb_get_config_descriptor, aDevice, i, &config)) {
+            if (LIB_USB_CALL_DEBUG(libusb_get_config_descriptor, aDevice, i, &config))
+            {
                 namespace ConfigData = DeviceUSBData::Config;
 
                 QVariantMap configData;
@@ -375,13 +424,16 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    TLibUSBDataList getInterfaceData(libusb_config_descriptor *config) {
+    TLibUSBDataList getInterfaceData(libusb_config_descriptor *config)
+    {
         TLibUSBDataList result;
 
-        for (int i = 0; i < config->bNumInterfaces; ++i) {
+        for (int i = 0; i < config->bNumInterfaces; ++i)
+        {
             libusb_interface configInterface = config->interface[i];
 
-            for (int j = 0; j < configInterface.num_altsetting; ++j) {
+            for (int j = 0; j < configInterface.num_altsetting; ++j)
+            {
                 namespace InterfaceData = DeviceUSBData::Config::Interface;
 
                 libusb_interface_descriptor interface = configInterface.altsetting[j];
@@ -422,10 +474,12 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    TLibUSBDataList getEndpointData(const libusb_interface_descriptor &aInterface) {
+    TLibUSBDataList getEndpointData(const libusb_interface_descriptor &aInterface)
+    {
         TLibUSBDataList result;
 
-        for (int i = 0; i < aInterface.bNumEndpoints; ++i) {
+        for (int i = 0; i < aInterface.bNumEndpoints; ++i)
+        {
             namespace EndpointData = DeviceUSBData::Config::Interface::Endpoint;
 
             libusb_endpoint_descriptor endpoint = aInterface.endpoint[i];
@@ -436,7 +490,8 @@ namespace LibUSBUtils {
 
             libusb_transfer_type transferType = CLibUSBUtils::transferType(attributes);
 
-            if (transferType == LIBUSB_TRANSFER_TYPE_ISOCHRONOUS) {
+            if (transferType == LIBUSB_TRANSFER_TYPE_ISOCHRONOUS)
+            {
                 endpointData.insert(EndpointData::IsoSyncType, CLibUSBUtils::IsoSyncTypeDescriptions[attributes]);
                 endpointData.insert(EndpointData::IsoUsageType, CLibUSBUtils::IsoUsageTypeDescriptions[attributes]);
             }
@@ -482,15 +537,19 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    TLibUSBDataList getEPCompanionData(const libusb_endpoint_descriptor &aEndpoint) {
+    TLibUSBDataList getEPCompanionData(const libusb_endpoint_descriptor &aEndpoint)
+    {
         TLibUSBDataList result;
 
-        for (int i = 0; i < aEndpoint.extra_length;) {
-            if (LIBUSB_DT_SS_ENDPOINT_COMPANION == aEndpoint.extra[i + 1]) {
+        for (int i = 0; i < aEndpoint.extra_length;)
+        {
+            if (LIBUSB_DT_SS_ENDPOINT_COMPANION == aEndpoint.extra[i + 1])
+            {
                 struct libusb_ss_endpoint_companion_descriptor *epCompanionDescriptor;
 
                 if (LIB_USB_CALL_DEBUG(libusb_get_ss_endpoint_companion_descriptor, getContext(), &aEndpoint,
-                                       &epCompanionDescriptor)) {
+                                       &epCompanionDescriptor))
+                {
                     namespace CompanionEPData = DeviceUSBData::Config::Interface::Endpoint::Companion;
 
                     QVariantMap companionEPData;
@@ -518,8 +577,10 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    TResult logAnswer(const QString &aFunctionName, int aResult, ILog *aLog) {
-        if (LIB_USB_SUCCESS(aResult) || (aResult == LIBUSB_ERROR_TIMEOUT)) {
+    TResult logAnswer(const QString &aFunctionName, int aResult, ILog *aLog)
+    {
+        if (LIB_USB_SUCCESS(aResult) || (aResult == LIBUSB_ERROR_TIMEOUT))
+        {
             return CommandResult::OK;
         }
 
@@ -531,9 +592,12 @@ namespace LibUSBUtils {
                           .arg(errorName)
                           .arg(errorDescription);
 
-        if (aLog) {
+        if (aLog)
+        {
             aLog->write(LogLevel::Error, log);
-        } else {
+        }
+        else
+        {
             // QTextCodec::setCodecForCStrings(codec); // Removed: not available in Qt 5.0+; use UTF-8 everywhere.
 
             qDebug() << log;
@@ -543,7 +607,8 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    template <class T> QString doubleBCD2String(T aData) {
+    template <class T> QString doubleBCD2String(T aData)
+    {
         int size = sizeof(aData);
         QString result = QString::number(aData, 16).rightJustified(size * 2, ASCII::Zero);
         QString fraction = result.right(size);
@@ -553,18 +618,22 @@ namespace LibUSBUtils {
     }
 
     //--------------------------------------------------------------------------------
-    bool getDataFromMap(QVariantMap &aData, const QString &aKey, bool aSetNextData) {
-        if (!aData.contains(aKey) || !aData[aKey].isValid() && (aData[aKey].typeId() != QMetaType::User)) {
+    bool getDataFromMap(QVariantMap &aData, const QString &aKey, bool aSetNextData)
+    {
+        if (!aData.contains(aKey) || !aData[aKey].isValid() && (aData[aKey].typeId() != QMetaType::User))
+        {
             return false;
         }
 
         CLibUSB::TDeviceDataList deviceDataList = aData[aKey].value<CLibUSB::TDeviceDataList>();
 
-        if (deviceDataList.isEmpty()) {
+        if (deviceDataList.isEmpty())
+        {
             return false;
         }
 
-        if (aSetNextData) {
+        if (aSetNextData)
+        {
             aData = deviceDataList[0];
         }
 

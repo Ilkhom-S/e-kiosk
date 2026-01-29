@@ -8,8 +8,14 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-namespace ELoggingType {
-    enum Enum { None = 0, Write, ReadWrite };
+namespace ELoggingType
+{
+    enum Enum
+    {
+        None = 0,
+        Write,
+        ReadWrite
+    };
 } // namespace ELoggingType
 
 Q_DECLARE_METATYPE(ELoggingType::Enum);

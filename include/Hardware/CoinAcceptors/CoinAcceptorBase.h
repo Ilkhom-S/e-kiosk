@@ -5,13 +5,15 @@
 #include <Hardware/CashAcceptors/SerialCashAcceptor.h>
 
 //--------------------------------------------------------------------------------
-namespace CCoinAcceptor {
+namespace CCoinAcceptor
+{
     /// Таймаут отсылки сигнала об отключении монетника, [мс].
     const int DisablingTimeout = 600;
 } // namespace CCoinAcceptor
 
 //--------------------------------------------------------------------------------
-class CoinAcceptorBase : public TSerialCashAcceptor {
+class CoinAcceptorBase : public TSerialCashAcceptor
+{
     SET_DEVICE_TYPE(CoinAcceptor)
 
   public:

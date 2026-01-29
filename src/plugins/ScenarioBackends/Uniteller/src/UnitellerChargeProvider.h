@@ -15,8 +15,10 @@
 // Project
 #include "API.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class DealerSettings;
     } // namespace PaymentProcessor
 } // namespace SDK
@@ -25,7 +27,8 @@ namespace SDK {
 class UnitellerChargeProvider : public QObject,
                                 public SDK::PaymentProcessor::IChargeProvider,
                                 public SDK::Plugin::IPlugin,
-                                public ILogable {
+                                public ILogable
+{
     Q_OBJECT
 
   public:

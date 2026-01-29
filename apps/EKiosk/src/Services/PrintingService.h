@@ -46,7 +46,8 @@ namespace DeviceStatus = SDK::Driver::EWarningLevel;
 //---------------------------------------------------------------------------
 class PrintingService : public SDK::PaymentProcessor::IPrinterService,
                         public SDK::PaymentProcessor::IService,
-                        private ILogable {
+                        private ILogable
+{
     Q_OBJECT
 
     /// Команды печати чеков определенного типа.
@@ -118,7 +119,8 @@ class PrintingService : public SDK::PaymentProcessor::IPrinterService,
 
 #pragma endregion
 
-    bool enableBlankFiscalData() const {
+    bool enableBlankFiscalData() const
+    {
         return mEnableBlankFiscalData;
     }
 
@@ -234,7 +236,8 @@ class PrintingService : public SDK::PaymentProcessor::IPrinterService,
 
     QFutureWatcher<bool> mFutureWatcher;
 
-    struct Task {
+    struct Task
+    {
         int index;
         PrintCommand *command;
         QVariantMap parameters;

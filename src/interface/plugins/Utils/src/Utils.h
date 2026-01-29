@@ -21,7 +21,8 @@
 class QQmlEngine;
 
 //------------------------------------------------------------------------------
-class Utils : public QObject {
+class Utils : public QObject
+{
     Q_OBJECT
 
     Q_PROPERTY(QObject *locale READ getTranslator NOTIFY updateTranslator);
@@ -72,7 +73,8 @@ class Utils : public QObject {
 
     QVariantMap str2json(const QString &aString) const;
 
-    QString json2str(const QObject *aJSON) const {
+    QString json2str(const QObject *aJSON) const
+    {
         Q_UNUSED(aJSON);
         return QString();
     }

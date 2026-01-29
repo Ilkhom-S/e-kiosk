@@ -8,17 +8,21 @@
 #include <QtCore/QVariantMap>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         class ICore;
         class IGUIService;
 
-        namespace Scripting {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
             /// Прокси класс для работы с графическим движком в скриптах.
-            class GUIService : public QObject {
+            class GUIService : public QObject
+            {
                 Q_OBJECT
 
                 Q_PROPERTY(bool isDisabled READ isDisabled)
@@ -56,7 +60,8 @@ namespace SDK {
 
                 // Когда надо из qml что-то передать в скрипты
                 /// Оповестить сценарий.
-                void notifyScenario(const QVariantMap &aParams) {
+                void notifyScenario(const QVariantMap &aParams)
+                {
                     emit notifyScriptEngine(aParams);
                 }
 

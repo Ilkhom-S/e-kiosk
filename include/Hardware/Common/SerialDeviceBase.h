@@ -13,22 +13,26 @@ typedef QList<int> TSerialDevicePortParameter;
 typedef QMap<int, TSerialDevicePortParameter> TSerialDevicePortParameters;
 
 /// Параметры COM-порта.
-struct SSerialPortParameters {
+struct SSerialPortParameters
+{
     int baudRate;
     int parity;
     int RTS;
     int DTR;
     int byteSize;
 
-    SSerialPortParameters() : baudRate(0), parity(0), RTS(0), DTR(0), byteSize(8) {
+    SSerialPortParameters() : baudRate(0), parity(0), RTS(0), DTR(0), byteSize(8)
+    {
     }
     SSerialPortParameters(int aBaudRate, int aParity, int aRTS, int aDTR, int aByteSize)
-        : baudRate(aBaudRate), parity(aParity), RTS(aRTS), DTR(aDTR), byteSize(aByteSize) {
+        : baudRate(aBaudRate), parity(aParity), RTS(aRTS), DTR(aDTR), byteSize(aByteSize)
+    {
     }
 };
 
 //--------------------------------------------------------------------------------
-template <class T> class SerialDeviceBase : public T {
+template <class T> class SerialDeviceBase : public T
+{
     SET_INTERACTION_TYPE(COM)
 
   public:

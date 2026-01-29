@@ -9,13 +9,15 @@
 #include <Hardware/CashDevices/CCTalkData.h>
 
 //--------------------------------------------------------------------------------
-namespace CCCTalk {
+namespace CCCTalk
+{
     /// Неизвестный тип протокола.
     const char UnknownType[] = "unknown";
 } // namespace CCCTalk
 
 //--------------------------------------------------------------------------------
-class CCTalkCAProtocol : public ProtocolBase {
+class CCTalkCAProtocol : public ProtocolBase
+{
   public:
     CCTalkCAProtocol();
 

@@ -31,12 +31,14 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------------
-namespace CPayment {
+namespace CPayment
+{
     const int TriesLimit = 25;
     const int NextTryDateIncrement = 5;
     const char DateLogFormat[] = "yyyy.MM.dd hh:mm:ss";
 
-    namespace Parameters {
+    namespace Parameters
+    {
         const char TemporarySession[] = "temporary_session";
     } // namespace Parameters
 } // namespace CPayment
@@ -45,33 +47,39 @@ namespace CPayment {
 // Конструктор класса AdPayment
 AdPayment::AdPayment(PaymentFactory *aFactory)
     : PaymentBase(aFactory, aFactory->getCore()),
-      mRequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine()) {
+      mRequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine())
+{
     mRequestSender.setResponseCreator(
         boost::bind(&AdPayment::createResponse, this, boost::placeholders::_1, boost::placeholders::_2));
 }
 
 //------------------------------------------------------------------------------
-bool AdPayment::isNull() const {
+bool AdPayment::isNull() const
+{
     return false;
 }
 
 //------------------------------------------------------------------------------
-PaymentFactory *AdPayment::getPaymentFactory() const {
+PaymentFactory *AdPayment::getPaymentFactory() const
+{
     return dynamic_cast<PaymentFactory *>(mFactory);
 }
 
 //------------------------------------------------------------------------------
-Request *AdPayment::createRequest(const QString &aStep) {
+Request *AdPayment::createRequest(const QString &aStep)
+{
     return new AdPaymentRequest(this, aStep);
 }
 
 //------------------------------------------------------------------------------
-Response *AdPayment::createResponse(const Request &aRequest, const QString &aResponseString) {
+Response *AdPayment::createResponse(const Request &aRequest, const QString &aResponseString)
+{
     return new Response(aRequest, aResponseString);
 }
 
 //------------------------------------------------------------------------------
-Response *AdPayment::sendRequest(const QUrl &aUrl, Request &aRequest) {
+Response *AdPayment::sendRequest(const QUrl &aUrl, Request &aRequest)
+{
     mRequestSender.setCryptKeyPair(mProviderSettings.processor.keyPair);
 
     toLog(LogLevel::Normal, QString("AdPayment %1. Sending request to url %2. ").arg(getID()).arg(aUrl.toString()) +
@@ -80,7 +88,8 @@ Response *AdPayment::sendRequest(const QUrl &aUrl, Request &aRequest) {
     RequestSender::ESendError error;
 
     QScopedPointer<Response> response(mRequestSender.post(aUrl, aRequest, RequestSender::Solid, error));
-    if (!response) {
+    if (!response)
+    {
         toLog(LogLevel::Error, QString("AdPayment %1. Failed to send request: %2.")
                                    .arg(getID())
                                    .arg(RequestSender::translateError(error)));
@@ -91,7 +100,8 @@ Response *AdPayment::sendRequest(const QUrl &aUrl, Request &aRequest) {
     toLog(LogLevel::Normal, QString("AdPayment %1. Response from url %2 received.").arg(getID()).arg(aUrl.toString()) +
                                 QString(" Fields: %1.").arg(response->toLogString()));
 
-    if (!response->isOk()) {
+    if (!response->isOk())
+    {
         toLog(LogLevel::Warning, QString("AdPayment %1. Request was sent, but server response has non "
                                          "zero error code (error: %2, result: %3, message: %4).")
                                      .arg(getID())
@@ -108,24 +118,29 @@ Response *AdPayment::sendRequest(const QUrl &aUrl, Request &aRequest) {
 }
 
 //---------------------------------------------------------------------------
-bool AdPayment::isCriticalError(int aError) const {
-    switch (aError) {
+bool AdPayment::isCriticalError(int aError) const
+{
+    switch (aError)
+    {
         case EServerError::BadSumFormat:
         case EServerError::BadNumberFormat:
         case EServerError::BadAccountFormat:
         case EServerError::ErrorDate:
-        case EServerError::MaxSumExceeded: {
+        case EServerError::MaxSumExceeded:
+        {
             return true;
         }
 
-        default: {
+        default:
+        {
             return false;
         }
     }
 }
 
 //------------------------------------------------------------------------------
-bool AdPayment::pay() {
+bool AdPayment::pay()
+{
     toLog(LogLevel::Normal, QString("AdPayment %1. %2, operator: %3 (%4), session: %5")
                                 .arg(getID())
                                 .arg(CPayment::Requests::Pay)
@@ -134,14 +149,16 @@ bool AdPayment::pay() {
                                 .arg(getSession()));
 
     QScopedPointer<Request> request(createRequest(CPayment::Requests::Pay));
-    if (!request) {
+    if (!request)
+    {
         toLog(LogLevel::Error, QString("AdPayment %1. Failed to create request for operation.").arg(getID()));
 
         return false;
     }
 
     QUrl url(mProviderSettings.processor.requests[CPayment::Requests::Pay].url);
-    if (!url.isValid()) {
+    if (!url.isValid())
+    {
         toLog(LogLevel::Error, QString("AdPayment %1. Can't find url for operation.").arg(getID()));
 
         setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::BadProvider, true));
@@ -150,13 +167,17 @@ bool AdPayment::pay() {
     }
 
     QScopedPointer<Response> response(sendRequest(url, *request));
-    if (response) {
-        if (response->isOk()) {
+    if (response)
+    {
+        if (response->isOk())
+        {
             toLog(LogLevel::Normal, QString("AdPayment %1. Paid.").arg(getID()));
 
             return true;
         }
-    } else {
+    }
+    else
+    {
         setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::NetworkError, true));
     }
 
@@ -164,7 +185,8 @@ bool AdPayment::pay() {
 }
 
 //------------------------------------------------------------------------------
-void AdPayment::setProcessError() {
+void AdPayment::setProcessError()
+{
     int tryCount = getParameter(PPSDK::CPayment::Parameters::NumberOfTries).value.toInt();
     int serverError = getParameter(PPSDK::CPayment::Parameters::ServerError).value.toInt();
 
@@ -172,28 +194,38 @@ void AdPayment::setProcessError() {
         static_cast<int>(CPayment::NextTryDateIncrement * pow(1.3f, tryCount) * 60)));
 
     // Время установки статуса BadPayment
-    if (tryCount > CPayment::TriesLimit) {
+    if (tryCount > CPayment::TriesLimit)
+    {
         toLog(LogLevel::Normal, QString("AdPayment %1. Try count limit exceeded.").arg(getID()));
 
         setStatus(PPSDK::EPaymentStatus::BadPayment);
-    } else {
-        if (serverError != ELocalError::NetworkError) {
+    }
+    else
+    {
+        if (serverError != ELocalError::NetworkError)
+        {
             toLog(LogLevel::Normal, QString("AdPayment %1. Next try will be at %2.")
                                         .arg(getID())
                                         .arg(getNextTryDate().toString(CPayment::DateLogFormat)));
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Normal, QString("AdPayment %1. Waiting for connection is established.").arg(getID()));
         }
 
         setStatus(PPSDK::EPaymentStatus::ProcessError);
     }
 
-    if (serverError != ELocalError::NetworkError) {
+    if (serverError != ELocalError::NetworkError)
+    {
         // Количество попыток проведения платежа увеличиваем только
         // если ошибка не связана с транспортом.
         setParameter(SParameter(PPSDK::CPayment::Parameters::NumberOfTries, ++tryCount, true));
-    } else {
-        if (!tryCount) {
+    }
+    else
+    {
+        if (!tryCount)
+        {
             // Для правильной отправки статусов на мониторинг
             setParameter(SParameter(PPSDK::CPayment::Parameters::NumberOfTries, 1, true));
         }
@@ -201,13 +233,15 @@ void AdPayment::setProcessError() {
 }
 
 //------------------------------------------------------------------------------
-void AdPayment::performTransaction() {
+void AdPayment::performTransaction()
+{
     toLog(LogLevel::Normal, QString("AdPayment %1. Processing...").arg(getID()));
 
     // Если дошли до этапа оплаты, сохраняем данные в базу, чтобы предотвратить дубликат платежа.
     setParameter(SParameter(PPSDK::CPayment::Parameters::Step, CPayment::Steps::Pay, true));
 
-    if (!getPaymentFactory()->savePayment(this)) {
+    if (!getPaymentFactory()->savePayment(this))
+    {
         toLog(LogLevel::Error, QString("AdPayment %1. Failed to save data before pay request.").arg(getID()));
 
         setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::DatabaseError, true));
@@ -215,12 +249,14 @@ void AdPayment::performTransaction() {
         return;
     }
 
-    if (!pay()) {
+    if (!pay())
+    {
         setProcessError();
 
         int serverError = getParameter(PPSDK::CPayment::Parameters::ServerError).value.toInt();
 
-        if (isCriticalError(serverError)) {
+        if (isCriticalError(serverError))
+        {
             setStatus(PPSDK::EPaymentStatus::BadPayment);
             setPriority(Low);
         }
@@ -234,29 +270,38 @@ void AdPayment::performTransaction() {
 }
 
 //------------------------------------------------------------------------------
-void AdPayment::process() {
+void AdPayment::process()
+{
     // TODO: добавить проверку на возможность проведения платежа.
-    if (getCreationDate().addDays(60) < QDateTime::currentDateTime()) {
+    if (getCreationDate().addDays(60) < QDateTime::currentDateTime())
+    {
         toLog(LogLevel::Normal, QString("AdPayment %1. Old payment. Cannot be processed.").arg(getID()));
     }
 
     bool processed = false;
 
-    while (!processed) {
+    while (!processed)
+    {
         processed = true;
 
-        switch (getStatus()) {
+        switch (getStatus())
+        {
             // Возможно, требуется провести.
             case PPSDK::EPaymentStatus::Init:
             case PPSDK::EPaymentStatus::ReadyForCheck:
             case PPSDK::EPaymentStatus::ProcessError:
-            case PPSDK::EPaymentStatus::BadPayment: {
+            case PPSDK::EPaymentStatus::BadPayment:
+            {
                 int step = getParameter(PPSDK::CPayment::Parameters::Step).value.toInt();
 
-                if (step == CPayment::Steps::Init) {
-                    if (getSession().isEmpty()) {
+                if (step == CPayment::Steps::Init)
+                {
+                    if (getSession().isEmpty())
+                    {
                         setParameter(SParameter(PPSDK::CPayment::Parameters::Session, getInitialSession(), true));
-                    } else {
+                    }
+                    else
+                    {
                         setParameter(SParameter(PPSDK::CPayment::Parameters::Session, createPaymentSession(), true));
                     }
                 }
@@ -266,13 +311,15 @@ void AdPayment::process() {
                 break;
             }
 
-            case PPSDK::EPaymentStatus::Cheated: {
+            case PPSDK::EPaymentStatus::Cheated:
+            {
                 toLog(LogLevel::Error, QString("AdPayment %1. Cannot handle cheated payment.").arg(getID()));
 
                 break;
             }
 
-            default: {
+            default:
+            {
                 toLog(LogLevel::Error,
                       QString("AdPayment %1. Cannot handle payment status %2.").arg(getID()).arg(getStatus()));
 
@@ -283,12 +330,14 @@ void AdPayment::process() {
 }
 
 //---------------------------------------------------------------------------
-bool AdPayment::canProcessOffline() const {
+bool AdPayment::canProcessOffline() const
+{
     return true;
 }
 
 //------------------------------------------------------------------------------
-bool AdPayment::performStep(int /*aStep*/) {
+bool AdPayment::performStep(int /*aStep*/)
+{
     setStatus(PPSDK::EPaymentStatus::ProcessError);
 
     process();
@@ -297,33 +346,38 @@ bool AdPayment::performStep(int /*aStep*/) {
 }
 
 //------------------------------------------------------------------------------
-bool AdPayment::cancel() {
+bool AdPayment::cancel()
+{
     toLog(LogLevel::Warning, QString("AdPayment %1. Failed to cancel.").arg(getID()));
 
     return false;
 }
 
 //------------------------------------------------------------------------------
-bool AdPayment::remove() {
+bool AdPayment::remove()
+{
     toLog(LogLevel::Warning, QString("AdPayment %1. Failed to delete.").arg(getID()));
 
     return false;
 }
 
 //------------------------------------------------------------------------------
-bool AdPayment::limitsDependOnParameter(const SParameter &aParameter) {
+bool AdPayment::limitsDependOnParameter(const SParameter &aParameter)
+{
     Q_UNUSED(aParameter)
 
     return false;
 }
 
 //------------------------------------------------------------------------------
-bool AdPayment::calculateLimits() {
+bool AdPayment::calculateLimits()
+{
     return false;
 }
 
 //------------------------------------------------------------------------------
-void AdPayment::calculateSums() {
+void AdPayment::calculateSums()
+{
 }
 
 //------------------------------------------------------------------------------

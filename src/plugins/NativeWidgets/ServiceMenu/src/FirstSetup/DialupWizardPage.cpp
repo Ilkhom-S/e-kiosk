@@ -24,7 +24,8 @@
 // Project
 #include "DialupWizardPage.h"
 
-DialupWizardPage::DialupWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent) : WizardPageBase(aBackend, aParent) {
+DialupWizardPage::DialupWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent) : WizardPageBase(aBackend, aParent)
+{
     mConnectionWindow = new DialupConnectionWindow(this);
     mConnectionWindow->setParent(this);
     setLayout(new QHBoxLayout(this));
@@ -43,7 +44,8 @@ DialupWizardPage::DialupWizardPage(ServiceMenuBackend *aBackend, QWidget *aParen
 }
 
 //------------------------------------------------------------------------
-bool DialupWizardPage::initialize() {
+bool DialupWizardPage::initialize()
+{
     mConnectionWindow->initialize();
     mConnectionWindow->fillTemplateList(mBackend->getNetworkManager()->getConnectionTemplates());
     mConnectionWindow->fillModemList(mBackend->getNetworkManager()->getModems());
@@ -59,19 +61,22 @@ bool DialupWizardPage::initialize() {
 }
 
 //------------------------------------------------------------------------
-bool DialupWizardPage::shutdown() {
+bool DialupWizardPage::shutdown()
+{
     mTaskWatcher.waitForFinished();
 
     return true;
 }
 
 //------------------------------------------------------------------------
-bool DialupWizardPage::activate() {
+bool DialupWizardPage::activate()
+{
     return true;
 }
 
 //------------------------------------------------------------------------
-bool DialupWizardPage::deactivate() {
+bool DialupWizardPage::deactivate()
+{
     SDK::PaymentProcessor::SConnection connection;
 
     connection.type = EConnectionTypes::Dialup;
@@ -83,27 +88,33 @@ bool DialupWizardPage::deactivate() {
 }
 
 //------------------------------------------------------------------------
-void DialupWizardPage::onSelectionChanged(const QString & /*aSelectedConnection*/) {
+void DialupWizardPage::onSelectionChanged(const QString & /*aSelectedConnection*/)
+{
     emit pageEvent("#can_proceed", false);
 }
 
 //------------------------------------------------------------------------
-void DialupWizardPage::onCreateConnection(const QString &aConnection, const QString &aNetworkDevice) {
+void DialupWizardPage::onCreateConnection(const QString &aConnection, const QString &aNetworkDevice)
+{
     SDK::PaymentProcessor::SConnection connection;
 
     connection.type = EConnectionTypes::Dialup;
     connection.name = aConnection;
 
-    if (mBackend->getNetworkManager()->createDialupConnection(connection, aNetworkDevice)) {
+    if (mBackend->getNetworkManager()->createDialupConnection(connection, aNetworkDevice))
+    {
         mConnectionWindow->fillConnectionList(mBackend->getNetworkManager()->getRemoteConnections(), aConnection);
         mConnectionWindow->switchToListPage();
-    } else {
+    }
+    else
+    {
         GUI::MessageBox::warning(tr("#failed_create_connection"));
     }
 }
 
 //------------------------------------------------------------------------
-void DialupWizardPage::onTestConnection(const QString &aConnection) {
+void DialupWizardPage::onTestConnection(const QString &aConnection)
+{
     SDK::PaymentProcessor::SConnection connection;
 
     connection.type = EConnectionTypes::Dialup;
@@ -117,22 +128,27 @@ void DialupWizardPage::onTestConnection(const QString &aConnection) {
 }
 
 //------------------------------------------------------------------------
-void DialupWizardPage::onRemoveConnection(const QString &aConnection) {
+void DialupWizardPage::onRemoveConnection(const QString &aConnection)
+{
     SDK::PaymentProcessor::SConnection connection;
 
     connection.type = EConnectionTypes::Dialup;
     connection.name = aConnection;
 
-    if (mBackend->getNetworkManager()->removeDialupConnection(connection)) {
+    if (mBackend->getNetworkManager()->removeDialupConnection(connection))
+    {
         mConnectionWindow->fillConnectionList(mBackend->getNetworkManager()->getRemoteConnections(), aConnection);
         mConnectionWindow->switchToListPage();
-    } else {
+    }
+    else
+    {
         GUI::MessageBox::warning(tr("#failed_remove_connection"));
     }
 }
 
 //---------------------------------------------------------------------------
-void DialupWizardPage::onTestFinished() {
+void DialupWizardPage::onTestFinished()
+{
     GUI::MessageBox::hide();
     GUI::MessageBox::info(mTaskWatcher.result() ? tr("#connection_test_ok")
                                                 : tr("#connection_test_failed") + "\n" + mConnectionError);

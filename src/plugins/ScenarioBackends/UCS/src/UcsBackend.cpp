@@ -20,9 +20,11 @@
 #include "API.h"
 #include "UcsBackend.h"
 
-namespace {
+namespace
+{
     /// Конструктор плагина.
-    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+    {
         return new Ucs::UcsBackendPlugin(aFactory, aInstancePath);
     }
 } // namespace

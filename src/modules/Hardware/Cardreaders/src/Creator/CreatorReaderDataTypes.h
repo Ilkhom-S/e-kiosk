@@ -3,10 +3,18 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-namespace CCreatorReader {
-    namespace CardTypes {
-        namespace EICCPU {
-            enum Enum { Unknown = -1, T0, T1 };
+namespace CCreatorReader
+{
+    namespace CardTypes
+    {
+        namespace EICCPU
+        {
+            enum Enum
+            {
+                Unknown = -1,
+                T0,
+                T1
+            };
         } // namespace EICCPU
     } // namespace CardTypes
 } // namespace CCreatorReader

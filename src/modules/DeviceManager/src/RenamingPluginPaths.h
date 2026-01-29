@@ -9,9 +9,11 @@
 #include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-class RenamePluginPath : public QMap<QString, QString> {
+class RenamePluginPath : public QMap<QString, QString>
+{
   public:
-    RenamePluginPath() {
+    RenamePluginPath()
+    {
         insert("Common.Driver.BillAcceptor", "Common.Driver.BillAcceptor.COM");
         insert("Common.Driver.BillAcceptor.Virtual", "Common.Driver.BillAcceptor.System.Virtual");
         insert("Common.Driver.Camera.DirectX", "Common.Driver.Camera.External");

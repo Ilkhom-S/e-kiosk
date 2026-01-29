@@ -5,7 +5,8 @@
 #include "../Presenter/PrimPresenterFR.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class PrimEjectorFR : public PrimPresenterFR<T> {
+template <class T> class PrimEjectorFR : public PrimPresenterFR<T>
+{
     SET_SUBSERIES("Ejector")
 
   public:

@@ -14,16 +14,20 @@
 // Modules
 #include <Common/ILogable.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         class ICore;
         class IHIDService;
 
-        namespace Scripting {
+        namespace Scripting
+        {
 
             /// Константы для HID.
-            namespace HID {
+            namespace HID
+            {
                 const char STRING[] = "hid_string";
                 const char EXTERNAL_DATA[] = "hid_external_data";
                 const char RAW[] = "hid_raw";
@@ -42,7 +46,8 @@ namespace SDK {
 
             //------------------------------------------------------------------------------
             /// Прокси-класс для работы со сканером в скриптах.
-            class HIDService : public QObject, public ILogable {
+            class HIDService : public QObject, public ILogable
+            {
                 Q_OBJECT
 
               public:

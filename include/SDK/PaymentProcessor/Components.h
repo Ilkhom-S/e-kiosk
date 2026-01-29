@@ -2,8 +2,10 @@
 
 #pragma once
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
         /// Все расширения для ПП должны иметь соответствующий идентификатор приложения.
@@ -11,7 +13,8 @@ namespace SDK {
 
         //---------------------------------------------------------------------------
         /// Список возможных компонентов, расширяющих функциональность приложения.
-        namespace CComponents {
+        namespace CComponents
+        {
             /// Графический бэкэнд.
             const char GraphicsBackend[] = "GraphicsBackend";
             /// Фабрика платежей.

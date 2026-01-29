@@ -5,11 +5,13 @@
 #include "PayFRBase.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class PayVKP80FA : public PayFRBase<T> {
+template <class T> class PayVKP80FA : public PayFRBase<T>
+{
     SET_SUBSERIES("PayVKP80FA")
 
   public:
-    PayVKP80FA() {
+    PayVKP80FA()
+    {
         mDeviceName = CShtrihFR::Models::CData()[CShtrihFR::Models::ID::PayVKP80KFA].name;
         mSupportedModels = QStringList() << mDeviceName;
 

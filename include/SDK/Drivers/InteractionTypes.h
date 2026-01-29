@@ -2,15 +2,20 @@
 
 #pragma once
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
 #define ADD_IT(aType)                                                                                                  \
     const char aType[] = #aType;                                                                                       \
-    class It##aType {};
+    class It##aType                                                                                                    \
+    {                                                                                                                  \
+    };
 
         /// Типы взаимодействия.
-        namespace CInteractionTypes {
+        namespace CInteractionTypes
+        {
             ADD_IT(COM)
             ADD_IT(USB)
             ADD_IT(LibUSB)

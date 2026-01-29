@@ -5,16 +5,19 @@
 #include "Hardware/Common/BaseStatus.h"
 
 //--------------------------------------------------------------------------------
-namespace BillAcceptorStatusCode {
+namespace BillAcceptorStatusCode
+{
     /// Устройство ничего не делает. OK.
-    namespace Normal {
+    namespace Normal
+    {
         const int Disabled = 600; /// Отключен на прием денег.
         const int Inhibit = 601;  /// Выключен на прием денег, не может бы включен до отработки определенных действий.
         const int Enabled = 602;  /// Включен на прием денег.
     } // namespace Normal
 
     /// Работа с купюрой/монетой. OK.
-    namespace BillOperation {
+    namespace BillOperation
+    {
         const int Accepting =
             620; /// Принимает купюру. Необходимо дать валидатору команду на укладывание в стекер или выброс.
         const int Escrow =
@@ -31,7 +34,8 @@ namespace BillAcceptorStatusCode {
     } // namespace BillOperation
 
     /// Занят, технологические операции. OK, но если долго висит - предупреждение.
-    namespace Busy {
+    namespace Busy
+    {
         const int SettingStackerType = 640; /// Устанавливает тип кассеты.
         const int SetStackerType = 641;     /// Установил тип кассеты.
         const int Pause = 642;              /// Попытка сунуть вторую купюру, пока первая ещё не проглочена стекером.
@@ -42,7 +46,8 @@ namespace BillAcceptorStatusCode {
     } // namespace Busy
 
     /// Ошибка выполнения команды. Предупреждение, наверх не шлем.
-    namespace OperationError {
+    namespace OperationError
+    {
         const int NoteRecognize = 660; /// Ошибка при распознавании купюр.
         const int Unknown = 661;       /// Неверная команда.
         const int Reset = 662;         /// Ошибка выполнения команды RESET.
@@ -66,7 +71,8 @@ namespace BillAcceptorStatusCode {
     } // namespace OperationError
 
     /// Механическая ошибка. При платеже может быть потеря денег.
-    namespace MechanicFailure {
+    namespace MechanicFailure
+    {
         const int JammedInValidator = 681;  /// Зажевало купюру в валидаторе.
         const int JammedInStacker = 682;    /// Зажевало купюру в стекере.
         const int StickInExitChannel = 683; /// Купюра застряла в выходном канале.
@@ -91,7 +97,8 @@ namespace BillAcceptorStatusCode {
     } // namespace MechanicFailure
 
     /// Неисправность датчиков. Ошибка, не ведет к потере денег.
-    namespace SensorError {
+    namespace SensorError
+    {
         const int Optical = 710;     /// Неисправен оптический датчик (на просвет).
         const int Reflective = 711;  /// Неисправен оптический датчик  (на отражение).
         const int Magnetic = 712;    /// Неисправен магнитный датчик.
@@ -111,7 +118,8 @@ namespace BillAcceptorStatusCode {
     } // namespace SensorError
 
     /// Ошибка. Не ведет к потере денег.
-    namespace Error {
+    namespace Error
+    {
         const int WrongCurrency = 730;   /// Валюта не поддерживается.
         const int NoParsAvailable = 731; /// Нет доступных номиналов.
         const int ParTableLoading = 732; /// Не загружена таблица номиналов.
@@ -121,14 +129,16 @@ namespace BillAcceptorStatusCode {
     } // namespace Error
 
     /// Предупреждение. Наверх шлем.
-    namespace Warning {
+    namespace Warning
+    {
         const int Cheated = 740;         /// Попытка мошенничества.
         const int StackerNearFull = 741; /// Стекер почти полон.
         const int ParInhibitions = 742;  /// Не установлены запрещения номиналов.
     } // namespace Warning
 
     /// Выброс. Предупреждение, но если долго висит - ошибка.
-    namespace Reject {
+    namespace Reject
+    {
         const int Rejecting = 750;         /// В процессе выброса.
         const int Insertion = 751;         /// Купюра неверно вставлена.
         const int Dielectric = 752;        /// Выброс по диэлектрическому каналу.

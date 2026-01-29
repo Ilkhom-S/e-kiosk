@@ -12,9 +12,12 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-namespace EMV {
-    namespace TLV {
-        namespace Tag {
+namespace EMV
+{
+    namespace TLV
+    {
+        namespace Tag
+        {
             const quint16 ClassMask = 0xc0;
             const quint16 Complex = 0x20;
             const quint16 ValueMask = 0x1f;
@@ -22,30 +25,37 @@ namespace EMV {
             const quint16 Invalid = 0;
         } // namespace Tag
 
-        namespace Len {
+        namespace Len
+        {
             const quint16 Long = 0x80;
             const quint16 Mask = 0x7f;
             const quint16 Invalid = 0;
         } // namespace Len
 
-        struct SItem {
+        struct SItem
+        {
             quint16 tag;
             QByteArray body;
 
-            SItem() : tag(Tag::Invalid) {
+            SItem() : tag(Tag::Invalid)
+            {
             }
-            bool isEmpty() const {
+            bool isEmpty() const
+            {
                 return tag == 0 || body.isEmpty();
             }
-            bool isComplex() const {
+            bool isComplex() const
+            {
                 return tag & Tag::Complex;
             }
         };
 
         /// Tag-Len-Value parser
-        class TLVs {
+        class TLVs
+        {
           public:
-            TLVs() {
+            TLVs()
+            {
             }
             TLVs(const QByteArray &aBuffer);
 

@@ -15,28 +15,35 @@
 #include <SDK/PaymentProcessor/Payment/Amount.h>
 #include <Common/Currency.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
         /// Краткая информация о суммах и платежах с момента последней инкассации.
-        struct SBalance {
+        struct SBalance
+        {
             /// Описание подробной разбивки по суммам.
-            struct SAmounts {
+            struct SAmounts
+            {
                 /// Структура суммы.
-                struct SAmount {
+                struct SAmount
+                {
                     Currency::Nominal value;
                     int count;
                     QString serials;
 
                     /// Конструктор.
                     SAmount(double aValue, int aCount, const QString &aSerials)
-                        : value(aValue), count(aCount), serials(aSerials) {
+                        : value(aValue), count(aCount), serials(aSerials)
+                    {
                     }
                 };
 
                 /// Конструктор.
-                SAmounts() {
+                SAmounts()
+                {
                     type = EAmountType::Bill;
                     currency = 0;
                 }
@@ -45,10 +52,12 @@ namespace SDK {
                 int currency;           /// Валюта, пока не используется.
                 QList<SAmount> amounts; /// Список сумма:количество.
 
-                Currency::Nominal getSum() const {
+                Currency::Nominal getSum() const
+                {
                     Currency::Nominal::RawType result = 0;
 
-                    foreach (auto &a, amounts) {
+                    foreach (auto &a, amounts)
+                    {
                         result += a.value.rawValue() * a.count;
                     }
 
@@ -57,14 +66,16 @@ namespace SDK {
             };
 
             /// Конструктор.
-            SBalance() {
+            SBalance()
+            {
                 isValid = false;
                 lastEncashmentId = 0;
                 amount = fee = processed = QString::number(0);
             }
 
             /// Проверяет, пустой ли баланс.
-            bool isEmpty() const {
+            bool isEmpty() const
+            {
                 return qFuzzyIsNull(amount.toDouble()) && payments.isEmpty();
             }
 
@@ -86,11 +97,14 @@ namespace SDK {
             QString dispensedNotes; /// Список выданных купюр в виде отчета
 
             /// Получить сумму по типу.
-            QString getAmountSum(const EAmountType::Enum aType, const QList<SAmounts> &aSumsList) const {
+            QString getAmountSum(const EAmountType::Enum aType, const QList<SAmounts> &aSumsList) const
+            {
                 Currency::Nominal::RawType result = 0;
 
-                foreach (auto &bal, aSumsList) {
-                    if (bal.type == aType) {
+                foreach (auto &bal, aSumsList)
+                {
+                    if (bal.type == aType)
+                    {
                         result += bal.getSum().rawValue();
                     }
                 }
@@ -99,12 +113,15 @@ namespace SDK {
             }
 
             /// Получить список полей для чека баланса.
-            QVariantMap getFields() const {
+            QVariantMap getFields() const
+            {
                 QVariantMap fields;
 
                 /// Преобразует тип суммы в строку.
-                auto typeToString = [](EAmountType::Enum aType) -> QString {
-                    switch (aType) {
+                auto typeToString = [](EAmountType::Enum aType) -> QString
+                {
+                    switch (aType)
+                    {
                         case EAmountType::Coin:
                             return "COIN";
                         case EAmountType::EMoney:
@@ -117,7 +134,8 @@ namespace SDK {
                 };
 
                 /// Заполняет поля для сумм.
-                auto fillFields = [&](const QString &aPrefix, const QList<SAmounts> &aSums) {
+                auto fillFields = [&](const QString &aPrefix, const QList<SAmounts> &aSums)
+                {
                     fields[aPrefix + "BILL_COUNT"] = 0;
                     fields[aPrefix + "BILL_SUM"] = 0;
                     fields[aPrefix + "COIN_COUNT"] = 0;
@@ -126,15 +144,18 @@ namespace SDK {
                     fields[aPrefix + "EMONEY_SUM"] = 0;
                     fields[aPrefix + "BANKCARD_SUM"] = 0;
 
-                    if (isValid) {
+                    if (isValid)
+                    {
                         fields["ENCASHMENT_START_DATE"] =
                             lastEncashmentDate.toLocalTime().toString("dd.MM.yyyy hh:mm:ss");
                         fields[aPrefix + "TOTAL_SUM"] = amount;
 
-                        foreach (const SAmounts &sum, aSums) {
+                        foreach (const SAmounts &sum, aSums)
+                        {
                             QString type = typeToString(sum.type);
 
-                            for (auto &a : sum.amounts) {
+                            for (auto &a : sum.amounts)
+                            {
                                 fields[aPrefix + a.value.toString() + "_" + type + "_COUNT"] = a.count;
                                 fields[aPrefix + a.value.toString() + "_" + type + "_SUM"] =
                                     a.value.toDouble() * a.count;
@@ -166,14 +187,17 @@ namespace SDK {
 
         //---------------------------------------------------------------------------
         /// Описание инкассационных данных.
-        struct SEncashment {
+        struct SEncashment
+        {
             /// Конструктор.
-            SEncashment() {
+            SEncashment()
+            {
                 id = -1;
             }
 
             /// Проверяет, валидна ли инкассация.
-            bool isValid() const {
+            bool isValid() const
+            {
                 return id != -1;
             }
 
@@ -184,7 +208,8 @@ namespace SDK {
             QVariantMap parameters; /// Параметры
 
             /// Получить список полей для чека инкассации.
-            QVariantMap getFields() const {
+            QVariantMap getFields() const
+            {
                 auto fields = parameters;
 
                 fields.insert(balance.getFields());

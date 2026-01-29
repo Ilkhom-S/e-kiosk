@@ -9,7 +9,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-class UnmanagedConnectionWindow : public QFrame, protected Ui::UnmanagedConnectionWindow {
+class UnmanagedConnectionWindow : public QFrame, protected Ui::UnmanagedConnectionWindow
+{
     Q_OBJECT
 
   public:

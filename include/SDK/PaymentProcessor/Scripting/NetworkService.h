@@ -21,17 +21,21 @@
 class NetworkTaskManager;
 class NetworkTask;
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         class ICore;
         class INetworkService;
 
-        namespace Scripting {
+        namespace Scripting
+        {
 
             //---------------------------------------------------------------------------
             /// Класс запроса для скриптов.
-            class Request : public SDK::PaymentProcessor::Humo::Request {
+            class Request : public SDK::PaymentProcessor::Humo::Request
+            {
               public:
                 /// Конструктор.
                 Request(const QVariantMap &aRequestParameters);
@@ -39,7 +43,8 @@ namespace SDK {
 
             //---------------------------------------------------------------------------
             /// Класс ответа для скриптов.
-            class Response : public SDK::PaymentProcessor::Humo::Response {
+            class Response : public SDK::PaymentProcessor::Humo::Response
+            {
               public:
                 /// Конструктор.
                 Response(const SDK::PaymentProcessor::Humo::Request &aRequest, const QString &aResponseString);
@@ -47,7 +52,8 @@ namespace SDK {
 
             //------------------------------------------------------------------------------
             /// Прокси класс для работы с сетью.
-            class NetworkService : public QObject {
+            class NetworkService : public QObject
+            {
                 Q_OBJECT
                 Q_PROPERTY(bool connected READ isConnected NOTIFY connectionStatus)
 

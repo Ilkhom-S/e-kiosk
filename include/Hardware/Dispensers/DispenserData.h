@@ -16,9 +16,11 @@
 #include "Hardware/Dispensers/DispenserStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace CDispenser {
+namespace CDispenser
+{
     /// Группы статус-кодов.
-    namespace StatusCodes {
+    namespace StatusCodes
+    {
         using namespace DispenserStatusCode::Warning;
         using namespace DispenserStatusCode::Error;
 
@@ -31,23 +33,28 @@ namespace CDispenser {
 
         //--------------------------------------------------------------------------------
         /// Описатель статус-кодов кассеты.
-        struct SData {
+        struct SData
+        {
             int empty;     /// Пустая.
             int nearEmpty; /// Почти пустая.
             int opened;    /// Открыта.
 
-            SData() : empty(-1), nearEmpty(-1), opened(-1) {
+            SData() : empty(-1), nearEmpty(-1), opened(-1)
+            {
             }
-            SData(int aEmpty, int aNearEmpty, int aOpened) : empty(aEmpty), nearEmpty(aNearEmpty), opened(aOpened) {
+            SData(int aEmpty, int aNearEmpty, int aOpened) : empty(aEmpty), nearEmpty(aNearEmpty), opened(aOpened)
+            {
             }
         };
 
 #define ADD_UNIT_DATA(aUnit) append(aUnit, SData(Unit##aUnit##Empty, Unit##aUnit##NearEmpty, Unit##aUnit##Opened));
 
         /// Спецификация состояний кассет.
-        class CData : public CSpecification<int, SData> {
+        class CData : public CSpecification<int, SData>
+        {
           public:
-            CData() {
+            CData()
+            {
                 ADD_UNIT_DATA(0);
                 ADD_UNIT_DATA(1);
                 ADD_UNIT_DATA(2);

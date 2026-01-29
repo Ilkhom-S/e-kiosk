@@ -16,12 +16,14 @@ template class VirtualDeviceBase<CashAcceptorBase<DeviceBase<ProtoCashAcceptor>>
 template class VirtualDeviceBase<DispenserBase<DeviceBase<ProtoDispenser>>>;
 
 //---------------------------------------------------------------------------------
-template <class T> VirtualDeviceBase<T>::VirtualDeviceBase() {
+template <class T> VirtualDeviceBase<T>::VirtualDeviceBase()
+{
     this->mDeviceName = "Virtual";
 }
 
 //---------------------------------------------------------------------------------
-template <class T> void VirtualDeviceBase<T>::initialize() {
+template <class T> void VirtualDeviceBase<T>::initialize()
+{
     START_IN_WORKING_THREAD(initialize)
 
     T::initialize();
@@ -34,21 +36,24 @@ template <class T> void VirtualDeviceBase<T>::initialize() {
 }
 
 //---------------------------------------------------------------------------------
-template <class T> bool VirtualDeviceBase<T>::release() {
+template <class T> bool VirtualDeviceBase<T>::release()
+{
     qApp->removeEventFilter(this);
 
     return T::release();
 }
 
 //---------------------------------------------------------------------------------
-template <class T> bool VirtualDeviceBase<T>::getStatus(TStatusCodes &aStatusCodes) {
+template <class T> bool VirtualDeviceBase<T>::getStatus(TStatusCodes &aStatusCodes)
+{
     aStatusCodes += mStatusCodes;
 
     return true;
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void VirtualDeviceBase<T>::blinkStatusCode(int aStatusCode) {
+template <class T> void VirtualDeviceBase<T>::blinkStatusCode(int aStatusCode)
+{
     mStatusCodes.insert(aStatusCode);
     this->onPoll();
 
@@ -57,17 +62,23 @@ template <class T> void VirtualDeviceBase<T>::blinkStatusCode(int aStatusCode) {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void VirtualDeviceBase<T>::changeStatusCode(int aStatusCode) {
-    if (mStatusCodes.contains(aStatusCode)) {
+template <class T> void VirtualDeviceBase<T>::changeStatusCode(int aStatusCode)
+{
+    if (mStatusCodes.contains(aStatusCode))
+    {
         mStatusCodes.remove(aStatusCode);
-    } else {
+    }
+    else
+    {
         mStatusCodes.insert(aStatusCode);
     }
 }
 
 //---------------------------------------------------------------------------------
-template <class T> bool VirtualDeviceBase<T>::eventFilter(QObject * /*aWatched*/, QEvent *aEvent) {
-    if ((aEvent->type() == QEvent::KeyPress) && aEvent->spontaneous()) {
+template <class T> bool VirtualDeviceBase<T>::eventFilter(QObject * /*aWatched*/, QEvent *aEvent)
+{
+    if ((aEvent->type() == QEvent::KeyPress) && aEvent->spontaneous())
+    {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(aEvent);
 
         filterKeyEvent(keyEvent->key(), keyEvent->modifiers());

@@ -9,31 +9,37 @@
 #include "Tags.h"
 
 void Tags::Engine::appendByGroup(bool aBitField, Type::Enum aType, const QByteArray &aPrefix, const QByteArray &aOpen,
-                                 const QByteArray &aClose) {
+                                 const QByteArray &aClose)
+{
     append(aType, STagData(aBitField, aPrefix, aOpen, aClose));
     mPrefixData.insert(aType, aPrefix);
 }
 
 //--------------------------------------------------------------------------------
 void Tags::Engine::appendSingle(Type::Enum aType, const QByteArray &aPrefix, const QByteArray &aOpen,
-                                const QByteArray &aClose) {
+                                const QByteArray &aClose)
+{
     appendByGroup(false, aType, aPrefix, aOpen, aClose);
 }
 
 //--------------------------------------------------------------------------------
 void Tags::Engine::appendCommon(Type::Enum aType, const QByteArray &aPrefix, const QByteArray &aOpen,
-                                const QByteArray &aClose) {
+                                const QByteArray &aClose)
+{
     appendByGroup(true, aType, aPrefix, aOpen, aClose);
 }
 
 //--------------------------------------------------------------------------------
-void Tags::Engine::set(Type::Enum aType) {
+void Tags::Engine::set(Type::Enum aType)
+{
     appendByGroup(false, aType, "", "", "");
 }
 
 //--------------------------------------------------------------------------------
-QByteArray Tags::Engine::getTag(const TTypes &aTypes, const Direction::Enum aDirection) const {
-    if (aTypes.isEmpty()) {
+QByteArray Tags::Engine::getTag(const TTypes &aTypes, const Direction::Enum aDirection) const
+{
+    if (aTypes.isEmpty())
+    {
         return "";
     }
 
@@ -41,14 +47,17 @@ QByteArray Tags::Engine::getTag(const TTypes &aTypes, const Direction::Enum aDir
     bool isClose = aDirection == Direction::Close;
 
     // если не битовое поле или закрываем - склеиваем префикс и актив
-    if ((aTypes.size() == 1) || isClose) {
+    if ((aTypes.size() == 1) || isClose)
+    {
         return tagData.prefix + (isClose ? tagData.close : tagData.open);
     }
 
     char tag = 0;
 
-    foreach (Type::Enum type, aTypes) {
-        if (mBuffer.contains(type)) {
+    foreach (Type::Enum type, aTypes)
+    {
+        if (mBuffer.contains(type))
+        {
             tag |= operator[](type).open[0];
         }
     }
@@ -57,7 +66,8 @@ QByteArray Tags::Engine::getTag(const TTypes &aTypes, const Direction::Enum aDir
 }
 
 //--------------------------------------------------------------------------------
-void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagLexemes) const {
+void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagLexemes) const
+{
     aTagLexemes.clear();
     // Добавляем маркер конца, используя QStringLiteral для оптимизации
     QString source = aSource + Tags::None;
@@ -70,14 +80,16 @@ void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagL
     int pos = 0;
 
     // 2. В Qt 6/C++14 итерируемся по строке, используя объект Match
-    while (pos != -1) {
+    while (pos != -1)
+    {
         QRegularExpressionMatch match = regExp.match(source, pos);
         int begin = match.hasMatch() ? static_cast<int>(match.capturedStart()) : -1;
 
         Tags::TTypes tags;
         QString lexeme;
 
-        if (aTagLexemes.isEmpty()) {
+        if (aTagLexemes.isEmpty())
+        {
             // Если 1-я лексема, то складываем в лист то, что до 1-го тега
             lexeme = (begin == -1) ? aSource : source.left(begin);
 
@@ -86,7 +98,9 @@ void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagL
                 pos = -1;
             else
                 pos = begin;
-        } else if (begin != -1) {
+        }
+        else if (begin != -1)
+        {
             // 3. Используем match.captured(n) вместо capturedTexts() для производительности
             QString tagName = match.captured(1);
             lexeme = match.captured(2);
@@ -94,30 +108,40 @@ void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagL
             Tags::Type::Enum type = Tags::Type::None;
             Tags::Direction::Enum direction;
 
-            if (identifyTag(tagName, type, direction)) {
+            if (identifyTag(tagName, type, direction))
+            {
                 tags = aTagLexemes.last().tags;
                 Tags::Type::Enum tagType = Tags::Types[tagName];
 
-                if (direction == Tags::Direction::Open) {
+                if (direction == Tags::Direction::Open)
+                {
                     tags.insert(tagType);
-                } else {
+                }
+                else
+                {
                     // Логика закрытия тега (совместима с C++14)
-                    if (!aTagLexemes.isEmpty()) {
-                        if (!aTagLexemes.last().tags.contains(tagType)) {
-                            for (int i = 0; i < aTagLexemes.size(); ++i) {
+                    if (!aTagLexemes.isEmpty())
+                    {
+                        if (!aTagLexemes.last().tags.contains(tagType))
+                        {
+                            for (int i = 0; i < aTagLexemes.size(); ++i)
+                            {
                                 aTagLexemes[i].tags.insert(tagType);
                             }
                         }
                     }
                     tags.remove(tagType);
                 }
-            } else {
+            }
+            else
+            {
                 // Если тег не известен
                 QString nextTagName;
                 QString rawThirdGroup = match.captured(3);
                 bool isIdentify = identifyTag(rawThirdGroup, type, direction);
 
-                if (!isIdentify || (type != Tags::Type::None)) {
+                if (!isIdentify || (type != Tags::Type::None))
+                {
                     nextTagName = QStringLiteral("[%1%2]")
                                       .arg(direction == Tags::Direction::Open ? QString() : QStringLiteral("/"))
                                       .arg(rawThirdGroup);
@@ -128,7 +152,9 @@ void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagL
 
             // Сдвигаем позицию для следующего поиска
             pos = begin + tagName.size() + lexeme.size();
-        } else {
+        }
+        else
+        {
             // Больше совпадений нет
             pos = -1;
             continue;
@@ -141,17 +167,22 @@ void Tags::Engine::splitForLexemes(const QString &aSource, TLexemesBuffer &aTagL
 }
 
 //--------------------------------------------------------------------------------
-void Tags::Engine::cleanLexemeBuffer(TLexemesBuffer &aTagLexemes) const {
-    for (int i = 0; i < aTagLexemes.size(); ++i) {
-        if (i > 1) {
-            if (aTagLexemes[i].tags == aTagLexemes[i - 1].tags) {
+void Tags::Engine::cleanLexemeBuffer(TLexemesBuffer &aTagLexemes) const
+{
+    for (int i = 0; i < aTagLexemes.size(); ++i)
+    {
+        if (i > 1)
+        {
+            if (aTagLexemes[i].tags == aTagLexemes[i - 1].tags)
+            {
                 aTagLexemes[i - 1].data += aTagLexemes[i].data;
                 aTagLexemes.removeAt(i);
                 i--;
             }
         }
 
-        if (aTagLexemes[i].data.isEmpty()) {
+        if (aTagLexemes[i].data.isEmpty())
+        {
             aTagLexemes.removeAt(i);
             i--;
         }
@@ -159,18 +190,24 @@ void Tags::Engine::cleanLexemeBuffer(TLexemesBuffer &aTagLexemes) const {
 }
 
 //--------------------------------------------------------------------------------
-Tags::TGroupTypes Tags::Engine::groupsTypesByPrefix(const TTypes &aTypes) const {
+Tags::TGroupTypes Tags::Engine::groupsTypesByPrefix(const TTypes &aTypes) const
+{
     TTypes types = aTypes;
     TGroupTypes result;
 
     // Используем стандартный цикл C++14
-    for (Type::Enum type : aTypes) {
-        if (mBuffer.contains(type)) {
-            if (!mBuffer[type].bitField) {
+    for (Type::Enum type : aTypes)
+    {
+        if (mBuffer.contains(type))
+        {
+            if (!mBuffer[type].bitField)
+            {
                 TTypes singleTypes;
                 singleTypes.insert(type);
                 result.insert(singleTypes);
-            } else {
+            }
+            else
+            {
                 // 1. Получаем список ключей
                 auto keysList = mPrefixData.keys(mBuffer[type].prefix);
 
@@ -190,10 +227,12 @@ Tags::TGroupTypes Tags::Engine::groupsTypesByPrefix(const TTypes &aTypes) const 
 }
 
 //--------------------------------------------------------------------------------
-bool Tags::Engine::identifyTag(QString &aTag, Type::Enum &aType, Direction::Enum &aDirection) const {
+bool Tags::Engine::identifyTag(QString &aTag, Type::Enum &aType, Direction::Enum &aDirection) const
+{
     aDirection = Direction::Open;
 
-    if (aTag[0] == ASCII::ForwardSlash) {
+    if (aTag[0] == ASCII::ForwardSlash)
+    {
         aDirection = Direction::Close;
         aTag = aTag.mid(1);
     }
@@ -204,18 +243,22 @@ bool Tags::Engine::identifyTag(QString &aTag, Type::Enum &aType, Direction::Enum
 }
 
 //--------------------------------------------------------------------------------
-bool Tags::Engine::contains(Type::Enum aTag) const {
+bool Tags::Engine::contains(Type::Enum aTag) const
+{
     return mPrefixData.contains(aTag);
 }
 
 //--------------------------------------------------------------------------------
-uint qHash(const Tags::TTypes &aTypes) {
+uint qHash(const Tags::TTypes &aTypes)
+{
     uint result = 1;
 
-    foreach (Tags::Type::Enum type, aTypes) {
+    foreach (Tags::Type::Enum type, aTypes)
+    {
         uint element = uint(type) + 2;
 
-        switch (element) {
+        switch (element)
+        {
             case 6:
                 element = 17;
                 break;

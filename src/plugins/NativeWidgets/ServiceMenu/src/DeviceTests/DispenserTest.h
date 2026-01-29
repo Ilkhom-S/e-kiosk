@@ -13,17 +13,21 @@
 #include <SDK/Drivers/IDispenser.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
         class IDevice;
     } // namespace Driver
-    namespace PaymentProcessor {
+    namespace PaymentProcessor
+    {
         class ICore;
     } // namespace PaymentProcessor
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class DispenserTest : public SDK::PaymentProcessor::IDeviceTest {
+class DispenserTest : public SDK::PaymentProcessor::IDeviceTest
+{
     Q_OBJECT
 
   public:

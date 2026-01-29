@@ -3,8 +3,10 @@
 #include "USBClassCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace USB {
-    CClassData::CClassData() {
+namespace USB
+{
+    CClassData::CClassData()
+    {
         using namespace DescriptorUsage;
 
         // https://www.usb.org/defined-class-codes

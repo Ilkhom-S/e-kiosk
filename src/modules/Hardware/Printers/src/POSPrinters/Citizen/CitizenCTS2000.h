@@ -5,7 +5,8 @@
 #include "CitizenBase.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class CitizenCTS2000 : public CitizenBase<POSPrinter<T>> {
+template <class T> class CitizenCTS2000 : public CitizenBase<POSPrinter<T>>
+{
     SET_SUBSERIES("CitizenCTS2000")
 
   public:
@@ -16,7 +17,8 @@ template <class T> class CitizenCTS2000 : public CitizenBase<POSPrinter<T>> {
 };
 
 //--------------------------------------------------------------------------------
-template <class T> CitizenCTS2000<T>::CitizenCTS2000() {
+template <class T> CitizenCTS2000<T>::CitizenCTS2000()
+{
     // статусы ошибок
     this->mParameters.errors.clear();
 
@@ -43,7 +45,8 @@ template <class T> CitizenCTS2000<T>::CitizenCTS2000() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void CitizenCTS2000<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
+template <class T> void CitizenCTS2000<T>::setDeviceConfiguration(const QVariantMap &aConfiguration)
+{
     POSPrinter<T>::setDeviceConfiguration(aConfiguration);
 
     int lineSpacing = this->getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();

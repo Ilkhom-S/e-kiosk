@@ -14,13 +14,15 @@
 #include "TemplatePlugin.h"
 
 TemplatePlugin::TemplatePlugin(SDK::Plugin::IEnvironment *aEnvironment, const QString &aInstancePath)
-    : mEnvironment(aEnvironment), mInstancePath(aInstancePath), mHelloMessage("Hello from Template Plugin!") {
+    : mEnvironment(aEnvironment), mInstancePath(aInstancePath), mHelloMessage("Hello from Template Plugin!")
+{
 
     // Логируем создание плагина
     qDebug() << "TemplatePlugin created with instance path:" << aInstancePath;
 
     // Пример инициализации: проверка окружения
-    if (!mEnvironment) {
+    if (!mEnvironment)
+    {
         qWarning() << "TemplatePlugin: Environment is null!";
         return;
     }
@@ -39,7 +41,8 @@ TemplatePlugin::TemplatePlugin(SDK::Plugin::IEnvironment *aEnvironment, const QS
 //---------------------------------------------------------------------------
 // Деструктор плагина.
 /// Выполняет очистку ресурсов.
-TemplatePlugin::~TemplatePlugin() {
+TemplatePlugin::~TemplatePlugin()
+{
     qDebug() << "TemplatePlugin destroyed";
 
     // Здесь выполняется очистка ресурсов:
@@ -52,21 +55,24 @@ TemplatePlugin::~TemplatePlugin() {
 //---------------------------------------------------------------------------
 // Возвращает название плагина.
 /// @return QString с названием плагина
-QString TemplatePlugin::getPluginName() const {
+QString TemplatePlugin::getPluginName() const
+{
     return "Template Plugin";
 }
 
 //---------------------------------------------------------------------------
 // Возвращает имя файла конфигурации.
 /// @return QString с именем конфигурации
-QString TemplatePlugin::getConfigurationName() const {
+QString TemplatePlugin::getConfigurationName() const
+{
     return mInstancePath;
 }
 
 //---------------------------------------------------------------------------
 // Возвращает текущую конфигурацию.
 /// @return QVariantMap с параметрами плагина
-QVariantMap TemplatePlugin::getConfiguration() const {
+QVariantMap TemplatePlugin::getConfiguration() const
+{
     return mConfiguration;
 }
 
@@ -74,14 +80,16 @@ QVariantMap TemplatePlugin::getConfiguration() const {
 // Устанавливает новую конфигурацию.
 /// @param aConfiguration Новые параметры конфигурации
 /// Вызывается при изменении настроек через интерфейс или загрузке из файла.
-void TemplatePlugin::setConfiguration(const QVariantMap &aConfiguration) {
+void TemplatePlugin::setConfiguration(const QVariantMap &aConfiguration)
+{
     mConfiguration = aConfiguration;
 
     // Логируем изменение конфигурации
     qDebug() << "TemplatePlugin configuration set:" << aConfiguration;
 
     // Пример обработки параметров конфигурации:
-    if (aConfiguration.contains("helloMessage")) {
+    if (aConfiguration.contains("helloMessage"))
+    {
         mHelloMessage = aConfiguration.value("helloMessage").toString();
     }
 
@@ -94,7 +102,8 @@ void TemplatePlugin::setConfiguration(const QVariantMap &aConfiguration) {
 //---------------------------------------------------------------------------
 // Сохраняет конфигурацию.
 /// @return true если сохранение успешно
-bool TemplatePlugin::saveConfiguration() {
+bool TemplatePlugin::saveConfiguration()
+{
     // В реальном плагине здесь сохраняем в постоянное хранилище
     // Пример: mEnvironment->savePluginConfiguration(mInstancePath, mConfiguration);
 
@@ -115,7 +124,8 @@ bool TemplatePlugin::saveConfiguration() {
 //---------------------------------------------------------------------------
 // Проверяет готовность плагина.
 /// @return true если плагин готов к работе
-bool TemplatePlugin::isReady() const {
+bool TemplatePlugin::isReady() const
+{
     // Пример проверки готовности:
     // - Проверка наличия необходимых ресурсов
     // - Проверка соединений
@@ -130,14 +140,16 @@ bool TemplatePlugin::isReady() const {
 //---------------------------------------------------------------------------
 // Возвращает приветственное сообщение.
 /// @return QString с сообщением
-QString TemplatePlugin::getHelloMessage() const {
+QString TemplatePlugin::getHelloMessage() const
+{
     return mHelloMessage;
 }
 
 //---------------------------------------------------------------------------
 // Выполняет основную работу плагина.
 /// Пример метода для демонстрации функциональности.
-void TemplatePlugin::doWork() {
+void TemplatePlugin::doWork()
+{
     qDebug() << "TemplatePlugin is doing work:" << getHelloMessage();
 
     // Здесь реализуется основная логика плагина:
@@ -173,7 +185,8 @@ void TemplatePlugin::doWork() {
 //---------------------------------------------------------------------------
 // Обрабатывает ошибки плагина.
 /// @param errorMessage Сообщение об ошибке
-void TemplatePlugin::handleError(const QString &errorMessage) {
+void TemplatePlugin::handleError(const QString &errorMessage)
+{
     qWarning() << "TemplatePlugin error:" << errorMessage;
 
     // Здесь можно добавить обработку ошибок:
@@ -204,19 +217,22 @@ void TemplatePlugin::handleError(const QString &errorMessage) {
 //------------------------------------------------------------------------------
 // Регистрация плагина в системе.
 // Используется анонимное пространство имён для внутренней линковки.
-namespace {
+namespace
+{
 
     /// Создаёт экземпляр плагина TemplatePlugin.
     /// @param aFactory Указатель на фабрику плагинов
     /// @param aInstancePath Путь к экземпляру плагина
     /// @return указатель на созданный плагин
-    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+    {
         return new TemplatePlugin(aFactory, aInstancePath);
     }
 
     /// Возвращает параметры плагина.
     /// @return QVector с параметрами плагина
-    QVector<SDK::Plugin::SPluginParameter> EnumParameters() {
+    QVector<SDK::Plugin::SPluginParameter> EnumParameters()
+    {
         return QVector<SDK::Plugin::SPluginParameter>() << SDK::Plugin::SPluginParameter(
                    SDK::Plugin::Parameters::Debug, SDK::Plugin::SPluginParameter::Bool, false,
                    QT_TRANSLATE_NOOP("TemplatePluginParameters", "#debug_mode"),

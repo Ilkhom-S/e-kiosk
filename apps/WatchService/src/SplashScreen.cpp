@@ -27,7 +27,8 @@
 // Project
 #include "SplashScreen.h"
 
-namespace CSplashScreen {
+namespace CSplashScreen
+{
     const char DefaultBackgroundStyle[] = "QWidget#wgtBackground { background-color: #335599; }";
     const char CustomBackgroundStyle[] = "QWidget#wgtBackground { border-image: url(%1); }";
     const char StateImagesPath[] = ":/images/states/";
@@ -56,15 +57,18 @@ SplashScreen::SplashScreen(const QString &aLog, QWidget *aParent)
 }
 
 //----------------------------------------------------------------------------
-SplashScreen::~SplashScreen() {
+SplashScreen::~SplashScreen()
+{
 }
 
 //----------------------------------------------------------------------------
-void SplashScreen::onInit() {
+void SplashScreen::onInit()
+{
 }
 
 //----------------------------------------------------------------------------
-void SplashScreen::closeEvent(QCloseEvent *aEvent) {
+void SplashScreen::closeEvent(QCloseEvent *aEvent)
+{
     toLog(LogLevel::Normal, "Close splash screen by event.");
 
     aEvent->ignore();
@@ -74,12 +78,16 @@ void SplashScreen::closeEvent(QCloseEvent *aEvent) {
 }
 
 //----------------------------------------------------------------------------
-bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent) {
-    if (aEvent->type() == QEvent::MouseButtonPress) {
+bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent)
+{
+    if (aEvent->type() == QEvent::MouseButtonPress)
+    {
         // Проверим, что был сделан клик по некоторой области
         QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(aEvent);
-        if (mouseEvent) {
-            if (mAreas.isEmpty()) {
+        if (mouseEvent)
+        {
+            if (mAreas.isEmpty())
+            {
                 // Размеры виджета до первого показа кривые
                 updateAreas();
             }
@@ -87,7 +95,8 @@ bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent) {
             TAreas::iterator area = std::find_if(mAreas.begin(), mAreas.end(),
                                                  boost::bind(&SplashScreen::testPoint, this, _1, mouseEvent->pos()));
 
-            if (area != mAreas.end()) {
+            if (area != mAreas.end())
+            {
                 emit clicked(area->first);
             }
         }
@@ -97,12 +106,14 @@ bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent) {
 }
 
 //----------------------------------------------------------------------------
-bool SplashScreen::testPoint(const TAreas::value_type &aArea, const QPoint &aPoint) const {
+bool SplashScreen::testPoint(const TAreas::value_type &aArea, const QPoint &aPoint) const
+{
     return aArea.second.contains(aPoint);
 }
 
 //----------------------------------------------------------------------------
-void SplashScreen::updateAreas() {
+void SplashScreen::updateAreas()
+{
     int width = rect().width();
     int height = rect().height();
 
@@ -114,26 +125,33 @@ void SplashScreen::updateAreas() {
 }
 
 //----------------------------------------------------------------------------
-void SplashScreen::setState(const QString &aSender, const QString &aState) {
+void SplashScreen::setState(const QString &aSender, const QString &aState)
+{
     // Проверим, есть ли такое состояние у нас в списке.
     TStateList::iterator it;
 
     QString stateCode = aState.left(aState.indexOf('_'));
     QString stateStatus = aState.right(aState.size() - stateCode.size() - 1);
 
-    for (it = mStates.begin(); it != mStates.end(); ++it) {
+    for (it = mStates.begin(); it != mStates.end(); ++it)
+    {
         QString oldStateCode = it->state.left(it->state.indexOf('_'));
         QString oldStateStatus = it->state.right(it->state.size() - oldStateCode.size() - 1);
 
-        if (stateCode == oldStateCode) {
-            if (stateStatus == oldStateStatus) {
+        if (stateCode == oldStateCode)
+        {
+            if (stateStatus == oldStateStatus)
+            {
                 // Уже установлено точно такое же состояние.
                 return;
             }
 
-            if (it->date.secsTo(QDateTime::currentDateTime()) < CSplashScreen::MinStateShowSeconds) {
+            if (it->date.secsTo(QDateTime::currentDateTime()) < CSplashScreen::MinStateShowSeconds)
+            {
                 QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000, it->widget, SLOT(deleteLater()));
-            } else {
+            }
+            else
+            {
                 it->widget->deleteLater();
             }
 
@@ -145,7 +163,8 @@ void SplashScreen::setState(const QString &aSender, const QString &aState) {
 
     QString stateImagePath(CSplashScreen::StateImagesPath + aState + CSplashScreen::StateImageExtension);
 
-    if (!QFile::exists(stateImagePath)) {
+    if (!QFile::exists(stateImagePath))
+    {
         return;
     }
 
@@ -163,14 +182,20 @@ void SplashScreen::setState(const QString &aSender, const QString &aState) {
 }
 
 //----------------------------------------------------------------------------
-void SplashScreen::removeStates(const QString &aSender) {
+void SplashScreen::removeStates(const QString &aSender)
+{
     TStateList::iterator it;
 
-    for (it = mStates.begin(); it != mStates.end(); ++it) {
-        if (aSender == it->sender) {
-            if (it->date.secsTo(QDateTime::currentDateTime()) < CSplashScreen::MinStateShowSeconds) {
+    for (it = mStates.begin(); it != mStates.end(); ++it)
+    {
+        if (aSender == it->sender)
+        {
+            if (it->date.secsTo(QDateTime::currentDateTime()) < CSplashScreen::MinStateShowSeconds)
+            {
                 QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000, it->widget, SLOT(deleteLater()));
-            } else {
+            }
+            else
+            {
                 it->widget->deleteLater();
             }
 
@@ -182,7 +207,8 @@ void SplashScreen::removeStates(const QString &aSender) {
 }
 
 //----------------------------------------------------------------------------
-void SplashScreen::setCustomBackground(const QString &aPath) {
+void SplashScreen::setCustomBackground(const QString &aPath)
+{
     aPath.isEmpty() ? setStyleSheet(CSplashScreen::DefaultBackgroundStyle)
                     : setStyleSheet(QString(CSplashScreen::CustomBackgroundStyle).arg(aPath));
 }

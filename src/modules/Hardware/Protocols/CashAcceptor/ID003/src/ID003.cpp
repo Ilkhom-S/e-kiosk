@@ -11,14 +11,17 @@
 // Project
 #include "ID003Constants.h"
 
-ushort ID003Protocol::calcCRC16(const QByteArray &aData) {
+ushort ID003Protocol::calcCRC16(const QByteArray &aData)
+{
     ushort CRC = 0;
 
-    for (int i = 0; i < aData.size(); ++i) {
+    for (int i = 0; i < aData.size(); ++i)
+    {
         ushort byteCRC = 0;
         ushort value = uchar(CRC ^ aData[i]);
 
-        for (int j = 0; j < 8; ++j) {
+        for (int j = 0; j < 8; ++j)
+        {
             ushort data = byteCRC >> 1;
             byteCRC = ((byteCRC ^ value) & 1) ? (data ^ CID003::Polynominal) : data;
             value = value >> 1;
@@ -31,7 +34,8 @@ ushort ID003Protocol::calcCRC16(const QByteArray &aData) {
 }
 
 //--------------------------------------------------------------------------------
-void ID003Protocol::pack(QByteArray &aCommandData) {
+void ID003Protocol::pack(QByteArray &aCommandData)
+{
     aCommandData.prepend(uchar(aCommandData.size() + 4));
     aCommandData.prepend(CID003::Prefix);
 
@@ -41,9 +45,11 @@ void ID003Protocol::pack(QByteArray &aCommandData) {
 }
 
 //--------------------------------------------------------------------------------
-bool ID003Protocol::check(const QByteArray &aAnswer) {
+bool ID003Protocol::check(const QByteArray &aAnswer)
+{
     // минимальный размер ответа
-    if (aAnswer.size() < CID003::MinAnswerSize) {
+    if (aAnswer.size() < CID003::MinAnswerSize)
+    {
         toLog(LogLevel::Error, QString("ID003: Invalid answer length = %1, need %2 minimum")
                                    .arg(aAnswer.size())
                                    .arg(CID003::MinAnswerSize));
@@ -53,7 +59,8 @@ bool ID003Protocol::check(const QByteArray &aAnswer) {
     // первый байт
     char prefix = aAnswer[0];
 
-    if (prefix != CID003::Prefix) {
+    if (prefix != CID003::Prefix)
+    {
         toLog(LogLevel::Error, QString("ID003: Invalid prefix = %1, need = %2")
                                    .arg(ProtocolUtils::toHexLog(prefix))
                                    .arg(ProtocolUtils::toHexLog(CID003::Prefix)));
@@ -63,7 +70,8 @@ bool ID003Protocol::check(const QByteArray &aAnswer) {
     // длина
     ushort length = aAnswer[1] & 0x00FF;
 
-    if (length != aAnswer.size()) {
+    if (length != aAnswer.size())
+    {
         toLog(LogLevel::Error, QString("ID003: Invalid length = %1, need %2").arg(aAnswer.size()).arg(length));
         return false;
     }
@@ -72,7 +80,8 @@ bool ID003Protocol::check(const QByteArray &aAnswer) {
     ushort answerCRC = calcCRC16(aAnswer.mid(0, length - 2));
     ushort CRC = qToBigEndian(aAnswer.right(2).toHex().toUShort(0, 16));
 
-    if (CRC != answerCRC) {
+    if (CRC != answerCRC)
+    {
         toLog(LogLevel::Error, QString("ID003: Invalid CRC = %1, need %2")
                                    .arg(ProtocolUtils::toHexLog(CRC))
                                    .arg(ProtocolUtils::toHexLog(answerCRC)));
@@ -83,21 +92,25 @@ bool ID003Protocol::check(const QByteArray &aAnswer) {
 }
 
 //--------------------------------------------------------------------------------
-TResult ID003Protocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData) {
+TResult ID003Protocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData)
+{
     QByteArray request = aCommandData;
     pack(request);
 
     toLog(LogLevel::Normal, QString("ID003: >> {%1}").arg(request.toHex().data()));
 
-    if (!mPort->write(request) || !getAnswer(aAnswerData)) {
+    if (!mPort->write(request) || !getAnswer(aAnswerData))
+    {
         return CommandResult::Port;
     }
 
-    if (aAnswerData.isEmpty()) {
+    if (aAnswerData.isEmpty())
+    {
         return CommandResult::NoAnswer;
     }
 
-    if (!check(aAnswerData)) {
+    if (!check(aAnswerData))
+    {
         return CommandResult::Protocol;
     }
 
@@ -107,7 +120,8 @@ TResult ID003Protocol::processCommand(const QByteArray &aCommandData, QByteArray
 }
 
 //--------------------------------------------------------------------------------
-bool ID003Protocol::getAnswer(QByteArray &aAnswerData) {
+bool ID003Protocol::getAnswer(QByteArray &aAnswerData)
+{
     aAnswerData.clear();
     QByteArray answer;
     uchar length = 0;
@@ -115,16 +129,19 @@ bool ID003Protocol::getAnswer(QByteArray &aAnswerData) {
     QElapsedTimer clockTimer;
     clockTimer.restart();
 
-    do {
+    do
+    {
         answer.clear();
 
-        if (!mPort->read(answer, 20)) {
+        if (!mPort->read(answer, 20))
+        {
             return false;
         }
 
         aAnswerData.append(answer);
 
-        if (aAnswerData.size() > 1) {
+        if (aAnswerData.size() > 1)
+        {
             length = aAnswerData[1];
         }
     } while ((clockTimer.elapsed() < CID003::AnswerTimeout) && ((aAnswerData.size() < length) || (!length)));
@@ -135,7 +152,8 @@ bool ID003Protocol::getAnswer(QByteArray &aAnswerData) {
 }
 
 //--------------------------------------------------------------------------------
-bool ID003Protocol::sendACK() {
+bool ID003Protocol::sendACK()
+{
     QByteArray commandData(1, CID003::ACK);
     pack(commandData);
 

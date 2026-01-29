@@ -7,7 +7,8 @@
 #include "AtolEjectorDataTypes.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class AtolEjectorFR : public T {
+template <class T> class AtolEjectorFR : public T
+{
   public:
     AtolEjectorFR();
 

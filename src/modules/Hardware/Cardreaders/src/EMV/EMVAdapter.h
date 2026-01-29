@@ -9,23 +9,28 @@
 // SDK
 #include <SDK/Drivers/IMifareReader.h>
 
-namespace EMV {
+namespace EMV
+{
     // http://en.wikipedia.org/wiki/EMV#Application_selection
-    struct Application {
+    struct Application
+    {
         QString aid;
         QString name;
         quint8 sfi; // short file identifier
         quint8 recordIndex;
 
-        Application() : sfi(1), recordIndex(0) {
+        Application() : sfi(1), recordIndex(0)
+        {
         }
-        Application(const QString &aAid, const QString &aName) : aid(aAid), name(aName), sfi(1), recordIndex(0) {
+        Application(const QString &aAid, const QString &aName) : aid(aAid), name(aName), sfi(1), recordIndex(0)
+        {
         }
     };
 } // namespace EMV
 
 //------------------------------------------------------------------------------
-class EMVAdapter {
+class EMVAdapter
+{
   public:
     EMVAdapter();
     EMVAdapter(SDK::Driver::IMifareReader *aReader);

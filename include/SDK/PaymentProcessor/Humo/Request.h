@@ -7,12 +7,16 @@
 #include <QtCore/QVariantMap>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Humo {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Humo
+        {
 
             //---------------------------------------------------------------------------
-            class Request {
+            class Request
+            {
                 Q_DISABLE_COPY(Request)
 
               public:

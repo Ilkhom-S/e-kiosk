@@ -4,7 +4,8 @@
 // Project
 #include "MessageQueueClient.h"
 
-MessageQueueClient::MessageQueueClient() : ILogable(CIMessageQueueClient::DefaultLog) {
+MessageQueueClient::MessageQueueClient() : ILogable(CIMessageQueueClient::DefaultLog)
+{
     QObject::connect(&m_socket, SIGNAL(readyRead()), this, SLOT(onSocketReadyRead()));
     QObject::connect(&m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
                      SLOT(onSocketError(QAbstractSocket::SocketError)));
@@ -13,11 +14,13 @@ MessageQueueClient::MessageQueueClient() : ILogable(CIMessageQueueClient::Defaul
 }
 
 //----------------------------------------------------------------------------
-MessageQueueClient::~MessageQueueClient() {
+MessageQueueClient::~MessageQueueClient()
+{
 }
 
 //----------------------------------------------------------------------------
-bool MessageQueueClient::connect(const QString &aQueueName) {
+bool MessageQueueClient::connect(const QString &aQueueName)
+{
     m_socket.connectToHost("127.0.0.1", aQueueName.toUShort());
     m_socket.waitForConnected(CIMessageQueueClient::ConnectionTimeout);
 
@@ -25,35 +28,42 @@ bool MessageQueueClient::connect(const QString &aQueueName) {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueClient::disconnect() {
+void MessageQueueClient::disconnect()
+{
     m_socket.disconnectFromHost();
 }
 
 //----------------------------------------------------------------------------
-bool MessageQueueClient::isConnected() const {
+bool MessageQueueClient::isConnected() const
+{
     return (m_socket.state() == QAbstractSocket::ConnectedState);
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueClient::sendMessage(const QByteArray &aMessage) {
-    if (m_socket.state() == QTcpSocket::ConnectedState) {
+void MessageQueueClient::sendMessage(const QByteArray &aMessage)
+{
+    if (m_socket.state() == QTcpSocket::ConnectedState)
+    {
         m_socket.write(aMessage + '\0');
         m_socket.flush();
     }
 }
 
 //----------------------------------------------------------------------------
-bool MessageQueueClient::subscribeOnMessageReceived(QObject *aObject) {
+bool MessageQueueClient::subscribeOnMessageReceived(QObject *aObject)
+{
     return QObject::connect(this, SIGNAL(onMessageReceived(QByteArray)), aObject, SLOT(onMessageReceived(QByteArray)));
 }
 
 //----------------------------------------------------------------------------
-bool MessageQueueClient::subscribeOnDisconnected(QObject *aObject) {
+bool MessageQueueClient::subscribeOnDisconnected(QObject *aObject)
+{
     return QObject::connect(this, SIGNAL(onDisconnected()), aObject, SLOT(onDisconnected()));
 }
 
 //----------------------------------------------------------------------------
-bool MessageQueueClient::subscribeOnEvents(QObject *aObject) {
+bool MessageQueueClient::subscribeOnEvents(QObject *aObject)
+{
     return QObject::connect(this, SIGNAL(onMessageReceived(QByteArray)), aObject,
                             SLOT(onMessageReceived(QByteArray))) &&
            QObject::connect(this, SIGNAL(onError(CIMessageQueueClient::ErrorCode, const QString &)), aObject,
@@ -62,8 +72,10 @@ bool MessageQueueClient::subscribeOnEvents(QObject *aObject) {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueClient::onSocketReadyRead() {
-    while (m_socket.bytesAvailable() > 0) {
+void MessageQueueClient::onSocketReadyRead()
+{
+    while (m_socket.bytesAvailable() > 0)
+    {
         QByteArray buffer = m_socket.readAll();
 
         toLog(LogLevel::Normal, QString::fromUtf8(buffer));
@@ -74,19 +86,23 @@ void MessageQueueClient::onSocketReadyRead() {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueClient::onSocketError(QAbstractSocket::SocketError aErrorCode) {
+void MessageQueueClient::onSocketError(QAbstractSocket::SocketError aErrorCode)
+{
     emit onError(static_cast<CIMessageQueueClient::ErrorCode>(aErrorCode), m_socket.errorString());
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueClient::onSocketDisconnected() {
+void MessageQueueClient::onSocketDisconnected()
+{
     emit onDisconnected();
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueClient::parseInputBuffer(QByteArray &aBuffer) {
+void MessageQueueClient::parseInputBuffer(QByteArray &aBuffer)
+{
     int messageEnd = aBuffer.indexOf('\0');
-    while (messageEnd != -1) {
+    while (messageEnd != -1)
+    {
         QByteArray newMessageData = aBuffer.left(messageEnd);
 
         aBuffer = aBuffer.right(aBuffer.size() - messageEnd - 1);
@@ -98,7 +114,8 @@ void MessageQueueClient::parseInputBuffer(QByteArray &aBuffer) {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueClient::pingServer() {
+void MessageQueueClient::pingServer()
+{
     sendMessage(MessageQueueConstants::PingMessage);
     m_answerTimer.start(MessageQueueConstants::AnswerFromServerTime);
 }

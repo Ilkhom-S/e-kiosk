@@ -12,7 +12,8 @@
 #include <QtCore/QString>
 #include <QtCore5Compat/QTextCodec>
 
-class QGsmCodec : public QTextCodec {
+class QGsmCodec : public QTextCodec
+{
   public:
     explicit QGsmCodec(bool noLoss = false);
     ~QGsmCodec();

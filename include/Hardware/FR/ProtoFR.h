@@ -9,7 +9,8 @@
 #include "Hardware/Common/ProtoDevice.h"
 
 //--------------------------------------------------------------------------------
-class ProtoFR : public ProtoDevice, public MetaDevice<SDK::Driver::IFiscalPrinter> {
+class ProtoFR : public ProtoDevice, public MetaDevice<SDK::Driver::IFiscalPrinter>
+{
     Q_OBJECT
 
     SET_DEVICE_TYPE(FiscalRegistrator)
@@ -20,7 +21,8 @@ class ProtoFR : public ProtoDevice, public MetaDevice<SDK::Driver::IFiscalPrinte
 
   protected slots:
     /// Выполнить Z-отчет.
-    virtual void onExecZReport() {
+    virtual void onExecZReport()
+    {
     }
 };
 

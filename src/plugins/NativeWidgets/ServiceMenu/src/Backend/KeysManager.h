@@ -15,8 +15,10 @@
 // Project
 #include "IConfigManager.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class ICore;
         class ICryptService;
         class TerminalSettings;
@@ -24,7 +26,8 @@ namespace SDK {
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class KeysManager : public QObject, public IConfigManager {
+class KeysManager : public QObject, public IConfigManager
+{
     Q_OBJECT
 
   public:

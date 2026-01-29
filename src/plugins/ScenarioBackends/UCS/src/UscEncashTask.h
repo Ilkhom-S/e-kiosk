@@ -8,10 +8,12 @@
 // Модули
 #include <Common/ILogable.h>
 
-namespace Ucs {
+namespace Ucs
+{
 
     //---------------------------------------------------------------------------
-    class UscEncashTask : public QObject, public SDK::PaymentProcessor::ITask {
+    class UscEncashTask : public QObject, public SDK::PaymentProcessor::ITask
+    {
         Q_OBJECT
 
       public:
@@ -21,7 +23,8 @@ namespace Ucs {
         virtual void execute();
 
         /// остановить выполнение задачи
-        virtual bool cancel() {
+        virtual bool cancel()
+        {
             return true;
         };
 

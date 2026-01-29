@@ -6,7 +6,8 @@
 #include <Hardware/Protocols/CashAcceptor/CCNetDataTypes.h>
 
 //--------------------------------------------------------------------------------
-class CCNetProtocol : public ProtocolBase {
+class CCNetProtocol : public ProtocolBase
+{
   public:
     CCNetProtocol();
 

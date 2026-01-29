@@ -4,11 +4,14 @@
 
 #include <SDK/Drivers/IDevice.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //--------------------------------------------------------------------------------
-        class IHID : public IDevice {
+        class IHID : public IDevice
+        {
           public: // константы
             /// Событие о новых введённых данных.
             static const char *DataSignal; // = SIGNAL(void data(const QVariantMap &));
@@ -21,7 +24,8 @@ namespace SDK {
             virtual bool isDeviceReady() = 0;
 
           protected:
-            virtual ~IHID() {
+            virtual ~IHID()
+            {
             }
         };
 

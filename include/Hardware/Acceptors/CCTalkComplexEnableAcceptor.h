@@ -5,7 +5,8 @@
 #include <Hardware/Acceptors/CCTalkAcceptorBase.h>
 
 //--------------------------------------------------------------------------------
-template <class T> class CCTalkComplexEnableAcceptor : public T {
+template <class T> class CCTalkComplexEnableAcceptor : public T
+{
     SET_SUBSERIES("ComplexEnabling")
 
   protected:

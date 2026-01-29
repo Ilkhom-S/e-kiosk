@@ -5,7 +5,8 @@
 #include "DeviceManager/DeviceManager.h"
 
 //------------------------------------------------------------------------------
-class IntegratedDrivers {
+class IntegratedDrivers
+{
   public:
     typedef QSet<QString> TPaths;
 
@@ -30,13 +31,16 @@ class IntegratedDrivers {
     void checkDriverPath(QString &aDriverPath, const QVariantMap &aConfig);
 
   private:
-    struct SData {
+    struct SData
+    {
         TPaths paths;
         QStringList models;
 
-        SData() {
+        SData()
+        {
         }
-        SData(const TPaths &aPaths, const QStringList &aModels) : paths(aPaths), models(aModels) {
+        SData(const TPaths &aPaths, const QStringList &aModels) : paths(aPaths), models(aModels)
+        {
         }
     };
 

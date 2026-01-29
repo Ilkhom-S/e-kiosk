@@ -19,14 +19,17 @@
 //----------------------------------------------------------------------------
 class IApplication;
 
-namespace SDK {
-    namespace Plugin {
+namespace SDK
+{
+    namespace Plugin
+    {
         class IPlugin;
     } // namespace Plugin
 } // namespace SDK
 
 //----------------------------------------------------------------------------
-class ServiceController : public SDK::PaymentProcessor::ICore, public SDK::Plugin::IExternalInterface {
+class ServiceController : public SDK::PaymentProcessor::ICore, public SDK::Plugin::IExternalInterface
+{
     Q_OBJECT
 
   public:

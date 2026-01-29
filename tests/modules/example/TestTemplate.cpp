@@ -6,15 +6,19 @@
 // Modules
 #include <Common/ILog.h>
 
-class TestTemplate : public QObject {
+class TestTemplate : public QObject
+{
     Q_OBJECT
 
   private slots:
-    void initTestCase() { /* setup */
+    void initTestCase()
+    { /* setup */
     }
-    void cleanupTestCase() { /* teardown */
+    void cleanupTestCase()
+    { /* teardown */
     }
-    void testBasic() {
+    void testBasic()
+    {
         QVERIFY(true);
     }
 };

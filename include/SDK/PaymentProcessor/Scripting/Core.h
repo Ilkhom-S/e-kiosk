@@ -20,16 +20,20 @@
 #include <SDK/PaymentProcessor/Scripting/HIDService.h>
 #include <SDK/PaymentProcessor/Scripting/DeviceService.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         class ICore;
 
-        namespace Scripting {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
             /// Имена объектов для экспорта в скрипты.
-            namespace CProxyNames {
+            namespace CProxyNames
+            {
                 const char Core[] = "Core";
                 const char EventType[] = "EventType";
                 const char PaymentStep[] = "PaymentStep";
@@ -39,40 +43,49 @@ namespace SDK {
 
             //------------------------------------------------------------------------------
             /// Класс для логирования в скриптах.
-            class Log : public QObject, public ILogable {
+            class Log : public QObject, public ILogable
+            {
                 Q_OBJECT
 
               public slots:
                 /// Логирование нормального сообщения.
-                void normal(const QString &aMessage) const {
+                void normal(const QString &aMessage) const
+                {
                     toLog(LogLevel::Normal, aMessage);
                 }
                 /// Логирование предупреждения.
-                void warning(const QString &aMessage) const {
+                void warning(const QString &aMessage) const
+                {
                     toLog(LogLevel::Warning, aMessage);
                 }
-                void error(const QString &aMessage) const {
+                void error(const QString &aMessage) const
+                {
                     toLog(LogLevel::Error, aMessage);
                 }
-                void debug(const QString &aMessage) const {
+                void debug(const QString &aMessage) const
+                {
                     toLog(LogLevel::Debug, aMessage);
                 }
             };
 
             //------------------------------------------------------------------------------
             /// Класс для работы со свойствами в скриптах.
-            class Properties : public QObject {
+            class Properties : public QObject
+            {
                 Q_OBJECT
 
               public:
                 /// Конструктор.
-                Properties(QVariantMap &aProperties) : mProperties(aProperties) {
+                Properties(QVariantMap &aProperties) : mProperties(aProperties)
+                {
                 }
 
               public slots:
                 /// Получить значение свойства.
-                QVariant get(const QString &aName) {
-                    if (has(aName)) {
+                QVariant get(const QString &aName)
+                {
+                    if (has(aName))
+                    {
                         return mProperties[aName];
                     }
 
@@ -80,13 +93,15 @@ namespace SDK {
                 }
 
                 /// Установить значение свойства.
-                void set(const QString &aName, const QVariant &aValue) {
+                void set(const QString &aName, const QVariant &aValue)
+                {
                     mProperties[aName] = aValue;
                     emit updated();
                 }
 
                 /// Проверить наличие свойства.
-                bool has(const QString &aName) {
+                bool has(const QString &aName)
+                {
                     return mProperties.contains(aName);
                 }
 
@@ -101,7 +116,8 @@ namespace SDK {
 
             //------------------------------------------------------------------------------
             /// Прокси класс для работы с объектами ядра в скриптах.
-            class Core : public QObject {
+            class Core : public QObject
+            {
                 Q_OBJECT
 
                 Q_PROPERTY(QObject *payment READ getPayment CONSTANT)

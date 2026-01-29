@@ -4,12 +4,15 @@
 
 #include <SDK/Plugins/IPlugin.h>
 
-namespace SDK {
-    namespace Plugin {
+namespace SDK
+{
+    namespace Plugin
+    {
 
         //------------------------------------------------------------------------------
         /// Реализует создание группы классов с базой T.
-        template <typename T> class IFactory : public IPlugin {
+        template <typename T> class IFactory : public IPlugin
+        {
           public:
             /// Возвращает список имен классов, которые создает фабрика.
             virtual QStringList getClassNames() const = 0;

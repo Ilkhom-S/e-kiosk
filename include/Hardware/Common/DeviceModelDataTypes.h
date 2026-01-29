@@ -9,13 +9,16 @@
 
 //--------------------------------------------------------------------------------
 /// Данные устройства.
-struct SModelDataBase {
+struct SModelDataBase
+{
     QString model;
     bool verified;
 
-    SModelDataBase() : verified(false) {
+    SModelDataBase() : verified(false)
+    {
     }
-    SModelDataBase(const QString &aModel, bool aVerified) : model(aModel), verified(aVerified) {
+    SModelDataBase(const QString &aModel, bool aVerified) : model(aModel), verified(aVerified)
+    {
     }
 };
 

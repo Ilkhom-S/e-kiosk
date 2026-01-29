@@ -14,10 +14,12 @@
 // Modules
 #include <Common/ILogable.h>
 
-namespace UcsDB {
+namespace UcsDB
+{
 
     //------------------------------------------------------------------------------
-    struct Encashment {
+    struct Encashment
+    {
         QDateTime date;
         QStringList receipt;
         int printed;
@@ -26,7 +28,8 @@ namespace UcsDB {
     };
 
     //------------------------------------------------------------------------------
-    class DatabaseUtils : public ILogable {
+    class DatabaseUtils : public ILogable
+    {
         typedef QSharedPointer<IDatabaseQuery> TQueryPointer;
 
       public:

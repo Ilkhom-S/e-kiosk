@@ -7,12 +7,14 @@ using namespace SDK::Driver;
 using namespace SDK::Plugin;
 
 //------------------------------------------------------------------------------
-template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
+template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath)
+{
     return new DevicePluginBase<T>(CComponents::CoinAcceptor, aEnvironment, aInstancePath);
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList EnumParameters() {
+template <class T> TParameterList EnumParameters()
+{
     return createNamedList<T>(T::getModelList(), CComponents::CoinAcceptor)
            << setProtocol(ProtocolNames::CashDevice::CCTalk)
 
@@ -25,7 +27,8 @@ template <class T> TParameterList EnumParameters() {
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList CCTalkParameters() {
+template <class T> TParameterList CCTalkParameters()
+{
     using namespace CHardware::CashDevice;
 
     return EnumParameters<T>() << setProtocolType(CCTalkTypes::CRC8, QStringList() << CCTalkTypes::CRC8);

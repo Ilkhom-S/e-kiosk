@@ -5,11 +5,13 @@
 #include "CustomPrinters.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class CustomTG2480H : public CustomPrinter<T> {
+template <class T> class CustomTG2480H : public CustomPrinter<T>
+{
     SET_SUBSERIES("CustomTG2480H")
 
   public:
-    CustomTG2480H() {
+    CustomTG2480H()
+    {
         this->mParameters.errors[20][4].insert('\x08', PrinterStatusCode::OK::MotorMotion);
         this->mParameters.errors[20][5].insert('\x02', PrinterStatusCode::Error::Presenter);
 
@@ -23,12 +25,15 @@ template <class T> class CustomTG2480H : public CustomPrinter<T> {
 
   protected:
     /// Получить статус.
-    virtual bool getStatus(TStatusCodes &aStatusCodes) {
-        if (!T::getStatus(aStatusCodes)) {
+    virtual bool getStatus(TStatusCodes &aStatusCodes)
+    {
+        if (!T::getStatus(aStatusCodes))
+        {
             return false;
         }
 
-        if (aStatusCodes.contains(PrinterStatusCode::Error::Presenter)) {
+        if (aStatusCodes.contains(PrinterStatusCode::Error::Presenter))
+        {
             aStatusCodes.remove(PrinterStatusCode::Error::Presenter);
 
             this->cut();
@@ -40,9 +45,11 @@ template <class T> class CustomTG2480H : public CustomPrinter<T> {
 };
 
 //--------------------------------------------------------------------------------
-class LibUSBCustomTG2480H : public CustomTG2480H<TLibUSBPrinterBase> {
+class LibUSBCustomTG2480H : public CustomTG2480H<TLibUSBPrinterBase>
+{
   public:
-    LibUSBCustomTG2480H() {
+    LibUSBCustomTG2480H()
+    {
         this->mDetectingData->set(CUSBVendors::Custom, this->mDeviceName, 0x01a8);
         this->setConfigParameter(CHardwareSDK::Printer::LineSize, 44);
     }

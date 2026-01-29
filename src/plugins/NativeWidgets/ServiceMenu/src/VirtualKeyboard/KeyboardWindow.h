@@ -9,19 +9,24 @@
 #include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------
-class VirtualButton {
+class VirtualButton
+{
   public:
-    VirtualButton() : mKey(Qt::Key_unknown), mShiftKey(Qt::Key_unknown) {
+    VirtualButton() : mKey(Qt::Key_unknown), mShiftKey(Qt::Key_unknown)
+    {
     }
     VirtualButton(Qt::Key aKey, const QString &aText, Qt::Key aShiftKey, const QString &aShiftText)
-        : mKey(aKey), mText(aText), mShiftKey(aShiftKey), mShiftText(aShiftText) {
+        : mKey(aKey), mText(aText), mShiftKey(aShiftKey), mShiftText(aShiftText)
+    {
     }
 
   public:
-    Qt::Key getKey(bool aShifted) {
+    Qt::Key getKey(bool aShifted)
+    {
         return aShifted ? mShiftKey : mKey;
     }
-    QString getText(bool aShifted) {
+    QString getText(bool aShifted)
+    {
         return aShifted ? mShiftText : mText;
     }
 
@@ -37,7 +42,8 @@ class VirtualButton {
 Q_DECLARE_METATYPE(VirtualButton);
 
 //------------------------------------------------------------------------
-class KeyboardWindow : public QWidget {
+class KeyboardWindow : public QWidget
+{
     Q_OBJECT
 
   public:
@@ -50,11 +56,13 @@ class KeyboardWindow : public QWidget {
 
   private slots:
     void onButtonClicked();
-    void onShiftClicked() {
+    void onShiftClicked()
+    {
         mShifted = ui.KEY_SHIFT->isChecked();
         updateKeys();
     }
-    void onLanguageClicked() {
+    void onLanguageClicked()
+    {
         mAltMode = !mAltMode;
         updateKeys();
     }

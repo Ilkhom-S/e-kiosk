@@ -17,14 +17,16 @@
 #include <SDK/PaymentProcessor/Core/IService.h>
 
 //---------------------------------------------------------------------------
-namespace Ad {
+namespace Ad
+{
     struct Campaign;
     class DatabaseUtils;
     class Client;
 } // namespace Ad
 
 //---------------------------------------------------------------------------
-class AdService : public QObject, public SDK::PaymentProcessor::IService, private ILogable {
+class AdService : public QObject, public SDK::PaymentProcessor::IService, private ILogable
+{
     Q_OBJECT
 
   public:

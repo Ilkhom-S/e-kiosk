@@ -5,7 +5,8 @@
 #include "Hardware/Common/ASCII.h"
 
 //--------------------------------------------------------------------------------
-namespace COSMPWD {
+namespace COSMPWD
+{
     /// Начало пакета - фиксированный байт.
     const char Prefix = '\xA5';
 

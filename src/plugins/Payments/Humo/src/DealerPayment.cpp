@@ -18,11 +18,13 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-DealerPayment::DealerPayment(PaymentFactory *aFactory) : Payment(aFactory), mFactory(aFactory) {
+DealerPayment::DealerPayment(PaymentFactory *aFactory) : Payment(aFactory), mFactory(aFactory)
+{
 }
 
 //------------------------------------------------------------------------------
-bool DealerPayment::check(bool /*aFakeCheck*/) {
+bool DealerPayment::check(bool /*aFakeCheck*/)
+{
     toLog(LogLevel::Normal,
           QString("Payment %1. (dealer) %2, operator: %3 (%4), session: %5, amount_all: %6, amount: %7.")
               .arg(getID())
@@ -33,22 +35,27 @@ bool DealerPayment::check(bool /*aFakeCheck*/) {
               .arg(getAmountAll())
               .arg(getAmount()));
 
-    if (haveLocalData()) {
+    if (haveLocalData())
+    {
         QString number = getParameter(mLocalData.getFirstField()).value.toString();
 
         toLog(LogLevel::Normal, QString("Payment %1. (dealer) Check local data by '%2'.").arg(getID()).arg(number));
 
         QMap<QString, QString> values;
-        if (mLocalData.findNumber(number, values)) {
+        if (mLocalData.findNumber(number, values))
+        {
             QString addInfo = getAddinfo(values);
             toLog(LogLevel::Normal, QString("Payment %1. ADDINFO: %2.").arg(getID()).arg(addInfo));
             setParameter(SParameter(PPSDK::CPayment::Parameters::AddInfo, addInfo, true));
 
-            foreach (auto field, values.keys()) {
+            foreach (auto field, values.keys())
+            {
                 toLog(LogLevel::Normal, QString("Payment %1. %2=%3.").arg(getID()).arg(field).arg(values.value(field)));
                 setParameter(SParameter(field, values.value(field), true));
             }
-        } else {
+        }
+        else
+        {
             // не нашли, отдаем поля для ручного заполнения
             setParameter(SParameter("ADD_FIELDS", getAddFields(), true));
         }
@@ -62,7 +69,8 @@ bool DealerPayment::check(bool /*aFakeCheck*/) {
 }
 
 //------------------------------------------------------------------------------
-bool DealerPayment::pay() {
+bool DealerPayment::pay()
+{
     toLog(LogLevel::Normal, QString("Payment %1. (dealer) Paid.").arg(getID()));
 
     setStateOk();
@@ -73,7 +81,8 @@ bool DealerPayment::pay() {
 }
 
 //------------------------------------------------------------------------------
-bool DealerPayment::status() {
+bool DealerPayment::status()
+{
     toLog(LogLevel::Normal, QString("Payment %1. Status retrieved.").arg(getID()));
 
     setStateOk();
@@ -82,15 +91,18 @@ bool DealerPayment::status() {
 }
 
 //------------------------------------------------------------------------------
-void DealerPayment::setStateOk() {
+void DealerPayment::setStateOk()
+{
     setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, EServerError::Ok, true));
     setParameter(SParameter(PPSDK::CPayment::Parameters::ServerResult, EServerResult::Ok, true));
     setParameter(SParameter(PPSDK::CPayment::Parameters::ErrorMessage, "", true));
 }
 
 //---------------------------------------------------------------------------
-bool DealerPayment::haveLocalData() {
-    if (!getProviderSettings().processor.requests.contains("CHECK")) {
+bool DealerPayment::haveLocalData()
+{
+    if (!getProviderSettings().processor.requests.contains("CHECK"))
+    {
         toLog(LogLevel::Error, QString("Payment %1. Requests: %2.")
                                    .arg(getID())
                                    .arg(QStringList(getProviderSettings().processor.requests.keys()).join(",")));
@@ -100,19 +112,23 @@ bool DealerPayment::haveLocalData() {
 
     QString url = getProviderSettings().processor.requests["CHECK"].url;
     QStringList urlParts = url.split(":", Qt::SkipEmptyParts);
-    if (urlParts.size() < 2 || urlParts[0] != "local_data") {
+    if (urlParts.size() < 2 || urlParts[0] != "local_data")
+    {
         return false;
     }
 
     SDK::Plugin::IEnvironment *env = mFactory->getEnvironment();
 
-    if (env) {
+    if (env)
+    {
         QString dataFile = QDir(env->getKernelDataDirectory()).filePath(urlParts[1]);
 
         toLog(LogLevel::Normal, QString("Payment %1. (dealer) LocalDataFile: %3.").arg(getID()).arg(dataFile));
 
         return mLocalData.loadInfo(dataFile);
-    } else {
+    }
+    else
+    {
         toLog(LogLevel::Error, QString("Payment %1. Failed get IEnvironment object.").arg(getID()));
 
         return false;
@@ -120,11 +136,13 @@ bool DealerPayment::haveLocalData() {
 }
 
 //---------------------------------------------------------------------------
-QString DealerPayment::getAddinfo(QMap<QString, QString> &aValues) {
+QString DealerPayment::getAddinfo(QMap<QString, QString> &aValues)
+{
     QStringList result;
     auto columns = mLocalData.getColumns();
 
-    for (int i = 0; i < columns.size(); i++) {
+    for (int i = 0; i < columns.size(); i++)
+    {
         QString fieldID = columns[i].first;
         QString fieldName = columns[i].second;
 
@@ -135,12 +153,15 @@ QString DealerPayment::getAddinfo(QMap<QString, QString> &aValues) {
 }
 
 //---------------------------------------------------------------------------
-QString DealerPayment::getAddFields() {
+QString DealerPayment::getAddFields()
+{
     QStringList fields;
     auto columns = mLocalData.getColumns();
 
-    for (int i = 0; i < columns.size(); i++) {
-        if (i) {
+    for (int i = 0; i < columns.size(); i++)
+    {
+        if (i)
+        {
             fields << QString("<field id=\"%1\" type=\"text\"><name>%2</name></field>")
                           .arg(columns[i].first)
                           .arg(columns[i].second);

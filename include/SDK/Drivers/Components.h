@@ -7,8 +7,10 @@
 #include <QtCore/QString>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //---------------------------------------------------------------------------
         /// Драйверы являются общим расширением.
@@ -16,7 +18,8 @@ namespace SDK {
 
         //---------------------------------------------------------------------------
         /// Список возможных компонентов.
-        namespace CComponents {
+        namespace CComponents
+        {
             const char Driver[] = "Driver";
             const char IOPort[] = "IOPort";
             const char BillAcceptor[] = "BillAcceptor";
@@ -34,7 +37,8 @@ namespace SDK {
             const char Token[] = "Token";
 
             /// Проверяет, является ли тип устройства принтером.
-            inline bool isPrinter(const QString &aDeviceType) {
+            inline bool isPrinter(const QString &aDeviceType)
+            {
                 return aDeviceType == Printer || aDeviceType == DocumentPrinter || aDeviceType == FiscalRegistrator;
             }
         } // namespace CComponents

@@ -69,29 +69,37 @@
 #include <sys/utsname.h>
 #include <sys/utsname.h>
 
-QString ISysUtils::getOSVersionInfo() {
+QString ISysUtils::getOSVersionInfo()
+{
     struct utsname uts;
-    if (uname(&uts) == 0) {
+    if (uname(&uts) == 0)
+    {
         return QString("%1 %2 (%3)").arg(uts.sysname).arg(uts.release).arg(uts.machine);
-    } else {
+    }
+    else
+    {
         return QSysInfo::prettyProductName();
     }
 }
 
 //---------------------------------------------------------------------------
 // Удаляет BOM из файла, если он есть (UTF-8 BOM)
-QString ISysUtils::rmBOM(const QString &aFile) {
+QString ISysUtils::rmBOM(const QString &aFile)
+{
     QFile file(aFile);
-    if (!file.open(QIODevice::ReadOnly)) {
+    if (!file.open(QIODevice::ReadOnly))
+    {
         return aFile;
     }
     QByteArray data = file.readAll();
     file.close();
 
     static const QByteArray utf8BOM = QByteArray::fromHex("efbbbf");
-    if (data.startsWith(utf8BOM)) {
+    if (data.startsWith(utf8BOM))
+    {
         data = data.mid(3);
-        if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        if (file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
             file.write(data);
             file.close();
         }
@@ -101,7 +109,8 @@ QString ISysUtils::rmBOM(const QString &aFile) {
 
 //---------------------------------------------------------------------------
 // Перезагрузка системы (Linux: reboot syscall, macOS: shutdown command)
-int ISysUtils::systemReboot() {
+int ISysUtils::systemReboot()
+{
 #if defined(__linux__)
     sync();
     int ret = reboot(RB_AUTOBOOT);
@@ -120,7 +129,8 @@ int ISysUtils::systemReboot() {
 
 //---------------------------------------------------------------------------
 // Выключение системы (Linux: reboot syscall with poweroff, macOS: shutdown command)
-int ISysUtils::systemShutdown() {
+int ISysUtils::systemShutdown()
+{
 #if defined(__linux__)
 // Try to use the reboot syscall with RB_POWER_OFF (requires root)
 #include <unistd.h>
@@ -141,7 +151,8 @@ int ISysUtils::systemShutdown() {
 
 //---------------------------------------------------------------------------
 // Отключение скринсейвера для Linux (X11) и macOS
-void ISysUtils::disableScreenSaver() {
+void ISysUtils::disableScreenSaver()
+{
 #if defined(__APPLE__)
     // On macOS, use caffeinate to prevent sleep/screensaver
     // This will keep the system awake while the app is running
@@ -163,19 +174,24 @@ void ISysUtils::disableScreenSaver() {
 
 //---------------------------------------------------------------------------
 // Включение/выключение дисплея (имитация активности для пробуждения)
-void ISysUtils::displayOn(bool aOn) {
+void ISysUtils::displayOn(bool aOn)
+{
 #if defined(__APPLE__)
-    if (aOn) {
+    if (aOn)
+    {
         // Prevent display sleep (caffeinate)
         int ret = system("caffeinate -u -t 2"); // -u: user activity, -t: seconds
         Q_UNUSED(ret);
-    } else {
+    }
+    else
+    {
         // Turn display off (pmset)
         int ret = system("pmset displaysleepnow");
         Q_UNUSED(ret);
     }
 #elif defined(__linux__)
-    if (aOn) {
+    if (aOn)
+    {
         // Wake up display: force DPMS on, simulate mouse move if possible
         int ret1 = system("xset dpms force on");
         int ret2 = system("xset s reset");
@@ -184,7 +200,9 @@ void ISysUtils::displayOn(bool aOn) {
         Q_UNUSED(ret1);
         Q_UNUSED(ret2);
         Q_UNUSED(ret3);
-    } else {
+    }
+    else
+    {
         // Turn display off
         int ret = system("xset dpms force off");
         Q_UNUSED(ret);
@@ -197,7 +215,8 @@ void ISysUtils::displayOn(bool aOn) {
 
 //---------------------------------------------------------------------------
 // Принудительный запуск скринсейвера
-void ISysUtils::runScreenSaver() {
+void ISysUtils::runScreenSaver()
+{
 #if defined(__APPLE__)
     // On macOS, use AppleScript to start the screensaver
     int ret = system("osascript -e 'tell application \"System Events\" to start current screen saver'");
@@ -213,7 +232,8 @@ void ISysUtils::runScreenSaver() {
 
 //---------------------------------------------------------------------------
 // Установка системного времени (Linux: date, macOS: systemsetup)
-void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false) {
+void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false)
+{
 #if defined(__linux__)
     // Format: date MMDDhhmmYYYY.SS
     QDateTime dt = aDateTime.toLocalTime();
@@ -225,7 +245,8 @@ void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false) {
                       .arg(dt.date().year())
                       .arg(dt.time().second(), 2, 10, QChar('0'));
     int ret = system(cmd.toUtf8().constData());
-    if (ret != 0) {
+    if (ret != 0)
+    {
         throw std::runtime_error("Failed to set system time (date command, Linux)");
     }
 #elif defined(__APPLE__)
@@ -240,7 +261,8 @@ void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false) {
                           .arg(dt.time().minute(), 2, 10, QChar('0'))
                           .arg(dt.time().second(), 2, 10, QChar('0'));
     int ret = system(dateCmd.toUtf8().constData());
-    if (ret != 0) {
+    if (ret != 0)
+    {
         throw std::runtime_error("Failed to set system time (systemsetup, macOS)");
     }
 #else
@@ -251,24 +273,28 @@ void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false) {
 
 //---------------------------------------------------------------------------
 // Сон потока
-void ISysUtils::sleep(int aMs) {
+void ISysUtils::sleep(int aMs)
+{
     Q_ASSERT(aMs > 0);
     QThread::msleep(aMs);
 }
 
 //---------------------------------------------------------------------------
 // Получить описание последней системной ошибки (errno)
-QString ISysUtils::getLastErrorMessage() {
+QString ISysUtils::getLastErrorMessage()
+{
     return getErrorMessage(errno);
 }
 
 //---------------------------------------------------------------------------
 // Получить описание системной ошибки (errno)
-QString ISysUtils::getErrorMessage(ulong aError, bool aNativeLanguage) {
+QString ISysUtils::getErrorMessage(ulong aError, bool aNativeLanguage)
+{
     Q_UNUSED(aNativeLanguage);
     QString result = QString("error: %1").arg(aError);
     const char *msg = strerror(static_cast<int>(aError));
-    if (msg && *msg) {
+    if (msg && *msg)
+    {
         result += QString(" (%1)").arg(QString::fromLocal8Bit(msg));
     }
     return result;
@@ -276,22 +302,28 @@ QString ISysUtils::getErrorMessage(ulong aError, bool aNativeLanguage) {
 
 //---------------------------------------------------------------------------
 // Получить количество памяти, используемое процессом (Unix/macOS)
-bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *aProcess) {
+bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *aProcess)
+{
 #if defined(__linux__)
     aMemoryInfo = MemoryInfo();
     qint64 pid = 0;
-    if (aProcess) {
+    if (aProcess)
+    {
         pid = aProcess->processId();
-    } else {
+    }
+    else
+    {
         pid = getpid();
     }
     QString statmPath = QString("/proc/%1/statm").arg(pid);
     QFile statm(statmPath);
-    if (statm.open(QIODevice::ReadOnly)) {
+    if (statm.open(QIODevice::ReadOnly))
+    {
         QByteArray line = statm.readLine();
         statm.close();
         QList<QByteArray> parts = line.split(' ');
-        if (parts.size() >= 2) {
+        if (parts.size() >= 2)
+        {
             long pageSize = sysconf(_SC_PAGESIZE);
             aMemoryInfo.total = 0;     // Not available from statm
             aMemoryInfo.totalUsed = 0; // Not available from statm
@@ -303,29 +335,38 @@ bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *a
 #elif defined(__APPLE__)
     aMemoryInfo = MemoryInfo();
     pid_t pid = 0;
-    if (aProcess) {
+    if (aProcess)
+    {
         pid = static_cast<pid_t>(aProcess->processId());
-    } else {
+    }
+    else
+    {
         pid = getpid();
     }
     mach_port_t task;
     kern_return_t kr = KERN_FAILURE;
-    if (pid == getpid()) {
+    if (pid == getpid())
+    {
         task = mach_task_self();
         kr = KERN_SUCCESS;
-    } else {
+    }
+    else
+    {
         kr = task_for_pid(mach_task_self(), pid, &task);
     }
-    if (kr == KERN_SUCCESS) {
+    if (kr == KERN_SUCCESS)
+    {
         struct task_basic_info info;
         mach_msg_type_number_t infoCount = TASK_BASIC_INFO_COUNT;
-        if (task_info(task, TASK_BASIC_INFO, (task_info_t)&info, &infoCount) == KERN_SUCCESS) {
+        if (task_info(task, TASK_BASIC_INFO, (task_info_t)&info, &infoCount) == KERN_SUCCESS)
+        {
             aMemoryInfo.processUsed = info.resident_size;
             // Total and used system memory: use sysctl
             int mib[2] = {CTL_HW, HW_MEMSIZE};
             int64_t memsize = 0;
             size_t len = sizeof(memsize);
-            if (sysctl(mib, 2, &memsize, &len, NULL, 0) == 0) {
+            if (sysctl(mib, 2, &memsize, &len, NULL, 0) == 0)
+            {
                 aMemoryInfo.total = memsize;
             }
             // Used memory: not trivial, so leave as 0
@@ -341,14 +382,16 @@ bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *a
 }
 
 //--------------------------------------------------------------------------------
-bool ISysUtils::bringWindowToFront(WId aWindow) {
+bool ISysUtils::bringWindowToFront(WId aWindow)
+{
     Q_UNUSED(aWindow)
     // Not implemented on Unix-like systems
     return false;
 }
 
 //--------------------------------------------------------------------------------
-bool ISysUtils::bringWindowToFront(const QString &aWindowTitle) {
+bool ISysUtils::bringWindowToFront(const QString &aWindowTitle)
+{
     Q_UNUSED(aWindowTitle)
     // Not implemented on Unix-like systems
     return false;

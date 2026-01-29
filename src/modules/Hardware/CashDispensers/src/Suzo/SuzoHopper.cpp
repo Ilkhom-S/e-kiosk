@@ -14,7 +14,8 @@ using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------
-SuzoHopper::SuzoHopper() {
+SuzoHopper::SuzoHopper()
+{
     // Параметры порта.
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
     mPortParameters[EParameters::Parity].append(EParity::No);
@@ -33,13 +34,16 @@ SuzoHopper::SuzoHopper() {
 }
 
 //---------------------------------------------------------------------------
-QStringList SuzoHopper::getProtocolTypes() {
+QStringList SuzoHopper::getProtocolTypes()
+{
     return QStringList() << CHardware::CashDevice::CCTalkTypes::CRC8;
 }
 
 //--------------------------------------------------------------------------------
-bool SuzoHopper::updateParameters() {
-    if (!CCTalkDeviceBase<PortDispenser>::updateParameters()) {
+bool SuzoHopper::updateParameters()
+{
+    if (!CCTalkDeviceBase<PortDispenser>::updateParameters())
+    {
         return false;
     }
 
@@ -50,12 +54,15 @@ bool SuzoHopper::updateParameters() {
 }
 
 //---------------------------------------------------------------------------
-TResult SuzoHopper::execCommand(const QByteArray &aCommand, const QByteArray &aCommandData, QByteArray *aAnswer) {
+TResult SuzoHopper::execCommand(const QByteArray &aCommand, const QByteArray &aCommandData, QByteArray *aAnswer)
+{
     TResult result;
     int index = 0;
 
-    do {
-        if (index) {
+    do
+    {
+        if (index)
+        {
             SleepHelper::msleep(CSuzo::Pause::CommandIteration);
         }
 
@@ -67,16 +74,19 @@ TResult SuzoHopper::execCommand(const QByteArray &aCommand, const QByteArray &aC
 }
 
 //---------------------------------------------------------------------------
-bool SuzoHopper::setSingleMode(bool aEnable) {
+bool SuzoHopper::setSingleMode(bool aEnable)
+{
     QByteArray data;
 
-    if (!processCommand(CCCTalk::Command::GetVariables, &data)) {
+    if (!processCommand(CCCTalk::Command::GetVariables, &data))
+    {
         return false;
     }
 
     data = data.left(3) + char(aEnable);
 
-    if (!processCommand(CCCTalk::Command::SetVariables, data)) {
+    if (!processCommand(CCCTalk::Command::SetVariables, data))
+    {
         return false;
     }
 
@@ -86,12 +96,15 @@ bool SuzoHopper::setSingleMode(bool aEnable) {
 }
 
 //---------------------------------------------------------------------------
-bool SuzoHopper::getStatus(TStatusCodes &aStatusCodes) {
+bool SuzoHopper::getStatus(TStatusCodes &aStatusCodes)
+{
     QByteArray answer;
     TResult result = processCommand(CCCTalk::Command::TestHopper, &answer);
 
-    if (!result) {
-        if (!CommandResult::PresenceErrors.contains(result)) {
+    if (!result)
+    {
+        if (!CommandResult::PresenceErrors.contains(result))
+        {
             return false;
         }
 
@@ -103,10 +116,12 @@ bool SuzoHopper::getStatus(TStatusCodes &aStatusCodes) {
     TDeviceCodeSpecifications testDeviceCodeSpecification;
     CSuzo::DeviceCodeSpecification.getSpecification(answer, testDeviceCodeSpecification);
 
-    foreach (const SDeviceCodeSpecification &specification, testDeviceCodeSpecification) {
+    foreach (const SDeviceCodeSpecification &specification, testDeviceCodeSpecification)
+    {
         aStatusCodes.insert(specification.statusCode);
 
-        if ((answer != mLastDeviceStatusCodes) && !specification.description.isEmpty()) {
+        if ((answer != mLastDeviceStatusCodes) && !specification.description.isEmpty())
+        {
             SStatusCodeSpecification statusCodeData = mStatusCodesSpecification->value(specification.statusCode);
             LogLevel::Enum logLevel = getLogLevel(statusCodeData.warningLevel);
 
@@ -121,11 +136,13 @@ bool SuzoHopper::getStatus(TStatusCodes &aStatusCodes) {
 }
 
 //---------------------------------------------------------------------------
-bool SuzoHopper::setEnable(bool aEnabled) {
+bool SuzoHopper::setEnable(bool aEnabled)
+{
     char enabled = aEnabled ? CSuzo::Enable : ASCII::NUL;
     bool result = processCommand(CCCTalk::Command::EnableHopper, QByteArray(1, enabled));
 
-    if (!aEnabled) {
+    if (!aEnabled)
+    {
         SleepHelper::msleep(CSuzo::Pause::Disabling);
     }
 
@@ -133,10 +150,12 @@ bool SuzoHopper::setEnable(bool aEnabled) {
 }
 
 //---------------------------------------------------------------------------
-bool SuzoHopper::getDispensingStatus(CSuzo::SStatus &aStatus) {
+bool SuzoHopper::getDispensingStatus(CSuzo::SStatus &aStatus)
+{
     QByteArray data;
 
-    if (!processCommand(CCCTalk::Command::GetHopperStatus, &data)) {
+    if (!processCommand(CCCTalk::Command::GetHopperStatus, &data))
+    {
         return false;
     }
 
@@ -146,14 +165,17 @@ bool SuzoHopper::getDispensingStatus(CSuzo::SStatus &aStatus) {
 }
 
 //--------------------------------------------------------------------------------
-void SuzoHopper::performDispense(int aUnit, int aItems) {
-    if (!isWorkingThread()) {
+void SuzoHopper::performDispense(int aUnit, int aItems)
+{
+    if (!isWorkingThread())
+    {
         QMetaObject::invokeMethod(this, "performDispense", Qt::QueuedConnection, Q_ARG(int, aUnit), Q_ARG(int, aItems));
 
         return;
     }
 
-    if (!setSingleMode(true) || !setEnable(true)) {
+    if (!setSingleMode(true) || !setEnable(true))
+    {
         return;
     }
 
@@ -162,33 +184,38 @@ void SuzoHopper::performDispense(int aUnit, int aItems) {
 
     TStatusCodes statusCodes;
 
-    if (!getStatus(statusCodes) || !getStatusCollection(statusCodes)[EWarningLevel::Error].isEmpty()) {
+    if (!getStatus(statusCodes) || !getStatusCollection(statusCodes)[EWarningLevel::Error].isEmpty())
+    {
         return;
     }
 
     QByteArray commandData(1, char(aItems));
     QByteArray answer;
 
-    if (needSerialNumberForDispense) {
+    if (needSerialNumberForDispense)
+    {
         int serialNumber = getDeviceParameter(CDeviceData::SerialNumber).toInt();
         char serialNumberData[3] = {char(uchar(serialNumber)), char(uchar(serialNumber / 0x100)),
                                     char(uchar(serialNumber / 0x10000))};
         commandData.prepend(serialNumberData, 3);
     }
 
-    if (!processCommand(CCCTalk::Command::Dispense, commandData, &answer)) {
+    if (!processCommand(CCCTalk::Command::Dispense, commandData, &answer))
+    {
         return;
     }
 
     CSuzo::SStatus status;
 
-    while (getDispensingStatus(status) && status.remains) {
+    while (getDispensingStatus(status) && status.remains)
+    {
         SleepHelper::msleep(CSuzo::Pause::Dispensing);
     }
 
     emitDispensed(0, status.paid);
 
-    if (status.unpaid) {
+    if (status.unpaid)
+    {
         toLog(LogLevel::Error, mDeviceName + QString(": Cannot pay out %1 coins").arg(status.unpaid));
 
         onPoll();
@@ -198,7 +225,8 @@ void SuzoHopper::performDispense(int aUnit, int aItems) {
 }
 
 //--------------------------------------------------------------------------------
-QStringList SuzoHopper::getModelList() {
+QStringList SuzoHopper::getModelList()
+{
     return CCCTalk::Dispenser::CModelData().getModels(false);
 }
 

@@ -5,17 +5,21 @@
 #include "../AtolFRConstants.h"
 
 //------------------------------------------------------------------------------------------------
-namespace CAtolEjectorFR {
+namespace CAtolEjectorFR
+{
     /// Теги.
-    class TagEngine : public CAtolFR::TagEngine {
+    class TagEngine : public CAtolFR::TagEngine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             set(Tags::Type::Image);
         }
     };
 
     /// Печать изображений
-    namespace ImageProcessing {
+    namespace ImageProcessing
+    {
         /// Максимальная ширина печатаемой части изображения, [пикс] (1 пикс == 1 бит).
         const int MaxWidth = 608;
 

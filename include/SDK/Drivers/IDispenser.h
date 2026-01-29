@@ -10,14 +10,17 @@
 // SDK
 #include <SDK/Drivers/IDevice.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         /// Данные о единицах.
         typedef QVector<int> TUnitData;
 
         //--------------------------------------------------------------------------------
-        class IDispenser : public IDevice {
+        class IDispenser : public IDevice
+        {
           public:
             /// Предметы выданы.
             static const char *DispensedSignal; // SIGNAL(dispensed(int aUnit, int aItems));
@@ -45,7 +48,8 @@ namespace SDK {
             virtual int units() = 0;
 
           protected:
-            virtual ~IDispenser() {
+            virtual ~IDispenser()
+            {
             }
         };
 

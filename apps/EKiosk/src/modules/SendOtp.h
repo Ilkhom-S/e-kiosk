@@ -5,7 +5,8 @@
 
 class SendRequest;
 
-class SendOtp : public SendRequest {
+class SendOtp : public SendRequest
+{
     Q_OBJECT
 
   public:

@@ -18,7 +18,8 @@
 // Project
 #include "ConnectionBase.h"
 
-namespace CConnection {
+namespace CConnection
+{
     /// Период проверки статуса соединения.
     const int DefaultCheckPeriod = 60 * 1000; // 1 минутa
 
@@ -37,7 +38,8 @@ namespace CConnection {
 
 //--------------------------------------------------------------------------------
 ConnectionBase::ConnectionBase(const QString &aName, NetworkTaskManager *aNetwork, ILog *aLog)
-    : mNetwork(aNetwork), mName(aName), mConnected(false), mCheckCount(0), mWatch(false), mLog(aLog) {
+    : mNetwork(aNetwork), mName(aName), mConnected(false), mCheckCount(0), mWatch(false), mLog(aLog)
+{
     // Таймер будет взводится заново после каждой удачной проверки
     mCheckTimer.setSingleShot(true);
     mCheckTimer.setInterval(CConnection::DefaultCheckPeriod);
@@ -47,23 +49,30 @@ ConnectionBase::ConnectionBase(const QString &aName, NetworkTaskManager *aNetwor
 }
 
 //--------------------------------------------------------------------------------
-void ConnectionBase::open(bool aWatch) noexcept(false) {
+void ConnectionBase::open(bool aWatch) noexcept(false)
+{
     toLog(LogLevel::Normal, QString("*").repeated(40));
     toLog(LogLevel::Normal, QString("Connection:     %1").arg(getName()));
     toLog(LogLevel::Normal, QString("Type:           %1").arg(EConnectionTypes::getConnectionTypeName(getType())));
 
-    if (aWatch) {
+    if (aWatch)
+    {
         toLog(LogLevel::Normal, QString("Check interval: %1 sec").arg(mCheckTimer.interval() / 1000));
         toLog(LogLevel::Normal, QString("Ping interval: %1 sec").arg(mCheckTimer.interval() * mPingPeriod / 1000));
-    } else {
+    }
+    else
+    {
         toLog(LogLevel::Normal, "Check interval: uncontrolled connection");
     }
 
     toLog(LogLevel::Normal, QString("*").repeated(40));
 
-    if (!isConnected(false)) {
+    if (!isConnected(false))
+    {
         doConnect();
-    } else {
+    }
+    else
+    {
         toLog(LogLevel::Normal, "Already connected.");
     }
 
@@ -72,7 +81,8 @@ void ConnectionBase::open(bool aWatch) noexcept(false) {
     mConnected = true;
 
     // Если нужно наблюдение за соединением
-    if (mWatch) {
+    if (mWatch)
+    {
         toLog(LogLevel::Normal, "Check timer START.");
         mCheckTimer.start();
 
@@ -82,11 +92,13 @@ void ConnectionBase::open(bool aWatch) noexcept(false) {
 }
 
 //--------------------------------------------------------------------------------
-void ConnectionBase::close() noexcept(false) {
+void ConnectionBase::close() noexcept(false)
+{
     toLog(LogLevel::Debug, "Check timer STOP.");
     mCheckTimer.stop();
 
-    if (isConnected(true)) {
+    if (isConnected(true))
+    {
         doDisconnect();
     }
 
@@ -94,18 +106,22 @@ void ConnectionBase::close() noexcept(false) {
 }
 
 //--------------------------------------------------------------------------------
-QString ConnectionBase::getName() const {
+QString ConnectionBase::getName() const
+{
     return mName;
 }
 
 //--------------------------------------------------------------------------------
-void ConnectionBase::setCheckPeriod(int aMinutes) {
+void ConnectionBase::setCheckPeriod(int aMinutes)
+{
     mPingPeriod = aMinutes;
 }
 
 //--------------------------------------------------------------------------------
-bool ConnectionBase::isConnected(bool aUseCache) noexcept(false) {
-    if (!aUseCache) {
+bool ConnectionBase::isConnected(bool aUseCache) noexcept(false)
+{
+    if (!aUseCache)
+    {
         mConnected = doIsConnected();
     }
 
@@ -113,23 +129,30 @@ bool ConnectionBase::isConnected(bool aUseCache) noexcept(false) {
 }
 
 //--------------------------------------------------------------------------------
-bool ConnectionBase::checkConnection(const IConnection::CheckUrl &aHost) noexcept(false) {
+bool ConnectionBase::checkConnection(const IConnection::CheckUrl &aHost) noexcept(false)
+{
     QList<CheckUrl> hosts;
 
-    if (aHost.first.isValid() && !aHost.first.isEmpty()) {
+    if (aHost.first.isValid() && !aHost.first.isEmpty())
+    {
         hosts << aHost;
-    } else {
+    }
+    else
+    {
         hosts = mCheckHosts;
     }
 
-    if (hosts.isEmpty()) {
+    if (hosts.isEmpty())
+    {
         toLog(LogLevel::Error, QString("Cannot check connection, no hosts specified."));
         return true;
     }
 
     // Для каждого хоста из списка или до первой удачной проверки
-    foreach (auto host, hosts) {
-        if (doCheckConnection(host)) {
+    foreach (auto host, hosts)
+    {
+        if (doCheckConnection(host))
+        {
             emit connectionAlive();
 
             return true;
@@ -140,35 +163,47 @@ bool ConnectionBase::checkConnection(const IConnection::CheckUrl &aHost) noexcep
 }
 
 //--------------------------------------------------------------------------------
-void ConnectionBase::setCheckHosts(const QList<IConnection::CheckUrl> &aHosts) {
-    if (aHosts.isEmpty()) {
+void ConnectionBase::setCheckHosts(const QList<IConnection::CheckUrl> &aHosts)
+{
+    if (aHosts.isEmpty())
+    {
         toLog(LogLevel::Warning, QString("No check hosts specified, using previous/default ones."));
-    } else {
+    }
+    else
+    {
         mCheckHosts = aHosts;
     }
 }
 
 //--------------------------------------------------------------------------------
-void ConnectionBase::onCheckTimeout() {
+void ConnectionBase::onCheckTimeout()
+{
     ++mCheckCount;
 
     toLog(LogLevel::Debug, QString("Check timeout. count: %1.").arg(mCheckCount));
 
-    try {
+    try
+    {
         // Проверяем состояние соединения через апи ОС и делаем http запрос если
         // подошло время
-        if (isConnected(false) && mCheckCount >= mPingPeriod) {
+        if (isConnected(false) && mCheckCount >= mPingPeriod)
+        {
             mCheckCount = 0;
             mConnected = checkConnection();
         }
 
-        if (isConnected(true)) {
+        if (isConnected(true))
+        {
             toLog(LogLevel::Debug, "Check timer START.");
             mCheckTimer.start();
-        } else {
+        }
+        else
+        {
             emit connectionLost();
         }
-    } catch (const NetworkError &e) {
+    }
+    catch (const NetworkError &e)
+    {
         toLog(LogLevel::Error, e.getMessage());
 
         emit connectionLost();
@@ -176,10 +211,12 @@ void ConnectionBase::onCheckTimeout() {
 }
 
 //--------------------------------------------------------------------------------
-bool ConnectionBase::httpCheckMethod(const IConnection::CheckUrl &aHost) {
+bool ConnectionBase::httpCheckMethod(const IConnection::CheckUrl &aHost)
+{
     toLog(LogLevel::Normal, QString("Checking connection on %1...").arg(aHost.first.toString()));
 
-    if (!mNetwork) {
+    if (!mNetwork)
+    {
         toLog(LogLevel::Error, "Failed to check connection. Network interface is not specified.");
 
         return false;
@@ -200,12 +237,14 @@ bool ConnectionBase::httpCheckMethod(const IConnection::CheckUrl &aHost) {
 
     QByteArray answer = task->getDataStream()->takeAll();
 
-    auto traceLog = [&]() {
+    auto traceLog = [&]()
+    {
         toLog(LogLevel::Trace, QString("error:%1 http_code:%2").arg(task->getError()).arg(task->getHttpError()));
 
         QStringList response;
         QMapIterator<QByteArray, QByteArray> i(task->getResponseHeader());
-        while (i.hasNext()) {
+        while (i.hasNext())
+        {
             i.next();
             response << QString("%1: %2").arg(QString::fromLatin1(i.key())).arg(QString::fromLatin1(i.value()));
         }
@@ -214,7 +253,8 @@ bool ConnectionBase::httpCheckMethod(const IConnection::CheckUrl &aHost) {
               QString("HEADER:\n%1\nBODY:\n%2").arg(response.join("\n")).arg(QString::fromLatin1(answer.left(80))));
     };
 
-    if (task->getError() != NetworkTask::NoError) {
+    if (task->getError() != NetworkTask::NoError)
+    {
         toLog(LogLevel::Error, QString("Connection check failed. Error %1.").arg(task->errorString()));
 
         traceLog();
@@ -222,7 +262,8 @@ bool ConnectionBase::httpCheckMethod(const IConnection::CheckUrl &aHost) {
         return false;
     }
 
-    if (!aHost.second.isEmpty() && !answer.contains(aHost.second.toLatin1())) {
+    if (!aHost.second.isEmpty() && !answer.contains(aHost.second.toLatin1()))
+    {
         toLog(LogLevel::Error, QString("Server answer verify failed '%1'.\nServer response: '%2'.")
                                    .arg(aHost.second)
                                    .arg(QString::fromUtf8(answer).left(1024)));
@@ -238,14 +279,16 @@ bool ConnectionBase::httpCheckMethod(const IConnection::CheckUrl &aHost) {
 }
 
 //----------------------------------------------------------------------------
-void ConnectionBase::toLog(LogLevel::Enum aLevel, const QString &aMessage) const {
+void ConnectionBase::toLog(LogLevel::Enum aLevel, const QString &aMessage) const
+{
     mLog->write(aLevel, aMessage);
 }
 
 //----------------------------------------------------------------------------
 
 IConnection *IConnection::create(const QString &aName, EConnectionTypes::Enum aType, NetworkTaskManager *aNetwork,
-                                 ILog *aLog) {
+                                 ILog *aLog)
+{
 #ifdef Q_OS_WIN32
     // Windows-specific implementation is in Win32/src/Common.cpp
     return nullptr; // This will be overridden by the Windows implementation

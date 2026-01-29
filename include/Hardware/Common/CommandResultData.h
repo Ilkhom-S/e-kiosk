@@ -3,43 +3,53 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-struct TResult {
+struct TResult
+{
   public:
-    TResult() : mData(0) {
+    TResult() : mData(0)
+    {
     }
-    TResult(const int &aResult) {
+    TResult(const int &aResult)
+    {
         *this = aResult;
     }
 
-    TResult(bool aResult) {
+    TResult(bool aResult)
+    {
         *this = aResult;
     }
 
-    TResult &operator=(const int &aResult) {
+    TResult &operator=(const int &aResult)
+    {
         mData = aResult;
 
         return *this;
     }
 
-    TResult &operator=(bool aResult) {
+    TResult &operator=(bool aResult)
+    {
         mData = aResult ? 0 : -1;
 
         return *this;
     }
 
-    bool operator==(const int &aResult) {
+    bool operator==(const int &aResult)
+    {
         return mData == aResult;
     }
 
-    bool operator!=(const int &aResult) {
+    bool operator!=(const int &aResult)
+    {
         return !operator==(aResult);
     }
 
-    operator int() {
+    operator int()
+    {
         return mData;
     }
 
-    operator bool() {
+    operator bool()
+    {
         return !mData;
     }
 

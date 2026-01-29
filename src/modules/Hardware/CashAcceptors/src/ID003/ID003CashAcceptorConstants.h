@@ -12,7 +12,8 @@
 #include "Hardware/CashAcceptors/CashAcceptorBaseConstants.h"
 
 //--------------------------------------------------------------------------------
-namespace CID003 {
+namespace CID003
+{
     /// ACK.
     const char ACK = '\x50';
 
@@ -36,7 +37,8 @@ namespace CID003 {
 
     //--------------------------------------------------------------------------------
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char GetBillTable = '\x8A';  /// Запрос таблицы номиналов.
         const char Reset = '\x40';         /// Перезагрузка.
         const char StatusRequest = '\x11'; /// Запрос статуса.
@@ -52,13 +54,22 @@ namespace CID003 {
         const char SetInhibits = '\xC3';    /// Включить валидатор на прием купюр.
         const char SetDirections = '\xC4';  /// Установить допустимые направления подачи купюры.
 
-        namespace EAnswerType {
-            enum Enum { Default, ACK, Echo, Answer };
+        namespace EAnswerType
+        {
+            enum Enum
+            {
+                Default,
+                ACK,
+                Echo,
+                Answer
+            };
         } // namespace EAnswerType
 
-        class CData : public CSpecification<char, EAnswerType::Enum> {
+        class CData : public CSpecification<char, EAnswerType::Enum>
+        {
           public:
-            CData() {
+            CData()
+            {
                 append(Reset, EAnswerType::ACK);
                 append(Return, EAnswerType::ACK);
                 append(Stack1, EAnswerType::ACK);
@@ -81,9 +92,11 @@ namespace CID003 {
 
     //--------------------------------------------------------------------------------
     /// Спецификация статусов.
-    class DeviceCodeSpecification : public CommonDeviceCodeSpecification {
+    class DeviceCodeSpecification : public CommonDeviceCodeSpecification
+    {
       public:
-        DeviceCodeSpecification() {
+        DeviceCodeSpecification()
+        {
             /// Состояния.
             addStatus('\x11', BillAcceptorStatusCode::Normal::Enabled);
             addStatus('\x12', BillAcceptorStatusCode::BillOperation::Accepting);
@@ -137,7 +150,8 @@ namespace CID003 {
         }
 
         // TODO: при рефакторинге - попробовать завязать на статус-код
-        bool isNeedACK(const QByteArray &aBuffer) {
+        bool isNeedACK(const QByteArray &aBuffer)
+        {
             return !aBuffer.isEmpty() && ((aBuffer[0] == '\x15') || (aBuffer[0] == '\x40'));
         }
     };

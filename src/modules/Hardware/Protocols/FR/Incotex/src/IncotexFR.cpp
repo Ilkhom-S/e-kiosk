@@ -9,7 +9,8 @@
 using namespace SDK::Driver::IOPort::COM;
 
 //--------------------------------------------------------------------------------
-IncotexFR::IncotexFR() {
+IncotexFR::IncotexFR()
+{
     // данные порта
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR115200); // preferable for work
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);   // default
@@ -22,14 +23,17 @@ IncotexFR::IncotexFR() {
 }
 
 //--------------------------------------------------------------------------------
-const uchar IncotexFR::calcCRC(const QByteArray &aData) {
-    if (!aData.size()) {
+const uchar IncotexFR::calcCRC(const QByteArray &aData)
+{
+    if (!aData.size())
+    {
         return 0;
     }
 
     uchar sum = 0;
 
-    for (int i = 0; i < aData.size(); ++i) {
+    for (int i = 0; i < aData.size(); ++i)
+    {
         sum += uchar(aData[i]);
     }
 
@@ -37,16 +41,19 @@ const uchar IncotexFR::calcCRC(const QByteArray &aData) {
 }
 
 //--------------------------------------------------------------------------------
-bool IncotexFR::packData(FRProtocolCommands::Enum aCommand, const QVariantMap &aCommandData, QByteArray &aPacket) {
+bool IncotexFR::packData(FRProtocolCommands::Enum aCommand, const QVariantMap &aCommandData, QByteArray &aPacket)
+{
     // Складываем в пакет код сообщения (команды) и в другой пакет данные команды
     QByteArray localCommandData;
 
-    if (!getCommandPacket(aCommand, aPacket, localCommandData, aCommandData)) {
+    if (!getCommandPacket(aCommand, aPacket, localCommandData, aCommandData))
+    {
         toLog(LogLevel::Error, "Incotex: Failed to get command packet");
         return false;
     }
 
-    if (!isESCCommand(aCommand)) {
+    if (!isESCCommand(aCommand))
+    {
         // Пароль передачи данных
         aPacket.append(CIncotexFR::Constants::ModelInfoPassword);
 
@@ -66,7 +73,9 @@ bool IncotexFR::packData(FRProtocolCommands::Enum aCommand, const QVariantMap &a
 
         // Конечный байт
         aPacket.append(CIncotexFR::Constants::Postfix);
-    } else {
+    }
+    else
+    {
         // Данные команды
         aPacket.append(localCommandData);
     }
@@ -75,9 +84,11 @@ bool IncotexFR::packData(FRProtocolCommands::Enum aCommand, const QVariantMap &a
 }
 
 //--------------------------------------------------------------------------------
-bool IncotexFR::unpackData(const QByteArray &aPacket, QByteArray &aData) {
+bool IncotexFR::unpackData(const QByteArray &aPacket, QByteArray &aData)
+{
     // проверяем длину сообщения
-    if (aPacket.size() < CIncotexFR::Constants::MinAnswerSize) {
+    if (aPacket.size() < CIncotexFR::Constants::MinAnswerSize)
+    {
         toLog(LogLevel::Error, QString("Incotex: Length of the packet is too small, %1 < %2")
                                    .arg(aPacket.size())
                                    .arg(CIncotexFR::Constants::MinAnswerSize));
@@ -85,13 +96,15 @@ bool IncotexFR::unpackData(const QByteArray &aPacket, QByteArray &aData) {
     }
 
     // проверяем первый байт
-    if (!aPacket.startsWith(CIncotexFR::Constants::Prefix)) {
+    if (!aPacket.startsWith(CIncotexFR::Constants::Prefix))
+    {
         toLog(LogLevel::Error, "Incotex: Invalid first byte (prefix)");
         return false;
     }
 
     // проверяем последний байт
-    if (!aPacket.endsWith(CIncotexFR::Constants::Postfix)) {
+    if (!aPacket.endsWith(CIncotexFR::Constants::Postfix))
+    {
         toLog(LogLevel::Error, "Incotex: Invalid last byte (postfix)");
         return false;
     }
@@ -105,12 +118,14 @@ bool IncotexFR::unpackData(const QByteArray &aPacket, QByteArray &aData) {
     QByteArray CRCBuffer = aPacket.right(CIncotexFR::Positions::CRC).left(CIncotexFR::Positions::CRCsize);
     uchar CRC;
 
-    if (!ASCIIBuffer2UChar(CRCBuffer, CRC)) {
+    if (!ASCIIBuffer2UChar(CRCBuffer, CRC))
+    {
         toLog(LogLevel::Error, "Incotex: Invalid CRC:{" + CRCBuffer.toHex() + "}");
         return false;
     }
 
-    if (localCRC != CRC) {
+    if (localCRC != CRC)
+    {
         toLog(LogLevel::Error, "Incotex: Invalid CRC of the answer message.");
         return false;
     }
@@ -120,7 +135,8 @@ bool IncotexFR::unpackData(const QByteArray &aPacket, QByteArray &aData) {
     int purgedDataSize;
     QByteArray separator = QByteArray(1, CIncotexFR::Constants::Separator);
 
-    do {
+    do
+    {
         purgedDataSize = purgedData.size();
         purgedData = purgedData.replace(separator + separator, separator);
     } while (purgedDataSize != purgedData.size());
@@ -133,47 +149,57 @@ bool IncotexFR::unpackData(const QByteArray &aPacket, QByteArray &aData) {
 
 //--------------------------------------------------------------------------------
 bool IncotexFR::processCommand(SDK::Driver::IIOPort *aPort, FRProtocolCommands::Enum aCommand,
-                               const QVariantMap &aCommandData, SUnpackedDataBase *aUnpackedData) {
+                               const QVariantMap &aCommandData, SUnpackedDataBase *aUnpackedData)
+{
     return localProcessCommand(aPort, aCommand, aCommandData, static_cast<CIncotexFR::SUnpackedData *>(aUnpackedData));
 }
 
 //--------------------------------------------------------------------------------
 bool IncotexFR::processAnswer(SDK::Driver::IIOPort *aPort, FRProtocolCommands::Enum aCommand,
                               const QVariantMap &aCommandData, QByteArray &aAnswerData,
-                              CIncotexFR::SUnpackedData *aUnpackedData) {
+                              CIncotexFR::SUnpackedData *aUnpackedData)
+{
     bool processSuccess = false;
 
     // если результат успешный и есть ответ и он может содержать код ошибки или режима
-    if (aAnswerData.size() > 1) {
+    if (aAnswerData.size() > 1)
+    {
         CIncotexFR::SUnpackedData data;
         CIncotexFR::SUnpackedData &unpackedData = aUnpackedData ? *aUnpackedData : data;
 
         // проверяем на ошибку
-        if (parseAnswer(aAnswerData, unpackedData)) {
+        if (parseAnswer(aAnswerData, unpackedData))
+        {
             processSuccess = !unpackedData.commandResult;
 
             // если есть ошибка - печатаем в лог ответ
-            if (!processSuccess) {
+            if (!processSuccess)
+            {
                 toLog(LogLevel::Error,
                       QString("Incotex: Error: %1").arg(CIncotexFR::Errors::Descriptions[unpackedData.commandResult]));
             }
 
             QVariantMap commandData;
 
-            switch (unpackedData.commandResult) {
-                case CIncotexFR::Errors::Codes::CashierNotRegistered: {
-                    if (localProcessCommand(aPort, FRProtocolCommands::CashierRegistration, commandData)) {
+            switch (unpackedData.commandResult)
+            {
+                case CIncotexFR::Errors::Codes::CashierNotRegistered:
+                {
+                    if (localProcessCommand(aPort, FRProtocolCommands::CashierRegistration, commandData))
+                    {
                         return localProcessCommand(aPort, aCommand, aCommandData, aUnpackedData);
                     }
 
                     break;
                 }
                 //--------------------------------------------------------------------------------
-                case CIncotexFR::Errors::Codes::NeedCloseSession: {
+                case CIncotexFR::Errors::Codes::NeedCloseSession:
+                {
                     toLog(LogLevel::Normal, "Incotex: Begin processing auto-ZReport command");
 
                     if (localProcessCommand(aPort, FRProtocolCommands::ZReport, commandData) &&
-                        localProcessCommand(aPort, FRProtocolCommands::CashierRegistration, commandData)) {
+                        localProcessCommand(aPort, FRProtocolCommands::CashierRegistration, commandData))
+                    {
                         return localProcessCommand(aPort, aCommand, aCommandData, aUnpackedData);
                     }
 
@@ -188,10 +214,12 @@ bool IncotexFR::processAnswer(SDK::Driver::IIOPort *aPort, FRProtocolCommands::E
 
 //--------------------------------------------------------------------------------
 bool IncotexFR::localProcessCommand(SDK::Driver::IIOPort *aPort, FRProtocolCommands::Enum aCommand,
-                                    const QVariantMap &aCommandData, CIncotexFR::SUnpackedData *aUnpackedData) {
+                                    const QVariantMap &aCommandData, CIncotexFR::SUnpackedData *aUnpackedData)
+{
     QByteArray packet;
 
-    if (!packData(aCommand, aCommandData, packet)) {
+    if (!packData(aCommand, aCommandData, packet))
+    {
         toLog(LogLevel::Error, "Incotex: Failed to pack data");
         return false;
     }
@@ -199,14 +227,16 @@ bool IncotexFR::localProcessCommand(SDK::Driver::IIOPort *aPort, FRProtocolComma
     toLog(LogLevel::Normal, QString("Incotex: >> {%1}").arg(packet.toHex().data()));
     QByteArray answer;
 
-    if (!execCommand(aPort, packet, answer)) {
+    if (!execCommand(aPort, packet, answer))
+    {
         toLog(LogLevel::Error, "Incotex: Failed to execute command");
         return false;
     }
 
     QByteArray unpacketAnswer;
 
-    if (!isESCCommand(packet) && !unpackData(answer, unpacketAnswer)) {
+    if (!isESCCommand(packet) && !unpackData(answer, unpacketAnswer))
+    {
         toLog(LogLevel::Error, "Incotex: Failed to unpack data");
         return false;
     }
@@ -215,19 +245,23 @@ bool IncotexFR::localProcessCommand(SDK::Driver::IIOPort *aPort, FRProtocolComma
 }
 
 //--------------------------------------------------------------------------------
-bool IncotexFR::execCommand(SDK::Driver::IIOPort *aPort, const QByteArray &aCommandPacket, QByteArray &aAnswerData) {
-    if (!aPort->write(aCommandPacket)) {
+bool IncotexFR::execCommand(SDK::Driver::IIOPort *aPort, const QByteArray &aCommandPacket, QByteArray &aAnswerData)
+{
+    if (!aPort->write(aCommandPacket))
+    {
         return false;
     }
 
-    if (!isESCCommand(aCommandPacket)) {
+    if (!isESCCommand(aCommandPacket))
+    {
         return getAnswer(aPort, aAnswerData);
     }
 
     QByteArray data;
     bool result = aPort->read(data);
 
-    if (!data.isEmpty()) {
+    if (!data.isEmpty())
+    {
         toLog(LogLevel::Normal, QString("Incotex: << {%1}").arg(data.toHex().data()));
     }
 
@@ -236,22 +270,27 @@ bool IncotexFR::execCommand(SDK::Driver::IIOPort *aPort, const QByteArray &aComm
 
 //--------------------------------------------------------------------------------
 bool IncotexFR::getCommandPacket(FRProtocolCommands::Enum aCommand, QByteArray &aPacket, QByteArray &aLocalCommandData,
-                                 const QVariantMap &aCommandData) {
-    switch (aCommand) {
-        case FRProtocolCommands::Identification: {
+                                 const QVariantMap &aCommandData)
+{
+    switch (aCommand)
+    {
+        case FRProtocolCommands::Identification:
+        {
             aPacket.append(CIncotexFR::Commands::GetModelInfo);
 
             break;
         }
         //---------------------------------------------------------------
         case FRProtocolCommands::GetStatus:
-        case FRProtocolCommands::GetCodeStatus: {
+        case FRProtocolCommands::GetCodeStatus:
+        {
             aPacket.append(CIncotexFR::Commands::GetStatus);
 
             break;
         }
         //---------------------------------------------------------------
-        case FRProtocolCommands::GetFRParameters: {
+        case FRProtocolCommands::GetFRParameters:
+        {
             Q_ASSERT(aCommandData.contains(CHardware::StatusType));
 
             aPacket.append(CIncotexFR::Commands::GetFRParameters);
@@ -264,7 +303,8 @@ bool IncotexFR::getCommandPacket(FRProtocolCommands::Enum aCommand, QByteArray &
             break;
         }
         //---------------------------------------------------------------
-        case FRProtocolCommands::CashierRegistration: {
+        case FRProtocolCommands::CashierRegistration:
+        {
             aPacket.append(CIncotexFR::Commands::CashierRegistration);
 
             // Номер кассира
@@ -278,7 +318,8 @@ bool IncotexFR::getCommandPacket(FRProtocolCommands::Enum aCommand, QByteArray &
             break;
         }
         //---------------------------------------------------------------
-        case FRProtocolCommands::XReport: {
+        case FRProtocolCommands::XReport:
+        {
             aPacket.append(CIncotexFR::Commands::Report);
 
             // Тип операции
@@ -297,7 +338,8 @@ bool IncotexFR::getCommandPacket(FRProtocolCommands::Enum aCommand, QByteArray &
             break;
         }
         //---------------------------------------------------------------
-        case FRProtocolCommands::ZReport: {
+        case FRProtocolCommands::ZReport:
+        {
             aPacket.append(CIncotexFR::Commands::Report);
 
             // Тип операции
@@ -316,7 +358,8 @@ bool IncotexFR::getCommandPacket(FRProtocolCommands::Enum aCommand, QByteArray &
             break;
         }
         //---------------------------------------------------------------
-        case FRProtocolCommands::Sale: {
+        case FRProtocolCommands::Sale:
+        {
             Q_ASSERT(aCommandData.contains(CHardware::FiscalPrinter::Amount));
 
             aPacket.append(CIncotexFR::Commands::Sale);
@@ -398,7 +441,8 @@ bool IncotexFR::getCommandPacket(FRProtocolCommands::Enum aCommand, QByteArray &
             break;
         }
         //---------------------------------------------------------------
-        case FRProtocolCommands::Encashment: {
+        case FRProtocolCommands::Encashment:
+        {
             Q_ASSERT(aCommandData.contains(CHardware::FiscalPrinter::Amount));
             Q_ASSERT(aCommandData.contains(CHardware::Printer::Receipt));
 
@@ -430,10 +474,12 @@ bool IncotexFR::getCommandPacket(FRProtocolCommands::Enum aCommand, QByteArray &
             Q_ASSERT(receipt != 0);
 
             // нефискальная часть
-            for (int i = 0; i < receipt->size(); ++i) {
+            for (int i = 0; i < receipt->size(); ++i)
+            {
                 int start = 0;
 
-                do {
+                do
+                {
                     addFiscalElement(
                         aLocalCommandData, CIncotexFR::FiscalData::Elements::Free, x, ++y,
                         receipt->value(i)
@@ -497,7 +543,8 @@ bool IncotexFR::getCommandPacket(FRProtocolCommands::Enum aCommand, QByteArray &
             break;
         }
         //---------------------------------------------------------------
-        case FRProtocolCommands::GetFRRegisters: {
+        case FRProtocolCommands::GetFRRegisters:
+        {
             Q_ASSERT(aCommandData.contains(CHardware::Register));
 
             aPacket.append(CIncotexFR::Commands::GetRegister);
@@ -509,27 +556,31 @@ bool IncotexFR::getCommandPacket(FRProtocolCommands::Enum aCommand, QByteArray &
             break;
         }
         //---------------------------------------------------------------
-        case FRProtocolCommands::SetPrinterMode: {
+        case FRProtocolCommands::SetPrinterMode:
+        {
             aPacket.append(CIncotexFR::Commands::SetPrinterMode);
 
             break;
         }
         //---------------------------------------------------------------
         // Команды нефискального режима
-        case FRProtocolCommands::SetFiscalMode: {
+        case FRProtocolCommands::SetFiscalMode:
+        {
             aPacket.push_back(CIncotexFR::Commands::SetFiscalMode);
 
             break;
         }
         //---------------------------------------------------------------
-        case FRProtocolCommands::PrintString: {
+        case FRProtocolCommands::PrintString:
+        {
             Q_ASSERT(aCommandData.contains(CHardware::Printer::ByteString));
 
             aPacket.push_back(aCommandData[CHardware::Printer::ByteString].toByteArray());
 
             break;
         }
-        default: {
+        default:
+        {
             toLog(
                 LogLevel::Error,
                 QString("Incotex: The commmand %1 is not implemented").arg(FRProtocolCommands::Description[aCommand]));
@@ -541,7 +592,8 @@ bool IncotexFR::getCommandPacket(FRProtocolCommands::Enum aCommand, QByteArray &
 }
 
 //--------------------------------------------------------------------------------
-bool IncotexFR::getAnswer(SDK::Driver::IIOPort *aPort, QByteArray &aAnswer) {
+bool IncotexFR::getAnswer(SDK::Driver::IIOPort *aPort, QByteArray &aAnswer)
+{
     // Запускаем таймер максимального ожидания
     QTime clockTimer;
     clockTimer.start();
@@ -554,28 +606,33 @@ bool IncotexFR::getAnswer(SDK::Driver::IIOPort *aPort, QByteArray &aAnswer) {
     bool isCAN;
     bool isStopRead;
 
-    auto adjust = [](QByteArray &aAnswer) {
+    auto adjust = [](QByteArray &aAnswer)
+    {
         int position = aAnswer.indexOf(CIncotexFR::Constants::Prefix);
         if (position != -1)
             aAnswer = aAnswer.mid(position, aAnswer.indexOf(CIncotexFR::Constants::Postfix, position) - position + 1);
     };
 
-    do {
+    do
+    {
         data.clear();
         isACK = false;
         isCAN = false;
         isStopRead = false;
 
-        if (!aPort->read(data)) {
+        if (!aPort->read(data))
+        {
             return false;
         }
 
         elapsedTime = clockTimer.elapsed();
 
-        if (!data.isEmpty()) {
+        if (!data.isEmpty())
+        {
             adjust(data);
 
-            if (data.size() == 1) {
+            if (data.size() == 1)
+            {
                 isACK = aAnswer.isEmpty() && (data[0] == ASCII::ACK);
                 isCAN = aAnswer.isEmpty() && (data[0] == CIncotexFR::Constants::CAN);
             }
@@ -583,7 +640,8 @@ bool IncotexFR::getAnswer(SDK::Driver::IIOPort *aPort, QByteArray &aAnswer) {
             elapsedTimeMark = elapsedTime;
 
             // если получили не ACK - складываем, иначе - если ESC-команда - выходим
-            if (!isACK) {
+            if (!isACK)
+            {
                 aAnswer.push_back(data);
             }
         }
@@ -592,7 +650,8 @@ bool IncotexFR::getAnswer(SDK::Driver::IIOPort *aPort, QByteArray &aAnswer) {
                      ((elapsedTime - elapsedTimeMark) > CIncotexFR::Timeouts::MaxWork) ||
                      data.endsWith(CIncotexFR::Constants::Postfix);
 
-        if (!isStopRead) {
+        if (!isStopRead)
+        {
             SleepHelper::msleep(CIncotexFR::Timeouts::Default);
         }
     } while (!isStopRead);
@@ -609,7 +668,8 @@ bool IncotexFR::getAnswer(SDK::Driver::IIOPort *aPort, QByteArray &aAnswer) {
 }
 
 //--------------------------------------------------------------------------------
-bool IncotexFR::parseAnswer(const QByteArray &aUnpackedData, CIncotexFR::SUnpackedData &aAnswer) {
+bool IncotexFR::parseAnswer(const QByteArray &aUnpackedData, CIncotexFR::SUnpackedData &aAnswer)
+{
     bool result = true;
 
     QList<QByteArray> answerData = aUnpackedData.split(CIncotexFR::Constants::Separator);
@@ -633,16 +693,20 @@ bool IncotexFR::parseAnswer(const QByteArray &aUnpackedData, CIncotexFR::SUnpack
     aAnswer.PaperEnd = ProtocolUtils::getBit(PrinterStatus, CIncotexFR::Answer::Errors::PaperEnd);
     aAnswer.OfflineError = ProtocolUtils::getBit(PrinterStatus, CIncotexFR::Answer::Errors::OfflineError);
 
-    if (aAnswer.commandResult) {
+    if (aAnswer.commandResult)
+    {
         return true;
     }
 
     QString errorLog = QString("Incotex: Wrong sections in answer : %1, need min ").arg(answerData.size());
 
     // статусы ЭКЛЗ мы получить не можем
-    switch (aAnswer.command) {
-        case CIncotexFR::Commands::GetModelInfo: {
-            if (answerData.size() < (CIncotexFR::Answer::Sections::SoftVersion + 1)) {
+    switch (aAnswer.command)
+    {
+        case CIncotexFR::Commands::GetModelInfo:
+        {
+            if (answerData.size() < (CIncotexFR::Answer::Sections::SoftVersion + 1))
+            {
                 toLog(LogLevel::Error, errorLog + QString::number(CIncotexFR::Answer::Sections::SoftVersion + 1));
                 return false;
             }
@@ -653,8 +717,10 @@ bool IncotexFR::parseAnswer(const QByteArray &aUnpackedData, CIncotexFR::SUnpack
 
             break;
         }
-        case CIncotexFR::Commands::GetFRParameters: {
-            if (answerData.size() < (CIncotexFR::Answer::Sections::StatusEKLZ + 1)) {
+        case CIncotexFR::Commands::GetFRParameters:
+        {
+            if (answerData.size() < (CIncotexFR::Answer::Sections::StatusEKLZ + 1))
+            {
                 toLog(LogLevel::Error, errorLog + QString::number(CIncotexFR::Answer::Sections::StatusEKLZ));
                 return false;
             }
@@ -663,15 +729,18 @@ bool IncotexFR::parseAnswer(const QByteArray &aUnpackedData, CIncotexFR::SUnpack
             QByteArray StatusEKLZ = answerData[CIncotexFR::Answer::Sections::StatusEKLZ];
             convertASCIITo16(StatusEKLZ);
 
-            if (ParameterFR == CIncotexFR::Constants::EKLZStatusRequest) {
+            if (ParameterFR == CIncotexFR::Constants::EKLZStatusRequest)
+            {
                 aAnswer.EKLZError = ProtocolUtils::getBit(StatusEKLZ, CIncotexFR::Answer::Errors::EKLZError, true);
                 aAnswer.EKLZNearEnd = ProtocolUtils::getBit(StatusEKLZ, CIncotexFR::Answer::Errors::EKLZNearEnd, true);
             }
 
             break;
         }
-        case CIncotexFR::Commands::GetRegister: {
-            if (answerData.size() < (CIncotexFR::Answer::Sections::Register + 1)) {
+        case CIncotexFR::Commands::GetRegister:
+        {
+            if (answerData.size() < (CIncotexFR::Answer::Sections::Register + 1))
+            {
                 toLog(LogLevel::Error, errorLog + QString::number(CIncotexFR::Answer::Sections::Register));
                 return false;
             }
@@ -679,7 +748,8 @@ bool IncotexFR::parseAnswer(const QByteArray &aUnpackedData, CIncotexFR::SUnpack
             bool convertCorrect;
             aAnswer.Register = answerData[CIncotexFR::Answer::Sections::Register].toDouble(&convertCorrect);
 
-            if (!convertCorrect) {
+            if (!convertCorrect)
+            {
                 toLog(LogLevel::Error,
                       "Incotex: wrong money register format: " + answerData[CIncotexFR::Answer::Sections::Register]);
                 return false;
@@ -693,37 +763,44 @@ bool IncotexFR::parseAnswer(const QByteArray &aUnpackedData, CIncotexFR::SUnpack
 }
 
 //--------------------------------------------------------------------------------
-const bool IncotexFR::setFRParameters(SDK::Driver::IIOPort * /*aPort*/) {
+const bool IncotexFR::setFRParameters(SDK::Driver::IIOPort * /*aPort*/)
+{
     // TODO: реализовать
     return true;
 }
 
 //--------------------------------------------------------------------------------
-const bool IncotexFR::programmFRParameter(SDK::Driver::IIOPort * /*aPort*/, uchar /*aNumber*/, uchar /*aValue*/) {
+const bool IncotexFR::programmFRParameter(SDK::Driver::IIOPort * /*aPort*/, uchar /*aNumber*/, uchar /*aValue*/)
+{
     // TODO: реализовать
     return true;
 }
 
 //--------------------------------------------------------------------------------
-const bool IncotexFR::isESCCommand(const QByteArray &aPacket) {
+const bool IncotexFR::isESCCommand(const QByteArray &aPacket)
+{
     return aPacket.isEmpty()
                ? false
                : ((aPacket[0] != CIncotexFR::Constants::Prefix) && (aPacket != CIncotexFR::Commands::SetFiscalMode));
 }
 
 //--------------------------------------------------------------------------------
-const bool IncotexFR::isESCCommand(FRProtocolCommands::Enum aCommand) {
+const bool IncotexFR::isESCCommand(FRProtocolCommands::Enum aCommand)
+{
     return (aCommand == FRProtocolCommands::PrintString) || (aCommand == FRProtocolCommands::SetFiscalMode);
 }
 
 //--------------------------------------------------------------------------------
-const bool IncotexFR::ASCIIBuffer2UShort(const QByteArray &aData, ushort &aNumber, bool isRevert) {
+const bool IncotexFR::ASCIIBuffer2UShort(const QByteArray &aData, ushort &aNumber, bool isRevert)
+{
     bool result = false;
 
-    if (aData.size() == 2 * sizeof(aNumber)) {
+    if (aData.size() == 2 * sizeof(aNumber))
+    {
         ushort dcData = QString(aData).toUShort(&result, 16);
 
-        if (result) {
+        if (result)
+        {
             aNumber = isRevert ? qToBigEndian(dcData) : dcData;
         }
     }
@@ -732,13 +809,18 @@ const bool IncotexFR::ASCIIBuffer2UShort(const QByteArray &aData, ushort &aNumbe
 }
 
 //--------------------------------------------------------------------------------
-void IncotexFR::UShort2ASCIIBuffer(QByteArray &aData, ushort aNumber, int aBase, int aSize) {
+void IncotexFR::UShort2ASCIIBuffer(QByteArray &aData, ushort aNumber, int aBase, int aSize)
+{
     QString filledNumber = QString::number(aNumber, aBase).rightJustified(2 * sizeof(aNumber), ASCII::Zero, true);
 
-    if (aSize > 0) {
-        if (aSize < filledNumber.size()) {
+    if (aSize > 0)
+    {
+        if (aSize < filledNumber.size())
+        {
             filledNumber = filledNumber.mid(filledNumber.size() - aSize);
-        } else {
+        }
+        else
+        {
             filledNumber = filledNumber.leftJustified(aSize, ASCII::Space, true);
         }
     }
@@ -747,13 +829,16 @@ void IncotexFR::UShort2ASCIIBuffer(QByteArray &aData, ushort aNumber, int aBase,
 }
 
 //--------------------------------------------------------------------------------
-const bool IncotexFR::ASCIIBuffer2UChar(const QByteArray &aData, uchar &aNumber) {
+const bool IncotexFR::ASCIIBuffer2UChar(const QByteArray &aData, uchar &aNumber)
+{
     bool result = false;
 
-    if (aData.size() == 2 * sizeof(aNumber)) {
+    if (aData.size() == 2 * sizeof(aNumber))
+    {
         ushort dcData = QString(aData).toUShort(&result, 16);
 
-        if (result) {
+        if (result)
+        {
             aNumber = uchar(dcData);
         }
     }
@@ -762,11 +847,13 @@ const bool IncotexFR::ASCIIBuffer2UChar(const QByteArray &aData, uchar &aNumber)
 }
 
 //--------------------------------------------------------------------------------
-void IncotexFR::UChar2ASCIIBuffer(QByteArray &aData, uchar aNumber, int aBase, int aSize) {
+void IncotexFR::UChar2ASCIIBuffer(QByteArray &aData, uchar aNumber, int aBase, int aSize)
+{
     QByteArray buffer;
     buffer.append(QString::number(aNumber, aBase).rightJustified(2 * sizeof(aNumber), ASCII::Zero, true));
 
-    if (aSize) {
+    if (aSize)
+    {
         buffer = (buffer.size() >= aSize) ? buffer.mid(buffer.size() - aSize)
                                           : buffer.leftJustified(aSize, ASCII::Space, true);
     }
@@ -776,7 +863,8 @@ void IncotexFR::UChar2ASCIIBuffer(QByteArray &aData, uchar aNumber, int aBase, i
 
 //--------------------------------------------------------------------------------
 const int IncotexFR::addFiscalElement(QByteArray &aLocalData, char elementNumber, uchar aX, uchar aY,
-                                      const QByteArray &aData, ushort aFlags) {
+                                      const QByteArray &aData, ushort aFlags)
+{
     UChar2ASCIIBuffer(aLocalData, elementNumber, 10);
     aLocalData.append(CIncotexFR::Constants::Separator);
 
@@ -797,10 +885,12 @@ const int IncotexFR::addFiscalElement(QByteArray &aLocalData, char elementNumber
 }
 
 //--------------------------------------------------------------------------------
-bool IncotexFR::getStatus(SDK::Driver::IIOPort *aPort, CIncotexFR::SUnpackedData &aUnpacketAnswer) {
+bool IncotexFR::getStatus(SDK::Driver::IIOPort *aPort, CIncotexFR::SUnpackedData &aUnpacketAnswer)
+{
     QVariantMap commandData;
 
-    if (localProcessCommand(aPort, FRProtocolCommands::GetStatus, commandData, &aUnpacketAnswer)) {
+    if (localProcessCommand(aPort, FRProtocolCommands::GetStatus, commandData, &aUnpacketAnswer))
+    {
         commandData.insert(CHardware::StatusType, CIncotexFR::Constants::EKLZStatusRequest);
 
         return localProcessCommand(aPort, FRProtocolCommands::GetFRParameters, commandData, &aUnpacketAnswer);
@@ -810,10 +900,12 @@ bool IncotexFR::getStatus(SDK::Driver::IIOPort *aPort, CIncotexFR::SUnpackedData
 }
 
 //--------------------------------------------------------------------------------
-void IncotexFR::convertASCIITo16(QByteArray &aBuffer) {
+void IncotexFR::convertASCIITo16(QByteArray &aBuffer)
+{
     int size = aBuffer.size();
 
-    for (int i = 0; i < size / 2; ++i) {
+    for (int i = 0; i < size / 2; ++i)
+    {
         aBuffer.push_back(uchar(aBuffer.left(2).toUShort(0, 16)));
         aBuffer.remove(0, 2);
     }

@@ -9,7 +9,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------------
-class Skin : public QObject {
+class Skin : public QObject
+{
     Q_OBJECT
 
   public:

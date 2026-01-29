@@ -5,16 +5,21 @@
 #include "Hardware/CashDevices/CCTalkModelData.h"
 
 //--------------------------------------------------------------------------------
-namespace CCCTalk {
-    namespace Dispenser {
+namespace CCCTalk
+{
+    namespace Dispenser
+    {
         /// Параметры моделей.
-        namespace Models {
+        namespace Models
+        {
             const char Default[] = "Default dispenser on ccTalk protocol";
         } // namespace Models
 
-        class CModelData : public CModelDataBase {
+        class CModelData : public CModelDataBase
+        {
           public:
-            CModelData() {
+            CModelData()
+            {
                 add("SUZO INT (NL)", "SCH2", "CUBE MKII");
                 data()["SUZO INT (NL)"]["SCH2"].unsupported =
                     CCCTalk::TUnsupported()

@@ -2,7 +2,8 @@
 
 #pragma once
 
-namespace CServices {
+namespace CServices
+{
     const char CryptService[] = "CryptService";
     const char EventService[] = "EventService";
     const char PaymentService[] = "PaymentService";

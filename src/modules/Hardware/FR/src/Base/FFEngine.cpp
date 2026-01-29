@@ -19,23 +19,28 @@ using namespace SDK::Driver;
 using namespace ProtocolUtils;
 
 //--------------------------------------------------------------------------------
-FFEngine::FFEngine(ILog *aLog) : DeviceLogManager(aLog), mOperatorPresence(false) {
+FFEngine::FFEngine(ILog *aLog) : DeviceLogManager(aLog), mOperatorPresence(false)
+{
     mCodec = CodecByName[CHardware::Codepages::CP866];
 }
 
 //--------------------------------------------------------------------------------
-void FFEngine::setConfigParameter(const QString &aName, const QVariant &aValue) {
+void FFEngine::setConfigParameter(const QString &aName, const QVariant &aValue)
+{
     int field = mFFData.getKey(aName);
     QVariant value(aValue);
 
-    if (value.isValid() && field) {
+    if (value.isValid() && field)
+    {
         CFR::FiscalFields::SData &data = mFFData.data()[field];
 
-        if (data.isString()) {
+        if (data.isString())
+        {
             value = clean(value.toString());
         }
 
-        if (data.isINN()) {
+        if (data.isINN())
+        {
             value = value.toString().simplified().leftJustified(CFR::INN::Person::Natural, QChar(ASCII::Space));
         }
     }
@@ -46,14 +51,17 @@ void FFEngine::setConfigParameter(const QString &aName, const QVariant &aValue) 
 }
 
 //--------------------------------------------------------------------------------
-bool FFEngine::parseTLV(const QByteArray &aData, CFR::STLV &aTLV) {
-    auto getInt = [&aData](int aIndex, int aShift) -> int {
+bool FFEngine::parseTLV(const QByteArray &aData, CFR::STLV &aTLV)
+{
+    auto getInt = [&aData](int aIndex, int aShift) -> int
+    {
         int result = uchar(aData[aIndex]);
         return result << (8 * aShift);
     };
     int fullDataSize = aData.size();
 
-    if (fullDataSize < CFR::MinTLVSize) {
+    if (fullDataSize < CFR::MinTLVSize)
+    {
         toLog(LogLevel::Error,
               mDeviceName + QString(": Failed to parse TLV data due to full data size = %1, need %2 min")
                                 .arg(fullDataSize)
@@ -64,7 +72,8 @@ bool FFEngine::parseTLV(const QByteArray &aData, CFR::STLV &aTLV) {
     int size = getInt(2, 0) | getInt(3, 1);
     int dataSize = fullDataSize - 4;
 
-    if (dataSize < size) {
+    if (dataSize < size)
+    {
         toLog(LogLevel::Error,
               mDeviceName +
                   QString(": Failed to parse TLV data due to data size = %1, need %2 min").arg(dataSize).arg(size));
@@ -78,10 +87,12 @@ bool FFEngine::parseTLV(const QByteArray &aData, CFR::STLV &aTLV) {
 }
 
 //--------------------------------------------------------------------------------
-bool FFEngine::checkTLVData(CFR::STLV &aTLV) {
+bool FFEngine::checkTLVData(CFR::STLV &aTLV)
+{
     using namespace CFR::FiscalFields;
 
-    if (!mFFData.data().contains(aTLV.field)) {
+    if (!mFFData.data().contains(aTLV.field))
+    {
         toLog(LogLevel::Warning,
               mDeviceName +
                   QString(": Cannot check TLV-data for field %2 due to no data in specification").arg(aTLV.field));
@@ -94,7 +105,8 @@ bool FFEngine::checkTLVData(CFR::STLV &aTLV) {
     int FFMinSize = typeData.minSize;
     int FFDataSize = aTLV.data.size();
 
-    if (FFDataSize < FFMinSize) {
+    if (FFDataSize < FFMinSize)
+    {
         toLog(LogLevel::Error, mDeviceName + QString(": Failed to parse %1 %2 due to size = %3, need %4 min")
                                                  .arg(typeData.description)
                                                  .arg(mFFData.getTextLog(aTLV.field))
@@ -103,7 +115,8 @@ bool FFEngine::checkTLVData(CFR::STLV &aTLV) {
         return false;
     }
 
-    if (typeData.fixSize) {
+    if (typeData.fixSize)
+    {
         aTLV.data = aTLV.data.left(FFMinSize);
     }
 
@@ -111,12 +124,14 @@ bool FFEngine::checkTLVData(CFR::STLV &aTLV) {
 }
 
 //--------------------------------------------------------------------------------
-CFR::TTLVList FFEngine::parseSTLV(const QByteArray &aData) {
+CFR::TTLVList FFEngine::parseSTLV(const QByteArray &aData)
+{
     CFR::TTLVList result;
     CFR::STLV TLV;
     int index = 0;
 
-    while ((index < aData.size()) && parseTLV(aData.mid(index), TLV)) {
+    while ((index < aData.size()) && parseTLV(aData.mid(index), TLV))
+    {
         result.insert(TLV.field, TLV.data);
         index += TLV.data.size() + 4;
     }
@@ -125,15 +140,19 @@ CFR::TTLVList FFEngine::parseSTLV(const QByteArray &aData) {
 }
 
 //--------------------------------------------------------------------------------
-void FFEngine::parseTLVDataList(const CFR::TTLVList &aTLVs, SDK::Driver::TFiscalPaymentData &aFPData) {
-    for (auto it = aTLVs.begin(); it != aTLVs.end(); ++it) {
+void FFEngine::parseTLVDataList(const CFR::TTLVList &aTLVs, SDK::Driver::TFiscalPaymentData &aFPData)
+{
+    for (auto it = aTLVs.begin(); it != aTLVs.end(); ++it)
+    {
         parseTLVData(CFR::STLV(it.key(), it.value()), aFPData);
     }
 }
 
 //--------------------------------------------------------------------------------
-void FFEngine::parseTLVData(const CFR::STLV &aTLV, TFiscalPaymentData &aFPData) {
-    if (!mFFData.data().contains(aTLV.field)) {
+void FFEngine::parseTLVData(const CFR::STLV &aTLV, TFiscalPaymentData &aFPData)
+{
+    if (!mFFData.data().contains(aTLV.field))
+    {
         toLog(LogLevel::Error, QString("%1: Failed to parse TLV-data for field %2 due to no data in specification")
                                    .arg(mDeviceName)
                                    .arg(aTLV.field));
@@ -145,17 +164,21 @@ void FFEngine::parseTLVData(const CFR::STLV &aTLV, TFiscalPaymentData &aFPData) 
     SData FFData = mFFData[aTLV.field];
     QVariant result;
 
-    if (FFData.isSTLV()) {
+    if (FFData.isSTLV())
+    {
         return;
     }
 
-    switch (FFData.type) {
-        case ETypes::String: {
+    switch (FFData.type)
+    {
+        case ETypes::String:
+        {
             result = mCodec->toUnicode(aTLV.data);
 
             break;
         }
-        case ETypes::FVLN: {
+        case ETypes::FVLN:
+        {
             qulonglong digitData = revert(aTLV.data.mid(1)).toHex().toULongLong(0, 16);
             QString textData = QString::number(digitData);
             textData = textData.insert(textData.size() - int(uchar(aTLV.data[0])), QChar(ASCII::Dot));
@@ -165,12 +188,14 @@ void FFEngine::parseTLVData(const CFR::STLV &aTLV, TFiscalPaymentData &aFPData) 
         }
         case ETypes::Byte:
         case ETypes::VLN:
-        case ETypes::UINT32: {
+        case ETypes::UINT32:
+        {
             result = revert(aTLV.data).toHex().toUInt(0, 16);
 
             break;
         }
-        case ETypes::UnixTime: {
+        case ETypes::UnixTime:
+        {
             QDateTime dateTime;
             // QTimeZone::UTC is available in Qt 5.2+, which is the practical minimum
             dateTime.setTimeZone(QTimeZone::UTC);
@@ -181,12 +206,14 @@ void FFEngine::parseTLVData(const CFR::STLV &aTLV, TFiscalPaymentData &aFPData) 
 
             break;
         }
-        case ETypes::ByteArray: {
+        case ETypes::ByteArray:
+        {
             result = aTLV.data; // формат априори неизвестен
 
             break;
         }
-        default: {
+        default:
+        {
             toLog(LogLevel::Error,
                   QString("%1: Failed to parse TLV-data for field %2 due to data type to set = %3 is unknown")
                       .arg(mDeviceName)
@@ -197,31 +224,37 @@ void FFEngine::parseTLVData(const CFR::STLV &aTLV, TFiscalPaymentData &aFPData) 
         }
     }
 
-    if (result.isValid()) {
+    if (result.isValid())
+    {
         setFPData(aFPData, aTLV.field, result);
     }
 }
 
 //--------------------------------------------------------------------------------
-void FFEngine::parseSTLVData(const CFR::STLV &aTLV, TComplexFiscalPaymentData &aPSData) {
-    if (!mFFData[aTLV.field].isSTLV()) {
+void FFEngine::parseSTLVData(const CFR::STLV &aTLV, TComplexFiscalPaymentData &aPSData)
+{
+    if (!mFFData[aTLV.field].isSTLV())
+    {
         return;
     }
 
     CFR::TTLVList complexFPData = parseSTLV(aTLV.data);
     TFiscalPaymentData FPData;
 
-    for (auto it = complexFPData.begin(); it != complexFPData.end(); ++it) {
+    for (auto it = complexFPData.begin(); it != complexFPData.end(); ++it)
+    {
         parseTLVData(CFR::STLV(it.key(), it.value()), FPData);
     }
 
-    if (!FPData.isEmpty()) {
+    if (!FPData.isEmpty())
+    {
         aPSData << FPData;
     }
 }
 
 //--------------------------------------------------------------------------------
-QByteArray FFEngine::getTLVData(int aField, QString *aLog) {
+QByteArray FFEngine::getTLVData(int aField, QString *aLog)
+{
     QString textKey = mFFData[aField].textKey;
     QVariant value = getConfigParameter(textKey);
 
@@ -229,8 +262,10 @@ QByteArray FFEngine::getTLVData(int aField, QString *aLog) {
 }
 
 //--------------------------------------------------------------------------------
-QByteArray FFEngine::getTLVData(const QString &aTextKey, const QVariant &aValue, QString *aLog) {
-    if (!mFFData.getTextKeys().contains(aTextKey)) {
+QByteArray FFEngine::getTLVData(const QString &aTextKey, const QVariant &aValue, QString *aLog)
+{
+    if (!mFFData.getTextKeys().contains(aTextKey))
+    {
         toLog(LogLevel::Error,
               mDeviceName +
                   QString(": Failed to get TLV-data for field with text key %1 due to no data in specification")
@@ -244,8 +279,10 @@ QByteArray FFEngine::getTLVData(const QString &aTextKey, const QVariant &aValue,
 }
 
 //--------------------------------------------------------------------------------
-QByteArray FFEngine::getTLVData(int aField, const QVariant &aValue, QString *aLog) {
-    if (!mFFData.data().contains(aField)) {
+QByteArray FFEngine::getTLVData(int aField, const QVariant &aValue, QString *aLog)
+{
+    if (!mFFData.data().contains(aField))
+    {
         toLog(LogLevel::Error,
               mDeviceName +
                   QString(": Failed to get TLV-data for field %1 due to no data in specification").arg(aField));
@@ -259,16 +296,19 @@ QByteArray FFEngine::getTLVData(int aField, const QVariant &aValue, QString *aLo
 
     QByteArray result = getHexReverted(aField, 2);
 
-    switch (FFData.type) {
+    switch (FFData.type)
+    {
         case ETypes::VLN:
-        case ETypes::UINT32: {
+        case ETypes::UINT32:
+        {
             qulonglong data = aValue.toULongLong();
             result += getDigitTLVData(data);
             log += QString::number(data);
 
             break;
         }
-        case ETypes::FVLN: {
+        case ETypes::FVLN:
+        {
             double data = aValue.toDouble();
             int dotNumber = QString::number(data).indexOf(ASCII::Dot) + 1;
             result.append(uchar(dotNumber));
@@ -280,10 +320,12 @@ QByteArray FFEngine::getTLVData(int aField, const QVariant &aValue, QString *aLo
 
             break;
         }
-        case ETypes::String: {
+        case ETypes::String:
+        {
             QString data = aValue.toString();
 
-            if (data.isEmpty()) {
+            if (data.isEmpty())
+            {
                 data = " ";
                 toLog(LogLevel::Warning,
                       mDeviceName +
@@ -295,7 +337,8 @@ QByteArray FFEngine::getTLVData(int aField, const QVariant &aValue, QString *aLo
 
             break;
         }
-        case ETypes::Byte: {
+        case ETypes::Byte:
+        {
             char data = char(aValue.toUInt());
             result += data;
             log += toHexLog(data);
@@ -304,14 +347,16 @@ QByteArray FFEngine::getTLVData(int aField, const QVariant &aValue, QString *aLo
         }
         // TODO: доделать лог для STLV - для Касби
         case ETypes::STLV:
-        case ETypes::ByteArray: {
+        case ETypes::ByteArray:
+        {
             QByteArray data = aValue.toByteArray();
             result += data;
             log += "0x" + data.toHex().toUpper();
 
             break;
         }
-        default: {
+        default:
+        {
             result.clear(); // чтобы не прошел запрос установки TLV-параметра из-за неверных данных, с которыми неясно
                             // что делать
             log += "0x" + aValue.toByteArray();
@@ -327,7 +372,8 @@ QByteArray FFEngine::getTLVData(int aField, const QVariant &aValue, QString *aLo
 
     result.insert(2, getHexReverted(result.size() - 2, 2));
 
-    if (aLog) {
+    if (aLog)
+    {
         *aLog = log;
     }
 
@@ -335,19 +381,23 @@ QByteArray FFEngine::getTLVData(int aField, const QVariant &aValue, QString *aLo
 }
 
 //--------------------------------------------------------------------------------
-QByteArray FFEngine::getDigitTLVData(qulonglong aValue) {
+QByteArray FFEngine::getDigitTLVData(qulonglong aValue)
+{
     int size = sizeof(aValue);
     QByteArray result;
 
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i)
+    {
         char data = char(aValue >> (8 * (size - i - 1)));
 
-        if (!result.isEmpty() || data) {
+        if (!result.isEmpty() || data)
+        {
             result.append(data);
         }
     }
 
-    if (result.isEmpty()) {
+    if (result.isEmpty())
+    {
         result.append(ASCII::NUL);
     }
 
@@ -355,13 +405,15 @@ QByteArray FFEngine::getDigitTLVData(qulonglong aValue) {
 }
 
 //--------------------------------------------------------------------------------
-void FFEngine::setFPData(TFiscalPaymentData &aFPData, int aField, const QVariant &aValue) {
+void FFEngine::setFPData(TFiscalPaymentData &aFPData, int aField, const QVariant &aValue)
+{
     CFR::FiscalFields::SData data = mFFData[aField];
     aFPData.insert(data.textKey, aValue.isValid() ? aValue : QString());
 }
 
 //--------------------------------------------------------------------------------
-void FFEngine::checkFPData(TFiscalPaymentData &aFPData, int aField) {
+void FFEngine::checkFPData(TFiscalPaymentData &aFPData, int aField)
+{
     QString textKey = mFFData[aField].textKey;
     QVariant value = getConfigParameter(textKey);
 
@@ -369,13 +421,18 @@ void FFEngine::checkFPData(TFiscalPaymentData &aFPData, int aField) {
 }
 
 //--------------------------------------------------------------------------------
-void FFEngine::checkFPData(TFiscalPaymentData &aFPData, int aField, const QVariant &aValue) {
+void FFEngine::checkFPData(TFiscalPaymentData &aFPData, int aField, const QVariant &aValue)
+{
     QString textKey = mFFData[aField].textKey;
 
-    if (!aFPData.contains(textKey)) {
-        if (!mFFData[aField].isString()) {
+    if (!aFPData.contains(textKey))
+    {
+        if (!mFFData[aField].isString())
+        {
             aFPData.insert(textKey, aValue);
-        } else {
+        }
+        else
+        {
             QString value = clean(aValue.toString());
             aFPData.insert(textKey, value);
         }
@@ -383,17 +440,21 @@ void FFEngine::checkFPData(TFiscalPaymentData &aFPData, int aField, const QVaria
 }
 
 //--------------------------------------------------------------------------------
-void FFEngine::checkSimpleFPData(TFiscalPaymentData &aFPData, int aField) {
+void FFEngine::checkSimpleFPData(TFiscalPaymentData &aFPData, int aField)
+{
     CFR::FiscalFields::SData data = mFFData[aField];
 
-    if (aFPData.contains(data.textKey) || getConfigParameter(data.textKey, 0).toInt()) {
+    if (aFPData.contains(data.textKey) || getConfigParameter(data.textKey, 0).toInt())
+    {
         aFPData.insert(data.textKey, QString());
     }
 }
 
 //--------------------------------------------------------------------------------
-QString FFEngine::getFPDataLog(const TFiscalPaymentData &aFPData) const {
-    if (aFPData.isEmpty()) {
+QString FFEngine::getFPDataLog(const TFiscalPaymentData &aFPData) const
+{
+    if (aFPData.isEmpty())
+    {
         return "";
     }
 
@@ -401,7 +462,8 @@ QString FFEngine::getFPDataLog(const TFiscalPaymentData &aFPData) const {
     int maxKeySize = 0;
     int maxTextKeySize = 0;
 
-    foreach (const QString &textKey, aFPData.keys()) {
+    foreach (const QString &textKey, aFPData.keys())
+    {
         int field = mFFData.getKey(textKey);
         CFR::FiscalFields::SData data = mFFData[field];
 
@@ -414,7 +476,8 @@ QString FFEngine::getFPDataLog(const TFiscalPaymentData &aFPData) const {
 
     QStringList logData;
 
-    foreach (int field, fields) {
+    foreach (int field, fields)
+    {
         CFR::FiscalFields::SData data = mFFData[field];
 
         QString textKey = data.textKey;
@@ -438,14 +501,18 @@ QString FFEngine::getFPDataLog(const TFiscalPaymentData &aFPData) const {
 }
 
 //---------------------------------------------------------------------------
-bool FFEngine::checkTaxSystems(char aData, TTaxSystems &aTaxSystems) {
+bool FFEngine::checkTaxSystems(char aData, TTaxSystems &aTaxSystems)
+{
     QStringList errorLog;
 
-    for (int i = 0; i < (sizeof(aData) * 8); ++i) {
+    for (int i = 0; i < (sizeof(aData) * 8); ++i)
+    {
         char taxSystem = 1 << i;
 
-        if (aData & taxSystem) {
-            if (!CFR::TaxSystems.data().contains(taxSystem)) {
+        if (aData & taxSystem)
+        {
+            if (!CFR::TaxSystems.data().contains(taxSystem))
+            {
                 errorLog << toHexLog(taxSystem);
             }
 
@@ -455,7 +522,8 @@ bool FFEngine::checkTaxSystems(char aData, TTaxSystems &aTaxSystems) {
 
     mTaxSystems = aTaxSystems;
 
-    if (!errorLog.isEmpty()) {
+    if (!errorLog.isEmpty())
+    {
         toLog(LogLevel::Error, mDeviceName + ": Unknown taxation system(s): " + errorLog.join(", "));
         return false;
     }
@@ -469,14 +537,18 @@ bool FFEngine::checkTaxSystems(char aData, TTaxSystems &aTaxSystems) {
 }
 
 //---------------------------------------------------------------------------
-bool FFEngine::checkAgentFlags(char aData, TAgentFlags &aAgentFlags) {
+bool FFEngine::checkAgentFlags(char aData, TAgentFlags &aAgentFlags)
+{
     QStringList errorLog;
 
-    for (int i = 0; i < (sizeof(aData) * 8); ++i) {
+    for (int i = 0; i < (sizeof(aData) * 8); ++i)
+    {
         char agentFlag = 1 << i;
 
-        if (aData & agentFlag) {
-            if (!CFR::AgentFlags.data().contains(agentFlag)) {
+        if (aData & agentFlag)
+        {
+            if (!CFR::AgentFlags.data().contains(agentFlag))
+            {
                 errorLog << toHexLog(agentFlag);
             }
 
@@ -486,7 +558,8 @@ bool FFEngine::checkAgentFlags(char aData, TAgentFlags &aAgentFlags) {
 
     mAgentFlags = aAgentFlags;
 
-    if (!errorLog.isEmpty()) {
+    if (!errorLog.isEmpty())
+    {
         toLog(LogLevel::Error, mDeviceName + ": Unknown agent flag(s): " + errorLog.join(", "));
         return false;
     }
@@ -500,15 +573,19 @@ bool FFEngine::checkAgentFlags(char aData, TAgentFlags &aAgentFlags) {
 }
 
 //---------------------------------------------------------------------------
-bool FFEngine::checkOperationModes(char aData, TOperationModes &aOperationModes) {
+bool FFEngine::checkOperationModes(char aData, TOperationModes &aOperationModes)
+{
     QStringList errorLog;
     aData &= ~CFR::OperationModeData.TrashMask;
 
-    for (int i = 0; i < (sizeof(aData) * 8); ++i) {
+    for (int i = 0; i < (sizeof(aData) * 8); ++i)
+    {
         char operationMode = 1 << i;
 
-        if (aData & operationMode) {
-            if (!CFR::OperationModeData.data().contains(operationMode)) {
+        if (aData & operationMode)
+        {
+            if (!CFR::OperationModeData.data().contains(operationMode))
+            {
                 errorLog << toHexLog(operationMode);
             }
 
@@ -518,7 +595,8 @@ bool FFEngine::checkOperationModes(char aData, TOperationModes &aOperationModes)
 
     mOperationModes = aOperationModes;
 
-    if (!errorLog.isEmpty()) {
+    if (!errorLog.isEmpty())
+    {
         toLog(LogLevel::Error, mDeviceName + ": Unknown operation mode(s): " + errorLog.join(", "));
         return false;
     }
@@ -527,8 +605,10 @@ bool FFEngine::checkOperationModes(char aData, TOperationModes &aOperationModes)
 }
 
 //---------------------------------------------------------------------------
-bool FFEngine::checkFiscalField(int aField, bool &aResult) {
-    if (!mFFData.data().contains(aField)) {
+bool FFEngine::checkFiscalField(int aField, bool &aResult)
+{
+    if (!mFFData.data().contains(aField))
+    {
         aResult = false;
         toLog(LogLevel::Error,
               mDeviceName + QString(": Failed to set %2 fiscal field due to it is unknown").arg(aField));
@@ -541,18 +621,24 @@ bool FFEngine::checkFiscalField(int aField, bool &aResult) {
     SData data = mFFData[aField];
     QString log = mFFData.getTextLog(aField);
 
-    auto makeResult = [&](const QString &aAddLog) -> bool {
+    auto makeResult = [&](const QString &aAddLog) -> bool
+    {
         QString addLog = aAddLog.isEmpty() ? "" : aAddLog + ", but ";
 
-        if (data.required == CFR::FiscalFields::ERequired::No) {
+        if (data.required == CFR::FiscalFields::ERequired::No)
+        {
             toLog(LogLevel::Debug,
                   mDeviceName + QString(": Don`t set %1 due to %2the field is not required").arg(log).arg(addLog));
             aResult = true;
-        } else if ((data.required == CFR::FiscalFields::ERequired::PM) && !mOperatorPresence) {
+        }
+        else if ((data.required == CFR::FiscalFields::ERequired::PM) && !mOperatorPresence)
+        {
             toLog(LogLevel::Debug,
                   mDeviceName + QString(": Don`t set %1 due to %2the operator is not present").arg(log).arg(addLog));
             aResult = true;
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Error,
                   mDeviceName + QString(": Failed to set required %1 due to %2").arg(log).arg(aAddLog));
             aResult = false;
@@ -561,15 +647,19 @@ bool FFEngine::checkFiscalField(int aField, bool &aResult) {
         return false;
     };
 
-    if (!containsConfigParameter(data.textKey)) {
+    if (!containsConfigParameter(data.textKey))
+    {
         return makeResult("the field is absent");
     }
 
     QVariant value = getConfigParameter(data.textKey);
 
-    if (!value.isValid()) {
+    if (!value.isValid())
+    {
         return makeResult("the field is not valid");
-    } else if (value.toString().simplified().isEmpty()) {
+    }
+    else if (value.toString().simplified().isEmpty())
+    {
         return makeResult("the field is empty");
     }
 
@@ -579,15 +669,19 @@ bool FFEngine::checkFiscalField(int aField, bool &aResult) {
 }
 
 //--------------------------------------------------------------------------------
-bool FFEngine::checkDealerTaxSystem(ERequestStatus::Enum aInitialized, bool aCanLog) {
+bool FFEngine::checkDealerTaxSystem(ERequestStatus::Enum aInitialized, bool aCanLog)
+{
     CFR::DealerDataManager DDManager(this, CHardwareSDK::FR::DealerTaxSystem);
 
-    if (mOperatorPresence) {
+    if (mOperatorPresence)
+    {
         return true;
     }
 
-    if (!containsConfigParameter(CHardwareSDK::FR::DealerTaxSystem)) {
-        if (aCanLog) {
+    if (!containsConfigParameter(CHardwareSDK::FR::DealerTaxSystem))
+    {
+        if (aCanLog)
+        {
             toLog(LogLevel::Normal, mDeviceName + ": No dealer taxation system");
         }
 
@@ -596,8 +690,10 @@ bool FFEngine::checkDealerTaxSystem(ERequestStatus::Enum aInitialized, bool aCan
 
     QVariant taxSystemData = getConfigParameter(CHardwareSDK::FR::DealerTaxSystem);
 
-    if (taxSystemData.toString().isEmpty()) {
-        if (aCanLog) {
+    if (taxSystemData.toString().isEmpty())
+    {
+        if (aCanLog)
+        {
             toLog(LogLevel::Warning, mDeviceName + ": Dealer taxation system is empty");
         }
 
@@ -606,8 +702,10 @@ bool FFEngine::checkDealerTaxSystem(ERequestStatus::Enum aInitialized, bool aCan
 
     char taxSystem = char(taxSystemData.toInt());
 
-    if (!CFR::TaxSystems.data().keys().contains(taxSystem)) {
-        if (aCanLog) {
+    if (!CFR::TaxSystems.data().keys().contains(taxSystem))
+    {
+        if (aCanLog)
+        {
             toLog(LogLevel::Warning,
                   QString("%1: Wrong dealer taxation system = %2").arg(mDeviceName).arg(int(taxSystem)));
         }
@@ -617,8 +715,10 @@ bool FFEngine::checkDealerTaxSystem(ERequestStatus::Enum aInitialized, bool aCan
 
     DDManager.setValue(CFR::TaxSystems[taxSystem]);
 
-    if ((aInitialized == ERequestStatus::Success) && !mTaxSystems.isEmpty() && !mTaxSystems.contains(taxSystem)) {
-        if (aCanLog) {
+    if ((aInitialized == ERequestStatus::Success) && !mTaxSystems.isEmpty() && !mTaxSystems.contains(taxSystem))
+    {
+        if (aCanLog)
+        {
             toLog(LogLevel::Warning,
                   QString("%1: The actual taxation system(s) %2 don`t contain dealer taxation system %3 (%4)")
                       .arg(mDeviceName)
@@ -634,15 +734,19 @@ bool FFEngine::checkDealerTaxSystem(ERequestStatus::Enum aInitialized, bool aCan
 }
 
 //--------------------------------------------------------------------------------
-bool FFEngine::checkDealerAgentFlag(ERequestStatus::Enum aInitialized, bool aCanLog) {
+bool FFEngine::checkDealerAgentFlag(ERequestStatus::Enum aInitialized, bool aCanLog)
+{
     CFR::DealerDataManager DDManager(this, CHardwareSDK::FR::DealerAgentFlag);
 
-    if (mOperatorPresence) {
+    if (mOperatorPresence)
+    {
         return true;
     }
 
-    if (!containsConfigParameter(CHardwareSDK::FR::DealerAgentFlag)) {
-        if (aCanLog) {
+    if (!containsConfigParameter(CHardwareSDK::FR::DealerAgentFlag))
+    {
+        if (aCanLog)
+        {
             toLog(LogLevel::Normal, mDeviceName + ": No dealer agent flag");
         }
 
@@ -651,8 +755,10 @@ bool FFEngine::checkDealerAgentFlag(ERequestStatus::Enum aInitialized, bool aCan
 
     QVariant agentFlagData = getConfigParameter(CHardwareSDK::FR::DealerAgentFlag);
 
-    if (agentFlagData.toString().isEmpty()) {
-        if (aCanLog) {
+    if (agentFlagData.toString().isEmpty())
+    {
+        if (aCanLog)
+        {
             toLog(LogLevel::Warning, mDeviceName + ": Dealer agent flag is empty");
         }
 
@@ -661,16 +767,20 @@ bool FFEngine::checkDealerAgentFlag(ERequestStatus::Enum aInitialized, bool aCan
 
     char agentFlag = char(agentFlagData.toInt());
 
-    if (!agentFlag) {
-        if (aCanLog) {
+    if (!agentFlag)
+    {
+        if (aCanLog)
+        {
             toLog(LogLevel::Debug, mDeviceName + ": Dealer agent flag is zero");
         }
 
         return true;
     }
 
-    if (!CFR::AgentFlags.data().keys().contains(agentFlag)) {
-        if (aCanLog) {
+    if (!CFR::AgentFlags.data().keys().contains(agentFlag))
+    {
+        if (aCanLog)
+        {
             toLog(LogLevel::Warning, QString("%1: Wrong dealer agent flag = %2").arg(mDeviceName).arg(int(agentFlag)));
         }
 
@@ -679,8 +789,10 @@ bool FFEngine::checkDealerAgentFlag(ERequestStatus::Enum aInitialized, bool aCan
 
     DDManager.setValue(CFR::AgentFlags[agentFlag]);
 
-    if ((aInitialized == ERequestStatus::Success) && !mAgentFlags.isEmpty() && !mAgentFlags.contains(agentFlag)) {
-        if (aCanLog) {
+    if ((aInitialized == ERequestStatus::Success) && !mAgentFlags.isEmpty() && !mAgentFlags.contains(agentFlag))
+    {
+        if (aCanLog)
+        {
             toLog(LogLevel::Warning, QString("%1: The actual agent flag(s) %2 don`t contain dealer agent flag %3 (%4)")
                                          .arg(mDeviceName)
                                          .arg(toHexLog(CFR::joinData(mAgentFlags)))
@@ -695,15 +807,18 @@ bool FFEngine::checkDealerAgentFlag(ERequestStatus::Enum aInitialized, bool aCan
 }
 
 //--------------------------------------------------------------------------------
-bool FFEngine::checkCashier(QString &aCashier) {
-    if (!containsConfigParameter(CFiscalSDK::Cashier)) {
+bool FFEngine::checkCashier(QString &aCashier)
+{
+    if (!containsConfigParameter(CFiscalSDK::Cashier))
+    {
         toLog(LogLevel::Warning, mDeviceName + ": Failed to set cashier due to it is absent");
         return false;
     }
 
     aCashier = getConfigParameter(CFiscalSDK::Cashier).toString().simplified();
 
-    if (aCashier.isEmpty()) {
+    if (aCashier.isEmpty())
+    {
         toLog(LogLevel::Warning, mDeviceName + ": Failed to set cashier due to it is empty");
         return false;
     }
@@ -712,31 +827,44 @@ bool FFEngine::checkCashier(QString &aCashier) {
 }
 
 //--------------------------------------------------------------------------------
-bool FFEngine::checkTaxSystemOnPayment(SPaymentData &aPaymentData) {
+bool FFEngine::checkTaxSystemOnPayment(SPaymentData &aPaymentData)
+{
     char paymentTaxSystemData = char(aPaymentData.taxSystem);
     char dealerTaxSystemData = char(getConfigParameter(CHardwareSDK::FR::DealerTaxSystem).toInt());
     ETaxSystems::Enum dealerTaxSystem = ETaxSystems::Enum(dealerTaxSystemData);
 
-    if (dealerTaxSystem != ETaxSystems::None) {
-        if (mTaxSystems.contains(dealerTaxSystemData)) {
+    if (dealerTaxSystem != ETaxSystems::None)
+    {
+        if (mTaxSystems.contains(dealerTaxSystemData))
+        {
             aPaymentData.taxSystem = dealerTaxSystem;
-        } else if (mTaxSystems.size() == 1) {
+        }
+        else if (mTaxSystems.size() == 1)
+        {
             aPaymentData.taxSystem = ETaxSystems::Enum(mTaxSystems[0]);
         }
-    } else if (!mTaxSystems.isEmpty()) {
+    }
+    else if (!mTaxSystems.isEmpty())
+    {
         char joinedTaxSystems = CFR::joinData(mTaxSystems);
 
-        if (aPaymentData.taxSystem == ETaxSystems::None) {
-            if (mTaxSystems.size() == 1) {
+        if (aPaymentData.taxSystem == ETaxSystems::None)
+        {
+            if (mTaxSystems.size() == 1)
+            {
                 aPaymentData.taxSystem = ETaxSystems::Enum(mTaxSystems[0]);
-            } else {
+            }
+            else
+            {
                 toLog(LogLevel::Error,
                       mDeviceName +
                           QString(": Failed to determine the required taxation system from the several ones (%1)")
                               .arg(toHexLog(joinedTaxSystems)));
                 return false;
             }
-        } else if (!mTaxSystems.contains(paymentTaxSystemData)) {
+        }
+        else if (!mTaxSystems.contains(paymentTaxSystemData))
+        {
             toLog(LogLevel::Error,
                   mDeviceName + QString(": The actual taxation system(s) %1 don`t contain system %2 (%3)")
                                     .arg(toHexLog(joinedTaxSystems))
@@ -748,7 +876,8 @@ bool FFEngine::checkTaxSystemOnPayment(SPaymentData &aPaymentData) {
 
     removeConfigParameter(CFiscalSDK::TaxSystem);
 
-    if (aPaymentData.taxSystem != ETaxSystems::None) {
+    if (aPaymentData.taxSystem != ETaxSystems::None)
+    {
         setConfigParameter(CFiscalSDK::TaxSystem, char(aPaymentData.taxSystem));
     }
 
@@ -756,7 +885,8 @@ bool FFEngine::checkTaxSystemOnPayment(SPaymentData &aPaymentData) {
 }
 
 //--------------------------------------------------------------------------------
-bool FFEngine::checkAgentFlagOnPayment(SPaymentData &aPaymentData) {
+bool FFEngine::checkAgentFlagOnPayment(SPaymentData &aPaymentData)
+{
     /*
     if (mAgentFlags.size() > 1)
     {
@@ -774,14 +904,20 @@ bool FFEngine::checkAgentFlagOnPayment(SPaymentData &aPaymentData) {
     char dealerAgentFlagData = char(getConfigParameter(CHardwareSDK::FR::DealerAgentFlag).toInt());
     EAgentFlags::Enum dealerAgentFlag = EAgentFlags::Enum(dealerAgentFlagData);
 
-    if (dealerAgentFlag != EAgentFlags::None) {
-        if (mAgentFlags.isEmpty() || mAgentFlags.contains(dealerAgentFlagData)) {
+    if (dealerAgentFlag != EAgentFlags::None)
+    {
+        if (mAgentFlags.isEmpty() || mAgentFlags.contains(dealerAgentFlagData))
+        {
             aPaymentData.agentFlag = dealerAgentFlag;
-        } else if (mAgentFlags.size() == 1) {
+        }
+        else if (mAgentFlags.size() == 1)
+        {
             aPaymentData.agentFlag = EAgentFlags::Enum(mAgentFlags[0]);
         }
-    } else if ((aPaymentData.agentFlag != EAgentFlags::None) && !mAgentFlags.isEmpty() &&
-               !mAgentFlags.contains(paymentAgentFlagData)) {
+    }
+    else if ((aPaymentData.agentFlag != EAgentFlags::None) && !mAgentFlags.isEmpty() &&
+             !mAgentFlags.contains(paymentAgentFlagData))
+    {
         toLog(LogLevel::Error, mDeviceName + QString(": The actual agent flag(s) %1 don`t contain flag %2 (%3)")
                                                  .arg(toHexLog(CFR::joinData(mAgentFlags)))
                                                  .arg(toHexLog(paymentAgentFlagData))
@@ -792,7 +928,8 @@ bool FFEngine::checkAgentFlagOnPayment(SPaymentData &aPaymentData) {
     removeConfigParameter(CFiscalSDK::AgentFlag);
     removeConfigParameter(CFiscalSDK::AgentFlagsReg);
 
-    if (aPaymentData.agentFlag != EAgentFlags::None) {
+    if (aPaymentData.agentFlag != EAgentFlags::None)
+    {
         paymentAgentFlagData = char(aPaymentData.agentFlag);
         setConfigParameter(CFiscalSDK::AgentFlag, paymentAgentFlagData);
         setConfigParameter(CFiscalSDK::AgentFlagsReg, paymentAgentFlagData);
@@ -802,7 +939,8 @@ bool FFEngine::checkAgentFlagOnPayment(SPaymentData &aPaymentData) {
 }
 
 //--------------------------------------------------------------------------------
-void FFEngine::logRemovedFields(const QStringList &aOldTextKeys, SDK::Driver::TFiscalPaymentData &aFPData) const {
+void FFEngine::logRemovedFields(const QStringList &aOldTextKeys, SDK::Driver::TFiscalPaymentData &aFPData) const
+{
     CFR::FiscalFields::TFields removedFields =
         mFFData.getKeys((aOldTextKeys.toSet() - aFPData.keys().toSet()).toList());
 
@@ -811,13 +949,16 @@ void FFEngine::logRemovedFields(const QStringList &aOldTextKeys, SDK::Driver::TF
 }
 
 //--------------------------------------------------------------------------------
-void FFEngine::filterAfterPayment(TFiscalPaymentData &aFPData, TComplexFiscalPaymentData &aPSData) {
+void FFEngine::filterAfterPayment(TFiscalPaymentData &aFPData, TComplexFiscalPaymentData &aPSData)
+{
     QStringList textKeys = aFPData.keys();
 
-    foreach (int field, CFR::FiscalFields::FiscalTotals) {
+    foreach (int field, CFR::FiscalFields::FiscalTotals)
+    {
         QString textKey = mFFData[field].textKey;
 
-        if (!aFPData.value(textKey).toInt()) {
+        if (!aFPData.value(textKey).toInt())
+        {
             aFPData.remove(textKey);
         }
     }
@@ -837,22 +978,26 @@ void FFEngine::filterAfterPayment(TFiscalPaymentData &aFPData, TComplexFiscalPay
     checkFPData(aFPData, CFR::FiscalFields::PayOffAddress);
     checkFPData(aFPData, CFR::FiscalFields::PayOffPlace);
 
-    if (aFPData.contains(CFiscalSDK::FDSign)) {
+    if (aFPData.contains(CFiscalSDK::FDSign))
+    {
         QByteArray FDSignData = aFPData[CFiscalSDK::FDSign].toByteArray();
         qulonglong FDSign = FDSignData.right(4).toHex().toULongLong(0, 16);
         QString FDSignTextData = QString("%1").arg(FDSign, CFR::FDSignSize, 10, QChar(ASCII::Zero));
         setFPData(aFPData, CFR::FiscalFields::FDSign, FDSignTextData);
     }
 
-    if (aFPData.contains(CFiscalSDK::FDDateTime)) {
+    if (aFPData.contains(CFiscalSDK::FDDateTime))
+    {
         QDateTime dateTime = aFPData.value(CFiscalSDK::FDDateTime).toDateTime();
         setFPData(aFPData, CFR::FiscalFields::FDDateTime, dateTime.toString(CFR::DateTimeShortLogFormat));
     }
 
-    for (int i = 0; i < mOperationModes.size(); ++i) {
+    for (int i = 0; i < mOperationModes.size(); ++i)
+    {
         int field = CFR::OperationModeData[mOperationModes[i]];
 
-        if (field) {
+        if (field)
+        {
             setFPData(aFPData, field);
         }
     }
@@ -863,7 +1008,8 @@ void FFEngine::filterAfterPayment(TFiscalPaymentData &aFPData, TComplexFiscalPay
     checkSimpleFPData(aFPData, CFR::FiscalFields::InAutomateMode);
 
 #define ADD_SPEC_DFIELD(aData, aName, aSpecification)                                                                  \
-    if (aData.contains(CFiscalSDK::aName)) {                                                                           \
+    if (aData.contains(CFiscalSDK::aName))                                                                             \
+    {                                                                                                                  \
         int value = aData[CFiscalSDK::aName].toInt();                                                                  \
         aData[CFiscalSDK::aName] = CFR::aSpecification[char(value)];                                                   \
     }
@@ -873,7 +1019,8 @@ void FFEngine::filterAfterPayment(TFiscalPaymentData &aFPData, TComplexFiscalPay
     ADD_SPEC_DFIELD_SAME(aFPData, TaxSystem);
     ADD_SPEC_DFIELD_SAME(aFPData, PayOffType);
 
-    for (int i = 0; i < aPSData.size(); ++i) {
+    for (int i = 0; i < aPSData.size(); ++i)
+    {
         ADD_SPEC_DFIELD_SAME(aPSData[i], PayOffSubjectType);
         ADD_SPEC_DFIELD_SAME(aPSData[i], PayOffSubjectMethodType);
         ADD_SPEC_DFIELD_SAME(aPSData[i], VATRate);
@@ -882,11 +1029,13 @@ void FFEngine::filterAfterPayment(TFiscalPaymentData &aFPData, TComplexFiscalPay
 }
 
 //--------------------------------------------------------------------------------
-bool FFEngine::checkINN(const QString &aINN, int aType) const {
+bool FFEngine::checkINN(const QString &aINN, int aType) const
+{
     int size = aINN.size();
     bool wrongSize = (size != CFR::INN::Person::Legal) && (size != CFR::INN::Person::Natural);
 
-    if (wrongSize || (aType && (aType != size))) {
+    if (wrongSize || (aType && (aType != size)))
+    {
         QString log = QString("%1: Wrong INN size = %2, need ").arg(mDeviceName).arg(size);
         QString legalLog = QString("%1 for legal person").arg(CFR::INN::Person::Legal);
         QString naturalLog = QString("%1 for natural person").arg(CFR::INN::Person::Natural);
@@ -903,15 +1052,18 @@ bool FFEngine::checkINN(const QString &aINN, int aType) const {
         return false;
     }
 
-    if (QRegExp("^[0-9]+$").indexIn(aINN) == -1) {
+    if (QRegExp("^[0-9]+$").indexIn(aINN) == -1)
+    {
         toLog(LogLevel::Error, mDeviceName + ": Wrong INN = " + aINN);
         return false;
     }
 
-    if (size == CFR::INN::Person::Legal) {
+    if (size == CFR::INN::Person::Legal)
+    {
         qlonglong data = 0;
 
-        for (int i = 0; i < aINN.size() - 1; ++i) {
+        for (int i = 0; i < aINN.size() - 1; ++i)
+        {
             int digit = aINN[i].digitValue();
             data += digit * CFR::INN::Factors::Legal[i];
         }
@@ -919,19 +1071,24 @@ bool FFEngine::checkINN(const QString &aINN, int aType) const {
         int digit = (data % CFR::INN::Divider) % 10;
         int dataDigit = aINN[CFR::INN::Person::Legal - 1].digitValue();
 
-        if (digit != dataDigit) {
+        if (digit != dataDigit)
+        {
             toLog(LogLevel::Error, mDeviceName + ": Control numbers are not equal for INN " + aINN);
             return false;
         }
-    } else if (size == CFR::INN::Person::Natural) {
+    }
+    else if (size == CFR::INN::Person::Natural)
+    {
         qlonglong data1 = 0;
         qlonglong data2 = 0;
 
-        for (int i = 0; i < aINN.size() - 1; ++i) {
+        for (int i = 0; i < aINN.size() - 1; ++i)
+        {
             int digit = aINN[i].digitValue();
             data2 += digit * CFR::INN::Factors::Natural2[i];
 
-            if (i < aINN.size() - 2) {
+            if (i < aINN.size() - 2)
+            {
                 data1 += digit * CFR::INN::Factors::Natural1[i];
             }
         }
@@ -941,7 +1098,8 @@ bool FFEngine::checkINN(const QString &aINN, int aType) const {
         int dataDigit1 = aINN[CFR::INN::Person::Natural - 2].digitValue();
         int dataDigit2 = aINN[CFR::INN::Person::Natural - 1].digitValue();
 
-        if ((digit1 != dataDigit1) || (digit2 != dataDigit2)) {
+        if ((digit1 != dataDigit1) || (digit2 != dataDigit2))
+        {
             toLog(LogLevel::Error, mDeviceName + ": Control numbers are not equal for INN " + aINN);
             return false;
         }
@@ -951,8 +1109,10 @@ bool FFEngine::checkINN(const QString &aINN, int aType) const {
 }
 
 //--------------------------------------------------------------------------------
-QString FFEngine::filterPhone(const QString &aData) const {
-    if (!aData.contains(QRegularExpression("[0-9]+"))) {
+QString FFEngine::filterPhone(const QString &aData) const
+{
+    if (!aData.contains(QRegularExpression("[0-9]+")))
+    {
         return "";
     }
 
@@ -962,26 +1122,33 @@ QString FFEngine::filterPhone(const QString &aData) const {
     int last = 1 + result.indexOf(QRegExp("[\\+\\(]"), index);
     result = revert(result.left(last ? last : index));
 
-    if (result.startsWith("(")) {
+    if (result.startsWith("("))
+    {
         result.prepend("+7");
-    } else if (!result.indexOf(QRegularExpression("8[^0-9]"))) {
+    }
+    else if (!result.indexOf(QRegularExpression("8[^0-9]")))
+    {
         result.replace(0, 1, "+7");
     }
 
     index = result.indexOf("(");
 
-    if (index != -1) {
+    if (index != -1)
+    {
         int index2 = result.indexOf("(", index + 1);
 
-        if (index2 != -1) {
+        if (index2 != -1)
+        {
             QString data = result.left(index2);
             int index3 = data.lastIndexOf(ASCII::Space);
 
-            if (index3 < index) {
+            if (index3 < index)
+            {
                 index3 = data.lastIndexOf(QRegularExpression("[0-9]"));
             }
 
-            if ((index3 < index2) && (index3 > index)) {
+            if ((index3 < index2) && (index3 > index))
+            {
                 result = result.left(index3 + 1);
             }
         }
@@ -990,7 +1157,8 @@ QString FFEngine::filterPhone(const QString &aData) const {
     index = result.indexOf(QRegularExpression(QString::fromUtf8("[a-zA-Zа-яА-Я\\.\\,\\;\\+]+")), 1);
     result = result.left(index).remove(QRegularExpression("[^0-9\\+]+"), "");
 
-    if (result.size() == 10) {
+    if (result.size() == 10)
+    {
         result.prepend("+7");
     }
 
@@ -998,12 +1166,14 @@ QString FFEngine::filterPhone(const QString &aData) const {
 }
 
 //--------------------------------------------------------------------------------
-void FFEngine::addData(const CFR::FiscalFields::TData &aData) {
+void FFEngine::addData(const CFR::FiscalFields::TData &aData)
+{
     mFFData.add(aData);
 }
 
 //--------------------------------------------------------------------------------
-void FFEngine::setDeviceName(const QString &aDeviceName) {
+void FFEngine::setDeviceName(const QString &aDeviceName)
+{
     QWriteLocker lock(&mConfigurationGuard);
 
     mDeviceName = aDeviceName;

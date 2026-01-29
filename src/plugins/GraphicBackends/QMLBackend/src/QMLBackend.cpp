@@ -23,7 +23,8 @@
 #include <SDK/Plugins/IPluginFactory.h>
 #include <SDK/Plugins/PluginInitializer.h>
 
-namespace CQMLBackend {
+namespace CQMLBackend
+{
     /// Тип данного графического движка.
     const char Type[] = "qml";
     const char PluginName[] = "QML";
@@ -31,14 +32,17 @@ namespace CQMLBackend {
 } // namespace CQMLBackend
 
 //------------------------------------------------------------------------------
-namespace {
+namespace
+{
 
     /// Конструктор экземпляра плагина.
-    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+    {
         return new QMLBackend(aFactory, aInstancePath);
     }
 
-    QVector<SDK::Plugin::SPluginParameter> EnumParameters() {
+    QVector<SDK::Plugin::SPluginParameter> EnumParameters()
+    {
         return QVector<SDK::Plugin::SPluginParameter>(1)
                << SDK::Plugin::SPluginParameter(SDK::Plugin::Parameters::Debug, SDK::Plugin::SPluginParameter::Bool,
                                                 false, QT_TRANSLATE_NOOP("QMLBackendParameters", "#debug_mode"),
@@ -53,7 +57,8 @@ REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
                                 &CreatePlugin, &EnumParameters, QMLBackend);
 
 //------------------------------------------------------------------------------
-QMLBackend::QMLBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+QMLBackend::QMLBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+{
     mFactory = aFactory;
     mInstancePath = aInstancePath;
     mEngine = 0;
@@ -79,50 +84,61 @@ QMLBackend::QMLBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInst
 }
 
 //------------------------------------------------------------------------------
-QString QMLBackend::getPluginName() const {
+QString QMLBackend::getPluginName() const
+{
     return CQMLBackend::PluginName;
 }
 
 //------------------------------------------------------------------------------
-QVariantMap QMLBackend::getConfiguration() const {
+QVariantMap QMLBackend::getConfiguration() const
+{
     return mParameters;
 }
 
 //------------------------------------------------------------------------------
-void QMLBackend::setConfiguration(const QVariantMap &aParameters) {
+void QMLBackend::setConfiguration(const QVariantMap &aParameters)
+{
     mParameters = aParameters;
 }
 
 //------------------------------------------------------------------------------
-QString QMLBackend::getConfigurationName() const {
+QString QMLBackend::getConfigurationName() const
+{
     return mInstancePath;
 }
 
 //------------------------------------------------------------------------------
-bool QMLBackend::saveConfiguration() {
+bool QMLBackend::saveConfiguration()
+{
     // У плагина нет параметров
     return true;
 }
 
 //------------------------------------------------------------------------------
-bool QMLBackend::isReady() const {
+bool QMLBackend::isReady() const
+{
     return true;
 }
 
 //------------------------------------------------------------------------------
-std::weak_ptr<SDK::GUI::IGraphicsItem> QMLBackend::getItem(const SDK::GUI::GraphicsItemInfo &aInfo) {
+std::weak_ptr<SDK::GUI::IGraphicsItem> QMLBackend::getItem(const SDK::GUI::GraphicsItemInfo &aInfo)
+{
     TGraphicItemsCache::iterator it = mCachedItems.find(aInfo.name);
 
-    if (it != mCachedItems.end() && it.value()->getContext() == aInfo.context) {
+    if (it != mCachedItems.end() && it.value()->getContext() == aInfo.context)
+    {
         return it.value();
     }
 
     std::shared_ptr<QMLGraphicsItem> item(new QMLGraphicsItem(aInfo, &mQMLEngine, mEngine->getLog()),
                                           SDK::GUI::GraphicsItemDeleter());
 
-    if (item->isValid()) {
+    if (item->isValid())
+    {
         mCachedItems.insert(aInfo.name, item);
-    } else {
+    }
+    else
+    {
         mEngine->getLog()->write(LogLevel::Error, item->getError());
     }
 
@@ -130,9 +146,12 @@ std::weak_ptr<SDK::GUI::IGraphicsItem> QMLBackend::getItem(const SDK::GUI::Graph
 }
 
 //------------------------------------------------------------------------------
-bool QMLBackend::removeItem(const SDK::GUI::GraphicsItemInfo &aInfo) {
-    foreach (auto item, mCachedItems.values(aInfo.name)) {
-        if (item->getContext() == aInfo.context) {
+bool QMLBackend::removeItem(const SDK::GUI::GraphicsItemInfo &aInfo)
+{
+    foreach (auto item, mCachedItems.values(aInfo.name))
+    {
+        if (item->getContext() == aInfo.context)
+        {
             return mCachedItems.remove(aInfo.name, item) != 0;
         }
     }
@@ -141,25 +160,31 @@ bool QMLBackend::removeItem(const SDK::GUI::GraphicsItemInfo &aInfo) {
 }
 
 //------------------------------------------------------------------------------
-QString QMLBackend::getType() const {
+QString QMLBackend::getType() const
+{
     return CQMLBackend::Type;
 }
 
 //------------------------------------------------------------------------------
-QList<SDK::GUI::GraphicsItemInfo> QMLBackend::getItemList() {
+QList<SDK::GUI::GraphicsItemInfo> QMLBackend::getItemList()
+{
     return QList<SDK::GUI::GraphicsItemInfo>();
 }
 
 //------------------------------------------------------------------------------
-bool QMLBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine) {
+bool QMLBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine)
+{
     mEngine = aEngine;
     mCore = mEngine->getGraphicsHost()->getInterface<SDK::PaymentProcessor::ICore>(
         SDK::PaymentProcessor::CInterfaces::ICore);
 
-    foreach (auto objectName, mEngine->getGraphicsHost()->getInterfacesName()) {
-        if (SDK::PaymentProcessor::CInterfaces::ICore != objectName) {
+    foreach (auto objectName, mEngine->getGraphicsHost()->getInterfacesName())
+    {
+        if (SDK::PaymentProcessor::CInterfaces::ICore != objectName)
+        {
             auto object = mEngine->getGraphicsHost()->getInterface<QObject>(objectName);
-            if (object) {
+            if (object)
+            {
                 mQMLEngine.rootContext()->setContextProperty(objectName, object);
             }
         }
@@ -169,13 +194,16 @@ bool QMLBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine) {
 }
 
 //------------------------------------------------------------------------------
-void QMLBackend::shutdown() {
+void QMLBackend::shutdown()
+{
 }
 
 //------------------------------------------------------------------------------
-void QMLBackend::onWarnings(const QList<QQmlError> &aWarnings) {
+void QMLBackend::onWarnings(const QList<QQmlError> &aWarnings)
+{
     QString warnings;
-    foreach (QQmlError e, aWarnings) {
+    foreach (QQmlError e, aWarnings)
+    {
         warnings += e.toString() + "\n";
     }
 

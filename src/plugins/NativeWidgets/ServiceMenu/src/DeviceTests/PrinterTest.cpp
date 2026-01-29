@@ -10,7 +10,8 @@
 // Project
 #include "PrinterTest.h"
 
-namespace CPrinterTest {
+namespace CPrinterTest
+{
     const QString PrintTestReceipt = QT_TRANSLATE_NOOP("PrinterTest", "#print_test_receipt");
 } // namespace CPrinterTest
 
@@ -18,34 +19,43 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------------
 PrinterTest::PrinterTest(SDK::Driver::IDevice *aDevice, SDK::PaymentProcessor::ICore *aCore)
-    : mPrinter(dynamic_cast<SDK::Driver::IPrinter *>(aDevice)), mCore(aCore) {
+    : mPrinter(dynamic_cast<SDK::Driver::IPrinter *>(aDevice)), mCore(aCore)
+{
 }
 
 //------------------------------------------------------------------------------
-QList<QPair<QString, QString>> PrinterTest::getTestNames() const {
+QList<QPair<QString, QString>> PrinterTest::getTestNames() const
+{
     return QList<QPair<QString, QString>>() << qMakePair(CPrinterTest::PrintTestReceipt, QString());
 }
 
 //------------------------------------------------------------------------------
-bool PrinterTest::run(const QString &aName) {
-    if (aName == CPrinterTest::PrintTestReceipt) {
-        mTestResult = QtConcurrent::run([this]() {
-            return mCore->getPrinterService()->printReceiptDirected(mPrinter.data(), QString(PPSDK::CReceiptType::Test),
-                                                                    QVariantMap());
-        });
+bool PrinterTest::run(const QString &aName)
+{
+    if (aName == CPrinterTest::PrintTestReceipt)
+    {
+        mTestResult = QtConcurrent::run(
+            [this]()
+            {
+                return mCore->getPrinterService()->printReceiptDirected(
+                    mPrinter.data(), QString(PPSDK::CReceiptType::Test), QVariantMap());
+            });
     }
 
     return true;
 }
 
 //------------------------------------------------------------------------------
-void PrinterTest::stop() {
+void PrinterTest::stop()
+{
     mTestResult.waitForFinished();
 }
 
 //------------------------------------------------------------------------------
-bool PrinterTest::isReady() {
-    if (mPrinter) {
+bool PrinterTest::isReady()
+{
+    if (mPrinter)
+    {
         auto fr = dynamic_cast<SDK::Driver::IFiscalPrinter *>(mPrinter.data());
 
         return fr ? fr->isFiscalReady(false, SDK::Driver::EFiscalPrinterCommand::Print)
@@ -56,12 +66,14 @@ bool PrinterTest::isReady() {
 }
 
 //------------------------------------------------------------------------------
-bool PrinterTest::hasResult() {
+bool PrinterTest::hasResult()
+{
     return false;
 }
 
 //------------------------------------------------------------------------------
-void PrinterTest::onPrinted(bool aError) {
+void PrinterTest::onPrinted(bool aError)
+{
     emit result(CPrinterTest::PrintTestReceipt, aError ? tr("#failed") : tr("#ok"));
 }
 

@@ -5,7 +5,8 @@
 #include "../Retractor/ShtrihRetractorFRLite.h"
 
 //--------------------------------------------------------------------------------
-class ShtrihRetractorFR : public ShtrihRetractorFRLite<ShtrihSerialFR> {
+class ShtrihRetractorFR : public ShtrihRetractorFRLite<ShtrihSerialFR>
+{
   public:
     ShtrihRetractorFR();
 

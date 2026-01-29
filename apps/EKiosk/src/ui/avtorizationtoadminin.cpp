@@ -8,7 +8,8 @@
 #include "avtorizationtoadminin.h"
 #include "ui_avtorizationtoadminin.h"
 
-AvtorizationToAdminIn::AvtorizationToAdminIn(QWidget *parent) : QDialog(parent), ui(new Ui::AvtorizationToAdminIn) {
+AvtorizationToAdminIn::AvtorizationToAdminIn(QWidget *parent) : QDialog(parent), ui(new Ui::AvtorizationToAdminIn)
+{
     ui->setupUi(this);
 
     KeyPud = new keyPud(this);
@@ -23,8 +24,10 @@ AvtorizationToAdminIn::AvtorizationToAdminIn(QWidget *parent) : QDialog(parent),
     //    connect(ui->btnCancelReg1,SIGNAL(clicked()),SLOT(close()));
 }
 
-void AvtorizationToAdminIn::checkInputData() {
-    if (countCheckIn > 5) {
+void AvtorizationToAdminIn::checkInputData()
+{
+    if (countCheckIn > 5)
+    {
         countCheckIn = 0;
         this->close();
     }
@@ -32,7 +35,8 @@ void AvtorizationToAdminIn::checkInputData() {
     QString vrmLogin = ui->editLoginReg->text().trimmed();
     QString vrmPass = ui->editPasswordReg->text().trimmed();
 
-    if (vrmLogin == "" || vrmPass == "") {
+    if (vrmLogin == "" || vrmPass == "")
+    {
 
         countCheckIn++;
 
@@ -49,12 +53,15 @@ void AvtorizationToAdminIn::checkInputData() {
         return;
     }
 
-    if (vrmLogin == this->loginIn && vrmPass == this->passIn) {
+    if (vrmLogin == this->loginIn && vrmPass == this->passIn)
+    {
         countCheckIn = 0;
         emit this->emit_openAdminDialog();
         this->close();
         return;
-    } else {
+    }
+    else
+    {
         countCheckIn++;
 
         QMessageBox messageBox1(this);
@@ -71,11 +78,13 @@ void AvtorizationToAdminIn::checkInputData() {
     }
 }
 
-AvtorizationToAdminIn::~AvtorizationToAdminIn() {
+AvtorizationToAdminIn::~AvtorizationToAdminIn()
+{
     delete ui;
 }
 
-void AvtorizationToAdminIn::setAuthParam(QString login, QString pass) {
+void AvtorizationToAdminIn::setAuthParam(QString login, QString pass)
+{
     loginIn = login;
     passIn = pass;
 
@@ -87,7 +96,8 @@ void AvtorizationToAdminIn::setAuthParam(QString login, QString pass) {
     QTimer::singleShot(180000, this, SLOT(close()));
 }
 
-void AvtorizationToAdminIn::sendCharacter(QChar character) {
+void AvtorizationToAdminIn::sendCharacter(QChar character)
+{
     QPointer<QWidget> w = focusWidget();
 
     if (!w)
@@ -96,19 +106,23 @@ void AvtorizationToAdminIn::sendCharacter(QChar character) {
     int un = character.unicode();
 
     QString a = QString(character);
-    if (un == 15405) {
+    if (un == 15405)
+    {
         un = Qt::Key_Backspace;
         a = "";
     }
-    if (un == 15934) {
+    if (un == 15934)
+    {
         un = Qt::Key_Tab;
         a = "";
     }
-    if (un == 15917) {
+    if (un == 15917)
+    {
         un = Qt::Key_Enter;
         a = "";
     }
-    if (un == 15420) {
+    if (un == 15420)
+    {
         return;
     }
 

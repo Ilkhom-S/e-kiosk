@@ -16,7 +16,8 @@ class IDatabaseProxy;
 //---------------------------------------------------------------------------
 class DatabaseService : public SDK::PaymentProcessor::IDatabaseService,
                         public SDK::PaymentProcessor::IService,
-                        public IDatabaseQueryChecker {
+                        public IDatabaseQueryChecker
+{
   public:
     /// Получение экземпляра DatabaseService.
     static DatabaseService *instance(IApplication *aApplication);
@@ -75,7 +76,8 @@ class DatabaseService : public SDK::PaymentProcessor::IDatabaseService,
 #pragma endregion
 
     /// Получение нужной части интерфейса базы данных.
-    template <typename T> T *getDatabaseUtils() {
+    template <typename T> T *getDatabaseUtils()
+    {
         return dynamic_cast<T *>(mDbUtils.data());
     }
 

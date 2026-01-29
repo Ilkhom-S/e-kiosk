@@ -11,10 +11,13 @@
 // Plugin SDK
 #include <SDK/Plugins/IPluginEnvironment.h>
 
-namespace SDK {
-    namespace Plugin {
+namespace SDK
+{
+    namespace Plugin
+    {
 
-        namespace CPlugin {
+        namespace CPlugin
+        {
             /// Разделитель пути плагина и имени экземпляра.
             const char InstancePathSeparator[] = ".configuration_";
 
@@ -27,7 +30,8 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         /// Интерфейс плагина.
-        class IPlugin {
+        class IPlugin
+        {
             // Для доступа фабрики к деструктору
             friend class PluginFactory;
 
@@ -54,15 +58,18 @@ namespace SDK {
 
           protected:
             friend class PluginDeleter;
-            virtual ~IPlugin() {
+            virtual ~IPlugin()
+            {
             }
         };
 
         //---------------------------------------------------------------------------
         /// Удалятор для смарт-поинтера
-        class PluginDeleter {
+        class PluginDeleter
+        {
           public:
-            void operator()(IPlugin *aPlugin) {
+            void operator()(IPlugin *aPlugin)
+            {
                 delete aPlugin;
             }
         };

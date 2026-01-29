@@ -11,7 +11,8 @@
 #include "ShtrihFROnlineConstants.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class ShtrihOnlineFRBase : public ShtrihFRBase<T> {
+template <class T> class ShtrihOnlineFRBase : public ShtrihFRBase<T>
+{
     SET_SERIES("ShtrihOnline")
 
   public:

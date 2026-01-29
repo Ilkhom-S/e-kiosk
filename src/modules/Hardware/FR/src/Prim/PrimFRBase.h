@@ -10,10 +10,13 @@
 #include "PrimModelData.h"
 #include "PrimFRConstants.h"
 
-class PrimSeriesType {};
+class PrimSeriesType
+{
+};
 
 //--------------------------------------------------------------------------------
-class PrimFRBase : public TSerialFRBase {
+class PrimFRBase : public TSerialFRBase
+{
     SET_SERIES("PRIM")
     typedef PrimSeriesType TSeriesType;
 

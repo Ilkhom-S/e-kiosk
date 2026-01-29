@@ -1,6 +1,7 @@
 // System
 #include <MessageQueue/IMessageQueueClient.h>
 
-IMessageQueueClient *createMessageQueueClient() {
+IMessageQueueClient *createMessageQueueClient()
+{
     return nullptr;
 }

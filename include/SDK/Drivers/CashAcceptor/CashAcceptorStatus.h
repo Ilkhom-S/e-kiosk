@@ -10,14 +10,18 @@
 // SDK
 #include <SDK/Drivers/DeviceStatus.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //---------------------------------------------------------------------------
         /// Обобщенные статусы устройств приема денег. Передаются в пп и служат для внутренних нужд драйвера. Порядок не
         /// менять.
-        namespace ECashAcceptorStatus {
-            enum Enum {
+        namespace ECashAcceptorStatus
+        {
+            enum Enum
+            {
                 /// OK.
                 OK = 1,  /// Хороший статус.
                 Escrow,  /// Принял деньгу, и ждет дальнейшего решения: stack, return или hold. Выдает инфо о купюре.

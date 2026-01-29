@@ -2,18 +2,23 @@
 
 #pragma once
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
-        namespace CDatabaseConstants {
+        namespace CDatabaseConstants
+        {
             /// Имена обязательных устройств.
-            namespace Devices {
+            namespace Devices
+            {
                 const char Terminal[] = "Terminal";
             } // namespace Devices
 
             /// Имена параметров в БД.
-            namespace Parameters {
+            namespace Parameters
+            {
                 /// Общие параметры.
                 const char DeviceName[] = "device_name"; /// Содержит имя устройства.
                 const char DeviceInfo[] = "device_info"; /// Содержит различную информацию о устройстве.

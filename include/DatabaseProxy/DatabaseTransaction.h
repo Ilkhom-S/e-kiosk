@@ -5,18 +5,21 @@
 #include "IDatabaseProxy.h"
 
 //---------------------------------------------------------------------------
-class DatabaseTransaction {
+class DatabaseTransaction
+{
     IDatabaseProxy *mProxy;
     bool mTransactionOpened;
 
   public:
     /// Конструктор. Начинает транзакцию.
-    DatabaseTransaction(IDatabaseProxy *aProxy) : mProxy(aProxy), mTransactionOpened(false) {
+    DatabaseTransaction(IDatabaseProxy *aProxy) : mProxy(aProxy), mTransactionOpened(false)
+    {
         begin();
     }
 
     /// Деструктор. Откатывает транзакцию.
-    ~DatabaseTransaction() {
+    ~DatabaseTransaction()
+    {
         rollback();
 
         mTransactionOpened = false;
@@ -24,13 +27,16 @@ class DatabaseTransaction {
     }
 
     /// Проверяет, открыта ли транзакция.
-    operator bool() const {
+    operator bool() const
+    {
         return mTransactionOpened;
     }
 
     /// Начинает транзакцию.
-    bool begin() {
-        if (mProxy && !mTransactionOpened) {
+    bool begin()
+    {
+        if (mProxy && !mTransactionOpened)
+        {
             mTransactionOpened = mProxy->transaction();
         }
 
@@ -38,10 +44,12 @@ class DatabaseTransaction {
     }
 
     /// Фиксирует транзакцию.
-    bool commit() {
+    bool commit()
+    {
         bool result = false;
 
-        if (mProxy && mTransactionOpened) {
+        if (mProxy && mTransactionOpened)
+        {
             result = mProxy->commit();
             mTransactionOpened = false;
         }
@@ -50,10 +58,12 @@ class DatabaseTransaction {
     }
 
     /// Откатывает транзакцию.
-    bool rollback() {
+    bool rollback()
+    {
         bool result = false;
 
-        if (mProxy && mTransactionOpened) {
+        if (mProxy && mTransactionOpened)
+        {
             result = mProxy->rollback();
             mTransactionOpened = false;
         }

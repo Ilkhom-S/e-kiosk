@@ -10,7 +10,8 @@
 #include "Hardware/Acceptors/CCTalkAcceptorConstants.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class CCTalkAcceptorBase : public CCTalkDeviceBase<T> {
+template <class T> class CCTalkAcceptorBase : public CCTalkDeviceBase<T>
+{
   public:
     CCTalkAcceptorBase();
 
@@ -22,7 +23,8 @@ template <class T> class CCTalkAcceptorBase : public CCTalkDeviceBase<T> {
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
     /// Получить буферизованные статусы.
-    virtual bool getBufferedStatuses(QByteArray & /*aAnswer*/) {
+    virtual bool getBufferedStatuses(QByteArray & /*aAnswer*/)
+    {
         return false;
     }
 
@@ -30,7 +32,8 @@ template <class T> class CCTalkAcceptorBase : public CCTalkDeviceBase<T> {
     virtual void parseBufferedStatuses(const QByteArray &aAnswer, TStatusCodes &aStatusCodes);
 
     /// Распарсить данные о купюре.
-    virtual void parseCreditData(uchar /*aCredit*/, uchar /*aError*/, TStatusCodes & /*aStatusCodes*/) {
+    virtual void parseCreditData(uchar /*aCredit*/, uchar /*aError*/, TStatusCodes & /*aStatusCodes*/)
+    {
     }
 
     /// Применить таблицу номиналов.

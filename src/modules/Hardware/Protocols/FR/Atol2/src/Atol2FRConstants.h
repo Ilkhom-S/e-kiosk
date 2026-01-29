@@ -11,7 +11,8 @@
 #include "Hardware/Common/ASCII.h"
 
 //--------------------------------------------------------------------------------
-namespace CAtol2FR {
+namespace CAtol2FR
+{
     /// Начало пакета - фиксированный байт.
     const char Prefix = ASCII::STX;
 
@@ -40,7 +41,8 @@ namespace CAtol2FR {
     const QByteArray Password = QByteArray(2, ASCII::NUL);
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Дефолтный для ожидания ответа на команду.
         const int Default = 3000;
 

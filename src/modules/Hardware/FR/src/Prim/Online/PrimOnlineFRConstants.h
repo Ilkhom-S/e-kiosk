@@ -6,7 +6,8 @@
 #include "../PrimFRConstants.h"
 
 //--------------------------------------------------------------------------------
-namespace CPrimOnlineFR {
+namespace CPrimOnlineFR
+{
     /// Параметр снятия Z-отчета наружу.
     const char ZReportOut[] = "00";
 
@@ -30,16 +31,19 @@ namespace CPrimOnlineFR {
 
     //----------------------------------------------------------------------------
     /// Настройки для ПФД.
-    namespace AFD {
+    namespace AFD
+    {
         /// Длина поля
-        namespace LineSize {
+        namespace LineSize
+        {
             const int GField = 40; /// Произвольное поле.
             const int Unit = 39;   /// Названия товара.
         } // namespace LineSize
     } // namespace AFD
 
     /// Получить версию ФФД по номеру билда прошивки.
-    inline EFFD::Enum getFFD(double aBuild) {
+    inline EFFD::Enum getFFD(double aBuild)
+    {
         if (aBuild < 60)
             return EFFD::F10Beta;
         if (aBuild < 100)
@@ -53,10 +57,12 @@ namespace CPrimOnlineFR {
     }
 
     /// Получить версию УПД по версии прошивки.
-    inline int getDTD(const QString &aFirmware, EFFD::Enum aFFDFR) {
+    inline int getDTD(const QString &aFirmware, EFFD::Enum aFFDFR)
+    {
         int result = aFirmware.mid(1, 1).toInt(0, 16);
 
-        if ((aFFDFR >= EFFD::F105) && (result < 6)) {
+        if ((aFFDFR >= EFFD::F105) && (result < 6))
+        {
             result += 16;
         }
 
@@ -64,7 +70,8 @@ namespace CPrimOnlineFR {
     }
 
     /// Получить актуальные версии прошивок для разных версий ФФД.
-    inline double getActualFirmware(EFFD::Enum aFFD) {
+    inline double getActualFirmware(EFFD::Enum aFFD)
+    {
         if (aFFD == EFFD::F10)
             return 64.0;
         if (aFFD == EFFD::F105)
@@ -74,7 +81,8 @@ namespace CPrimOnlineFR {
     }
 
     /// Получить варианты поддержки кодов (Bar- и QR-).
-    inline QString getCodes(const QString &aFirmware) {
+    inline QString getCodes(const QString &aFirmware)
+    {
         int digit = aFirmware.left(1).toInt();
 
         if (digit == 1)
@@ -89,9 +97,11 @@ namespace CPrimOnlineFR {
 
     //----------------------------------------------------------------------------
     /// Спецификация типов оплаты по тегам итогов типов оплаты.
-    class CPayTypeData : public CSpecification<int, SDK::Driver::EPayTypes::Enum> {
+    class CPayTypeData : public CSpecification<int, SDK::Driver::EPayTypes::Enum>
+    {
       public:
-        CPayTypeData() {
+        CPayTypeData()
+        {
             append(CFR::FiscalFields::CashFiscalTotal, SDK::Driver::EPayTypes::Cash);
             append(CFR::FiscalFields::CardFiscalTotal, SDK::Driver::EPayTypes::EMoney);
             append(CFR::FiscalFields::PrePaymentFiscalTotal, SDK::Driver::EPayTypes::PrePayment);
@@ -104,7 +114,8 @@ namespace CPrimOnlineFR {
 
     //----------------------------------------------------------------------------
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char GetFSStatus = '\x29';          /// Получить статус ФН.
         const char GetOFDNotSentCount = '\x39';   /// Получить количество неотправленных документов в ОФД.
         const char GetPayTypeData = '\x4B';       /// Получить данные о виде платежа.
@@ -116,23 +127,27 @@ namespace CPrimOnlineFR {
 
     //----------------------------------------------------------------------------
     /// Флаги команды получения фискальных тегов.
-    namespace FiscalTLVDataFlags {
+    namespace FiscalTLVDataFlags
+    {
         const int Start = 3;
         const int Get = 4;
     } // namespace FiscalTLVDataFlags
 
     //----------------------------------------------------------------------------
     /// Ошибки.
-    namespace Errors {
+    namespace Errors
+    {
         /// Коды ошибок.
         const char MoneyCounterOverflow = '\x10'; /// Переполнение денежного счетчика.
         const char Code2DErrors = '\x60';         /// Ошибка 2D-кода.
         const char NoRequiedData = '\x78';        /// Нет запрошенных данных.
         const char FSOfflineEnd = '\x84';         /// Исчерпан ресурс хранения документов для ОФД.
 
-        class Data : public FRError::Data {
+        class Data : public FRError::Data
+        {
           public:
-            Data() {
+            Data()
+            {
                 using namespace FRError;
 
                 /// Коды ошибок.
@@ -213,9 +228,11 @@ namespace CPrimOnlineFR {
             }
         };
 
-        class ExtraData : public CPrimFR::Errors::ExtraDataBase {
+        class ExtraData : public CPrimFR::Errors::ExtraDataBase
+        {
           public:
-            ExtraData() {
+            ExtraData()
+            {
                 /// Причины переполнения денежного счетчика.
                 mMoneyCounterOverflows.append('\x01', "Сумма составляющих не равна общей сумме");
                 mMoneyCounterOverflows.append('\x02', "Сумма по видам оплат не равна общей сумме");
@@ -239,7 +256,8 @@ namespace CPrimOnlineFR {
                 mCode2DErrors.setDefault("Неизвестна");
             }
 
-            virtual QString value(char aErrorCode, char aErrorReason) {
+            virtual QString value(char aErrorCode, char aErrorReason)
+            {
                 if (aErrorCode == Errors::Code2DErrors)
                     return mCode2DErrors[aErrorReason];
                 if (aErrorCode == Errors::MoneyCounterOverflow)

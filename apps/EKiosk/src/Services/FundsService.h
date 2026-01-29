@@ -23,7 +23,8 @@ class IApplication;
 class CashDispenserManager;
 class CashAcceptorManager;
 
-namespace CFundsService {
+namespace CFundsService
+{
     const char LogName[] = "Funds";
 } // namespace CFundsService
 
@@ -32,7 +33,8 @@ class FundsService : public QObject,
                      public SDK::PaymentProcessor::IFundsService,
                      public SDK::PaymentProcessor::IService,
                      public SDK::PaymentProcessor::IServiceState,
-                     private ILogable {
+                     private ILogable
+{
     Q_OBJECT
 
   public:

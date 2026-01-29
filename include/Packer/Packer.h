@@ -12,13 +12,18 @@
 #include <Common/ILogable.h>
 
 //------------------------------------------------------------------------------
-class Packer : public ILogable {
+class Packer : public ILogable
+{
     int mExitCode;
 
     QString mMessages;
 
   public:
-    typedef enum { Zip, SevenZip } Format;
+    typedef enum
+    {
+        Zip,
+        SevenZip
+    } Format;
 
   public:
     Packer(const QString &aToolPath, ILog *aLog);

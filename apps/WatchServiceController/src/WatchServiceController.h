@@ -16,11 +16,17 @@
 #include <Common/ILog.h>
 
 //----------------------------------------------------------------------------
-class WatchServiceController : public QObject {
+class WatchServiceController : public QObject
+{
     Q_OBJECT
 
     // Последняя команда выполненная пользователем
-    enum LastCommand { Unknown, Start, Stop };
+    enum LastCommand
+    {
+        Unknown,
+        Start,
+        Stop
+    };
 
   public:
     WatchServiceController();

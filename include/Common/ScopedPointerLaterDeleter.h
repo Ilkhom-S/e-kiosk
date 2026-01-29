@@ -3,11 +3,14 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-template <class T> class ScopedPointerLaterDeleter {
+template <class T> class ScopedPointerLaterDeleter
+{
   public:
     /// Очистка указателя с вызовом deleteLater.
-    static inline void cleanup(T *aPointer) {
-        if (aPointer) {
+    static inline void cleanup(T *aPointer)
+    {
+        if (aPointer)
+        {
             aPointer->deleteLater();
         }
     }

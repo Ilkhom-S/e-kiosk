@@ -9,8 +9,10 @@
 #include <QtCore/QMutex>
 
 //-----------------------------------------------------------------------------
-namespace CBaudRateType {
-    enum Enum {
+namespace CBaudRateType
+{
+    enum Enum
+    {
         Baud50,
         Baud75,
         Baud110,
@@ -45,26 +47,52 @@ namespace CBaudRateType {
     };
 } // namespace CBaudRateType
 
-namespace CDataBitsType {
-    enum Enum { Data5, Data6, Data7, Data8 };
+namespace CDataBitsType
+{
+    enum Enum
+    {
+        Data5,
+        Data6,
+        Data7,
+        Data8
+    };
 } // namespace CDataBitsType
 
 //-----------------------------------------------------------------------------
-namespace CParityType {
-    enum Enum { None, Odd, Even, Space };
+namespace CParityType
+{
+    enum Enum
+    {
+        None,
+        Odd,
+        Even,
+        Space
+    };
 } // namespace CParityType
 
 //-----------------------------------------------------------------------------
-namespace CStopBitsType {
-    enum Enum { Stop1, Stop2 };
+namespace CStopBitsType
+{
+    enum Enum
+    {
+        Stop1,
+        Stop2
+    };
 } // namespace CStopBitsType
 
-namespace CFlowType {
-    enum Enum { Off, Hardware, XOnXOff };
+namespace CFlowType
+{
+    enum Enum
+    {
+        Off,
+        Hardware,
+        XOnXOff
+    };
 } // namespace CFlowType
 
 //-----------------------------------------------------------------------------
-struct SerialDeviceSettings {
+struct SerialDeviceSettings
+{
     SerialDeviceSettings();
 
     CBaudRateType::Enum baudRate;
@@ -76,7 +104,8 @@ struct SerialDeviceSettings {
 };
 
 //-----------------------------------------------------------------------------
-class SerialDevice : public QIODevice {
+class SerialDevice : public QIODevice
+{
   public:
     explicit SerialDevice(const QString &aFilePath, QObject *aParent = 0);
     ~SerialDevice();

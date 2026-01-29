@@ -13,7 +13,8 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний устройств на протоколе PRIM.
-namespace CPrimFR {
+namespace CPrimFR
+{
     /// Байт-разделитель.
     const char Separator = '\x1C';
 
@@ -27,9 +28,11 @@ namespace CPrimFR {
     const char FRDateTimeFormat[] = "ddMMyyyyhhmm";
 
     /// Данные типов фискальных документов.
-    class CPayOffTypeData : public CSpecification<SDK::Driver::EPayOffTypes::Enum, QByteArray> {
+    class CPayOffTypeData : public CSpecification<SDK::Driver::EPayOffTypes::Enum, QByteArray>
+    {
       public:
-        CPayOffTypeData() {
+        CPayOffTypeData()
+        {
             using namespace SDK::Driver;
 
             append(EPayOffTypes::Debit, "00");
@@ -135,14 +138,16 @@ namespace CPrimFR {
 
     //----------------------------------------------------------------------------
     /// Шрифт для фискальных документов.
-    namespace FiscalFont {
+    namespace FiscalFont
+    {
         const int Default = 1;
         const int Narrow = 0;
     } // namespace FiscalFont
 
     //----------------------------------------------------------------------------
     /// Паузы, [мс].
-    namespace Pause {
+    namespace Pause
+    {
         /// Между печатью строк.
         const int LinePrinting = 100;
 
@@ -150,18 +155,22 @@ namespace CPrimFR {
         const int Programming = 1000;
     } // namespace Pause
 
-    class CommandTimouts : public CSpecification<char, int> {
+    class CommandTimouts : public CSpecification<char, int>
+    {
       public:
-        CommandTimouts() {
+        CommandTimouts()
+        {
             setDefault(1000);
         }
     };
 
     //----------------------------------------------------------------------------
     /// Теги.
-    class TagEngine : public Tags::Engine {
+    class TagEngine : public Tags::Engine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             QByteArray prefix("\x1B\x21");
 
             appendCommon(Tags::Type::Bold, prefix, "\x08");
@@ -173,7 +182,8 @@ namespace CPrimFR {
 
     //----------------------------------------------------------------------------
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char OpenSession = '\x01';
         const char OpenFRSession = '\x02';
         const char GetStatus = '\x03';
@@ -209,15 +219,18 @@ namespace CPrimFR {
     } // namespace Commands
 
     /// Максимальное количество повторов.
-    namespace MaxRepeat {
+    namespace MaxRepeat
+    {
         const int RetractorError = 3;
     } // namespace MaxRepeat
 
     //----------------------------------------------------------------------------
     /// Спецификация статусов.
-    class CStatusInfo : public CSpecification<int, int> {
+    class CStatusInfo : public CSpecification<int, int>
+    {
       public:
-        CStatusInfo() {
+        CStatusInfo()
+        {
             append(0, DeviceStatusCode::Error::Unknown);
             append(1, FRStatusCode::Error::FM);
             append(2, FRStatusCode::Error::EKLZ);
@@ -231,7 +244,8 @@ namespace CPrimFR {
 
     //----------------------------------------------------------------------------
     /// Ошибки выполнения команд.
-    namespace Errors {
+    namespace Errors
+    {
         /// Коды ошибок.
         const char NeedBeginSession = '\x07';       /// Необходима команда начало сеанса.
         const char NeedBeginFRSession = '\x25';     /// Необходима команда "Открытие смены"
@@ -243,9 +257,11 @@ namespace CPrimFR {
         const char IncorrigibleError = '\x17';      /// Неисправимая ошибка принтера.
         const char NotReadyForPrint = '\x18';       /// Принтер не готов к печати.
 
-        class Data : public FRError::Data {
+        class Data : public FRError::Data
+        {
           public:
-            Data() {
+            Data()
+            {
                 /// Коды ошибок.
                 add('\x01', "Неверный формат сообщения");
                 add('\x02', "Неверный формат поля ", true);
@@ -324,9 +340,11 @@ namespace CPrimFR {
             }
         };
 
-        class ExtraData : public ExtraDataBase {
+        class ExtraData : public ExtraDataBase
+        {
           public:
-            ExtraData() {
+            ExtraData()
+            {
                 /// Причины переполнения денежного счетчика.
                 mMoneyCounterOverflows.append('\x01', "Сумма составляющих не равна общей сумме");
                 mMoneyCounterOverflows.append('\x02', "Сумма по видам оплат не равна общей сумме");
@@ -350,7 +368,8 @@ namespace CPrimFR {
                 mEKLZIncorrectStateReason.setDefault("Неизвестна");
             }
 
-            virtual QString value(char aErrorCode, char aErrorReason) {
+            virtual QString value(char aErrorCode, char aErrorReason)
+            {
                 if (aErrorCode == Errors::EKLZIncorrectState)
                     return mEKLZIncorrectStateReason[aErrorReason];
                 else if (aErrorCode == Errors::MoneyCounterOverflow)

@@ -38,7 +38,8 @@
 #include "../../../../modules/Hardware/FR/src/Atol/Online/Paymaster.h"
 
 //------------------------------------------------------------------------------
-template <class T> class FRPluginBase : public DevicePluginBase<T> {
+template <class T> class FRPluginBase : public DevicePluginBase<T>
+{
   public:
     FRPluginBase(SDK::Plugin::IEnvironment *aEnvironment, const QString &aInstancePath);
 
@@ -47,17 +48,20 @@ template <class T> class FRPluginBase : public DevicePluginBase<T> {
 
   protected:
     /// Добавить кастомные настройки в конфигурацию.
-    template <class T2> void addConfiguration(QVariantMap & /*aParameters*/) {
+    template <class T2> void addConfiguration(QVariantMap & /*aParameters*/)
+    {
     }
 
-    template <> void addConfiguration<AtolSeriesType>(QVariantMap &aParameters) {
+    template <> void addConfiguration<AtolSeriesType>(QVariantMap &aParameters)
+    {
         using namespace CHardware::FR::Strings;
 
         aParameters.insert(WithoutTaxes,
                            QCoreApplication::translate("ChequeParameters", "#without_taxes")); // Без налогов.
     }
 
-    template <> void addConfiguration<PrimSeriesType>(QVariantMap &aParameters) {
+    template <> void addConfiguration<PrimSeriesType>(QVariantMap &aParameters)
+    {
         using namespace CHardware::FR::Strings;
 
         aParameters.insert(Payment, QCoreApplication::translate("ChequeParameters", "#cheque_payment")); // Платеж.

@@ -9,8 +9,10 @@
 
 //--------------------------------------------------------------------------------
 /// Типы сетевых соединений.
-namespace EConnectionTypes {
-    enum Enum {
+namespace EConnectionTypes
+{
+    enum Enum
+    {
         Unknown,   /// Неизвестное.
         Unmanaged, /// Неуправляемое/локальная сеть.
         Dialup,    /// Модемное соединение.
@@ -18,8 +20,10 @@ namespace EConnectionTypes {
     };
 
     /// Возвращает имя типа соединения.
-    inline QString getConnectionTypeName(Enum aType) {
-        switch (aType) {
+    inline QString getConnectionTypeName(Enum aType)
+    {
+        switch (aType)
+        {
             case Unmanaged:
                 return "Unmanaged"; /// Неуправляемое/локальная сеть.
             case Dialup:

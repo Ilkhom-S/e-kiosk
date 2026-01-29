@@ -15,18 +15,26 @@
 #include <Hardware/CashAcceptors/CashAcceptorBase.h>
 
 /// Ожидание после резета
-namespace EResetWaiting {
-    enum Enum { No = 0, Available, Full };
+namespace EResetWaiting
+{
+    enum Enum
+    {
+        No = 0,
+        Available,
+        Full
+    };
 } // namespace EResetWaiting
 
 //--------------------------------------------------------------------------------
-namespace CPortCashAcceptor {
+namespace CPortCashAcceptor
+{
     /// Ожидание завершения выполнения функционала для фильтрации/отправки накопленных статусов.
     const SWaitingData RestoreStatusesWaiting = SWaitingData(1, 10 * 1000);
 } // namespace CPortCashAcceptor
 
 //--------------------------------------------------------------------------------
-template <class T> class PortCashAcceptor : public CashAcceptorBase<T> {
+template <class T> class PortCashAcceptor : public CashAcceptorBase<T>
+{
   public:
     PortCashAcceptor();
 
@@ -44,7 +52,8 @@ template <class T> class PortCashAcceptor : public CashAcceptorBase<T> {
     virtual bool updateParameters();
 
     /// Запросить и сохранить параметры устройства.
-    virtual void processDeviceData() {
+    virtual void processDeviceData()
+    {
     }
 
     /// Получить и обработать статус.
@@ -54,7 +63,8 @@ template <class T> class PortCashAcceptor : public CashAcceptorBase<T> {
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
     /// Получить статус.
-    virtual bool checkStatus(QByteArray & /*aAnswer*/) {
+    virtual bool checkStatus(QByteArray & /*aAnswer*/)
+    {
         return false;
     }
 
@@ -79,7 +89,8 @@ template <class T> class PortCashAcceptor : public CashAcceptorBase<T> {
     virtual void processEnable(bool aEnabled);
 
     /// Установка параметров по умолчанию.
-    virtual bool setDefaultParameters() {
+    virtual bool setDefaultParameters()
+    {
         return true;
     }
 
@@ -91,7 +102,8 @@ template <class T> class PortCashAcceptor : public CashAcceptorBase<T> {
     bool reset(bool aWait);
 
     /// Локальный сброс.
-    virtual bool processReset() {
+    virtual bool processReset()
+    {
         return false;
     }
 
@@ -99,7 +111,8 @@ template <class T> class PortCashAcceptor : public CashAcceptorBase<T> {
     bool isResetCompleted(bool aWait);
 
     /// Применить таблицу номиналов.
-    virtual bool applyParTable() {
+    virtual bool applyParTable()
+    {
         return true;
     }
 
@@ -110,7 +123,8 @@ template <class T> class PortCashAcceptor : public CashAcceptorBase<T> {
     virtual void finalizeInitialization();
 
     /// Изменение режима приема денег.
-    virtual bool enableMoneyAcceptingMode(bool /*aEnabled*/) {
+    virtual bool enableMoneyAcceptingMode(bool /*aEnabled*/)
+    {
         return false;
     }
 

@@ -12,7 +12,8 @@
 // System
 #include "MessageQueue/IMessageQueueClient.h"
 
-class MessageQueueClient : public QObject, public IMessageQueueClient {
+class MessageQueueClient : public QObject, public IMessageQueueClient
+{
     Q_OBJECT
 
   public:

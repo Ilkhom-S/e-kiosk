@@ -6,11 +6,15 @@
 #include <Hardware/Acceptors/CCTalkAcceptorConstants.h>
 
 //--------------------------------------------------------------------------------
-namespace CCCTalk {
-    namespace CoinAcceptor {
-        class CModelData : public CModelDataBase {
+namespace CCCTalk
+{
+    namespace CoinAcceptor
+    {
+        class CModelData : public CModelDataBase
+        {
           public:
-            CModelData() {
+            CModelData()
+            {
                 add("MSC", "SP2", 6, 13);
                 data()["MSC"]["SP2"].minVersions.insert(Currency::RUB, 5.38);
 

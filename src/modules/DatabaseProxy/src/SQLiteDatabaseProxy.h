@@ -18,13 +18,15 @@
 class QSqlDatabase;
 
 //---------------------------------------------------------------------------
-namespace CSQLiteDatabaseProxy {
+namespace CSQLiteDatabaseProxy
+{
     const QString DriverName = "QSQLITE";
     const int BusyTimeout = 5000; // ms
 } // namespace CSQLiteDatabaseProxy
 
 //---------------------------------------------------------------------------
-class SQLiteDatabaseProxy : public IDatabaseProxy, protected ILogable {
+class SQLiteDatabaseProxy : public IDatabaseProxy, protected ILogable
+{
     friend class IDatabaseProxy;
 
   public:

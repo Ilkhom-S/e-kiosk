@@ -13,8 +13,10 @@
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 #include <SDK/Plugins/PluginParameters.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         /// Список моделей и драйверов для каждой модели.
         typedef QMap<QString, QStringList> TModelList;
@@ -24,10 +26,16 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         /// Интерфейс менеджера устройств.
-        class IDeviceService : public QObject {
+        class IDeviceService : public QObject
+        {
             Q_OBJECT
           public:
-            enum UpdateFirmwareResult { OK = 0, NoDevice, CantUpdate };
+            enum UpdateFirmwareResult
+            {
+                OK = 0,
+                NoDevice,
+                CantUpdate
+            };
 
           public:
             /// Неблокирующий поиск всех устройств.
@@ -101,7 +109,8 @@ namespace SDK {
 
         //------------------------------------------------------------------------------
         // Интерфейс состояния устройства
-        class IDeviceStatus {
+        class IDeviceStatus
+        {
           public:
             /// Уровень тревожности
             virtual SDK::Driver::EWarningLevel::Enum level() const = 0;

@@ -24,220 +24,220 @@
 //----------------------------------------------------------------------------
 namespace CStartMode
 {
-	const char Normal[] = "normal";
-	const char Exclusive[] = "exclusive";
+    const char Normal[] = "normal";
+    const char Exclusive[] = "exclusive";
 } // namespace CStartMode
 
 //----------------------------------------------------------------------------
 namespace CWatchService
 {
-	const int CheckInterval = 3 * 1000;			// 3 sec
-	const int ScreenActivityTimeout = 5 * 1000; // 5 sec
+    const int CheckInterval = 3 * 1000;         // 3 sec
+    const int ScreenActivityTimeout = 5 * 1000; // 5 sec
 
-	const int KillModuleTimeout = 30;		// in sec
-	const int CheckMemoryUsageTimeout = 60; // in min
+    const int KillModuleTimeout = 30;       // in sec
+    const int CheckMemoryUsageTimeout = 60; // in min
 
-	namespace SlowPC
-	{
-		const int Threshold = 1400; // in MHz
+    namespace SlowPC
+    {
+        const int Threshold = 1400; // in MHz
 
-		const int KillModuleTimeout = 180; // in sec
-	} // namespace SlowPC
+        const int KillModuleTimeout = 180; // in sec
+    } // namespace SlowPC
 
-	const uint FirstPingTimeoutDefault = 60;   // in sec
-	const uint FirstPingTimeoutIncrement = 10; // in sec
-	const uint FirstPingTimeoutMax = 600;	   // in sec
+    const uint FirstPingTimeoutDefault = 60;   // in sec
+    const uint FirstPingTimeoutIncrement = 10; // in sec
+    const uint FirstPingTimeoutMax = 600;      // in sec
 } // namespace CWatchService
 
 //----------------------------------------------------------------------------
 /// Действие, которое будет выполнено после закрытия сервиса.
 namespace ECloseAction
 {
-	enum Enum
-	{
-		None = 0, /// Никаких специальных действий.
-		Restart,  /// Перезапуск модулей.
-		Exit,	  /// Закрытие сервиса.
-		Reboot,	  /// Перезагрузка системы.
-		Shutdown  /// Выключение системы.
-	};
+    enum Enum
+    {
+        None = 0, /// Никаких специальных действий.
+        Restart,  /// Перезапуск модулей.
+        Exit,     /// Закрытие сервиса.
+        Reboot,   /// Перезагрузка системы.
+        Shutdown  /// Выключение системы.
+    };
 } // namespace ECloseAction
 
 //----------------------------------------------------------------------------
 struct SModule
 {
-	QString name;
-	QString file;
-	QString workingDirectory;
-	QString params;
-	QString startMode;
-	QDateTime initDate;
-	QDateTime lastUpdate;
-	uint restartCount;
-	QProcess* process;
-	bool autoStart;
-	uint startPriority;
-	uint closePriority;
-	uint afterStartDelay;
-	bool needToStart;
-	bool previousNeedToStart;
-	bool gui;
-	uint firstPingTimeout;
-	QByteArray lastAnswer;
-	uint maxStartCount;
-	QStringList commandStack;
-	QString arguments;
-	int noResponseCount;
-	ISysUtils::MemoryInfo memoryUsage;
-	int killTimeout;
-	int killOnStartCount;
+    QString name;
+    QString file;
+    QString workingDirectory;
+    QString params;
+    QString startMode;
+    QDateTime initDate;
+    QDateTime lastUpdate;
+    uint restartCount;
+    QProcess *process;
+    bool autoStart;
+    uint startPriority;
+    uint closePriority;
+    uint afterStartDelay;
+    bool needToStart;
+    bool previousNeedToStart;
+    bool gui;
+    uint firstPingTimeout;
+    QByteArray lastAnswer;
+    uint maxStartCount;
+    QStringList commandStack;
+    QString arguments;
+    int noResponseCount;
+    ISysUtils::MemoryInfo memoryUsage;
+    int killTimeout;
+    int killOnStartCount;
 
-	SModule();
+    SModule();
 
-	/// Модуль прислал сигнал alive
-	void touch();
+    /// Модуль прислал сигнал alive
+    void touch();
 
-	/// Прибить модуль
-	bool kill();
+    /// Прибить модуль
+    bool kill();
 
-	/// Получить таймаут до первого пинга модуля
-	int getFirstPingTimeout() const;
+    /// Получить таймаут до первого пинга модуля
+    int getFirstPingTimeout() const;
 };
 
 //----------------------------------------------------------------------------
 class WatchService : public QObject, protected ILogable
 {
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-	WatchService();
+  public:
+    WatchService();
 
-	virtual ~WatchService();
+    virtual ~WatchService();
 
-	/// Возвращает таймаут, в зависимости от скорости процессора
-	static int defaultKillTimeout();
+    /// Возвращает таймаут, в зависимости от скорости процессора
+    static int defaultKillTimeout();
 
-signals:
-	/// Сигнал срабатывает, когда не запущен ни один модуль с графическим интерфейсом.
-	void screenUnprotected();
+  signals:
+    /// Сигнал срабатывает, когда не запущен ни один модуль с графическим интерфейсом.
+    void screenUnprotected();
 
-	/// Сигнал срабатывает, когда запущен модуль с графическим интерфейсом.
-	void screenProtected();
+    /// Сигнал срабатывает, когда запущен модуль с графическим интерфейсом.
+    void screenProtected();
 
-	/// Сигнал об изменении состояния модуля aSender.
-	void stateChanged(QString aSender, QString aState);
+    /// Сигнал об изменении состояния модуля aSender.
+    void stateChanged(QString aSender, QString aState);
 
-	/// Сигнал о сбросе состояния модуля aSender.
-	void stateReset(QString aSender);
+    /// Сигнал о сбросе состояния модуля aSender.
+    void stateReset(QString aSender);
 
-protected:
-	/// Чтение конфигурации о модулях.
-	virtual void loadConfiguration();
+  protected:
+    /// Чтение конфигурации о модулях.
+    virtual void loadConfiguration();
 
-	/// От одного из модулей пришло сообщение.
-	virtual void messageReceived(const QByteArray& aMessage);
+    /// От одного из модулей пришло сообщение.
+    virtual void messageReceived(const QByteArray &aMessage);
 
-	/// Запустить процедуру перезагрузки терминала
-	void doReboot();
+    /// Запустить процедуру перезагрузки терминала
+    void doReboot();
 
-	/// Работа всех модулей была завершена.
-	virtual void modulesClosed();
+    /// Работа всех модулей была завершена.
+    virtual void modulesClosed();
 
-	/// Событие при завершении всех модулей.
-	virtual void closeAction();
+    /// Событие при завершении всех модулей.
+    virtual void closeAction();
 
-public slots:
-	/// Инициализация сервиса.
-	virtual void initialize();
+  public slots:
+    /// Инициализация сервиса.
+    virtual void initialize();
 
-	/// Останавливаем сервисы по запросу операционной системы
-	void closeBySystemRequest(QSessionManager& aSessionManager);
+    /// Останавливаем сервисы по запросу операционной системы
+    void closeBySystemRequest(QSessionManager &aSessionManager);
 
-private slots:
-	/// Слот закрытие всех работающих модулей.
-	void closeModules();
+  private slots:
+    /// Слот закрытие всех работающих модулей.
+    void closeModules();
 
-	/// Проверка состояния модулей.
-	void onCheckModules();
+    /// Проверка состояния модулей.
+    void onCheckModules();
 
-	/// Обработка клика по защитному экрану.
-	void onScreenActivity(int aArea);
+    /// Обработка клика по защитному экрану.
+    void onScreenActivity(int aArea);
 
-	/// Обнуляем накопленные экраные клики
-	void onScreenActivityTimeout();
+    /// Обнуляем накопленные экраные клики
+    void onScreenActivityTimeout();
 
-	/// От одного из модулей пришло сообщение.
-	void onMessageReceived(QByteArray aMessage);
+    /// От одного из модулей пришло сообщение.
+    void onMessageReceived(QByteArray aMessage);
 
-	/// Один из модулей был закрыт.
-	void onModuleFinished(int aExitCode, QProcess::ExitStatus aExitStatus);
+    /// Один из модулей был закрыт.
+    void onModuleFinished(int aExitCode, QProcess::ExitStatus aExitStatus);
 
-	/// Обработчик сигнала об изменении системного времени
-	void onTimeChanged(qint64 aTimeOffset);
+    /// Обработчик сигнала об изменении системного времени
+    void onTimeChanged(qint64 aTimeOffset);
 
-	/// Проверка используемой памяти процессом
-	void checkProcessMemory();
+    /// Проверка используемой памяти процессом
+    void checkProcessMemory();
 
-	/// Запсутить все autoStart модули
-	void checkAutoStartModules();
+    /// Запсутить все autoStart модули
+    void checkAutoStartModules();
 
-private:
-	/// Запустить модуль
-	void startModule(SModule& aModule);
+  private:
+    /// Запустить модуль
+    void startModule(SModule &aModule);
 
-	/// Закрытие всех работающих модулей.
-	void doCloseModules(QString aSender);
+    /// Закрытие всех работающих модулей.
+    void doCloseModules(QString aSender);
 
-	/// Проверка защищённости рабочего стола.
-	void checkScreenProtection();
+    /// Проверка защищённости рабочего стола.
+    void checkScreenProtection();
 
-	/// Отключение проверки рабочего стола.
-	void enableScreenProtection(bool aEnabled);
+    /// Отключение проверки рабочего стола.
+    void enableScreenProtection(bool aEnabled);
 
-	/// Закрытие модуля по приоритету или экстренно.
-	bool closeModule(SModule& aModule, bool aIgnorePriority = false);
+    /// Закрытие модуля по приоритету или экстренно.
+    bool closeModule(SModule &aModule, bool aIgnorePriority = false);
 
-	bool canRun(const SModule& aModule);
+    bool canRun(const SModule &aModule);
 
-	bool canTerminate(const SModule& aModule);
+    bool canTerminate(const SModule &aModule);
 
-	/// Перевод кода ошибки процесса в строку.
-	QString translateError(QProcess::ProcessError aError);
+    /// Перевод кода ошибки процесса в строку.
+    QString translateError(QProcess::ProcessError aError);
 
-	/// Пересылка команды неизвестному модулю
-	void sendCommandToUknownModule(const QString& aCommand, const QString& aModule);
+    /// Пересылка команды неизвестному модулю
+    void sendCommandToUknownModule(const QString &aCommand, const QString &aModule);
 
-private slots:
-	/// Реинициализация сервиса
-	void reinitialize();
+  private slots:
+    /// Реинициализация сервиса
+    void reinitialize();
 
-private:
-	typedef QMap<QString, SModule> TModules;
+  private:
+    typedef QMap<QString, SModule> TModules;
 
-	QSharedPointer<IMessageQueueServer> mServer;
+    QSharedPointer<IMessageQueueServer> mServer;
 
-	/// При первом запуске модулей всегда true.
-	bool mFirstRun;
+    /// При первом запуске модулей всегда true.
+    bool mFirstRun;
 
-	/// Защитный экран.
-	SplashScreen mSplashScreen;
+    /// Защитный экран.
+    SplashScreen mSplashScreen;
 
-	/// Таймер на проверку состояния модулей.
-	QTimer mTimer;
+    /// Таймер на проверку состояния модулей.
+    QTimer mTimer;
 
-	/// Таймер для обнуления экранных кликов
-	QTimer mScreenActivityTimer;
+    /// Таймер для обнуления экранных кликов
+    QTimer mScreenActivityTimer;
 
-	/// Последовательность экранных кликов
-	QString mClickSequence;
+    /// Последовательность экранных кликов
+    QString mClickSequence;
 
-	/// Это действие будет выполнено после закрытия всех модулей.
-	ECloseAction::Enum mCloseAction;
+    /// Это действие будет выполнено после закрытия всех модулей.
+    ECloseAction::Enum mCloseAction;
 
-	/// Включён ли автоматический показ сплэш-скрина
-	bool mScreenProtectionEnabled;
+    /// Включён ли автоматический показ сплэш-скрина
+    bool mScreenProtectionEnabled;
 
-	TModules mModules;
+    TModules mModules;
 
 #if 0 // #40592 Пока выключаем данную опцию
 private slots:
@@ -260,14 +260,14 @@ private:
 	QSharedPointer<QTimer> mCheckForbiddenTimer;
 #endif
 
-private:
-	/// Параметры при перезапуске
-	QString mRestartParameters;
+  private:
+    /// Параметры при перезапуске
+    QString mRestartParameters;
 
-	QSharedPointer<TimeChangeListener> mTimeChangeListner;
-	QSharedPointer<QTimer> mCheckMemoryTimer;
+    QSharedPointer<TimeChangeListener> mTimeChangeListner;
+    QSharedPointer<QTimer> mCheckMemoryTimer;
 
-	int mInitializeFailedCounter;
+    int mInitializeFailedCounter;
 };
 
 //----------------------------------------------------------------------------

@@ -4,7 +4,8 @@
 #include "DialupConnectionWindow.h"
 #include "ListDelegate.h"
 
-DialupConnectionWindow::DialupConnectionWindow(QWidget *aParent) : QWidget(aParent) {
+DialupConnectionWindow::DialupConnectionWindow(QWidget *aParent) : QWidget(aParent)
+{
     setupUi(this);
 
     lwModems->setItemDelegate(new ListDelegate(lwModems));
@@ -21,23 +22,28 @@ DialupConnectionWindow::DialupConnectionWindow(QWidget *aParent) : QWidget(aPare
 }
 
 //---------------------------------------------------------------------------
-DialupConnectionWindow::~DialupConnectionWindow() {
+DialupConnectionWindow::~DialupConnectionWindow()
+{
 }
 
 //---------------------------------------------------------------------------
-void DialupConnectionWindow::initialize() {
+void DialupConnectionWindow::initialize()
+{
     switchToListPage();
 }
 
 //---------------------------------------------------------------------------
-QString DialupConnectionWindow::getUserSelection() const {
+QString DialupConnectionWindow::getUserSelection() const
+{
     return lwConnections->count() ? lwConnections->currentItem()->text() : "";
 }
 
 //---------------------------------------------------------------------------
-void DialupConnectionWindow::fillModemList(const QList<QPair<QString, QString>> &aModems) {
+void DialupConnectionWindow::fillModemList(const QList<QPair<QString, QString>> &aModems)
+{
     lwModems->clear();
-    foreach (auto modem, aModems) {
+    foreach (auto modem, aModems)
+    {
         QListWidgetItem *item = new QListWidgetItem();
         item->setData(Qt::DisplayRole, modem.first);
         item->setData(Qt::UserRole + 1, modem.second);
@@ -52,16 +58,20 @@ void DialupConnectionWindow::fillModemList(const QList<QPair<QString, QString>> 
 }
 
 //---------------------------------------------------------------------------
-void DialupConnectionWindow::fillConnectionList(const QStringList &aConnections, const QString &aCurrent) {
+void DialupConnectionWindow::fillConnectionList(const QStringList &aConnections, const QString &aCurrent)
+{
     lwConnections->clear();
     lwConnections->addItems(aConnections);
 
     QList<QListWidgetItem *> items = lwConnections->findItems(aCurrent, Qt::MatchFixedString);
 
-    if (items.size()) {
+    if (items.size())
+    {
         lwConnections->setCurrentItem(items.first(), QItemSelectionModel::ClearAndSelect);
         items.first()->setSelected(true);
-    } else {
+    }
+    else
+    {
         lwConnections->setCurrentRow(0);
     }
 
@@ -69,21 +79,24 @@ void DialupConnectionWindow::fillConnectionList(const QStringList &aConnections,
 }
 
 //---------------------------------------------------------------------------
-void DialupConnectionWindow::fillTemplateList(const QStringList &aTemplates) {
+void DialupConnectionWindow::fillTemplateList(const QStringList &aTemplates)
+{
     lwTemplates->clear();
     lwTemplates->addItems(aTemplates);
     emit updated();
 }
 
 //---------------------------------------------------------------------------
-void DialupConnectionWindow::onUpdated() {
+void DialupConnectionWindow::onUpdated()
+{
     btnTest->setEnabled(lwConnections->count() ? true : false);
     btnRemove->setEnabled(lwConnections->count() ? true : false);
     btnCreate->setEnabled(lwModems->count() && lwTemplates->count());
 }
 
 //---------------------------------------------------------------------------
-void DialupConnectionWindow::switchToCreatePage() {
+void DialupConnectionWindow::switchToCreatePage()
+{
     swPages->setCurrentWidget(wNewConnectionPage);
     lwModems->setCurrentRow(0);
     lwTemplates->setCurrentRow(0);
@@ -91,23 +104,27 @@ void DialupConnectionWindow::switchToCreatePage() {
 }
 
 //---------------------------------------------------------------------------
-void DialupConnectionWindow::switchToListPage() {
+void DialupConnectionWindow::switchToListPage()
+{
     swPages->setCurrentWidget(wConnectionListPage);
     onUpdated();
 }
 
 //---------------------------------------------------------------------------
-void DialupConnectionWindow::onCreateConnection() {
+void DialupConnectionWindow::onCreateConnection()
+{
     emit createConnection(lwTemplates->currentItem()->text(), lwModems->currentItem()->text());
 }
 
 //---------------------------------------------------------------------------
-void DialupConnectionWindow::onRemoveConnection() {
+void DialupConnectionWindow::onRemoveConnection()
+{
     emit removeConnection(lwConnections->currentItem()->text());
 }
 
 //---------------------------------------------------------------------------
-void DialupConnectionWindow::onTestConnection() {
+void DialupConnectionWindow::onTestConnection()
+{
     emit testConnection(lwConnections->currentItem()->text());
 }
 

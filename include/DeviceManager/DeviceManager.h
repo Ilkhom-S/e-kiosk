@@ -24,7 +24,8 @@ typedef QMultiMap<SDK::Driver::IDevice *, SDK::Driver::IDevice *> TDeviceDepende
 typedef QPair<QString, SDK::Driver::IDevice *> TNamedDevice;
 
 //--------------------------------------------------------------------------------
-class DeviceManager : public QObject, public ILogable {
+class DeviceManager : public QObject, public ILogable
+{
     Q_OBJECT
 
   public:

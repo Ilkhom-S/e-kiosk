@@ -10,7 +10,8 @@ class NetworkTaskManager;
 
 //------------------------------------------------------------------------
 /// Класс для тестирования менеджера сетевых запросов.
-class TestThread : public QThread {
+class TestThread : public QThread
+{
     Q_OBJECT
 
   public:

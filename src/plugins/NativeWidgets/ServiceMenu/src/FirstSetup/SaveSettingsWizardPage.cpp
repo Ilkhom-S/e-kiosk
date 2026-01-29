@@ -13,7 +13,8 @@
 
 //----------------------------------------------------------------------------
 SaveSettingsWizardPage::SaveSettingsWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : WizardPageBase(aBackend, aParent) {
+    : WizardPageBase(aBackend, aParent)
+{
     setupUi(this);
 
     connect(btnRepeat, SIGNAL(clicked()), SLOT(onSave()));
@@ -21,17 +22,20 @@ SaveSettingsWizardPage::SaveSettingsWizardPage(ServiceMenuBackend *aBackend, QWi
 }
 
 //------------------------------------------------------------------------
-bool SaveSettingsWizardPage::initialize() {
+bool SaveSettingsWizardPage::initialize()
+{
     return true;
 }
 
 //------------------------------------------------------------------------
-bool SaveSettingsWizardPage::shutdown() {
+bool SaveSettingsWizardPage::shutdown()
+{
     return true;
 }
 
 //------------------------------------------------------------------------
-bool SaveSettingsWizardPage::activate() {
+bool SaveSettingsWizardPage::activate()
+{
     swPages->setCurrentWidget(wProgressPage);
 
     QTimer::singleShot(0, this, SLOT(onSave()));
@@ -40,16 +44,19 @@ bool SaveSettingsWizardPage::activate() {
 }
 
 //------------------------------------------------------------------------
-bool SaveSettingsWizardPage::deactivate() {
+bool SaveSettingsWizardPage::deactivate()
+{
     return true;
 }
 
 //----------------------------------------------------------------------------
-void SaveSettingsWizardPage::onSave() {
+void SaveSettingsWizardPage::onSave()
+{
     lbStatus->setText(tr("#saving_configs"));
 
     // TODO Надо получать описание ошибки
-    if (!mBackend->saveConfiguration()) {
+    if (!mBackend->saveConfiguration())
+    {
         showError(tr("#when_saving_configs"), tr("#save_configuration_error"));
         return;
     }
@@ -59,7 +66,8 @@ void SaveSettingsWizardPage::onSave() {
 }
 
 //----------------------------------------------------------------------------
-void SaveSettingsWizardPage::onFinish() {
+void SaveSettingsWizardPage::onFinish()
+{
     QVariantMap parameters;
     parameters["signal"] = "exit";
 
@@ -70,7 +78,8 @@ void SaveSettingsWizardPage::onFinish() {
 }
 
 //----------------------------------------------------------------------------
-void SaveSettingsWizardPage::showError(const QString &aContext, const QString &aError) {
+void SaveSettingsWizardPage::showError(const QString &aContext, const QString &aError)
+{
     swPages->setCurrentWidget(wRepeatPage);
 
     lbStatus->setText(aContext + "\n" + aError);

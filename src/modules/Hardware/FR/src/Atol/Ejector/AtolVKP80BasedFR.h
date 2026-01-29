@@ -6,12 +6,14 @@
 
 //--------------------------------------------------------------------------------
 /// Константы ФР PayVKP-80.
-namespace CAtolVKP80BasedFR {
+namespace CAtolVKP80BasedFR
+{
     /// Максимальное количество попыток переинициализации принтера в случае возможности такого выхода из ошибки.
     const int MaxReInitPrinterCount = 3;
 
     /// Переинициализация принтера Custom VKP-80.
-    namespace ReInitialization {
+    namespace ReInitialization
+    {
         /// Данные комманды.
         const char Data[] = "\x8F\x1B\x40";
 
@@ -27,7 +29,8 @@ namespace CAtolVKP80BasedFR {
 } // namespace CAtolVKP80BasedFR
 
 //--------------------------------------------------------------------------------
-template <class T> class AtolVKP80BasedFR : public AtolEjectorFR<T> {
+template <class T> class AtolVKP80BasedFR : public AtolEjectorFR<T>
+{
   public:
     AtolVKP80BasedFR();
 

@@ -10,8 +10,10 @@
 #include <AdBackend/StatisticRecord.h>
 
 //------------------------------------------------------------------------------
-namespace Ad {
-    namespace Parameters {
+namespace Ad
+{
+    namespace Parameters
+    {
         const char RequestType[] = "REQUEST_TYPE";
         const char ResponseType[] = "RESPONSE_TYPE";
         const char Channel[] = "CHANNEL";
@@ -39,7 +41,8 @@ namespace Ad {
         const char Data[] = "DATA";
     } // namespace Parameters
 
-    namespace Requests {
+    namespace Requests
+    {
         const char ChannelList[] = "CHANNEL_LIST";
         const char Channel[] = "GET_CHANNEL";
         const char Statistics[] = "STATISTICS";
@@ -48,25 +51,29 @@ namespace Ad {
 } // namespace Ad
 
 //---------------------------------------------------------------------------
-class AdRequest : public SDK::PaymentProcessor::Humo::Request {
+class AdRequest : public SDK::PaymentProcessor::Humo::Request
+{
   public:
     explicit AdRequest(SDK::PaymentProcessor::ICore *aCore);
 };
 
 //---------------------------------------------------------------------------
-class AdGetChannelsRequest : public AdRequest {
+class AdGetChannelsRequest : public AdRequest
+{
   public:
     AdGetChannelsRequest(SDK::PaymentProcessor::ICore *aCore);
 };
 
 //---------------------------------------------------------------------------
-class AdGetChannelRequest : public AdRequest {
+class AdGetChannelRequest : public AdRequest
+{
   public:
     AdGetChannelRequest(SDK::PaymentProcessor::ICore *aCore, const QString &aName);
 };
 
 //---------------------------------------------------------------------------
-class AdStatisticRequest : public AdRequest {
+class AdStatisticRequest : public AdRequest
+{
   public:
     AdStatisticRequest(SDK::PaymentProcessor::ICore *aCore, const QList<Ad::SStatisticRecord> aStatistic);
 };

@@ -14,7 +14,8 @@ template class PrimEjectorFR<PrimFRBase>;
 template class PrimEjectorFR<PrimOnlineFRBase>;
 
 //--------------------------------------------------------------------------------
-template <class T> PrimEjectorFR<T>::PrimEjectorFR() {
+template <class T> PrimEjectorFR<T>::PrimEjectorFR()
+{
     // данные устройства
     setConfigParameter(CHardware::Printer::RetractorEnable, true);
 
@@ -25,15 +26,18 @@ template <class T> PrimEjectorFR<T>::PrimEjectorFR() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::updateParameters() {
+template <class T> bool PrimEjectorFR<T>::updateParameters()
+{
     return PrimPresenterFR<T>::updateParameters() && setPresentationMode() && checkPresentationLength();
 }
 
 //--------------------------------------------------------------------------------
-template <class T> ushort PrimEjectorFR<T>::getParameter3() {
+template <class T> ushort PrimEjectorFR<T>::getParameter3()
+{
     using namespace CHardware::Printer;
 
-    if (getConfigParameter(Settings::NotTakenReceipt).toString() != Values::Retract) {
+    if (getConfigParameter(Settings::NotTakenReceipt).toString() != Values::Retract)
+    {
         return 0;
     }
 
@@ -41,19 +45,23 @@ template <class T> ushort PrimEjectorFR<T>::getParameter3() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::checkPresentationLength() {
-    if (!PrimFRBase::checkParameters()) {
+template <class T> bool PrimEjectorFR<T>::checkPresentationLength()
+{
+    if (!PrimFRBase::checkParameters())
+    {
         return false;
     }
 
     CPrimFR::TData data;
 
-    if (processCommand(CPrimFR::Commands::GetMoneyBoxSettings, &data) && (data.size() >= 8)) {
+    if (processCommand(CPrimFR::Commands::GetMoneyBoxSettings, &data) && (data.size() >= 8))
+    {
         bool OK;
         int presentationLength = getConfigParameter(CHardware::Printer::Settings::PresentationLength).toInt();
         int FRPresentationLength = data[5].toInt(&OK, 16);
 
-        if (!OK || (presentationLength == FRPresentationLength)) {
+        if (!OK || (presentationLength == FRPresentationLength))
+        {
             return OK;
         }
 
@@ -67,12 +75,15 @@ template <class T> bool PrimEjectorFR<T>::checkPresentationLength() {
 }
 
 //---------------------------------------------------------------------------
-template <class T> void PrimEjectorFR<T>::cleanStatusCodes(TStatusCodes &aStatusCodes) {
-    if (mOldBuildNumber) {
+template <class T> void PrimEjectorFR<T>::cleanStatusCodes(TStatusCodes &aStatusCodes)
+{
+    if (mOldBuildNumber)
+    {
         aStatusCodes.insert(DeviceStatusCode::Warning::Firmware);
     }
 
-    if (aStatusCodes.contains(PrinterStatusCode::Warning::PaperEndVirtual)) {
+    if (aStatusCodes.contains(PrinterStatusCode::Warning::PaperEndVirtual))
+    {
         aStatusCodes.remove(PrinterStatusCode::Warning::PaperEndVirtual);
         aStatusCodes.insert(PrinterStatusCode::Warning::PaperNearEnd);
     }
@@ -81,9 +92,11 @@ template <class T> void PrimEjectorFR<T>::cleanStatusCodes(TStatusCodes &aStatus
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::processAnswer(char aError) {
+template <class T> bool PrimEjectorFR<T>::processAnswer(char aError)
+{
     if (((aError == CPrimFR::Errors::IncorrigibleError) || (aError == CPrimFR::Errors::NotReadyForPrint)) &&
-        (mLPC22RetractorErrorCount < CPrimFR::MaxRepeat::RetractorError)) {
+        (mLPC22RetractorErrorCount < CPrimFR::MaxRepeat::RetractorError))
+    {
         mProcessingErrors.push_back(aError);
 
         mLPC22RetractorErrorCount++;
@@ -94,7 +107,8 @@ template <class T> bool PrimEjectorFR<T>::processAnswer(char aError) {
     }
 
     if (aError && (mLPC22RetractorErrorCount >= CPrimFR::MaxRepeat::RetractorError) &&
-        (aError != CPrimFR::Errors::IncorrigibleError) && (aError != CPrimFR::Errors::NotReadyForPrint)) {
+        (aError != CPrimFR::Errors::IncorrigibleError) && (aError != CPrimFR::Errors::NotReadyForPrint))
+    {
         toLog(LogLevel::Normal, "Reset Abnormal error count");
         mLPC22RetractorErrorCount = 0;
     }
@@ -103,8 +117,10 @@ template <class T> bool PrimEjectorFR<T>::processAnswer(char aError) {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::push() {
-    if (mMode == EFRMode::Printer) {
+template <class T> bool PrimEjectorFR<T>::push()
+{
+    if (mMode == EFRMode::Printer)
+    {
         return TSerialFRBase::push();
     }
 
@@ -112,8 +128,10 @@ template <class T> bool PrimEjectorFR<T>::push() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::retract() {
-    if (mMode == EFRMode::Printer) {
+template <class T> bool PrimEjectorFR<T>::retract()
+{
+    if (mMode == EFRMode::Printer)
+    {
         return TSerialFRBase::retract();
     }
 
@@ -121,16 +139,19 @@ template <class T> bool PrimEjectorFR<T>::retract() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::setPresentationMode() {
+template <class T> bool PrimEjectorFR<T>::setPresentationMode()
+{
     QString loop = getConfigParameter(CHardware::Printer::Settings::Loop).toString();
 
-    if (loop == CHardwareSDK::Values::Auto) {
+    if (loop == CHardwareSDK::Values::Auto)
+    {
         return true;
     }
 
     bool loopEnable = loop == CHardwareSDK::Values::Use;
 
-    if (mMode == EFRMode::Printer) {
+    if (mMode == EFRMode::Printer)
+    {
         return mIOPort->write(loopEnable ? CPOSPrinter::Command::LoopEnable : CPOSPrinter::Command::LoopDisable);
     }
 
@@ -139,15 +160,18 @@ template <class T> bool PrimEjectorFR<T>::setPresentationMode() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::present() {
+template <class T> bool PrimEjectorFR<T>::present()
+{
     return (mMode == EFRMode::Printer) && TSerialFRBase::present();
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PrimEjectorFR<T>::processEjectorAction(const QString &aAction) {
+template <class T> bool PrimEjectorFR<T>::processEjectorAction(const QString &aAction)
+{
     CPrimFR::TData commandData;
 
-    for (int i = 0; i < aAction.size(); ++i) {
+    for (int i = 0; i < aAction.size(); ++i)
+    {
         commandData << int2ByteArray(QString(aAction[i]).toInt(0, 16));
     }
 

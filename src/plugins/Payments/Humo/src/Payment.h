@@ -9,7 +9,8 @@
 #include "PaymentFactory.h"
 
 //------------------------------------------------------------------------------
-class Payment : public PaymentBase {
+class Payment : public PaymentBase
+{
     friend class PaymentFactory;
 
   public:

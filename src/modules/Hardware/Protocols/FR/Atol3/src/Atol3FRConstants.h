@@ -11,7 +11,8 @@
 #include "Hardware/Common/ASCII.h"
 
 //--------------------------------------------------------------------------------
-namespace CAtol3FR {
+namespace CAtol3FR
+{
     typedef QPair<QByteArray, QByteArray> TReplaceableData;
     typedef QList<TReplaceableData> TReplaceableDataList;
 
@@ -37,7 +38,8 @@ namespace CAtol3FR {
     const int MinAnswerSize = 5;
 
     /// Подсчет CRC.
-    namespace CRC {
+    namespace CRC
+    {
         /// Начальное значние.
         const char StartValue = '\xFF';
 
@@ -48,14 +50,16 @@ namespace CAtol3FR {
         const char LastBit = '\x80';
     } // namespace CRC
 
-    namespace TaskFlags {
+    namespace TaskFlags
+    {
         const char NeedResult = '\x01';    /// Передача результата задания.
         const char IgnoreError = '\x02';   /// Работа с ошибками.
         const char WaitAsyncData = '\x04'; /// Ожидание выполнения задания.
     } // namespace TaskFlags
 
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char Add = '\xC1';    /// Добавить задание в буфер.
         const char ACK = '\xC2';    /// Подтвердить получение результата.
         const char Req = '\xC3';    /// Получить состояние задания.
@@ -64,7 +68,8 @@ namespace CAtol3FR {
     } // namespace Commands
 
     /// Ошибки.
-    namespace Errors {
+    namespace Errors
+    {
         const char Overflow = '\xB1';      /// Недостаточно места в буфере.
         const char AlreadyExists = '\xB2'; /// Уже есть задание с таким TId.
         const char NotFound = '\xB3';      /// Задания с таким TId нет в буфере.
@@ -72,7 +77,8 @@ namespace CAtol3FR {
     } // namespace Errors
 
     /// Таймауты ожидания ответа, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// На ACK.
         const int ACK = 500;
 

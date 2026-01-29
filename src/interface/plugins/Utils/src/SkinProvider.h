@@ -11,7 +11,8 @@
 class Skin;
 
 //------------------------------------------------------------------------------
-class SkinProvider : public QObject, public QQuickImageProvider {
+class SkinProvider : public QObject, public QQuickImageProvider
+{
     Q_OBJECT
 
   public:

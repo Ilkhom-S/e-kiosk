@@ -19,26 +19,31 @@
 
 namespace PPSDK = SDK::PaymentProcessor;
 
-namespace CHIDService {
+namespace CHIDService
+{
     const QString Name = "HID";
 }; // namespace CHIDService
 
 //---------------------------------------------------------------------------
-HIDService *HIDService::instance(IApplication *aApplication) {
+HIDService *HIDService::instance(IApplication *aApplication)
+{
     return static_cast<HIDService *>(aApplication->getCore()->getService(CServices::HIDService));
 }
 
 //---------------------------------------------------------------------------
 HIDService::HIDService(IApplication *aApplication)
-    : mApplication(aApplication), mDeviceService(0), ILogable(CHIDService::Name) {
+    : mApplication(aApplication), mDeviceService(0), ILogable(CHIDService::Name)
+{
 }
 
 //---------------------------------------------------------------------------
-HIDService::~HIDService() {
+HIDService::~HIDService()
+{
 }
 
 //---------------------------------------------------------------------------
-bool HIDService::initialize() {
+bool HIDService::initialize()
+{
     mDeviceService = DeviceService::instance(mApplication);
 
     updateHardwareConfiguration();
@@ -49,11 +54,13 @@ bool HIDService::initialize() {
 }
 
 //------------------------------------------------------------------------------
-void HIDService::finishInitialize() {
+void HIDService::finishInitialize()
+{
 }
 
 //---------------------------------------------------------------------------
-void HIDService::updateHardwareConfiguration() {
+void HIDService::updateHardwareConfiguration()
+{
     mHIDs.clear();
     mCardReaders.clear();
 
@@ -63,16 +70,20 @@ void HIDService::updateHardwareConfiguration() {
     PPSDK::TerminalSettings *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
 
     foreach (const QString &configurationName,
-             settings->getDeviceList().filter(QRegularExpression(SDK::Driver::CComponents::Scanner))) {
+             settings->getDeviceList().filter(QRegularExpression(SDK::Driver::CComponents::Scanner)))
+    {
         SDK::Driver::IHID *device = dynamic_cast<SDK::Driver::IHID *>(mDeviceService->acquireDevice(configurationName));
 
-        if (device) {
+        if (device)
+        {
             mHIDs.append(device);
 
             // Подписываемся на сигнал от устройства.
             device->subscribe(SDK::Driver::IHID::DataSignal, this, SIGNAL(data(const QVariantMap &)));
             toLog(LogLevel::Normal, QString("Device '%1' added...").arg(device->getName()));
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Error, QString("Failed to acquire HID device %1.").arg(configurationName));
         }
     }
@@ -81,11 +92,13 @@ void HIDService::updateHardwareConfiguration() {
 
     // Добавляем картридеры
     foreach (const QString &configurationName,
-             settings->getDeviceList().filter(QRegularExpression(SDK::Driver::CComponents::CardReader))) {
+             settings->getDeviceList().filter(QRegularExpression(SDK::Driver::CComponents::CardReader)))
+    {
         SDK::Driver::ICardReader *device =
             dynamic_cast<SDK::Driver::ICardReader *>(mDeviceService->acquireDevice(configurationName));
 
-        if (device) {
+        if (device)
+        {
             mCardReaders.append(device);
 
             // Подписываемся на сигнал от устройства.
@@ -96,35 +109,43 @@ void HIDService::updateHardwareConfiguration() {
                               SLOT(onStatusChanged(SDK::Driver::EWarningLevel::Enum, const QString &, int)));
 
             toLog(LogLevel::Normal, QString("Device '%1' added...").arg(device->getName()));
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Error, QString("Failed to acquire CardReader device %1.").arg(configurationName));
         }
     }
 }
 
 //---------------------------------------------------------------------------
-void HIDService::onStatusChanged(DSDK::EWarningLevel::Enum /*aLevel*/, const QString & /*aTranslation*/, int aStatus) {
-    if (aStatus == DSDK::ECardReaderStatus::NeedReloading) {
+void HIDService::onStatusChanged(DSDK::EWarningLevel::Enum /*aLevel*/, const QString & /*aTranslation*/, int aStatus)
+{
+    if (aStatus == DSDK::ECardReaderStatus::NeedReloading)
+    {
         emit error();
     }
 }
 
 //---------------------------------------------------------------------------
-bool HIDService::canShutdown() {
+bool HIDService::canShutdown()
+{
     return true;
 }
 
 //---------------------------------------------------------------------------
-bool HIDService::shutdown() {
+bool HIDService::shutdown()
+{
     toLog(LogLevel::Normal, "Shutting down HIDs...");
 
-    foreach (SDK::Driver::IHID *HID, mHIDs) {
+    foreach (SDK::Driver::IHID *HID, mHIDs)
+    {
         mDeviceService->releaseDevice(HID);
     }
 
     mHIDs.clear();
 
-    foreach (auto cardReader, mCardReaders) {
+    foreach (auto cardReader, mCardReaders)
+    {
         mDeviceService->releaseDevice(cardReader);
     }
 
@@ -134,52 +155,65 @@ bool HIDService::shutdown() {
 }
 
 //---------------------------------------------------------------------------
-QString HIDService::getName() const {
+QString HIDService::getName() const
+{
     return CServices::HIDService;
 }
 
 //---------------------------------------------------------------------------
-const QSet<QString> &HIDService::getRequiredServices() const {
+const QSet<QString> &HIDService::getRequiredServices() const
+{
     static QSet<QString> requiredServices = QSet<QString>() << CServices::SettingsService << CServices::DeviceService;
 
     return requiredServices;
 }
 
 //---------------------------------------------------------------------------
-QVariantMap HIDService::getParameters() const {
+QVariantMap HIDService::getParameters() const
+{
     return QVariantMap();
 }
 
 //---------------------------------------------------------------------------
-void HIDService::resetParameters(const QSet<QString> &) {
+void HIDService::resetParameters(const QSet<QString> &)
+{
 }
 
 //---------------------------------------------------------------------------
-bool HIDService::setEnable(bool aEnable, const QString &aDevice) {
+bool HIDService::setEnable(bool aEnable, const QString &aDevice)
+{
     bool result = false;
 
-    if (!aDevice.isEmpty()) {
+    if (!aDevice.isEmpty())
+    {
         // Получаем список всех доступных HID-устройств.
         PPSDK::TerminalSettings *settings =
             SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
 
-        foreach (const QString &configurationName, settings->getDeviceList().filter(QRegularExpression(aDevice))) {
+        foreach (const QString &configurationName, settings->getDeviceList().filter(QRegularExpression(aDevice)))
+        {
             SDK::Driver::IHID *device =
                 dynamic_cast<SDK::Driver::IHID *>(mDeviceService->acquireDevice(configurationName));
 
-            if (device) {
+            if (device)
+            {
                 // Подписываемся на сигнал от устройства.
                 device->subscribe(SDK::Driver::IHID::DataSignal, this, SIGNAL(data(const QVariantMap &)));
 
-                if (device->enable(aEnable)) {
+                if (device->enable(aEnable))
+                {
                     result = true;
                 }
             }
         }
-    } else {
+    }
+    else
+    {
         // TODO когда появится контекст - конкретизируем
-        foreach (SDK::Driver::IHID *HID, mHIDs) {
-            if (HID->enable(aEnable)) {
+        foreach (SDK::Driver::IHID *HID, mHIDs)
+        {
+            if (HID->enable(aEnable))
+            {
                 result = true;
             }
         }
@@ -194,11 +228,14 @@ bool HIDService::setEnable(bool aEnable, const QString &aDevice) {
 }
 
 //------------------------------------------------------------------------------
-QString HIDService::valueToString(const QVariant &aData) {
-    if (aData.type() == QVariant::ByteArray) {
+QString HIDService::valueToString(const QVariant &aData)
+{
+    if (aData.type() == QVariant::ByteArray)
+    {
         QStringDecoder decoderUtf8(QStringDecoder::Utf8);
         QString utf8 = decoderUtf8(aData.toByteArray());
-        if (decoderUtf8.hasError()) {
+        if (decoderUtf8.hasError())
+        {
             QStringDecoder decoderCp1251("windows-1251");
             return decoderCp1251(aData.toByteArray());
         }
@@ -209,15 +246,19 @@ QString HIDService::valueToString(const QVariant &aData) {
 }
 
 //------------------------------------------------------------------------------
-void HIDService::onCardInserted(SDK::Driver::ECardType::Enum aCardType, const QVariantMap &aData) {
+void HIDService::onCardInserted(SDK::Driver::ECardType::Enum aCardType, const QVariantMap &aData)
+{
     SDK::Driver::ICardReader *cardReader = dynamic_cast<SDK::Driver::ICardReader *>(sender());
 
-    if (cardReader) {
+    if (cardReader)
+    {
         toLog(LogLevel::Normal, QString("Card type %1 inserted into '%2'.").arg(aCardType).arg(cardReader->getName()));
 
-        if (!aData.isEmpty()) {
+        if (!aData.isEmpty())
+        {
 #ifdef _DEBUG
-            foreach (auto track, aData.keys()) {
+            foreach (auto track, aData.keys())
+            {
                 toLog(LogLevel::Debug, QString("Card data %1 : '%2'.").arg(track).arg(aData.value(track).toString()));
             }
 #endif
@@ -227,10 +268,12 @@ void HIDService::onCardInserted(SDK::Driver::ECardType::Enum aCardType, const QV
 }
 
 //------------------------------------------------------------------------------
-void HIDService::onCardEjected() {
+void HIDService::onCardEjected()
+{
     SDK::Driver::ICardReader *cardReader = dynamic_cast<SDK::Driver::ICardReader *>(sender());
 
-    if (cardReader) {
+    if (cardReader)
+    {
         toLog(LogLevel::Normal, QString("Card ejected from '%1'.").arg(cardReader->getName()));
 
         emit ejected();

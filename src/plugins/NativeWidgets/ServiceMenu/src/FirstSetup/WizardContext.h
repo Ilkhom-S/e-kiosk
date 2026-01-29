@@ -8,7 +8,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //----------------------------------------------------------------------------
-namespace CWizardContext {
+namespace CWizardContext
+{
     const QString StartPage = "#start";
     const QString RunDemo = "#demo";
     const QString RunSetup = "#hardware";

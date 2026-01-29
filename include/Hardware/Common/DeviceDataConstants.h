@@ -3,7 +3,8 @@
 #pragma once
 
 //---------------------------------------------------------------------------
-namespace CDeviceData {
+namespace CDeviceData
+{
     /// Общие константы.
     const char ModelName[] = "model_name";
     const char Port[] = "port";
@@ -41,7 +42,8 @@ namespace CDeviceData {
     const char Number[] = "number";
 
     /// Общие значения.
-    namespace Values {
+    namespace Values
+    {
         const char Yes[] = "yes";
         const char No[] = "no";
         const char Opened[] = "opened";
@@ -52,11 +54,13 @@ namespace CDeviceData {
     } // namespace Values
 
     /// Порты.
-    namespace Ports {
+    namespace Ports
+    {
         const char Mine[] = "port_data";
         const char Other[] = "other_port_data";
 
-        namespace USB {
+        namespace USB
+        {
             const char ConfigAmount[] = "config_amount";
             const char BusNumber[] = "device_bus_number";
             const char Address[] = "device_address";
@@ -71,14 +75,17 @@ namespace CDeviceData {
             const char Product[] = "device_product";
             const char BOSData[] = "bos_data";
 
-            namespace BOS {
+            namespace BOS
+            {
                 const char Capability[] = "capability";
 
-                namespace Capability2_0 {
+                namespace Capability2_0
+                {
                     const char Attributes[] = "2_0_attributes";
                 } // namespace Capability2_0
 
-                namespace Capability3_0 {
+                namespace Capability3_0
+                {
                     const char Attributes[] = "3_0_attributes";
                     const char SpeedSupported[] = "speed_supported";
                     const char FunctionalitySupport[] = "functionality_support";
@@ -87,7 +94,8 @@ namespace CDeviceData {
                 } // namespace Capability3_0
             } // namespace BOS
 
-            namespace Config {
+            namespace Config
+            {
                 const char InterfaceAmount[] = "interface_amount";
                 const char InterfaceData[] = "interface_data";
                 const char Index[] = "config_index";
@@ -95,7 +103,8 @@ namespace CDeviceData {
                 const char Attributes[] = "config_attributes";
                 const char MaxPower[] = "config_max_power";
 
-                namespace Interface {
+                namespace Interface
+                {
                     const char EndpointAmount[] = "endpoint_amount";
                     const char EndpointData[] = "endpoint_data";
                     const char Number[] = "interface_number";
@@ -104,7 +113,8 @@ namespace CDeviceData {
                     const char Code[] = "interface_code";
                     const char Description[] = "interface_description";
 
-                    namespace Endpoint {
+                    namespace Endpoint
+                    {
                         const char TransferType[] = "ep_transfer_type";
                         const char IsoSyncType[] = "ep_iso_sync_type";
                         const char IsoUsageType[] = "ep_iso_usage_type";
@@ -117,7 +127,8 @@ namespace CDeviceData {
                         const char SyncRefreshRate[] = "ep_sync_refresh_rate";
                         const char SynchAddress[] = "ep_sync_address";
 
-                        namespace Companion {
+                        namespace Companion
+                        {
                             const char MaxBurstPacketAmount[] = "companion_ep_max_burst";
                             const char Attributes[] = "companion_ep_attributes";
                             const char BytesPerInterval[] = "companion_ep_bytes_per_interval";
@@ -129,14 +140,16 @@ namespace CDeviceData {
     } // namespace Ports
 
     /// OPOS-устройства.
-    namespace OPOS {
+    namespace OPOS
+    {
         const char Description[] = "description";
         const char ControlObject[] = "control_object";
         const char ServiceObject[] = "service_object";
     } // namespace OPOS
 
     /// Купюроприемники и монетоприемники.
-    namespace CashAcceptors {
+    namespace CashAcceptors
+    {
         const char AssetNumber[] = "asset_number";
         const char BillSet[] = "bill_set";
         const char Alias[] = "alias";
@@ -149,7 +162,8 @@ namespace CDeviceData {
     } // namespace CashAcceptors
 
     /// Модемы
-    namespace Modems {
+    namespace Modems
+    {
         const char IMEI[] = "imei";
         const char IMSI[] = "imsi";
         const char SIMNumber[] = "sim_number";
@@ -158,7 +172,8 @@ namespace CDeviceData {
     } // namespace Modems
 
     /// Принтеры
-    namespace Printers {
+    namespace Printers
+    {
         const char Location[] = "location";
         const char Comment[] = "comment";
         const char Server[] = "server";
@@ -175,7 +190,8 @@ namespace CDeviceData {
     } // namespace Printers
 
     /// Фискальные регистраторы
-    namespace FR {
+    namespace FR
+    {
         const char OnlineMode[] = "online_mode";
         const char INN[] = "inn";
         const char RNM[] = "rnm";
@@ -209,20 +225,23 @@ namespace CDeviceData {
     } // namespace FR
 
     /// ЭКЛЗ.
-    namespace EKLZ {
+    namespace EKLZ
+    {
         const char Serial[] = "eklz_serial";
         const char ActivizationDate[] = "eklz_activization_date";
         const char FreeActivizations[] = "eklz_free_activizations";
     } // namespace EKLZ
 
     /// ФП.
-    namespace FM {
+    namespace FM
+    {
         const char FreeSessions[] = "fm_free_sessions";
         const char Firmware[] = "fm_firmware";
     } // namespace FM
 
     /// ФН.
-    namespace FS {
+    namespace FS
+    {
         const char SerialNumber[] = "fs_serial_number";
         const char ValidityData[] = "fs_validity_data";
         const char DifferenceDT[] = "fs_difference_date_time";
@@ -234,13 +253,15 @@ namespace CDeviceData {
     } // namespace FS
 
     /// Сторожевые таймеры.
-    namespace Watchdogs {
+    namespace Watchdogs
+    {
         const char Key[] = "key";
         const char CanWakeUpPC[] = "can_wake_up_pc";
         const char PowerControlLogic[] = "power_control_logic";
         const char AdvancedPowerLogic[] = "advanced_power_logic";
 
-        namespace Sub {
+        namespace Sub
+        {
             const char All[] = "all_devices";
             const char CrossUSBCard[] = "cross_usb_card";
             const char PowerSupply[] = "power_supply_device";
@@ -248,7 +269,8 @@ namespace CDeviceData {
     } // namespace Watchdogs
 
     /// PC health.
-    namespace Health {
+    namespace Health
+    {
         const char HandleCount[] = "handle_count";
         const char HandleCountAll[] = "handle_count_all";
         const char CPUTemperature[] = "cpu_temperature";

@@ -11,7 +11,8 @@
 #include <Hardware/CardReaders/CreatorReaderDataTypes.h>
 
 //------------------------------------------------------------------------------
-class CreatorReader : public USBDeviceBase<PortPollingDeviceBase<ProtoMifareReader>> {
+class CreatorReader : public USBDeviceBase<PortPollingDeviceBase<ProtoMifareReader>>
+{
     SET_SERIES("Creator")
 
   public:

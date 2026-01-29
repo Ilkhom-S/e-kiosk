@@ -6,7 +6,8 @@
 #include <Hardware/HID/HIDBase.h>
 
 //--------------------------------------------------------------------------------
-namespace CScanner {
+namespace CScanner
+{
     /// Интервал опроса порта, [мс].
     const int PollingInterval = 500;
 
@@ -15,7 +16,8 @@ namespace CScanner {
 } // namespace CScanner
 
 //--------------------------------------------------------------------------------
-template <class T> class PortScanner : public HIDBase<T> {
+template <class T> class PortScanner : public HIDBase<T>
+{
   public:
     PortScanner();
 

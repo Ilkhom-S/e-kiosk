@@ -12,15 +12,18 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-class MutexLocker {
+class MutexLocker
+{
     typedef QMap<QThread *, QThread *> TMatchedThreads;
     typedef QPair<QThread *, int> TLocksCounter;
 
     // Union to store either mutex type
-    union MutexUnion {
+    union MutexUnion
+    {
         QMutex *mutex;
         QRecursiveMutex *recursiveMutex;
-        MutexUnion() : mutex(nullptr) {
+        MutexUnion() : mutex(nullptr)
+        {
         }
     };
 

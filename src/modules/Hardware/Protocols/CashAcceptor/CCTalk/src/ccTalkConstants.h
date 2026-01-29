@@ -8,7 +8,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-namespace CCCTalk {
+namespace CCCTalk
+{
     const char NAK = '\x05';
     const char BUSY = '\x06';
 
@@ -25,7 +26,8 @@ namespace CCCTalk {
     const int MaxBusyNAKRepeats = 3;
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Повтор после BUSY или NAK-а.
         const int NAKBusy = 1000;
 

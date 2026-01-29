@@ -12,7 +12,8 @@
 #include "SparkFRConstants.h"
 
 //--------------------------------------------------------------------------------
-class SparkFR : public TSerialFRBase {
+class SparkFR : public TSerialFRBase
+{
     SET_SERIES("SPARK")
 
   public:

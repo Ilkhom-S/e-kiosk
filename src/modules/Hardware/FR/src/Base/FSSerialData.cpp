@@ -3,8 +3,10 @@
 // System
 #include <Hardware/FR/FSSerialData.h>
 
-namespace FS {
-    CData::CData() {
+namespace FS
+{
+    CData::CData()
+    {
         add("87100001", 13, EFFD::F10, "ООО \"РИК\"");
         add("87110001", 36, EFFD::F10, "ООО \"РИК\"");
         add("8712000100", 13, EFFD::F10, "ООО \"Прагматик\"", "3 верс.2");
@@ -29,31 +31,34 @@ namespace FS {
     }
 
     //--------------------------------------------------------------------------------
-    bool CData::contains(const QString &aSerialNumber) const {
+    bool CData::contains(const QString &aSerialNumber) const
+    {
         return getSerialNumberTemplate(aSerialNumber) != mSerialNumberTemplates.end();
     }
 
     //--------------------------------------------------------------------------------
     void CData::add(const QString &aSerialNumber, int aExpiration, EFFD::Enum aFFD, const char *aProvider,
-                    const char *aRevision) {
+                    const char *aRevision)
+    {
         append(aSerialNumber, SData(aExpiration, aFFD, QString::fromUtf8(aProvider), QString::fromUtf8(aRevision)));
     }
 
     //--------------------------------------------------------------------------------
-    SData CData::value(const QString &aSerialNumber) const {
+    SData CData::value(const QString &aSerialNumber) const
+    {
         QStringList::const_iterator serialNumberTemplate = getSerialNumberTemplate(aSerialNumber);
 
         return (serialNumberTemplate == mSerialNumberTemplates.end()) ? SData() : mBuffer[*serialNumberTemplate];
     }
 
     //--------------------------------------------------------------------------------
-    QStringList::const_iterator CData::getSerialNumberTemplate(const QString &aSerialNumber) const {
+    QStringList::const_iterator CData::getSerialNumberTemplate(const QString &aSerialNumber) const
+    {
         QString serialNumber = aSerialNumber.simplified();
 
         return std::find_if(mSerialNumberTemplates.begin(), mSerialNumberTemplates.end(),
-                            [&serialNumber](const QString &aSerialNumberTemplate) -> bool {
-                                return serialNumber.startsWith(aSerialNumberTemplate);
-                            });
+                            [&serialNumber](const QString &aSerialNumberTemplate) -> bool
+                            { return serialNumber.startsWith(aSerialNumberTemplate); });
     }
 
 } // namespace FS

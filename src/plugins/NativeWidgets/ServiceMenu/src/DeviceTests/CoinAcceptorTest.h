@@ -7,14 +7,17 @@
 #include <SDK/Drivers/ICashAcceptor.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
         class IDevice;
     } // namespace Driver
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class CoinAcceptorTest : public SDK::PaymentProcessor::IDeviceTest {
+class CoinAcceptorTest : public SDK::PaymentProcessor::IDeviceTest
+{
     Q_OBJECT
 
   public:

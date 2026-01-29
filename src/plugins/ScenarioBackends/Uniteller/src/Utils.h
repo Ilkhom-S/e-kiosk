@@ -19,17 +19,20 @@
 #include <tchar.h>
 #include <tlhelp32.h>
 
-namespace CUtils {
+namespace CUtils
+{
     TCHAR UnitellerHostName[] = L"Uniteller.SoftwareManager.ServiceHost.exe";
     TCHAR UnitellerConsoleHostName[] = L"Uniteller.Framework.Kernel.ConsoleHost.exe";
     char UnitellerServiceConfig[] = "service.config";
     char UnitellerIdentificationKey[] = "Identification";
 } // namespace CUtils
 
-namespace Uniteller {
+namespace Uniteller
+{
 
     //---------------------------------------------------------------------------
-    QString getUnitellerHostPath() {
+    QString getUnitellerHostPath()
+    {
         PROCESSENTRY32 entry;
         entry.dwSize = sizeof(PROCESSENTRY32);
 
@@ -37,10 +40,13 @@ namespace Uniteller {
 
         HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
 
-        if (Process32First(snapshot, &entry)) {
-            while (Process32Next(snapshot, &entry)) {
+        if (Process32First(snapshot, &entry))
+        {
+            while (Process32Next(snapshot, &entry))
+            {
                 if (_wcsicmp(entry.szExeFile, CUtils::UnitellerHostName) == 0 ||
-                    _wcsicmp(entry.szExeFile, CUtils::UnitellerConsoleHostName) == 0) {
+                    _wcsicmp(entry.szExeFile, CUtils::UnitellerConsoleHostName) == 0)
+                {
                     HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
 
                     HANDLE processHandle =
@@ -48,8 +54,10 @@ namespace Uniteller {
 
                     TCHAR fullPath[MAX_PATH] = {0};
 
-                    if (processHandle != NULL) {
-                        if (GetModuleFileNameEx(processHandle, NULL, fullPath, MAX_PATH) != 0) {
+                    if (processHandle != NULL)
+                    {
+                        if (GetModuleFileNameEx(processHandle, NULL, fullPath, MAX_PATH) != 0)
+                        {
                             CloseHandle(processHandle);
                             CloseHandle(hProcess);
                             CloseHandle(snapshot);
@@ -71,21 +79,26 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    QString getUPID(const QString &aRuntimePath) {
+    QString getUPID(const QString &aRuntimePath)
+    {
         QFile config(QString("%1%2%3").arg(aRuntimePath).arg(QDir::separator()).arg(CUtils::UnitellerServiceConfig));
         QString s = QString("%1%2%3").arg(aRuntimePath).arg(QDir::separator()).arg(CUtils::UnitellerServiceConfig);
 
-        if (config.open(QIODevice::ReadOnly)) {
+        if (config.open(QIODevice::ReadOnly))
+        {
             QStringList content = QString(config.readAll()).split("\n");
 
-            foreach (QString line, content) {
-                if (!line.contains(CUtils::UnitellerIdentificationKey)) {
+            foreach (QString line, content)
+            {
+                if (!line.contains(CUtils::UnitellerIdentificationKey))
+                {
                     continue;
                 }
 
                 QRegularExpression rx("\"(.*)\"");
-                return rx.match(line).capturedStart() != -1 ? rx.capturedTexts().last().rightJustified(10, '0').right(10)
-                                              : QString().fill('0', 10);
+                return rx.match(line).capturedStart() != -1
+                           ? rx.capturedTexts().last().rightJustified(10, '0').right(10)
+                           : QString().fill('0', 10);
             }
         }
 
@@ -93,11 +106,13 @@ namespace Uniteller {
     }
 
     //---------------------------------------------------------------------------
-    bool haveContactlessReader() {
+    bool haveContactlessReader()
+    {
         QFile config(
             QString("%1%2%3").arg(getUnitellerHostPath()).arg(QDir::separator()).arg(CUtils::UnitellerServiceConfig));
 
-        if (config.open(QIODevice::ReadOnly)) {
+        if (config.open(QIODevice::ReadOnly))
+        {
             return QString(config.readAll()).contains("ContactlessReader");
         }
 

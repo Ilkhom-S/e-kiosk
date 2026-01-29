@@ -5,8 +5,10 @@
 #include "Hardware/CashAcceptors/ModelData.h"
 
 //--------------------------------------------------------------------------------
-namespace CSSP {
-    namespace Models {
+namespace CSSP
+{
+    namespace Models
+    {
         /// Название устройства по умолчанию.
         const char Default[] = "SSP cash acceptor";
 
@@ -21,9 +23,11 @@ namespace CSSP {
         const char BV50[] = "ITL BV50";
         const char BV100[] = "ITL BV100";
 
-        class CData : public CSpecification<QString, SBaseModelData> {
+        class CData : public CSpecification<QString, SBaseModelData>
+        {
           public:
-            CData() {
+            CData()
+            {
                 add("NV0009", NV9);
                 add("NV0010", NV10);
                 add("NV0150", NV150);
@@ -39,7 +43,8 @@ namespace CSSP {
             }
 
           private:
-            void add(const QString &aId, const QString &aModelName, bool aVerified = false) {
+            void add(const QString &aId, const QString &aModelName, bool aVerified = false)
+            {
                 append(aId, SBaseModelData(aModelName, aVerified, true));
             }
         };

@@ -5,7 +5,8 @@
 #include "Hardware/Common/ASCII.h"
 
 //--------------------------------------------------------------------------------
-namespace CCCNet {
+namespace CCCNet
+{
     /// Первый байт при упаковке данных.
     const char Prefix = ASCII::STX;
 

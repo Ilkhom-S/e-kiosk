@@ -17,7 +17,8 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------
-class DispenserServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::DispenserServiceWindow {
+class DispenserServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::DispenserServiceWindow
+{
     Q_OBJECT
 
   public:

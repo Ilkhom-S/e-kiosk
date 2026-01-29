@@ -5,7 +5,8 @@
 
 class SendRequest;
 
-class ConfirmOtp : public SendRequest {
+class ConfirmOtp : public SendRequest
+{
     Q_OBJECT
 
   public:

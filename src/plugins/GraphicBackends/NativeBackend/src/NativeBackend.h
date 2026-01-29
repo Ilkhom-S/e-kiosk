@@ -18,7 +18,8 @@
 #include <SDK/GUI/IGraphicsBackend.h>
 
 //------------------------------------------------------------------------------
-class NativeBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsBackend {
+class NativeBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsBackend
+{
     Q_OBJECT
 
   public:

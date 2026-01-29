@@ -5,7 +5,8 @@
 
 class SendRequest;
 
-class SendLogInfo : public SendRequest {
+class SendLogInfo : public SendRequest
+{
     Q_OBJECT
 
   public:

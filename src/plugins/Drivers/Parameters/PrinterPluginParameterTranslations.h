@@ -3,7 +3,8 @@
 #pragma once
 
 //------------------------------------------------------------------------
-namespace PluginParameterTranslations {
+namespace PluginParameterTranslations
+{
     static const char *PrintPageNumber = QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#print_page_number");
     static const char *RemotePaperSensor =
         QT_TRANSLATE_NOOP("PrinterParameters", "PrinterParameters#remote_paper_sensor");

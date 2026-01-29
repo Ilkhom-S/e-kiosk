@@ -20,15 +20,18 @@
 // Project
 #include "FirstSetup.h"
 
-namespace CFirstSetup {
+namespace CFirstSetup
+{
     const QString PluginName = "FirstSetup";
 } // namespace CFirstSetup
 
 //--------------------------------------------------------------------------
-namespace {
+namespace
+{
 
     /// Конструктор плагина.
-    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+    {
         return new FirstSetup(aFactory, aInstancePath);
     }
 
@@ -40,20 +43,25 @@ REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application, SDK::PaymentProcess
 
 //--------------------------------------------------------------------------
 FirstSetup::FirstSetup(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mMainWidget(0), mEnvironment(aFactory), mInstancePath(aInstancePath), mIsReady(false) {
+    : mMainWidget(0), mEnvironment(aFactory), mInstancePath(aInstancePath), mIsReady(false)
+{
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
         mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
-    if (core) {
+    if (core)
+    {
         mBackend = QSharedPointer<ServiceMenuBackend>(
             new ServiceMenuBackend(mEnvironment, mEnvironment->getLog(CServiceMenuBackend::LogName)));
-    } else {
+    }
+    else
+    {
         mEnvironment->getLog("ServiceMenu")->write(LogLevel::Error, "Failed to get ICore");
     }
 
     mIsReady = core != 0;
 
-    if (mIsReady) {
+    if (mIsReady)
+    {
         mMainWidget = new QGraphicsProxyWidget();
 
         mWizardFrame = new WizardFrame(mBackend.data());
@@ -75,80 +83,96 @@ FirstSetup::FirstSetup(SDK::Plugin::IEnvironment *aFactory, const QString &aInst
 }
 
 //--------------------------------------------------------------------------
-FirstSetup::~FirstSetup() {
-    if (mMainWidget) {
+FirstSetup::~FirstSetup()
+{
+    if (mMainWidget)
+    {
         mWizardFrame->shutdown();
         mMainWidget->deleteLater();
     }
 }
 
 //--------------------------------------------------------------------------
-QString FirstSetup::getPluginName() const {
+QString FirstSetup::getPluginName() const
+{
     return CFirstSetup::PluginName;
 }
 
 //--------------------------------------------------------------------------
-QVariantMap FirstSetup::getConfiguration() const {
+QVariantMap FirstSetup::getConfiguration() const
+{
     return mParameters;
 }
 
 //--------------------------------------------------------------------------
-void FirstSetup::setConfiguration(const QVariantMap &aParameters) {
+void FirstSetup::setConfiguration(const QVariantMap &aParameters)
+{
     mParameters = aParameters;
 }
 
 //--------------------------------------------------------------------------
-QString FirstSetup::getConfigurationName() const {
+QString FirstSetup::getConfigurationName() const
+{
     return mInstancePath;
 }
 
 //--------------------------------------------------------------------------
-bool FirstSetup::saveConfiguration() {
+bool FirstSetup::saveConfiguration()
+{
     return true;
 }
 
 //--------------------------------------------------------------------------
-bool FirstSetup::isReady() const {
+bool FirstSetup::isReady() const
+{
     return mIsReady;
 }
 
 //---------------------------------------------------------------------------
-void FirstSetup::show() {
+void FirstSetup::show()
+{
 }
 
 //---------------------------------------------------------------------------
-void FirstSetup::hide() {
+void FirstSetup::hide()
+{
 }
 
 //---------------------------------------------------------------------------
-void FirstSetup::notify(const QString & /*aReason*/, const QVariantMap &aParameters) {
+void FirstSetup::notify(const QString & /*aReason*/, const QVariantMap &aParameters)
+{
     GUI::MessageBox::emitSignal(aParameters);
 }
 
 //---------------------------------------------------------------------------
-void FirstSetup::reset(const QVariantMap & /*aParameters*/) {
+void FirstSetup::reset(const QVariantMap & /*aParameters*/)
+{
 }
 
 //---------------------------------------------------------------------------
-QQuickItem *FirstSetup::getWidget() const {
+QQuickItem *FirstSetup::getWidget() const
+{
     // return mMainWidget;
     // FIXME
     return nullptr;
 }
 
 //---------------------------------------------------------------------------
-QVariantMap FirstSetup::getContext() const {
+QVariantMap FirstSetup::getContext() const
+{
     // TODO
     return QVariantMap();
 }
 
 //---------------------------------------------------------------------------
-bool FirstSetup::isValid() const {
+bool FirstSetup::isValid() const
+{
     return mMainWidget != 0;
 }
 
 //---------------------------------------------------------------------------
-QString FirstSetup::getError() const {
+QString FirstSetup::getError() const
+{
     return QString();
 }
 

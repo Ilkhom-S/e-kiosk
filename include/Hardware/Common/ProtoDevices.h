@@ -10,12 +10,16 @@
 #include "Hardware/Common/ProtoDevice.h"
 
 //--------------------------------------------------------------------------------
-class ProtoDeviceBase : public ProtoDevice, public MetaDevice<SDK::Driver::IDevice> {};
+class ProtoDeviceBase : public ProtoDevice, public MetaDevice<SDK::Driver::IDevice>
+{
+};
 
-class ProtoPrinter : public ProtoDevice, public MetaDevice<SDK::Driver::IPrinter> {
+class ProtoPrinter : public ProtoDevice, public MetaDevice<SDK::Driver::IPrinter>
+{
     SET_DEVICE_TYPE(Printer)
 };
-class ProtoModem : public ProtoDevice, public MetaDevice<SDK::Driver::IModem> {
+class ProtoModem : public ProtoDevice, public MetaDevice<SDK::Driver::IModem>
+{
     SET_DEVICE_TYPE(Modem)
 };
 

@@ -3,7 +3,8 @@
 // System
 #include "../AbstractPrinter.h"
 
-namespace CMDPhoenix {
+namespace CMDPhoenix
+{
     const int charTimeOut = 15;        /// Time out
     const int TimeOutAfterWriting = 0; /// Таймаут порта после запроса.
     const int MaxBufferSize = 1024;    /// Размер буфера.
@@ -38,7 +39,8 @@ namespace CMDPhoenix {
 
 class BasePrinterDevices;
 
-class Phoenix_PRINTER : public BasePrinterDevices {
+class Phoenix_PRINTER : public BasePrinterDevices
+{
     Q_OBJECT
 
   public:

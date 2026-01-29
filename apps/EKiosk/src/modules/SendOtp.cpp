@@ -1,25 +1,29 @@
 // Project
 #include "SendOtp.h"
 
-SendOtp::SendOtp(QObject *parent) : SendRequest(parent) {
+SendOtp::SendOtp(QObject *parent) : SendRequest(parent)
+{
     senderName = "SEND_OTP";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
     connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 }
 
-void SendOtp::resendRequest() {
+void SendOtp::resendRequest()
+{
     emit emit_SendOtpResult("", "");
 }
 
-void SendOtp::setDataNote(const QDomNode &domElement) {
+void SendOtp::setDataNote(const QDomNode &domElement)
+{
     resultCode = "";
     otpId = "";
 
     // Парсим данные
     parcerNote(domElement);
 
-    if (resultCode != "") {
+    if (resultCode != "")
+    {
         // Тут отправляем сигнал с балансом
         emit emit_SendOtpResult(resultCode, otpId);
         return;
@@ -29,21 +33,26 @@ void SendOtp::setDataNote(const QDomNode &domElement) {
     return;
 }
 
-void SendOtp::parcerNote(const QDomNode &domElement) {
+void SendOtp::parcerNote(const QDomNode &domElement)
+{
     // Необходимо отпарсить документ
     QDomNode domNode = domElement.firstChild();
 
-    while (!domNode.isNull()) {
-        if (domNode.isElement()) {
+    while (!domNode.isNull())
+    {
+        if (domNode.isElement())
+        {
 
             QDomElement domElement = domNode.toElement();
             QString strTag = domElement.tagName();
 
-            if (strTag == "resultCode") {
+            if (strTag == "resultCode")
+            {
                 resultCode = domElement.text();
             }
 
-            if (strTag == "otp_id") {
+            if (strTag == "otp_id")
+            {
                 otpId = domElement.text();
             }
         }
@@ -53,7 +62,8 @@ void SendOtp::parcerNote(const QDomNode &domElement) {
     }
 }
 
-void SendOtp::sendOtpRequest(QString account) {
+void SendOtp::sendOtpRequest(QString account)
+{
     QString header_xml = getHeaderRequest(Request::Type::SendOtp);
 
     QString footer_xml = getFooterRequest();

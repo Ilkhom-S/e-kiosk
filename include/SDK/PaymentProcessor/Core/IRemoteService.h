@@ -10,11 +10,15 @@
 #include <QtCore/QByteArray>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
-        namespace CMonitoringService {
-            namespace CommandParameters {
+        namespace CMonitoringService
+        {
+            namespace CommandParameters
+            {
                 /// Степень готовности команды.
                 const char Progress[] = "progress";
 
@@ -27,7 +31,8 @@ namespace SDK {
         } // namespace CMonitoringService
 
         //------------------------------------------------------------------------------
-        class IRemoteService : public QObject {
+        class IRemoteService : public QObject
+        {
             Q_OBJECT
             Q_ENUMS(EStatus)
             Q_ENUMS(EUpdateType)
@@ -35,7 +40,8 @@ namespace SDK {
 
           public:
             /// Статус команды.
-            enum EStatus {
+            enum EStatus
+            {
                 OK = 0,         /// Выполнена успешно.
                 Error,          /// Ошибка.
                 Waiting,        /// Ожидает выполнения/отправки.
@@ -45,7 +51,8 @@ namespace SDK {
             };
 
             /// Тип команды обновления.
-            enum EUpdateType {
+            enum EUpdateType
+            {
                 Configuration = 0, /// Конфигурация.
                 ServicePack,       /// Пакет обновления. (для совместимости с 2.0) Не поддерживается.
                 UserPack,          /// Пользовательский архив.
@@ -58,7 +65,8 @@ namespace SDK {
             };
 
             /// Возможные платёжные команды.
-            enum EPaymentOperation {
+            enum EPaymentOperation
+            {
                 Process = 0, /// Проведение платежа.
                 Remove       /// Удаление.
             };
@@ -110,7 +118,8 @@ namespace SDK {
             void commandStatusChanged(int aID, int aStatus, const QVariantMap &aParameters);
 
           protected:
-            virtual ~IRemoteService() {
+            virtual ~IRemoteService()
+            {
             }
         };
 

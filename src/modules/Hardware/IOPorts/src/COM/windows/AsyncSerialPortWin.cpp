@@ -17,7 +17,8 @@ using namespace SDK::Driver::IOPort::COM;
 //--------------------------------------------------------------------------------
 AsyncSerialPortWin::AsyncSerialPortWin()
     : mPortHandle(0), mExist(false), mReadMutex(QMutex::Recursive), mWriteMutex(QMutex::Recursive), mReadEventMask(0),
-      mLastError(0), mLastErrorChecking(0), mMaxReadingSize(0), mWaitResult(false), mReadBytes(0) {
+      mLastError(0), mLastErrorChecking(0), mMaxReadingSize(0), mWaitResult(false), mReadBytes(0)
+{
     setBaudRate(EBaudRate::BR9600);
     setParity(EParity::No);
     setByteSize(8);
@@ -36,24 +37,27 @@ AsyncSerialPortWin::AsyncSerialPortWin()
 }
 
 //--------------------------------------------------------------------------------
-void AsyncSerialPortWin::initialize() {
+void AsyncSerialPortWin::initialize()
+{
     TIOPortDeviceData deviceData;
     getDeviceProperties(mUuids, mPathProperty, false, &deviceData);
 
     QStringList minePortData;
     QStringList otherPortData;
 
-    for (auto it = deviceData.begin(); it != deviceData.end(); ++it) {
+    for (auto it = deviceData.begin(); it != deviceData.end(); ++it)
+    {
         bool mine = !mSystemName.isEmpty() && it->contains(mSystemName);
         QStringList &target = mine ? minePortData : otherPortData;
         target << it.key() + "\n" + it.value() + "\n";
 
-        if (mine) {
+        if (mine)
+        {
             bool cannotWaitResult =
                 std::find_if(CAsyncSerialPortWin::CannotWaitResult.begin(), CAsyncSerialPortWin::CannotWaitResult.end(),
-                             [&](const QString &aLexeme) -> bool {
-                                 return it->contains(aLexeme, Qt::CaseInsensitive);
-                             }) != CAsyncSerialPortWin::CannotWaitResult.end();
+                             [&](const QString &aLexeme) -> bool
+                             { return it->contains(aLexeme, Qt::CaseInsensitive); }) !=
+                CAsyncSerialPortWin::CannotWaitResult.end();
             setConfigParameter(CHardware::Port::COM::ControlRemoving, cannotWaitResult);
         }
     }
@@ -62,8 +66,10 @@ void AsyncSerialPortWin::initialize() {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::release() {
-    if (checkHandle()) {
+bool AsyncSerialPortWin::release()
+{
+    if (checkHandle())
+    {
         BOOL_CALL(CancelIo);
     }
 
@@ -71,7 +77,8 @@ bool AsyncSerialPortWin::release() {
 }
 
 //--------------------------------------------------------------------------------
-void AsyncSerialPortWin::setDeviceConfiguration(const QVariantMap &aConfiguration) {
+void AsyncSerialPortWin::setDeviceConfiguration(const QVariantMap &aConfiguration)
+{
     IOPortBase::setDeviceConfiguration(aConfiguration);
     bool unknownSystemName = !mSystemName.isEmpty() && !mSystemNames.contains(mSystemName);
     EPortTypes::Enum portType = getSystemData()[mSystemName];
@@ -80,50 +87,62 @@ void AsyncSerialPortWin::setDeviceConfiguration(const QVariantMap &aConfiguratio
 
     // TODO: при увеличении номенклатуры виртуальных/эмуляторных портов продумать логику загрузки девайса с
     // отсутствующим портом
-    if ((mType == EPortTypes::COM) && (unknownSystemName || (portType == EPortTypes::VirtualCOM))) {
+    if ((mType == EPortTypes::COM) && (unknownSystemName || (portType == EPortTypes::VirtualCOM)))
+    {
         mType = EPortTypes::VirtualCOM;
     }
 
-    if (portType == EPortTypes::COMEmulator) {
+    if (portType == EPortTypes::COMEmulator)
+    {
         mType = EPortTypes::COMEmulator;
     }
 
-    if (!mExist && !mSystemName.isEmpty()) {
+    if (!mExist && !mSystemName.isEmpty())
+    {
         checkExistence();
     }
 
-    if (mType == EPortTypes::VirtualCOM) {
+    if (mType == EPortTypes::VirtualCOM)
+    {
         mWaitResult = !cannotWaitResult && aConfiguration.value(CHardware::Port::COM::WaitResult, mWaitResult).toBool();
     }
 
-    if (aConfiguration.contains(CHardware::Port::MaxReadingSize)) {
+    if (aConfiguration.contains(CHardware::Port::MaxReadingSize))
+    {
         mMaxReadingSize = aConfiguration[CHardware::Port::MaxReadingSize].toInt();
     }
 
-    if (getType() != EPortTypes::USB) {
+    if (getType() != EPortTypes::USB)
+    {
         TPortParameters portParameters;
 
-        if (containsConfigParameter(CHardware::Port::COM::BaudRate)) {
+        if (containsConfigParameter(CHardware::Port::COM::BaudRate))
+        {
             portParameters.insert(EParameters::BaudRate, getConfigParameter(CHardware::Port::COM::BaudRate).toInt());
         }
 
-        if (containsConfigParameter(CHardware::Port::COM::Parity)) {
+        if (containsConfigParameter(CHardware::Port::COM::Parity))
+        {
             portParameters.insert(EParameters::Parity, getConfigParameter(CHardware::Port::COM::Parity).toInt());
         }
 
-        if (containsConfigParameter(CHardware::Port::COM::RTS)) {
+        if (containsConfigParameter(CHardware::Port::COM::RTS))
+        {
             portParameters.insert(EParameters::RTS, getConfigParameter(CHardware::Port::COM::RTS).toInt());
         }
 
-        if (containsConfigParameter(CHardware::Port::COM::DTR)) {
+        if (containsConfigParameter(CHardware::Port::COM::DTR))
+        {
             portParameters.insert(EParameters::DTR, getConfigParameter(CHardware::Port::COM::DTR).toInt());
         }
 
-        if (containsConfigParameter(CHardware::Port::COM::ByteSize)) {
+        if (containsConfigParameter(CHardware::Port::COM::ByteSize))
+        {
             portParameters.insert(EParameters::ByteSize, getConfigParameter(CHardware::Port::COM::ByteSize).toInt());
         }
 
-        if (containsConfigParameter(CHardware::Port::COM::StopBits)) {
+        if (containsConfigParameter(CHardware::Port::COM::StopBits))
+        {
             portParameters.insert(EParameters::StopBits, getConfigParameter(CHardware::Port::COM::StopBits).toInt());
         }
 
@@ -132,10 +151,12 @@ void AsyncSerialPortWin::setDeviceConfiguration(const QVariantMap &aConfiguratio
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::process(TBOOLMethod aMethod, const QString &aFunctionName) {
+bool AsyncSerialPortWin::process(TBOOLMethod aMethod, const QString &aFunctionName)
+{
     BOOL result = aMethod();
 
-    if (!result) {
+    if (!result)
+    {
         handleError(aFunctionName);
     }
 
@@ -143,36 +164,45 @@ bool AsyncSerialPortWin::process(TBOOLMethod aMethod, const QString &aFunctionNa
 }
 
 //--------------------------------------------------------------------------------
-void AsyncSerialPortWin::logError(const QString &aFunctionName) {
-    if (CAsyncSerialPortWin::NoLogErrors.contains(mLastError)) {
+void AsyncSerialPortWin::logError(const QString &aFunctionName)
+{
+    if (CAsyncSerialPortWin::NoLogErrors.contains(mLastError))
+    {
         return;
     }
 
-    if (checkHandle() || (mLastErrorChecking != mLastError)) {
+    if (checkHandle() || (mLastErrorChecking != mLastError))
+    {
         toLog(LogLevel::Error, QString("%1: %2 failed with %3.")
                                    .arg(mSystemName)
                                    .arg(aFunctionName)
                                    .arg(ISysUtils::getErrorMessage(mLastError)));
     }
 
-    if (!checkHandle()) {
+    if (!checkHandle())
+    {
         mLastErrorChecking = mLastError;
-    } else {
+    }
+    else
+    {
         mLastErrorChecking = 0;
     }
 }
 
 //--------------------------------------------------------------------------------
-void AsyncSerialPortWin::handleError(const QString &aFunctionName) {
+void AsyncSerialPortWin::handleError(const QString &aFunctionName)
+{
     mLastError = ::GetLastError();
 
     logError(aFunctionName);
 
-    if (CAsyncSerialPortWin::DisappearingErrors.contains(mLastError)) {
+    if (CAsyncSerialPortWin::DisappearingErrors.contains(mLastError))
+    {
         mSystemNames = getSystemData(true).keys();
     }
 
-    if (!mSystemNames.contains(mSystemName)) {
+    if (!mSystemNames.contains(mSystemName))
+    {
         close();
 
         mExist = false;
@@ -180,14 +210,17 @@ void AsyncSerialPortWin::handleError(const QString &aFunctionName) {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::checkHandle() {
+bool AsyncSerialPortWin::checkHandle()
+{
     return mPortHandle && (mPortHandle != INVALID_HANDLE_VALUE);
 }
 
 //--------------------------------------------------------------------------------
-void AsyncSerialPortWin::changePerformingTimeout(const QString &aContext, int aTimeout, int aPerformingTime) {
+void AsyncSerialPortWin::changePerformingTimeout(const QString &aContext, int aTimeout, int aPerformingTime)
+{
     if ((aContext == CHardware::Port::OpeningContext) &&
-        (aTimeout == getConfigParameter(CHardware::Port::OpeningTimeout).toInt())) {
+        (aTimeout == getConfigParameter(CHardware::Port::OpeningTimeout).toInt()))
+    {
         int newTimeout = int(aPerformingTime * CAsyncSerialPortWin::KOpeningTimeout);
         toLog(LogLevel::Normal, QString("Task performing timeout for context \"%1\" has been changed: %2 -> %3")
                                     .arg(aContext)
@@ -199,17 +232,21 @@ void AsyncSerialPortWin::changePerformingTimeout(const QString &aContext, int aT
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::opened() {
+bool AsyncSerialPortWin::opened()
+{
     return checkHandle();
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::open() {
-    if (checkHandle()) {
+bool AsyncSerialPortWin::open()
+{
+    if (checkHandle())
+    {
         return true;
     }
 
-    if (getConfigParameter(CHardware::Port::Suspended).toBool()) {
+    if (getConfigParameter(CHardware::Port::Suspended).toBool())
+    {
         toLog(LogLevel::Error, mSystemName + ": Failed to open due to there is a suspended task.");
         return false;
     }
@@ -230,12 +267,14 @@ bool AsyncSerialPortWin::open() {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::performOpen() {
+bool AsyncSerialPortWin::performOpen()
+{
     QByteArray fileName = "\\\\.\\" + mSystemName.toLatin1();
     mPortHandle =
         CreateFileA(fileName.data(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, 0);
 
-    if (!checkHandle()) {
+    if (!checkHandle())
+    {
         handleError("CreateFileA");
         mPortHandle = 0;
 
@@ -246,31 +285,36 @@ bool AsyncSerialPortWin::performOpen() {
 
     toLog(LogLevel::Normal, QString("Port %1 is opened.").arg(mSystemName));
 
-    if (clear() && BOOL_CALL(GetCommState, &mDCB)) {
+    if (clear() && BOOL_CALL(GetCommState, &mDCB))
+    {
         bool result = BOOL_CALL(ClearCommBreak);
 
         COMMTIMEOUTS timeouts = {0};
         timeouts.ReadIntervalTimeout = MAXDWORD;
 
-        if (BOOL_CALL(SetCommTimeouts, &timeouts) && BOOL_CALL(SetCommMask, EV_ERR | EV_RXCHAR)) {
+        if (BOOL_CALL(SetCommTimeouts, &timeouts) && BOOL_CALL(SetCommMask, EV_ERR | EV_RXCHAR))
+        {
             ::RtlSecureZeroMemory(&mReadOverlapped, sizeof(mReadOverlapped));
             mReadOverlapped.hEvent = ::CreateEvent(NULL, TRUE, FALSE, NULL);
 
             ::RtlSecureZeroMemory(&mWriteOverlapped, sizeof(mWriteOverlapped));
             mWriteOverlapped.hEvent = ::CreateEvent(NULL, TRUE, FALSE, NULL);
 
-            if (!applyPortSettings()) {
+            if (!applyPortSettings())
+            {
                 return false;
             }
 
-            if (mType == EPortTypes::VirtualCOM) {
+            if (mType == EPortTypes::VirtualCOM)
+            {
                 setConfigParameter(CHardware::Port::Suspended, false);
 
                 toLog(LogLevel::Normal, mSystemName + " is virtual COM port via USB.");
                 return true;
             }
 
-            if (result) {
+            if (result)
+            {
                 setConfigParameter(CHardware::Port::Suspended, false);
 
                 return true;
@@ -286,13 +330,17 @@ bool AsyncSerialPortWin::performOpen() {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::close() {
+bool AsyncSerialPortWin::close()
+{
     bool result = true;
     bool beenOpened = checkHandle();
 
-    auto closeHandle = [&](HANDLE &aHandle) {
-        if (aHandle && (aHandle != INVALID_HANDLE_VALUE)) {
-            if (!::CloseHandle(aHandle)) {
+    auto closeHandle = [&](HANDLE &aHandle)
+    {
+        if (aHandle && (aHandle != INVALID_HANDLE_VALUE))
+        {
+            if (!::CloseHandle(aHandle))
+            {
                 mLastError = ::GetLastError();
                 logError("CloseHandle");
 
@@ -307,7 +355,8 @@ bool AsyncSerialPortWin::close() {
     closeHandle(mWriteOverlapped.hEvent);
     closeHandle(mPortHandle);
 
-    if (result && beenOpened) {
+    if (result && beenOpened)
+    {
         toLog(LogLevel::Normal, QString("Port %1 is closed.").arg(mSystemName));
     }
 
@@ -315,17 +364,20 @@ bool AsyncSerialPortWin::close() {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::clear() {
+bool AsyncSerialPortWin::clear()
+{
     Sleep(1);
 
     bool result = true;
     DWORD errors = 0;
 
-    if (!BOOL_CALL(PurgeComm, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR)) {
+    if (!BOOL_CALL(PurgeComm, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR))
+    {
         result = false;
     }
 
-    if (!BOOL_CALL(ClearCommError, &errors, nullptr)) {
+    if (!BOOL_CALL(ClearCommError, &errors, nullptr))
+    {
         result = false;
     }
 
@@ -333,20 +385,24 @@ bool AsyncSerialPortWin::clear() {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::isExist() {
+bool AsyncSerialPortWin::isExist()
+{
     return mExist;
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::checkExistence() {
+bool AsyncSerialPortWin::checkExistence()
+{
     mExist = mSystemNames.contains(mSystemName);
 
-    if (!mExist && (mType != EPortTypes::COM)) {
+    if (!mExist && (mType != EPortTypes::COM))
+    {
         mSystemNames = getSystemData(true).keys();
         mExist = mSystemNames.contains(mSystemName);
     }
 
-    if (!mExist) {
+    if (!mExist)
+    {
         setOpeningTimeout(CAsyncSerialPortWin::OnlineOpeningTimeout);
 
         toLog(LogLevel::Error, QString("Port %1 does not exist.").arg(mSystemName));
@@ -357,14 +413,19 @@ bool AsyncSerialPortWin::checkExistence() {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::checkReady() {
-    if (mExist) {
+bool AsyncSerialPortWin::checkReady()
+{
+    if (mExist)
+    {
         return true;
-    } else if (!checkExistence()) {
+    }
+    else if (!checkExistence())
+    {
         return false;
     }
 
-    if (!open() || !checkHandle()) {
+    if (!open() || !checkHandle())
+    {
         toLog(LogLevel::Error, QString("Port %1 is not opened.").arg(mSystemName));
         return false;
     }
@@ -373,7 +434,8 @@ bool AsyncSerialPortWin::checkReady() {
 }
 
 //--------------------------------------------------------------------------------
-void AsyncSerialPortWin::initializeOverlapped(OVERLAPPED &aOverlapped) {
+void AsyncSerialPortWin::initializeOverlapped(OVERLAPPED &aOverlapped)
+{
     aOverlapped.Internal = 0;
     aOverlapped.InternalHigh = 0;
     aOverlapped.Pointer = nullptr;
@@ -381,14 +443,16 @@ void AsyncSerialPortWin::initializeOverlapped(OVERLAPPED &aOverlapped) {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::waitAsyncAction(DWORD &aResult, int aTimeout) {
+bool AsyncSerialPortWin::waitAsyncAction(DWORD &aResult, int aTimeout)
+{
     initializeOverlapped(mReadOverlapped);
 
     mReadEventMask = 0;
     ::WaitCommEvent(mPortHandle, &mReadEventMask, &mReadOverlapped);
     aResult = ::WaitForSingleObject(mReadOverlapped.hEvent, aTimeout);
 
-    if ((aResult != WAIT_OBJECT_0) && (aResult != WAIT_TIMEOUT)) {
+    if ((aResult != WAIT_OBJECT_0) && (aResult != WAIT_TIMEOUT))
+    {
         QString hexResult = QString("%1").arg(uint(aResult), 8, 16, QChar(ASCII::Zero)).toUpper();
         toLog(LogLevel::Error, QString("%1: WaitForSingleObject (ReadFile) has returned %2 = 0x%3 result.")
                                    .arg(mSystemName)
@@ -403,10 +467,12 @@ bool AsyncSerialPortWin::waitAsyncAction(DWORD &aResult, int aTimeout) {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::read(QByteArray &aData, int aTimeout, int aMinSize) {
+bool AsyncSerialPortWin::read(QByteArray &aData, int aTimeout, int aMinSize)
+{
     aData.clear();
 
-    if (!checkHandle() && !open()) {
+    if (!checkHandle() && !open())
+    {
         return false;
     }
 
@@ -415,15 +481,20 @@ bool AsyncSerialPortWin::read(QByteArray &aData, int aTimeout, int aMinSize) {
     QTime timer;
     timer.start();
 
-    while ((timer.elapsed() < aTimeout) && (aData.size() < aMinSize)) {
-        if (!processReading(aData, readingTimeout)) {
+    while ((timer.elapsed() < aTimeout) && (aData.size() < aMinSize))
+    {
+        if (!processReading(aData, readingTimeout))
+        {
             return false;
         }
     }
 
-    if (mDeviceIOLoging == ELoggingType::ReadWrite) {
+    if (mDeviceIOLoging == ELoggingType::ReadWrite)
+    {
         toLog(LogLevel::Normal, QString("%1: << {%2}").arg(mConnectedDeviceName).arg(aData.toHex().constData()));
-    } else if (!aData.isEmpty() && !mMaxReadingSize) {
+    }
+    else if (!aData.isEmpty() && !mMaxReadingSize)
+    {
         toLog(LogLevel::Debug, QString("%1 << %2").arg(mSystemName).arg(aData.toHex().data()));
     }
 
@@ -431,16 +502,19 @@ bool AsyncSerialPortWin::read(QByteArray &aData, int aTimeout, int aMinSize) {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::processReading(QByteArray &aData, int aTimeout) {
+bool AsyncSerialPortWin::processReading(QByteArray &aData, int aTimeout)
+{
     QMutexLocker locker(&mReadMutex);
 
     DWORD result = 0;
 
-    if (!checkReady() || !waitAsyncAction(result, aTimeout)) {
+    if (!checkReady() || !waitAsyncAction(result, aTimeout))
+    {
         return false;
     }
 
-    if ((result == WAIT_OBJECT_0) || (mType == EPortTypes::VirtualCOM)) {
+    if ((result == WAIT_OBJECT_0) || (mType == EPortTypes::VirtualCOM))
+    {
         mReadBytes = 0;
         BOOL wait = ((result == WAIT_OBJECT_0) || mWaitResult) ? TRUE : FALSE;
         ::GetOverlappedResult(mPortHandle, &mReadOverlapped, &mReadBytes, wait);
@@ -451,15 +525,18 @@ bool AsyncSerialPortWin::processReading(QByteArray &aData, int aTimeout) {
     DWORD errors = 0;
     COMSTAT comstat = {0};
 
-    if ((mReadEventMask & EV_RXCHAR) && BOOL_CALL(ClearCommError, &errors, &comstat)) {
+    if ((mReadEventMask & EV_RXCHAR) && BOOL_CALL(ClearCommError, &errors, &comstat))
+    {
         mReadingBuffer.fill(ASCII::NUL, comstat.cbInQue);
 
-        if (comstat.cbInQue) {
+        if (comstat.cbInQue)
+        {
             mReadBytes = 0;
             result = BOOL_CALL(ReadFile, &mReadingBuffer[0], comstat.cbInQue, &mReadBytes, &mReadOverlapped);
             int size = mReadBytes ? mReadBytes : mReadingBuffer.size();
 
-            if (size) {
+            if (size)
+            {
                 aData.append(mReadingBuffer.data(), size);
             }
         }
@@ -469,25 +546,32 @@ bool AsyncSerialPortWin::processReading(QByteArray &aData, int aTimeout) {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::write(const QByteArray &aData) {
-    if (aData.isEmpty()) {
+bool AsyncSerialPortWin::write(const QByteArray &aData)
+{
+    if (aData.isEmpty())
+    {
         toLog(LogLevel::Normal, mConnectedDeviceName + ": written data is empty.");
         return false;
     }
 
-    if (!checkHandle() && !open()) {
+    if (!checkHandle() && !open())
+    {
         return false;
     }
 
     QMutexLocker locker(&mWriteMutex);
 
-    if (mDeviceIOLoging != ELoggingType::None) {
+    if (mDeviceIOLoging != ELoggingType::None)
+    {
         toLog(LogLevel::Normal, QString("%1: >> {%2}").arg(mConnectedDeviceName).arg(aData.toHex().constData()));
-    } else if (!mMaxReadingSize) {
+    }
+    else if (!mMaxReadingSize)
+    {
         toLog(LogLevel::Debug, QString("%1 >> %2").arg(mSystemName).arg(aData.toHex().data()));
     }
 
-    if (!checkReady() || !clear()) {
+    if (!checkReady() || !clear())
+    {
         return false;
     }
 
@@ -497,7 +581,8 @@ bool AsyncSerialPortWin::write(const QByteArray &aData) {
     DWORD bytesWritten = 0;
     DWORD result = BOOL_CALL(WriteFile, aData.constData(), dataCount, &bytesWritten, &mWriteOverlapped);
 
-    if (result || (mLastError == ERROR_IO_PENDING) || (mLastError == ERROR_MORE_DATA)) {
+    if (result || (mLastError == ERROR_IO_PENDING) || (mLastError == ERROR_MORE_DATA))
+    {
         DWORD singlePacketSize = DWORD(mDCB.ByteSize + int(mDCB.fParity && (mDCB.Parity != NOPARITY)) +
                                        qCeil(double(mDCB.StopBits) / 2 + 1));
         DWORD requiredTime = qCeil((aData.size() * singlePacketSize * 8 * 1000) / mDCB.BaudRate);
@@ -506,21 +591,28 @@ bool AsyncSerialPortWin::write(const QByteArray &aData) {
         result =
             ::WaitForSingleObject(mWriteOverlapped.hEvent, qMax(DWORD(IIOPort::DefaultWriteTimeout), expectedTimeout));
 
-        switch (result) {
-            case WAIT_OBJECT_0: {
+        switch (result)
+        {
+            case WAIT_OBJECT_0:
+            {
                 result = BOOL_CALL(GetOverlappedResult, &mWriteOverlapped, &bytesWritten, TRUE);
 
                 break;
             }
-            case WAIT_TIMEOUT: {
+            case WAIT_TIMEOUT:
+            {
                 result = BOOL_CALL(GetOverlappedResult, &mWriteOverlapped, &bytesWritten, FALSE);
 
-                if (bytesWritten == dataCount) {
+                if (bytesWritten == dataCount)
+                {
                     result = true;
-                } else {
+                }
+                else
+                {
                     QString log = mSystemName + ": WriteFile timed out";
 
-                    if (bytesWritten) {
+                    if (bytesWritten)
+                    {
                         log += QString(", bytes written = %1, size of data = %2").arg(bytesWritten).arg(dataCount);
                     }
 
@@ -529,7 +621,8 @@ bool AsyncSerialPortWin::write(const QByteArray &aData) {
 
                 break;
             }
-            default: {
+            default:
+            {
                 QString hexResult = QString("%1").arg(uint(result), 8, 16, QChar(ASCII::Zero)).toUpper();
                 toLog(LogLevel::Error, QString("%1: WaitForSingleObject (WriteFile) has returned %2 = 0x%3 result.")
                                            .arg(mSystemName)
@@ -542,7 +635,8 @@ bool AsyncSerialPortWin::write(const QByteArray &aData) {
         }
     }
 
-    if (result) {
+    if (result)
+    {
         return result && (dataCount == bytesWritten);
     }
 
@@ -552,13 +646,16 @@ bool AsyncSerialPortWin::write(const QByteArray &aData) {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::setParameters(const TPortParameters &aParameters) {
+bool AsyncSerialPortWin::setParameters(const TPortParameters &aParameters)
+{
     DCB newDCB(mDCB);
 
-    for (auto it = aParameters.begin(); it != aParameters.end(); ++it) {
+    for (auto it = aParameters.begin(); it != aParameters.end(); ++it)
+    {
         int value = it.value();
 
-        switch (EParameters::Enum(it.key())) {
+        switch (EParameters::Enum(it.key()))
+        {
             case EParameters::BaudRate:
                 if (!setBaudRate(EBaudRate::Enum(value)))
                     return false;
@@ -595,7 +692,8 @@ bool AsyncSerialPortWin::setParameters(const TPortParameters &aParameters) {
     setConfigParameter(CHardware::Port::COM::ByteSize, int(mDCB.ByteSize));
     setConfigParameter(CHardware::Port::COM::StopBits, int(mDCB.StopBits));
 
-    if ((newDCB == mDCB) && (mType == EPortTypes::COM)) {
+    if ((newDCB == mDCB) && (mType == EPortTypes::COM))
+    {
         return true;
     }
 
@@ -603,7 +701,8 @@ bool AsyncSerialPortWin::setParameters(const TPortParameters &aParameters) {
 }
 
 //--------------------------------------------------------------------------------
-void AsyncSerialPortWin::getParameters(TPortParameters &aParameters) {
+void AsyncSerialPortWin::getParameters(TPortParameters &aParameters)
+{
     aParameters[EParameters::BaudRate] = getConfigParameter(CHardware::Port::COM::BaudRate).toInt();
     aParameters[EParameters::Parity] = getConfigParameter(CHardware::Port::COM::Parity).toInt();
     aParameters[EParameters::RTS] = getConfigParameter(CHardware::Port::COM::RTS).toInt();
@@ -613,8 +712,10 @@ void AsyncSerialPortWin::getParameters(TPortParameters &aParameters) {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::applyPortSettings() {
-    if (!checkHandle()) {
+bool AsyncSerialPortWin::applyPortSettings()
+{
+    if (!checkHandle())
+    {
         return true;
     }
 
@@ -632,8 +733,10 @@ bool AsyncSerialPortWin::applyPortSettings() {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::setBaudRate(EBaudRate::Enum aValue) {
-    switch (aValue) {
+bool AsyncSerialPortWin::setBaudRate(EBaudRate::Enum aValue)
+{
+    switch (aValue)
+    {
         case EBaudRate::BR4800:
             mDCB.BaudRate = CBR_4800;
             break;
@@ -663,8 +766,10 @@ bool AsyncSerialPortWin::setBaudRate(EBaudRate::Enum aValue) {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::setRTS(ERTSControl::Enum aValue) {
-    switch (aValue) {
+bool AsyncSerialPortWin::setRTS(ERTSControl::Enum aValue)
+{
+    switch (aValue)
+    {
         case ERTSControl::Disable:
             mDCB.fRtsControl = RTS_CONTROL_DISABLE;
             break;
@@ -685,8 +790,10 @@ bool AsyncSerialPortWin::setRTS(ERTSControl::Enum aValue) {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::setDTR(EDTRControl::Enum aValue) {
-    switch (aValue) {
+bool AsyncSerialPortWin::setDTR(EDTRControl::Enum aValue)
+{
+    switch (aValue)
+    {
         case EDTRControl::Disable:
             mDCB.fDtrControl = DTR_CONTROL_DISABLE;
             break;
@@ -704,8 +811,10 @@ bool AsyncSerialPortWin::setDTR(EDTRControl::Enum aValue) {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::setByteSize(int aValue) {
-    if (aValue >= 7 && aValue <= 9) {
+bool AsyncSerialPortWin::setByteSize(int aValue)
+{
+    if (aValue >= 7 && aValue <= 9)
+    {
         mDCB.ByteSize = BYTE(aValue);
         return true;
     }
@@ -714,8 +823,10 @@ bool AsyncSerialPortWin::setByteSize(int aValue) {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::setStopBits(EStopBits::Enum aValue) {
-    switch (aValue) {
+bool AsyncSerialPortWin::setStopBits(EStopBits::Enum aValue)
+{
+    switch (aValue)
+    {
         case EStopBits::One:
             mDCB.StopBits = 0;
             break;
@@ -733,8 +844,10 @@ bool AsyncSerialPortWin::setStopBits(EStopBits::Enum aValue) {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::setParity(EParity::Enum aValue) {
-    switch (aValue) {
+bool AsyncSerialPortWin::setParity(EParity::Enum aValue)
+{
+    switch (aValue)
+    {
         case EParity::Even:
             mDCB.Parity = EVENPARITY;
             break;
@@ -758,13 +871,15 @@ bool AsyncSerialPortWin::setParity(EParity::Enum aValue) {
 }
 
 //--------------------------------------------------------------------------------
-bool AsyncSerialPortWin::deviceConnected() {
+bool AsyncSerialPortWin::deviceConnected()
+{
     TWinDeviceProperties winProperties = getDeviceProperties(mUuids, mPathProperty, true);
     bool result = (winProperties.size() > mWinProperties.size()) && !mWinProperties.isEmpty();
 
     mWinProperties = winProperties;
 
-    if (result) {
+    if (result)
+    {
         checkReady();
 
         setDeviceConfiguration(getDeviceConfiguration());
@@ -775,32 +890,40 @@ bool AsyncSerialPortWin::deviceConnected() {
 
 //--------------------------------------------------------------------------------
 TWinDeviceProperties AsyncSerialPortWin::getDeviceProperties(const TUuids &aUuids, DWORD aPropertyName, bool aQuick,
-                                                             TIOPortDeviceData *aData) {
+                                                             TIOPortDeviceData *aData)
+{
     TWinDeviceProperties deviceProperties;
     QMap<QString, QStringList> sourceDeviceData;
 
-    foreach (const QUuid &uuid, aUuids) {
+    foreach (const QUuid &uuid, aUuids)
+    {
         TWinDeviceProperties uidDeviceProperties;
 
-        if (SystemDeviceUtils::enumerateSystemDevices(uuid, uidDeviceProperties, aPropertyName, aQuick)) {
-            for (auto it = uidDeviceProperties.begin(); it != uidDeviceProperties.end(); ++it) {
+        if (SystemDeviceUtils::enumerateSystemDevices(uuid, uidDeviceProperties, aPropertyName, aQuick))
+        {
+            for (auto it = uidDeviceProperties.begin(); it != uidDeviceProperties.end(); ++it)
+            {
                 deviceProperties.insert(it.key(), it.value());
                 sourceDeviceData[it.key()] << uuid.toString();
             }
         }
     }
 
-    if (aUuids == CAsyncSerialPortWin::System::Uuids()) {
+    if (aUuids == CAsyncSerialPortWin::System::Uuids())
+    {
         TWinDeviceProperties deviceRegistryProperties = SystemDeviceUtils::enumerateRegistryDevices(aQuick);
         SystemDeviceUtils::mergeRegistryDeviceProperties(deviceProperties, deviceRegistryProperties, sourceDeviceData);
     }
 
-    if (aData) {
-        for (auto it = sourceDeviceData.begin(); it != sourceDeviceData.end(); ++it) {
+    if (aData)
+    {
+        for (auto it = sourceDeviceData.begin(); it != sourceDeviceData.end(); ++it)
+        {
             QString outKey = SystemDeviceUtils::getDeviceOutKey(it.value());
             QString outData = SystemDeviceUtils::getDeviceOutData(deviceProperties[it.key()].data);
 
-            if (!outData.toLower().contains("mouse")) {
+            if (!outData.toLower().contains("mouse"))
+            {
                 aData->insert(outKey, outData);
             }
         }
@@ -810,31 +933,39 @@ TWinDeviceProperties AsyncSerialPortWin::getDeviceProperties(const TUuids &aUuid
 }
 
 //--------------------------------------------------------------------------------
-AsyncSerialPortWin::TData AsyncSerialPortWin::getSystemData(bool aForce) {
+AsyncSerialPortWin::TData AsyncSerialPortWin::getSystemData(bool aForce)
+{
     static TData data;
 
-    if (aForce || data.isEmpty()) {
+    if (aForce || data.isEmpty())
+    {
         TWinDeviceProperties deviceProperties =
             getDeviceProperties(CAsyncSerialPortWin::System::Uuids(), CAsyncSerialPortWin::System::PathProperty);
 
-        auto isMatched = [&](const TWinProperties &aProperties, const QStringList &aTags) -> bool {
-            return std::find_if(aProperties.begin(), aProperties.end(), [&](const QString &aValue) -> bool {
-                       return std::find_if(aTags.begin(), aTags.end(), [&](const QString &aTag) -> bool {
-                                  return aValue.contains(aTag, Qt::CaseInsensitive);
-                              }) != aTags.end();
-                   }) != aProperties.end();
+        auto isMatched = [&](const TWinProperties &aProperties, const QStringList &aTags) -> bool
+        {
+            return std::find_if(aProperties.begin(), aProperties.end(),
+                                [&](const QString &aValue) -> bool
+                                {
+                                    return std::find_if(aTags.begin(), aTags.end(), [&](const QString &aTag) -> bool
+                                                        { return aValue.contains(aTag, Qt::CaseInsensitive); }) !=
+                                           aTags.end();
+                                }) != aProperties.end();
         };
 
         data.clear();
         QRegularExpression regExp("COM[0-9]+");
 
-        for (auto it = deviceProperties.begin(); it != deviceProperties.end(); ++it) {
+        for (auto it = deviceProperties.begin(); it != deviceProperties.end(); ++it)
+        {
             int index = -1;
 
-            do {
+            do
+            {
                 index = regExp.match(it.key().capturedStart(), ++index);
 
-                if (index != -1) {
+                if (index != -1)
+                {
                     EPortTypes::Enum portType =
                         isMatched(it->data, CAsyncSerialPortWin::Tags::Virtual())
                             ? EPortTypes::VirtualCOM
@@ -861,7 +992,8 @@ AsyncSerialPortWin::TData AsyncSerialPortWin::getSystemData(bool aForce) {
 }
 
 //--------------------------------------------------------------------------------
-QStringList AsyncSerialPortWin::enumerateSystemNames() {
+QStringList AsyncSerialPortWin::enumerateSystemNames()
+{
     return getSystemData().keys();
 }
 

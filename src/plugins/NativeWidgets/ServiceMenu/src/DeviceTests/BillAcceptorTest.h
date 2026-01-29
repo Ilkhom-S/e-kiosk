@@ -12,19 +12,23 @@
 #include <SDK/Drivers/ICashAcceptor.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
         class IDevice;
     } // namespace Driver
 } // namespace SDK
 
-namespace CBillAcceptorTest {
+namespace CBillAcceptorTest
+{
     /// Таймаут сообщения о номинале купюры в эскроу, [мс].
     const int EscrowMessageTimeout = 5 * 1000;
 } // namespace CBillAcceptorTest
 
 //------------------------------------------------------------------------------
-class BillAcceptorTest : public SDK::PaymentProcessor::IDeviceTest {
+class BillAcceptorTest : public SDK::PaymentProcessor::IDeviceTest
+{
     Q_OBJECT
 
   public:

@@ -27,9 +27,11 @@ typedef unsigned long SIZE_T, *PSIZE_T;
 #endif // _MSC_VER < 1300
 
 class StackWalkerInternal; // forward
-class StackWalker {
+class StackWalker
+{
   public:
-    typedef enum StackWalkOptions {
+    typedef enum StackWalkOptions
+    {
         // No addition info will be retrieved
         // (only the address is available)
         RetrieveNone = 0,
@@ -87,11 +89,15 @@ class StackWalker {
     // declare it as "protected"
   protected:
 #endif
-    enum { STACKWALK_MAX_NAMELEN = 1024 }; // max name length for found symbols
+    enum
+    {
+        STACKWALK_MAX_NAMELEN = 1024
+    }; // max name length for found symbols
 
   protected:
     // Entry for each Callstack-Entry
-    struct CallstackEntry {
+    struct CallstackEntry
+    {
         DWORD64 offset; // if 0, we have no valid entry
         CHAR name[STACKWALK_MAX_NAMELEN];
         CHAR undName[STACKWALK_MAX_NAMELEN];
@@ -107,7 +113,12 @@ class StackWalker {
         CHAR loadedImageName[STACKWALK_MAX_NAMELEN];
     } CallstackEntry;
 
-    enum CallstackEntryType { firstEntry, nextEntry, lastEntry };
+    enum CallstackEntryType
+    {
+        firstEntry,
+        nextEntry,
+        lastEntry
+    };
 
     virtual void OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName);
     virtual void OnLoadModule(LPCSTR img, LPCSTR mod, DWORD64 baseAddr, DWORD size, DWORD result, LPCSTR symType,
@@ -146,12 +157,16 @@ class StackWalker {
 // TODO: The following is not a "good" implementation,
 // because the callstack is only valid in the "__except" block...
 #define GET_CURRENT_CONTEXT(c, contextFlags)                                                                           \
-    do {                                                                                                               \
+    do                                                                                                                 \
+    {                                                                                                                  \
         memset(&c, 0, sizeof(CONTEXT));                                                                                \
         EXCEPTION_POINTERS *pExp = NULL;                                                                               \
-        __try {                                                                                                        \
+        __try                                                                                                          \
+        {                                                                                                              \
             throw 0;                                                                                                   \
-        } __except (((pExp = GetExceptionInformation()) ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_EXECUTE_HANDLER)) {    \
+        }                                                                                                              \
+        __except (((pExp = GetExceptionInformation()) ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_EXECUTE_HANDLER))        \
+        {                                                                                                              \
         }                                                                                                              \
         if (pExp != NULL)                                                                                              \
             memcpy(&c, pExp->ContextRecord, sizeof(CONTEXT));                                                          \
@@ -160,7 +175,8 @@ class StackWalker {
 #else
 // The following should be enough for walking the callstack...
 #define GET_CURRENT_CONTEXT(c, contextFlags)                                                                           \
-    do {                                                                                                               \
+    do                                                                                                                 \
+    {                                                                                                                  \
         memset(&c, 0, sizeof(CONTEXT));                                                                                \
         c.ContextFlags = contextFlags;                                                                                 \
         __asm call x __asm x : pop eax __asm mov c.Eip, eax __asm mov c.Ebp, ebp __asm mov c.Esp, esp                  \
@@ -171,7 +187,8 @@ class StackWalker {
 
 // The following is defined for x86 (XP and higher), x64 and IA64:
 #define GET_CURRENT_CONTEXT(c, contextFlags)                                                                           \
-    do {                                                                                                               \
+    do                                                                                                                 \
+    {                                                                                                                  \
         memset(&c, 0, sizeof(CONTEXT));                                                                                \
         c.ContextFlags = contextFlags;                                                                                 \
         RtlCaptureContext(&c);                                                                                         \

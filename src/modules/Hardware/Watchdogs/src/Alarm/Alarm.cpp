@@ -13,7 +13,8 @@
 using namespace SDK::Driver::IOPort::COM;
 
 //----------------------------------------------------------------------------
-Alarm::Alarm() {
+Alarm::Alarm()
+{
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
     mPortParameters[EParameters::Parity].append(EParity::No);
 
@@ -22,21 +23,25 @@ Alarm::Alarm() {
 }
 
 //----------------------------------------------------------------------------
-bool Alarm::isConnected() {
+bool Alarm::isConnected()
+{
     CAlarm::CCommandIntervals CommandIntervals;
 
-    for (auto it = CommandIntervals.data().begin(); it != CommandIntervals.data().end(); ++it) {
+    for (auto it = CommandIntervals.data().begin(); it != CommandIntervals.data().end(); ++it)
+    {
         TAnswer answer;
 
-        if (!mIOPort->write(QByteArray(1, it.key())) || !getAnswer(answer) || answer.isEmpty()) {
+        if (!mIOPort->write(QByteArray(1, it.key())) || !getAnswer(answer) || answer.isEmpty())
+        {
             return false;
         }
 
         CAlarm::TInterval interval = it.value();
 
-        if (std::find_if(answer.begin(), answer.end(), [&](char state) -> bool {
-                return qBound(it.value().first, uchar(state), it.value().second) == uchar(state);
-            }) == answer.end()) {
+        if (std::find_if(answer.begin(), answer.end(), [&](char state) -> bool
+                         { return qBound(it.value().first, uchar(state), it.value().second) == uchar(state); }) ==
+            answer.end())
+        {
             return false;
         }
     }
@@ -45,8 +50,10 @@ bool Alarm::isConnected() {
 }
 
 //----------------------------------------------------------------------------
-bool Alarm::reset(const QString & /*aLine*/) {
-    if (!checkConnectionAbility()) {
+bool Alarm::reset(const QString & /*aLine*/)
+{
+    if (!checkConnectionAbility())
+    {
         return false;
     }
 
@@ -56,21 +63,27 @@ bool Alarm::reset(const QString & /*aLine*/) {
 }
 
 //---------------------------------------------------------------------------
-bool Alarm::getStatus(TStatusCodes &aStatusCodes) {
+bool Alarm::getStatus(TStatusCodes &aStatusCodes)
+{
     TAnswer answer;
 
-    if (!getAnswer(answer)) {
+    if (!getAnswer(answer))
+    {
         return false;
     }
 
-    if (answer.isEmpty()) {
+    if (answer.isEmpty())
+    {
         return isConnected();
     }
 
-    foreach (char state, answer) {
+    foreach (char state, answer)
+    {
         for (auto it = CAlarm::SensorCodeSpecification.data().begin();
-             it != CAlarm::SensorCodeSpecification.data().end(); ++it) {
-            if ((state >> it.key()) & 1) {
+             it != CAlarm::SensorCodeSpecification.data().end(); ++it)
+        {
+            if ((state >> it.key()) & 1)
+            {
                 aStatusCodes << it.value();
             }
         }
@@ -80,7 +93,8 @@ bool Alarm::getStatus(TStatusCodes &aStatusCodes) {
 }
 
 //--------------------------------------------------------------------------------
-bool Alarm::getAnswer(TAnswer &aAnswer) {
+bool Alarm::getAnswer(TAnswer &aAnswer)
+{
     MutexLocker locker(&mExternalMutex);
 
     aAnswer.clear();
@@ -89,13 +103,16 @@ bool Alarm::getAnswer(TAnswer &aAnswer) {
     QElapsedTimer clockTimer;
     clockTimer.restart();
 
-    do {
-        if (!mIOPort->read(answer, 100)) {
+    do
+    {
+        if (!mIOPort->read(answer, 100))
+        {
             return false;
         }
     } while ((clockTimer.elapsed() < CAlarm::DefaultTimeout) && answer.isEmpty());
 
-    for (int i = 0; i < answer.size(); ++i) {
+    for (int i = 0; i < answer.size(); ++i)
+    {
         aAnswer << answer[i];
     }
 

@@ -16,9 +16,11 @@
 class QAtResultParser;
 class QTextCodec;
 
-class QAtUtils {
+class QAtUtils
+{
   private:
-    QAtUtils() {
+    QAtUtils()
+    {
     }
 
   public:

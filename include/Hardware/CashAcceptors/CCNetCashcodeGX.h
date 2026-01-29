@@ -7,7 +7,8 @@
 #include <Hardware/CashAcceptors/CCNetCashAcceptorBase.h>
 
 //--------------------------------------------------------------------------------
-namespace CCCNetCashcodeGX {
+namespace CCCNetCashcodeGX
+{
     /// Пауза после резета, [мс].
     const int ResetPause = 15 * 1000;
 
@@ -16,7 +17,8 @@ namespace CCCNetCashcodeGX {
 } // namespace CCCNetCashcodeGX
 
 //--------------------------------------------------------------------------------
-class CCNetCashcodeGX : public CCNetCashAcceptorBase {
+class CCNetCashcodeGX : public CCNetCashAcceptorBase
+{
     SET_SUBSERIES("CashcodeGX")
 
   public:

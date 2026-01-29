@@ -11,11 +11,13 @@
 // Project
 #include "keypud.h"
 
-namespace Ui {
+namespace Ui
+{
     class AvtorizationToAdminIn;
 }
 
-class AvtorizationToAdminIn : public QDialog {
+class AvtorizationToAdminIn : public QDialog
+{
     Q_OBJECT
 
   public:

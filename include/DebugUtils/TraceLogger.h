@@ -10,10 +10,12 @@
 #include <Common/ILog.h>
 
 //---------------------------------------------------------------------------
-class TraceLogger {
+class TraceLogger
+{
   public:
     /// Конструктор. Логирует вход в функцию.
-    TraceLogger(const char *aFileName, const char *aFuncName, int aLineNumber) {
+    TraceLogger(const char *aFileName, const char *aFuncName, int aLineNumber)
+    {
         mFileName = aFileName;
         mFuncName = aFuncName;
 
@@ -27,7 +29,8 @@ class TraceLogger {
     }
 
     /// Деструктор. Логирует выход из функции.
-    ~TraceLogger() {
+    ~TraceLogger()
+    {
         mIndent--;
 
         ILog::getInstance(mLogName)->write(

@@ -16,7 +16,8 @@
 class IDatabaseQueryChecker;
 
 //---------------------------------------------------------------------------
-class DatabaseQuery : public IDatabaseQuery, public QSqlQuery {
+class DatabaseQuery : public IDatabaseQuery, public QSqlQuery
+{
   public:
     DatabaseQuery(QSqlDatabase db, IDatabaseQueryChecker *aQueryChecker);
     virtual ~DatabaseQuery();

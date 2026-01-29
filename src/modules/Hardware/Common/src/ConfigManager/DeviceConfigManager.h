@@ -9,7 +9,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-class DeviceConfigManager {
+class DeviceConfigManager
+{
   public:
     DeviceConfigManager();
 

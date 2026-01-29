@@ -27,13 +27,17 @@
 
 class ILog;
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
         /// Структура с персональными данными дилера.
-        struct SPersonalSettings {
-            bool isValid() {
+        struct SPersonalSettings
+        {
+            bool isValid()
+            {
                 return !name.isEmpty() || !inn.isEmpty();
             }
 
@@ -65,21 +69,27 @@ namespace SDK {
         };
 
         //---------------------------------------------------------------------------
-        class DealerSettings : public ISettingsAdapter, public ILogable, private boost::noncopyable {
-            struct SCustomer {
+        class DealerSettings : public ISettingsAdapter, public ILogable, private boost::noncopyable
+        {
+            struct SCustomer
+            {
                 bool blocked;
                 QSet<QString> values;
                 Commissions commissions;
 
-                void addValue(const QString &aValue) {
-                    if (!aValue.isEmpty()) {
+                void addValue(const QString &aValue)
+                {
+                    if (!aValue.isEmpty())
+                    {
                         values.insert(aValue);
                     }
                 }
-                bool isEmpty() const {
+                bool isEmpty() const
+                {
                     return values.isEmpty();
                 }
-                bool contains(QSet<QString> aValues) const {
+                bool contains(QSet<QString> aValues) const
+                {
                     return !aValues.intersect(values).isEmpty();
                 }
             };

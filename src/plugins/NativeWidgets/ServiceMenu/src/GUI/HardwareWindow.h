@@ -25,11 +25,14 @@
 #include "EditorPane.h"
 #include "IDeviceBackend.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class IDeviceService;
     } // namespace PaymentProcessor
-    namespace Driver {
+    namespace Driver
+    {
         class IDevice;
     } // namespace Driver
 } // namespace SDK
@@ -38,7 +41,8 @@ class DeviceSlot;
 class ServiceMenuBackend;
 
 //---------------------------------------------------------------------------
-class HardwareWindow : public QWidget, public IDeviceBackend {
+class HardwareWindow : public QWidget, public IDeviceBackend
+{
     Q_OBJECT
 
   public:
@@ -46,26 +50,36 @@ class HardwareWindow : public QWidget, public IDeviceBackend {
     virtual ~HardwareWindow();
 
   public:
-    enum SlotCreationMode {
+    enum SlotCreationMode
+    {
         /// В этом режиме ничего дополнительно не происходит.
         Default = 0,
         /// Для пользовательских слотов после создания сразу будет открыт редактор.
         OpenEditorAfterCreation
     };
 
-    struct SDeviceItem {
+    struct SDeviceItem
+    {
         QString model;
         QString type;
         QString driver;
     };
 
-    struct TypeTag {};
-    struct ModelTag {};
-    struct TypeModelTag {};
+    struct TypeTag
+    {
+    };
+    struct ModelTag
+    {
+    };
+    struct TypeModelTag
+    {
+    };
 
     struct TypeModelKey
         : boost::multi_index::composite_key<SDeviceItem, BOOST_MULTI_INDEX_MEMBER(SDeviceItem, QString, type),
-                                            BOOST_MULTI_INDEX_MEMBER(SDeviceItem, QString, model)> {};
+                                            BOOST_MULTI_INDEX_MEMBER(SDeviceItem, QString, model)>
+    {
+    };
 
     typedef boost::multi_index::multi_index_container<
         SDeviceItem, boost::multi_index::indexed_by<

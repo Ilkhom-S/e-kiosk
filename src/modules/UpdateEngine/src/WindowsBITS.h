@@ -19,13 +19,15 @@
 // Project
 #include "WindowsBITS_i.h"
 
-namespace CBITS {
+namespace CBITS
+{
 
     //---------------------------------------------------------------------------
     class CopyManager_p;
 
     //---------------------------------------------------------------------------
-    class CopyManager : public ILogable {
+    class CopyManager : public ILogable
+    {
       public:
         explicit CopyManager(ILog *aLog);
         virtual ~CopyManager();

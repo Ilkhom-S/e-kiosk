@@ -16,8 +16,10 @@
 class RasConnection;
 #endif
 
-namespace Connection {
-    enum conSate {
+namespace Connection
+{
+    enum conSate
+    {
         conStateUp = 0,
         conStateDown = 1,
         conStateUpping = 2,
@@ -27,7 +29,8 @@ namespace Connection {
     };
 } // namespace Connection
 
-class ConnectionPart : public QObject {
+class ConnectionPart : public QObject
+{
     Q_OBJECT
 
   public:

@@ -21,7 +21,8 @@
 // System
 #include <Crypt/CryptEngine.h>
 
-namespace CCryptEngine {
+namespace CCryptEngine
+{
 #ifdef TC_USE_MD5
 #pragma message("CryptEngine use IPRIV_ALG_MD5!")
     const int IprivHashAlg = IPRIV_ALG_MD5;
@@ -33,29 +34,37 @@ namespace CCryptEngine {
     const int KeyExportBufferSize = 4096;  // Размер памяти для экспорта публичного ключа.
     const int KeySize = 2048;
 
-    ICryptEngine &instance() {
+    ICryptEngine &instance()
+    {
         static CryptEngine cryptEngine;
         return cryptEngine;
     }
 } // namespace CCryptEngine
 
 //---------------------------------------------------------------------------
-CryptEngine::CryptEngine() : mMutex(), mInitialized(false), mEngine(CCrypt::ETypeEngine::File) {
+CryptEngine::CryptEngine() : mMutex(), mInitialized(false), mEngine(CCrypt::ETypeEngine::File)
+{
 }
 
 //---------------------------------------------------------------------------
-CryptEngine::~CryptEngine() {
+CryptEngine::~CryptEngine()
+{
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::initialize() {
-    if (!mInitialized) {
-        if (CRYPT_IS_SUCCESS(Crypt_Initialize())) {
+bool CryptEngine::initialize()
+{
+    if (!mInitialized)
+    {
+        if (CRYPT_IS_SUCCESS(Crypt_Initialize()))
+        {
             Crypt_SetHashAlg(CCryptEngine::IprivHashAlg);
             mInitialized = true;
 
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
@@ -64,29 +73,34 @@ bool CryptEngine::initialize() {
 }
 
 //---------------------------------------------------------------------------
-void CryptEngine::shutdown() {
+void CryptEngine::shutdown()
+{
     releaseKeyPairs();
 
-    if (mInitialized) {
+    if (mInitialized)
+    {
         Crypt_Done();
         mInitialized = false;
     }
 }
 
 //---------------------------------------------------------------------------
-QSet<CCrypt::ETypeEngine> CryptEngine::availableEngines() {
+QSet<CCrypt::ETypeEngine> CryptEngine::availableEngines()
+{
     QMutexLocker locker(&mMutex);
 
     QSet<CCrypt::ETypeEngine> result;
 
-    if (CRYPT_IS_SUCCESS(Crypt_Ctrl_Null(IPRIV_ENGINE_RSAREF, IPRIV_ENGCMD_IS_READY))) {
+    if (CRYPT_IS_SUCCESS(Crypt_Ctrl_Null(IPRIV_ENGINE_RSAREF, IPRIV_ENGCMD_IS_READY)))
+    {
         result << CCrypt::ETypeEngine::File;
     }
 
 #ifdef TC_USE_TOKEN
     // Движок инициализирован и в наличии хотя бы один ключ
     if (CRYPT_IS_SUCCESS(Crypt_Ctrl_Null(IPRIV_ENGINE_PKCS11_RUTOKEN, IPRIV_ENGCMD_IS_READY)) &&
-        Crypt_Ctrl_Null(IPRIV_ENGINE_PKCS11_RUTOKEN, IPRIV_ENGCMD_GET_PKCS11_SLOTS_NUM) > 0) {
+        Crypt_Ctrl_Null(IPRIV_ENGINE_PKCS11_RUTOKEN, IPRIV_ENGCMD_GET_PKCS11_SLOTS_NUM) > 0)
+    {
         // Сразу инициализируем ключ
         Crypt_Ctrl_Int(IPRIV_ENGINE_PKCS11_RUTOKEN, IPRIV_ENGCMD_SET_PKCS11_SLOT, 0);
         Crypt_Ctrl_String(IPRIV_ENGINE_PKCS11_RUTOKEN, IPRIV_ENGCMD_SET_PIN, getRootPassword()[0].data());
@@ -99,7 +113,8 @@ QSet<CCrypt::ETypeEngine> CryptEngine::availableEngines() {
 }
 
 //---------------------------------------------------------------------------
-CCrypt::TokenStatus CryptEngine::getTokenStatus(CCrypt::ETypeEngine aEngine) {
+CCrypt::TokenStatus CryptEngine::getTokenStatus(CCrypt::ETypeEngine aEngine)
+{
     QMutexLocker locker(&mMutex);
 
     CCrypt::TokenStatus result;
@@ -107,17 +122,20 @@ CCrypt::TokenStatus CryptEngine::getTokenStatus(CCrypt::ETypeEngine aEngine) {
     result.available = false;
     result.initialized = false;
 
-    if (aEngine != CCrypt::ETypeEngine::RuToken) {
+    if (aEngine != CCrypt::ETypeEngine::RuToken)
+    {
         return result;
     }
 
     result.available = availableEngines().contains(aEngine);
     result.initialized = false;
 
-    if (result.available) {
+    if (result.available)
+    {
         char tmp[80] = {0};
         int len = Crypt_Ctrl(aEngine, IPRIV_ENGCMD_GET_PKCS11_SLOT_NAME, 0, tmp, sizeof(tmp) - 1);
-        if (len > 0) {
+        if (len > 0)
+        {
             result.name = QString::fromLocal8Bit(tmp);
         }
 
@@ -131,7 +149,8 @@ CCrypt::TokenStatus CryptEngine::getTokenStatus(CCrypt::ETypeEngine aEngine) {
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::initializeToken(CCrypt::ETypeEngine aEngine) {
+bool CryptEngine::initializeToken(CCrypt::ETypeEngine aEngine)
+{
 #ifdef TC_USE_TOKEN
     QMutexLocker locker(&mMutex);
 
@@ -146,7 +165,8 @@ bool CryptEngine::initializeToken(CCrypt::ETypeEngine aEngine) {
 
 //---------------------------------------------------------------------------
 bool CryptEngine::createKeyPair(const QString &aPath, const QString &aKeyPairName, const QString &aUserId,
-                                const QString &aPassword, const ulong aSerialNumber, QString &aErrorDescription) {
+                                const QString &aPassword, const ulong aSerialNumber, QString &aErrorDescription)
+{
     QMutexLocker locker(&mMutex);
 
     IPRIV_KEY secretKey, publicKey;
@@ -157,21 +177,24 @@ bool CryptEngine::createKeyPair(const QString &aPath, const QString &aKeyPairNam
     int res = Crypt_GenKey2(CCrypt::ETypeEngine::File, aSerialNumber, aUserId.toLatin1().data(), &secretKey, &publicKey,
                             CCryptEngine::KeySize);
 
-    if (res) {
+    if (res)
+    {
         aErrorDescription = errorToString(res);
 
         return false;
     }
 
     res = Crypt_ExportSecretKeyToFile(secretPath.toLocal8Bit(), aPassword.toLatin1(), &secretKey);
-    if (res <= 0) {
+    if (res <= 0)
+    {
         aErrorDescription = errorToString(res);
 
         return false;
     }
 
     res = Crypt_ExportPublicKeyToFile(publicPath.toLocal8Bit(), &publicKey, 0);
-    if (res <= 0) {
+    if (res <= 0)
+    {
         aErrorDescription = errorToString(res);
 
         return false;
@@ -184,7 +207,8 @@ bool CryptEngine::createKeyPair(const QString &aPath, const QString &aKeyPairNam
 }
 
 //---------------------------------------------------------------------------
-QByteArray CryptEngine::generatePassword() const {
+QByteArray CryptEngine::generatePassword() const
+{
     QByteArray phrase;
     phrase.resize(32);
 
@@ -197,10 +221,12 @@ QByteArray CryptEngine::generatePassword() const {
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::exportSecretKey(int aKeyPair, QByteArray &aSecretKey, const QByteArray &aPassword) {
+bool CryptEngine::exportSecretKey(int aKeyPair, QByteArray &aSecretKey, const QByteArray &aPassword)
+{
     QMutexLocker locker(&mMutex);
 
-    if (!mKeyPairs.contains(aKeyPair)) {
+    if (!mKeyPairs.contains(aKeyPair))
+    {
         return false;
     }
 
@@ -209,7 +235,8 @@ bool CryptEngine::exportSecretKey(int aKeyPair, QByteArray &aSecretKey, const QB
     TKeyPair pair = mKeyPairs[aKeyPair];
 
     int result = Crypt_ExportSecretKey(aSecretKey.data(), aSecretKey.size(), aPassword.data(), &pair.first);
-    if (result <= 0) {
+    if (result <= 0)
+    {
         return false;
     }
 
@@ -219,16 +246,19 @@ bool CryptEngine::exportSecretKey(int aKeyPair, QByteArray &aSecretKey, const QB
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::exportSecretKeyToFile(int aKeyPair, const QString &aFilePath, const QByteArray &aPassword) {
+bool CryptEngine::exportSecretKeyToFile(int aKeyPair, const QString &aFilePath, const QByteArray &aPassword)
+{
     QByteArray keyData;
 
-    if (!exportSecretKey(aKeyPair, keyData, aPassword)) {
+    if (!exportSecretKey(aKeyPair, keyData, aPassword))
+    {
         return false;
     }
 
     QFile keyFile(aFilePath);
 
-    if (!keyFile.open(QIODevice::ReadWrite | QIODevice::Append)) {
+    if (!keyFile.open(QIODevice::ReadWrite | QIODevice::Append))
+    {
         return false;
     }
 
@@ -239,10 +269,12 @@ bool CryptEngine::exportSecretKeyToFile(int aKeyPair, const QString &aFilePath, 
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::exportPublicKey(int aKeyPair, QByteArray &aPublicKey, ulong &aSerialNumber) {
+bool CryptEngine::exportPublicKey(int aKeyPair, QByteArray &aPublicKey, ulong &aSerialNumber)
+{
     QMutexLocker locker(&mMutex);
 
-    if (!mKeyPairs.contains(aKeyPair)) {
+    if (!mKeyPairs.contains(aKeyPair))
+    {
         return false;
     }
 
@@ -251,7 +283,8 @@ bool CryptEngine::exportPublicKey(int aKeyPair, QByteArray &aPublicKey, ulong &a
     TKeyPair pair = mKeyPairs[aKeyPair];
 
     int result = Crypt_ExportPublicKey(aPublicKey.data(), aPublicKey.size(), &pair.second, &pair.first);
-    if (result <= 0) {
+    if (result <= 0)
+    {
         return false;
     }
 
@@ -262,20 +295,24 @@ bool CryptEngine::exportPublicKey(int aKeyPair, QByteArray &aPublicKey, ulong &a
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::exportPublicKeyToFile(int aKeyPair, const QString &aFilePath, ulong &aSerialNumber) {
+bool CryptEngine::exportPublicKeyToFile(int aKeyPair, const QString &aFilePath, ulong &aSerialNumber)
+{
     QByteArray keyData;
 
-    if (!exportPublicKey(aKeyPair, keyData, aSerialNumber)) {
+    if (!exportPublicKey(aKeyPair, keyData, aSerialNumber))
+    {
         return false;
     }
 
     QFile keyFile(aFilePath);
 
-    if (!keyFile.open(QIODevice::ReadWrite | QIODevice::Append)) {
+    if (!keyFile.open(QIODevice::ReadWrite | QIODevice::Append))
+    {
         return false;
     }
 
-    if (keyFile.size()) {
+    if (keyFile.size())
+    {
         keyFile.write("\r\n");
     }
 
@@ -286,18 +323,21 @@ bool CryptEngine::exportPublicKeyToFile(int aKeyPair, const QString &aFilePath, 
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::replacePublicKey(int aKeyPair, const QByteArray &aPublicKey) {
+bool CryptEngine::replacePublicKey(int aKeyPair, const QByteArray &aPublicKey)
+{
     QMutexLocker locker(&mMutex);
 
     // Проверяем есть ли такая пара.
-    if (!mKeyPairs.contains(aKeyPair)) {
+    if (!mKeyPairs.contains(aKeyPair))
+    {
         return false;
     }
 
     IPRIV_KEY key;
 
     int result = Crypt_OpenPublicKey(mEngine, aPublicKey.data(), aPublicKey.size(), 0, &key, 0);
-    if (result != 0) {
+    if (result != 0)
+    {
         return false;
     }
 
@@ -310,14 +350,16 @@ bool CryptEngine::replacePublicKey(int aKeyPair, const QByteArray &aPublicKey) {
 
 //---------------------------------------------------------------------------
 bool CryptEngine::createKeyPair(int aKeyPair, CCrypt::ETypeEngine aEngine, const QByteArray &aKeyCard, int aKeySize,
-                                QString &aErrorDescription) {
+                                QString &aErrorDescription)
+{
     CCrypt::ETypeEngine primaryEngine = CCrypt::ETypeEngine::File;
 
 #ifdef TC_USE_TOKEN
     primaryEngine = CCrypt::ETypeEngine::RuToken;
 #endif
 
-    if (aKeyPair >= 0 && aEngine != primaryEngine) {
+    if (aKeyPair >= 0 && aEngine != primaryEngine)
+    {
         aErrorDescription = errorToString(CRYPT_ERR_INVALID_ENG);
 
         return false;
@@ -328,11 +370,13 @@ bool CryptEngine::createKeyPair(int aKeyPair, CCrypt::ETypeEngine aEngine, const
     std::optional<TKeyPair> oldPair;
 
     // Если уже загружена эта пара, то выгружаем и перетираем.
-    if (mKeyPairs.contains(aKeyPair)) {
+    if (mKeyPairs.contains(aKeyPair))
+    {
         oldPair = mKeyPairs.take(aKeyPair);
     }
 
-    if (aEngine == CCrypt::ETypeEngine::RuToken) {
+    if (aEngine == CCrypt::ETypeEngine::RuToken)
+    {
         Crypt_Ctrl_Int(aEngine, IPRIV_ENGCMD_SET_PKCS11_SLOT, 0);
         Crypt_Ctrl_String(aEngine, IPRIV_ENGCMD_SET_PIN, getRootPassword()[0].data());
     }
@@ -340,16 +384,21 @@ bool CryptEngine::createKeyPair(int aKeyPair, CCrypt::ETypeEngine aEngine, const
     TKeyPair pair;
 
     int result = Crypt_GenKey(aEngine, aKeyCard.data(), aKeyCard.size(), &pair.first, &pair.second, aKeySize);
-    if (result != 0) {
+    if (result != 0)
+    {
         aErrorDescription = errorToString(result);
 
-        if (oldPair.has_value()) {
+        if (oldPair.has_value())
+        {
             mKeyPairs.insert(aKeyPair, oldPair.value());
         }
 
         return false;
-    } else {
-        if (oldPair.has_value()) {
+    }
+    else
+    {
+        if (oldPair.has_value())
+        {
             Crypt_CloseKey(&oldPair->first);
             Crypt_CloseKey(&oldPair->second);
         }
@@ -363,9 +412,11 @@ bool CryptEngine::createKeyPair(int aKeyPair, CCrypt::ETypeEngine aEngine, const
 //---------------------------------------------------------------------------
 bool CryptEngine::loadKeyPair(int aKeyPair, CCrypt::ETypeEngine aEngine, const QString &aSecretKeyPath,
                               const QString &aPassword, const QString &aPublicKeyPath, const ulong aSerialNumber,
-                              const ulong aBankSerialNumber, QString &aErrorDescription) {
+                              const ulong aBankSerialNumber, QString &aErrorDescription)
+{
 #ifdef TC_USE_TOKEN
-    if (aKeyPair >= 0 && aEngine != CCrypt::ETypeEngine::RuToken) {
+    if (aKeyPair >= 0 && aEngine != CCrypt::ETypeEngine::RuToken)
+    {
         aErrorDescription = errorToString(CRYPT_ERR_INVALID_ENG);
 
         return false;
@@ -374,7 +425,8 @@ bool CryptEngine::loadKeyPair(int aKeyPair, CCrypt::ETypeEngine aEngine, const Q
 
     QMutexLocker locker(&mMutex);
 
-    if (mKeyPairs.contains(aKeyPair)) {
+    if (mKeyPairs.contains(aKeyPair))
+    {
         // Пара ключей с таким номером уже загружена, выгружаем.
         releaseKeyPair(aKeyPair);
     }
@@ -382,7 +434,8 @@ bool CryptEngine::loadKeyPair(int aKeyPair, CCrypt::ETypeEngine aEngine, const Q
     TKeyPair keyPair;
     int res = 0;
 
-    switch (aEngine) {
+    switch (aEngine)
+    {
         case CCrypt::ETypeEngine::File:
             res = ::Crypt_OpenSecretKeyFromFile(aEngine, aSecretKeyPath.toLocal8Bit().data(),
                                                 aPassword.toLatin1().data(), &keyPair.first);
@@ -391,13 +444,15 @@ bool CryptEngine::loadKeyPair(int aKeyPair, CCrypt::ETypeEngine aEngine, const Q
         case CCrypt::ETypeEngine::RuToken:
             res = ::Crypt_Ctrl(aEngine, IPRIV_ENGCMD_SET_PIN, getRootPassword()[0].data());
 
-            if (CRYPT_IS_SUCCESS(res)) {
+            if (CRYPT_IS_SUCCESS(res))
+            {
                 res = ::Crypt_OpenSecretKeyFromStore(aEngine, aSerialNumber, &keyPair.first);
             }
             break;
     }
 
-    if (CRYPT_IS_ERROR(res)) {
+    if (CRYPT_IS_ERROR(res))
+    {
         aErrorDescription = errorToString(res);
 
         return false;
@@ -406,7 +461,8 @@ bool CryptEngine::loadKeyPair(int aKeyPair, CCrypt::ETypeEngine aEngine, const Q
     res = ::Crypt_OpenPublicKeyFromFile(CCrypt::ETypeEngine::File, aPublicKeyPath.toLocal8Bit(), aBankSerialNumber,
                                         &keyPair.second, 0);
 
-    if (res != 0) {
+    if (res != 0)
+    {
         aErrorDescription = errorToString(res);
 
         // Уже успели загрузить закрытый ключ, освобождаем
@@ -421,11 +477,13 @@ bool CryptEngine::loadKeyPair(int aKeyPair, CCrypt::ETypeEngine aEngine, const Q
 }
 
 //---------------------------------------------------------------------------
-QString CryptEngine::getKeyPairSerialNumber(int aKeyPair) {
+QString CryptEngine::getKeyPairSerialNumber(int aKeyPair)
+{
     QMutexLocker locker(&mMutex);
 
     TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    if (keyPair == mKeyPairs.end())
+    {
         return QString();
     }
 
@@ -437,38 +495,46 @@ QString CryptEngine::getKeyPairSerialNumber(int aKeyPair) {
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::releaseKeyPair(int aKeyPair) {
+bool CryptEngine::releaseKeyPair(int aKeyPair)
+{
     QMutexLocker locker(&mMutex);
 
     TKeyPairList::iterator it = mKeyPairs.find(aKeyPair);
 
-    if (it != mKeyPairs.end()) {
+    if (it != mKeyPairs.end())
+    {
         Crypt_CloseKey(&it.value().first);
         Crypt_CloseKey(&it.value().second);
 
         mKeyPairs.erase(it);
 
         return true;
-    } else {
+    }
+    else
+    {
         return false;
     }
 }
 
 //---------------------------------------------------------------------------
-void CryptEngine::releaseKeyPairs() {
+void CryptEngine::releaseKeyPairs()
+{
     QMutexLocker locker(&mMutex);
 
-    while (!mKeyPairs.isEmpty()) {
+    while (!mKeyPairs.isEmpty())
+    {
         releaseKeyPair(mKeyPairs.keys()[0]);
     }
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::sign(int aKeyPair, const QByteArray &aRequest, QByteArray &aSignature, QString &aErrorDescription) {
+bool CryptEngine::sign(int aKeyPair, const QByteArray &aRequest, QByteArray &aSignature, QString &aErrorDescription)
+{
     QMutexLocker locker(&mMutex);
 
     TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    if (keyPair == mKeyPairs.end())
+    {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -479,11 +545,14 @@ bool CryptEngine::sign(int aKeyPair, const QByteArray &aRequest, QByteArray &aSi
     int res = ::Crypt_SignEx(aRequest.data(), aRequest.size(), aSignature.data(), aSignature.size(),
                              &keyPair.value().first, CCryptEngine::IprivHashAlg);
 
-    if (res <= 0) {
+    if (res <= 0)
+    {
         aErrorDescription = errorToString(res);
 
         return false;
-    } else {
+    }
+    else
+    {
         aSignature.resize(res);
 
         return true;
@@ -492,11 +561,13 @@ bool CryptEngine::sign(int aKeyPair, const QByteArray &aRequest, QByteArray &aSi
 
 //---------------------------------------------------------------------------
 bool CryptEngine::signDetach(int aKeyPair, const QByteArray &aRequest, QByteArray &aSignature,
-                             QString &aErrorDescription) {
+                             QString &aErrorDescription)
+{
     QMutexLocker locker(&mMutex);
 
     TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    if (keyPair == mKeyPairs.end())
+    {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -507,11 +578,14 @@ bool CryptEngine::signDetach(int aKeyPair, const QByteArray &aRequest, QByteArra
     int res = ::Crypt_Sign2Ex(aRequest.data(), aRequest.size(), aSignature.data(), aSignature.size(),
                               &keyPair.value().first, CCryptEngine::IprivHashAlg);
 
-    if (res <= 0) {
+    if (res <= 0)
+    {
         aErrorDescription = errorToString(res);
 
         return false;
-    } else {
+    }
+    else
+    {
         aSignature.resize(res);
 
         return true;
@@ -520,11 +594,13 @@ bool CryptEngine::signDetach(int aKeyPair, const QByteArray &aRequest, QByteArra
 
 //---------------------------------------------------------------------------
 bool CryptEngine::verify(int aKeyPair, const QByteArray &aResponseString, QByteArray &aOriginalResponse,
-                         QString &aErrorDescription) {
+                         QString &aErrorDescription)
+{
     QMutexLocker locker(&mMutex);
 
     TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    if (keyPair == mKeyPairs.end())
+    {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -536,11 +612,14 @@ bool CryptEngine::verify(int aKeyPair, const QByteArray &aResponseString, QByteA
     int res = ::Crypt_Verify(aResponseString.data(), aResponseString.size(), &originalResponseData,
                              &originalResponseDataSize, &keyPair.value().second);
 
-    if (res == 0) {
+    if (res == 0)
+    {
         aOriginalResponse = QByteArray(originalResponseData, originalResponseDataSize);
 
         return true;
-    } else {
+    }
+    else
+    {
         aErrorDescription = errorToString(res);
 
         return false;
@@ -549,11 +628,13 @@ bool CryptEngine::verify(int aKeyPair, const QByteArray &aResponseString, QByteA
 
 //---------------------------------------------------------------------------
 bool CryptEngine::verifyDetach(int aKeyPair, const QByteArray &aResponseString, const QByteArray &aSignature,
-                               QString &aErrorDescription) {
+                               QString &aErrorDescription)
+{
     QMutexLocker locker(&mMutex);
 
     TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    if (keyPair == mKeyPairs.end())
+    {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -562,9 +643,12 @@ bool CryptEngine::verifyDetach(int aKeyPair, const QByteArray &aResponseString, 
     int res = ::Crypt_Verify3(aResponseString.data(), aResponseString.size(), aSignature.data(), aSignature.size(),
                               &keyPair.value().second);
 
-    if (res == 0) {
+    if (res == 0)
+    {
         return true;
-    } else {
+    }
+    else
+    {
         aErrorDescription = errorToString(res);
 
         return false;
@@ -573,11 +657,13 @@ bool CryptEngine::verifyDetach(int aKeyPair, const QByteArray &aResponseString, 
 
 //---------------------------------------------------------------------------
 bool CryptEngine::encrypt(int aKeyPair, const QByteArray &aData, QByteArray &aResult, CCrypt::ETypeKey aKey,
-                          QString &aErrorDescription) {
+                          QString &aErrorDescription)
+{
     QMutexLocker locker(&mMutex);
 
     TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    if (keyPair == mKeyPairs.end())
+    {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -589,11 +675,14 @@ bool CryptEngine::encrypt(int aKeyPair, const QByteArray &aData, QByteArray &aRe
 
     int res = ::Crypt_Encrypt(aData.data(), aData.size(), aResult.data(), aResult.size(), &key);
 
-    if (res <= 0) {
+    if (res <= 0)
+    {
         aErrorDescription = errorToString(res);
 
         return false;
-    } else {
+    }
+    else
+    {
         aResult.resize(res);
 
         return true;
@@ -601,17 +690,20 @@ bool CryptEngine::encrypt(int aKeyPair, const QByteArray &aData, QByteArray &aRe
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::encrypt(int aKeyPair, const QByteArray &aData, QByteArray &aResult, QString &aErrorDescription) {
+bool CryptEngine::encrypt(int aKeyPair, const QByteArray &aData, QByteArray &aResult, QString &aErrorDescription)
+{
     return encrypt(aKeyPair, aData, aResult, CCrypt::ETypeKey::Public, aErrorDescription);
 }
 
 //---------------------------------------------------------------------------
 bool CryptEngine::encryptLong(int aKeyPair, const QByteArray &aData, QByteArray &aResult, CCrypt::ETypeKey aKey,
-                              QString &aErrorDescription) {
+                              QString &aErrorDescription)
+{
     QMutexLocker locker(&mMutex);
 
     TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    if (keyPair == mKeyPairs.end())
+    {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -623,11 +715,14 @@ bool CryptEngine::encryptLong(int aKeyPair, const QByteArray &aData, QByteArray 
 
     int res = ::Crypt_EncryptLong(aData.data(), aData.size(), aResult.data(), aResult.size(), &key);
 
-    if (res <= 0) {
+    if (res <= 0)
+    {
         aErrorDescription = errorToString(res);
 
         return false;
-    } else {
+    }
+    else
+    {
         aResult.resize(res);
 
         return true;
@@ -635,17 +730,20 @@ bool CryptEngine::encryptLong(int aKeyPair, const QByteArray &aData, QByteArray 
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::encryptLong(int aKeyPair, const QByteArray &aData, QByteArray &aResult, QString &aErrorDescription) {
+bool CryptEngine::encryptLong(int aKeyPair, const QByteArray &aData, QByteArray &aResult, QString &aErrorDescription)
+{
     return encryptLong(aKeyPair, aData, aResult, CCrypt::ETypeKey::Public, aErrorDescription);
 }
 
 //---------------------------------------------------------------------------
 bool CryptEngine::decrypt(int aKeyPair, const QByteArray &aData, QByteArray &aResult, CCrypt::ETypeKey aKey,
-                          QString &aErrorDescription) {
+                          QString &aErrorDescription)
+{
     QMutexLocker locker(&mMutex);
 
     TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    if (keyPair == mKeyPairs.end())
+    {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -657,11 +755,14 @@ bool CryptEngine::decrypt(int aKeyPair, const QByteArray &aData, QByteArray &aRe
 
     int res = ::Crypt_Decrypt(aData.data(), aData.size(), aResult.data(), aResult.size(), &key);
 
-    if (res <= 0) {
+    if (res <= 0)
+    {
         aErrorDescription = errorToString(res);
 
         return false;
-    } else {
+    }
+    else
+    {
         aResult.resize(res);
 
         return true;
@@ -669,17 +770,20 @@ bool CryptEngine::decrypt(int aKeyPair, const QByteArray &aData, QByteArray &aRe
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::decrypt(int aKeyPair, const QByteArray &aData, QByteArray &aResult, QString &aErrorDescription) {
+bool CryptEngine::decrypt(int aKeyPair, const QByteArray &aData, QByteArray &aResult, QString &aErrorDescription)
+{
     return decrypt(aKeyPair, aData, aResult, CCrypt::ETypeKey::Private, aErrorDescription);
 }
 
 //---------------------------------------------------------------------------
 bool CryptEngine::decryptLong(int aKeyPair, const QByteArray &aData, QByteArray &aResult, CCrypt::ETypeKey aKey,
-                              QString &aErrorDescription) {
+                              QString &aErrorDescription)
+{
     QMutexLocker locker(&mMutex);
 
     TKeyPairList::iterator keyPair = mKeyPairs.find(aKeyPair);
-    if (keyPair == mKeyPairs.end()) {
+    if (keyPair == mKeyPairs.end())
+    {
         aErrorDescription = "key pair not found";
 
         return false;
@@ -691,11 +795,14 @@ bool CryptEngine::decryptLong(int aKeyPair, const QByteArray &aData, QByteArray 
 
     int res = ::Crypt_DecryptLong(aData.data(), aData.size(), aResult.data(), aResult.size(), &key);
 
-    if (res <= 0) {
+    if (res <= 0)
+    {
         aErrorDescription = errorToString(res);
 
         return false;
-    } else {
+    }
+    else
+    {
         aResult.resize(res);
 
         return true;
@@ -703,13 +810,16 @@ bool CryptEngine::decryptLong(int aKeyPair, const QByteArray &aData, QByteArray 
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::decryptLong(int aKeyPair, const QByteArray &aData, QByteArray &aResult, QString &aErrorDescription) {
+bool CryptEngine::decryptLong(int aKeyPair, const QByteArray &aData, QByteArray &aResult, QString &aErrorDescription)
+{
     return decryptLong(aKeyPair, aData, aResult, CCrypt::ETypeKey::Private, aErrorDescription);
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::setData(const QString &aName, const QByteArray &aData) {
-    if (getTokenStatus(CCrypt::ETypeEngine::RuToken).isOK()) {
+bool CryptEngine::setData(const QString &aName, const QByteArray &aData)
+{
+    if (getTokenStatus(CCrypt::ETypeEngine::RuToken).isOK())
+    {
         return CRYPT_IS_SUCCESS(Crypt_Ctrl(IPRIV_ENGINE_PKCS11_RUTOKEN, IPRIV_ENGCMD_PKCS11_SET_DATA,
                                            aName.toLatin1().data(), aData.data(), aData.size()));
     }
@@ -718,12 +828,15 @@ bool CryptEngine::setData(const QString &aName, const QByteArray &aData) {
 }
 
 //---------------------------------------------------------------------------
-bool CryptEngine::getData(const QString &aName, QByteArray &aData) {
-    if (getTokenStatus(CCrypt::ETypeEngine::RuToken).isOK()) {
+bool CryptEngine::getData(const QString &aName, QByteArray &aData)
+{
+    if (getTokenStatus(CCrypt::ETypeEngine::RuToken).isOK())
+    {
         int size = 0, count = 1;
         aData.clear();
 
-        do {
+        do
+        {
             aData.resize(CCryptEngine::DecryptMaxBufferSize * (count++));
 
             size = Crypt_Ctrl(IPRIV_ENGINE_PKCS11_RUTOKEN, IPRIV_ENGCMD_PKCS11_GET_DATA, aName.toLatin1().data(),
@@ -739,8 +852,10 @@ bool CryptEngine::getData(const QString &aName, QByteArray &aData) {
 }
 
 //---------------------------------------------------------------------------
-QString CryptEngine::errorToString(int aError) const {
-    switch (aError) {
+QString CryptEngine::errorToString(int aError) const
+{
+    switch (aError)
+    {
         case CRYPT_ERR_BAD_ARGS:
             return QString("wrong arguments (%1)").arg(aError);
         case CRYPT_ERR_OUT_OF_MEMORY:

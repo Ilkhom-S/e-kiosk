@@ -6,8 +6,10 @@
 #include <Hardware/FR/PrimFRRealTime.h>
 
 /// Условия выполнения команд.
-namespace EPrimFRCommandConditions {
-    enum Enum {
+namespace EPrimFRCommandConditions
+{
+    enum Enum
+    {
         None = 0,    /// Нет дополнительных условий
         PrinterMode, /// Команда протокола выполняется из режима принтера
         NAKRepeat    /// Повторный запрос ответа с помощью NAK-а
@@ -16,7 +18,8 @@ namespace EPrimFRCommandConditions {
 
 //--------------------------------------------------------------------------------
 /// Класс протокола PrimFR.
-class PrimFRProtocol : public ProtocolBase {
+class PrimFRProtocol : public ProtocolBase
+{
   public:
     PrimFRProtocol();
 

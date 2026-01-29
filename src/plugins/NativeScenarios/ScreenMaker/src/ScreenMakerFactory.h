@@ -10,7 +10,8 @@
 
 //---------------------------------------------------------------------------
 /// Фабрика плагина ScreenMaker с метаданными Qt.
-class ScreenMakerPluginFactory : public SDK::Plugin::PluginFactory {
+class ScreenMakerPluginFactory : public SDK::Plugin::PluginFactory
+{
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "SDK.Plugin.PluginFactory")
     Q_INTERFACES(SDK::Plugin::IPluginFactory)

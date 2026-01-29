@@ -13,32 +13,44 @@
 #include <QtCore/QList>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         class IPaymentFactory;
 
         //------------------------------------------------------------------------------
         /// Интерфейс платежа.
-        class IPayment {
+        class IPayment
+        {
           public:
             /// Приоритет проведения платежа.
-            enum Priority { Online = 0, Offline, Low };
+            enum Priority
+            {
+                Online = 0,
+                Offline,
+                Low
+            };
 
             /// Параметр платежа.
-            struct SParameter {
+            struct SParameter
+            {
                 /// Конструктор по умолчанию.
-                SParameter() : crypted(false), updated(false), external(false) {
+                SParameter() : crypted(false), updated(false), external(false)
+                {
                 }
 
                 /// Конструктор с параметрами.
                 SParameter(QString aName, QVariant aValue, bool aUpdated = false, bool aCrypted = false,
                            bool aExternal = false)
-                    : name(aName), value(aValue), crypted(aCrypted), updated(aUpdated), external(aExternal) {
+                    : name(aName), value(aValue), crypted(aCrypted), updated(aUpdated), external(aExternal)
+                {
                 }
 
                 /// Проверяет, является ли параметр пустым.
-                inline bool isNull() const {
+                inline bool isNull() const
+                {
                     return name.isEmpty();
                 }
 
@@ -140,7 +152,8 @@ namespace SDK {
             virtual bool remove() = 0;
 
             /// Вспомогательные метод возвращающий параметр из списка по имени.
-            static SParameter parameterByName(const QString &aName, const QList<SParameter> &aParameters) {
+            static SParameter parameterByName(const QString &aName, const QList<SParameter> &aParameters)
+            {
                 QList<SParameter>::const_iterator it =
                     std::find_if(aParameters.begin(), aParameters.end(),
                                  [aName](const SParameter &aP) -> bool { return aP.name == aName; });
@@ -150,7 +163,8 @@ namespace SDK {
 
           protected:
             /// Деструктор.
-            virtual ~IPayment() {
+            virtual ~IPayment()
+            {
             }
         };
 

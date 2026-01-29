@@ -5,11 +5,14 @@
 // SDK
 #include <SDK/Drivers/IDevice.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //--------------------------------------------------------------------------------
-        class IWatchdog : public IDevice {
+        class IWatchdog : public IDevice
+        {
           public:
             /// Предметы выданы.
             static const char *KeyRegisteredSignal; // SIGNAL(keyRegistered(bool aSuccess));
@@ -22,7 +25,8 @@ namespace SDK {
             virtual void registerKey() = 0;
 
           protected:
-            virtual ~IWatchdog() {
+            virtual ~IWatchdog()
+            {
             }
         };
 

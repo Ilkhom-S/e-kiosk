@@ -5,7 +5,8 @@
 
 class SendRequest;
 
-class CommandConfirm : public SendRequest {
+class CommandConfirm : public SendRequest
+{
     Q_OBJECT
 
   public:

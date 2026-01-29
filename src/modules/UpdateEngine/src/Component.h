@@ -14,14 +14,17 @@
 class NetworkTask;
 
 //---------------------------------------------------------------------------
-namespace CComponent {
-    inline const char *OptionalTask() {
+namespace CComponent
+{
+    inline const char *OptionalTask()
+    {
         return "OptionalTaskProperty";
     }
 } // namespace CComponent
 
 //---------------------------------------------------------------------------
-class Component : public QObject {
+class Component : public QObject
+{
     Q_OBJECT
 
   public:

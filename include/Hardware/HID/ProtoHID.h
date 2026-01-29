@@ -14,7 +14,8 @@
 #include "Hardware/Common/ProtoDevice.h"
 
 //--------------------------------------------------------------------------------
-class ProtoHID : public ProtoDevice, public MetaDevice<SDK::Driver::IHID> {
+class ProtoHID : public ProtoDevice, public MetaDevice<SDK::Driver::IHID>
+{
     Q_OBJECT
 
     SET_DEVICE_TYPE(Scanner)

@@ -41,7 +41,8 @@
 typedef OPOSPollingDeviceBase<ProtoFR, OPOS::OPOSFiscalPrinter> TPollingOPOSFR;
 typedef FRBase<PrinterBase<TPollingOPOSFR>> TOPOSFR;
 
-class OPOSMStarTUPK : public TOPOSFR {
+class OPOSMStarTUPK : public TOPOSFR
+{
     SET_SERIES("Multisoft")
 
   public:

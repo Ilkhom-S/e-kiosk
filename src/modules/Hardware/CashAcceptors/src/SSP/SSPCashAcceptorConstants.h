@@ -11,9 +11,11 @@
 #include "Hardware/CashAcceptors/CashAcceptorStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace CSSP {
+namespace CSSP
+{
     /// Адреса устройств
-    namespace Addresses {
+    namespace Addresses
+    {
         const char Validator = 0x00; /// Купюроприемник, диспенсер (пристегивается к купюрнику).
         const char Hopper = 0x10;    /// Хоппер.
         const char Printer1 = 0x40;  /// Принтер Smart Ticket (печать по шаблонам или "на лету" (?).
@@ -21,20 +23,26 @@ namespace CSSP {
             0x41; /// Принтер Coupon Printer (печатает на фальцованной бумаге) и Flatbed Printer (обычный термопринтер).
     } // namespace Addresses
 
-    namespace Result {
-        struct SData {
+    namespace Result
+    {
+        struct SData
+        {
             int code;
             QString description;
 
-            SData() : code(CommandResult::OK) {
+            SData() : code(CommandResult::OK)
+            {
             }
-            SData(int aCode, const QString &aDescription) : code(aCode), description(aDescription) {
+            SData(int aCode, const QString &aDescription) : code(aCode), description(aDescription)
+            {
             }
         };
 
-        class CData : public CSpecification<char, SData> {
+        class CData : public CSpecification<char, SData>
+        {
           public:
-            CData() {
+            CData()
+            {
                 append('\xF0', SData(CommandResult::OK, "OK"));
                 append('\xF2', SData(CommandResult::Driver, "Unknown command"));
                 append('\xF3', SData(CommandResult::Driver, "Wrong parameter quantity"));
@@ -76,13 +84,21 @@ namespace CSSP {
     const int NV200MinInhibitedChannels = 16;
 
     /// Скорости для перепрошивки.
-    namespace EBaudRate {
-        enum Enum { BR9600 = 0, BR38400 = 1, BR115200 = 2 };
+    namespace EBaudRate
+    {
+        enum Enum
+        {
+            BR9600 = 0,
+            BR38400 = 1,
+            BR115200 = 2
+        };
     } // namespace EBaudRate
 
-    class CBaudRateData : public CSpecification<EBaudRate::Enum, SDK::Driver::IOPort::COM::EBaudRate::Enum> {
+    class CBaudRateData : public CSpecification<EBaudRate::Enum, SDK::Driver::IOPort::COM::EBaudRate::Enum>
+    {
       public:
-        CBaudRateData() {
+        CBaudRateData()
+        {
             append(EBaudRate::BR9600, SDK::Driver::IOPort::COM::EBaudRate::BR9600);
             append(EBaudRate::BR38400, SDK::Driver::IOPort::COM::EBaudRate::BR38400);
             append(EBaudRate::BR115200, SDK::Driver::IOPort::COM::EBaudRate::BR115200);
@@ -99,7 +115,8 @@ namespace CSSP {
 
     //--------------------------------------------------------------------------------
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char GetBillTable = '\x00';       /// Запрос таблицы номиналов.
         const char Reset = '\x01';              /// Перезагрузка.
         const char SetInhibit = '\x02';         /// Установить запрещения номиналов.
@@ -117,18 +134,22 @@ namespace CSSP {
         const char SetBaudrate = '\x4D';        /// Установить скорость порта.
         const char GetBuild = '\x4F';           /// Запрос версии билда.
 
-        class CData : public CSpecification<char, SData> {
+        class CData : public CSpecification<char, SData>
+        {
           public:
-            CData() {
+            CData()
+            {
                 add(GetSetupData, 1000);
                 add(Sync, true);
             }
 
           private:
-            void add(char aCommand, int aTimeout) {
+            void add(char aCommand, int aTimeout)
+            {
                 append(aCommand, SData(aTimeout, false));
             }
-            void add(char aCommand, bool aSetSync) {
+            void add(char aCommand, bool aSetSync)
+            {
                 append(aCommand, SData(DefaultTimeout, aSetSync));
             }
         };
@@ -144,9 +165,11 @@ namespace CSSP {
     const char StackingStarted = '\xEE';
 
     /// Спецификация статусов.
-    class DeviceCodeSpecification : public CommonDeviceCodeSpecification {
+    class DeviceCodeSpecification : public CommonDeviceCodeSpecification
+    {
       public:
-        DeviceCodeSpecification() {
+        DeviceCodeSpecification()
+        {
             /// Состояния.
             addStatus('\xE0', BillAcceptorStatusCode::BillOperation::Unknown, "Note path open");
             addStatus('\xE4', DeviceStatusCode::OK::Initialization, "Stacker replaced");
@@ -205,19 +228,27 @@ namespace CSSP {
 
         /// Получить спецификации девайс-кодов по байт-массиву. байт-массив не должен содержать лишних байтов перед
         /// статусными байтами.
-        virtual void getSpecification(const QByteArray &aBuffer, TDeviceCodeSpecifications &aSpecifications) {
-            if (aBuffer == EnabledStatus) {
+        virtual void getSpecification(const QByteArray &aBuffer, TDeviceCodeSpecifications &aSpecifications)
+        {
+            if (aBuffer == EnabledStatus)
+            {
                 aSpecifications.insert("", SDeviceCodeSpecification(BillAcceptorStatusCode::Normal::Enabled, ""));
-            } else if (aBuffer == DisabledStatus) {
+            }
+            else if (aBuffer == DisabledStatus)
+            {
                 aSpecifications.insert("", SDeviceCodeSpecification(BillAcceptorStatusCode::Normal::Disabled, ""));
-            } else {
+            }
+            else
+            {
                 CommonDeviceCodeSpecification::getSpecification(aBuffer, aSpecifications);
 
-                if (!aSpecifications.isEmpty()) {
+                if (!aSpecifications.isEmpty())
+                {
                     int &statusCode = aSpecifications.begin()->statusCode;
 
                     if ((statusCode == BillAcceptorStatusCode::BillOperation::Escrow) && (aBuffer.size() >= 2) &&
-                        !aBuffer[1]) {
+                        !aBuffer[1])
+                    {
                         statusCode = BillAcceptorStatusCode::BillOperation::Accepting;
                     }
                 }

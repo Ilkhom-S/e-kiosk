@@ -17,19 +17,23 @@
 #include <SDK/PaymentProcessor/Payment/Amount.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class ICore;
         class IPaymentService;
         class Directory;
         class DealerSettings;
 
-        namespace Scripting {
+        namespace Scripting
+        {
             class PaymentService;
 
             //------------------------------------------------------------------------------
             /// Элемент перечисления.
-            class EnumItem : public QObject {
+            class EnumItem : public QObject
+            {
                 Q_OBJECT
 
                 Q_PROPERTY(QString name READ getName CONSTANT)
@@ -38,20 +42,24 @@ namespace SDK {
 
               public:
                 /// Конструктор.
-                EnumItem(const SProviderField::SEnumItem &aItem, QObject *aParent) : QObject(aParent), mItem(aItem) {
+                EnumItem(const SProviderField::SEnumItem &aItem, QObject *aParent) : QObject(aParent), mItem(aItem)
+                {
                 }
 
               private:
                 /// Получить имя.
-                QString getName() {
+                QString getName()
+                {
                     return mItem.title;
                 }
                 /// Получить значение.
-                QString getValue() {
+                QString getValue()
+                {
                     return mItem.value;
                 }
                 /// Получить ID.
-                QString getID() {
+                QString getID()
+                {
                     return mItem.id;
                 }
 
@@ -62,7 +70,8 @@ namespace SDK {
 
             //------------------------------------------------------------------------------
             /// Поле провайдера.
-            class ProviderField : public QObject {
+            class ProviderField : public QObject
+            {
                 Q_OBJECT
 
                 Q_PROPERTY(QString type READ getType CONSTANT)
@@ -97,81 +106,103 @@ namespace SDK {
 
               public:
                 /// Конструктор.
-                ProviderField(const SProviderField &aField, QObject *aParent = 0) : QObject(aParent), mField(aField) {
+                ProviderField(const SProviderField &aField, QObject *aParent = 0) : QObject(aParent), mField(aField)
+                {
                 }
 
               private:
                 /// Получить тип.
-                QString getType() {
+                QString getType()
+                {
                     return mField.type;
                 }
-                QString getId() {
+                QString getId()
+                {
                     return mField.id;
                 }
 
-                QString getKeyboardType() {
+                QString getKeyboardType()
+                {
                     return mField.keyboardType;
                 }
-                QString getLanguage() {
+                QString getLanguage()
+                {
                     return mField.language;
                 }
-                QString getLetterCase() {
+                QString getLetterCase()
+                {
                     return mField.letterCase;
                 }
 
-                int getMinSize() {
+                int getMinSize()
+                {
                     return mField.minSize;
                 }
-                int getMaxSize() {
+                int getMaxSize()
+                {
                     return mField.maxSize;
                 }
 
-                bool isRequired() {
+                bool isRequired()
+                {
                     return mField.isRequired;
                 }
 
-                QString getTitle() {
+                QString getTitle()
+                {
                     return mField.title;
                 }
-                QString getComment() {
+                QString getComment()
+                {
                     return mField.comment;
                 }
-                QString getExtendedComment() {
+                QString getExtendedComment()
+                {
                     return mField.extendedComment;
                 }
 
-                QString getMask() {
+                QString getMask()
+                {
                     return mField.mask;
                 }
-                QString getFormat() {
+                QString getFormat()
+                {
                     return mField.format;
                 }
-                bool isPassword() {
+                bool isPassword()
+                {
                     return mField.isPassword;
                 }
 
-                QString getBehavior() {
+                QString getBehavior()
+                {
                     return mField.behavior;
                 }
-                QString getDefaultValue() {
+                QString getDefaultValue()
+                {
                     return mField.defaultValue;
                 }
                 ScriptArray *getEnumItems();
 
-                QString getUrl() {
+                QString getUrl()
+                {
                     return mField.url;
                 }
-                QString getHtml() {
+                QString getHtml()
+                {
                     return mField.html;
                 }
-                QString getBackButton() {
+                QString getBackButton()
+                {
                     return mField.backButton;
                 }
-                QString getForwardButton() {
+                QString getForwardButton()
+                {
                     return mField.forwardButton;
                 }
 
-                QString getDependency() {
+                QString getDependency()
+                {
                     return mField.dependency;
                 }
 
@@ -179,7 +210,8 @@ namespace SDK {
             };
 
             //------------------------------------------------------------------------------
-            class Provider : public QObject {
+            class Provider : public QObject
+            {
                 Q_OBJECT
 
                 Q_PROPERTY(QString id READ getID CONSTANT)
@@ -206,7 +238,8 @@ namespace SDK {
                 Provider(const SProvider &aProvider, QObject *aParent);
 
               public slots:
-                bool isNull() const {
+                bool isNull() const
+                {
                     return mProvider.id == -1 || mProvider.fields.isEmpty();
                 }
 
@@ -219,59 +252,77 @@ namespace SDK {
                 QString xmlFields2Json(const QString &aXmlFields);
 
               private:
-                QString getID() const {
+                QString getID() const
+                {
                     return QString::number(mProvider.id);
                 }
-                QString getCID() const {
+                QString getCID() const
+                {
                     return QString::number(mProvider.cid);
                 }
-                QString getType() const {
+                QString getType() const
+                {
                     return mProvider.type;
                 }
-                QString getProcessorType() const {
+                QString getProcessorType() const
+                {
                     return mProvider.processor.type;
                 }
-                QString getName() const {
+                QString getName() const
+                {
                     return mProvider.name;
                 }
-                QString getComment() const {
+                QString getComment() const
+                {
                     return mProvider.comment;
                 }
-                QString getMinLimit() const {
+                QString getMinLimit() const
+                {
                     return mProvider.limits.min;
                 }
-                QString getMaxLimit() const {
+                QString getMaxLimit() const
+                {
                     return mProvider.limits.max;
                 }
-                QString getSystemLimit() const {
+                QString getSystemLimit() const
+                {
                     return mProvider.limits.system;
                 }
                 QVariant getFields();
-                bool getSkipCheck() const {
+                bool getSkipCheck() const
+                {
                     return mProvider.processor.skipCheck;
                 }
-                bool getPayOnline() const {
+                bool getPayOnline() const
+                {
                     return mProvider.processor.payOnline;
                 }
-                bool getAskForRetry() const {
+                bool getAskForRetry() const
+                {
                     return mProvider.processor.askForRetry;
                 }
-                bool getRequirePrinter() const {
+                bool getRequirePrinter() const
+                {
                     return mProvider.processor.requirePrinter;
                 }
-                bool getShowAddInfo() const {
+                bool getShowAddInfo() const
+                {
                     return mProvider.processor.showAddInfo;
                 }
-                QString getClientCard() const {
+                QString getClientCard() const
+                {
                     return QString::number(mProvider.processor.clientCard);
                 }
-                QString getExternalDataHandler() const {
+                QString getExternalDataHandler() const
+                {
                     return mProvider.externalDataHandler;
                 }
-                QVariantMap getReceipts() const {
+                QVariantMap getReceipts() const
+                {
                     return mProvider.receipts;
                 }
-                QVariantMap getReceiptParameters() const {
+                QVariantMap getReceiptParameters() const
+                {
                     return mProvider.receiptParameters;
                 }
 
@@ -281,12 +332,14 @@ namespace SDK {
             };
 
 #define PROPERTY_GET(type, name, holder)                                                                               \
-    type name() const {                                                                                                \
+    type name() const                                                                                                  \
+    {                                                                                                                  \
         return holder.name;                                                                                            \
     }
 
             //------------------------------------------------------------------------------
-            class Note : public QObject {
+            class Note : public QObject
+            {
                 Q_OBJECT
 
                 Q_PROPERTY(double nominal READ nominal CONSTANT)
@@ -295,7 +348,8 @@ namespace SDK {
                 Q_PROPERTY(int type READ type CONSTANT)
 
               public:
-                Note(const SNote &aNote, QObject *aParent) : QObject(aParent), mNote(aNote) {
+                Note(const SNote &aNote, QObject *aParent) : QObject(aParent), mNote(aNote)
+                {
                 }
 
               private:
@@ -309,9 +363,11 @@ namespace SDK {
             };
 
             //------------------------------------------------------------------------------
-            class IProviderProvider {
+            class IProviderProvider
+            {
               public:
-                virtual ~IProviderProvider() {
+                virtual ~IProviderProvider()
+                {
                 }
 
               public:
@@ -320,13 +376,15 @@ namespace SDK {
             };
 
             //------------------------------------------------------------------------------
-            class PaymentService : public QObject {
+            class PaymentService : public QObject
+            {
                 Q_OBJECT
                 Q_ENUMS(EProcessResult)
 
               public:
                 /// Результат попытки проведения платежа.
-                enum EProcessResult {
+                enum EProcessResult
+                {
                     OK = 0,       /// Ошибок нет.
                     LowMoney = 1, /// Недостаточно средств для проведения платежа.
                     OfflineIsNotSupported =

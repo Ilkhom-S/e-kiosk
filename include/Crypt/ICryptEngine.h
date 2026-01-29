@@ -10,21 +10,33 @@
 #include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-namespace CCrypt {
+namespace CCrypt
+{
     // Константы соответствуют значениям в libipriv.h
-    enum ETypeEngine { File = 0, RuToken = 5 };
+    enum ETypeEngine
+    {
+        File = 0,
+        RuToken = 5
+    };
 
-    enum ETypeKey { Private = 0, Public };
+    enum ETypeKey
+    {
+        Private = 0,
+        Public
+    };
 
     /// Состояние аппаратного ключа
-    struct TokenStatus {
+    struct TokenStatus
+    {
         bool available;
         QString name;
         bool initialized;
 
-        TokenStatus() : available(false), initialized(false) {
+        TokenStatus() : available(false), initialized(false)
+        {
         }
-        bool isOK() const {
+        bool isOK() const
+        {
             return available && initialized;
         }
     };
@@ -33,7 +45,8 @@ namespace CCrypt {
 //---------------------------------------------------------------------------
 /// Интерфейс криптодвижка, производящего подписывание и верификацию сообщений, летящих
 ///	к серверу и от него.
-class ICryptEngine {
+class ICryptEngine
+{
   public:
     /// Функции init и shutdown предназначены для инициализации внутренних компонент шифрования.
     /// Их необходимо вызывать в начале и в конце работы приложения.
@@ -166,7 +179,8 @@ class ICryptEngine {
 };
 
 //---------------------------------------------------------------------------
-namespace CCryptEngine {
+namespace CCryptEngine
+{
     ICryptEngine &instance();
 } // namespace CCryptEngine
 

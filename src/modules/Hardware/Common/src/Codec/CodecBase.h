@@ -13,51 +13,64 @@
 #include "Hardware/Common/HardwareConstants.h"
 
 //---------------------------------------------------------------------------
-namespace CCodec {
+namespace CCodec
+{
     /// Символ по умолчанию для неизвестных символов.
     const char DefaultCharacter = '?';
 } // namespace CCodec
 
-struct SCharData {
+struct SCharData
+{
     QString character; /// UTF-8-cимвол по коду.
     bool main;         /// Признак основного символа при обратной перекодировке.
 
-    SCharData() : character(QChar(CCodec::DefaultCharacter)), main(false) {
+    SCharData() : character(QChar(CCodec::DefaultCharacter)), main(false)
+    {
     }
-    SCharData(const QString &aCharacter, bool aMain) : character(aCharacter), main(aMain) {
+    SCharData(const QString &aCharacter, bool aMain) : character(aCharacter), main(aMain)
+    {
     }
-    SCharData(const char *aCharacter, bool aMain) : character(QString::fromUtf8(aCharacter)), main(aMain) {
+    SCharData(const char *aCharacter, bool aMain) : character(QString::fromUtf8(aCharacter)), main(aMain)
+    {
     }
-    SCharData(const QChar &aCharacter, bool aMain) : character(aCharacter), main(aMain) {
+    SCharData(const QChar &aCharacter, bool aMain) : character(aCharacter), main(aMain)
+    {
     }
 
-    bool operator==(const SCharData &aData) const {
+    bool operator==(const SCharData &aData) const
+    {
         return (character == aData.character) && (main == aData.main);
     }
 };
 
 //---------------------------------------------------------------------------
-class CharacterData : public CSpecification<char, SCharData> {
+class CharacterData : public CSpecification<char, SCharData>
+{
   public:
-    CharacterData() {
+    CharacterData()
+    {
         setDefault(SCharData());
     }
 
-    void add(char aCode, const QString &aCharacter, bool aMain = true) {
+    void add(char aCode, const QString &aCharacter, bool aMain = true)
+    {
         append(aCode, SCharData(aCharacter, aMain));
     }
 
-    void add(char aCode, const char *aCharacter, bool aMain = true) {
+    void add(char aCode, const char *aCharacter, bool aMain = true)
+    {
         append(aCode, SCharData(aCharacter, aMain));
     }
 
-    void add(char aCode) {
+    void add(char aCode)
+    {
         append(aCode, mDefaultValue);
     }
 };
 
 //---------------------------------------------------------------------------
-class CodecBase {
+class CodecBase
+{
   public:
     CodecBase();
 

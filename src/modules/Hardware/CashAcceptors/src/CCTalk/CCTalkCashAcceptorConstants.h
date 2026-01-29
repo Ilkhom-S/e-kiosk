@@ -5,7 +5,8 @@
 #include "Hardware/Acceptors/CCTalkAcceptorConstants.h"
 
 //--------------------------------------------------------------------------------
-namespace CCCTalk {
+namespace CCCTalk
+{
     /// Пауза после резета - купюрник еще отвечает, [мс].
     const int ResetPause = 4 * 1000;
 
@@ -19,7 +20,8 @@ namespace CCCTalk {
     const char Stack = '\x01';
 
     /// Ошибки продвижения купюры после эскроу.
-    namespace RoutingErrors {
+    namespace RoutingErrors
+    {
         /// В эскроу нет купюры.
         const char EmptyEscrow = '\xFE';
 
@@ -29,9 +31,11 @@ namespace CCCTalk {
 
     //--------------------------------------------------------------------------------
     /// Ошибки.
-    class ErrorData : public ErrorDataBase {
+    class ErrorData : public ErrorDataBase
+    {
       public:
-        ErrorData() {
+        ErrorData()
+        {
             add(0, BillAcceptorStatusCode::Normal::Inhibit);
             add(1, BillAcceptorStatusCode::Busy::Returned);
             add(2, BillAcceptorStatusCode::Reject::Verification, true);

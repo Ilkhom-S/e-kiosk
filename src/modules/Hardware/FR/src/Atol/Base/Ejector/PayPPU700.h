@@ -5,9 +5,11 @@
 #include "../../Ejector/AtolEjectorFR.h"
 
 /// Константы ФР PayPPU-700.
-namespace CPayPPU700 {
+namespace CPayPPU700
+{
     /// Параметры эжектора.
-    namespace EjectorParameters {
+    namespace EjectorParameters
+    {
         const char LoopAndPushNotTakenOnTimeout = '\x40';      /// Петля и вытолкнуть чек по таймауту
         const char NoLoopAndPushNotTakenOnTimeout = '\xC0';    /// нет петли и вытолкнуть чек по таймауту
         const char NoLoopAndRetractNotTakenOnTimeout = '\x00'; /// нет петли и забрать чек в ретрактор по таймауту
@@ -16,7 +18,8 @@ namespace CPayPPU700 {
 } // namespace CPayPPU700
 
 //--------------------------------------------------------------------------------
-class PayPPU700 : public AtolEjectorFR<AtolSerialFR> {
+class PayPPU700 : public AtolEjectorFR<AtolSerialFR>
+{
     SET_SUBSERIES("PayPPU700K")
 
   public:

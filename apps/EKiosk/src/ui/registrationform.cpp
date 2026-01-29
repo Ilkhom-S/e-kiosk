@@ -2,7 +2,8 @@
 #include "registrationform.h"
 #include "ui_registrationform.h"
 
-RegistrationForm::RegistrationForm(QWidget *parent) : QDialog(parent), ui(new Ui::RegistrationForm) {
+RegistrationForm::RegistrationForm(QWidget *parent) : QDialog(parent), ui(new Ui::RegistrationForm)
+{
     ui->setupUi(this);
 
     // Создание нового соединения
@@ -120,29 +121,36 @@ RegistrationForm::RegistrationForm(QWidget *parent) : QDialog(parent), ui(new Ui
     ui->cbxWinprinter->setVisible(false);
 }
 
-RegistrationForm::~RegistrationForm() {
+RegistrationForm::~RegistrationForm()
+{
     delete ui;
 }
 
-void RegistrationForm::setDB(QSqlDatabase db) {
+void RegistrationForm::setDB(QSqlDatabase db)
+{
     this->db = db;
 
     //    searchDevices->setDbName(db);
     //    getServices->setDbConnect(this->db);
 }
 
-void RegistrationForm::btnBackClicked() {
+void RegistrationForm::btnBackClicked()
+{
     clearStatusText();
 
-    switch (ui->stackedWgtReg->currentIndex()) {
-        case Page::SelectTpl: {
+    switch (ui->stackedWgtReg->currentIndex())
+    {
+        case Page::SelectTpl:
+        {
             closeConfirm();
             return;
         }
-        case Page::SearchDevice: {
+        case Page::SearchDevice:
+        {
             ui->lblStatus->setVisible(false);
             ui->stackedWgtReg->setCurrentIndex(Page::SelectTpl);
-        } break;
+        }
+        break;
         case Page::SelectConnection:
             ui->stackedWgtReg->setCurrentIndex(Page::SearchDevice);
             break;
@@ -154,11 +162,14 @@ void RegistrationForm::btnBackClicked() {
     addPageData();
 }
 
-void RegistrationForm::btnNextClicked() {
+void RegistrationForm::btnNextClicked()
+{
     clearStatusText();
 
-    switch (ui->stackedWgtReg->currentIndex()) {
-        case Page::SelectTpl: {
+    switch (ui->stackedWgtReg->currentIndex())
+    {
+        case Page::SelectTpl:
+        {
             ui->lblStatus->setVisible(true);
             ui->stackedWgtReg->setCurrentIndex(Page::SearchDevice);
             addPageData();
@@ -166,9 +177,11 @@ void RegistrationForm::btnNextClicked() {
             auto tpl = ui->radioTplUZB->isChecked() ? "uzb" : "tjk";
             auto test = ui->chbTest->isChecked();
             emit emitTpl(tpl, test);
-        } break;
+        }
+        break;
         case Page::SearchDevice:
-            if (searchClicked) {
+            if (searchClicked)
+            {
                 ui->stackedWgtReg->setCurrentIndex(Page::SelectConnection);
                 addPageData();
                 searchClicked = false;
@@ -177,7 +190,8 @@ void RegistrationForm::btnNextClicked() {
 
             deviceSearchStart();
             break;
-        case Page::SelectConnection: {
+        case Page::SelectConnection:
+        {
             // Тип подключения
             QString connectionName = ui->radioDialUpConnection->isChecked()
                                          ? ui->listWidgetConnectionList->currentItem()->text()
@@ -185,12 +199,15 @@ void RegistrationForm::btnNextClicked() {
 
             setLoading(true);
             emit emitStartToConnect(connectionName);
-        } break;
-        case Page::EnterAuthData: {
+        }
+        break;
+        case Page::EnterAuthData:
+        {
             auto secretPass = ui->editSecretPasswordReg->text().trimmed();
             auto secretPassConfirm = ui->editSecretPasswordConfirmReg->text().trimmed();
 
-            if (secretPass != secretPassConfirm) {
+            if (secretPass != secretPassConfirm)
+            {
                 setStatusText(Status::Error, "Не совпадает пароль входа в админ");
                 return;
             }
@@ -200,7 +217,8 @@ void RegistrationForm::btnNextClicked() {
             auto otp = ui->editOtpReg->text().trimmed();
 
             emit emitSendAuthRequest(login, otp);
-        } break;
+        }
+        break;
             //        case Page::EnterAdminAuthData:
             //            // Запуск программы
             //            break;
@@ -209,10 +227,12 @@ void RegistrationForm::btnNextClicked() {
     //    addPageData();
 }
 
-void RegistrationForm::authResponse(const QString resultCode, const QString token, const QString message) {
+void RegistrationForm::authResponse(const QString resultCode, const QString token, const QString message)
+{
     setLoading(false);
 
-    if (resultCode != "" && resultCode.toInt() == 0 && token != "") {
+    if (resultCode != "" && resultCode.toInt() == 0 && token != "")
+    {
         ui->btnBackReg->setEnabled(false);
         ui->btnNextReg->setEnabled(false);
 
@@ -242,20 +262,25 @@ void RegistrationForm::authResponse(const QString resultCode, const QString toke
         return;
     }
 
-    if (resultCode == "") {
+    if (resultCode == "")
+    {
         setStatusText(Status::Error, "Сервер недоступен или нет связи");
         emit emitToLog(1, "AUTH", "Сервер недоступен или нет связи");
-    } else {
+    }
+    else
+    {
         auto msg = message.isEmpty() ? "Ошибка авторизации" : message;
         setStatusText(Status::Error, msg);
         emit emitToLog(2, "AUTH", msg);
     }
 }
 
-void RegistrationForm::setConnectionState(bool connectionOk, QString message) {
+void RegistrationForm::setConnectionState(bool connectionOk, QString message)
+{
     setLoading(false);
 
-    if (connectionOk) {
+    if (connectionOk)
+    {
         setStatusText(Status::Success, "Соединение успешно");
 
         sleep(1000);
@@ -264,22 +289,26 @@ void RegistrationForm::setConnectionState(bool connectionOk, QString message) {
         ui->stackedWgtReg->setCurrentIndex(Page::EnterAuthData);
         clearStatusText();
         addPageData();
-
-    } else {
+    }
+    else
+    {
         setStatusText(Status::Error, message);
     }
 }
 
-void RegistrationForm::setLoading(bool val) {
+void RegistrationForm::setLoading(bool val)
+{
     ui->progressBar->setVisible(val);
     ui->btnBackReg->setEnabled(!val);
     ui->btnNextReg->setEnabled(!val);
 }
 
-void RegistrationForm::setStatusText(int status, QString text) {
+void RegistrationForm::setStatusText(int status, QString text)
+{
     QString style = "";
 
-    switch (status) {
+    switch (status)
+    {
         case Status::Info:
             style = "color: #000000;";
             break;
@@ -297,11 +326,13 @@ void RegistrationForm::setStatusText(int status, QString text) {
     ui->lblStatus->setText(text);
 }
 
-void RegistrationForm::clearStatusText() {
+void RegistrationForm::clearStatusText()
+{
     ui->lblStatus->clear();
 }
 
-void RegistrationForm::hideGroupDevice() {
+void RegistrationForm::hideGroupDevice()
+{
     ui->groupBoxValidator->setVisible(false);
     ui->groupBoxCoinAcceptor->setVisible(false);
     ui->groupBoxPrinter->setVisible(false);
@@ -309,14 +340,16 @@ void RegistrationForm::hideGroupDevice() {
     ui->groupBoxModem->setVisible(false);
 }
 
-void RegistrationForm::addPageData() {
+void RegistrationForm::addPageData()
+{
     int curentId = ui->stackedWgtReg->currentIndex();
     QString title = "";
     QString btnBack = "";
     QString btnNext = "";
     bool btnNextEnabled = false;
 
-    switch (curentId) {
+    switch (curentId)
+    {
         case Page::SelectTpl:
             title = tr("%1 1/4 %2 Выбор интерфейса<br>\n");
             btnBack = tr("Закрыть");
@@ -324,7 +357,8 @@ void RegistrationForm::addPageData() {
 
             btnNextEnabled = ui->radioTplTJK->isChecked() || ui->radioTplUZB->isChecked();
             break;
-        case Page::SearchDevice: {
+        case Page::SearchDevice:
+        {
             title = tr("%1 2/4 %2 Настройки устройств терминала<br>\n");
 
             btnBack = tr("Назад");
@@ -333,21 +367,26 @@ void RegistrationForm::addPageData() {
             btnNextEnabled = true;
 
             hideGroupDevice();
-        } break;
-        case Page::SelectConnection: {
+        }
+        break;
+        case Page::SelectConnection:
+        {
             title = tr("%1 3/4 %2 Выберите тип соединения и нажмите<br>кнопку далее");
             btnBack = tr("Назад");
             btnNext = tr("Далее");
             btnNextEnabled = isValidConnectionType();
-        } break;
-        case Page::EnterAuthData: {
+        }
+        break;
+        case Page::EnterAuthData:
+        {
             title = tr("%1 4/4 %2 Введите авторизационные данные терминала<br>и "
                        "нажмите кнопку далее");
             btnBack = tr("Назад");
             btnNext = tr("Далее");
 
             btnNextEnabled = isValidAuthInput();
-        } break;
+        }
+        break;
             //        case Page::EnterAdminAuthData:
             //        {
             //            title = tr("%2 4/5 %3 Введите секретные данные%1(такие как
@@ -380,7 +419,8 @@ void RegistrationForm::addPageData() {
     showKeyPud();
 }
 
-void RegistrationForm::showValidatorData(bool show) {
+void RegistrationForm::showValidatorData(bool show)
+{
     ui->groupBoxValidator->setVisible(show);
 
     ui->btnEditCoinAcceptor->setChecked(false);
@@ -396,7 +436,8 @@ void RegistrationForm::showValidatorData(bool show) {
     clearStatusText();
 }
 
-void RegistrationForm::showCoinAcceptorData(bool show) {
+void RegistrationForm::showCoinAcceptorData(bool show)
+{
     ui->groupBoxCoinAcceptor->setVisible(show);
 
     ui->btnEditValidator->setChecked(false);
@@ -412,7 +453,8 @@ void RegistrationForm::showCoinAcceptorData(bool show) {
     clearStatusText();
 }
 
-void RegistrationForm::showPrinterData(bool show) {
+void RegistrationForm::showPrinterData(bool show)
+{
     ui->groupBoxPrinter->setVisible(show);
 
     ui->btnEditValidator->setChecked(false);
@@ -428,7 +470,8 @@ void RegistrationForm::showPrinterData(bool show) {
     clearStatusText();
 }
 
-void RegistrationForm::showWatchdogData(bool show) {
+void RegistrationForm::showWatchdogData(bool show)
+{
     ui->groupBoxWatchDog->setVisible(show);
 
     ui->btnEditValidator->setChecked(false);
@@ -444,7 +487,8 @@ void RegistrationForm::showWatchdogData(bool show) {
     clearStatusText();
 }
 
-void RegistrationForm::showModemData(bool show) {
+void RegistrationForm::showModemData(bool show)
+{
     ui->groupBoxModem->setVisible(show);
 
     ui->btnEditValidator->setChecked(false);
@@ -460,11 +504,13 @@ void RegistrationForm::showModemData(bool show) {
     clearStatusText();
 }
 
-void RegistrationForm::searchValidatorToggle(bool value) {
+void RegistrationForm::searchValidatorToggle(bool value)
+{
     ui->labelDeviceValidator->setEnabled(value);
     ui->btnEditValidator->setEnabled(value);
 
-    if (!value) {
+    if (!value)
+    {
         showValidatorData(false);
         ui->btnEditValidator->setChecked(false);
     }
@@ -473,11 +519,13 @@ void RegistrationForm::searchValidatorToggle(bool value) {
         QString("<font color=\"%2\">%1</font>").arg("Купюроприемник", value ? "black" : "gray"));
 }
 
-void RegistrationForm::searchCointAcceptorToggle(bool value) {
+void RegistrationForm::searchCointAcceptorToggle(bool value)
+{
     ui->labelDeviceCoinAcceptor->setEnabled(value);
     ui->btnEditCoinAcceptor->setEnabled(value);
 
-    if (!value) {
+    if (!value)
+    {
         showCoinAcceptorData(false);
         ui->btnEditCoinAcceptor->setChecked(false);
     }
@@ -486,11 +534,13 @@ void RegistrationForm::searchCointAcceptorToggle(bool value) {
         QString("<font color=\"%2\">%1</font>").arg("Монетоприемник", value ? "black" : "gray"));
 }
 
-void RegistrationForm::searchPrinterToggle(bool value) {
+void RegistrationForm::searchPrinterToggle(bool value)
+{
     ui->labelDevicePrinter->setEnabled(value);
     ui->btnEditPrinter->setEnabled(value);
 
-    if (!value) {
+    if (!value)
+    {
         showPrinterData(false);
         ui->btnEditPrinter->setChecked(false);
     }
@@ -498,11 +548,13 @@ void RegistrationForm::searchPrinterToggle(bool value) {
     ui->labelDevicePrinter->setText(QString("<font color=\"%2\">%1</font>").arg("Принтер", value ? "black" : "gray"));
 }
 
-void RegistrationForm::searchWatchdogToggle(bool value) {
+void RegistrationForm::searchWatchdogToggle(bool value)
+{
     ui->labelDeviceWatchDog->setEnabled(value);
     ui->btnEditWatchDog->setEnabled(value);
 
-    if (!value) {
+    if (!value)
+    {
         showWatchdogData(false);
         ui->btnEditWatchDog->setChecked(false);
     }
@@ -511,11 +563,13 @@ void RegistrationForm::searchWatchdogToggle(bool value) {
         QString("<font color=\"%2\">%1</font>").arg("Сторожевой таймер", value ? "black" : "gray"));
 }
 
-void RegistrationForm::searchModemToggle(bool value) {
+void RegistrationForm::searchModemToggle(bool value)
+{
     ui->labelDeviceModem->setEnabled(value);
     ui->btnEditModem->setEnabled(value);
 
-    if (!value) {
+    if (!value)
+    {
         showModemData(false);
         ui->btnEditModem->setChecked(false);
     }
@@ -523,7 +577,8 @@ void RegistrationForm::searchModemToggle(bool value) {
     ui->labelDeviceModem->setText(QString("<font color=\"%2\">%1</font>").arg("Модем", value ? "black" : "gray"));
 }
 
-void RegistrationForm::validatorTest() {
+void RegistrationForm::validatorTest()
+{
     QString devName = ui->cbxValidatorName->currentText();
     QString port = ui->cbxValidatorPort->currentText();
     QString comment = "";
@@ -533,7 +588,8 @@ void RegistrationForm::validatorTest() {
     emit emitDeviceTest(SearchDev::search_validator, devName, port, comment);
 }
 
-void RegistrationForm::coinAcceptorTest() {
+void RegistrationForm::coinAcceptorTest()
+{
     QString devName = ui->cbxCoinAcceptorName->currentText();
     QString port = ui->cbxCoinAcceptorPort->currentText();
     QString comment = "";
@@ -543,7 +599,8 @@ void RegistrationForm::coinAcceptorTest() {
     emit emitDeviceTest(SearchDev::search_coin_acceptor, devName, port, comment);
 }
 
-void RegistrationForm::printerTest() {
+void RegistrationForm::printerTest()
+{
     QString devName = ui->cbxPrinterName->currentText();
     QString port = ui->cbxPrinterPort->currentText();
     QString comment = ui->cbxWinprinter->currentText();
@@ -553,7 +610,8 @@ void RegistrationForm::printerTest() {
     emit emitDeviceTest(SearchDev::search_printer, devName, port, comment);
 }
 
-void RegistrationForm::watchdogTest() {
+void RegistrationForm::watchdogTest()
+{
     QString devName = "OSMP1";
     QString port = ui->cbxWatchdogPort->currentText();
     QString comment = "";
@@ -563,7 +621,8 @@ void RegistrationForm::watchdogTest() {
     emit emitDeviceTest(SearchDev::search_watchdog, devName, port, comment);
 }
 
-void RegistrationForm::modemTest() {
+void RegistrationForm::modemTest()
+{
     QString devName = "AT-Modem";
     QString port = ui->cbxModemPort->currentText();
     QString comment = "";
@@ -573,8 +632,10 @@ void RegistrationForm::modemTest() {
     emit emitDeviceTest(SearchDev::search_modem, devName, port, comment);
 }
 
-void RegistrationForm::validatorSave() {
-    if (comPortList.size() > 0) {
+void RegistrationForm::validatorSave()
+{
+    if (comPortList.size() > 0)
+    {
         QString devName = ui->cbxValidatorName->currentText();
         QString portName = ui->cbxValidatorPort->currentText();
         QString comment = "";
@@ -583,8 +644,10 @@ void RegistrationForm::validatorSave() {
     }
 }
 
-void RegistrationForm::coinAcceptorSave() {
-    if (comPortList.size() > 0) {
+void RegistrationForm::coinAcceptorSave()
+{
+    if (comPortList.size() > 0)
+    {
         QString devName = ui->cbxCoinAcceptorName->currentText();
         QString portName = ui->cbxCoinAcceptorPort->currentText();
         QString comment = "";
@@ -593,7 +656,8 @@ void RegistrationForm::coinAcceptorSave() {
     }
 }
 
-void RegistrationForm::printerSave() {
+void RegistrationForm::printerSave()
+{
     QString devName = ui->cbxPrinterName->currentText();
 
     auto isWinprinter = devName == "WindowsPrinter";
@@ -609,8 +673,10 @@ void RegistrationForm::printerSave() {
     emit emitSaveDevice(2, devName, portName, comment, 1);
 }
 
-void RegistrationForm::watchdogSave() {
-    if (comPortList.size() > 0) {
+void RegistrationForm::watchdogSave()
+{
+    if (comPortList.size() > 0)
+    {
         QString devName = "OSMP1";
         QString portName = ui->cbxWatchdogPort->currentText();
         QString comment = "";
@@ -619,8 +685,10 @@ void RegistrationForm::watchdogSave() {
     }
 }
 
-void RegistrationForm::modemSave() {
-    if (comPortList.size() > 0) {
+void RegistrationForm::modemSave()
+{
+    if (comPortList.size() > 0)
+    {
         QString devName = "AT-Modem";
         QString portName = ui->cbxModemPort->currentText();
         QString comment = "";
@@ -636,7 +704,8 @@ void RegistrationForm::modemSave() {
 //     validator->wait();
 // }
 
-void RegistrationForm::setSearchDeviceParams(QVariantMap data) {
+void RegistrationForm::setSearchDeviceParams(QVariantMap data)
+{
     //    searchDevices->takeBalanceSim          =
     //    data.value("check_balance_sim").toBool(); searchDevices->takeSimNumber
     //    = data.value("check_number_sim").toBool();
@@ -677,12 +746,14 @@ void RegistrationForm::setSearchDeviceParams(QVariantMap data) {
     searchModemToggle(searchModem);
 }
 
-void RegistrationForm::btnSearchStartClc() {
+void RegistrationForm::btnSearchStartClc()
+{
     searchClicked = true;
     deviceSearchStart();
 }
 
-void RegistrationForm::deviceSearchStart() {
+void RegistrationForm::deviceSearchStart()
+{
     ui->btnSearchStart->setEnabled(false);
     setLoading(true);
 
@@ -703,28 +774,38 @@ void RegistrationForm::deviceSearchStart() {
 }
 
 void RegistrationForm::deviceSearchResult(int device, int result, QString dev_name, QString dev_comment,
-                                          QString dev_port) {
-    switch (device) {
-        case SearchDev::search_validator: {
-            switch (result) {
-                case SearchDev::start_search: {
+                                          QString dev_port)
+{
+    switch (device)
+    {
+        case SearchDev::search_validator:
+        {
+            switch (result)
+            {
+                case SearchDev::start_search:
+                {
                     QString vrmContentStart = tr("Идет поиск купюроприемник ...");
                     ui->labelDeviceValidator->setText(vrmContentStart);
                     //            emit emit_toLoging(TypeState::Info,
                     //            LogFileName::SEARCH_DEVICE, vrmContentStart);
-                } break;
-                case SearchDev::device_found: {
+                }
+                break;
+                case SearchDev::device_found:
+                {
                     ui->btnNextReg->setEnabled(true);
 
                     int curPos = -1;
-                    for (int i = 0; i < comPortList.size(); i++) {
-                        if (dev_port == comPortList.at(i)) {
+                    for (int i = 0; i < comPortList.size(); i++)
+                    {
+                        if (dev_port == comPortList.at(i))
+                        {
                             curPos = i;
                             break;
                         }
                     }
                     // Устанавливаем текущую позицию
-                    if (curPos >= 0) {
+                    if (curPos >= 0)
+                    {
                         ui->cbxValidatorPort->setCurrentIndex(curPos);
                     }
 
@@ -740,33 +821,45 @@ void RegistrationForm::deviceSearchResult(int device, int result, QString dev_na
                     ui->labelDeviceValidator->setText(
                         vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
                             .replace("[v2]", QString("<b>%1</b>").arg(dev_port)));
-                } break;
-                case SearchDev::device_notfound: {
+                }
+                break;
+                case SearchDev::device_notfound:
+                {
                     QString vrmContentFined = tr("Купюроприемник не найден!");
                     ui->labelDeviceValidator->setText(QString("<font color=\"red\">%1</font>").arg(vrmContentFined));
                     //            emit emit_toLoging(TypeState::Error,
                     //            LogFileName::SEARCH_DEVICE, vrmContentFined);
-                } break;
+                }
+                break;
             }
-        } break;
-        case SearchDev::search_coin_acceptor: {
-            switch (result) {
-                case SearchDev::start_search: {
+        }
+        break;
+        case SearchDev::search_coin_acceptor:
+        {
+            switch (result)
+            {
+                case SearchDev::start_search:
+                {
                     QString vrmContentStart = tr("Идет поиск монетоприемника ...");
                     ui->labelDeviceCoinAcceptor->setText(vrmContentStart);
-                } break;
-                case SearchDev::device_found: {
+                }
+                break;
+                case SearchDev::device_found:
+                {
                     ui->btnNextReg->setEnabled(true);
 
                     int curPos = -1;
-                    for (int i = 0; i < comPortList.size(); i++) {
-                        if (dev_port == comPortList.at(i)) {
+                    for (int i = 0; i < comPortList.size(); i++)
+                    {
+                        if (dev_port == comPortList.at(i))
+                        {
                             curPos = i;
                             break;
                         }
                     }
                     // Устанавливаем текущую позицию
-                    if (curPos >= 0) {
+                    if (curPos >= 0)
+                    {
                         ui->cbxCoinAcceptorPort->setCurrentIndex(curPos);
                     }
 
@@ -776,43 +869,58 @@ void RegistrationForm::deviceSearchResult(int device, int result, QString dev_na
                     ui->labelDeviceCoinAcceptor->setText(
                         vrmContent2.replace("[v1]", QString("<b>%1</b> %2").arg(dev_name, dev_comment))
                             .replace("[v2]", QString("<b>%1</b>").arg(dev_port)));
-                } break;
-                case SearchDev::device_notfound: {
+                }
+                break;
+                case SearchDev::device_notfound:
+                {
                     QString vrmContentFined = tr("Монетоприемник не найден!");
                     ui->labelDeviceCoinAcceptor->setText(QString("<font color=\"red\">%1</font>").arg(vrmContentFined));
-                } break;
+                }
+                break;
             }
-        } break;
-        case SearchDev::search_printer: {
-            switch (result) {
-                case SearchDev::start_search: {
+        }
+        break;
+        case SearchDev::search_printer:
+        {
+            switch (result)
+            {
+                case SearchDev::start_search:
+                {
                     QString vrmContentStart = tr("Идет поиск принтера ...");
                     ui->labelDevicePrinter->setText(vrmContentStart);
                     //            emit emit_toLoging(TypeState::Info,
                     //            LogFileName::SEARCH_DEVICE, vrmContentStart);
-                } break;
-                case SearchDev::device_found: {
+                }
+                break;
+                case SearchDev::device_found:
+                {
                     int curPos = -1;
-                    for (int i = 0; i < comPortList.size(); i++) {
-                        if (dev_port == comPortList.at(i)) {
+                    for (int i = 0; i < comPortList.size(); i++)
+                    {
+                        if (dev_port == comPortList.at(i))
+                        {
                             curPos = i;
                             break;
                         }
                     }
                     // Устанавливаем текущую позицию
-                    if (curPos >= 0) {
+                    if (curPos >= 0)
+                    {
                         ui->cbxPrinterPort->setCurrentIndex(curPos);
                     }
 
                     int curPosName = -1;
-                    for (int i = 0; i < printerList.size(); i++) {
-                        if (dev_port == printerList.at(i)) {
+                    for (int i = 0; i < printerList.size(); i++)
+                    {
+                        if (dev_port == printerList.at(i))
+                        {
                             curPosName = i;
                             break;
                         }
                     }
                     // Устанавливаем текущую позицию
-                    if (curPosName >= 0) {
+                    if (curPosName >= 0)
+                    {
                         ui->cbxPrinterName->setCurrentIndex(curPosName);
                     }
 
@@ -830,35 +938,47 @@ void RegistrationForm::deviceSearchResult(int device, int result, QString dev_na
                     //                emit emit_toLoging(TypeState::Info,
                     //                LogFileName::SEARCH_DEVICE,vrmContent1.replace("[v1]",QString("%1
                     //                %2").arg(dev_name).arg(dev_comment)).replace("[v2]",QString("%1").arg(dev_port)));
-                } break;
-                case SearchDev::device_notfound: {
+                }
+                break;
+                case SearchDev::device_notfound:
+                {
                     QString vrmContentFined = tr("Принтер не найден!");
                     ui->labelDevicePrinter->setText(QString("<font color=\"red\">%1</font>").arg(vrmContentFined));
                     //                emit emit_toLoging(TypeState::Error,
                     //                LogFileName::SEARCH_DEVICE, vrmContentFined);
-                } break;
+                }
+                break;
             }
-        } break;
+        }
+        break;
 
-        case SearchDev::search_modem: {
-            switch (result) {
-                case SearchDev::start_search: {
+        case SearchDev::search_modem:
+        {
+            switch (result)
+            {
+                case SearchDev::start_search:
+                {
                     QString vrmContentStart = tr("Идет поиск модема ...");
                     ui->labelDeviceModem->setText(vrmContentStart);
                     //            emit emit_toLoging(TypeState::Info,
                     //            LogFileName::SEARCH_DEVICE, vrmContentStart);
-                } break;
-                case SearchDev::device_found: {
+                }
+                break;
+                case SearchDev::device_found:
+                {
 
                     int curPos = -1;
-                    for (int i = 0; i < comPortList.size(); i++) {
-                        if (dev_port == comPortList.at(i)) {
+                    for (int i = 0; i < comPortList.size(); i++)
+                    {
+                        if (dev_port == comPortList.at(i))
+                        {
                             curPos = i;
                             break;
                         }
                     }
                     // Устанавливаем текущую позицию
-                    if (curPos >= 0) {
+                    if (curPos >= 0)
+                    {
                         ui->cbxModemPort->setCurrentIndex(curPos);
                     }
 
@@ -873,34 +993,46 @@ void RegistrationForm::deviceSearchResult(int device, int result, QString dev_na
                     //            emit emit_toLoging(TypeState::Info,
                     //            LogFileName::SEARCH_DEVICE,vrmContent1.replace("[v1]",QString("%1
                     //            %2").arg(dev_name).arg(dev_comment)).replace("[v2]",QString("%1").arg(dev_port)));
-                } break;
-                case SearchDev::device_notfound: {
+                }
+                break;
+                case SearchDev::device_notfound:
+                {
                     QString vrmContentFined = tr("Модем не найден! или порт занят.");
                     ui->labelDeviceModem->setText(QString("<font color=\"red\">%1</font>").arg(vrmContentFined));
                     //            emit emit_toLoging(TypeState::Error,
                     //            LogFileName::SEARCH_DEVICE, vrmContentFined);
-                } break;
+                }
+                break;
             }
-        } break;
-        case SearchDev::search_watchdog: {
-            switch (result) {
-                case SearchDev::start_search: {
+        }
+        break;
+        case SearchDev::search_watchdog:
+        {
+            switch (result)
+            {
+                case SearchDev::start_search:
+                {
                     QString vrmContentStart = tr("Идет поиск Сторожевого таймера ...");
                     ui->labelDeviceWatchDog->setText(vrmContentStart);
                     //            emit emit_toLoging(TypeState::Info,
                     //            LogFileName::SEARCH_DEVICE, vrmContentStart);
-                } break;
-                case SearchDev::device_found: {
+                }
+                break;
+                case SearchDev::device_found:
+                {
 
                     int curPos = -1;
-                    for (int i = 0; i < comPortList.size(); i++) {
-                        if (dev_port == comPortList.at(i)) {
+                    for (int i = 0; i < comPortList.size(); i++)
+                    {
+                        if (dev_port == comPortList.at(i))
+                        {
                             curPos = i;
                             break;
                         }
                     }
                     // Устанавливаем текущую позицию
-                    if (curPos >= 0) {
+                    if (curPos >= 0)
+                    {
                         ui->cbxWatchdogPort->setCurrentIndex(curPos);
                     }
 
@@ -916,34 +1048,42 @@ void RegistrationForm::deviceSearchResult(int device, int result, QString dev_na
                     //                    emit emit_toLoging(TypeState::Info,
                     //                    LogFileName::SEARCH_DEVICE,vrmContent1.replace("[v1]",QString("%1
                     //                    %2").arg(dev_name).arg(dev_comment)).replace("[v2]",QString("%1").arg(dev_port)));
-                } break;
-                case SearchDev::device_notfound: {
+                }
+                break;
+                case SearchDev::device_notfound:
+                {
                     QString vrmContentFined = tr("Сторожевой таймер не найден! или занят.");
                     ui->labelDeviceWatchDog->setText(QString("<font color=\"red\">%1</font>").arg(vrmContentFined));
                     //                    emit emit_toLoging(TypeState::Error,
                     //                    LogFileName::SEARCH_DEVICE, vrmContentFined);
-                } break;
+                }
+                break;
             }
-        } break;
+        }
+        break;
     }
 }
 
-void RegistrationForm::deviceSearchFinished() {
+void RegistrationForm::deviceSearchFinished()
+{
     ui->btnSearchStart->setEnabled(true);
     setLoading(false);
 
-    if (!searchClicked) {
+    if (!searchClicked)
+    {
         sleep(1000);
         ui->stackedWgtReg->setCurrentIndex(Page::SelectConnection);
         addPageData();
     }
 }
 
-bool RegistrationForm::isValidConnectionType() {
+bool RegistrationForm::isValidConnectionType()
+{
     return ui->radioLocalConnection->isChecked() || ui->listWidgetConnectionList->currentIndex().isValid();
 }
 
-void RegistrationForm::showDialUpParams(bool show) {
+void RegistrationForm::showDialUpParams(bool show)
+{
     ui->wgtDialUpConnectionData->setVisible(show);
     ui->wgtLocalConnectionData->setVisible(!show);
 
@@ -955,8 +1095,10 @@ void RegistrationForm::showDialUpParams(bool show) {
     clearStatusText();
 }
 
-void RegistrationForm::connectionSelect(QString connection) {
-    if (connection == "") {
+void RegistrationForm::connectionSelect(QString connection)
+{
+    if (connection == "")
+    {
         return;
     }
 
@@ -967,7 +1109,8 @@ void RegistrationForm::connectionSelect(QString connection) {
     ui->btnNextReg->setEnabled(true);
 }
 
-void RegistrationForm::createNewConnection() {
+void RegistrationForm::createNewConnection()
+{
     createDialupConnection->conList = connectionList;
     createDialupConnection->devList = dialupDevice;
 
@@ -976,7 +1119,8 @@ void RegistrationForm::createNewConnection() {
     createDialupConnection->openThis();
 }
 
-void RegistrationForm::setDataListConnection(QStringList list) {
+void RegistrationForm::setDataListConnection(QStringList list)
+{
     list.removeFirst();
     connectionList = list;
 
@@ -984,7 +1128,8 @@ void RegistrationForm::setDataListConnection(QStringList list) {
     ui->listWidgetConnectionList->addItems(connectionList);
 }
 
-void RegistrationForm::showMe() {
+void RegistrationForm::showMe()
+{
     // Даем фокус на кнопку отменить
     //    ui->stackedWgtReg->setCurrentIndex(PageReg::SelectDevice);
     QVariantMap devices;
@@ -1044,18 +1189,21 @@ void RegistrationForm::showMe() {
     showFullScreen();
 }
 
-bool RegistrationForm::getDeviceFromDB(QVariantMap &devices) {
+bool RegistrationForm::getDeviceFromDB(QVariantMap &devices)
+{
     QSqlQuery select(db);
 
     QString strSelect = QString("SELECT * FROM terminal_devices");
 
-    if (!select.exec(strSelect)) {
+    if (!select.exec(strSelect))
+    {
         return false;
     }
 
     QSqlRecord record = select.record();
 
-    while (select.next()) {
+    while (select.next())
+    {
 
         int id = select.value(record.indexOf("id")).toInt();
         QString port = select.value(record.indexOf("port")).toString();
@@ -1063,41 +1211,54 @@ bool RegistrationForm::getDeviceFromDB(QVariantMap &devices) {
         QString comment = select.value(record.indexOf("comment")).toString();
         //        QString state = select.value(record.indexOf("state")).toString();
 
-        switch (id) {
-            case 1: {
+        switch (id)
+        {
+            case 1:
+            {
                 devices["validator_name"] = name;
                 devices["validator_port"] = port;
-            } break;
-            case 2: {
+            }
+            break;
+            case 2:
+            {
                 devices["printer_name"] = name;
                 devices["printer_port"] = port;
                 devices["printer_comment"] = comment;
-            } break;
-            case 3: {
+            }
+            break;
+            case 3:
+            {
                 devices["modem_name"] = name;
                 devices["modem_port"] = port;
-            } break;
-            case 4: {
+            }
+            break;
+            case 4:
+            {
                 devices["watchdog_name"] = name;
                 devices["watchdog_port"] = port;
-            } break;
-            case 5: {
+            }
+            break;
+            case 5:
+            {
                 devices["coin_acceptor_name"] = name;
                 devices["coin_acceptor_port"] = port;
-            } break;
+            }
+            break;
         }
     }
 
     return true;
 }
 
-void RegistrationForm::checkAuthInput(QString text) {
+void RegistrationForm::checkAuthInput(QString text)
+{
     Q_UNUSED(text)
 
     ui->btnNextReg->setEnabled(isValidAuthInput());
 }
 
-bool RegistrationForm::isValidAuthInput() {
+bool RegistrationForm::isValidAuthInput()
+{
     bool validAuthData = ui->editLoginReg->hasAcceptableInput() && ui->editOtpReg->hasAcceptableInput();
     bool validAuthAdminData = ui->editSecretLoginReg->hasAcceptableInput() &&
                               ui->editSecretPasswordReg->hasAcceptableInput() &&
@@ -1106,55 +1267,69 @@ bool RegistrationForm::isValidAuthInput() {
     return validAuthData && validAuthAdminData;
 }
 
-void RegistrationForm::tplCheck() {
-    if (ui->radioTplTJK->isChecked()) {
+void RegistrationForm::tplCheck()
+{
+    if (ui->radioTplTJK->isChecked())
+    {
         ui->tplImageTJK->setStyleSheet(tplStyleEnable);
         ui->tplImageUZB->setStyleSheet(tplStyleDisable);
 
         ui->btnNextReg->setEnabled(true);
     }
 
-    if (ui->radioTplUZB->isChecked()) {
+    if (ui->radioTplUZB->isChecked())
+    {
         ui->tplImageUZB->setStyleSheet(tplStyleEnable);
         ui->tplImageTJK->setStyleSheet(tplStyleDisable);
 
         ui->btnNextReg->setEnabled(true);
     }
 
-    if (!ui->chbTest->isVisible()) {
+    if (!ui->chbTest->isVisible())
+    {
         ui->chbTest->setVisible(true);
     }
 }
 
-void RegistrationForm::tplTJKSet() {
+void RegistrationForm::tplTJKSet()
+{
     ui->radioTplTJK->setChecked(true);
     tplCheck();
 }
 
-void RegistrationForm::tplUZBSet() {
+void RegistrationForm::tplUZBSet()
+{
     ui->radioTplUZB->setChecked(true);
     tplCheck();
 }
 
-void RegistrationForm::sleep(const int msec) {
+void RegistrationForm::sleep(const int msec)
+{
     QEventLoop loop;
     QTimer::singleShot(msec, &loop, &QEventLoop::quit);
     loop.exec();
 }
 
-void RegistrationForm::showKeyPud() {
+void RegistrationForm::showKeyPud()
+{
     auto page = ui->stackedWgtReg->currentIndex();
 
-    if (page == Page::SelectConnection && ui->radioDialUpConnection->isChecked()) {
+    if (page == Page::SelectConnection && ui->radioDialUpConnection->isChecked())
+    {
         ui->wgtKeyPudReg->setVisible(true);
-    } else if (page == Page::EnterAuthData) {
+    }
+    else if (page == Page::EnterAuthData)
+    {
         ui->wgtKeyPudReg->setVisible(true);
-    } else {
+    }
+    else
+    {
         ui->wgtKeyPudReg->setVisible(false);
     }
 }
 
-void RegistrationForm::sendCharacter(QChar character) {
+void RegistrationForm::sendCharacter(QChar character)
+{
     QPointer<QWidget> w = focusWidget();
 
     if (!w)
@@ -1163,22 +1338,26 @@ void RegistrationForm::sendCharacter(QChar character) {
     int un = character.unicode();
 
     QString a = QString(character);
-    if (un == 15405) {
+    if (un == 15405)
+    {
         un = Qt::Key_Backspace;
         a = "";
     }
 
-    if (un == 15934) {
+    if (un == 15934)
+    {
         un = Qt::Key_Tab;
         a = "";
     }
 
-    if (un == 15917) {
+    if (un == 15917)
+    {
         un = Qt::Key_Enter;
         a = "";
     }
 
-    if (un == 15420) {
+    if (un == 15420)
+    {
         return;
     }
 
@@ -1186,27 +1365,36 @@ void RegistrationForm::sendCharacter(QChar character) {
     QApplication::sendEvent(w, &keyPress);
 }
 
-void RegistrationForm::secretPassView(bool show) {
-    if (show) {
+void RegistrationForm::secretPassView(bool show)
+{
+    if (show)
+    {
         ui->editSecretPasswordReg->setEchoMode(QLineEdit::Normal);
-    } else {
+    }
+    else
+    {
         ui->editSecretPasswordReg->setEchoMode(QLineEdit::Password);
     }
 
     ui->editSecretPasswordReg->setFocus();
 }
 
-void RegistrationForm::secretPassConfirmView(bool show) {
-    if (show) {
+void RegistrationForm::secretPassConfirmView(bool show)
+{
+    if (show)
+    {
         ui->editSecretPasswordConfirmReg->setEchoMode(QLineEdit::Normal);
-    } else {
+    }
+    else
+    {
         ui->editSecretPasswordConfirmReg->setEchoMode(QLineEdit::Password);
     }
 
     ui->editSecretPasswordConfirmReg->setFocus();
 }
 
-void RegistrationForm::closeConfirm() {
+void RegistrationForm::closeConfirm()
+{
     QMessageBox messageBox(this);
     messageBox.setWindowTitle(tr("Выход из программы."));
     messageBox.setText(tr("Вы действительно хотите выйти?<br/>"));
@@ -1220,11 +1408,13 @@ void RegistrationForm::closeConfirm() {
 
     int r = messageBox.exec();
 
-    if (r == QMessageBox::Yes) {
+    if (r == QMessageBox::Yes)
+    {
         closeMe();
     }
 }
 
-void RegistrationForm::closeMe() {
+void RegistrationForm::closeMe()
+{
     this->close();
 }

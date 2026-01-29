@@ -12,7 +12,8 @@
 // Project
 #include "ui_MessageWindow.h"
 
-class MessageWindow : public QDialog {
+class MessageWindow : public QDialog
+{
     Q_OBJECT
 
   public:

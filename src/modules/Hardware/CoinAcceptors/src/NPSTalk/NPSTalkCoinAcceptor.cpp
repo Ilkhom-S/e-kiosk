@@ -16,7 +16,8 @@ using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------
-NPSTalkCoinAcceptor::NPSTalkCoinAcceptor() {
+NPSTalkCoinAcceptor::NPSTalkCoinAcceptor()
+{
     // параметры порта
     mPortParameters[EParameters::Parity].append(EParity::No);
 
@@ -26,24 +27,28 @@ NPSTalkCoinAcceptor::NPSTalkCoinAcceptor() {
 }
 
 //--------------------------------------------------------------------------------
-bool NPSTalkCoinAcceptor::enableMoneyAcceptingMode(bool aEnabled) {
+bool NPSTalkCoinAcceptor::enableMoneyAcceptingMode(bool aEnabled)
+{
     return processCommand(aEnabled ? CNPSTalk::Command::Enable : CNPSTalk::Command::Disable);
 }
 
 //--------------------------------------------------------------------------------
 TResult NPSTalkCoinAcceptor::execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
-                                         QByteArray *aAnswer) {
+                                         QByteArray *aAnswer)
+{
     mProtocol.setPort(mIOPort);
     mProtocol.setLog(mLog);
 
     QByteArray answer;
     TResult result = mProtocol.processCommand(aCommand + aCommandData, answer);
 
-    if (!result) {
+    if (!result)
+    {
         return result;
     }
 
-    if (aAnswer) {
+    if (aAnswer)
+    {
         *aAnswer = answer;
     }
 
@@ -51,15 +56,18 @@ TResult NPSTalkCoinAcceptor::execCommand(const QByteArray &aCommand, const QByte
 }
 
 //--------------------------------------------------------------------------------
-QStringList NPSTalkCoinAcceptor::getModelList() {
+QStringList NPSTalkCoinAcceptor::getModelList()
+{
     return QStringList() << "Comestero Group RM5";
 }
 
 //---------------------------------------------------------------------------
-bool NPSTalkCoinAcceptor::processReset() {
+bool NPSTalkCoinAcceptor::processReset()
+{
     toLog(LogLevel::Normal, mDeviceName + ": processing command reset");
 
-    if (!processCommand(CNPSTalk::Command::Reset)) {
+    if (!processCommand(CNPSTalk::Command::Reset))
+    {
         toLog(LogLevel::Error, mDeviceName + ": Failed to reset");
         return false;
     }
@@ -68,29 +76,34 @@ bool NPSTalkCoinAcceptor::processReset() {
 }
 
 //---------------------------------------------------------------------------
-bool NPSTalkCoinAcceptor::getStatus(TStatusCodes &aStatusCodes) {
+bool NPSTalkCoinAcceptor::getStatus(TStatusCodes &aStatusCodes)
+{
     // TDeviceCodes lastCodes(mCodes); // ?
     mCodes.clear();
     mEscrowPars.clear();
 
     QByteArray answer;
 
-    if (!processCommand(CNPSTalk::Command::GetStatus, answer)) {
+    if (!processCommand(CNPSTalk::Command::GetStatus, answer))
+    {
         return false;
     }
 
     aStatusCodes.insert((!answer.isEmpty() && answer[0]) ? BillAcceptorStatusCode::Normal::Enabled
                                                          : BillAcceptorStatusCode::Normal::Disabled);
 
-    for (auto it = mEscrowParTable.data().begin(); it != mEscrowParTable.data().end(); ++it) {
+    for (auto it = mEscrowParTable.data().begin(); it != mEscrowParTable.data().end(); ++it)
+    {
         uchar coinPosition = uchar(it.key());
 
         if (processCommand(CNPSTalk::Command::GetAcceptedCoins, QByteArray(1, coinPosition), &answer) &&
-            !answer.isEmpty()) {
+            !answer.isEmpty())
+        {
             uchar coinAmountChange = uchar(answer[0]) - mCoinsByChannel[coinPosition];
             mCoinsByChannel[coinPosition] = uchar(answer[0]);
 
-            for (uchar i = 0; i < coinAmountChange; ++i) {
+            for (uchar i = 0; i < coinAmountChange; ++i)
+            {
                 mEscrowPars << it.value();
             }
         }
@@ -100,29 +113,36 @@ bool NPSTalkCoinAcceptor::getStatus(TStatusCodes &aStatusCodes) {
 }
 
 //--------------------------------------------------------------------------------
-bool NPSTalkCoinAcceptor::loadParTable() {
+bool NPSTalkCoinAcceptor::loadParTable()
+{
     QByteArray answer;
 
-    if (!processCommand(CNPSTalk::Command::GetNominalChannels, answer) || answer.isEmpty()) {
+    if (!processCommand(CNPSTalk::Command::GetNominalChannels, answer) || answer.isEmpty())
+    {
         return false;
     }
 
     uchar channelCount = uchar(answer[0]);
 
-    for (uchar i = 1; i <= channelCount; ++i) {
+    for (uchar i = 1; i <= channelCount; ++i)
+    {
         QByteArray nominalData;
 
-        if (processCommand(CNPSTalk::Command::GetNominals, QByteArray(1, i), &nominalData)) {
+        if (processCommand(CNPSTalk::Command::GetNominals, QByteArray(1, i), &nominalData))
+        {
             // TODO: сейчас только вариант для России и НЕ планируется доделывать для другой валюты. Зарефакторить если
             // таковой вариант появится.
             QByteArray countryCode = nominalData.left(2);
 
-            if (countryCode == "RU") {
+            if (countryCode == "RU")
+            {
                 MutexLocker locker(&mResourceMutex);
 
                 SPar par(nominalData.mid(2, 3).toInt(), Currency::RUB, ECashReceiver::CoinAcceptor);
                 mEscrowParTable.data().insert(i, par);
-            } else {
+            }
+            else
+            {
                 toLog(LogLevel::Error, mDeviceName + QString(": Unknown currency code %1)").arg(countryCode.data()));
             }
         }
@@ -132,17 +152,21 @@ bool NPSTalkCoinAcceptor::loadParTable() {
 }
 
 //--------------------------------------------------------------------------------
-bool NPSTalkCoinAcceptor::setDefaultParameters() {
+bool NPSTalkCoinAcceptor::setDefaultParameters()
+{
     QByteArray answer;
 
-    if (!processCommand(CNPSTalk::Command::GetNominalChannels, &answer) || answer.isEmpty()) {
+    if (!processCommand(CNPSTalk::Command::GetNominalChannels, &answer) || answer.isEmpty())
+    {
         return false;
     }
 
     uchar channelCount = uchar(answer[0]);
 
-    for (uchar i = 1; i < channelCount; ++i) {
-        if (!processCommand(CNPSTalk::Command::GetAcceptedCoins, QByteArray(1, i), &answer) || answer.isEmpty()) {
+    for (uchar i = 1; i < channelCount; ++i)
+    {
+        if (!processCommand(CNPSTalk::Command::GetAcceptedCoins, QByteArray(1, i), &answer) || answer.isEmpty())
+        {
             return false;
         }
 
@@ -153,18 +177,22 @@ bool NPSTalkCoinAcceptor::setDefaultParameters() {
 }
 
 //--------------------------------------------------------------------------------
-bool NPSTalkCoinAcceptor::isConnected() {
-    if (!processCommand(CNPSTalk::Command::TestConnection)) {
+bool NPSTalkCoinAcceptor::isConnected()
+{
+    if (!processCommand(CNPSTalk::Command::TestConnection))
+    {
         return false;
     }
 
     QByteArray data;
 
-    if (processCommand(CNPSTalk::Command::GetModelVersion, &data)) {
+    if (processCommand(CNPSTalk::Command::GetModelVersion, &data))
+    {
         mDeviceName = "Comestero RM5";
     }
 
-    if (processCommand(CNPSTalk::Command::GetFirmwareVersion, &data)) {
+    if (processCommand(CNPSTalk::Command::GetFirmwareVersion, &data))
+    {
         setDeviceParameter(CDeviceData::Firmware, data.simplified());
     }
 

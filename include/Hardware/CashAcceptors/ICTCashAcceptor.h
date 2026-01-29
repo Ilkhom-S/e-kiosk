@@ -5,7 +5,8 @@
 #include <Hardware/CashAcceptors/SerialCashAcceptor.h>
 
 //--------------------------------------------------------------------------------
-class ICTCashAcceptor : public TSerialCashAcceptor {
+class ICTCashAcceptor : public TSerialCashAcceptor
+{
     SET_SERIES("ICT")
 
   public:

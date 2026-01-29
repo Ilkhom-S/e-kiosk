@@ -2,13 +2,18 @@
 
 #pragma once
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Humo {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Humo
+        {
 
             //------------------------------------------------------------------------------
-            namespace ELocalError {
-                enum Enum {
+            namespace ELocalError
+            {
+                enum Enum
+                {
                     /// Отсутствует ожидаемый параметр
                     AbsentExpectedParam = -286,
 
@@ -24,8 +29,10 @@ namespace SDK {
             } // namespace ELocalError
 
             //------------------------------------------------------------------------------
-            namespace EServerError {
-                enum Enum {
+            namespace EServerError
+            {
+                enum Enum
+                {
                     /// Запрос корректно обработан, ошибок нет
                     Ok = 0,
 
@@ -106,8 +113,10 @@ namespace SDK {
             }; // namespace EServerError
 
             //------------------------------------------------------------------------------
-            namespace EServerResult {
-                enum Enum {
+            namespace EServerResult
+            {
+                enum Enum
+                {
                     // Пустая строка -> есть ошибка
                     Empty = -1,
 

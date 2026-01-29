@@ -1,8 +1,7 @@
 /* @file Спецификация статусов системного принтера для Linux/macOS (CUPS/IPP).
-*/
+ */
 
 #pragma once
-
 
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QMap>
@@ -10,9 +9,11 @@
 #include <QtCore/QSet>
 #include <Common/QtHeadersEnd.h>
 
-namespace CUnixPrinter {
+namespace CUnixPrinter
+{
     // Пример: коды CUPS/IPP и их соответствие внутренним статусам
-    enum StatusCode {
+    enum StatusCode
+    {
         Enabled = 0,
         Disabled = 1,
         Idle = 2,
@@ -21,19 +22,22 @@ namespace CUnixPrinter {
     };
 
     static const QMap<QString, StatusCode> StatusMap = {
-        {"enabled", Enabled},
-        {"disabled", Disabled},
-        {"idle", Idle},
-        {"printing", Printing}
-    };
+        {"enabled", Enabled}, {"disabled", Disabled}, {"idle", Idle}, {"printing", Printing}};
 
-    static QString statusToString(StatusCode code) {
-        switch (code) {
-            case Enabled: return "enabled";
-            case Disabled: return "disabled";
-            case Idle: return "idle";
-            case Printing: return "printing";
-            default: return "unknown";
+    static QString statusToString(StatusCode code)
+    {
+        switch (code)
+        {
+            case Enabled:
+                return "enabled";
+            case Disabled:
+                return "disabled";
+            case Idle:
+                return "idle";
+            case Printing:
+                return "printing";
+            default:
+                return "unknown";
         }
     }
-}
+} // namespace CUnixPrinter

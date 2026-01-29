@@ -11,12 +11,14 @@
 #include "FlashPlayerItem.h"
 
 //--------------------------------------------------------------------------
-class FlashPlayerItemPlugin : public QDeclarativeExtensionPlugin {
+class FlashPlayerItemPlugin : public QDeclarativeExtensionPlugin
+{
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "Humo.GraphicsItems.FlashPlayer")
 
   public:
-    virtual void registerTypes(const char *aUri) {
+    virtual void registerTypes(const char *aUri)
+    {
         qmlRegisterType<FlashPlayerItem>(aUri, 1, 0, "FlashPlayer");
     }
 };

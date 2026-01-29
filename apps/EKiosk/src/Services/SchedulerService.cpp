@@ -25,7 +25,8 @@
 
 namespace PPSDK = SDK::PaymentProcessor;
 
-namespace CScheduler {
+namespace CScheduler
+{
     const QString ConfigName = "/data/scheduler.ini";
     const QString UserConfigName = "/user/scheduler_config.ini";
     const QString ThreadName = "SchedulerThread";
@@ -35,7 +36,8 @@ namespace CScheduler {
 
     const int StartTimeIfExpired = 10 * 60; // таймаут в cекундах для cлучая, еcли мы пропуcтили запуcк задачи
 
-    namespace Config {
+    namespace Config
+    {
         const QString Type = "type";
         const QString Params = "params";
         const QString Time = "time";     // конкретное время запуcка задачи
@@ -51,7 +53,8 @@ namespace CScheduler {
         const QString AfterFirstRun = "first_run"; // задача запускающаяся 1 раз после первой установки
     } // namespace Config
 
-    namespace UserConfig {
+    namespace UserConfig
+    {
         const QString LastExecute = "last_execute";
         const QString FailExecuteCounter = "fail_execute_counter";
     } // namespace UserConfig
@@ -61,13 +64,15 @@ namespace CScheduler {
 } // namespace CScheduler
 
 //---------------------------------------------------------------------------
-SchedulerService *SchedulerService::instance(IApplication *aApplication) {
+SchedulerService *SchedulerService::instance(IApplication *aApplication)
+{
     return static_cast<SchedulerService *>(aApplication->getCore()->getService(CServices::SchedulerService));
 }
 
 //---------------------------------------------------------------------------
 SchedulerService::SchedulerService(IApplication *aApplication)
-    : mApplication(aApplication), ILogable(CScheduler::LogName) {
+    : mApplication(aApplication), ILogable(CScheduler::LogName)
+{
     mThread.setObjectName(CScheduler::ThreadName);
 
     moveToThread(&mThread);
@@ -77,11 +82,13 @@ SchedulerService::SchedulerService(IApplication *aApplication)
 }
 
 //---------------------------------------------------------------------------
-SchedulerService::~SchedulerService() {
+SchedulerService::~SchedulerService()
+{
 }
 
 //---------------------------------------------------------------------------
-bool SchedulerService::initialize() {
+bool SchedulerService::initialize()
+{
     QSettings settings(
         ISysUtils::rmBOM(IApplication::toAbsolutePath(IApplication::getWorkingDirectory() + CScheduler::ConfigName)),
         QSettings::IniFormat);
@@ -89,17 +96,23 @@ bool SchedulerService::initialize() {
                                                                          CScheduler::UserConfigName)),
                            QSettings::IniFormat);
 
-    foreach (QString taskName, settings.childGroups()) {
+    foreach (QString taskName, settings.childGroups())
+    {
         settings.beginGroup(taskName);
         userSettings.beginGroup(taskName);
 
         Item item(taskName, settings, userSettings);
 
-        if (!mFactory.contains(item.type()) && !mExternalTasks.contains(item.name())) {
+        if (!mFactory.contains(item.type()) && !mExternalTasks.contains(item.name()))
+        {
             toLog(LogLevel::Error, QString("[%1]: Unknown task type '%2'.").arg(item.name()).arg(item.type()));
-        } else if (!item.isOK()) {
+        }
+        else if (!item.isOK())
+        {
             toLog(LogLevel::Error, QString("[%1]: Invalid configuration. Skipped.").arg(taskName));
-        } else {
+        }
+        else
+        {
             mItems.insert(item.name(), item);
             toLog(LogLevel::Normal, QString("[%1]: Loaded.").arg(taskName));
         }
@@ -123,19 +136,23 @@ bool SchedulerService::initialize() {
 }
 
 //---------------------------------------------------------------------------
-void SchedulerService::setupAutoUpdate() {
+void SchedulerService::setupAutoUpdate()
+{
     PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
         mApplication->getCore()->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 
     QTime startTime = terminalSettings->autoUpdate();
 
-    if (startTime.isValid() && !startTime.isNull()) {
+    if (startTime.isValid() && !startTime.isNull())
+    {
         toLog(LogLevel::Normal,
               QString("Enabled auto update at '%1'.").arg(startTime.toString(CScheduler::TimeFormat)));
 
         // удаляем все задачи обновления
-        foreach (auto task, mItems.values()) {
-            if (task.type() == "RunUpdater") {
+        foreach (auto task, mItems.values())
+        {
+            if (task.type() == "RunUpdater")
+            {
                 mItems.remove(task.name());
                 toLog(LogLevel::Normal, QString("Removed task [%1].").arg(task.name()));
             }
@@ -164,12 +181,14 @@ void SchedulerService::setupAutoUpdate() {
 //------------------------------------------------------------------------------
 SchedulerService::Item::Item()
     : mPeriod(0), mTriggeredOnStart(false), mTimeThreshold(0), mRepeatCountIfFail(0), mRetryTimeout(0),
-      mOnlyOnce(false), mFailExecuteCounter(0) {
+      mOnlyOnce(false), mFailExecuteCounter(0)
+{
 }
 
 //------------------------------------------------------------------------------
 SchedulerService::Item::Item(const QString &aName, const QSettings &aSettings, const QSettings &aUserSettings)
-    : mName(aName), mFailExecuteCounter(0), mOnlyOnce(false) {
+    : mName(aName), mFailExecuteCounter(0), mOnlyOnce(false)
+{
     mType = aSettings.value(CScheduler::Config::Type).toString();
 
     QVariant params = aSettings.value(CScheduler::Config::Params);
@@ -188,36 +207,48 @@ SchedulerService::Item::Item(const QString &aName, const QSettings &aSettings, c
     mFailExecuteCounter = aUserSettings.value(CScheduler::UserConfig::FailExecuteCounter, 0).toInt();
 
     QString timeStr = aSettings.value(CScheduler::Config::Time, "-1").toString();
-    if (timeStr == CScheduler::Config::StartupTime) {
+    if (timeStr == CScheduler::Config::StartupTime)
+    {
         mTime = QTime::currentTime().addSecs(60);
         mLastExecute = QDateTime::currentDateTime().addDays(-2);
         mOnlyOnce = true;
-    } else if (timeStr == CScheduler::Config::AfterFirstRun) {
+    }
+    else if (timeStr == CScheduler::Config::AfterFirstRun)
+    {
         mOnlyOnce = true;
         mPeriod = -1;
-        if (mLastExecute.isValid() && !mLastExecute.isNull()) {
+        if (mLastExecute.isValid() && !mLastExecute.isNull())
+        {
             mLastExecute = QDateTime::currentDateTime().addSecs(-20);
             mTime = QTime::currentTime().addSecs(-30);
-        } else {
+        }
+        else
+        {
             mTime = QTime::currentTime().addSecs(60 * 60);
         }
-    } else {
+    }
+    else
+    {
         mTime = QTime::fromString(timeStr, CScheduler::TimeFormat);
         mOnlyOnce = aSettings.value(CScheduler::Config::OnlyOnce, false).toBool();
     }
 }
 
 //------------------------------------------------------------------------------
-bool SchedulerService::Item::isOK() const {
+bool SchedulerService::Item::isOK() const
+{
     return mTime.isValid() || mPeriod > 0;
 }
 
 //------------------------------------------------------------------------------
-bool SchedulerService::Item::execute(SDK::PaymentProcessor::ITask *aTask, ILog *aLog) {
-    if (isOK() && aTask) {
+bool SchedulerService::Item::execute(SDK::PaymentProcessor::ITask *aTask, ILog *aLog)
+{
+    if (isOK() && aTask)
+    {
         LOG(aLog, LogLevel::Normal, QString("[%1]: Execute").arg(mName));
 
-        if (mFailExecuteCounter) {
+        if (mFailExecuteCounter)
+        {
             LOG(aLog, LogLevel::Normal, QString("[%1]: Restart #%2 time.").arg(mName).arg(mFailExecuteCounter));
         }
 
@@ -226,7 +257,9 @@ bool SchedulerService::Item::execute(SDK::PaymentProcessor::ITask *aTask, ILog *
         aTask->execute();
 
         return true;
-    } else {
+    }
+    else
+    {
         LOG(aLog, LogLevel::Error, QString("[%1]: Error create object '%2'.").arg(mName).arg(mType));
 
         return false;
@@ -234,12 +267,14 @@ bool SchedulerService::Item::execute(SDK::PaymentProcessor::ITask *aTask, ILog *
 }
 
 //------------------------------------------------------------------------------
-QTimer *SchedulerService::Item::createTimer() {
+QTimer *SchedulerService::Item::createTimer()
+{
     QTimer *timer = new QTimer();
     timer->setSingleShot(true);
 
     // если последний запуск неудачный, то проверяем нужно ли перезапустить задачу
-    if (mFailExecuteCounter && mFailExecuteCounter <= mRepeatCountIfFail && mRetryTimeout >= 0) {
+    if (mFailExecuteCounter && mFailExecuteCounter <= mRepeatCountIfFail && mRetryTimeout >= 0)
+    {
         timer->setInterval(mRetryTimeout * 1000);
         return timer;
     }
@@ -255,35 +290,48 @@ QTimer *SchedulerService::Item::createTimer() {
 
         if (mLastExecute.date() < today) // cегодня не запуcкали
         {
-            if (mTime <= now) {
+            if (mTime <= now)
+            {
                 // пропуcтили время запуcка
                 timer->setInterval(qMin(CScheduler::StartTimeIfExpired, intervalToTomorrowStart) * 1000);
-            } else {
+            }
+            else
+            {
                 // не пропуcтили, запуcкаем как положено
                 timer->setInterval(now.secsTo(mTime) * 1000);
             }
-        } else {
+        }
+        else
+        {
             // cегодня уже запуcкали - выcтавляем таймер на завтра
             timer->setInterval(intervalToTomorrowStart * 1000);
         }
-    } else // запуcк задачи через интервалы времени
+    }
+    else // запуcк задачи через интервалы времени
     {
-        if (mPeriod > 0) {
-            if (mTriggeredOnStart) {
+        if (mPeriod > 0)
+        {
+            if (mTriggeredOnStart)
+            {
                 timer->setInterval(60 * 1000);
 
                 mTriggeredOnStart = false;
-            } else {
+            }
+            else
+            {
                 timer->setInterval(mPeriod * 1000);
             }
-        } else {
+        }
+        else
+        {
             // невалидный период запуcка
             delete timer;
             timer = nullptr;
         }
     }
 
-    if (timer && mTimeThreshold > 0) {
+    if (timer && mTimeThreshold > 0)
+    {
         // добавляем рандомное время для запуска задачи
         timer->setInterval(timer->interval() + (rand() * mTimeThreshold / RAND_MAX) * 1000);
     }
@@ -292,36 +340,46 @@ QTimer *SchedulerService::Item::createTimer() {
 }
 
 //------------------------------------------------------------------------------
-void SchedulerService::Item::complete(bool aComplete) {
-    if (aComplete) {
+void SchedulerService::Item::complete(bool aComplete)
+{
+    if (aComplete)
+    {
         mFailExecuteCounter = 0;
 
-        if (mOnlyOnce) {
+        if (mOnlyOnce)
+        {
             // делаем задачу невалидной, что бы больше не запускалась
             mTime = QTime();
             mPeriod = -1;
         }
-    } else {
+    }
+    else
+    {
         ++mFailExecuteCounter;
     }
 }
 
 //------------------------------------------------------------------------------
-void SchedulerService::finishInitialize() {
+void SchedulerService::finishInitialize()
+{
     mThread.start();
 }
 
 //------------------------------------------------------------------------------
-void SchedulerService::scheduleAll() {
-    foreach (auto key, mItems.keys()) {
+void SchedulerService::scheduleAll()
+{
+    foreach (auto key, mItems.keys())
+    {
         schedule(mItems[key]);
     }
 }
 
 //------------------------------------------------------------------------------
-bool SchedulerService::schedule(SchedulerService::Item &aItem) const {
+bool SchedulerService::schedule(SchedulerService::Item &aItem) const
+{
     QTimer *timer = aItem.createTimer();
-    if (timer) {
+    if (timer)
+    {
         timer->setObjectName(aItem.name());
 
         toLog(LogLevel::Normal,
@@ -332,8 +390,11 @@ bool SchedulerService::schedule(SchedulerService::Item &aItem) const {
         connect(timer, SIGNAL(timeout()), this, SLOT(execute()));
         timer->start();
         return true;
-    } else {
-        if (!aItem.onlyOnce()) {
+    }
+    else
+    {
+        if (!aItem.onlyOnce())
+        {
             toLog(LogLevel::Error, QString("Error of scheduling [%1].").arg(aItem.name()));
         }
     }
@@ -342,25 +403,32 @@ bool SchedulerService::schedule(SchedulerService::Item &aItem) const {
 }
 
 //------------------------------------------------------------------------------
-void SchedulerService::execute() {
+void SchedulerService::execute()
+{
     QTimer *timer = dynamic_cast<QTimer *>(sender());
-    if (timer) {
+    if (timer)
+    {
         timer->stop();
 
-        if (mItems.contains(timer->objectName())) {
+        if (mItems.contains(timer->objectName()))
+        {
             SchedulerService::Item &item = mItems[timer->objectName()];
             timer->deleteLater();
 
             SDK::PaymentProcessor::ITask *task;
 
             // Проверим, что таск может быть пользовательским
-            if (mExternalTasks[item.name()]) {
+            if (mExternalTasks[item.name()])
+            {
                 task = mExternalTasks[item.name()];
-            } else {
+            }
+            else
+            {
                 task = mFactory[item.type()](item.name(), CScheduler::LogName, item.params());
             }
 
-            if (task) {
+            if (task)
+            {
                 {
                     QWriteLocker locker(&mLock);
 
@@ -369,7 +437,8 @@ void SchedulerService::execute() {
 
                 task->subscribeOnComplete(this, SLOT(onTaskComplete(const QString &, bool)));
 
-                if (!item.execute(task, getLog())) {
+                if (!item.execute(task, getLog()))
+                {
                     onTaskComplete(item.name(), false);
                 }
             }
@@ -378,7 +447,8 @@ void SchedulerService::execute() {
 }
 
 //---------------------------------------------------------------------------
-void SchedulerService::onTaskComplete(const QString &aName, bool aComplete) {
+void SchedulerService::onTaskComplete(const QString &aName, bool aComplete)
+{
     SDK::PaymentProcessor::ITask *task = nullptr;
 
     {
@@ -388,26 +458,36 @@ void SchedulerService::onTaskComplete(const QString &aName, bool aComplete) {
         mWorkingTasks.remove(aName);
     }
 
-    if (task && task != mExternalTasks[aName]) {
-        try {
+    if (task && task != mExternalTasks[aName])
+    {
+        try
+        {
             QObject *taskObject = dynamic_cast<QObject *>(task);
 
-            if (taskObject) {
+            if (taskObject)
+            {
                 taskObject->deleteLater();
-            } else {
+            }
+            else
+            {
                 delete task;
             }
 
             task = nullptr;
-        } catch (...) {
+        }
+        catch (...)
+        {
         }
     }
 
     mItems[aName].complete(aComplete);
 
-    if (aComplete) {
+    if (aComplete)
+    {
         toLog(LogLevel::Normal, QString("[%1]: Done.").arg(aName));
-    } else {
+    }
+    else
+    {
         toLog(LogLevel::Error, QString("[%1]: Error executing.").arg(aName));
     }
 
@@ -417,7 +497,8 @@ void SchedulerService::onTaskComplete(const QString &aName, bool aComplete) {
 }
 
 //------------------------------------------------------------------------------
-void SchedulerService::saveLastExecute(Item &aItem, bool aComplete) {
+void SchedulerService::saveLastExecute(Item &aItem, bool aComplete)
+{
     QSettings settings(IApplication::toAbsolutePath(IApplication::getWorkingDirectory() + CScheduler::UserConfigName),
                        QSettings::IniFormat);
 
@@ -428,16 +509,19 @@ void SchedulerService::saveLastExecute(Item &aItem, bool aComplete) {
 }
 
 //---------------------------------------------------------------------------
-bool SchedulerService::canShutdown() {
+bool SchedulerService::canShutdown()
+{
     return true;
 }
 
 //---------------------------------------------------------------------------
-bool SchedulerService::shutdown() {
+bool SchedulerService::shutdown()
+{
     {
         QReadLocker locker(&mLock);
 
-        foreach (auto task, mWorkingTasks.values()) {
+        foreach (auto task, mWorkingTasks.values())
+        {
             task->cancel();
         }
     }
@@ -448,12 +532,14 @@ bool SchedulerService::shutdown() {
 }
 
 //---------------------------------------------------------------------------
-QString SchedulerService::getName() const {
+QString SchedulerService::getName() const
+{
     return CServices::SchedulerService;
 }
 
 //---------------------------------------------------------------------------
-const QSet<QString> &SchedulerService::getRequiredServices() const {
+const QSet<QString> &SchedulerService::getRequiredServices() const
+{
     // TODO Как отслеживать зависимости тасков от нужных сервисов?
     static QSet<QString> requiredServices = QSet<QString>() << CServices::SettingsService << CServices::EventService
                                                             << CServices::TerminalService << CServices::RemoteService
@@ -463,22 +549,26 @@ const QSet<QString> &SchedulerService::getRequiredServices() const {
 }
 
 //---------------------------------------------------------------------------
-QVariantMap SchedulerService::getParameters() const {
+QVariantMap SchedulerService::getParameters() const
+{
     return QVariantMap();
 }
 
 //---------------------------------------------------------------------------
-void SchedulerService::resetParameters(const QSet<QString> &) {
+void SchedulerService::resetParameters(const QSet<QString> &)
+{
 }
 
 //---------------------------------------------------------------------------
-void SchedulerService::setupDisplayOnOff() {
+void SchedulerService::setupDisplayOnOff()
+{
     PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
         mApplication->getCore()->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 
     QString energySave = terminalSettings->energySave();
 
-    if (energySave.split(";", Qt::SkipEmptyParts).size() >= 2) {
+    if (energySave.split(";", Qt::SkipEmptyParts).size() >= 2)
+    {
         toLog(LogLevel::Normal, QString("Enabled energy saving: %1.").arg(energySave));
 
         QSettings settings;

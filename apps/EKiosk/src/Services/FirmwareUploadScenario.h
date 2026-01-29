@@ -20,26 +20,32 @@
 class IApplication;
 class ReportBuilder;
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class ICore;
 
-        namespace Scripting {
+        namespace Scripting
+        {
             class PaymentService;
         } // namespace Scripting
     } // namespace PaymentProcessor
 
-    namespace Plugin {
+    namespace Plugin
+    {
         class IEnvironment;
     } // namespace Plugin
 
-    namespace Driver {
+    namespace Driver
+    {
         class IDevice;
     } // namespace Driver
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class FirmwareUploadScenario : public GUI::Scenario {
+class FirmwareUploadScenario : public GUI::Scenario
+{
     Q_OBJECT
 
   public:

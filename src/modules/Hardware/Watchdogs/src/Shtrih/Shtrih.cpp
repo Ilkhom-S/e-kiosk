@@ -13,8 +13,10 @@ using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //--------------------------------------------------------------------------------
-namespace EShtrihCommands {
-    enum Enum {
+namespace EShtrihCommands
+{
+    enum Enum
+    {
         /// Идентификация.
         Identification,
 
@@ -42,7 +44,8 @@ namespace EShtrihCommands {
 } // namespace EShtrihCommands
 
 //--------------------------------------------------------------------------------
-Shtrih::Shtrih() : mPowerControlLogicEnable(false), mAdvancedPowerLogicEnable(false), mMessageNumber(0) {
+Shtrih::Shtrih() : mPowerControlLogicEnable(false), mAdvancedPowerLogicEnable(false), mMessageNumber(0)
+{
     // Параметры порта.
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600); // default
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR115200);
@@ -59,12 +62,15 @@ Shtrih::Shtrih() : mPowerControlLogicEnable(false), mAdvancedPowerLogicEnable(fa
 }
 
 //--------------------------------------------------------------------------------------------------
-bool Shtrih::isConnected() {
-    if (!processCommand(int(EShtrihCommands::Identification))) {
+bool Shtrih::isConnected()
+{
+    if (!processCommand(int(EShtrihCommands::Identification)))
+    {
         return false;
     }
 
-    if (!processCommand(int(EShtrihCommands::Poll))) {
+    if (!processCommand(int(EShtrihCommands::Poll)))
+    {
         toLog(LogLevel::Normal, "Shtrih: Failed to poll");
         return false;
     }
@@ -79,14 +85,18 @@ bool Shtrih::isConnected() {
 
     QString log;
 
-    if (!CrossDeviceLogData.isEmpty() && !PowerInterrupterLogData.isEmpty()) {
+    if (!CrossDeviceLogData.isEmpty() && !PowerInterrupterLogData.isEmpty())
+    {
         log = QString("%1 and %2 have no address").arg(CrossDeviceLogData).arg(PowerInterrupterLogData);
-    } else if (!CrossDeviceLogData.isEmpty() || !PowerInterrupterLogData.isEmpty()) {
+    }
+    else if (!CrossDeviceLogData.isEmpty() || !PowerInterrupterLogData.isEmpty())
+    {
         log = QString("%1 has no address")
                   .arg(!CrossDeviceLogData.isEmpty() ? CrossDeviceLogData : PowerInterrupterLogData);
     }
 
-    if (!log.isEmpty()) {
+    if (!log.isEmpty())
+    {
         toLog(LogLevel::Error, log);
         return false;
     }
@@ -102,8 +112,10 @@ bool Shtrih::isConnected() {
 }
 
 //----------------------------------------------------------------------------
-bool Shtrih::reset(const QString & /*aLine*/) {
-    if (!checkConnectionAbility()) {
+bool Shtrih::reset(const QString & /*aLine*/)
+{
+    if (!checkConnectionAbility())
+    {
         return false;
     }
 
@@ -111,17 +123,20 @@ bool Shtrih::reset(const QString & /*aLine*/) {
 }
 
 //----------------------------------------------------------------------------
-void Shtrih::onPing() {
+void Shtrih::onPing()
+{
     processCommand(EShtrihCommands::Poll);
 }
 
 //--------------------------------------------------------------------------------
-uchar Shtrih::calcCRC(const QByteArray &aData) const {
+uchar Shtrih::calcCRC(const QByteArray &aData) const
+{
     Q_ASSERT(!aData.isEmpty());
 
     uchar sum = aData[1];
 
-    for (int i = 2; i < aData.size(); ++i) {
+    for (int i = 2; i < aData.size(); ++i)
+    {
         sum ^= static_cast<uchar>(aData[i]);
     }
 
@@ -129,9 +144,12 @@ uchar Shtrih::calcCRC(const QByteArray &aData) const {
 }
 
 //--------------------------------------------------------------------------------
-bool Shtrih::getCommandPacket(int aCommand, QByteArray &aCommandPacket, const QByteArray &aCommandData) {
-    switch (aCommand) {
-        case EShtrihCommands::Identification: {
+bool Shtrih::getCommandPacket(int aCommand, QByteArray &aCommandPacket, const QByteArray &aCommandData)
+{
+    switch (aCommand)
+    {
+        case EShtrihCommands::Identification:
+        {
             // aCommandPacket.append(mDeviceData[CShtrih::Devices::Type::General].address);
             aCommandPacket.append(aCommandData);
             aCommandPacket.append(CShtrih::Commands::General::Identification);
@@ -139,7 +157,8 @@ bool Shtrih::getCommandPacket(int aCommand, QByteArray &aCommandPacket, const QB
             break;
         }
         //-------------------------------------------------------
-        case EShtrihCommands::RebootPC: {
+        case EShtrihCommands::RebootPC:
+        {
             aCommandPacket.append(mDeviceData[CShtrih::Devices::Type::CrossDevice].address);
             aCommandPacket.append(CShtrih::Commands::CrossDevice::PowerControl);
             aCommandPacket.append(CShtrih::Constants::SmartRebootPC);
@@ -147,7 +166,8 @@ bool Shtrih::getCommandPacket(int aCommand, QByteArray &aCommandPacket, const QB
             break;
         }
         //-------------------------------------------------------
-        case EShtrihCommands::ResetModem: {
+        case EShtrihCommands::ResetModem:
+        {
             aCommandPacket.append(mDeviceData[CShtrih::Devices::Type::PowerInterrupter].address);
             aCommandPacket.append(CShtrih::Commands::PowerInterrupter::PulseRelay);
             char relayNumber = 1 << CShtrih::Constants::ModemRelay;
@@ -160,14 +180,16 @@ bool Shtrih::getCommandPacket(int aCommand, QByteArray &aCommandPacket, const QB
             break;
         }
         //-------------------------------------------------------
-        case EShtrihCommands::Poll: {
+        case EShtrihCommands::Poll:
+        {
             aCommandPacket.append(mDeviceData[CShtrih::Devices::Type::CrossDevice].address);
             aCommandPacket.append(CShtrih::Commands::CrossDevice::PollExtended);
 
             break;
         }
         //-------------------------------------------------------
-        default: {
+        default:
+        {
             toLog(LogLevel::Error, QString("Shtrih: The command %1 is not implemented").arg(aCommand));
             return false;
         }
@@ -177,7 +199,8 @@ bool Shtrih::getCommandPacket(int aCommand, QByteArray &aCommandPacket, const QB
 }
 
 //--------------------------------------------------------------------------------
-void Shtrih::packedData(const QByteArray &aCommandPacket, QByteArray &aPacket) {
+void Shtrih::packedData(const QByteArray &aCommandPacket, QByteArray &aPacket)
+{
     Q_ASSERT(!aCommandPacket.isEmpty());
 
     aPacket.append(CShtrih::Constants::Prefix);   // префикс
@@ -189,18 +212,22 @@ void Shtrih::packedData(const QByteArray &aCommandPacket, QByteArray &aPacket) {
 
 //--------------------------------------------------------------------------------
 bool Shtrih::unpackData(const QByteArray &aPacket, const QByteArray &aAnswer,
-                        CShtrih::TAnswersBuffer &aUnpackedBuffer) const {
+                        CShtrih::TAnswersBuffer &aUnpackedBuffer) const
+{
     int position = 0;
 
-    do {
+    do
+    {
         // Минимальная длина ответа.
-        if (aAnswer.size() < (position + CShtrih::Constants::MinAnswerSize)) {
+        if (aAnswer.size() < (position + CShtrih::Constants::MinAnswerSize))
+        {
             toLog(LogLevel::Error, "Shtrih: no prefix in answer");
             return false;
         }
 
         // Префикс.
-        if (aAnswer[position++] != CShtrih::Constants::Prefix) {
+        if (aAnswer[position++] != CShtrih::Constants::Prefix)
+        {
             toLog(LogLevel::Error,
                   QString("Shtrih: prefix unpacked error, prefix = 0x%1, need = 0x%2")
                       .arg(QString("%1").arg(uchar(aAnswer[position - 1]), 2, 16, QChar(ASCII::Zero)).toUpper())
@@ -209,7 +236,8 @@ bool Shtrih::unpackData(const QByteArray &aPacket, const QByteArray &aAnswer,
         }
 
         // Счетчик посылок.
-        if (aPacket[position] != aAnswer[position++]) {
+        if (aPacket[position] != aAnswer[position++])
+        {
             toLog(LogLevel::Error, QString("Shtrih: message counter unpacked error, value = %1, need = %2")
                                        .arg(uchar(aAnswer[position - 1]))
                                        .arg(int(aPacket[position - 1])));
@@ -222,7 +250,8 @@ bool Shtrih::unpackData(const QByteArray &aPacket, const QByteArray &aAnswer,
 
         if ((answerAddress == CShtrih::Constants::NoAddress) ||
             (answerAddress == CShtrih::Constants::BroadcastAddress) ||
-            ((packetAddress != answerAddress) && (packetAddress != CShtrih::Constants::BroadcastAddress))) {
+            ((packetAddress != answerAddress) && (packetAddress != CShtrih::Constants::BroadcastAddress)))
+        {
             toLog(LogLevel::Error,
                   QString("Shtrih: address unpacked error, value = 0x%1, need = 0x%2")
                       .arg(QString("%1").arg(uchar(answerAddress), 2, 16, QChar(ASCII::Zero)).toUpper())
@@ -233,14 +262,16 @@ bool Shtrih::unpackData(const QByteArray &aPacket, const QByteArray &aAnswer,
         // Длина сообщения.
         int length = aAnswer[position++];
 
-        if (!length) {
+        if (!length)
+        {
             toLog(LogLevel::Error, "Shtrih: no information in answer, length = 0");
             return false;
         }
 
         int minLength = position + length + 1;
 
-        if (aAnswer.size() < minLength) {
+        if (aAnswer.size() < minLength)
+        {
             toLog(LogLevel::Error, QString("Shtrih: length unpacked error, answer size = %1, need min = %2")
                                        .arg(aAnswer.size())
                                        .arg(minLength));
@@ -251,7 +282,8 @@ bool Shtrih::unpackData(const QByteArray &aPacket, const QByteArray &aAnswer,
         uchar answerCRC = aAnswer[minLength - 1];
         uchar CRC = calcCRC(aAnswer.mid(position - 4, length + 4));
 
-        if (answerCRC != CRC) {
+        if (answerCRC != CRC)
+        {
             toLog(LogLevel::Error, QString("Shtrih: CRC unpacked error, value = 0x%1, need = 0x%2")
                                        .arg(QString("%1").arg(uchar(answerCRC), 2, 16, QChar(ASCII::Zero)).toUpper())
                                        .arg(QString("%1").arg(uchar(CRC), 2, 16, QChar(ASCII::Zero)).toUpper()));
@@ -266,29 +298,41 @@ bool Shtrih::unpackData(const QByteArray &aPacket, const QByteArray &aAnswer,
 }
 
 //--------------------------------------------------------------------------------
-bool Shtrih::parseAnswer(const CShtrih::TAnswersBuffer &aAnswersBuffer, CShtrih::SUnpackedData *aUnpackedData) {
+bool Shtrih::parseAnswer(const CShtrih::TAnswersBuffer &aAnswersBuffer, CShtrih::SUnpackedData *aUnpackedData)
+{
     bool result = true;
 
-    foreach (QByteArray answer, aAnswersBuffer) {
+    foreach (QByteArray answer, aAnswersBuffer)
+    {
         char command = answer[2];
         char error = answer[3];
         result = result && !error;
 
-        if (!result) {
+        if (!result)
+        {
             toLog(LogLevel::Error, "Shtrih: Error = " + CShtrih::Errors::Description[error]);
-        } else {
+        }
+        else
+        {
             // Вообще говоря, парсинг ответа надо начинать с разбора дареса, но нам это не нужно, т.к. команды такие.
-            switch (command) {
-                case CShtrih::Commands::General::Identification: {
+            switch (command)
+            {
+                case CShtrih::Commands::General::Identification:
+                {
                     // Имя устройства.
                     QString name = answer.mid(21);
                     CShtrih::Devices::Type::Enum deviceType;
 
-                    if (name.contains(CShtrih::Devices::Name::CrossDevice, Qt::CaseInsensitive)) {
+                    if (name.contains(CShtrih::Devices::Name::CrossDevice, Qt::CaseInsensitive))
+                    {
                         deviceType = CShtrih::Devices::Type::CrossDevice;
-                    } else if (name.contains(CShtrih::Devices::Name::PowerInterrupter, Qt::CaseInsensitive)) {
+                    }
+                    else if (name.contains(CShtrih::Devices::Name::PowerInterrupter, Qt::CaseInsensitive))
+                    {
                         deviceType = CShtrih::Devices::Type::PowerInterrupter;
-                    } else {
+                    }
+                    else
+                    {
                         toLog(LogLevel::Error, "Shtrih: unknown device name \"" + name + "\"");
                         return false;
                     }
@@ -312,7 +356,8 @@ bool Shtrih::parseAnswer(const CShtrih::TAnswersBuffer &aAnswersBuffer, CShtrih:
                     break;
                 }
                 //--------------------------------------------------------------------------------
-                case CShtrih::Commands::CrossDevice::PollExtended: {
+                case CShtrih::Commands::CrossDevice::PollExtended:
+                {
                     ushort flags = answer[4];
                     aUnpackedData->door = bool(flags & (1 << CShtrih::Position::Sensors::Door));
                     aUnpackedData->power = bool(flags & (1 << CShtrih::Position::Sensors::Power));
@@ -329,11 +374,13 @@ bool Shtrih::parseAnswer(const CShtrih::TAnswersBuffer &aAnswersBuffer, CShtrih:
 }
 
 //--------------------------------------------------------------------------------
-bool Shtrih::localProcessCommand(int aCommand, CShtrih::SUnpackedData &aUnpackedData, const QByteArray &aCommandData) {
+bool Shtrih::localProcessCommand(int aCommand, CShtrih::SUnpackedData &aUnpackedData, const QByteArray &aCommandData)
+{
     // Получаем пакет команды (код + данные).
     QByteArray commandPacket;
 
-    if (!getCommandPacket(aCommand, commandPacket, aCommandData)) {
+    if (!getCommandPacket(aCommand, commandPacket, aCommandData))
+    {
         toLog(LogLevel::Error, "Shtrih: Failed to get command packet");
         return false;
     }
@@ -342,7 +389,8 @@ bool Shtrih::localProcessCommand(int aCommand, CShtrih::SUnpackedData &aUnpacked
     QByteArray packet;
     packedData(commandPacket, packet);
 
-    if (!isDeviceAddressExist(packet)) {
+    if (!isDeviceAddressExist(packet))
+    {
         toLog(LogLevel::Error, "Shtrih: Unknown address");
         // return false;
     }
@@ -350,13 +398,15 @@ bool Shtrih::localProcessCommand(int aCommand, CShtrih::SUnpackedData &aUnpacked
     // Выполняем команду.
     int repeatCount = 0;
 
-    do {
+    do
+    {
         QString logIteration = repeatCount ? QString(" - iteration %1").arg(repeatCount + 1) : "";
         toLog(LogLevel::Normal, QString("Shtrih: >> {%1}%2").arg(packet.toHex().data()).arg(logIteration));
 
         QByteArray answer;
 
-        if (!performCommand(packet, answer)) {
+        if (!performCommand(packet, answer))
+        {
             toLog(LogLevel::Error, "Shtrih: Failed to execute command");
             return false;
         }
@@ -365,12 +415,15 @@ bool Shtrih::localProcessCommand(int aCommand, CShtrih::SUnpackedData &aUnpacked
         CShtrih::TAnswersBuffer unpackedBuffer;
 
         // Минимальная длина ответа.
-        if (answer.isEmpty()) {
+        if (answer.isEmpty())
+        {
             return false;
         }
 
-        if (unpackData(packet, answer, unpackedBuffer)) {
-            if (parseAnswer(unpackedBuffer, &aUnpackedData)) {
+        if (unpackData(packet, answer, unpackedBuffer))
+        {
+            if (parseAnswer(unpackedBuffer, &aUnpackedData))
+            {
                 return true;
             }
         }
@@ -383,8 +436,10 @@ bool Shtrih::localProcessCommand(int aCommand, CShtrih::SUnpackedData &aUnpacked
 }
 
 //--------------------------------------------------------------------------------
-bool Shtrih::performCommand(const QByteArray &aPacket, QByteArray &aAnswer) {
-    if (!mIOPort->write(aPacket)) {
+bool Shtrih::performCommand(const QByteArray &aPacket, QByteArray &aAnswer)
+{
+    if (!mIOPort->write(aPacket))
+    {
         return false;
     }
 
@@ -392,17 +447,20 @@ bool Shtrih::performCommand(const QByteArray &aPacket, QByteArray &aAnswer) {
     bool broadcastCommand = isBroadcastCommand(aPacket);
     QByteArray localAnswer;
 
-    do {
+    do
+    {
         localAnswer.clear();
 
         // TODO: учесть таймауты между ответами устройств
-        if (!mIOPort->read(localAnswer)) {
+        if (!mIOPort->read(localAnswer))
+        {
             return false;
         }
 
         aAnswer.append(localAnswer);
 
-        if (broadcastCommand) {
+        if (broadcastCommand)
+        {
             SleepHelper::msleep(CShtrih::Timeouts::Broadcast);
         }
     } while (broadcastCommand && (!localAnswer.isEmpty()));
@@ -411,18 +469,23 @@ bool Shtrih::performCommand(const QByteArray &aPacket, QByteArray &aAnswer) {
 }
 
 //---------------------------------------------------------------------------
-bool Shtrih::isBroadcastCommand(const QByteArray &aPacket) const {
+bool Shtrih::isBroadcastCommand(const QByteArray &aPacket) const
+{
     return (aPacket.size() > CShtrih::Position::Bytes::Address) &&
            (aPacket[CShtrih::Position::Bytes::Address] == mDeviceData[CShtrih::Devices::Type::General].address);
 }
 
 //---------------------------------------------------------------------------
-bool Shtrih::isDeviceAddressExist(const QByteArray &aPacket) const {
+bool Shtrih::isDeviceAddressExist(const QByteArray &aPacket) const
+{
     char address = aPacket[CShtrih::Position::Bytes::Address];
 
-    if (address != CShtrih::Constants::NoAddress) {
-        foreach (const CShtrih::Devices::SData &data, mDeviceData.devicesData.values()) {
-            if (address == data.address) {
+    if (address != CShtrih::Constants::NoAddress)
+    {
+        foreach (const CShtrih::Devices::SData &data, mDeviceData.devicesData.values())
+        {
+            if (address == data.address)
+            {
                 return true;
             }
         }
@@ -432,7 +495,8 @@ bool Shtrih::isDeviceAddressExist(const QByteArray &aPacket) const {
 }
 
 //---------------------------------------------------------------------------
-bool Shtrih::processCommand(int aCommandID) {
+bool Shtrih::processCommand(int aCommandID)
+{
     MutexLocker lock(&mWaitMutex);
 
     EShtrihCommands::Enum command = static_cast<EShtrihCommands::Enum>(aCommandID);
@@ -440,22 +504,28 @@ bool Shtrih::processCommand(int aCommandID) {
     CShtrih::SUnpackedData unpackedData;
     bool result = false;
 
-    if (command == EShtrihCommands::Identification) {
+    if (command == EShtrihCommands::Identification)
+    {
         bool resultCrossUSB = localProcessCommand(
             command, unpackedData, QByteArray(1, mDeviceData[CShtrih::Devices::Type::CrossDevice].address));
         bool resultPowerInterrupter = localProcessCommand(
             command, unpackedData, QByteArray(1, mDeviceData[CShtrih::Devices::Type::PowerInterrupter].address));
         result = resultCrossUSB && resultPowerInterrupter;
-    } else {
+    }
+    else
+    {
         result = localProcessCommand(command, unpackedData);
     }
 
-    if (command == EShtrihCommands::Poll) {
-        if (unpackedData.door) {
+    if (command == EShtrihCommands::Poll)
+    {
+        if (unpackedData.door)
+        {
             // emit sensorAlert(WatchdogSensorCode::Door);
         }
 
-        if (unpackedData.power) {
+        if (unpackedData.power)
+        {
             // emit sensorAlert(WatchdogSensorCode::Power);
         }
     }
@@ -464,7 +534,8 @@ bool Shtrih::processCommand(int aCommandID) {
 }
 
 //---------------------------------------------------------------------------
-void Shtrih::setDeviceDataByType(CShtrih::Devices::Type::Enum aType) {
+void Shtrih::setDeviceDataByType(CShtrih::Devices::Type::Enum aType)
+{
     QString key = mDeviceData[aType].name;
 
     QString addressLog = QString("0x%1").arg(uchar(mDeviceData[aType].address), 2, 16, QChar(ASCII::Zero)).toUpper();
@@ -473,7 +544,8 @@ void Shtrih::setDeviceDataByType(CShtrih::Devices::Type::Enum aType) {
 
     CShtrih::Devices::SSoftInfo &softInfo = mDeviceData[aType].softInfo;
 
-    if (softInfo.build && softInfo.version) {
+    if (softInfo.build && softInfo.version)
+    {
         QString version = QString("%1").arg(softInfo.version, 5, 'f', 2);
         QString build = QString("%1").arg(softInfo.build, 5, 'f', 2);
         QString date = softInfo.date.toString(CShtrih::Constants::DateFormatLog);

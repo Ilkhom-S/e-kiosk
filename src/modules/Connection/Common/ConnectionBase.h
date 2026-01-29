@@ -19,7 +19,8 @@
 
 //--------------------------------------------------------------------------------
 /// Константы
-namespace CConnection {
+namespace CConnection
+{
     /// Имя лога.
     const QString LogName = "Connection";
 } // namespace CConnection
@@ -28,7 +29,8 @@ namespace CConnection {
 /// Базовый класс соединения.
 /// Управляет таймерами проверки соединения и реализует метод проверки
 /// соединения по HTTP.
-class ConnectionBase : public IConnection {
+class ConnectionBase : public IConnection
+{
     Q_OBJECT
 
   public:

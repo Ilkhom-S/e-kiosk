@@ -17,11 +17,13 @@
 
 #include <ScenarioEngine/Scenario.h>
 
-namespace GUI {
+namespace GUI
+{
 
     //---------------------------------------------------------------------------
     /// Движок сценариев графического интерфейса.
-    class ScenarioEngine : public QObject, protected ILogable {
+    class ScenarioEngine : public QObject, protected ILogable
+    {
         Q_OBJECT
 
       public:
@@ -40,29 +42,34 @@ namespace GUI {
         /// Добавляет ранее созданный сценарий.
         void addScenario(Scenario *aScenario);
 
-        struct SScenarioDescriptor {
+        struct SScenarioDescriptor
+        {
             QString name;
             QString path;
             QString basePath;
             Scenario *instance;
 
-            SScenarioDescriptor() : instance(nullptr) {
+            SScenarioDescriptor() : instance(nullptr)
+            {
             }
 
             SScenarioDescriptor(const QString &aName, const QString &aPath, const QString &aBasePath,
                                 Scenario *aInstance = nullptr)
-                : name(aName), path(aPath), basePath(aBasePath), instance(aInstance) {
+                : name(aName), path(aPath), basePath(aBasePath), instance(aInstance)
+            {
             }
         };
 
         /// Экспортирует объект во все вновь открываемые сценарии. Движок не берёт
         /// на себя обязанности по очистке памяти после использования объекта.
-        void injectScriptObject(const QString &aName, QObject *aObject) {
+        void injectScriptObject(const QString &aName, QObject *aObject)
+        {
             mScriptObjects << SScriptObject(aName, aObject);
         }
 
         /// Экспортирует типовой объект во все вновь открываемые сценарии.
-        template <typename T> void injectScriptObject(const QString &aName) {
+        template <typename T> void injectScriptObject(const QString &aName)
+        {
             mScriptObjects << SScriptObject(aName, &T::staticMetaObject);
         }
 
@@ -74,7 +81,8 @@ namespace GUI {
         bool startScenario(const QString &aScenario, const QVariantMap &aParameters = QVariantMap());
 
         /// Останавливает текущий сценарий.
-        void stopScenario() { /*TODO*/
+        void stopScenario()
+        { /*TODO*/
         }
 
         /// Перезапускает таймер.

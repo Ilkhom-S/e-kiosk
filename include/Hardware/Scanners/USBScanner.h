@@ -9,7 +9,8 @@
 #include <Hardware/Scanners/PortScanner.h>
 
 //--------------------------------------------------------------------------------
-namespace CUSBScanner {
+namespace CUSBScanner
+{
     /// Количество байтов в буфере для чтения ответа (независимо от наличия ответа) из USB-канала.
     const int USBAnswerSize = 100;
 } // namespace CUSBScanner
@@ -17,7 +18,8 @@ namespace CUSBScanner {
 //--------------------------------------------------------------------------------
 typedef PortScanner<USBDeviceBase<PortPollingDeviceBase<ProtoHID>>> TUSBScanner;
 
-class USBScanner : public TUSBScanner {
+class USBScanner : public TUSBScanner
+{
   public:
     USBScanner();
 

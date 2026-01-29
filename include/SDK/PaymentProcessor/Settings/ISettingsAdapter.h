@@ -8,11 +8,14 @@
 
 class QString;
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
-        namespace CAdapterNames {
+        namespace CAdapterNames
+        {
             const char TerminalAdapter[] = "TerminalSettings";
             const char DealerAdapter[] = "DealerSettings";
             const char UserAdapter[] = "UserSettings";
@@ -21,12 +24,14 @@ namespace SDK {
         }; // namespace CAdapterNames
 
         //---------------------------------------------------------------------------
-        class ISettingsAdapter {
+        class ISettingsAdapter
+        {
           public:
             /// Все ли нужные настройки загрузились?
             virtual bool isValid() const = 0;
 
-            virtual ~ISettingsAdapter() {
+            virtual ~ISettingsAdapter()
+            {
             }
         };
 

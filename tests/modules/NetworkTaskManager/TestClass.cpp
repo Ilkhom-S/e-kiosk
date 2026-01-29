@@ -21,15 +21,18 @@
 #include "TestClass.h"
 #include "TestThread.h"
 
-NetworkTaskManagerTestClass::NetworkTaskManagerTestClass() : m_application("TestUnit", "1.0", 0, nullptr) {
+NetworkTaskManagerTestClass::NetworkTaskManagerTestClass() : m_application("TestUnit", "1.0", 0, nullptr)
+{
 }
 
 //------------------------------------------------------------------------
-NetworkTaskManagerTestClass::~NetworkTaskManagerTestClass() {
+NetworkTaskManagerTestClass::~NetworkTaskManagerTestClass()
+{
 }
 
 //------------------------------------------------------------------------
-void NetworkTaskManagerTestClass::httpGetTest() {
+void NetworkTaskManagerTestClass::httpGetTest()
+{
     QScopedPointer<NetworkTask> task(new NetworkTask());
 
     task->setUrl(TestUrl);
@@ -43,7 +46,8 @@ void NetworkTaskManagerTestClass::httpGetTest() {
 }
 
 //------------------------------------------------------------------------
-void NetworkTaskManagerTestClass::httpGetTimeoutTest() {
+void NetworkTaskManagerTestClass::httpGetTimeoutTest()
+{
     QScopedPointer<NetworkTask> task(new NetworkTask());
 
     task->setUrl(TestUrl);
@@ -58,7 +62,8 @@ void NetworkTaskManagerTestClass::httpGetTimeoutTest() {
 }
 
 //------------------------------------------------------------------------
-void NetworkTaskManagerTestClass::httpGetRegetTest() {
+void NetworkTaskManagerTestClass::httpGetRegetTest()
+{
     QScopedPointer<NetworkTask> task(new NetworkTask());
 
     task->setUrl(TestUrl);
@@ -101,7 +106,8 @@ void NetworkTaskManagerTestClass::httpGetRegetTest() {
 }
 
 //------------------------------------------------------------------------
-void NetworkTaskManagerTestClass::httpGetRegetFailTest() {
+void NetworkTaskManagerTestClass::httpGetRegetFailTest()
+{
     QScopedPointer<NetworkTask> task(new NetworkTask());
 
     task->setUrl(TestUrl);
@@ -129,7 +135,8 @@ void NetworkTaskManagerTestClass::httpGetRegetFailTest() {
 }
 
 //------------------------------------------------------------------------
-void NetworkTaskManagerTestClass::httpDownloadFileAndSignalsTest() {
+void NetworkTaskManagerTestClass::httpDownloadFileAndSignalsTest()
+{
     TestThread thread(&m_manager);
 
     thread.start();

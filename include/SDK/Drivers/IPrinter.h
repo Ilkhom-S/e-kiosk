@@ -5,11 +5,14 @@
 // SDK
 #include <SDK/Drivers/IDevice.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //--------------------------------------------------------------------------------
-        class IPrinter : public IDevice {
+        class IPrinter : public IDevice
+        {
           public: // методы
             /// Напечатать.
             virtual bool print(const QStringList &aStrings) = 0;
@@ -18,7 +21,8 @@ namespace SDK {
             virtual bool isDeviceReady(bool aOnline) = 0;
 
           protected:
-            virtual ~IPrinter() {
+            virtual ~IPrinter()
+            {
             }
         };
 

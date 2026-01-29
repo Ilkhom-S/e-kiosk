@@ -5,32 +5,39 @@
 // SDK
 #include <SDK/Drivers/IDevice.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //--------------------------------------------------------------------------------
 
-        class SingleDetectingIterator : public IDevice::IDetectingIterator {
+        class SingleDetectingIterator : public IDevice::IDetectingIterator
+        {
             int mDetectNextIndex;
 
           public:
-            SingleDetectingIterator() {
+            SingleDetectingIterator()
+            {
                 resetDetectingIterator();
             }
 
-            void resetDetectingIterator() {
+            void resetDetectingIterator()
+            {
                 mDetectNextIndex = 0;
             }
 
 #pragma region IDetectingIterator interface
 
             /// Переход к следующим параметрам устройства.
-            virtual bool moveNext() {
+            virtual bool moveNext()
+            {
                 return (mDetectNextIndex++ == 0);
             }
 
             /// Поиск устройства на текущих параметрах.
-            virtual bool find() {
+            virtual bool find()
+            {
                 return true;
             }
 

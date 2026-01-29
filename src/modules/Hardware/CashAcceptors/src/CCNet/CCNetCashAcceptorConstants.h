@@ -11,7 +11,8 @@
 #include "Hardware/CashAcceptors/CashAcceptorStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-namespace CCCNet {
+namespace CCCNet
+{
     /// ACK.
     const char ACK = ASCII::NUL;
 
@@ -28,7 +29,8 @@ namespace CCCNet {
     const int NominalSize = 5;
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// После Reset-а.
         const int Reset = 3000;
 
@@ -73,7 +75,8 @@ namespace CCCNet {
     const int WriteFirmwareDataMaxRepeats = 3;
 
     /// Базовые индексы прошивок, работающих с монетами.
-    namespace FirmwareCoinSupportedMinBase {
+    namespace FirmwareCoinSupportedMinBase
+    {
         const int Horizontal = 1300; /// для горизонтальной загрузки банкнот.
         const int Vertical = 1400;   /// для вертикальной загрузки банкнот.
     } // namespace FirmwareCoinSupportedMinBase
@@ -83,7 +86,8 @@ namespace CCCNet {
 
     //--------------------------------------------------------------------------------
     /// Адреса устройств
-    namespace Addresses {
+    namespace Addresses
+    {
         const char NoDevice = 0x00;    /// Неизвестное.
         const char BillToBill = 0x01;  /// B2B (отдает сдачу принятыми ранее купюрами).
         const char CoinChanger = 0x02; /// Монетоприемник.
@@ -93,7 +97,8 @@ namespace CCCNet {
 
     //--------------------------------------------------------------------------------
     /// Команды
-    namespace Commands {
+    namespace Commands
+    {
         const char Reset[] = "\x30";
         const char SetSecurity[] = "\x32";
         const char GetStatus[] = "\x33";
@@ -105,7 +110,8 @@ namespace CCCNet {
         const char UpdateFirmware[] = "\x50";
 
         /// Обновление прошивки.
-        namespace UpdatingFirmware {
+        namespace UpdatingFirmware
+        {
             const QByteArray GetStatus = QByteArray::fromRawData("\x50\x00", 2);
             const char GetBlockSize[] = "\x50\x01";
             const char Write[] = "\x50\x02";
@@ -115,7 +121,8 @@ namespace CCCNet {
     } // namespace Commands
 
     /// Обновление прошивки.
-    namespace UpdatingFirmware {
+    namespace UpdatingFirmware
+    {
         /// Базовый адрес записи блоков.
         const int BaseAddress = 0xB000;
 
@@ -123,28 +130,34 @@ namespace CCCNet {
         const int FirmwareStatusOK = 1350;
 
         /// Ответы на команды обновления прошивки.
-        namespace Answers {
+        namespace Answers
+        {
             const char OK = '\xE0';
             const char Error = '\xE1';
 
             using namespace SDK::Driver;
 
             /// Описатель ответа
-            struct SData {
+            struct SData
+            {
                 EWarningLevel::Enum warningLevel;
                 QString description;
 
-                SData() : warningLevel(EWarningLevel::OK) {
+                SData() : warningLevel(EWarningLevel::OK)
+                {
                 }
                 SData(EWarningLevel::Enum aWarningLevel, const QString &aDescription)
-                    : warningLevel(aWarningLevel), description(aDescription) {
+                    : warningLevel(aWarningLevel), description(aDescription)
+                {
                 }
             };
 
             /// Спецификация статусов.
-            class Specifications : public CSpecification<char, SData> {
+            class Specifications : public CSpecification<char, SData>
+            {
               public:
-                Specifications() {
+                Specifications()
+                {
                     append('\x00', SData(EWarningLevel::OK, "Ready"));
                     append('\xE0', SData(EWarningLevel::OK, "OK"));
                     append('\xE1', SData(EWarningLevel::Error, "Unknown error"));
@@ -163,9 +176,11 @@ namespace CCCNet {
 
     //--------------------------------------------------------------------------------
     /// Спецификация статусов.
-    class DeviceCodeSpecification : public CommonDeviceCodeSpecification {
+    class DeviceCodeSpecification : public CommonDeviceCodeSpecification
+    {
       public:
-        DeviceCodeSpecification() {
+        DeviceCodeSpecification()
+        {
             /// Обычные состояния.
             addStatus('\x19', BillAcceptorStatusCode::Normal::Disabled);
             addStatus('\x10', DeviceStatusCode::OK::Initialization, "PowerUp");
@@ -251,12 +266,14 @@ namespace CCCNet {
         }
 
         // TODO: при рефакторинге - завязать на статус-код
-        bool isBusy(const QByteArray &aBuffer) {
+        bool isBusy(const QByteArray &aBuffer)
+        {
             return !aBuffer.isEmpty() && (aBuffer[0] == '\x1B');
         }
 
         // TODO: при рефакторинге - сделать статус PowerUp, завязать на статус-код и сделать фильтр 2-го уровня
-        bool isPowerUp(const QByteArray &aBuffer) {
+        bool isPowerUp(const QByteArray &aBuffer)
+        {
             return !aBuffer.isEmpty() && ((aBuffer[0] == '\x10') || (aBuffer[0] == '\x11') || (aBuffer[0] == '\x12'));
         }
     };

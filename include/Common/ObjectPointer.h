@@ -9,34 +9,42 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-template <typename I> class ObjectPointer {
+template <typename I> class ObjectPointer
+{
     QPointer<QObject> mPtr;
 
   public:
-    ObjectPointer() {
+    ObjectPointer()
+    {
     }
-    ObjectPointer(I *aPtr) : mPtr(dynamic_cast<QObject *>(aPtr)) {
+    ObjectPointer(I *aPtr) : mPtr(dynamic_cast<QObject *>(aPtr))
+    {
     }
 
-    ObjectPointer<I> &operator=(I *aPtr) {
+    ObjectPointer<I> &operator=(I *aPtr)
+    {
         mPtr = dynamic_cast<QObject *>(aPtr);
 
         return *this;
     }
 
-    operator bool() const {
+    operator bool() const
+    {
         return mPtr && dynamic_cast<I *>(mPtr.data()) != nullptr;
     }
 
-    operator I *() const {
+    operator I *() const
+    {
         return data();
     }
 
-    I *operator->() const {
+    I *operator->() const
+    {
         return mPtr ? dynamic_cast<I *>(mPtr.data()) : nullptr;
     }
 
-    I *data() const {
+    I *data() const
+    {
         return mPtr ? dynamic_cast<I *>(mPtr.data()) : nullptr;
     }
 };

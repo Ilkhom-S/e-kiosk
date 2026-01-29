@@ -9,14 +9,16 @@
 #include <Common/QtHeadersEnd.h>
 
 /// Константы сервера очереди сообщений.
-namespace CIMessageQueueServer {
+namespace CIMessageQueueServer
+{
     const QString DefaultLog = "MessageQueue";
     const QString DefaultName = "HumoMessageQueue";
 } // namespace CIMessageQueueServer
 
 //----------------------------------------------------------------------------
 /// Интерфейс сервера очереди сообщений.
-class IMessageQueueServer {
+class IMessageQueueServer
+{
   public:
     virtual ~IMessageQueueServer() {};
 

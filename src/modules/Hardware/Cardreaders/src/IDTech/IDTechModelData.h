@@ -12,27 +12,41 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний устройств на протоколе ATOL.
-namespace CIDTech {
-    namespace Models {
+namespace CIDTech
+{
+    namespace Models
+    {
         /// Название кардридера IDTech по умолчанию.
         const char Default[] = "ViVOpay cardreader";
 
         // TODO: убрать
         const char Kiosk_III_IV[] = "IDTech ViVOpay Kiosk III/IV";
 
-        namespace EModes {
-            enum Enum { Unknown = 0, COM, USB, HID, BT, Keyboard };
+        namespace EModes
+        {
+            enum Enum
+            {
+                Unknown = 0,
+                COM,
+                USB,
+                HID,
+                BT,
+                Keyboard
+            };
         } // namespace EModes
 
-        struct SData {
+        struct SData
+        {
             QString name;
             EModes::Enum mode;
             bool SRED;
         };
 
-        class CData : public CDescription<IDT_DEVICE_TYPE> {
+        class CData : public CDescription<IDT_DEVICE_TYPE>
+        {
           public:
-            CData() {
+            CData()
+            {
                 /*
                 AUGUSTA_HID,
                 AUGUSTA_KB,     // keyboard mode

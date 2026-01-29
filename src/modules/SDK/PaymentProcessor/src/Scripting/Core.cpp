@@ -11,15 +11,19 @@
 #include <SDK/PaymentProcessor/Core/IEventService.h>
 #include <SDK/PaymentProcessor/Scripting/Core.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Scripting {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
             Core::Core(ICore *aCore)
                 : mCore(aCore), mUserProperties(aCore->getUserProperties()), mPaymentService(aCore),
                   mFundsService(aCore), mPrinterService(aCore), mNetworkService(aCore), mGUIService(aCore),
-                  mAdService(aCore), mDeviceService(aCore), mSettings(aCore), mHID(aCore) {
+                  mAdService(aCore), mDeviceService(aCore), mSettings(aCore), mHID(aCore)
+            {
                 ISettingsService *settingsService = aCore->getSettingsService();
                 auto terminalSettings = static_cast<SDK::PaymentProcessor::TerminalSettings *>(
                     settingsService->getAdapter(CAdapterNames::TerminalAdapter));
@@ -30,102 +34,124 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void Core::installService(const QString &aName, QObject *aService) {
+            void Core::installService(const QString &aName, QObject *aService)
+            {
                 mServices[aName] = aService;
             }
 
             //------------------------------------------------------------------------------
-            void Core::setLog(ILog *aLog) {
+            void Core::setLog(ILog *aLog)
+            {
                 mLog.setLog(aLog);
                 mHID.setLog(aLog);
             }
 
             //------------------------------------------------------------------------------
-            ICore *Core::getCore() const {
+            ICore *Core::getCore() const
+            {
                 return mCore;
             }
 
             //------------------------------------------------------------------------------
-            QObject *Core::getService(const QString &aName) {
-                if (mServices.contains(aName)) {
+            QObject *Core::getService(const QString &aName)
+            {
+                if (mServices.contains(aName))
+                {
                     return mServices[aName];
-                } else {
+                }
+                else
+                {
                     return 0;
                 }
             }
 
             //------------------------------------------------------------------------------
-            QObject *Core::getPayment() {
+            QObject *Core::getPayment()
+            {
                 return &mPaymentService;
             }
 
             //------------------------------------------------------------------------------
-            QObject *Core::getPrinter() {
+            QObject *Core::getPrinter()
+            {
                 return &mPrinterService;
             }
 
             //------------------------------------------------------------------------------
-            QObject *Core::getCharge() {
+            QObject *Core::getCharge()
+            {
                 return &mFundsService;
             }
 
             //------------------------------------------------------------------------------
-            QObject *Core::getHID() {
+            QObject *Core::getHID()
+            {
                 return &mHID;
             }
 
             //------------------------------------------------------------------------------
-            QObject *Core::getNetwork() {
+            QObject *Core::getNetwork()
+            {
                 return &mNetworkService;
             }
 
             //------------------------------------------------------------------------------
-            QObject *Core::getGraphics() {
+            QObject *Core::getGraphics()
+            {
                 return &mGUIService;
             }
 
             //------------------------------------------------------------------------------
-            QObject *Core::getAd() {
+            QObject *Core::getAd()
+            {
                 return &mAdService;
             }
 
             //------------------------------------------------------------------------------
-            QObject *Core::getHardware() {
+            QObject *Core::getHardware()
+            {
                 return &mDeviceService;
             }
 
             //------------------------------------------------------------------------------
-            QObject *Core::getSettings() {
+            QObject *Core::getSettings()
+            {
                 return &mSettings;
             }
 
             //------------------------------------------------------------------------------
-            QObject *Core::getLog() {
+            QObject *Core::getLog()
+            {
                 return &mLog;
             }
 
             //------------------------------------------------------------------------------
-            QObject *Core::getUserProperties() {
+            QObject *Core::getUserProperties()
+            {
                 return &mUserProperties;
             }
 
             //------------------------------------------------------------------------------
-            void Core::postEvent(int aEvent, QVariant aParameters) {
+            void Core::postEvent(int aEvent, QVariant aParameters)
+            {
                 QMetaObject::invokeMethod(this, "onPostEvent", Qt::QueuedConnection, Q_ARG(int, aEvent),
                                           Q_ARG(QVariant, aParameters));
             }
 
             //------------------------------------------------------------------------------
-            void Core::onPostEvent(int aEvent, QVariant aParameters) const {
+            void Core::onPostEvent(int aEvent, QVariant aParameters) const
+            {
                 IEventService *service = mCore->getEventService();
 
-                if (service) {
+                if (service)
+                {
                     service->sendEvent(Event(aEvent, "ScriptingCore::postEvent", aParameters));
                 }
             }
 
             //------------------------------------------------------------------------------
-            QString Core::getMD5Hash(const QString &aSource) {
+            QString Core::getMD5Hash(const QString &aSource)
+            {
                 return QCryptographicHash::hash(aSource.toLatin1(), QCryptographicHash::Md5).toHex();
             }
 

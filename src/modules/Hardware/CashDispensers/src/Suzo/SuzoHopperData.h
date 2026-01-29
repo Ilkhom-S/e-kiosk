@@ -6,9 +6,11 @@
 #include "Hardware/CashDevices/CCTalkModelData.h"
 
 //--------------------------------------------------------------------------------
-namespace CSuzo {
+namespace CSuzo
+{
     /// Нужен серийный номер для команды выдачи?
-    inline bool isNeedSerialNumberForDispense(const QString &aProductCode) {
+    inline bool isNeedSerialNumberForDispense(const QString &aProductCode)
+    {
         return aProductCode.contains("USE_SER");
     }
 
@@ -16,7 +18,8 @@ namespace CSuzo {
     const char Enable = '\xA5';
 
     /// Паузы.
-    namespace Pause {
+    namespace Pause
+    {
         /// Между запросами статуса на выдачу денег.
         const int Dispensing = 300;
 
@@ -35,9 +38,11 @@ namespace CSuzo {
 
     //--------------------------------------------------------------------------------
     /// Спецификация статусов.
-    class CDeviceCodeSpecification : public BitmapDeviceCodeSpecification {
+    class CDeviceCodeSpecification : public BitmapDeviceCodeSpecification
+    {
       public:
-        CDeviceCodeSpecification() {
+        CDeviceCodeSpecification()
+        {
             addStatus(0, DeviceStatusCode::Error::PowerSupply, "absolute maximum current exceeded");
             // addStatus( 1, DispenserStatusCode::Warning::Unit0Empty);
             addStatus(2, BillAcceptorStatusCode::MechanicFailure::JammedCoin);

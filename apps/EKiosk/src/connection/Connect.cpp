@@ -5,7 +5,8 @@
 #include <windows.h>
 #endif
 
-ConnectionPart::ConnectionPart(QObject *parent) : QObject(parent) {
+ConnectionPart::ConnectionPart(QObject *parent) : QObject(parent)
+{
 #ifdef Q_OS_WIN
     rasConn = new RasConnection(this);
     connect(rasConn, SIGNAL(emit_ConnectionError()), this, SIGNAL(emit_ConnectionError()));
@@ -26,17 +27,20 @@ ConnectionPart::ConnectionPart(QObject *parent) : QObject(parent) {
     conState = Connection::conStateDown;
 }
 
-void ConnectionPart::nowStateDialuping(int state) {
+void ConnectionPart::nowStateDialuping(int state)
+{
     //    qDebug() << state;
     this->conState = state;
 }
 
-void ConnectionPart::setDateTimeIn(QString dt) {
+void ConnectionPart::setDateTimeIn(QString dt)
+{
 #ifdef Q_OS_WIN32
     HANDLE hToken;
     TOKEN_PRIVILEGES tkp;
 
-    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {
+    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
+    {
         emit emit_toLoging(2, "SYNCHRONIZATION", QString("Error synchronization DateTime"));
         return;
     }
@@ -49,14 +53,16 @@ void ConnectionPart::setDateTimeIn(QString dt) {
 
     AdjustTokenPrivileges(hToken, FALSE, &tkp, 0, (PTOKEN_PRIVILEGES)NULL, 0);
 
-    if (GetLastError() != ERROR_SUCCESS) {
+    if (GetLastError() != ERROR_SUCCESS)
+    {
         emit emit_toLoging(2, "SYNCHRONIZATION", QString("Error synchronization DateTime"));
         return;
     }
 
     emit emit_toLoging(0, "SYNCHRONIZATION", QString("Server DateTime - ") + dt);
 
-    if (dt.length() != 19) {
+    if (dt.length() != 19)
+    {
         emit emit_toLoging(2, "SYNCHRONIZATION", QString("Error DateTime FORMAT"));
         return;
     }
@@ -85,28 +91,34 @@ void ConnectionPart::setDateTimeIn(QString dt) {
 #endif
 }
 
-void ConnectionPart::startCheckConnection() {
-    if (!this->daemonTimer->isActive()) {
+void ConnectionPart::startCheckConnection()
+{
+    if (!this->daemonTimer->isActive())
+    {
         this->daemonTimer->start(300000);
     }
 }
 
-QStringList ConnectionPart::getLocalConnectionList() {
+QStringList ConnectionPart::getLocalConnectionList()
+{
     QStringList interfaces;
 
-    foreach (QNetworkInterface intf, QNetworkInterface::allInterfaces()) {
+    foreach (QNetworkInterface intf, QNetworkInterface::allInterfaces())
+    {
         interfaces.append(intf.humanReadableName());
     }
 
     return interfaces;
 }
 
-QStringList ConnectionPart::getRasConnectionList() {
+QStringList ConnectionPart::getRasConnectionList()
+{
 #ifdef Q_OS_WIN
     QStringList list;
     rasConn->getConnection(list);
 
-    for (int i = 0; i < list.count(); i++) {
+    for (int i = 0; i < list.count(); i++)
+    {
         qDebug() << QString("connection -(%1) ").arg(i) << list.at(i);
     }
 
@@ -116,7 +128,8 @@ QStringList ConnectionPart::getRasConnectionList() {
 #endif
 }
 
-bool ConnectionPart::getNowConnectionState(QStringList &lstCon) {
+bool ConnectionPart::getNowConnectionState(QStringList &lstCon)
+{
 #ifdef Q_OS_WIN
     return rasConn->getConName(lstCon);
 #else
@@ -125,11 +138,13 @@ bool ConnectionPart::getNowConnectionState(QStringList &lstCon) {
 #endif
 }
 
-QString ConnectionPart::getActiveConnection() {
+QString ConnectionPart::getActiveConnection()
+{
     return "";
 }
 
-bool ConnectionPart::checkConnection(int type) {
+bool ConnectionPart::checkConnection(int type)
+{
     bool checConn = false;
 
     checkConn->checkConnection(type);
@@ -137,13 +152,15 @@ bool ConnectionPart::checkConnection(int type) {
     return checConn;
 }
 
-void ConnectionPart::closeThis() {
+void ConnectionPart::closeThis()
+{
     checkConn->terminate();
     checkConn->wait(100);
 }
 
 int ConnectionPart::createNewDialupConnection(QString conName, QString devName, QString phone, QString login,
-                                              QString pass) {
+                                              QString pass)
+{
 #ifdef Q_OS_WIN
     int status = rasConn->createNewDialupConnection(conName, devName, phone, login, pass);
     return status;
@@ -157,7 +174,8 @@ int ConnectionPart::createNewDialupConnection(QString conName, QString devName, 
 #endif
 }
 
-bool ConnectionPart::hasInstalledModems(QStringList &lstModemList) {
+bool ConnectionPart::hasInstalledModems(QStringList &lstModemList)
+{
 #ifdef Q_OS_WIN
     bool result = rasConn->HasInstalledModems(lstModemList);
     return result;
@@ -167,24 +185,29 @@ bool ConnectionPart::hasInstalledModems(QStringList &lstModemList) {
 #endif
 }
 
-void ConnectionPart::connectNet() {
+void ConnectionPart::connectNet()
+{
 #ifdef Q_OS_WIN
-    if (connectionName.toUpper() != "LOCAL CONNECTION") {
+    if (connectionName.toUpper() != "LOCAL CONNECTION")
+    {
         rasConn->execCommand(DialupParam::StartDial);
     }
 #endif
 }
 
-void ConnectionPart::setConnectionConfig(QString pointName) {
+void ConnectionPart::setConnectionConfig(QString pointName)
+{
     connectionName = pointName;
 #ifdef Q_OS_WIN
     rasConn->setConnectionName(this->connectionName);
 #endif
 }
 
-bool ConnectionPart::disconnectNet() {
+bool ConnectionPart::disconnectNet()
+{
 #ifdef Q_OS_WIN
-    if (connectionName.toUpper() != "LOCAL CONNECTION") {
+    if (connectionName.toUpper() != "LOCAL CONNECTION")
+    {
         rasConn->HangUp();
     }
 #endif
@@ -192,20 +215,24 @@ bool ConnectionPart::disconnectNet() {
     return true;
 }
 
-bool ConnectionPart::restartNet() {
+bool ConnectionPart::restartNet()
+{
     return true;
 }
 
-void ConnectionPart::setEndpoint(int respTime, QString serverAddress) {
+void ConnectionPart::setEndpoint(int respTime, QString serverAddress)
+{
     checkConn->setEndpoint(respTime, serverAddress);
 }
 
-bool ConnectionPart::restartWindows(bool restart) {
+bool ConnectionPart::restartWindows(bool restart)
+{
 #ifdef Q_OS_WIN
     HANDLE hToken;
     TOKEN_PRIVILEGES tkp;
 
-    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {
+    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
+    {
         return false;
     }
 
@@ -217,7 +244,8 @@ bool ConnectionPart::restartWindows(bool restart) {
 
     AdjustTokenPrivileges(hToken, FALSE, &tkp, 0, (PTOKEN_PRIVILEGES)NULL, 0);
 
-    if (GetLastError() != ERROR_SUCCESS) {
+    if (GetLastError() != ERROR_SUCCESS)
+    {
         return false;
     }
 
@@ -225,7 +253,8 @@ bool ConnectionPart::restartWindows(bool restart) {
     if (restart)
         COMMAND_INIT = EWX_REBOOT;
 
-    if (!ExitWindowsEx(COMMAND_INIT | EWX_FORCE, 0)) {
+    if (!ExitWindowsEx(COMMAND_INIT | EWX_FORCE, 0))
+    {
         return false;
     }
 
@@ -236,7 +265,8 @@ bool ConnectionPart::restartWindows(bool restart) {
 #endif
 }
 
-void ConnectionPart::stopReconnect() {
+void ConnectionPart::stopReconnect()
+{
 #ifdef Q_OS_WIN
     rasConn->stopReconnect();
 #endif

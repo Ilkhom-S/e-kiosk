@@ -9,7 +9,8 @@
 class IDatabaseQuery;
 
 //---------------------------------------------------------------------------
-class IDatabaseUtils {
+class IDatabaseUtils
+{
   public:
     virtual bool initialize() = 0;
 

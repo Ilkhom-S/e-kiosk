@@ -3,7 +3,8 @@
 // System
 #include "../AbstractValidator.h"
 
-namespace CCNetConstruct {
+namespace CCNetConstruct
+{
     const int poolingTimeout = 220;
     const int MaxRepeatPacket = 3;
     const int MinAnswerSize = 6;
@@ -12,9 +13,13 @@ namespace CCNetConstruct {
     const char ACK = '\x00';
     const char NAK = '\xFF';
 
-    enum MessHeader { Sync = '\x02' };
+    enum MessHeader
+    {
+        Sync = '\x02'
+    };
 
-    enum PeripheralAddresses {
+    enum PeripheralAddresses
+    {
         PAForbidden = '\x00',
         PABillToBillUnit = '\x01',
         PACoinChanger = '\x02',
@@ -26,7 +31,8 @@ namespace CCNetConstruct {
     /* \enum ControllerCommands
                     Команды запросов
             */
-    enum ControllerCommands {
+    enum ControllerCommands
+    {
         CCAck = '\x00',
         CCReset = '\x30',
         CCGetStatus = '\x31',
@@ -46,7 +52,8 @@ namespace CCNetConstruct {
     };
 
     /// Коды cостояний
-    namespace States {
+    namespace States
+    {
         /// The state of the Bill Validator after power up.
         const char PowerUp = '\x10';
 
@@ -142,7 +149,8 @@ namespace CCNetConstruct {
     } // namespace States
 
     /// Коды выбросов
-    namespace Rejects {
+    namespace Rejects
+    {
         /// Rejecting due to Insertion.
         const char Insertion = '\x60';
 
@@ -201,7 +209,8 @@ namespace CCNetConstruct {
     } // namespace Rejects
 
     /// Коды ошибок
-    namespace Errors {
+    namespace Errors
+    {
         /// Drop Cassette full condition.
         const char StackerFull = '\x41';
 
@@ -231,7 +240,8 @@ namespace CCNetConstruct {
     } // namespace Errors
 
     /// Коды неисправностей
-    namespace Failures {
+    namespace Failures
+    {
         /// Drop Cassette Motor failure.
         const char StackerMotor = '\x50';
 
@@ -282,7 +292,8 @@ namespace CCNetConstruct {
     } // namespace Failures
 
     /// Bill-to-Bill unit Jammed
-    namespace BillJammed {
+    namespace BillJammed
+    {
         /// Bill Jammed in Cassette 1.
         const char JCassette1 = '\x70';
 
@@ -303,7 +314,8 @@ namespace CCNetConstruct {
     } // namespace BillJammed
 
     // Валюта
-    namespace Nominal_TJ {
+    namespace Nominal_TJ
+    {
         const char nom_1 = '\x00';
         const char nom_3 = '\x01';
         const char nom_5 = '\x02';
@@ -317,7 +329,8 @@ namespace CCNetConstruct {
 } // namespace CCNetConstruct
 
 class BaseValidatorDevices;
-class CCNetSm : public BaseValidatorDevices {
+class CCNetSm : public BaseValidatorDevices
+{
     Q_OBJECT
 
   public:

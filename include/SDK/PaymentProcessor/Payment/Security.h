@@ -10,14 +10,17 @@
 // SDK
 #include <SDK/PaymentProcessor/Settings/Provider.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
         struct SProvider;
 
         //------------------------------------------------------------------------------
-        class SecurityFilter {
+        class SecurityFilter
+        {
           public:
             SecurityFilter(const SProvider &aProvider, SProviderField::SecuritySubsystem aSubsustem);
 

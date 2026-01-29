@@ -20,7 +20,8 @@ namespace FiscalCommand = SDK::Driver::EFiscalPrinterCommand;
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-namespace CPrintCommands {
+namespace CPrintCommands
+{
     /// Постфикс имени файла нераспечатанных чеков.
     const char NotPrintedPostfix[] = "_not_printed";
 
@@ -38,17 +39,21 @@ class PrintingService;
 
 //---------------------------------------------------------------------------
 /// Комманда для печати чеков определенного типа.
-class PrintCommand {
+class PrintCommand
+{
     Q_DECLARE_TR_FUNCTIONS(PrintCommand)
 
   public:
-    PrintCommand(const QString &aReceiptType) : mReceiptType(aReceiptType) {
+    PrintCommand(const QString &aReceiptType) : mReceiptType(aReceiptType)
+    {
     }
-    virtual ~PrintCommand() {
+    virtual ~PrintCommand()
+    {
     }
 
     /// Проверка возможности печати.
-    virtual bool canPrint(SDK::Driver::IPrinter *aPrinter, bool aRealCheck) {
+    virtual bool canPrint(SDK::Driver::IPrinter *aPrinter, bool aRealCheck)
+    {
         return aPrinter && aPrinter->isDeviceReady(aRealCheck);
     }
 
@@ -59,7 +64,8 @@ class PrintCommand {
     void setReceiptTemplate(const QString &aTemplateName);
 
     /// Возвращает тип чека.
-    QString getReceiptType() const {
+    QString getReceiptType() const
+    {
         return mReceiptType;
     }
 
@@ -73,7 +79,8 @@ class PrintCommand {
 
 //---------------------------------------------------------------------------
 /// Печать фискального чека.
-class PrintFiscalCommand : public PrintCommand {
+class PrintFiscalCommand : public PrintCommand
+{
     Q_DECLARE_TR_FUNCTIONS(PrintFiscalCommand)
 
   public:
@@ -96,14 +103,16 @@ class PrintFiscalCommand : public PrintCommand {
 
 //---------------------------------------------------------------------------
 /// Печать платежного чека.
-class PrintPayment : public PrintFiscalCommand {
+class PrintPayment : public PrintFiscalCommand
+{
     Q_DECLARE_TR_FUNCTIONS(PrintPayment)
 
     SDK::Driver::TFiscalFieldData mFiscalFieldData;
 
   public:
     PrintPayment(const QString &aReceiptType, PrintingService *aService)
-        : PrintFiscalCommand(aReceiptType, FiscalCommand::Sale, aService) {
+        : PrintFiscalCommand(aReceiptType, FiscalCommand::Sale, aService)
+    {
     }
 
     /// Проверка возможности печати.
@@ -128,14 +137,17 @@ class PrintPayment : public PrintFiscalCommand {
 // т.д.)
 
 /// Печать баланса.
-class PrintBalance : public PrintFiscalCommand {
+class PrintBalance : public PrintFiscalCommand
+{
   public:
     PrintBalance(const QString &aReceiptType, PrintingService *aService)
-        : PrintFiscalCommand(aReceiptType, FiscalCommand::XReport, aService), mFiscalMode(true) {
+        : PrintFiscalCommand(aReceiptType, FiscalCommand::XReport, aService), mFiscalMode(true)
+    {
     }
 
     /// Установить признак фискальной печати
-    void setFiscal(bool aFiscal) {
+    void setFiscal(bool aFiscal)
+    {
         mFiscalMode = aFiscal;
     }
 
@@ -152,7 +164,8 @@ class PrintBalance : public PrintFiscalCommand {
 
 //---------------------------------------------------------------------------
 /// Печать чека инкассации.
-class PrintEncashment : public PrintBalance {
+class PrintEncashment : public PrintBalance
+{
   public:
     PrintEncashment(const QString &aReceiptType, PrintingService *aService);
 
@@ -162,10 +175,12 @@ class PrintEncashment : public PrintBalance {
 
 //---------------------------------------------------------------------------
 /// Печать Z-отчета.
-class PrintZReport : public PrintFiscalCommand {
+class PrintZReport : public PrintFiscalCommand
+{
   public:
     PrintZReport(const QString &aReceiptType, PrintingService *aService, bool aFull)
-        : PrintFiscalCommand(aReceiptType, FiscalCommand::ZReport, aService), mFull(aFull) {
+        : PrintFiscalCommand(aReceiptType, FiscalCommand::ZReport, aService), mFull(aFull)
+    {
     }
 
     virtual bool canPrint(SDK::Driver::IPrinter *aPrinter, bool aRealCheck);
@@ -179,10 +194,12 @@ class PrintZReport : public PrintFiscalCommand {
 
 //---------------------------------------------------------------------------
 /// Печать нетипизированного чека.
-class PrintReceipt : public PrintCommand {
+class PrintReceipt : public PrintCommand
+{
   public:
     PrintReceipt(const QString &aReceiptType, PrintingService *aService)
-        : PrintCommand(aReceiptType), mService(aService) {
+        : PrintCommand(aReceiptType), mService(aService)
+    {
     }
 
     /// Печать.

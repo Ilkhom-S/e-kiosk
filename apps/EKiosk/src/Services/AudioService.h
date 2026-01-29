@@ -20,7 +20,8 @@
 class AudioService : public QObject,
                      public SDK::PaymentProcessor::IAudioService,
                      public SDK::PaymentProcessor::IService,
-                     private ILogable {
+                     private ILogable
+{
     Q_OBJECT
 
   public:

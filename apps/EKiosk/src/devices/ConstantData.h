@@ -1,7 +1,9 @@
 #pragma once
 
-namespace CommandResult {
-    enum Result {
+namespace CommandResult
+{
+    enum Result
+    {
         Port = 0x00,
         NoAnswer = 0x01,
         Answer = 0x02,

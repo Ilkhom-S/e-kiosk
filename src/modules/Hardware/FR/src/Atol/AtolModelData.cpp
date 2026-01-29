@@ -5,7 +5,8 @@
 using namespace CAtolFR;
 
 //--------------------------------------------------------------------------------
-CModelData::CModelData() { // Cutter LineSpacing
+CModelData::CModelData()
+{ // Cutter LineSpacing
     addOldTrade(13, 40, Models::TriumF, true, false);
     addOldTrade(14, 20, Models::FelixRF, false, true);
     addOldTrade(15, 20, Models::Felix02K, false, true);
@@ -59,11 +60,14 @@ CModelData::CModelData() { // Cutter LineSpacing
 }
 
 //--------------------------------------------------------------------------------
-QStringList CModelData::getModelList(EFRType::Enum aFRType, bool aCanBeDP) {
+QStringList CModelData::getModelList(EFRType::Enum aFRType, bool aCanBeDP)
+{
     QSet<QString> models;
 
-    foreach (const SModelData &modelData, data()) {
-        if (!modelData.terminal && (modelData.FRType == aFRType) && (modelData.canBeDP == aCanBeDP)) {
+    foreach (const SModelData &modelData, data())
+    {
+        if (!modelData.terminal && (modelData.FRType == aFRType) && (modelData.canBeDP == aCanBeDP))
+        {
             models.insert(modelData.name);
         }
     }
@@ -73,7 +77,8 @@ QStringList CModelData::getModelList(EFRType::Enum aFRType, bool aCanBeDP) {
 
 //--------------------------------------------------------------------------------
 void CModelData::addOldTrade(int aModelId, int aMaxStringSize, QString aName, bool aCutter, bool aLineSpacing,
-                             bool aVerified, int aFeedingAmount) {
+                             bool aVerified, int aFeedingAmount)
+{
     EFRType::Enum type = aName.endsWith(EKLZPostfix) ? EFRType::EKLZ : EFRType::NoEKLZ;
     append(TModelKey(aModelId, EFRType::EKLZ), SModelData(aModelId, aMaxStringSize, aName, false, false, aVerified,
                                                           type, 0, false, aCutter, aFeedingAmount, 0, aLineSpacing));
@@ -81,12 +86,14 @@ void CModelData::addOldTrade(int aModelId, int aMaxStringSize, QString aName, bo
 
 //--------------------------------------------------------------------------------
 void CModelData::addTrade(int aModelId, int aMaxStringSize, QString aName, bool aCutter, bool aVerified,
-                          int aFeedingAmount) {
+                          int aFeedingAmount)
+{
     EFRType::Enum type = aName.endsWith(EKLZPostfix) ? EFRType::EKLZ : EFRType::NoEKLZ;
     append(TModelKey(aModelId, EFRType::EKLZ), SModelData(aModelId, aMaxStringSize, aName, true, false, aVerified, type,
                                                           0, false, aCutter, aFeedingAmount, 0, true));
 
-    if (type == EFRType::EKLZ) {
+    if (type == EFRType::EKLZ)
+    {
         aName.chop(1);
         append(TModelKey(aModelId, EFRType::NoEKLZ),
                SModelData(aModelId, aMaxStringSize, aName, true, false, aVerified, EFRType::NoEKLZ, 0, false, aCutter,
@@ -96,7 +103,8 @@ void CModelData::addTrade(int aModelId, int aMaxStringSize, QString aName, bool 
 
 //--------------------------------------------------------------------------------
 void CModelData::addTerminal(int aModelId, int aMaxStringSize, const QString &aName, int aBuild, bool aEjector,
-                             int aFeedingAmount, int aZBufferSize) {
+                             int aFeedingAmount, int aZBufferSize)
+{
     append(TModelKey(aModelId, EFRType::EKLZ),
            SModelData(aModelId, aMaxStringSize, aName, false, true, true, EFRType::EKLZ, aBuild, aEjector, true,
                       aFeedingAmount, aZBufferSize, true));
@@ -104,14 +112,16 @@ void CModelData::addTerminal(int aModelId, int aMaxStringSize, const QString &aN
 
 //--------------------------------------------------------------------------------
 void CModelData::addOnlineTrade(int aModelId, int aMaxStringSize, QString aName, bool aCutter, int aFeedingAmount,
-                                int aBuild, bool aVerified) {
+                                int aBuild, bool aVerified)
+{
     append(TModelKey(aModelId, EFRType::FS), SModelData(aModelId, aMaxStringSize, aName, false, false, aVerified,
                                                         EFRType::FS, aBuild, false, aCutter, aFeedingAmount, 0, true));
 }
 
 //--------------------------------------------------------------------------------
 void CModelData::addOnlineTerminal(int aModelId, int aMaxStringSize, const QString &aName, bool aEjector,
-                                   int aFeedingAmount, int aZBufferSize, int aBuild, bool aVerified) {
+                                   int aFeedingAmount, int aZBufferSize, int aBuild, bool aVerified)
+{
     append(TModelKey(aModelId, EFRType::FS),
            SModelData(aModelId, aMaxStringSize, aName, false, true, aVerified, EFRType::FS, aBuild, aEjector, true,
                       aFeedingAmount, aZBufferSize, true));

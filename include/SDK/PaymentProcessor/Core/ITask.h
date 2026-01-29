@@ -11,18 +11,23 @@
 // Модули
 #include <Common/ILog.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        class ITask {
+        class ITask
+        {
           protected:
             QString mName;
 
           public:
-            ITask(const QString &aName, const QString & /*aLogName*/, const QString & /*aParams*/) : mName(aName) {
+            ITask(const QString &aName, const QString & /*aLogName*/, const QString & /*aParams*/) : mName(aName)
+            {
             }
-            virtual ~ITask() {
+            virtual ~ITask()
+            {
             }
 
             /// выполнить задачу

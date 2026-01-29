@@ -15,7 +15,8 @@
 // System
 #include "MessageQueue/IMessageQueueClient.h"
 
-class MessageQueueClient : public QObject, public IMessageQueueClient, public ILogable {
+class MessageQueueClient : public QObject, public IMessageQueueClient, public ILogable
+{
     Q_OBJECT
 
   public:

@@ -10,7 +10,8 @@
 #include <QtSerialPort/QSerialPort>
 #include <Common/QtHeadersEnd.h>
 
-namespace CModemConstants {
+namespace CModemConstants
+{
     const auto regExpBalance = "([0-9]{1,5}[.][0-9]{1,2}|[0-9]{1,5}[,][0-9]{1,2}|[-][0-9]{1,5}[.][0-9]{1,"
                                "2}|[-][0-9]{1,5}[,][0-9]{1,2})";
     const auto regExpNumberSim = "[0-9]{9,12}";
@@ -18,7 +19,8 @@ namespace CModemConstants {
 
 //--------------------------------------------------------------------------------
 /// Константы ATProtocol протокола.
-namespace CATProtocolConstants {
+namespace CATProtocolConstants
+{
     /// Тип протокола
     const auto ProtocolType = "AT";
 
@@ -49,7 +51,8 @@ namespace CATProtocolConstants {
 
 //--------------------------------------------------------------------------------
 /// Команды ATProtocol протокола.
-namespace CATProtocolCommands {
+namespace CATProtocolCommands
+{
     /// "Получить оператора"
     const QString GetOperator = "AT+COPS?";
 
@@ -108,8 +111,10 @@ namespace CATProtocolCommands {
 
 //--------------------------------------------------------------------------------
 /// Возможные ошибки
-namespace ATErrors {
-    namespace Strings {
+namespace ATErrors
+{
+    namespace Strings
+    {
         const QString OK = "OK";
         const QString Connect = "CONNECT";
         const QString Ring = "RING";
@@ -123,7 +128,8 @@ namespace ATErrors {
         const QString NoAnswer = "NO ANSWER";
     }; // namespace Strings
 
-    enum Enum {
+    enum Enum
+    {
         /// Модем выполнил команду без ошибок
         OK,
 
@@ -158,8 +164,10 @@ namespace ATErrors {
 
 /// Команды протокола модемов.
 //--------------------------------------------------------------------------------
-namespace ModemProtocolCommands {
-    enum Enum {
+namespace ModemProtocolCommands
+{
+    enum Enum
+    {
         /// Получить качество сигнала (в dBm)
         GetSignalQuality,
 
@@ -213,7 +221,8 @@ namespace ModemProtocolCommands {
     };
 }; // namespace ModemProtocolCommands
 
-namespace ModemCmd {
+namespace ModemCmd
+{
 
     /// Получить качество сигнала (в dBm)
     const QString GetSignalQuality = "GetSignalQuality";
@@ -252,8 +261,10 @@ namespace ModemCmd {
 } // namespace ModemCmd
 
 /// Коды ошибок абстрактного валидатора
-namespace ModemErrors {
-    enum Enum {
+namespace ModemErrors
+{
+    enum Enum
+    {
         /// Всё окей, ошибок нет
         OK,
 
@@ -269,8 +280,10 @@ namespace ModemErrors {
 }; // namespace ModemErrors
 
 /// Состояния абстрактного валидатора.
-namespace ModemStates {
-    enum Enum {
+namespace ModemStates
+{
+    enum Enum
+    {
         /// Модем проиницилизирован, готов к работе.
         Initialize,
 
@@ -283,24 +296,29 @@ namespace ModemStates {
 }; // namespace ModemStates
 
 /// Структура о полном статусе абстрактного модема
-struct SModemStatusInfo {
+struct SModemStatusInfo
+{
     /// Состояние модема.
     ModemStates::Enum state;
 
     /// Ошибка модема (в случае возникновения).
     ModemErrors::Enum error;
 
-    bool operator==(const SModemStatusInfo &aModemStatusInfo) {
+    bool operator==(const SModemStatusInfo &aModemStatusInfo)
+    {
         return (state == aModemStatusInfo.state) && (error == aModemStatusInfo.error);
     }
 
-    bool operator!=(const SModemStatusInfo &aModemStatusInfo) {
+    bool operator!=(const SModemStatusInfo &aModemStatusInfo)
+    {
         return (state != aModemStatusInfo.state) || (error != aModemStatusInfo.error);
     }
 };
 
-namespace SmsTextIndex {
-    enum sms {
+namespace SmsTextIndex
+{
+    enum sms
+    {
         smsErrorValidator = 0,
         smsErrorPrinter = 1,
         smsErrorBalanceAgent = 2,
@@ -322,7 +340,8 @@ namespace SmsTextIndex {
 
 //--------------------------------------------------------------------------------
 /// Класс протокола ATProtocol.
-class ATProtocol : public QThread {
+class ATProtocol : public QThread
+{
 
     //    Q_OBJECT
 
@@ -385,7 +404,8 @@ class ATProtocol : public QThread {
     QString getCommandString(ModemProtocolCommands::Enum aCommand);
     bool readPort(QByteArray &tempAnswer);
     void printDataToHex(const QByteArray &data);
-    static void msleep(int ms) {
+    static void msleep(int ms)
+    {
         QThread::msleep(ms);
     }
     /// Получение пакета с сформированной командой и её данными.

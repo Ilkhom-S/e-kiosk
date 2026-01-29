@@ -7,7 +7,8 @@
 // SDK
 #include <SDK/Plugins/PluginFactory.h>
 
-class TemplatePluginTest : public QObject {
+class TemplatePluginTest : public QObject
+{
     Q_OBJECT
 
   private slots:
@@ -16,7 +17,8 @@ class TemplatePluginTest : public QObject {
     void testPluginFunctionality();
 };
 
-void TemplatePluginTest::testPluginLoading() {
+void TemplatePluginTest::testPluginLoading()
+{
     QCoreApplication::addLibraryPath("D:/plugins/Debug");
     QPluginLoader loader("template_plugind");
     QVERIFY(loader.load());
@@ -30,7 +32,8 @@ void TemplatePluginTest::testPluginLoading() {
     loader.unload();
 }
 
-void TemplatePluginTest::testPluginCreation() {
+void TemplatePluginTest::testPluginCreation()
+{
     QCoreApplication::addLibraryPath("D:/plugins/Debug");
     QPluginLoader loader("template_plugind");
     QVERIFY(loader.load());
@@ -53,7 +56,8 @@ void TemplatePluginTest::testPluginCreation() {
     loader.unload();
 }
 
-void TemplatePluginTest::testPluginFunctionality() {
+void TemplatePluginTest::testPluginFunctionality()
+{
     QCoreApplication::addLibraryPath("D:/plugins/Debug");
     QPluginLoader loader("template_plugind");
     QVERIFY(loader.load());

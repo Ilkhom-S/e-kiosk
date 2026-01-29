@@ -11,7 +11,8 @@
 //--------------------------------------------------------------------------------
 typedef PortScanner<SerialDeviceBase<PortPollingDeviceBase<ProtoHID>>> TSerialScanner;
 
-class SerialScanner : public TSerialScanner {
+class SerialScanner : public TSerialScanner
+{
   public:
     SerialScanner();
 

@@ -8,7 +8,8 @@
 #include "keypud.h"
 #include "ui_keypud.h"
 
-keyPud::keyPud(QWidget *parent) : QWidget(parent), ui(new Ui::keyPud) {
+keyPud::keyPud(QWidget *parent) : QWidget(parent), ui(new Ui::keyPud)
+{
     ui->setupUi(this);
 
     // QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
@@ -307,18 +308,22 @@ keyPud::keyPud(QWidget *parent) : QWidget(parent), ui(new Ui::keyPud) {
     DoublecharMap["RU_KEY_ENTER"] = ">-";
 }
 
-void keyPud::changeToRU() {
+void keyPud::changeToRU()
+{
     // QTextCodec::setCodecForCStrings(QTextCodec::codecForName("cp1251"));
 }
-void keyPud::changeToEN() {
+void keyPud::changeToEN()
+{
     // QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 }
 
-void keyPud::fordouble(QString lang) {
+void keyPud::fordouble(QString lang)
+{
     gblLang = lang;
     double_on = true;
 
-    if (lang == "EN") {
+    if (lang == "EN")
+    {
         ui->KEY_1->setText(DoublecharMap["KEY_1"]);
         ui->KEY_2->setText(DoublecharMap["KEY_2"]);
         ui->KEY_3->setText(DoublecharMap["KEY_3"]);
@@ -362,7 +367,9 @@ void keyPud::fordouble(QString lang) {
         ui->KEY_COMMA->setText(DoublecharMap["KEY_COMMA"]);
         ui->KEY_PERIOD->setText(DoublecharMap["KEY_PERIOD"]);
         ui->KEY_SLASH->setText(DoublecharMap["KEY_SLASH"]);
-    } else if (lang == "RU") {
+    }
+    else if (lang == "RU")
+    {
 
         ui->KEY_1->setText(DoublecharMap["RU_KEY_1"]);
         ui->KEY_2->setText(DoublecharMap["RU_KEY_2"]);
@@ -410,13 +417,15 @@ void keyPud::fordouble(QString lang) {
     }
 }
 
-void keyPud::shiftClicked() {
+void keyPud::shiftClicked()
+{
 
     // для ГАИ? отключаем шифт
     if (double_on)
         return;
 
-    if (!shiftKEY) {
+    if (!shiftKEY)
+    {
         ui->KEY_1->setText(BcharMap["KEY_1"]);
         ui->KEY_2->setText(BcharMap["KEY_2"]);
         ui->KEY_3->setText(BcharMap["KEY_3"]);
@@ -460,7 +469,9 @@ void keyPud::shiftClicked() {
         ui->KEY_COMMA->setText(BcharMap["KEY_COMMA"]);
         ui->KEY_PERIOD->setText(BcharMap["KEY_PERIOD"]);
         ui->KEY_SLASH->setText(BcharMap["KEY_SLASH"]);
-    } else {
+    }
+    else
+    {
 
         ui->KEY_1->setText(ScharMap["KEY_1"]);
         ui->KEY_2->setText(ScharMap["KEY_2"]);
@@ -513,7 +524,8 @@ void keyPud::shiftClicked() {
         shiftKEY = true;
 }
 
-void keyPud::buttonClicked(QWidget *w) {
+void keyPud::buttonClicked(QWidget *w)
+{
 
     QString on = w->objectName();
     QChar chr;
@@ -523,21 +535,29 @@ void keyPud::buttonClicked(QWidget *w) {
     if (gblLang == "RU")
         RU_change = "RU_";
 
-    if (shiftKEY) {
+    if (shiftKEY)
+    {
         QString str = BcharMap[on];
         chr = str.isEmpty() ? QChar() : str.at(0);
         shiftClicked();
-    } else if (double_on) {
-        if ((on == "KEY_CLEAR") || (on == "KEY_BACKSPACE") || (on == "KEY_TAB") || (on == "KEY_ENTER")) {
+    }
+    else if (double_on)
+    {
+        if ((on == "KEY_CLEAR") || (on == "KEY_BACKSPACE") || (on == "KEY_TAB") || (on == "KEY_ENTER"))
+        {
             QString str = BcharMap[on];
             chr = str.isEmpty() ? QChar() : str.at(0);
-        } else {
+        }
+        else
+        {
             QString strf = DoublecharMap[RU_change + on];
             chr = strf.at(0);
         }
 
         fordouble(gblLang);
-    } else {
+    }
+    else
+    {
         QString str = ScharMap[on];
         chr = str.isEmpty() ? QChar() : str.at(0);
     }
@@ -548,10 +568,12 @@ void keyPud::buttonClicked(QWidget *w) {
     emit characterGenerated(chr);
 }
 
-keyPud::~keyPud() {
+keyPud::~keyPud()
+{
     delete ui;
 }
 
-void keyPud::clickBackspace() {
+void keyPud::clickBackspace()
+{
     ui->KEY_BACKSPACE->click();
 }

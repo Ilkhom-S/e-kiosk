@@ -8,13 +8,16 @@
 #include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------------
-namespace SDK {
+namespace SDK
+{
 
     //------------------------------------------------------------------------------
-    namespace PaymentProcessor {
+    namespace PaymentProcessor
+    {
 
         /// Контекст задачи.
-        namespace TaskContext {
+        namespace TaskContext
+        {
             const int LastActivation = 0;
             const int CurrentTimestamp = 1;
 
@@ -22,7 +25,8 @@ namespace SDK {
         } // namespace TaskContext
 
         /// Интерфейс задачи для планировщика.
-        class ITask {
+        class ITask
+        {
           public:
             /// Тип контекста задачи.
             typedef QMap<int, QVariant> TContext;

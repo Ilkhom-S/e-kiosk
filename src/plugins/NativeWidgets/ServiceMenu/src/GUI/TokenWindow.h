@@ -14,13 +14,15 @@
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------
-namespace CTokenWindow {
+namespace CTokenWindow
+{
     const QString WarningStyleSheet = "background-color: rgb(255, 192, 192);";
     const QString DefaultStyleSheet = "";
 } // namespace CTokenWindow
 
 //------------------------------------------------------------------------
-class TokenWindow : public QFrame, protected Ui_TokenWindow {
+class TokenWindow : public QFrame, protected Ui_TokenWindow
+{
     Q_OBJECT
 
   public:

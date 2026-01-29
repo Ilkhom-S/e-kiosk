@@ -9,18 +9,23 @@
 // Project
 #include "Responses.h"
 
-namespace {
+namespace
+{
     const quint32 EncashmentThreshold = 2;
 } // namespace
 
-namespace Ucs {
+namespace Ucs
+{
 
-    BaseResponsePtr BaseResponse::createResponse(QByteArray &aResponseBuffer) {
-        if (aResponseBuffer.size() < 14) {
+    BaseResponsePtr BaseResponse::createResponse(QByteArray &aResponseBuffer)
+    {
+        if (aResponseBuffer.size() < 14)
+        {
             return QSharedPointer<BaseResponse>(nullptr);
         }
 
-        if (aResponseBuffer.size() == aResponseBuffer.count('\0')) {
+        if (aResponseBuffer.size() == aResponseBuffer.count('\0'))
+        {
             aResponseBuffer.clear();
             return QSharedPointer<BaseResponse>(nullptr);
         }
@@ -32,21 +37,25 @@ namespace Ucs {
 
         bool ok = true;
         int dataLength = QString::fromLatin1(aResponseBuffer.mid(12, 2)).toInt(&ok, 16);
-        if (ok && dataLength) {
+        if (ok && dataLength)
+        {
             response.mData = aResponseBuffer.mid(14, dataLength);
         }
 
         aResponseBuffer.remove(0, 14 + dataLength);
 
-        switch (response.mClass) {
+        switch (response.mClass)
+        {
             case Ucs::Class::Service:
-                switch (response.mCode) {
+                switch (response.mCode)
+                {
                     case Ucs::Encashment::CodeResponse:
                         return QSharedPointer<BaseResponse>(new EncashmentResponse(response));
                 }
                 break;
             case Ucs::Class::Session:
-                switch (response.mCode) {
+                switch (response.mCode)
+                {
                     case Ucs::Login::CodeResponse:
                         return QSharedPointer<BaseResponse>(new LoginResponse(response));
                     case Ucs::PrintLine::CodeRequest:
@@ -59,7 +68,8 @@ namespace Ucs {
                 break;
 
             case Ucs::Class::Accept:
-                switch (response.mCode) {
+                switch (response.mCode)
+                {
                     case Ucs::Initial::CodeResponse:
                         return QSharedPointer<BaseResponse>(new InitialResponse(response));
                     case Ucs::Sale::PinRequired:
@@ -76,7 +86,8 @@ namespace Ucs {
                 break;
 
             case Ucs::Class::AuthResponse:
-                switch (response.mCode) {
+                switch (response.mCode)
+                {
                     case Ucs::Auth::Response:
                         return QSharedPointer<BaseResponse>(new AuthResponse(response));
                 }
@@ -87,12 +98,15 @@ namespace Ucs {
     }
 
     //---------------------------------------------------------------------------
-    ErrorResponse::ErrorResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+    ErrorResponse::ErrorResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+    {
     }
 
     //---------------------------------------------------------------------------
-    QString ErrorResponse::getError() const {
-        if (mData.size() >= 2) {
+    QString ErrorResponse::getError() const
+    {
+        if (mData.size() >= 2)
+        {
             return QString::fromLatin1(mData.left(2));
         }
 
@@ -100,8 +114,10 @@ namespace Ucs {
     }
 
     //---------------------------------------------------------------------------
-    QString ErrorResponse::getErrorMessage() const {
-        if (mData.size() > 2) {
+    QString ErrorResponse::getErrorMessage() const
+    {
+        if (mData.size() > 2)
+        {
             return QString::fromLatin1(mData.mid(2));
         }
 
@@ -109,27 +125,33 @@ namespace Ucs {
     }
 
     //---------------------------------------------------------------------------
-    PrintLineResponse::PrintLineResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+    PrintLineResponse::PrintLineResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+    {
     }
 
     //---------------------------------------------------------------------------
-    bool PrintLineResponse::isLast() const {
+    bool PrintLineResponse::isLast() const
+    {
         return mData.size() > 0 && mData[0] == '1';
     }
 
     //---------------------------------------------------------------------------
-    QString PrintLineResponse::getText() const {
+    QString PrintLineResponse::getText() const
+    {
         return (mData.size() > 1) ? QTextCodec::codecForName("Windows-1251")->toUnicode(mData.mid(1)) : "";
     }
 
     //---------------------------------------------------------------------------
-    bool GetStateResponse::isLast() const {
+    bool GetStateResponse::isLast() const
+    {
         return mData.size() > 0 && mData[0] == '1';
     }
 
     //---------------------------------------------------------------------------
-    int GetStateResponse::state() const {
-        if (mData.size() > 2) {
+    int GetStateResponse::state() const
+    {
+        if (mData.size() > 2)
+        {
             return QString::fromLatin1(mData.mid(1, 2)).toInt(nullptr, 16);
         }
 
@@ -137,28 +159,34 @@ namespace Ucs {
     }
 
     //---------------------------------------------------------------------------
-    QString GetStateResponse::getName() const {
+    QString GetStateResponse::getName() const
+    {
         return QString::fromLatin1(mData.mid(3));
     }
 
     //---------------------------------------------------------------------------
-    bool BreakResponse::isComplete() const {
+    bool BreakResponse::isComplete() const
+    {
         return mData.size() && mData[0] == '0';
     }
 
     //---------------------------------------------------------------------------
-    AuthResponse::AuthResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+    AuthResponse::AuthResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+    {
         int index = 0;
 
-        auto readTo1B = [&](QString &aString, QTextCodec *aCodec) {
-            for (; mData.size() > index && mData.at(index) != 0x1b; index++) {
+        auto readTo1B = [&](QString &aString, QTextCodec *aCodec)
+        {
+            for (; mData.size() > index && mData.at(index) != 0x1b; index++)
+            {
                 char c = mData.at(index);
                 aString.append(aCodec ? aCodec->toUnicode(&c, 1).at(0) : c);
             }
             index++;
         };
 
-        if (mData.size()) {
+        if (mData.size())
+        {
             mOperation = static_cast<Ucs::Operation::Enum>(mData.at(index));
             index++;
             mTransactionSum = QString::fromLatin1(mData.mid(index, 12)).toUInt();
@@ -182,42 +210,51 @@ namespace Ucs {
     }
 
     //---------------------------------------------------------------------------
-    bool AuthResponse::isOK() const {
+    bool AuthResponse::isOK() const
+    {
         return mResponse == "00";
     }
 
     //---------------------------------------------------------------------------
-    QString AuthResponse::toString() const {
+    QString AuthResponse::toString() const
+    {
         return mCardLabel + "|" + mMessage;
     }
 
     //---------------------------------------------------------------------------
     //---------------------------------------------------------------------------
-    LoginResponse::LoginResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+    LoginResponse::LoginResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+    {
         mStatusCode = mData.size() == 2 ? QString::fromLatin1(mData.mid(1, 1)) : "";
     }
 
     //---------------------------------------------------------------------------
-    QString LoginResponse::getStatusCode() const {
+    QString LoginResponse::getStatusCode() const
+    {
         return mStatusCode;
     }
 
     //---------------------------------------------------------------------------
-    QString LoginResponse::getTerminalID() const {
+    QString LoginResponse::getTerminalID() const
+    {
         return mTerminalID;
     }
 
     //---------------------------------------------------------------------------
-    bool LoginResponse::needEncashment() const {
+    bool LoginResponse::needEncashment() const
+    {
         return mStatusCode == "1";
     }
 
     //---------------------------------------------------------------------------
-    ConsoleResponse::ConsoleResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
-        auto readTo1B = [](const QByteArray &aBuffer) -> QString {
+    ConsoleResponse::ConsoleResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+    {
+        auto readTo1B = [](const QByteArray &aBuffer) -> QString
+        {
             QString result;
             QTextCodec *aCodec = QTextCodec::codecForName("windows-1251");
-            for (int i = 0; i < aBuffer.size() && aBuffer[i]; i++) {
+            for (int i = 0; i < aBuffer.size() && aBuffer[i]; i++)
+            {
                 char c = aBuffer.at(i);
                 result.append(aCodec->toUnicode(&c, 1).at(0));
             }
@@ -229,15 +266,18 @@ namespace Ucs {
     }
 
     //---------------------------------------------------------------------------
-    QString ConsoleResponse::getMessage() const {
+    QString ConsoleResponse::getMessage() const
+    {
         return mMessage;
     }
 
     //---------------------------------------------------------------------------
-    MessageResponse::MessageResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+    MessageResponse::MessageResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+    {
         QByteArray response = mData.right(6);
 
-        if (response.size() == 6) {
+        if (response.size() == 6)
+        {
             mCurrentTransactionCount = response.left(3);
             mTimeUpload = response.mid(3, 2);
             mStatusCode = response.right(1);
@@ -245,16 +285,20 @@ namespace Ucs {
     }
 
     //---------------------------------------------------------------------------
-    bool MessageResponse::needEncashment() const {
-        if (mStatusCode == "1") {
+    bool MessageResponse::needEncashment() const
+    {
+        if (mStatusCode == "1")
+        {
             return true;
         }
 
-        if (!mTimeUpload.isEmpty() && mTimeUpload.toUInt() < ::EncashmentThreshold) {
+        if (!mTimeUpload.isEmpty() && mTimeUpload.toUInt() < ::EncashmentThreshold)
+        {
             return true;
         }
 
-        if (!mCurrentTransactionCount.isEmpty() && mCurrentTransactionCount.toUInt() < ::EncashmentThreshold) {
+        if (!mCurrentTransactionCount.isEmpty() && mCurrentTransactionCount.toUInt() < ::EncashmentThreshold)
+        {
             return true;
         }
 

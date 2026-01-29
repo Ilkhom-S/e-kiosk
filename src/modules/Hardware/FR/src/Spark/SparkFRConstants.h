@@ -18,9 +18,11 @@
 #include "Hardware/Printers/Tags.h"
 
 //--------------------------------------------------------------------------------
-namespace CSparkFR {
+namespace CSparkFR
+{
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Ответ на 1-байтовую команду.
         const int Control = 300;
 
@@ -78,7 +80,8 @@ namespace CSparkFR {
     const char PushZReport[] = "2";
 
     /// Системные флаги.
-    namespace SystemFlags {
+    namespace SystemFlags
+    {
         const int ZReportsAndFiscal = 7; /// Настройки Z-отчёта и чека.
         const int SystemOptions2 = 24;   /// Системные настройки-2.
     } // namespace SystemFlags
@@ -102,7 +105,8 @@ namespace CSparkFR {
     const char SessionExpired = '\x20';
 
     /// Коды команд.
-    namespace Commands {
+    namespace Commands
+    {
         /// Команды получения информации об устройстве.
         const char ENQT[] = "\x1A"; /// Объединённый статус
 
@@ -143,21 +147,26 @@ namespace CSparkFR {
         const char SetTextPropertyName[] = "PL";     /// Установить наименование текстового реквизита.
         const char GetTextPropertyName[] = "SY";     /// Получить наименование текстового реквизита.
 
-        struct SData {
+        struct SData
+        {
             QByteArray answer; /// Код команды в ответе. Может отличаться от кода команды в запросе.
             bool sending;      /// Отправляющая/получающая команда.
             bool password;     /// Нужен ввод пароля управления ККТ.
 
-            SData() : sending(false), password(false) {
+            SData() : sending(false), password(false)
+            {
             }
             SData(const QByteArray &aAnswer, bool aSending, bool aPassword)
-                : answer(aAnswer), sending(aSending), password(aPassword) {
+                : answer(aAnswer), sending(aSending), password(aPassword)
+            {
             }
         };
 
-        class CData : public CSpecification<QByteArray, SData> {
+        class CData : public CSpecification<QByteArray, SData>
+        {
           public:
-            CData() {
+            CData()
+            {
                 set(GetFWVersion, false);
                 set(KKMInfo, false);
                 add(EKLZInfo, "");
@@ -191,21 +200,25 @@ namespace CSparkFR {
                 set(SetTextProperty, true);
             }
 
-            virtual SData value(const QByteArray &aCommand) const {
+            virtual SData value(const QByteArray &aCommand) const
+            {
                 return mBuffer.contains(aCommand) ? mBuffer[aCommand] : SData(aCommand, true, false);
             }
 
           private:
             void add(const QByteArray &aCommand, const QByteArray &aAnswer, bool aSending = false,
-                     bool aPassword = false) {
+                     bool aPassword = false)
+            {
                 append(aCommand, SData(aAnswer, aSending, aPassword));
             }
 
-            void set(const QByteArray &aCommand, bool aSending, bool aPassword = false) {
+            void set(const QByteArray &aCommand, bool aSending, bool aPassword = false)
+            {
                 append(aCommand, SData(aCommand, aSending, aPassword));
             }
 
-            void set(char aCommand, bool aSending = false) {
+            void set(char aCommand, bool aSending = false)
+            {
                 append(QByteArray(1, aCommand), SData("", aSending, false));
             }
         };
@@ -215,7 +228,8 @@ namespace CSparkFR {
 
     //--------------------------------------------------------------------------------
     /// Состояния открытого документа (некотрые, используемые).
-    namespace DocumentStates {
+    namespace DocumentStates
+    {
         const char Closed = '0';   /// Нет открытого документа.
         const char Sale = '1';     /// Регистрация продаж.
         const char Closing = '2';  /// Ввод оплат при завершении чека.
@@ -225,7 +239,8 @@ namespace CSparkFR {
 
     //--------------------------------------------------------------------------------
     /// Ошибки.
-    namespace Errors {
+    namespace Errors
+    {
         const char KKMClosed = 43;            /// ККТ закрыта
         const char CashierNotSet = 46;        /// Кассир не установлен
         const char NeedZReport = 63;          /// Не снят Z-отчёт
@@ -235,9 +250,11 @@ namespace CSparkFR {
         const char NeedPayIOOnly = 93;        /// Нужна только выплата/внесение
         const char WrongTextModeCommand = 94; /// Неверная команда режима печати текста
 
-        class Data : public FRError::Data {
+        class Data : public FRError::Data
+        {
           public:
-            Data() {
+            Data()
+            {
                 addData(1, "Некорректный формат или параметр команды");
                 addData(2, "Некорректное состояние ЭКЛЗ");
                 addData(3, "Авария ЭКЛЗ");
@@ -479,7 +496,8 @@ namespace CSparkFR {
             }
 
           private:
-            void addData(uchar aKey, const char *aDescription) {
+            void addData(uchar aKey, const char *aDescription)
+            {
                 add(char(aKey), aDescription);
             }
         };
@@ -487,9 +505,11 @@ namespace CSparkFR {
 
     //--------------------------------------------------------------------------------
     /// Спецификация статусов.
-    class CStatus1 : public BitmapDeviceCodeSpecification {
+    class CStatus1 : public BitmapDeviceCodeSpecification
+    {
       public:
-        CStatus1() {
+        CStatus1()
+        {
             addStatus(2, DeviceStatusCode::OK::Busy);
             addStatus(3, FRStatusCode::Error::FM);
             addStatus(4, FRStatusCode::Warning::FiscalMemoryNearEnd);
@@ -499,9 +519,11 @@ namespace CSparkFR {
     };
 
     //--------------------------------------------------------------------------------
-    class CStatus2 : public BitmapDeviceCodeSpecification {
+    class CStatus2 : public BitmapDeviceCodeSpecification
+    {
       public:
-        CStatus2() {
+        CStatus2()
+        {
             addStatus(0, PrinterStatusCode::Error::PaperEnd);
             addStatus(1, PrinterStatusCode::Error::PrinterFR);
             addStatus(6, DeviceStatusCode::Warning::Unknown, "", true);
@@ -521,7 +543,8 @@ namespace CSparkFR {
 
         /// Получить спецификации девайс-кодов по байт-массиву. байт-массив не должен содержать лишних байтов перед
         /// статусными байтами.
-        virtual void getSpecification(char aAnswerData, TStatusCodes &aStatusCodes) {
+        virtual void getSpecification(char aAnswerData, TStatusCodes &aStatusCodes)
+        {
             BitmapDeviceCodeSpecification::getSpecification(aAnswerData, aStatusCodes);
 
             mErrors.getSpecification(aAnswerData & '\x3C', aStatusCodes);
@@ -533,9 +556,11 @@ namespace CSparkFR {
     };
 
     //--------------------------------------------------------------------------------
-    class CStatus3 : public BitmapDeviceCodeSpecification {
+    class CStatus3 : public BitmapDeviceCodeSpecification
+    {
       public:
-        CStatus3() {
+        CStatus3()
+        {
             addStatus(1, PrinterStatusCode::Warning::PaperNearEnd);
             addStatus(3, FRStatusCode::Error::EKLZ);
             addStatus(6, DeviceStatusCode::Warning::Unknown, "", true);
@@ -549,9 +574,11 @@ namespace CSparkFR {
 
     //--------------------------------------------------------------------------------
     /// Теги.
-    class TagEngine : public Tags::Engine {
+    class TagEngine : public Tags::Engine
+    {
       public:
-        TagEngine() {
+        TagEngine()
+        {
             appendSingle(Tags::Type::DoubleWidth, "", "\x7F");
             set(Tags::Type::DoubleHeight);
             set(Tags::Type::UnderLine);
@@ -559,7 +586,8 @@ namespace CSparkFR {
     };
 
     /// Теги для обработки постфиксом команды.
-    namespace Tag {
+    namespace Tag
+    {
         const char DoubleHeight = 2;
         const char UnderLine = 1;
     } // namespace Tag

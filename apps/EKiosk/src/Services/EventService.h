@@ -16,9 +16,8 @@ class Event;
 class IApplication;
 
 //---------------------------------------------------------------------------
-class EventService : public QObject,
-                     public SDK::PaymentProcessor::IEventService,
-                     public SDK::PaymentProcessor::IService {
+class EventService : public QObject, public SDK::PaymentProcessor::IEventService, public SDK::PaymentProcessor::IService
+{
     Q_OBJECT
 
   public:

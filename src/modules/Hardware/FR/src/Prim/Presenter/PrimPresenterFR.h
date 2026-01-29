@@ -6,7 +6,8 @@
 #include "../Online/PrimOnlineFRBase.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class PrimPresenterFR : public T {
+template <class T> class PrimPresenterFR : public T
+{
     SET_SUBSERIES("Presenter")
 
   public:

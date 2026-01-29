@@ -16,7 +16,8 @@
 
 //--------------------------------------------------------------------------------
 /// Константы OPOS-cканеров.
-namespace COPOSScanners {
+namespace COPOSScanners
+{
     /// Величина префикса удаляемых данных.
     const int Prefix = 4;
 
@@ -30,7 +31,8 @@ namespace COPOSScanners {
 //--------------------------------------------------------------------------------
 typedef HIDBase<OPOSPollingDeviceBase<ProtoOPOSScanner, OPOS::OPOSScanner>> TPollingOPOSScanner;
 
-class OPOSMetrologicScanner : public TPollingOPOSScanner {
+class OPOSMetrologicScanner : public TPollingOPOSScanner
+{
     SET_SERIES("Honeywell")
 
     Q_OBJECT

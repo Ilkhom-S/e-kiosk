@@ -9,7 +9,8 @@
 //--------------------------------------------------------------------------------
 typedef CCTalkAcceptorBase<TSerialCashAcceptor> TCCTalkCashAcceptor;
 
-class CCTalkCashAcceptor : public TCCTalkCashAcceptor {
+class CCTalkCashAcceptor : public TCCTalkCashAcceptor
+{
   public:
     CCTalkCashAcceptor();
 
@@ -57,11 +58,13 @@ class CCTalkCashAcceptor : public TCCTalkCashAcceptor {
     QMap<QByteArray, double> mScalingFactors;
 
     /// Виртуальный статус движения купюры после эскроу.
-    struct SRouting {
+    struct SRouting
+    {
         bool direction;
         bool active;
 
-        SRouting() : direction(false), active(false) {
+        SRouting() : direction(false), active(false)
+        {
         }
     };
 

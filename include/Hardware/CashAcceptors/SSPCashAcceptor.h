@@ -9,7 +9,8 @@
 #include <Hardware/CashAcceptors/SerialCashAcceptor.h>
 
 //--------------------------------------------------------------------------------
-class SSPCashAcceptor : public TSerialCashAcceptor {
+class SSPCashAcceptor : public TSerialCashAcceptor
+{
     SET_SERIES("SSP")
 
   public:

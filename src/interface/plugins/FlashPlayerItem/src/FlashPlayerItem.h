@@ -9,7 +9,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------
-class FlashPlayerItem : public QDeclarativeItem {
+class FlashPlayerItem : public QDeclarativeItem
+{
     Q_OBJECT
     Q_PROPERTY(QString movie READ getMovie WRITE setMovie)
 
@@ -28,7 +29,8 @@ class FlashPlayerItem : public QDeclarativeItem {
     void populateJavaScriptWindowObject();
 
   public slots:
-    void onClicked(const QVariant &aParameter) {
+    void onClicked(const QVariant &aParameter)
+    {
         emit clicked(aParameter);
     }
 

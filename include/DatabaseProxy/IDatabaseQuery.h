@@ -8,13 +8,15 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-namespace CIDatabaseQuery {
+namespace CIDatabaseQuery
+{
     /// Имя лога по умолчанию.
     const QString DefaultLog = "DatabaseProxy";
 } // namespace CIDatabaseQuery
 
 //--------------------------------------------------------------------------------
-class IDatabaseQuery {
+class IDatabaseQuery
+{
   public:
     /// Деструктор.
     virtual ~IDatabaseQuery() {};

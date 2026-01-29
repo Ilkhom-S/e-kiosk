@@ -11,11 +11,13 @@
 // System
 #include "../common/PluginTestBase.h"
 
-class AdPluginTest : public QObject {
+class AdPluginTest : public QObject
+{
     Q_OBJECT
 
   public:
-    AdPluginTest() : m_testBase("D:/plugins/Debug/add.dll") {
+    AdPluginTest() : m_testBase("D:/plugins/Debug/add.dll")
+    {
     }
 
   private slots:
@@ -35,7 +37,8 @@ class AdPluginTest : public QObject {
     PluginTestBase m_testBase;
 };
 
-void AdPluginTest::testPluginExists() {
+void AdPluginTest::testPluginExists()
+{
     // Test that the Ad plugin DLL was built successfully
     QString pluginPath = "D:/plugins/Debug/add.dll";
     QVERIFY(QFile::exists(pluginPath));
@@ -45,13 +48,15 @@ void AdPluginTest::testPluginExists() {
     QVERIFY(pluginFile.size() > 0);
 }
 
-void AdPluginTest::testPluginLoading() {
+void AdPluginTest::testPluginLoading()
+{
     // Test loading the plugin factory
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
 }
 
-void AdPluginTest::testFactoryInterface() {
+void AdPluginTest::testFactoryInterface()
+{
     // Test factory interface methods
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -63,7 +68,8 @@ void AdPluginTest::testFactoryInterface() {
     QVERIFY(!factory->getPluginList().isEmpty());
 }
 
-void AdPluginTest::testPluginCreation() {
+void AdPluginTest::testPluginCreation()
+{
     // Test creating a plugin instance
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -83,7 +89,8 @@ void AdPluginTest::testPluginCreation() {
     factory->destroyPlugin(plugin);
 }
 
-void AdPluginTest::testPluginInitialization() {
+void AdPluginTest::testPluginInitialization()
+{
     // Test plugin configuration methods
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -109,7 +116,8 @@ void AdPluginTest::testPluginInitialization() {
     factory->destroyPlugin(plugin);
 }
 
-void AdPluginTest::testPluginLifecycle() {
+void AdPluginTest::testPluginLifecycle()
+{
     // Test plugin interface methods
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);

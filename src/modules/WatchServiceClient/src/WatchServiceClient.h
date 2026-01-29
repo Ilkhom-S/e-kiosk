@@ -22,7 +22,8 @@
 #include <WatchServiceClient/IWatchServiceClient.h>
 
 //---------------------------------------------------------------------------
-class WatchServiceClient : public QThread, public IWatchServiceClient {
+class WatchServiceClient : public QThread, public IWatchServiceClient
+{
     Q_OBJECT
 
   public:

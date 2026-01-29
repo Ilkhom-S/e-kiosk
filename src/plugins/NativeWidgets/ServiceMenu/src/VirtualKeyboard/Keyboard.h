@@ -14,7 +14,8 @@
 #include "KeyboardWindow.h"
 
 //--------------------------------------------------------------------------
-class Keyboard : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem {
+class Keyboard : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem
+{
   public:
     Keyboard(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
     ~Keyboard();
@@ -64,7 +65,8 @@ class Keyboard : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem {
     // Возвращает виджет.
     virtual QQuickItem *getWidget() const;
 
-    virtual QWidget *getNativeWidget() const {
+    virtual QWidget *getNativeWidget() const
+    {
         return mKeyboardWindow;
     }
 

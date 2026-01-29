@@ -10,7 +10,8 @@
 class QQmlEngine;
 
 //------------------------------------------------------------------------------
-class UtilsPlugin : public QQmlExtensionPlugin {
+class UtilsPlugin : public QQmlExtensionPlugin
+{
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "com.humo.graphics.utils")
 

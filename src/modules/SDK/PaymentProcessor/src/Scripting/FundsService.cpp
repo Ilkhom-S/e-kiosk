@@ -8,13 +8,17 @@
 #include <SDK/PaymentProcessor/Payment/Parameters.h>
 #include <SDK/PaymentProcessor/Scripting/FundsService.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Scripting {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
             FundsService::FundsService(ICore *aCore)
-                : mCore(aCore), mFundsService(mCore->getFundsService()), mAvailableAmount(0.0) {
+                : mCore(aCore), mFundsService(mCore->getFundsService()), mAvailableAmount(0.0)
+            {
                 connect(mFundsService->getAcceptor(), SIGNAL(error(qint64, QString)), SIGNAL(error(qint64, QString)));
                 connect(mFundsService->getAcceptor(), SIGNAL(warning(qint64, QString)),
                         SIGNAL(warning(qint64, QString)));
@@ -30,27 +34,32 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            bool FundsService::enable(qint64 aPayment) {
+            bool FundsService::enable(qint64 aPayment)
+            {
                 return enable(aPayment, "", 0.0);
             }
 
             //------------------------------------------------------------------------------
-            bool FundsService::enable(qint64 aPayment, const QString &aPaymentMethod, QVariant aLimit) {
+            bool FundsService::enable(qint64 aPayment, const QString &aPaymentMethod, QVariant aLimit)
+            {
                 return mFundsService->getAcceptor()->enable(aPayment, aPaymentMethod, aLimit.toDouble());
             }
 
             //------------------------------------------------------------------------------
-            bool FundsService::disable(qint64 aPayment) {
+            bool FundsService::disable(qint64 aPayment)
+            {
                 return mFundsService->getAcceptor()->disable(aPayment);
             }
 
             //------------------------------------------------------------------------------
-            QStringList FundsService::getPaymentMethods() const {
+            QStringList FundsService::getPaymentMethods() const
+            {
                 return mFundsService->getAcceptor()->getPaymentMethods();
             }
 
             //------------------------------------------------------------------------------
-            bool FundsService::canDispense() {
+            bool FundsService::canDispense()
+            {
                 TPaymentAmount aRequiredAmount = mCore->getPaymentService()->getChangeAmount();
                 mAvailableAmount = mFundsService->getDispenser()->canDispense(aRequiredAmount);
 
@@ -58,16 +67,20 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void FundsService::dispense() {
-                if (!qFuzzyIsNull(mAvailableAmount)) {
+            void FundsService::dispense()
+            {
+                if (!qFuzzyIsNull(mAvailableAmount))
+                {
                     mFundsService->getDispenser()->dispense(mAvailableAmount);
                     mAvailableAmount = 0;
                 }
             }
 
             //------------------------------------------------------------------------------
-            void FundsService::onCheated(qint64 aPayment) {
-                if (aPayment > 0) {
+            void FundsService::onCheated(qint64 aPayment)
+            {
+                if (aPayment > 0)
+                {
                     mCore->getPaymentService()->updatePaymentField(
                         aPayment, IPayment::SParameter(SDK::PaymentProcessor::CPayment::Parameters::Cheated,
                                                        SDK::PaymentProcessor::EPaymentCheatedType::CashAcceptor, true,
@@ -76,11 +89,14 @@ namespace SDK {
             }
 
             //------------------------------------------------------------------------------
-            void FundsService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
-                if (aEvent.getType() == SDK::PaymentProcessor::EEventType::Critical) {
+            void FundsService::onEvent(const SDK::PaymentProcessor::Event &aEvent)
+            {
+                if (aEvent.getType() == SDK::PaymentProcessor::EEventType::Critical)
+                {
                     auto paymentId = mCore->getPaymentService()->getActivePayment();
 
-                    if (paymentId) {
+                    if (paymentId)
+                    {
                         emit error(paymentId, aEvent.getData().toString());
                     }
                 }

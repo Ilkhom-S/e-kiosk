@@ -15,11 +15,17 @@
 class ServiceMenuBackend;
 
 //----------------------------------------------------------------------------
-class WizardFrame : public QWidget, protected Ui::WizardFrame {
+class WizardFrame : public QWidget, protected Ui::WizardFrame
+{
     Q_OBJECT
 
   public:
-    enum Control { BackButton, ForwardButton, ExitButton };
+    enum Control
+    {
+        BackButton,
+        ForwardButton,
+        ExitButton
+    };
 
   public:
     WizardFrame(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
@@ -54,10 +60,12 @@ class WizardFrame : public QWidget, protected Ui::WizardFrame {
     QString stageIndex(const QString &aContext);
 
   private:
-    struct CacheItem {
+    struct CacheItem
+    {
         WizardPageBase *page;
 
-        struct ControlItem {
+        struct ControlItem
+        {
             Control control;
             QString title;
             QString context;

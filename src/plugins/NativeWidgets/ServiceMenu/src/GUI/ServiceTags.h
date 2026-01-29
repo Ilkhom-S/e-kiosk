@@ -8,7 +8,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------
-namespace CServiceTags {
+namespace CServiceTags
+{
     const QString Id = "#id";
 
     const QString Error = "#error_message";
@@ -35,13 +36,15 @@ namespace CServiceTags {
     const QString ModemStatus = "#modem_status";
     const QString DeviceType = "#device_type";
 
-    namespace UserRole {
+    namespace UserRole
+    {
         const QString RoleAdministrator = "Administrator";
         const QString RoleTechnician = "Technician";
         const QString RoleCollector = "Collector";
     } // namespace UserRole
 
-    namespace PrinterState {
+    namespace PrinterState
+    {
         const QString Printer = "#printer";
         const QString IsFiscal = "#is_fiscal";
         const QString Fiscal = "#fiscal";
@@ -49,7 +52,8 @@ namespace CServiceTags {
         const QString XReport = "#x_report";
     } // namespace PrinterState
 
-    namespace Payment {
+    namespace Payment
+    {
         const QString Number = "payment_number";
         const QString Account = "payment_account";
         const QString PaymentStatusName = "payment_status_name";

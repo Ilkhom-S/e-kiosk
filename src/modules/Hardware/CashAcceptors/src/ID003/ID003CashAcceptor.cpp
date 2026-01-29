@@ -19,7 +19,8 @@ using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------
-ID003CashAcceptor::ID003CashAcceptor() {
+ID003CashAcceptor::ID003CashAcceptor()
+{
     // параметры порта
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
@@ -38,13 +39,16 @@ ID003CashAcceptor::ID003CashAcceptor() {
 }
 
 //--------------------------------------------------------------------------------
-QStringList ID003CashAcceptor::getModelList() {
+QStringList ID003CashAcceptor::getModelList()
+{
     QStringList result;
 
-    foreach (CID003::SModelData aData, CID003::ModelData().data().values()) {
+    foreach (CID003::SModelData aData, CID003::ModelData().data().values())
+    {
         result << aData.name;
 
-        foreach (const SBaseModelData &aModelData, aData.models.data().values()) {
+        foreach (const SBaseModelData &aModelData, aData.models.data().values())
+        {
             result << aModelData.name;
         }
     }
@@ -58,15 +62,18 @@ QStringList ID003CashAcceptor::getModelList() {
 }
 
 //---------------------------------------------------------------------------------
-bool ID003CashAcceptor::checkStatus(QByteArray &aAnswer) {
-    if (!processCommand(CID003::Commands::StatusRequest, &aAnswer)) {
+bool ID003CashAcceptor::checkStatus(QByteArray &aAnswer)
+{
+    if (!processCommand(CID003::Commands::StatusRequest, &aAnswer))
+    {
         return false;
     }
 
     CID003::DeviceCodeSpecification *specification =
         mDeviceCodeSpecification.dynamicCast<CID003::DeviceCodeSpecification>().data();
 
-    if (specification->isNeedACK(aAnswer) && !mProtocol.sendACK()) {
+    if (specification->isNeedACK(aAnswer) && !mProtocol.sendACK())
+    {
         toLog(LogLevel::Error, mDeviceName + ": Failed to send ACK message");
     }
 
@@ -74,8 +81,8 @@ bool ID003CashAcceptor::checkStatus(QByteArray &aAnswer) {
 }
 
 //---------------------------------------------------------------------------------
-TResult ID003CashAcceptor::execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
-                                       QByteArray *aAnswer) {
+TResult ID003CashAcceptor::execCommand(const QByteArray &aCommand, const QByteArray &aCommandData, QByteArray *aAnswer)
+{
     MutexLocker locker(&mExternalMutex);
 
     mProtocol.setPort(mIOPort);
@@ -85,7 +92,8 @@ TResult ID003CashAcceptor::execCommand(const QByteArray &aCommand, const QByteAr
     QByteArray request = aCommand + aCommandData;
     TResult result = mProtocol.processCommand(request, answer);
 
-    if (!result) {
+    if (!result)
+    {
         return result;
     }
 
@@ -93,22 +101,31 @@ TResult ID003CashAcceptor::execCommand(const QByteArray &aCommand, const QByteAr
 
     EAnswerType::Enum answerType = Data[aCommand[0]];
 
-    if (answerType == EAnswerType::ACK) {
-        if (answer[0] != CID003::ACK) {
+    if (answerType == EAnswerType::ACK)
+    {
+        if (answer[0] != CID003::ACK)
+        {
             toLog(LogLevel::Error, mDeviceName + ": Answer doesn't contain ACK  message");
             return CommandResult::Answer;
         }
-    } else if (answerType == EAnswerType::Echo) {
-        if (!answer.endsWith(request)) {
+    }
+    else if (answerType == EAnswerType::Echo)
+    {
+        if (!answer.endsWith(request))
+        {
             toLog(LogLevel::Error, mDeviceName + ": Echo answer data doesn't match with command request");
             return CommandResult::Answer;
         }
-    } else if (answerType == EAnswerType::Answer) {
-        if (aCommand[0] != CID003::Commands::StatusRequest) {
+    }
+    else if (answerType == EAnswerType::Answer)
+    {
+        if (aCommand[0] != CID003::Commands::StatusRequest)
+        {
             answer.remove(0, 1);
         }
 
-        if (aAnswer) {
+        if (aAnswer)
+        {
             *aAnswer = answer;
         }
     }
@@ -117,31 +134,37 @@ TResult ID003CashAcceptor::execCommand(const QByteArray &aCommand, const QByteAr
 }
 
 //--------------------------------------------------------------------------------
-bool ID003CashAcceptor::processReset() {
+bool ID003CashAcceptor::processReset()
+{
     return processCommand(CID003::Commands::Reset);
 }
 
 //--------------------------------------------------------------------------------
-bool ID003CashAcceptor::isConnected() {
-    if (isAutoDetecting()) {
+bool ID003CashAcceptor::isConnected()
+{
+    if (isAutoDetecting())
+    {
         SleepHelper::msleep(CID003::IdentificationPause);
     }
 
     removeDeviceParameter(CDeviceData::Firmware);
 
-    if (!waitReady(CID003::AvailableWaiting)) {
+    if (!waitReady(CID003::AvailableWaiting))
+    {
         toLog(LogLevel::Error, mDeviceName + ": Failed to wait any available status from the cash acceptor.");
         return false;
     }
 
     QByteArray answerData;
 
-    if (!processCommand(CID003::Commands::VersionRequest, &answerData)) {
+    if (!processCommand(CID003::Commands::VersionRequest, &answerData))
+    {
         toLog(LogLevel::Error, mDeviceName + ": Failed to reset the cash acceptor.");
         return false;
     }
 
-    if (answerData.isEmpty() && isAutoDetecting()) {
+    if (answerData.isEmpty() && isAutoDetecting())
+    {
         toLog(LogLevel::Error, mDeviceName + ": Unknown device trying to impersonate this device");
         return false;
     }
@@ -149,7 +172,8 @@ bool ID003CashAcceptor::isConnected() {
     QString answer = QString(answerData).trimmed() + ASCII::Space;
     mVerified = false;
 
-    if (answer.contains(CID003::ProtocolData::GPTAurora)) {
+    if (answer.contains(CID003::ProtocolData::GPTAurora))
+    {
         mDeviceName = CID003::Models::GPTAurora;
 
         return true;
@@ -157,14 +181,17 @@ bool ID003CashAcceptor::isConnected() {
 
     CID003::ProtocolData::CIdentification identificationData;
 
-    foreach (const QString &regExpData, identificationData.data().values()) {
+    foreach (const QString &regExpData, identificationData.data().values())
+    {
         QRegularExpression regExp(regExpData);
         QRegularExpressionMatch match = regExp.match(answer);
 
-        if (match.capturedStart() != -1) {
+        if (match.capturedStart() != -1)
+        {
             QString alias = identificationData.key(regExpData);
 
-            if (alias != CID003::ProtocolData::Alias::ID003) {
+            if (alias != CID003::ProtocolData::Alias::ID003)
+            {
                 setDeviceParameter(CDeviceData::CashAcceptors::Alias, alias);
             }
 
@@ -179,12 +206,14 @@ bool ID003CashAcceptor::isConnected() {
             QString firmwareDate = modelParameters[11];
             // QString CRCCode       = modelParameters[12];
 
-            if (alias == CID003::ProtocolData::Alias::OP003) {
+            if (alias == CID003::ProtocolData::Alias::OP003)
+            {
                 modelNumber += " " + stackerType;
                 stackerType.clear();
             }
 
-            if (alias == CID003::ProtocolData::Alias::ID003Ext) {
+            if (alias == CID003::ProtocolData::Alias::ID003Ext)
+            {
                 firmware.insert(1, ASCII::Dot);
                 firmware.insert(4, ASCII::Dash);
                 firmware.insert(8, ASCII::Dash);
@@ -199,7 +228,8 @@ bool ID003CashAcceptor::isConnected() {
             setDeviceParameter(CDeviceData::ModelKey,
                                QString("'%1' (%2)").arg(modelCode).arg(ProtocolUtils::toHexLog(modelCode)));
 
-            if (!modelNumber.isEmpty()) {
+            if (!modelNumber.isEmpty())
+            {
                 setDeviceParameter(CDeviceData::ModelNumber, QString("%1").arg(modelNumber, 2, QChar(ASCII::Zero)));
             }
 
@@ -207,10 +237,14 @@ bool ID003CashAcceptor::isConnected() {
 
             SBaseModelData modelData = CID003::ModelData().getData(modelCode, modelNumber, stackerType);
 
-            if (modelNumber.size() == CID003::NewJCMModelDataCount) {
-                if (modelData.name == CID003::Models::JCMUBA) {
+            if (modelNumber.size() == CID003::NewJCMModelDataCount)
+            {
+                if (modelData.name == CID003::Models::JCMUBA)
+                {
                     modelData = CID003::SModelData(CID003::Models::JCMIPRO, true);
-                } else if (modelData.name == CID003::Models::CashcodeMVU) {
+                }
+                else if (modelData.name == CID003::Models::CashcodeMVU)
+                {
                     modelData = CID003::SModelData(CID003::Models::JCMVega, true);
                 }
             }
@@ -224,15 +258,18 @@ bool ID003CashAcceptor::isConnected() {
 }
 
 //--------------------------------------------------------------------------------
-bool ID003CashAcceptor::setDefaultParameters() {
+bool ID003CashAcceptor::setDefaultParameters()
+{
     // устанавливаем режим связи с устройством
-    if (!processCommand(CID003::Commands::SetCommMode, QByteArray(1, CID003::CommunicationMode))) {
+    if (!processCommand(CID003::Commands::SetCommMode, QByteArray(1, CID003::CommunicationMode)))
+    {
         toLog(LogLevel::Error, mDeviceName + ": Failed to set communication mode");
         return false;
     }
 
     // разрешаем принимать номиналы во всех направлениях
-    if (!processCommand(CID003::Commands::SetDirections, QByteArray(1, CID003::AllNoteDirections))) {
+    if (!processCommand(CID003::Commands::SetDirections, QByteArray(1, CID003::AllNoteDirections)))
+    {
         toLog(LogLevel::Error, mDeviceName + ": Failed to set nominals directions");
         return false;
     }
@@ -249,8 +286,10 @@ bool ID003CashAcceptor::setDefaultParameters() {
 }
 
 //---------------------------------------------------------------------------
-bool ID003CashAcceptor::stack() {
-    if (!checkConnectionAbility() || (mInitialized != ERequestStatus::Success) || mCheckDisable) {
+bool ID003CashAcceptor::stack()
+{
+    if (!checkConnectionAbility() || (mInitialized != ERequestStatus::Success) || mCheckDisable)
+    {
         return false;
     }
 
@@ -258,8 +297,10 @@ bool ID003CashAcceptor::stack() {
 }
 
 //---------------------------------------------------------------------------
-bool ID003CashAcceptor::reject() {
-    if (!checkConnectionAbility() || (mInitialized == ERequestStatus::Fail)) {
+bool ID003CashAcceptor::reject()
+{
+    if (!checkConnectionAbility() || (mInitialized == ERequestStatus::Fail))
+    {
         return false;
     }
 
@@ -267,24 +308,29 @@ bool ID003CashAcceptor::reject() {
 }
 
 //---------------------------------------------------------------------------
-bool ID003CashAcceptor::enableMoneyAcceptingMode(bool aEnabled) {
+bool ID003CashAcceptor::enableMoneyAcceptingMode(bool aEnabled)
+{
     return processCommand(CID003::Commands::SetInhibits, QByteArray(1, char(!aEnabled)));
 }
 
 //---------------------------------------------------------------------------
-bool ID003CashAcceptor::applyParTable() {
+bool ID003CashAcceptor::applyParTable()
+{
     int initEscrowPosition = mEscrowParTable.data().begin().key();
     QByteArray commandData(2, ASCII::NUL);
 
-    for (auto it = mEscrowParTable.data().begin(); it != mEscrowParTable.data().end(); ++it) {
-        if (!it->enabled || it->inhibit) {
+    for (auto it = mEscrowParTable.data().begin(); it != mEscrowParTable.data().end(); ++it)
+    {
+        if (!it->enabled || it->inhibit)
+        {
             int id = (it.key() - initEscrowPosition);
             int index = id / 8;
             commandData[index] = commandData[index] | (1 << id % 8);
         }
     }
 
-    if (!processCommand(CID003::Commands::SetEnables, commandData)) {
+    if (!processCommand(CID003::Commands::SetEnables, commandData))
+    {
         toLog(LogLevel::Error, mDeviceName + ": Failed to set nominals availability.");
         return false;
     }
@@ -293,17 +339,20 @@ bool ID003CashAcceptor::applyParTable() {
 }
 
 //--------------------------------------------------------------------------------
-bool ID003CashAcceptor::loadParTable() {
+bool ID003CashAcceptor::loadParTable()
+{
     QByteArray answer;
 
-    if (!processCommand(CID003::Commands::GetBillTable, &answer)) {
+    if (!processCommand(CID003::Commands::GetBillTable, &answer))
+    {
         toLog(LogLevel::Error, mDeviceName + ": Failed to get par table");
         return false;
     }
 
     int nominalCount = answer.size() / CID003::NominalSize;
 
-    for (int i = 0; i < nominalCount; ++i) {
+    for (int i = 0; i < nominalCount; ++i)
+    {
         QByteArray parData = answer.mid(i * CID003::NominalSize, CID003::NominalSize);
         int nominal = int(uchar(parData[2]) * qPow(10, uchar(parData[3])));
         int currencyCode = CID003::CurrencyCodes[parData[1]];

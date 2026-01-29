@@ -18,11 +18,14 @@
 //----------------------------------------------------------------------------
 class QJsonArray;
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //----------------------------------------------------------------------------
-        namespace CCommissions {
+        namespace CCommissions
+        {
             const double DefaultAboveValue = 0.0;
             const double DefaultBelowValue = 1000000.0;
             const double MinChargeValue = 0.0;
@@ -30,18 +33,41 @@ namespace SDK {
         } // namespace CCommissions
 
         //----------------------------------------------------------------------------
-        class Commission {
+        class Commission
+        {
             friend class CommissionList;
             friend class Commissions;
 
           public:
-            enum Type { Absolute, Percent };
+            enum Type
+            {
+                Absolute,
+                Percent
+            };
 
-            enum RoundType { High, Bank, Low };
+            enum RoundType
+            {
+                High,
+                Bank,
+                Low
+            };
 
-            enum Day { Mon = 1, Tue, Wed, Thu, Fri, Sat, Sun };
+            enum Day
+            {
+                Mon = 1,
+                Tue,
+                Wed,
+                Thu,
+                Fri,
+                Sat,
+                Sun
+            };
 
-            enum Base { AmountAll, Amount };
+            enum Base
+            {
+                AmountAll,
+                Amount
+            };
 
             Commission();
 
@@ -104,7 +130,8 @@ namespace SDK {
         typedef QList<Commission> TCommissions;
 
         //----------------------------------------------------------------------------
-        class CommissionList {
+        class CommissionList
+        {
             friend class CommissionByTimeList;
             friend class CommissionByDayList;
             friend class Commissions;
@@ -127,7 +154,8 @@ namespace SDK {
         };
 
         //----------------------------------------------------------------------------
-        class CommissionByTimeList {
+        class CommissionByTimeList
+        {
             friend class CommissionByDayList;
             friend class Commissions;
 
@@ -152,7 +180,8 @@ namespace SDK {
         };
 
         //----------------------------------------------------------------------------
-        class CommissionByDayList {
+        class CommissionByDayList
+        {
             friend class Commissions;
 
           protected:
@@ -174,8 +203,10 @@ namespace SDK {
         };
 
         //----------------------------------------------------------------------------
-        class ProcessingCommission {
-            enum Type {
+        class ProcessingCommission
+        {
+            enum Type
+            {
                 // <Комиссия> = <amount>*<процент комиссии хумо>
                 Real = 1,
                 // Если <amount_all> меньше <amount>, то <Комиссия>=0
@@ -205,11 +236,14 @@ namespace SDK {
         };
 
         //----------------------------------------------------------------------------
-        class Commissions {
-            struct SComplexCommissions {
+        class Commissions
+        {
+            struct SComplexCommissions
+            {
                 static bool sortByMinLimit(const Commission &aFirst, const Commission &aSecond);
 
-                SComplexCommissions() {
+                SComplexCommissions()
+                {
                     vat = 0;
                 }
 

@@ -6,9 +6,11 @@
 
 //--------------------------------------------------------------------------------
 /// Константы и команды Custom VKP-80 III.
-namespace CCustomVKP80III {
+namespace CCustomVKP80III
+{
     /// Команды.
-    namespace Command {
+    namespace Command
+    {
         const char GetModelId[] = "\x1D\x49\xFF";    /// Получение идентификатора модели.
         const char EjectorActivation[] = "\x1C\x50"; /// Неизменяемая часть команды активации эжектора.
     } // namespace Command
@@ -20,7 +22,8 @@ namespace CCustomVKP80III {
 } // namespace CCustomVKP80III
 
 //--------------------------------------------------------------------------------
-template <class T> class CustomVKP80III : public CustomVKP80<T> {
+template <class T> class CustomVKP80III : public CustomVKP80<T>
+{
     SET_SUBSERIES("CustomVKP80III")
 
   public:

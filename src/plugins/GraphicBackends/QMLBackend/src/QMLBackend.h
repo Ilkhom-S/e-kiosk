@@ -22,7 +22,8 @@
 #include "QMLGraphicsItem.h"
 
 //------------------------------------------------------------------------------
-class QMLBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsBackend {
+class QMLBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsBackend
+{
     Q_OBJECT
 
   public:

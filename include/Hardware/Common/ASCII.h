@@ -2,7 +2,8 @@
 
 #pragma once
 
-namespace ASCII {
+namespace ASCII
+{
     const char NUL = '\x00';
     const char SOH = '\x01';
     const char STX = '\x02';

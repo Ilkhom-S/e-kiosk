@@ -4,7 +4,8 @@
 
 //--------------------------------------------------------------------------------
 /// Интервал опроса - время между посылками запроса статуса, [мс].
-namespace CCashAcceptorsPollingInterval {
+namespace CCashAcceptorsPollingInterval
+{
     /// Включен на прием денег.
     const int Enabled = 300;
 

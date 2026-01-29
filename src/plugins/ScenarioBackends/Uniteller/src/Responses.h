@@ -11,9 +11,11 @@
 // Project
 #include "Uniteller.h"
 
-namespace Uniteller {
+namespace Uniteller
+{
     //---------------------------------------------------------------------------
-    class BaseResponse {
+    class BaseResponse
+    {
       public:
         char mClass;
         char mCode;
@@ -23,18 +25,22 @@ namespace Uniteller {
       public:
         BaseResponse(const BaseResponse &aResponse)
             : mClass(aResponse.mClass), mCode(aResponse.mCode), mTerminalID(aResponse.mTerminalID),
-              mData(aResponse.mData) {
+              mData(aResponse.mData)
+        {
         }
-        virtual ~BaseResponse() {
+        virtual ~BaseResponse()
+        {
         }
         static QSharedPointer<BaseResponse> createResponse(QByteArray &aResponseBuffer);
 
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return false;
         }
 
       protected:
-        BaseResponse() {
+        BaseResponse()
+        {
             mClass = mCode = 0;
         }
         BaseResponse(const QByteArray &aResponseBuffer);
@@ -43,10 +49,12 @@ namespace Uniteller {
     typedef QSharedPointer<BaseResponse> BaseResponsePtr;
 
     //---------------------------------------------------------------------------
-    class ErrorResponse : public BaseResponse {
+    class ErrorResponse : public BaseResponse
+    {
       public:
         ErrorResponse(const BaseResponse &aResponse);
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 
@@ -57,20 +65,25 @@ namespace Uniteller {
     typedef QSharedPointer<ErrorResponse> ErrorResponsePtr;
 
     //---------------------------------------------------------------------------
-    class LoginResponse : public BaseResponse {
+    class LoginResponse : public BaseResponse
+    {
       public:
-        LoginResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        LoginResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
     };
 
     //---------------------------------------------------------------------------
-    class PrintLineResponse : public BaseResponse {
+    class PrintLineResponse : public BaseResponse
+    {
       public:
         PrintLineResponse(const BaseResponse &aResponse);
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 
@@ -79,11 +92,14 @@ namespace Uniteller {
     };
 
     //---------------------------------------------------------------------------
-    class GetStateResponse : public BaseResponse {
+    class GetStateResponse : public BaseResponse
+    {
       public:
-        GetStateResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        GetStateResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 
@@ -93,21 +109,27 @@ namespace Uniteller {
     };
 
     //---------------------------------------------------------------------------
-    class InitialResponse : public BaseResponse {
+    class InitialResponse : public BaseResponse
+    {
       public:
-        InitialResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        InitialResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
     };
 
     //---------------------------------------------------------------------------
-    class DeviceEventResponse : public BaseResponse {
+    class DeviceEventResponse : public BaseResponse
+    {
       public:
-        DeviceEventResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        DeviceEventResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 
@@ -117,11 +139,14 @@ namespace Uniteller {
     };
 
     //---------------------------------------------------------------------------
-    class BreakResponse : public BaseResponse {
+    class BreakResponse : public BaseResponse
+    {
       public:
-        BreakResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        BreakResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 
@@ -129,27 +154,34 @@ namespace Uniteller {
     };
 
     //---------------------------------------------------------------------------
-    class PINRequiredResponse : public BaseResponse {
+    class PINRequiredResponse : public BaseResponse
+    {
       public:
-        PINRequiredResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        PINRequiredResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
     };
 
     //---------------------------------------------------------------------------
-    class OnlineRequiredResponse : public BaseResponse {
+    class OnlineRequiredResponse : public BaseResponse
+    {
       public:
-        OnlineRequiredResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
+        OnlineRequiredResponse(const BaseResponse &aResponse) : BaseResponse(aResponse)
+        {
         }
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
     };
 
     //---------------------------------------------------------------------------
-    class AuthResponse : public BaseResponse {
+    class AuthResponse : public BaseResponse
+    {
       public:
         Operation::Enum mOperation;
         quint32 mTransactionSumm;
@@ -165,7 +197,8 @@ namespace Uniteller {
 
       public:
         AuthResponse(const BaseResponse &aResponse);
-        virtual bool isValid() {
+        virtual bool isValid()
+        {
             return true;
         }
 

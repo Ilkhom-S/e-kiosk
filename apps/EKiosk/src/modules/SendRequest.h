@@ -14,10 +14,13 @@
 #include <QtXml/QDomNode>
 #include <Common/QtHeadersEnd.h>
 
-namespace Request {
+namespace Request
+{
 
-    namespace Type {
-        enum e_type {
+    namespace Type
+    {
+        enum e_type
+        {
             GetServices = 1,
             PayAuth = 2,
             PayStatus = 3,
@@ -35,7 +38,8 @@ namespace Request {
         };
     } // namespace Type
 
-    namespace CommentType {
+    namespace CommentType
+    {
         const QString GetServices = "ASO_GET_SERVICES_3";
         const QString PayAuth = "PAY";
         const QString GetAbonentInfo = "ABONENT_INFO";
@@ -52,7 +56,8 @@ namespace Request {
     } // namespace CommentType
 } // namespace Request
 
-namespace SendReq {
+namespace SendReq
+{
 
     const QString Title = "SEND_REQUEST";
 
@@ -61,7 +66,8 @@ namespace SendReq {
 #include <QtCore/QMutex>
 #include <QtCore/QThread>
 
-class SendRequest : public QThread {
+class SendRequest : public QThread
+{
 
     Q_OBJECT
 

@@ -13,13 +13,15 @@
 #include <Hardware/Dispensers/ProtoDispenser.h>
 #include <Hardware/Dispensers/DispenserData.h>
 
-namespace CDispensers {
+namespace CDispensers
+{
     /// Интервал поллинга в режиме простоя.
     const int IdlingPollingInterval = 2000;
 } // namespace CDispensers
 
 //--------------------------------------------------------------------------------
-template <class T> class DispenserBase : public T {
+template <class T> class DispenserBase : public T
+{
   public:
     DispenserBase();
 
@@ -34,7 +36,8 @@ template <class T> class DispenserBase : public T {
 
   protected:
     /// Запросить и сохранить параметры устройства.
-    virtual void processDeviceData() {
+    virtual void processDeviceData()
+    {
     }
 
     /// Применить конфигурацию кассет.

@@ -3,8 +3,10 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-namespace EOSMPCommandId {
-    enum Enum {
+namespace EOSMPCommandId
+{
+    enum Enum
+    {
         IdentificationData, /// Строка для идентификации.
 
         /// Команды.

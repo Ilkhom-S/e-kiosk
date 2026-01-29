@@ -13,7 +13,8 @@
 #include "Hardware/FR/FRErrorDescription.h"
 
 //--------------------------------------------------------------------------------
-namespace CShtrihFR {
+namespace CShtrihFR
+{
     /// Минимальный размер данных ответа.
     const int MinAnswerDataSize = 2;
 
@@ -26,7 +27,8 @@ namespace CShtrihFR {
     /// Максимальный размер строки билда ФР/ФП для вывода в лог.
     const int MaxBuildSize = 5;
 
-    namespace Fonts {
+    namespace Fonts
+    {
         /// Шрифт по умолчанию.
         const uchar Default = 0x01;
 
@@ -89,9 +91,11 @@ namespace CShtrihFR {
     const QByteArray ClosingFiscalTaxes = QByteArray(4, ASCII::NUL);
 
     /// Данные языковых таблиц.
-    class CLanguages : public CDescription<uchar> {
+    class CLanguages : public CDescription<uchar>
+    {
       public:
-        CLanguages() {
+        CLanguages()
+        {
             append(0, "Russian");
             append(1, "English");
 
@@ -102,7 +106,8 @@ namespace CShtrihFR {
     static CLanguages Languages;
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Максимальный ожидания допечати X-отчета.
         const int MaxXReportNoAnswer = 30 * 1000;
 
@@ -120,7 +125,8 @@ namespace CShtrihFR {
     } // namespace Timeouts
 
     /// Паузы, [мс].
-    namespace Pause {
+    namespace Pause
+    {
         /// Во время печати отложенных Z-отчетов.
         const int ZReportPrintingEnd = 350;
 
@@ -129,7 +135,8 @@ namespace CShtrihFR {
     } // namespace Pause
 
     /// Интервалы, [мс].
-    namespace Interval {
+    namespace Interval
+    {
         /// Для запроса статуса при выполнении X- и Z-отчета.
         const int ReportPoll = 500;
 
@@ -138,8 +145,10 @@ namespace CShtrihFR {
     } // namespace Interval
 
     /// Режимы (некотрые, используемые).
-    namespace InnerModes {
-        enum Enum {
+    namespace InnerModes
+    {
+        enum Enum
+        {
             Work = 0,              /// Принтер в рабочем режиме.
             DataEjecting = 1,      /// Выдача данных.
             SessionOpened = 2,     /// Открытая смена, 24 часа не кончились.
@@ -155,8 +164,10 @@ namespace CShtrihFR {
     } // namespace InnerModes
 
     /// Подрежимы (некотрые, используемые).
-    namespace InnerSubmodes {
-        enum Enum {
+    namespace InnerSubmodes
+    {
+        enum Enum
+        {
             PaperOn = 0,              /// Бумага есть.
             PaperEndPassive = 1,      /// Бумаги нет, ничего не печатали.
             PaperEndActive = 2,       /// Бумаги нет, закончилась при печати.
@@ -167,7 +178,8 @@ namespace CShtrihFR {
     } // namespace InnerSubmodes
 
     /// Коды команд.
-    namespace Commands {
+    namespace Commands
+    {
         /// Запросы статуса.
         const char GetShortStatus = '\x10'; /// Короткий запрос состояния ФР.
         const char GetLongStatus = '\x11';  /// Длинный запрос состояния ФР.
@@ -207,7 +219,8 @@ namespace CShtrihFR {
     } // namespace Commands
 
     /// Коды ошибок (некоторых).
-    namespace Errors {
+    namespace Errors
+    {
         const char NoError = '\x00'; /// Ошибок нет.
 
         const char WrongParametersInCommand = '\x33'; /// Некорректные параметры в команде.
@@ -224,20 +237,26 @@ namespace CShtrihFR {
         const char BadModeForField = '\xC7';          /// Поле не редактируется в данном режиме.
     } // namespace Errors
 
-    namespace PayOffType {
-        struct SData {
+    namespace PayOffType
+    {
+        struct SData
+        {
             char FDType;
             char command;
 
-            SData() : FDType(ASCII::Full), command(ASCII::NUL) {
+            SData() : FDType(ASCII::Full), command(ASCII::NUL)
+            {
             }
-            SData(char aFDType, char aCommand) : FDType(aFDType), command(aCommand) {
+            SData(char aFDType, char aCommand) : FDType(aFDType), command(aCommand)
+            {
             }
         };
 
-        class CData : public CSpecification<SDK::Driver::EPayOffTypes::Enum, SData> {
+        class CData : public CSpecification<SDK::Driver::EPayOffTypes::Enum, SData>
+        {
           public:
-            CData() {
+            CData()
+            {
                 using namespace SDK::Driver;
 
                 add(EPayOffTypes::Debit, 0, Commands::Sale);
@@ -247,7 +266,8 @@ namespace CShtrihFR {
             }
 
           private:
-            void add(SDK::Driver::EPayOffTypes::Enum aPayOffType, char aFDType, char aCommand) {
+            void add(SDK::Driver::EPayOffTypes::Enum aPayOffType, char aFDType, char aCommand)
+            {
                 append(aPayOffType, SData(aFDType, aCommand));
             }
         };
@@ -256,15 +276,18 @@ namespace CShtrihFR {
     } // namespace PayOffType
 
     /// Коды статусов (некоторых).
-    namespace Statuses {
+    namespace Statuses
+    {
         /// Весовой датчик.
-        namespace WeightSensor {
+        namespace WeightSensor
+        {
             const ushort NoControlPaper = 0x0001; /// Рулон операционного журнала (0 – нет, 1 – есть).
             const ushort NoChequePaper = 0x0002;  /// Рулон чековой ленты (0 – нет, 1 – есть).
         } // namespace WeightSensor
 
         /// Оптический датчик.
-        namespace OpticalSensor {
+        namespace OpticalSensor
+        {
             const ushort NoControlPaper = 0x0040; /// Рулон операционного журнала (0 – нет, 1 – есть).
             const ushort NoChequePaper = 0x0080;  /// Рулон чековой ленты (0 – нет, 1 – есть).
         } // namespace OpticalSensor
@@ -276,7 +299,8 @@ namespace CShtrihFR {
     } // namespace Statuses
 
     /// Режим работы ККМ. Приходит в ответе на запрос FCh (получить тип устройства). Изменяться не может.
-    namespace Types {
+    namespace Types
+    {
         const int NoType = -1;
 
         const int KKM = 0;
@@ -284,9 +308,11 @@ namespace CShtrihFR {
     } // namespace Types
 
     /// Параметры ФР.
-    namespace FRParameters {
+    namespace FRParameters
+    {
         /// Налоги.
-        namespace Taxes {
+        namespace Taxes
+        {
             /// Значения налоговой группы
             const SData Value = FRParameters::SData(1, 6, "tax value");
 
@@ -299,7 +325,8 @@ namespace CShtrihFR {
     } // namespace FRParameters
 
     /// Регистры.
-    namespace Registers {
+    namespace Registers
+    {
         /// Денежные регистры.
         const TRegisterId PaymentAmount = TRegisterId(121, ERegisterType::Money);
         const TRegisterId TotalCashSum = TRegisterId(241, ERegisterType::Money);
@@ -310,18 +337,22 @@ namespace CShtrihFR {
         const TRegisterId SalesCount = TRegisterId(144, ERegisterType::Operational);
         const TRegisterId SalesBackCount = TRegisterId(146, ERegisterType::Operational);
 
-        struct SData {
+        struct SData
+        {
             QString description;
             QString typeDescription;
 
             SData(const QString &aDescription, const QString &aTypeDescription)
-                : description(aDescription), typeDescription(aTypeDescription) {
+                : description(aDescription), typeDescription(aTypeDescription)
+            {
             }
         };
 
-        class CData : public CDescription<TRegisterId> {
+        class CData : public CDescription<TRegisterId>
+        {
           public:
-            CData() {
+            CData()
+            {
                 append(PaymentAmount, "payment amount in 1-st section");
                 append(TotalCashSum, "total sum in cash");
                 append(ZReportsQuantity, "quantity of Z-reports in buffer");
@@ -331,7 +362,8 @@ namespace CShtrihFR {
                 append(SalesBackCount, "quantity of fiscal sales back document in session");
             }
 
-            SData getInfo(const TRegisterId &aRegister) {
+            SData getInfo(const TRegisterId &aRegister)
+            {
                 QString typeDescription = "Unknown";
                 if (aRegister.second == ERegisterType::Money)
                     typeDescription = "Money";

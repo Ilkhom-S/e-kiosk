@@ -22,17 +22,20 @@
 // Project
 #include "ServiceMenu.h"
 
-namespace CServiceMenu {
+namespace CServiceMenu
+{
     const QString PluginName = "ServiceMenu";
 } // namespace CServiceMenu
 
 namespace PPSDK = SDK::PaymentProcessor;
 
 //--------------------------------------------------------------------------
-namespace {
+namespace
+{
 
     /// Конструктор плагина.
-    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath) {
+    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+    {
         return new ServiceMenu(aFactory, aInstancePath);
     }
 
@@ -41,7 +44,8 @@ namespace {
 typedef QMap<int, bool> map_type;
 Q_DECLARE_METATYPE(map_type)
 
-static SDK::Plugin::TParameterList EnumerateParameters() {
+static SDK::Plugin::TParameterList EnumerateParameters()
+{
     return SDK::Plugin::TParameterList() << SDK::Plugin::SPluginParameter("columnVisibility",
                                                                           SDK::Plugin::SPluginParameter::MultiSet, true,
                                                                           "columnVisibility", QString(), QVariantList())
@@ -58,14 +62,18 @@ REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
 
 //--------------------------------------------------------------------------
 ServiceMenu::ServiceMenu(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mEnvironment(aFactory), mInstancePath(aInstancePath), mMainServiceWindow(nullptr), mIsReady(true) {
+    : mEnvironment(aFactory), mInstancePath(aInstancePath), mMainServiceWindow(nullptr), mIsReady(true)
+{
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
         mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
-    if (core) {
+    if (core)
+    {
         mBackend = QSharedPointer<ServiceMenuBackend>(
             new ServiceMenuBackend(mEnvironment, mEnvironment->getLog(CServiceMenuBackend::LogName)));
-    } else {
+    }
+    else
+    {
         mEnvironment->getLog(CServiceMenuBackend::LogName)->write(LogLevel::Error, "Failed to get ICore");
     }
 
@@ -74,95 +82,116 @@ ServiceMenu::ServiceMenu(SDK::Plugin::IEnvironment *aFactory, const QString &aIn
 }
 
 //--------------------------------------------------------------------------
-ServiceMenu::~ServiceMenu() {
-    if (mMainServiceWindow) {
+ServiceMenu::~ServiceMenu()
+{
+    if (mMainServiceWindow)
+    {
         saveConfiguration();
     }
 }
 
 //--------------------------------------------------------------------------
-QString ServiceMenu::getPluginName() const {
+QString ServiceMenu::getPluginName() const
+{
     return CServiceMenu::PluginName;
 }
 
 //--------------------------------------------------------------------------
-QVariantMap ServiceMenu::getConfiguration() const {
+QVariantMap ServiceMenu::getConfiguration() const
+{
     return mBackend->getConfiguration();
 }
 
 //--------------------------------------------------------------------------
-void ServiceMenu::setConfiguration(const QVariantMap &aParameters) {
+void ServiceMenu::setConfiguration(const QVariantMap &aParameters)
+{
     mBackend->setConfiguration(aParameters);
 }
 
 //--------------------------------------------------------------------------
-QString ServiceMenu::getConfigurationName() const {
+QString ServiceMenu::getConfigurationName() const
+{
     return mInstancePath;
 }
 
 //--------------------------------------------------------------------------
-bool ServiceMenu::saveConfiguration() {
+bool ServiceMenu::saveConfiguration()
+{
     return mEnvironment->saveConfiguration(mInstancePath, mBackend->getConfiguration());
 }
 
 //--------------------------------------------------------------------------
-bool ServiceMenu::isReady() const {
+bool ServiceMenu::isReady() const
+{
     return mIsReady;
 }
 
 //---------------------------------------------------------------------------
-void ServiceMenu::show() {
+void ServiceMenu::show()
+{
     GUI::MessageBox::setParentWidget(mMainServiceWindow);
 
     mBackend->startHeartbeat();
 }
 
 //---------------------------------------------------------------------------
-void ServiceMenu::hide() {
+void ServiceMenu::hide()
+{
     GUI::MessageBox::hide();
     mBackend->stopHeartbeat();
 }
 
 //---------------------------------------------------------------------------
-void ServiceMenu::notify(const QString &aReason, const QVariantMap &aParameters) {
-    if (aReason.toInt() == PPSDK::EEventType::TryStopScenario) {
+void ServiceMenu::notify(const QString &aReason, const QVariantMap &aParameters)
+{
+    if (aReason.toInt() == PPSDK::EEventType::TryStopScenario)
+    {
         mMainServiceWindow->closeServiceMenu(true, QObject::tr("#need_restart_application"), true);
-    } else {
+    }
+    else
+    {
         GUI::MessageBox::emitSignal(aParameters);
     }
 }
 
 //---------------------------------------------------------------------------
-void ServiceMenu::reset(const QVariantMap & /*aParameters*/) {
-    if (mMainServiceWindow) {
+void ServiceMenu::reset(const QVariantMap & /*aParameters*/)
+{
+    if (mMainServiceWindow)
+    {
         mMainServiceWindow->shutdown();
         mMainServiceWindow->initialize();
     }
 }
 
 //---------------------------------------------------------------------------
-QQuickItem *ServiceMenu::getWidget() const {
+QQuickItem *ServiceMenu::getWidget() const
+{
     return nullptr;
 }
 
 //---------------------------------------------------------------------------
-QWidget *ServiceMenu::getNativeWidget() const {
+QWidget *ServiceMenu::getNativeWidget() const
+{
     return mMainServiceWindow;
 }
 
 //---------------------------------------------------------------------------
-QVariantMap ServiceMenu::getContext() const {
+QVariantMap ServiceMenu::getContext() const
+{
     // TODO
     return QVariantMap();
 }
 
 //---------------------------------------------------------------------------
-bool ServiceMenu::isValid() const {
+bool ServiceMenu::isValid() const
+{
     return true;
 }
 
 //---------------------------------------------------------------------------
-QString ServiceMenu::getError() const {
+QString ServiceMenu::getError() const
+{
     return QString();
 }
 

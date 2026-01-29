@@ -13,13 +13,16 @@
 #include <Common/ILog.h>
 #include <SDK/PaymentProcessor/Scripting/Core.h>
 
-class WebPageLogger : public QWebEnginePage {
+class WebPageLogger : public QWebEnginePage
+{
     Q_OBJECT
   public:
     WebPageLogger::WebPageLogger(QObject *aParent, SDK::PaymentProcessor::Scripting::Core *aCoreProxy, ILog *aLog)
-        : QWebEnginePage(aParent), mCoreProxy(aCoreProxy), mLog(aLog) {
+        : QWebEnginePage(aParent), mCoreProxy(aCoreProxy), mLog(aLog)
+    {
     }
-    ~WebPageLogger() {
+    ~WebPageLogger()
+    {
     }
 
   protected:

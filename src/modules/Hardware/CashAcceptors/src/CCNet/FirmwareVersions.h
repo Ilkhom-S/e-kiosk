@@ -12,13 +12,16 @@
 #include "Models.h"
 
 //--------------------------------------------------------------------------------
-namespace CCCNet {
+namespace CCCNet
+{
     typedef QSet<int> TFimwareVersionSet;
     typedef QMap<int, QMap<bool, TFimwareVersionSet>> TFimwareVersions;
 
-    class CFimwareVersions : public CSpecification<QString, TFimwareVersions> {
+    class CFimwareVersions : public CSpecification<QString, TFimwareVersions>
+    {
       public:
-        CFimwareVersions() {
+        CFimwareVersions()
+        {
             data()[Models::CashcodeGX][Currency::RUB][true] = TFimwareVersionSet() << 1208;
 
             data()[Models::CashcodeSM][Currency::RUB][true] = TFimwareVersionSet() << 1361;
@@ -39,9 +42,11 @@ namespace CCCNet {
         }
     };
 
-    class COutdatedFimwareSeries : public CSpecification<QString, TFimwareVersions> {
+    class COutdatedFimwareSeries : public CSpecification<QString, TFimwareVersions>
+    {
       public:
-        COutdatedFimwareSeries() {
+        COutdatedFimwareSeries()
+        {
             data()[Models::CashcodeSM][Currency::RUB][false] = TFimwareVersionSet() << 1600 << 1500;
             data()[Models::CashcodeMVU][Currency::KZT][false] = TFimwareVersionSet() << 1700;
         }

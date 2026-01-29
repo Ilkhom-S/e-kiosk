@@ -8,17 +8,21 @@
 
 //--------------------------------------------------------------------------------
 /// Класс для повышения привилегий для определенной операции Windows.
-class PrivilegeElevator {
+class PrivilegeElevator
+{
     ::HANDLE hToken;
     ::TOKEN_PRIVILEGES tkp;
     int result;
 
   public:
     /// Конструктор, повышающий указанную привилегию.
-    PrivilegeElevator(LPCTSTR aPrivilegeName) : result(ERROR_NOT_ALL_ASSIGNED) {
+    PrivilegeElevator(LPCTSTR aPrivilegeName) : result(ERROR_NOT_ALL_ASSIGNED)
+    {
         // Get a token for this process.
-        if (::OpenProcessToken(::GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {
-            if (::LookupPrivilegeValue(NULL, aPrivilegeName, &tkp.Privileges[0].Luid)) {
+        if (::OpenProcessToken(::GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
+        {
+            if (::LookupPrivilegeValue(NULL, aPrivilegeName, &tkp.Privileges[0].Luid))
+            {
                 // Get the LUID for the privilege.
                 tkp.PrivilegeCount = 1; // one privilege to set
                 tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
@@ -30,12 +34,14 @@ class PrivilegeElevator {
     }
 
     /// Деструктор, закрывающий дескриптор токена процесса.
-    ~PrivilegeElevator() {
+    ~PrivilegeElevator()
+    {
         ::CloseHandle(hToken);
     }
 
     /// Проверяет, успешно ли повышение привилегии.
-    bool OK() const {
+    bool OK() const
+    {
         return result == ERROR_SUCCESS;
     }
 };

@@ -10,10 +10,12 @@
 #include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-namespace Ad {
+namespace Ad
+{
     const char DefaultChannelPostfix[] = "_default";
 
-    struct Campaign {
+    struct Campaign
+    {
         qint64 id;         /// ID кампании
         QString type;      /// Тип рекламы
         QUrl url;          /// Url для скачивания контента кампании
@@ -21,40 +23,48 @@ namespace Ad {
         QDateTime expired; /// Дата окончания кампании
         QString text;      /// Текст рекламной кампании
 
-        Campaign() : id(-1) {
+        Campaign() : id(-1)
+        {
         }
 
         /// Проверка, валидна ли кампания
-        bool isValid() const {
+        bool isValid() const
+        {
             return !type.isEmpty() && id > 0;
         }
 
         /// Возвращает true, если кампания баннерная
-        bool isBanner() const {
+        bool isBanner() const
+        {
             return (type.contains("banner", Qt::CaseInsensitive) == true);
         }
 
         /// Проверка, это кампания по умолчанию?
-        bool isDefault() const {
+        bool isDefault() const
+        {
             return type.endsWith(DefaultChannelPostfix, Qt::CaseInsensitive);
         }
 
         /// Сравнение двух кампаний
-        bool isEqual(const Campaign &aCampaign) const {
+        bool isEqual(const Campaign &aCampaign) const
+        {
             return id == aCampaign.id && type == aCampaign.type && url.toString() == aCampaign.url.toString() &&
                    md5 == aCampaign.md5 && text == aCampaign.text && expired == aCampaign.expired;
         }
 
         /// Принятие решения о необходимости скачать
-        bool isDownloaded() const {
+        bool isDownloaded() const
+        {
             return !url.isEmpty() && !md5.isEmpty();
         }
 
-        bool isExpired() const {
+        bool isExpired() const
+        {
             return QDateTime::currentDateTime() > expired || expired.isNull();
         }
 
-        QString toString() {
+        QString toString()
+        {
             QStringList result;
             result << "id:" << QString::number(id) << " "
                    << "CH:" << type << " "

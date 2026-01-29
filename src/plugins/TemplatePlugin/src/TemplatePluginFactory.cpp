@@ -12,7 +12,8 @@
 #include "TemplatePlugin.h"
 #include "TemplatePluginFactory.h"
 
-TemplatePluginFactory::TemplatePluginFactory() {
+TemplatePluginFactory::TemplatePluginFactory()
+{
     mName = "Template Plugin";
     mDescription = "Minimal template plugin for plugin development";
     mAuthor = "EKiosk Template";
@@ -25,6 +26,7 @@ TemplatePluginFactory::TemplatePluginFactory() {
 //---------------------------------------------------------------------------
 // Деструктор фабрики.
 /// Выполняет очистку ресурсов фабрики.
-TemplatePluginFactory::~TemplatePluginFactory() {
+TemplatePluginFactory::~TemplatePluginFactory()
+{
     qDebug() << "TemplatePluginFactory destroyed";
 }

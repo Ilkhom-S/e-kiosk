@@ -13,11 +13,18 @@
 class QTcpSocket;
 class QAbstractSocket;
 
-namespace TypePing {
-    enum i_typeping { Ping = 1, Socket = 2, Request = 3 };
+namespace TypePing
+{
+    enum i_typeping
+    {
+        Ping = 1,
+        Socket = 2,
+        Request = 3
+    };
 } // namespace TypePing
 
-class CheckConnection : public QThread {
+class CheckConnection : public QThread
+{
     Q_OBJECT
 
   public:

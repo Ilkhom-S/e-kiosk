@@ -2,11 +2,14 @@
 
 #pragma once
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
-        namespace CReceiptType {
+        namespace CReceiptType
+        {
             const char Payment[] = "payment";
             const char Error[] = "error";
             const char Balance[] = "balance";

@@ -9,7 +9,8 @@ class KeysWindow;
 class IServiceBackend;
 
 //------------------------------------------------------------------------
-class KeysWizardPage : public WizardPageBase {
+class KeysWizardPage : public WizardPageBase
+{
     Q_OBJECT
 
   public:

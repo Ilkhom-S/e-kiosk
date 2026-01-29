@@ -33,48 +33,59 @@
 
 namespace PPSDK = SDK::PaymentProcessor;
 
-namespace CCashAcceptor {
+namespace CCashAcceptor
+{
     const char *CashPaymentMethod = "cash";
 } // namespace CCashAcceptor
 
 //---------------------------------------------------------------------------
-bool CashAcceptorManager::SPaymentData::maxAmountReached() const {
+bool CashAcceptorManager::SPaymentData::maxAmountReached() const
+{
     return !qFuzzyIsNull(maxAmount) && (currentAmount > maxAmount || qFuzzyCompare(currentAmount, maxAmount));
 }
 
 //---------------------------------------------------------------------------
-bool CashAcceptorManager::SPaymentData::chargeSourceEmpty() const {
+bool CashAcceptorManager::SPaymentData::chargeSourceEmpty() const
+{
     return validators.empty() && chargeProviders.empty();
 }
 
 //---------------------------------------------------------------------------
 CashAcceptorManager::CashAcceptorManager(IApplication *aApplication)
     : ILogable(CFundsService::LogName), mApplication(aApplication), mDatabase(nullptr), mDeviceService(nullptr),
-      mDisableAmountOverflow(false) {
+      mDisableAmountOverflow(false)
+{
 }
 
 //---------------------------------------------------------------------------
-CashAcceptorManager::~CashAcceptorManager() {
+CashAcceptorManager::~CashAcceptorManager()
+{
 }
 
 //---------------------------------------------------------------------------
-bool CashAcceptorManager::initialize(IPaymentDatabaseUtils *aDatabase) {
+bool CashAcceptorManager::initialize(IPaymentDatabaseUtils *aDatabase)
+{
     mDatabase = aDatabase;
 
     auto pluginLoader = PluginService::instance(mApplication)->getPluginLoader();
     QStringList providers = pluginLoader->getPluginList(
         QRegularExpression(QString("%1\\.%2\\..*").arg(PPSDK::Application, PPSDK::CComponents::ChargeProvider)));
 
-    foreach (const QString &path, providers) {
+    foreach (const QString &path, providers)
+    {
         SDK::Plugin::IPlugin *plugin = pluginLoader->createPlugin(path);
-        if (plugin) {
+        if (plugin)
+        {
             PPSDK::IChargeProvider *provider = dynamic_cast<PPSDK::IChargeProvider *>(plugin);
-            if (provider) {
+            if (provider)
+            {
                 mChargeProviders << provider;
 
                 provider->subscribe(SDK::PaymentProcessor::CChargeProvider::StackedSignal, this,
                                     SLOT(onChargeProviderStacked(SDK::PaymentProcessor::SNote)));
-            } else {
+            }
+            else
+            {
                 pluginLoader->destroyPlugin(plugin);
             }
         }
@@ -86,7 +97,8 @@ bool CashAcceptorManager::initialize(IPaymentDatabaseUtils *aDatabase) {
 
     mDisableAmountOverflow = settings->getCommonSettings().disableAmountOverflow;
 
-    if (settings->getCurrencySettings().id == -1) {
+    if (settings->getCurrencySettings().id == -1)
+    {
         toLog(LogLevel::Error, "Currency is not set for funds service!");
 
         return false;
@@ -108,14 +120,17 @@ bool CashAcceptorManager::initialize(IPaymentDatabaseUtils *aDatabase) {
 }
 
 //---------------------------------------------------------------------------
-bool CashAcceptorManager::shutdown() {
-    foreach (DSDK::ICashAcceptor *acceptor, mDeviceList) {
+bool CashAcceptorManager::shutdown()
+{
+    foreach (DSDK::ICashAcceptor *acceptor, mDeviceList)
+    {
         mDeviceService->releaseDevice(acceptor);
     }
 
     mDeviceList.clear();
 
-    foreach (SDK::PaymentProcessor::IChargeProvider *provider, mChargeProviders) {
+    foreach (SDK::PaymentProcessor::IChargeProvider *provider, mChargeProviders)
+    {
         provider->unsubscribe(SDK::PaymentProcessor::CChargeProvider::StackedSignal, this);
 
         PluginService::instance(mApplication)
@@ -130,7 +145,8 @@ bool CashAcceptorManager::shutdown() {
 }
 
 //---------------------------------------------------------------------------
-QStringList CashAcceptorManager::getPaymentMethods() {
+QStringList CashAcceptorManager::getPaymentMethods()
+{
     PPSDK::IPaymentService *ps = mApplication->getCore()->getPaymentService();
     qint64 id = ps->getActivePayment();
     QString procType = ps->getPaymentField(id, PPSDK::CPayment::Parameters::Type).value.toString();
@@ -140,26 +156,31 @@ QStringList CashAcceptorManager::getPaymentMethods() {
 
     QSet<QString> result;
 
-    auto checkMethod = [&chargeAccess, &procType](const QString &aName) -> bool {
+    auto checkMethod = [&chargeAccess, &procType](const QString &aName) -> bool
+    {
         if ((!chargeAccess.isEmpty() && chargeAccess.value(procType).toStringList().contains(aName)) ||
-            (chargeAccess.isEmpty() && !aName.isEmpty())) {
+            (chargeAccess.isEmpty() && !aName.isEmpty()))
+        {
             return true;
         }
 
         return false;
     };
 
-    foreach (SDK::PaymentProcessor::IChargeProvider *provider, mChargeProviders) {
+    foreach (SDK::PaymentProcessor::IChargeProvider *provider, mChargeProviders)
+    {
         QString method = provider->getMethod();
 
-        if (checkMethod(method)) {
+        if (checkMethod(method))
+        {
             result.insert(provider->getMethod());
         }
     }
 
     // Устройство добавляем в случае, если настройки оплаты для типов процессинга не заданы
     // Или должно быть соответствующее разрешение
-    if (!mDeviceList.isEmpty() && (chargeAccess.isEmpty() || checkMethod(CCashAcceptor::CashPaymentMethod))) {
+    if (!mDeviceList.isEmpty() && (chargeAccess.isEmpty() || checkMethod(CCashAcceptor::CashPaymentMethod)))
+    {
         result.insert(CCashAcceptor::CashPaymentMethod);
     }
 
@@ -167,7 +188,8 @@ QStringList CashAcceptorManager::getPaymentMethods() {
 }
 
 //---------------------------------------------------------------------------
-void CashAcceptorManager::updateHardwareConfiguration() {
+void CashAcceptorManager::updateHardwareConfiguration()
+{
     // Получаем список всех доступных устройств.
     PPSDK::TerminalSettings *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
     QStringList deviceList = settings->getDeviceList().filter(QRegularExpression(
@@ -175,11 +197,13 @@ void CashAcceptorManager::updateHardwareConfiguration() {
 
     mDeviceList.clear();
 
-    foreach (const QString &configurationName, deviceList) {
+    foreach (const QString &configurationName, deviceList)
+    {
         DSDK::ICashAcceptor *device =
             dynamic_cast<DSDK::ICashAcceptor *>(mDeviceService->acquireDevice(configurationName));
 
-        if (device) {
+        if (device)
+        {
             mDeviceList.append(device);
 
             // Подписываемся на статус.
@@ -187,26 +211,34 @@ void CashAcceptorManager::updateHardwareConfiguration() {
                               SLOT(onStatusChanged(SDK::Driver::EWarningLevel::Enum, const QString &, int)));
 
             device->setParList(mWorkingParList);
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Error, QString("Failed to acquire cash acceptor %1.").arg(configurationName));
         }
     }
 }
 
 //---------------------------------------------------------------------------
-bool CashAcceptorManager::enable(qint64 aPayment, const QString &aPaymentMethod, PPSDK::TPaymentAmount aMaxAmount) {
-    if (mPaymentData && mPaymentData->paymentId == aPayment) {
+bool CashAcceptorManager::enable(qint64 aPayment, const QString &aPaymentMethod, PPSDK::TPaymentAmount aMaxAmount)
+{
+    if (mPaymentData && mPaymentData->paymentId == aPayment)
+    {
         // Пересчитаем максимальную сумму платежа
-        if (mPaymentData->currentAmount == 0) {
+        if (mPaymentData->currentAmount == 0)
+        {
             mPaymentData->maxAmount = aMaxAmount;
         }
 
-        if (mPaymentData->maxAmountReached()) {
+        if (mPaymentData->maxAmountReached())
+        {
             return false;
         }
 
         // Продолжаем прием средств в контексте предыдущего платежа.
-    } else {
+    }
+    else
+    {
         // Создаем новый контекст приема средств.
         SPaymentData paymentData(aPayment);
 
@@ -217,22 +249,29 @@ bool CashAcceptorManager::enable(qint64 aPayment, const QString &aPaymentMethod,
 
     const QString method = aPaymentMethod.isEmpty() ? CCashAcceptor::CashPaymentMethod : aPaymentMethod;
 
-    if (method == CCashAcceptor::CashPaymentMethod) {
+    if (method == CCashAcceptor::CashPaymentMethod)
+    {
         // Взять валидатор, который поддерживает нужный набор номиналов.
-        foreach (DSDK::ICashAcceptor *acceptor, mDeviceList) {
-            if (!acceptor->isDeviceReady()) {
+        foreach (DSDK::ICashAcceptor *acceptor, mDeviceList)
+        {
+            if (!acceptor->isDeviceReady())
+            {
                 toLog(LogLevel::Warning,
                       QString("Payment %1. Cash acceptor %2 is not ready.").arg(aPayment).arg(acceptor->getName()));
 
                 continue;
             }
 
-            if (acceptor->setEnable(true)) {
+            if (acceptor->setEnable(true))
+            {
                 // Подписываемся на эскроу и стекед.
-                if (mDisableAmountOverflow) {
+                if (mDisableAmountOverflow)
+                {
                     acceptor->subscribe(SDK::Driver::ICashAcceptor::EscrowSignal, this,
                                         SLOT(onEscrowChangeControl(SDK::Driver::SPar)));
-                } else {
+                }
+                else
+                {
                     acceptor->subscribe(SDK::Driver::ICashAcceptor::EscrowSignal, this,
                                         SLOT(onEscrow(SDK::Driver::SPar)));
                 }
@@ -249,13 +288,16 @@ bool CashAcceptorManager::enable(qint64 aPayment, const QString &aPaymentMethod,
     }
 
     // Готовы принимать "деньги" от остальных поставщиков
-    foreach (PPSDK::IChargeProvider *provider, mChargeProviders) {
-        if (provider->getMethod() == method && provider->enable(aMaxAmount)) {
+    foreach (PPSDK::IChargeProvider *provider, mChargeProviders)
+    {
+        if (provider->getMethod() == method && provider->enable(aMaxAmount))
+        {
             mPaymentData->chargeProviders.insert(provider);
         }
     }
 
-    if (mPaymentData->chargeSourceEmpty()) {
+    if (mPaymentData->chargeSourceEmpty())
+    {
         toLog(LogLevel::Error, QString("Payment %1. No funds sources available.").arg(aPayment));
         return false;
     }
@@ -264,10 +306,12 @@ bool CashAcceptorManager::enable(qint64 aPayment, const QString &aPaymentMethod,
 }
 
 //---------------------------------------------------------------------------
-bool CashAcceptorManager::disable(qint64 aPayment) {
+bool CashAcceptorManager::disable(qint64 aPayment)
+{
     toLog(LogLevel::Debug, "Disable all cash acceptors.");
 
-    if (!mPaymentData || mPaymentData->paymentId != aPayment) {
+    if (!mPaymentData || mPaymentData->paymentId != aPayment)
+    {
         // Валидатор уже отключен.
         toLog(LogLevel::Debug, "No need to disable the cash acceptors due to data absent.");
 
@@ -277,21 +321,26 @@ bool CashAcceptorManager::disable(qint64 aPayment) {
     }
 
     // Отключаем источники средств.
-    foreach (PPSDK::IChargeProvider *provider, mChargeProviders) {
-        if (provider->disable()) {
+    foreach (PPSDK::IChargeProvider *provider, mChargeProviders)
+    {
+        if (provider->disable())
+        {
             mPaymentData->chargeProviders.remove(provider);
         }
     }
 
     // Даем команду на отключение устройств.
-    foreach (DSDK::ICashAcceptor *acceptor, mDeviceList) {
-        if (mPaymentData->validators.contains(acceptor) && !acceptor->setEnable(false)) {
+    foreach (DSDK::ICashAcceptor *acceptor, mDeviceList)
+    {
+        if (mPaymentData->validators.contains(acceptor) && !acceptor->setEnable(false))
+        {
             toLog(LogLevel::Error,
                   QString("Failed to disable cash acceptor %1.").arg(mDeviceService->getDeviceConfigName(acceptor)));
         }
     }
 
-    if (mPaymentData->chargeSourceEmpty()) {
+    if (mPaymentData->chargeSourceEmpty())
+    {
         toLog(LogLevel::Debug, "All cash acceptors were disabled already.");
 
         // Отключение устройств уже было произведено.
@@ -302,14 +351,17 @@ bool CashAcceptorManager::disable(qint64 aPayment) {
 }
 
 //---------------------------------------------------------------------------
-void CashAcceptorManager::onEscrowChangeControl(SDK::Driver::SPar aPar) {
+void CashAcceptorManager::onEscrowChangeControl(SDK::Driver::SPar aPar)
+{
     DSDK::ICashAcceptor *acceptor = dynamic_cast<DSDK::ICashAcceptor *>(sender());
 
     if (mPaymentData && mPaymentData->validators.contains(acceptor) && !isFixedAmountPayment(mPaymentData->paymentId) &&
-        !allowMoreMoney(aPar.nominal)) {
+        !allowMoreMoney(aPar.nominal))
+    {
         toLog(LogLevel::Error, QString("Escrow will overflow max amount. Reject %1.").arg(aPar.nominal));
 
-        if (!acceptor->reject()) {
+        if (!acceptor->reject())
+        {
             toLog(LogLevel::Error, QString("Return command failed. Nominal : %1.").arg(aPar.currencyId));
         }
 
@@ -322,34 +374,45 @@ void CashAcceptorManager::onEscrowChangeControl(SDK::Driver::SPar aPar) {
 }
 
 //---------------------------------------------------------------------------
-void CashAcceptorManager::onEscrow(DSDK::SPar aPar) {
+void CashAcceptorManager::onEscrow(DSDK::SPar aPar)
+{
     DSDK::ICashAcceptor *acceptor = dynamic_cast<DSDK::ICashAcceptor *>(sender());
 
-    if (mPaymentData && mPaymentData->validators.contains(acceptor)) {
+    if (mPaymentData && mPaymentData->validators.contains(acceptor))
+    {
         // TODO по флажку в настройках проверять будущую сумму платежа и выбрасывать, если результирующая сумма больше
         // maxAmount.
 
-        if (mPaymentData->maxAmountReached()) {
-            if (!acceptor->reject()) {
+        if (mPaymentData->maxAmountReached())
+        {
+            if (!acceptor->reject())
+            {
                 toLog(LogLevel::Error, QString("Return command failed. Nominal : %1.").arg(aPar.currencyId));
             }
-        } else if (!acceptor->stack()) {
+        }
+        else if (!acceptor->stack())
+        {
             toLog(LogLevel::Error, QString("Stack command failed. Nominal : %1.").arg(aPar.currencyId));
         }
-    } else {
+    }
+    else
+    {
         toLog(LogLevel::Error, QString("Escrow to unknown payment. Nominal %1 will be rejected.").arg(aPar.currencyId));
 
-        if (acceptor->reject()) {
+        if (acceptor->reject())
+        {
             toLog(LogLevel::Error, QString("Return command failed. Nominal : %1.").arg(aPar.currencyId));
         }
     }
 }
 
 //---------------------------------------------------------------------------
-void CashAcceptorManager::onStacked(DSDK::TParList aNotes) {
+void CashAcceptorManager::onStacked(DSDK::TParList aNotes)
+{
     DSDK::ICashAcceptor *acceptor = dynamic_cast<DSDK::ICashAcceptor *>(sender());
 
-    if (mPaymentData && mPaymentData->validators.contains(acceptor)) {
+    if (mPaymentData && mPaymentData->validators.contains(acceptor))
+    {
         double amount = std::accumulate(aNotes.begin(), aNotes.end(), 0.0,
                                         [](double acc, const DSDK::SPar &par) -> double { return acc + par.nominal; });
         auto paymentId = mPaymentData->paymentId;
@@ -358,13 +421,15 @@ void CashAcceptorManager::onStacked(DSDK::TParList aNotes) {
         if (!mDatabase->addPaymentNote(
                 paymentId, std::accumulate(aNotes.begin(), aNotes.end(), QList<SDK::PaymentProcessor::SNote>(),
                                            [](QList<SDK::PaymentProcessor::SNote> &list,
-                                              const DSDK::SPar &note) -> QList<SDK::PaymentProcessor::SNote> {
+                                              const DSDK::SPar &note) -> QList<SDK::PaymentProcessor::SNote>
+                                           {
                                                return list << SDK::PaymentProcessor::SNote(
                                                           note.cashReceiver == DSDK::ECashReceiver::CoinAcceptor
                                                               ? PPSDK::EAmountType::Coin
                                                               : PPSDK::EAmountType::Bill,
                                                           note.nominal, note.currencyId, note.serialNumber);
-                                           }))) {
+                                           })))
+        {
             toLog(LogLevel::Error,
                   QString("Payment %1. Failed to update payment amount. Total sum: %2.").arg(paymentId).arg(amount));
         }
@@ -373,13 +438,17 @@ void CashAcceptorManager::onStacked(DSDK::TParList aNotes) {
 
         emit PPSDK::ICashAcceptorManager::amountUpdated(paymentId, mPaymentData->currentAmount, amount);
 
-        if (mPaymentData->maxAmountReached()) {
+        if (mPaymentData->maxAmountReached())
+        {
             disable(paymentId);
         }
-    } else {
+    }
+    else
+    {
         // Сообщим о средствах, которые не попали в платеж
         QStringList lostMoney;
-        foreach (SDK::Driver::SPar par, aNotes) {
+        foreach (SDK::Driver::SPar par, aNotes)
+        {
             lostMoney.append(QString("%1: %2")
                                  .arg(par.cashReceiver == SDK::Driver::ECashReceiver::CoinAcceptor ? "Coin" : "Bill")
                                  .arg(par.nominal));
@@ -390,13 +459,16 @@ void CashAcceptorManager::onStacked(DSDK::TParList aNotes) {
 }
 
 //---------------------------------------------------------------------------
-void CashAcceptorManager::onChargeProviderStacked(SDK::PaymentProcessor::SNote aNote) {
-    if (mPaymentData) {
+void CashAcceptorManager::onChargeProviderStacked(SDK::PaymentProcessor::SNote aNote)
+{
+    if (mPaymentData)
+    {
         double amount = aNote.nominal;
         auto paymentId = mPaymentData->paymentId;
 
         // Записываем в БД информацию о принятых купюрах.
-        if (!mDatabase->addPaymentNote(paymentId, aNote)) {
+        if (!mDatabase->addPaymentNote(paymentId, aNote))
+        {
             toLog(LogLevel::Error,
                   QString("Payment %1. Failed to update payment amount. Total sum: %2.").arg(paymentId).arg(amount));
         }
@@ -405,33 +477,44 @@ void CashAcceptorManager::onChargeProviderStacked(SDK::PaymentProcessor::SNote a
 
         emit PPSDK::ICashAcceptorManager::amountUpdated(paymentId, mPaymentData->currentAmount, amount);
 
-        if (mPaymentData->maxAmountReached()) {
+        if (mPaymentData->maxAmountReached())
+        {
             disable(paymentId);
         }
     }
 }
 
 //---------------------------------------------------------------------------
-void CashAcceptorManager::onStatusChanged(DSDK::EWarningLevel::Enum aLevel, const QString &aTranslation, int aStatus) {
-    if (aLevel == DSDK::EWarningLevel::Error) {
-        if (mPaymentData) {
+void CashAcceptorManager::onStatusChanged(DSDK::EWarningLevel::Enum aLevel, const QString &aTranslation, int aStatus)
+{
+    if (aLevel == DSDK::EWarningLevel::Error)
+    {
+        if (mPaymentData)
+        {
             // Прервать прием денег.
             disable(mPaymentData->paymentId);
 
             emit error(mPaymentData->paymentId, aTranslation);
         }
-    } else {
+    }
+    else
+    {
         DSDK::ICashAcceptor *acceptor = dynamic_cast<DSDK::ICashAcceptor *>(sender());
 
         // Нормальные статусы.
-        if (aStatus == DSDK::ECashAcceptorStatus::Rejected) {
+        if (aStatus == DSDK::ECashAcceptorStatus::Rejected)
+        {
             // TODO: не обрабатывать непринятые купюры по запрещенным номиналам.
             incrementRejectCount();
 
             emit activity();
-        } else if (aStatus == DSDK::ECashAcceptorStatus::Cheated) {
+        }
+        else if (aStatus == DSDK::ECashAcceptorStatus::Cheated)
+        {
             emit cheated(mPaymentData ? mPaymentData->paymentId : -1);
-        } else if (acceptor && aStatus == DSDK::ECashAcceptorStatus::Disabled) {
+        }
+        else if (acceptor && aStatus == DSDK::ECashAcceptorStatus::Disabled)
+        {
             // Принят сигнал об отключении купюроприемника.
             toLog(LogLevel::Debug, acceptor->getName() + " is disabled.");
 
@@ -440,14 +523,16 @@ void CashAcceptorManager::onStatusChanged(DSDK::EWarningLevel::Enum aLevel, cons
             acceptor->unsubscribe(SDK::Driver::ICashAcceptor::StackedSignal, this);
 
             // Удаляем купюроприемник из списка включенных.
-            if (mPaymentData) {
+            if (mPaymentData)
+            {
                 toLog(LogLevel::Debug,
                       QString("Payment %2. %1 was removed.").arg(acceptor->getName()).arg(mPaymentData->paymentId));
 
                 mPaymentData->validators.remove(acceptor);
 
                 // Если список пуст, сообщаем об окончании приема средств.
-                if (mPaymentData->chargeSourceEmpty()) {
+                if (mPaymentData->chargeSourceEmpty())
+                {
                     toLog(LogLevel::Debug, "All cash acceptors are disabled.");
 
                     emit disabled(mPaymentData->paymentId);
@@ -458,7 +543,8 @@ void CashAcceptorManager::onStatusChanged(DSDK::EWarningLevel::Enum aLevel, cons
 }
 
 //---------------------------------------------------------------------------
-int CashAcceptorManager::getRejectCount() const {
+int CashAcceptorManager::getRejectCount() const
+{
     auto dbUtils = DatabaseService::instance(mApplication)->getDatabaseUtils<IHardwareDatabaseUtils>();
     return dbUtils
         ->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
@@ -467,39 +553,46 @@ int CashAcceptorManager::getRejectCount() const {
 }
 
 //---------------------------------------------------------------------------
-void CashAcceptorManager::incrementRejectCount() {
+void CashAcceptorManager::incrementRejectCount()
+{
     auto dbUtils = DatabaseService::instance(mApplication)->getDatabaseUtils<IHardwareDatabaseUtils>();
     dbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                             PPSDK::CDatabaseConstants::Parameters::RejectCount, getRejectCount() + 1);
 }
 
 //---------------------------------------------------------------------------
-void CashAcceptorManager::initWorkingParList() {
+void CashAcceptorManager::initWorkingParList()
+{
     // Получаем список поддерживаемых номиналов.
     PPSDK::TerminalSettings *settings = SettingsService::instance(mApplication)->getAdapter<PPSDK::TerminalSettings>();
     PPSDK::SCommonSettings commonSettings = settings->getCommonSettings();
 
-    foreach (auto nominal, commonSettings.enabledParNotesList) {
+    foreach (auto nominal, commonSettings.enabledParNotesList)
+    {
         mWorkingParList.append(DSDK::SPar(nominal, settings->getCurrencySettings().id,
                                           DSDK::ECashReceiver::BillAcceptor, commonSettings.isValid));
     }
 
-    foreach (auto nominal, commonSettings.enabledParCoinsList) {
+    foreach (auto nominal, commonSettings.enabledParCoinsList)
+    {
         mWorkingParList.append(DSDK::SPar(nominal, settings->getCurrencySettings().id,
                                           DSDK::ECashReceiver::CoinAcceptor, commonSettings.isValid));
     }
 }
 
 //---------------------------------------------------------------------------
-bool CashAcceptorManager::isFixedAmountPayment(qint64 aPayment) {
+bool CashAcceptorManager::isFixedAmountPayment(qint64 aPayment)
+{
     PPSDK::IPaymentService *paymentService = PaymentService::instance(mApplication);
 
     auto providerID = paymentService->getPaymentField(aPayment, PPSDK::CPayment::Parameters::Provider);
 
-    if (!providerID.isNull()) {
+    if (!providerID.isNull())
+    {
         auto limits = paymentService->getProvider(providerID.value.toLongLong()).limits;
 
-        if (limits.min == limits.max) {
+        if (limits.min == limits.max)
+        {
             return true;
         }
 
@@ -507,7 +600,8 @@ bool CashAcceptorManager::isFixedAmountPayment(qint64 aPayment) {
         auto maxAmount = paymentService->getPaymentField(aPayment, PPSDK::CPayment::Parameters::MaxAmount);
 
         if (!minAmount.isNull() && !maxAmount.isNull() &&
-            qFuzzyCompare(minAmount.value.toDouble(), maxAmount.value.toDouble())) {
+            qFuzzyCompare(minAmount.value.toDouble(), maxAmount.value.toDouble()))
+        {
             return true;
         }
     }
@@ -516,7 +610,8 @@ bool CashAcceptorManager::isFixedAmountPayment(qint64 aPayment) {
 }
 
 //---------------------------------------------------------------------------
-bool CashAcceptorManager::allowMoreMoney(SDK::PaymentProcessor::TPaymentAmount aAmount) {
+bool CashAcceptorManager::allowMoreMoney(SDK::PaymentProcessor::TPaymentAmount aAmount)
+{
     QList<PPSDK::IPayment::SParameter> parameters;
 
     PPSDK::IPaymentService *paymentService = PaymentService::instance(mApplication);
@@ -524,9 +619,8 @@ bool CashAcceptorManager::allowMoreMoney(SDK::PaymentProcessor::TPaymentAmount a
     parameters = paymentService->getPaymentFields(mPaymentData->paymentId);
 
     auto amountAll =
-        std::find_if(parameters.begin(), parameters.end(), [](const PPSDK::IPayment::SParameter &aParameter) -> bool {
-            return aParameter.name == PPSDK::CPayment::Parameters::AmountAll;
-        });
+        std::find_if(parameters.begin(), parameters.end(), [](const PPSDK::IPayment::SParameter &aParameter) -> bool
+                     { return aParameter.name == PPSDK::CPayment::Parameters::AmountAll; });
     Q_ASSERT(amountAll != parameters.end());
 
     double newAmountAll = amountAll->value.toDouble() + aAmount;
@@ -536,9 +630,8 @@ bool CashAcceptorManager::allowMoreMoney(SDK::PaymentProcessor::TPaymentAmount a
     parameters = paymentService->calculateCommission(parameters);
 
     auto change =
-        std::find_if(parameters.begin(), parameters.end(), [](const PPSDK::IPayment::SParameter &aParameter) -> bool {
-            return aParameter.name == PPSDK::CPayment::Parameters::Change;
-        });
+        std::find_if(parameters.begin(), parameters.end(), [](const PPSDK::IPayment::SParameter &aParameter) -> bool
+                     { return aParameter.name == PPSDK::CPayment::Parameters::Change; });
     Q_ASSERT(change != parameters.end());
 
     return qFuzzyIsNull(change->value.toDouble());

@@ -8,14 +8,18 @@
 #include <QtCore/QVariantMap>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //---------------------------------------------------------------------------
         /// Базовый интерфейс для всех сервисов.
-        class IService {
+        class IService
+        {
           public:
-            virtual ~IService() {
+            virtual ~IService()
+            {
             }
 
             /// Инициализация сервиса.

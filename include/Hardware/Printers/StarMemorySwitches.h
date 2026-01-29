@@ -6,8 +6,10 @@
 #include <Hardware/Printers/StarModelData.h>
 
 //----------------------------------------------------------------------------
-namespace CSTAR {
-    namespace MemorySwitches {
+namespace CSTAR
+{
+    namespace MemorySwitches
+    {
         /// Таймаут по умолчанию на получение ответа от устройства, [мс].
         const int MaxNumber = 0xA;
 
@@ -24,9 +26,11 @@ namespace CSTAR {
         const int Amount = 11;
 
         /// Утилиты - предоставляют логику работы с мем-свичами.
-        class Utils : public BaseMemorySwitchUtils {
+        class Utils : public BaseMemorySwitchUtils
+        {
           public:
-            Utils() {
+            Utils()
+            {
 #define STAR_PARAMETER(aHeaderName, aValues) QStringList aHeaderName = QStringList() << aValues;
 #define STAR_VALUE(aParameters, aValue, aKey) aParameters.insert(aKey, QStringList() << aValue);
 
@@ -102,9 +106,11 @@ namespace CSTAR {
         };
 
         /// Обязательные параметры для всех или некоторых принтеров на этапе идентификации.
-        class CMainSettings : public CMainSettingsBase {
+        class CMainSettings : public CMainSettingsBase
+        {
           public:
-            CMainSettings() {
+            CMainSettings()
+            {
                 using namespace CHardware::Printer;
                 using namespace CSTAR::Models;
 

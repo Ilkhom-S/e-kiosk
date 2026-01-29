@@ -18,11 +18,14 @@
 //------------------------------------------------------------------------------
 class NetworkTaskManager;
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        class INetworkService {
+        class INetworkService
+        {
           public:
             /// Устанавливает соединение.
             virtual bool openConnection(bool aWait = true) = 0;
@@ -55,7 +58,8 @@ namespace SDK {
             virtual QString getUserAgent() const = 0;
 
           protected:
-            virtual ~INetworkService() {
+            virtual ~INetworkService()
+            {
             }
         };
 

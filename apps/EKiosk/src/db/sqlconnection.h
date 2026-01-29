@@ -10,7 +10,8 @@
 #include <QtSql/QSqlRecord>
 #include <Common/QtHeadersEnd.h>
 
-inline bool createMainDB(QSqlDatabase &dbName) {
+inline bool createMainDB(QSqlDatabase &dbName)
+{
     QStringList queryList;
     queryList << "CREATE TABLE terminal_collect (collect_id TEXT, stack_id "
                  "NUMERIC, denom TEXT, date_create TEXT, status "
@@ -81,8 +82,10 @@ inline bool createMainDB(QSqlDatabase &dbName) {
 
     QSqlQuery updateSql(dbName);
 
-    for (auto &query : queryList) {
-        if (!updateSql.exec(query)) {
+    for (auto &query : queryList)
+    {
+        if (!updateSql.exec(query))
+        {
             qDebug() << updateSql.lastError();
             qDebug() << "Error Update SQL DATABASE IN LINE <<" + query + ">>";
             return false;
@@ -92,13 +95,15 @@ inline bool createMainDB(QSqlDatabase &dbName) {
     return true;
 }
 
-inline bool createUpdaterDB(QSqlDatabase &dbName) {
+inline bool createUpdaterDB(QSqlDatabase &dbName)
+{
     Q_UNUSED(dbName);
 
     return true;
 }
 
-inline bool createConnection(QSqlDatabase &db, QString db_path) {
+inline bool createConnection(QSqlDatabase &db, QString db_path)
+{
     QFile info;
 
     bool fileExist = info.exists(db_path);
@@ -110,12 +115,14 @@ inline bool createConnection(QSqlDatabase &db, QString db_path) {
 
     db.setDatabaseName(db_path);
 
-    if (!db.open()) {
+    if (!db.open())
+    {
         return false;
     }
 
     // Если файла базы данных не было то создаем каркас
-    if (!fileExist) {
+    if (!fileExist)
+    {
         return createMainDB(db);
     }
 
@@ -220,7 +227,8 @@ inline bool createConnection(QSqlDatabase &db, QString db_path) {
     return true;
 }
 
-inline bool createConnectionFile(QSqlDatabase &db, QString db_path) {
+inline bool createConnectionFile(QSqlDatabase &db, QString db_path)
+{
     QFile info;
 
     bool fileExist = info.exists(db_path);
@@ -232,12 +240,14 @@ inline bool createConnectionFile(QSqlDatabase &db, QString db_path) {
 
     db.setDatabaseName(db_path);
 
-    if (!db.open()) {
+    if (!db.open())
+    {
         return false;
     }
 
     // Если файла базы данных не было то создаем каркас
-    if (!fileExist) {
+    if (!fileExist)
+    {
         return createUpdaterDB(db);
     }
 

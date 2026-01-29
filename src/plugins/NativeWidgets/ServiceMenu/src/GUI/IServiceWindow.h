@@ -5,7 +5,8 @@
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------
-class IServiceWindow {
+class IServiceWindow
+{
   public:
     virtual bool initialize() = 0;
     virtual bool shutdown() = 0;
@@ -13,14 +14,17 @@ class IServiceWindow {
     virtual bool activate() = 0;
     virtual bool deactivate() = 0;
 
-    virtual ~IServiceWindow() {
+    virtual ~IServiceWindow()
+    {
     }
 };
 
 //------------------------------------------------------------------------
-class ServiceWindowBase : public IServiceWindow {
+class ServiceWindowBase : public IServiceWindow
+{
   public:
-    ServiceWindowBase(ServiceMenuBackend *aBackend) : mBackend(aBackend) {
+    ServiceWindowBase(ServiceMenuBackend *aBackend) : mBackend(aBackend)
+    {
     }
 
   protected:

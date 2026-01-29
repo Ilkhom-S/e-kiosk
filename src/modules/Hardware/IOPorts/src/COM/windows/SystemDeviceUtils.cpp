@@ -9,7 +9,8 @@
 // Project
 #include "SystemDeviceUtils.h"
 
-QStringList SystemDeviceUtils::enumerateCOMPorts() {
+QStringList SystemDeviceUtils::enumerateCOMPorts()
+{
     TCHAR buffer[USHRT_MAX];
     memset(buffer, NULL, sizeof(buffer));
     int bufferSize = QueryDosDevice(NULL, &buffer[0], USHRT_MAX);
@@ -19,8 +20,10 @@ QStringList SystemDeviceUtils::enumerateCOMPorts() {
     QRegularExpression regExp("[^0-9a-zA-Z](COM[0-9]+)[^a-zA-Z]");
     QStringList result;
 
-    foreach (auto port, data) {
-        if (regExp.match(" " + port + " ").capturedStart() != -1) {
+    foreach (auto port, data)
+    {
+        if (regExp.match(" " + port + " ").capturedStart() != -1)
+        {
             result << // TODO: // TODO: // TODO: // TODO: regExp.cap(0) needs manual migration to match.captured(0)
                       // needs manual migration to match.captured(0) needs manual migration to match.captured(0) needs
                       // manual migration to match.captured(0).simplified();
@@ -31,11 +34,13 @@ QStringList SystemDeviceUtils::enumerateCOMPorts() {
 }
 
 //--------------------------------------------------------------------------------
-QStringList SystemDeviceUtils::getSerialDeviceNames() {
+QStringList SystemDeviceUtils::getSerialDeviceNames()
+{
     HKEY hKey = nullptr;
 
     if (::RegOpenKeyEx(HKEY_LOCAL_MACHINE, CRegistrySerialPort::QuickInitialPath, 0, KEY_QUERY_VALUE, &hKey) !=
-        ERROR_SUCCESS) {
+        ERROR_SUCCESS)
+    {
         return QStringList();
     }
 
@@ -45,20 +50,26 @@ QStringList SystemDeviceUtils::getSerialDeviceNames() {
     QByteArray value;
     DWORD valueSize = 0;
 
-    forever {
+    forever
+    {
         DWORD keySyze = MAXSHORT / sizeof(wchar_t);
         LONG ret =
             ::RegEnumValue(hKey, i, LPTSTR(key.data()), &keySyze, nullptr, nullptr, LPBYTE(value.data()), &valueSize);
 
-        if (ret == ERROR_MORE_DATA) {
+        if (ret == ERROR_MORE_DATA)
+        {
             value.resize(valueSize);
-        } else if (ret == ERROR_SUCCESS) {
+        }
+        else if (ret == ERROR_SUCCESS)
+        {
             QString data = QString::fromWCharArray(LPTSTR(value.data()), value.size() / sizeof(wchar_t));
             int size = result.indexOf(QChar(0));
 
             result << data.left(size).replace(QChar(ASCII::NUL), "");
             i++;
-        } else {
+        }
+        else
+        {
             break;
         }
     }
@@ -71,25 +82,30 @@ QStringList SystemDeviceUtils::getSerialDeviceNames() {
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getRelevantPortName(const QString &aPortName, const QStringList &aPortNames) {
+QString SystemDeviceUtils::getRelevantPortName(const QString &aPortName, const QStringList &aPortNames)
+{
     auto getPropertyData = [](const QString &aData) -> QString { return " " + aData.simplified().toLower() + " "; };
-    auto getRegexData = [](const QString &aData) -> QString {
-        return QString("%2%1%2").arg(getScreenedData(aData.simplified().toLower())).arg("[^a-z0-9]+");
-    };
+    auto getRegexData = [](const QString &aData) -> QString
+    { return QString("%2%1%2").arg(getScreenedData(aData.simplified().toLower())).arg("[^a-z0-9]+"); };
     QString pathPropertyData = getPropertyData(aPortName);
     QRegularExpression pathPropertyRegex = QRegularExpression(getRegexData(aPortName));
 
-    auto it = std::find_if(aPortNames.begin(), aPortNames.end(), [&](const QString &portName) -> bool {
-        return !portName.isEmpty() && (pathPropertyData.contains(QRegularExpression(getRegexData(portName))) ||
+    auto it = std::find_if(aPortNames.begin(), aPortNames.end(),
+                           [&](const QString &portName) -> bool
+                           {
+                               return !portName.isEmpty() &&
+                                      (pathPropertyData.contains(QRegularExpression(getRegexData(portName))) ||
                                        getPropertyData(portName).contains(pathPropertyRegex));
-    });
+                           });
 
     return (it == aPortNames.end()) ? "" : *it;
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getRelevantWinProperty(const QString &aWinProperty, const QStringList &aWinProperties) {
-    auto getData = [](const QString &aData) -> QString {
+QString SystemDeviceUtils::getRelevantWinProperty(const QString &aWinProperty, const QStringList &aWinProperties)
+{
+    auto getData = [](const QString &aData) -> QString
+    {
         return aData.simplified()
             .toLower()
             .replace(CDeviceWinProperties::Prefix, "", Qt::CaseInsensitive)
@@ -104,12 +120,15 @@ QString SystemDeviceUtils::getRelevantWinProperty(const QString &aWinProperty, c
 }
 
 //--------------------------------------------------------------------------------
-TWinDeviceProperties SystemDeviceUtils::enumerateRegistryDevices(bool aQuick) {
+TWinDeviceProperties SystemDeviceUtils::enumerateRegistryDevices(bool aQuick)
+{
     QStringList portNames = getSerialDeviceNames();
     TWinDeviceProperties result;
 
-    if (aQuick) {
-        foreach (const QString &portName, portNames) {
+    if (aQuick)
+    {
+        foreach (const QString &portName, portNames)
+        {
             result[portName.simplified()];
         }
 
@@ -119,10 +138,12 @@ TWinDeviceProperties SystemDeviceUtils::enumerateRegistryDevices(bool aQuick) {
     QSettings settings(CRegistrySerialPort::InitialPath, QSettings::NativeFormat);
     QStringList allKeys = settings.allKeys().filter(CRegistrySerialPort::PathProperty);
 
-    foreach (const QString &key, allKeys) {
+    foreach (const QString &key, allKeys)
+    {
         QString pathPropertyValue = settings.value(key).toString();
 
-        if (!getRelevantPortName(pathPropertyValue, portNames).isEmpty()) {
+        if (!getRelevantPortName(pathPropertyValue, portNames).isEmpty())
+        {
             QStringList sections = key.split("/");
             QStringList groupSections = sections.mid(0, sections.size() - 1);
             QString group = groupSections.join("/");
@@ -131,13 +152,15 @@ TWinDeviceProperties SystemDeviceUtils::enumerateRegistryDevices(bool aQuick) {
 
             TWinProperties properties;
 
-            foreach (const QString &propertyKey, settings.childKeys()) {
+            foreach (const QString &propertyKey, settings.childKeys())
+            {
                 properties.insert(propertyKey, settings.value(propertyKey).toString());
             }
 
             settings.endGroup();
 
-            if (properties.contains(CRegistrySerialPort::PathProperty)) {
+            if (properties.contains(CRegistrySerialPort::PathProperty))
+            {
                 result[pathPropertyValue].path =
                     QString("%1\\%2").arg(CRegistrySerialPort::InitialPath).arg(group.replace("/", "\\"));
                 result[pathPropertyValue].data = properties;
@@ -149,27 +172,34 @@ TWinDeviceProperties SystemDeviceUtils::enumerateRegistryDevices(bool aQuick) {
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getProperty(const HDEVINFO &aHDevInfo, SP_DEVINFO_DATA &aDeviceInfoData, DWORD aProperty) {
+QString SystemDeviceUtils::getProperty(const HDEVINFO &aHDevInfo, SP_DEVINFO_DATA &aDeviceInfoData, DWORD aProperty)
+{
     DWORD DataT;
     LPTSTR buffer = NULL;
     DWORD buffersize = 0;
 
     while (!SetupDiGetDeviceRegistryProperty(aHDevInfo, &aDeviceInfoData, aProperty, &DataT, (PBYTE)buffer, buffersize,
-                                             &buffersize)) {
-        if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
-            if (buffer) {
+                                             &buffersize))
+    {
+        if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+        {
+            if (buffer)
+            {
                 LocalFree(buffer);
             }
 
             buffer = (LPTSTR)LocalAlloc(LPTR, buffersize * 2);
-        } else {
+        }
+        else
+        {
             break;
         }
     }
 
     QString result = QString::fromWCharArray(buffer);
 
-    if (buffer) {
+    if (buffer)
+    {
         LocalFree(buffer);
     }
 
@@ -177,7 +207,8 @@ QString SystemDeviceUtils::getProperty(const HDEVINFO &aHDevInfo, SP_DEVINFO_DAT
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getRegKeyValue(HKEY key, LPCTSTR aProperty) {
+QString SystemDeviceUtils::getRegKeyValue(HKEY key, LPCTSTR aProperty)
+{
     DWORD size = 0;
     RegQueryValueEx(key, aProperty, NULL, NULL, NULL, &size);
 
@@ -186,7 +217,8 @@ QString SystemDeviceUtils::getRegKeyValue(HKEY key, LPCTSTR aProperty) {
 
     QString value;
 
-    if (RegQueryValueEx(key, aProperty, NULL, NULL, buffer, &size) == ERROR_SUCCESS) {
+    if (RegQueryValueEx(key, aProperty, NULL, NULL, buffer, &size) == ERROR_SUCCESS)
+    {
         value = QString::fromUtf16(reinterpret_cast<const char16_t *>(buffer));
     }
 
@@ -197,11 +229,13 @@ QString SystemDeviceUtils::getRegKeyValue(HKEY key, LPCTSTR aProperty) {
 
 //--------------------------------------------------------------------------------
 bool SystemDeviceUtils::enumerateSystemDevices(const QUuid &aUuid, TWinDeviceProperties &aDeviceProperties,
-                                               DWORD aPathProperty, bool aQuick) {
+                                               DWORD aPathProperty, bool aQuick)
+{
     GUID guid = aUuid;
     HDEVINFO deviceInfo = SetupDiGetClassDevs(&guid, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 
-    if (deviceInfo == INVALID_HANDLE_VALUE) {
+    if (deviceInfo == INVALID_HANDLE_VALUE)
+    {
         qCritical("SetupDiGetClassDevs failed. Error code: %ld", GetLastError());
         return false;
     }
@@ -214,17 +248,20 @@ bool SystemDeviceUtils::enumerateSystemDevices(const QUuid &aUuid, TWinDevicePro
     DWORD detailedDataSize = 0;
     DWORD olddetailedDataSize = 0;
 
-    for (DWORD i = 0; OK; i++) {
+    for (DWORD i = 0; OK; i++)
+    {
         OK = SetupDiEnumDeviceInterfaces(deviceInfo, NULL, &guid, i, &interfaceData);
 
-        if (OK) {
+        if (OK)
+        {
             SP_DEVINFO_DATA deviceData = {sizeof(SP_DEVINFO_DATA)};
 
             // check for required detData size
             SetupDiGetDeviceInterfaceDetail(deviceInfo, &interfaceData, NULL, 0, &detailedDataSize, &deviceData);
 
             // if larger than old detData size then reallocate the buffer
-            if (detailedDataSize > olddetailedDataSize) {
+            if (detailedDataSize > olddetailedDataSize)
+            {
                 delete[] detailedData;
 
                 detailedData = (SP_DEVICE_INTERFACE_DETAIL_DATA *)new char[detailedDataSize];
@@ -234,7 +271,8 @@ bool SystemDeviceUtils::enumerateSystemDevices(const QUuid &aUuid, TWinDevicePro
 
             // check the details
             if (!SetupDiGetDeviceInterfaceDetail(deviceInfo, &interfaceData, detailedData, detailedDataSize, NULL,
-                                                 &deviceData)) {
+                                                 &deviceData))
+            {
                 qCritical("SetupDiGetDeviceInterfaceDetail failed. Error code: %ld", GetLastError());
                 return false;
             }
@@ -246,35 +284,43 @@ bool SystemDeviceUtils::enumerateSystemDevices(const QUuid &aUuid, TWinDevicePro
             QRegularExpression regexp("vid_([0-9a-fA-F]+)");
             bool parseOK;
 
-            if (regexp.match(path).capturedStart() != -1) {
+            if (regexp.match(path).capturedStart() != -1)
+            {
                 QString data = regexp.capturedTexts()[1];
                 qint32 value = data.toInt(&parseOK, 16);
 
-                if (parseOK) {
+                if (parseOK)
+                {
                     aDeviceProperties[pathProperty].VID = quint16(value);
                 }
             }
 
             regexp = QRegExp("pid_([0-9a-fA-F]+)");
 
-            if (regexp.match(path).capturedStart() != -1) {
+            if (regexp.match(path).capturedStart() != -1)
+            {
                 QString data = regexp.capturedTexts()[1];
                 qint32 value = data.toInt(&parseOK, 16);
 
-                if (parseOK) {
+                if (parseOK)
+                {
                     aDeviceProperties[pathProperty].PID = quint16(value);
                 }
             }
 
-            if (!aQuick) {
+            if (!aQuick)
+            {
                 DeviceWinProperties deviceWinProperties;
 
-                foreach (const QString &winProperty, deviceWinProperties.data().values()) {
+                foreach (const QString &winProperty, deviceWinProperties.data().values())
+                {
                     aDeviceProperties[pathProperty].data.insert(
                         winProperty, getProperty(deviceInfo, deviceData, deviceWinProperties.key(winProperty)));
                 }
             }
-        } else if (GetLastError() != ERROR_NO_MORE_ITEMS) {
+        }
+        else if (GetLastError() != ERROR_NO_MORE_ITEMS)
+        {
             qCritical("SetupDiEnumDeviceInterfaces failed. Error code: %ld", GetLastError());
             break;
         }
@@ -290,24 +336,31 @@ bool SystemDeviceUtils::enumerateSystemDevices(const QUuid &aUuid, TWinDevicePro
 //--------------------------------------------------------------------------------
 void SystemDeviceUtils::mergeRegistryDeviceProperties(TWinDeviceProperties &aDeviceProperties,
                                                       const TWinDeviceProperties &aDeviceRegistryProperties,
-                                                      TSourceDeviceData &aSourceDeviceData) {
+                                                      TSourceDeviceData &aSourceDeviceData)
+{
     QStringList devicePortNames = aDeviceProperties.keys();
 
-    for (auto it = aDeviceRegistryProperties.begin(); it != aDeviceRegistryProperties.end(); ++it) {
+    for (auto it = aDeviceRegistryProperties.begin(); it != aDeviceRegistryProperties.end(); ++it)
+    {
         QString portName = getRelevantPortName(it.key(), devicePortNames);
 
-        if (!portName.isEmpty()) {
+        if (!portName.isEmpty())
+        {
             aSourceDeviceData[portName] << it->path;
 
             TWinProperties &winDeviceProperties = aDeviceProperties[portName].data;
             QStringList winDevicePropertyNames = winDeviceProperties.keys();
 
-            for (auto jt = it->data.begin(); jt != it->data.end(); ++jt) {
+            for (auto jt = it->data.begin(); jt != it->data.end(); ++jt)
+            {
                 QString propertyName = getRelevantWinProperty(jt.key(), winDevicePropertyNames);
 
-                if (propertyName.isEmpty()) {
+                if (propertyName.isEmpty())
+                {
                     winDeviceProperties.insert(jt.key(), jt.value());
-                } else {
+                }
+                else
+                {
                     QString propertyData = winDeviceProperties[propertyName].simplified().toLower();
                     QString registryData = jt.value().simplified().toLower();
 
@@ -315,12 +368,15 @@ void SystemDeviceUtils::mergeRegistryDeviceProperties(TWinDeviceProperties &aDev
                     bool allEmpty = propertyData.isEmpty() && registryData.isEmpty();
                     bool contains = propertyData.contains(registryData) || registryData.contains(propertyData);
 
-                    if (oneEmpty || (!allEmpty && !contains)) {
+                    if (oneEmpty || (!allEmpty && !contains))
+                    {
                         winDeviceProperties.insert(jt.key(), jt.value());
                     }
                 }
             }
-        } else {
+        }
+        else
+        {
             aDeviceProperties.insert(it.key(), it.value());
             aSourceDeviceData[it.key()] << it->path;
         }
@@ -328,25 +384,35 @@ void SystemDeviceUtils::mergeRegistryDeviceProperties(TWinDeviceProperties &aDev
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getDeviceOutKey(const QStringList &aKeys) {
+QString SystemDeviceUtils::getDeviceOutKey(const QStringList &aKeys)
+{
     int maxNameSize = getMaxSize(aKeys);
     QString result;
 
-    foreach (const QString &key, aKeys) {
-        if (maxNameSize == CRegistrySerialPort::UuidSize) {
+    foreach (const QString &key, aKeys)
+    {
+        if (maxNameSize == CRegistrySerialPort::UuidSize)
+        {
             result += QString("\n%1 %2 %1").arg(QString(CRegistrySerialPort::LineSize, '-')).arg(key);
-        } else {
-            if (CRegistrySerialPort::MaxUuidSize > maxNameSize) {
+        }
+        else
+        {
+            if (CRegistrySerialPort::MaxUuidSize > maxNameSize)
+            {
                 int line1Size = (CRegistrySerialPort::MaxUuidSize - key.size() - 2) / 2;
                 int line2Size = CRegistrySerialPort::MaxUuidSize - line1Size - key.size() - 2;
 
                 result += QString("\n%1 %2 %3").arg(QString(line1Size, '-')).arg(key).arg(QString(line2Size, '-'));
-            } else if (key.size() < maxNameSize) {
+            }
+            else if (key.size() < maxNameSize)
+            {
                 int line1Size = (maxNameSize - key.size() - 2) / 2;
                 int line2Size = maxNameSize - line1Size - key.size() - 2;
 
                 result += QString("\n%1 %2 %3").arg(QString(line1Size, '-')).arg(key).arg(QString(line2Size, '-'));
-            } else {
+            }
+            else
+            {
                 result += "\n" + key;
             }
         }
@@ -356,7 +422,8 @@ QString SystemDeviceUtils::getDeviceOutKey(const QStringList &aKeys) {
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getDeviceOutData(const TWinProperties &aWinPropertyData) {
+QString SystemDeviceUtils::getDeviceOutData(const TWinProperties &aWinPropertyData)
+{
     QStringList dataKeys = aWinPropertyData.keys();
 
     QStringList outDataKeys = dataKeys.filter(CDeviceWinProperties::Prefix);
@@ -368,7 +435,8 @@ QString SystemDeviceUtils::getDeviceOutData(const TWinProperties &aWinPropertyDa
     QString result;
     int maxNameSize = getMaxSize(outDataKeys);
 
-    foreach (const QString &outKey, outDataKeys) {
+    foreach (const QString &outKey, outDataKeys)
+    {
         result += QString("\n%1 = %2").arg(outKey, maxNameSize).arg(aWinPropertyData[outKey]);
     }
 
@@ -376,10 +444,12 @@ QString SystemDeviceUtils::getDeviceOutData(const TWinProperties &aWinPropertyDa
 }
 
 //--------------------------------------------------------------------------------
-int SystemDeviceUtils::getMaxSize(const QStringList &aBuffer) {
+int SystemDeviceUtils::getMaxSize(const QStringList &aBuffer)
+{
     int result = 0;
 
-    foreach (auto element, aBuffer) {
+    foreach (auto element, aBuffer)
+    {
         result = qMax(result, element.size());
     }
 
@@ -387,10 +457,12 @@ int SystemDeviceUtils::getMaxSize(const QStringList &aBuffer) {
 }
 
 //--------------------------------------------------------------------------------
-QString SystemDeviceUtils::getScreenedData(const QString &aData) {
+QString SystemDeviceUtils::getScreenedData(const QString &aData)
+{
     QString result = aData;
 
-    for (int i = 0; i < sizeof(CRegistrySerialPort::RegexSymbols); ++i) {
+    for (int i = 0; i < sizeof(CRegistrySerialPort::RegexSymbols); ++i)
+    {
         QChar ch(CRegistrySerialPort::RegexSymbols[i]);
         result = result.replace(ch, ASCII::BackSlash + ch);
     }
@@ -399,7 +471,8 @@ QString SystemDeviceUtils::getScreenedData(const QString &aData) {
 }
 
 //--------------------------------------------------------------------------------
-bool operator!=(const COMMTIMEOUTS &aLeft, const COMMTIMEOUTS &aRight) {
+bool operator!=(const COMMTIMEOUTS &aLeft, const COMMTIMEOUTS &aRight)
+{
     return (aLeft.ReadIntervalTimeout != aRight.ReadIntervalTimeout) ||
            (aLeft.ReadTotalTimeoutMultiplier != aRight.ReadTotalTimeoutMultiplier) ||
            (aLeft.ReadTotalTimeoutConstant != aRight.ReadTotalTimeoutConstant) ||
@@ -408,7 +481,8 @@ bool operator!=(const COMMTIMEOUTS &aLeft, const COMMTIMEOUTS &aRight) {
 }
 
 //--------------------------------------------------------------------------------
-bool operator==(const DCB &aLeft, const DCB &aRight) {
+bool operator==(const DCB &aLeft, const DCB &aRight)
+{
     return (aLeft.BaudRate == aRight.BaudRate) && (aLeft.ByteSize == aRight.ByteSize) &&
            (aLeft.StopBits == aRight.StopBits) && (aLeft.fRtsControl == aRight.fRtsControl) &&
            (aLeft.fDtrControl == aRight.fDtrControl) && (aLeft.Parity == aRight.Parity);

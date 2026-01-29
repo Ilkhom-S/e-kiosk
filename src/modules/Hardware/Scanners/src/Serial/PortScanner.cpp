@@ -16,32 +16,38 @@ template class PortScanner<USBDeviceBase<PortPollingDeviceBase<ProtoHID>>>;
 template class PortScanner<SerialDeviceBase<PortPollingDeviceBase<ProtoHID>>>;
 
 //--------------------------------------------------------------------------------
-template <class T> PortScanner<T>::PortScanner() {
+template <class T> PortScanner<T>::PortScanner()
+{
     mPollingInterval = CScanner::PollingInterval;
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PortScanner<T>::release() {
+template <class T> bool PortScanner<T>::release()
+{
     this->mIOPort->release();
 
     return HIDBase<T>::release();
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PortScanner<T>::getData(QByteArray &aAnswer) {
+template <class T> bool PortScanner<T>::getData(QByteArray &aAnswer)
+{
     QByteArray data;
 
     QElapsedTimer clockTimer;
     clockTimer.start();
 
-    do {
-        if (!this->mIOPort->read(data, CScanner::CheckingTimeout)) {
+    do
+    {
+        if (!this->mIOPort->read(data, CScanner::CheckingTimeout))
+        {
             return false;
         }
 
         aAnswer.append(data);
 
-        if (!data.isEmpty()) {
+        if (!data.isEmpty())
+        {
             clockTimer.restart();
         }
     } while (clockTimer.elapsed() < this->mPollingInterval);
@@ -50,14 +56,17 @@ template <class T> bool PortScanner<T>::getData(QByteArray &aAnswer) {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool PortScanner<T>::getStatus(TStatusCodes & /*aStatusCodes*/) {
-    if (!this->mEnabled) {
+template <class T> bool PortScanner<T>::getStatus(TStatusCodes & /*aStatusCodes*/)
+{
+    if (!this->mEnabled)
+    {
         return true;
     }
 
     QByteArray answer;
 
-    if (!getData(answer)) {
+    if (!getData(answer))
+    {
         return false;
     }
 
@@ -65,13 +74,15 @@ template <class T> bool PortScanner<T>::getStatus(TStatusCodes & /*aStatusCodes*
     answer.replace(ASCII::CR, "");
     answer.replace(ASCII::LF, "");
 
-    if (!answer.isEmpty()) {
+    if (!answer.isEmpty())
+    {
         this->mIOPort->clear();
 
         QByteArray logData = ProtocolUtils::clean(answer);
         QString log = QString("%1: data received: %2").arg(this->mDeviceName).arg(logData.data());
 
-        if (logData != answer) {
+        if (logData != answer)
+        {
             log += QString(" -> {%1}").arg(answer.toHex().data());
         }
 

@@ -3,25 +3,32 @@
 #include "SerialDevice.h"
 
 //-----------------------------------------------------------------------------
-ComPortLin::ComPortLin(const QString &aFilePath) : m_device(new SerialDevice(aFilePath)), m_deviceName(aFilePath) {
+ComPortLin::ComPortLin(const QString &aFilePath) : m_device(new SerialDevice(aFilePath)), m_deviceName(aFilePath)
+{
     m_device->open();
 }
 
 //-----------------------------------------------------------------------------
-ComPortLin::~ComPortLin() {
+ComPortLin::~ComPortLin()
+{
     release();
 }
 
 //-----------------------------------------------------------------------------
-bool ComPortLin::open() {
+bool ComPortLin::open()
+{
     bool status = true;
 
-    if (!m_device->isOpen()) {
+    if (!m_device->isOpen())
+    {
         status = m_device->open(SerialDevice::ReadWrite);
 
-        if (status) {
+        if (status)
+        {
             LOG_WRITE(CComPortLin::LogName, LogLevel::Normal, "Port " + m_deviceName + " is successfully opened");
-        } else {
+        }
+        else
+        {
             LOG_WRITE(CComPortLin::LogName, LogLevel::Error,
                       "Port " + m_deviceName + ", ComPortLin::open(): failed because SerialDevice::open() failed");
         }
@@ -33,13 +40,16 @@ bool ComPortLin::open() {
 }
 
 //-----------------------------------------------------------------------------
-bool ComPortLin::init() {
+bool ComPortLin::init()
+{
     return m_device->init();
 }
 
 //-----------------------------------------------------------------------------
-bool ComPortLin::release() {
-    if (m_device->isOpen()) {
+bool ComPortLin::release()
+{
+    if (m_device->isOpen())
+    {
         m_device->close();
         LOG_WRITE(CComPortLin::LogName, LogLevel::Normal, "Port " + m_deviceName + " is successfully closed");
         return true;
@@ -48,8 +58,10 @@ bool ComPortLin::release() {
 }
 
 //-----------------------------------------------------------------------------
-bool ComPortLin::clear() {
-    if (m_device->isOpen()) {
+bool ComPortLin::clear()
+{
+    if (m_device->isOpen())
+    {
         m_device->readAll();
         return true;
     }
@@ -57,17 +69,20 @@ bool ComPortLin::clear() {
 }
 
 //-----------------------------------------------------------------------------
-bool ComPortLin::readData(QByteArray &aData, unsigned int aMaxSize, bool aIsTimeOut, bool aIsFirstData) {
+bool ComPortLin::readData(QByteArray &aData, unsigned int aMaxSize, bool aIsTimeOut, bool aIsFirstData)
+{
     Q_UNUSED(aIsFirstData);
 
     const ulong oldTimeout = m_device->getTimeout();
-    if (!aIsTimeOut) {
+    if (!aIsTimeOut)
+    {
         m_device->setTimeout(0);
     }
 
     aData = m_device->read(aMaxSize);
 
-    if (!aIsTimeOut) {
+    if (!aIsTimeOut)
+    {
         m_device->setTimeout(oldTimeout);
     }
 
@@ -75,14 +90,17 @@ bool ComPortLin::readData(QByteArray &aData, unsigned int aMaxSize, bool aIsTime
 }
 
 //-----------------------------------------------------------------------------
-int ComPortLin::writeData(const QByteArray &aData) {
+int ComPortLin::writeData(const QByteArray &aData)
+{
     return m_device->write(aData);
 }
 
 //-----------------------------------------------------------------------------
-bool ComPortLin::setBaudRate(PortParameters::BaudRate::Enum aBaudRate) {
+bool ComPortLin::setBaudRate(PortParameters::BaudRate::Enum aBaudRate)
+{
     CBaudRateType::Enum baudRate = CBaudRateType::Baud115200;
-    switch (aBaudRate) {
+    switch (aBaudRate)
+    {
         case PortParameters::BaudRate::BR110:
             baudRate = CBaudRateType::Baud110;
             break;
@@ -128,20 +146,27 @@ bool ComPortLin::setBaudRate(PortParameters::BaudRate::Enum aBaudRate) {
             return false;
     };
 
-    if (!m_device->setBaudRate(baudRate)) {
+    if (!m_device->setBaudRate(baudRate))
+    {
         LOG_WRITE(CComPortLin::LogName, LogLevel::Error,
                   "Port " + m_deviceName +
                       ", ComPortLin::setBaudRate(): failed because SerialDevice::setBaudRate() failed");
         return false;
-    } else {
+    }
+    else
+    {
         m_COMParameters.baudRate = aBaudRate;
 
-        if (!m_registryParameters) {
+        if (!m_registryParameters)
+        {
             changeRegistryParameters(m_COMParameters);
-        } else {
+        }
+        else
+        {
             QString root = CRegistry::Keys::Root;
             if (!m_registryParameters->setValue(root, CRegistry::Values::Ports::BaudRate,
-                                                PortParameters::BaudRate::toString(m_COMParameters.baudRate))) {
+                                                PortParameters::BaudRate::toString(m_COMParameters.baudRate)))
+            {
                 saveLastError("Error set value : " + root + "/" + CRegistry::Values::Ports::BaudRate);
                 LOG_WRITE(CComPortLin::LogName, LogLevel::Error,
                           "COM" + QString::number(m_COMParameters.portNumber) +
@@ -154,9 +179,11 @@ bool ComPortLin::setBaudRate(PortParameters::BaudRate::Enum aBaudRate) {
 }
 
 //-----------------------------------------------------------------------------
-bool ComPortLin::setStopBits(PortParameters::StopBits::Enum aStopBits) {
+bool ComPortLin::setStopBits(PortParameters::StopBits::Enum aStopBits)
+{
     CStopBitsType::Enum stopBits = CStopBitsType::Stop1;
-    switch (aStopBits) {
+    switch (aStopBits)
+    {
         case PortParameters::StopBits::One:
             stopBits = CStopBitsType::Stop1;
             break;
@@ -169,20 +196,25 @@ bool ComPortLin::setStopBits(PortParameters::StopBits::Enum aStopBits) {
             return false;
     };
 
-    if (!m_device->setStopBits(stopBits)) {
+    if (!m_device->setStopBits(stopBits))
+    {
         LOG_WRITE(CComPortLin::LogName, LogLevel::Error,
                   "Port " + m_deviceName +
                       ", ComPortLin::setStopBits(): failted because SerialDevice::setStopBits() failed");
         return false;
-    } else {
+    }
+    else
+    {
         m_COMParameters.stopBits = aStopBits;
 
         if (!m_registryParameters)
             changeRegistryParameters(m_COMParameters);
-        else {
+        else
+        {
             QString root = CRegistry::Keys::Root;
             if (!m_registryParameters->setValue(root, CRegistry::Values::Ports::StopBits,
-                                                PortParameters::StopBits::toString(m_COMParameters.stopBits))) {
+                                                PortParameters::StopBits::toString(m_COMParameters.stopBits)))
+            {
                 saveLastError("Error set value : " + root + "/" + CRegistry::Values::Ports::StopBits);
                 LOG_WRITE(CComPortLin::LogName, LogLevel::Error,
                           "COM" + QString::number(m_COMParameters.portNumber) +
@@ -195,9 +227,11 @@ bool ComPortLin::setStopBits(PortParameters::StopBits::Enum aStopBits) {
 }
 
 //-----------------------------------------------------------------------------
-bool ComPortLin::setParity(PortParameters::Parity::Enum aParity) {
+bool ComPortLin::setParity(PortParameters::Parity::Enum aParity)
+{
     CParityType::Enum parity = CParityType::None;
-    switch (aParity) {
+    switch (aParity)
+    {
         case PortParameters::Parity::PEven:
             parity = CParityType::Even;
             break;
@@ -216,20 +250,27 @@ bool ComPortLin::setParity(PortParameters::Parity::Enum aParity) {
             return false;
     }
 
-    if (!m_device->setParity(parity)) {
+    if (!m_device->setParity(parity))
+    {
         LOG_WRITE(CComPortLin::LogName, LogLevel::Error,
                   "Port " + m_deviceName +
                       ", ComPortLin::setParity(): failted because SerialDevice::setParity() failed");
         return false;
-    } else {
+    }
+    else
+    {
         m_COMParameters.parity = aParity;
 
-        if (!m_registryParameters) {
+        if (!m_registryParameters)
+        {
             changeRegistryParameters(m_COMParameters);
-        } else {
+        }
+        else
+        {
             QString root = CRegistry::Keys::Root;
             if (!m_registryParameters->setValue(root, CRegistry::Values::Ports::Parity,
-                                                PortParameters::Parity::toString(m_COMParameters.parity))) {
+                                                PortParameters::Parity::toString(m_COMParameters.parity)))
+            {
                 saveLastError("Error set value : " + root + "/" + CRegistry::Values::Ports::Parity);
                 LOG_WRITE(CComPortLin::LogName, LogLevel::Error,
                           "COM" + QString::number(m_COMParameters.portNumber) +
@@ -242,16 +283,21 @@ bool ComPortLin::setParity(PortParameters::Parity::Enum aParity) {
 }
 
 //-----------------------------------------------------------------------------
-bool ComPortLin::setDTR(PortParameters::DTR::Enum aDTR) {
+bool ComPortLin::setDTR(PortParameters::DTR::Enum aDTR)
+{
     m_device->setDtr(!(aDTR == PortParameters::DTR::Disable));
     m_COMParameters.dtrControl = aDTR;
 
-    if (!m_registryParameters) {
+    if (!m_registryParameters)
+    {
         changeRegistryParameters(m_COMParameters);
-    } else {
+    }
+    else
+    {
         QString root = CRegistry::Keys::Root;
         if (!m_registryParameters->setValue(root, CRegistry::Values::Ports::DtrControl,
-                                            PortParameters::DTR::toString(m_COMParameters.dtrControl))) {
+                                            PortParameters::DTR::toString(m_COMParameters.dtrControl)))
+        {
             saveLastError("Error set value : " + root + "/" + CRegistry::Values::Ports::DtrControl);
             LOG_WRITE(CComPortLin::LogName, LogLevel::Error,
                       "COM" + QString::number(m_COMParameters.portNumber) +
@@ -263,16 +309,21 @@ bool ComPortLin::setDTR(PortParameters::DTR::Enum aDTR) {
 }
 
 //-----------------------------------------------------------------------------
-bool ComPortLin::setRTS(PortParameters::RTS::Enum aRTS) {
+bool ComPortLin::setRTS(PortParameters::RTS::Enum aRTS)
+{
     m_device->setRts(!(aRTS == PortParameters::RTS::Disable));
     m_COMParameters.rtsControl = aRTS;
 
-    if (!m_registryParameters) {
+    if (!m_registryParameters)
+    {
         changeRegistryParameters(m_COMParameters);
-    } else {
+    }
+    else
+    {
         QString root = CRegistry::Keys::Root;
         if (!m_registryParameters->setValue(root, CRegistry::Values::Ports::RtsControl,
-                                            PortParameters::RTS::toString(m_COMParameters.rtsControl))) {
+                                            PortParameters::RTS::toString(m_COMParameters.rtsControl)))
+        {
             saveLastError("Error set value : " + root + "/" + CRegistry::Values::Ports::RtsControl);
             LOG_WRITE(CComPortLin::LogName, LogLevel::Error,
                       "COM" + QString::number(m_COMParameters.portNumber) +
@@ -284,8 +335,10 @@ bool ComPortLin::setRTS(PortParameters::RTS::Enum aRTS) {
 }
 
 //-----------------------------------------------------------------------------
-void ComPortLin::setTimeOut(int aMsecs) {
-    if (!m_device->setTimeout(aMsecs)) {
+void ComPortLin::setTimeOut(int aMsecs)
+{
+    if (!m_device->setTimeout(aMsecs))
+    {
         LOG_WRITE(CComPortLin::LogName, LogLevel::Error,
                   "Port " + m_deviceName +
                       ", ComPortLin::setTimeOut(): failted because SerialDevice::setTimeout() failed");

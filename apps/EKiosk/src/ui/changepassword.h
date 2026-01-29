@@ -8,11 +8,13 @@
 // Project
 #include "keypud.h"
 
-namespace Ui {
+namespace Ui
+{
     class ChangePassword;
 }
 class CoddingRes;
-class ChangePassword : public QDialog {
+class ChangePassword : public QDialog
+{
     Q_OBJECT
 
   public:

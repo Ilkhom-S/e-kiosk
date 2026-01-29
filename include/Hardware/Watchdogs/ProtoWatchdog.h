@@ -10,7 +10,8 @@
 #include "Hardware/Watchdogs/WatchdogStatusCodes.h"
 
 //--------------------------------------------------------------------------------
-class ProtoWatchdog : public ProtoDevice, public MetaDevice<SDK::Driver::IWatchdog> {
+class ProtoWatchdog : public ProtoDevice, public MetaDevice<SDK::Driver::IWatchdog>
+{
     Q_OBJECT
 
     SET_DEVICE_TYPE(Watchdog)
@@ -24,7 +25,8 @@ class ProtoWatchdog : public ProtoDevice, public MetaDevice<SDK::Driver::IWatchd
     virtual void onPing() {};
 
     /// Перезагрузка линии питания.
-    virtual bool reset(const QString & /*aLine*/) {
+    virtual bool reset(const QString & /*aLine*/)
+    {
         return true;
     };
 

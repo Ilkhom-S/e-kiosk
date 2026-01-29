@@ -9,7 +9,8 @@
 #include "Hardware/CoinAcceptors/CoinAcceptorBase.h"
 
 //--------------------------------------------------------------------------------
-class NPSTalkCoinAcceptor : public CoinAcceptorBase {
+class NPSTalkCoinAcceptor : public CoinAcceptorBase
+{
     SET_SERIES("NPS")
 
     typedef QMap<uchar, uchar> TCoinsByChannel;

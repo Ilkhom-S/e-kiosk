@@ -13,32 +13,44 @@
 class GroupModel;
 
 //------------------------------------------------------------------------------
-struct SProvider {
+struct SProvider
+{
     qint64 id;
     QString name;
     QString info;
 
-    SProvider() {
+    SProvider()
+    {
         id = -1;
     }
-    explicit SProvider(quint64 aId) : id(aId) {
+    explicit SProvider(quint64 aId) : id(aId)
+    {
     }
 
-    bool isValid() const {
+    bool isValid() const
+    {
         return id != -1;
     }
 
-    bool operator<(const SProvider &aProvider) const {
+    bool operator<(const SProvider &aProvider) const
+    {
         return info < aProvider.info;
     }
 };
 
 //------------------------------------------------------------------------------
-class ProviderListModel : public QAbstractListModel {
+class ProviderListModel : public QAbstractListModel
+{
     Q_OBJECT
 
   public:
-    enum EntryRoles { IdRole = Qt::UserRole + 1, NameRole, InfoRole, ImageRole };
+    enum EntryRoles
+    {
+        IdRole = Qt::UserRole + 1,
+        NameRole,
+        InfoRole,
+        ImageRole
+    };
 
   public:
     ProviderListModel(QObject *aParent, QSharedPointer<GroupModel> aGroupModel);

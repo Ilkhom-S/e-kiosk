@@ -10,7 +10,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-class UpdaterSplashScreen : public QWidget {
+class UpdaterSplashScreen : public QWidget
+{
     Q_OBJECT
 
   public:

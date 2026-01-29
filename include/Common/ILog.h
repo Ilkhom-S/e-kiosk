@@ -8,18 +8,36 @@
 
 //---------------------------------------------------------------------------
 /// Уровень логирования.
-namespace LogLevel {
-    enum Enum { Off = 0, Fatal, Error, Warning, Normal, Debug, Trace, Max = Trace };
+namespace LogLevel
+{
+    enum Enum
+    {
+        Off = 0,
+        Fatal,
+        Error,
+        Warning,
+        Normal,
+        Debug,
+        Trace,
+        Max = Trace
+    };
 } // namespace LogLevel
 
 //---------------------------------------------------------------------------
 /// Устройство вывода лога.
-namespace LogType {
-    enum Enum { File, Console, Debug };
+namespace LogType
+{
+    enum Enum
+    {
+        File,
+        Console,
+        Debug
+    };
 } // namespace LogType
 
 //---------------------------------------------------------------------------
-class ILog {
+class ILog
+{
   public:
     /// Возвращает экземпляр лога с направлением по умолчанию.
     static ILog *getInstance();
@@ -66,7 +84,8 @@ class ILog {
     virtual void logRotate() = 0;
 
   protected:
-    virtual ~ILog() {
+    virtual ~ILog()
+    {
     }
 };
 

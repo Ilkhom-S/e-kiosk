@@ -33,12 +33,14 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------------
-namespace CPayment {
+namespace CPayment
+{
     const int TriesLimit = 25;
     const int NextTryDateIncrement = 5;
     const char DateLogFormat[] = "yyyy.MM.dd hh:mm:ss";
 
-    namespace Parameters {
+    namespace Parameters
+    {
         const char TemporarySession[] = "temporary_session";
     } // namespace Parameters
 } // namespace CPayment
@@ -46,25 +48,35 @@ namespace CPayment {
 //------------------------------------------------------------------------------
 Payment::Payment(PaymentFactory *aFactory)
     : PaymentBase(aFactory, aFactory->getCore()),
-      mRequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine()) {
+      mRequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine())
+{
     mRequestSender.setResponseCreator(
         boost::bind(&Payment::createResponse, this, boost::placeholders::_1, boost::placeholders::_2));
 }
 
 //------------------------------------------------------------------------------
-PaymentFactory *Payment::getPaymentFactory() const {
+PaymentFactory *Payment::getPaymentFactory() const
+{
     return dynamic_cast<PaymentFactory *>(mFactory);
 }
 
 //------------------------------------------------------------------------------
-Request *Payment::createRequest(const QString &aStep) {
-    if (aStep == CPayment::Requests::FakeCheck) {
+Request *Payment::createRequest(const QString &aStep)
+{
+    if (aStep == CPayment::Requests::FakeCheck)
+    {
         return new PaymentCheckRequest(this, true);
-    } else if (aStep == CPayment::Requests::Check) {
+    }
+    else if (aStep == CPayment::Requests::Check)
+    {
         return new PaymentCheckRequest(this, false);
-    } else if (aStep == CPayment::Requests::Pay) {
+    }
+    else if (aStep == CPayment::Requests::Pay)
+    {
         return new PaymentPayRequest(this);
-    } else if (aStep == CPayment::Requests::Status) {
+    }
+    else if (aStep == CPayment::Requests::Status)
+    {
         return new PaymentStatusRequest(this);
     }
 
@@ -72,16 +84,21 @@ Request *Payment::createRequest(const QString &aStep) {
 }
 
 //------------------------------------------------------------------------------
-Response *Payment::createResponse(const Request &aRequest, const QString &aResponseString) {
-    if (dynamic_cast<const PaymentStatusRequest *>(&aRequest)) {
+Response *Payment::createResponse(const Request &aRequest, const QString &aResponseString)
+{
+    if (dynamic_cast<const PaymentStatusRequest *>(&aRequest))
+    {
         return new PaymentStatusResponse(aRequest, aResponseString);
-    } else {
+    }
+    else
+    {
         return new PaymentResponse(aRequest, aResponseString);
     }
 }
 
 //------------------------------------------------------------------------------
-Response *Payment::sendRequest(const QUrl &aUrl, Request &aRequest) {
+Response *Payment::sendRequest(const QUrl &aUrl, Request &aRequest)
+{
     mRequestSender.setCryptKeyPair(mProviderSettings.processor.keyPair);
 
     toLog(LogLevel::Normal, QString("Payment %1. Sending request to url %2. ").arg(getID()).arg(aUrl.toString()) +
@@ -90,7 +107,8 @@ Response *Payment::sendRequest(const QUrl &aUrl, Request &aRequest) {
     RequestSender::ESendError error;
 
     QScopedPointer<Response> response(mRequestSender.post(aUrl, aRequest, RequestSender::Solid, error));
-    if (!response) {
+    if (!response)
+    {
         toLog(
             LogLevel::Error,
             QString("Payment %1. Failed to send request: %2.").arg(getID()).arg(RequestSender::translateError(error)));
@@ -101,7 +119,8 @@ Response *Payment::sendRequest(const QUrl &aUrl, Request &aRequest) {
     toLog(LogLevel::Normal, QString("Payment %1. Response from url %2 received.").arg(getID()).arg(aUrl.toString()) +
                                 QString(" Fields: %1.").arg(response->toLogString()));
 
-    if (!response->isOk()) {
+    if (!response->isOk())
+    {
         toLog(LogLevel::Warning, QString("Payment %1. Request was sent, but server response has non "
                                          "zero error code (error: %2, result: %3, message: %4).")
                                      .arg(getID())
@@ -118,34 +137,42 @@ Response *Payment::sendRequest(const QUrl &aUrl, Request &aRequest) {
 }
 
 //---------------------------------------------------------------------------
-bool Payment::isCriticalError(int aError) const {
-    switch (aError) {
+bool Payment::isCriticalError(int aError) const
+{
+    switch (aError)
+    {
         case EServerError::BadSumFormat:
         case EServerError::BadNumberFormat:
         case EServerError::BadAccountFormat:
         case EServerError::OperatorNumberReject:
         case EServerError::ErrorDate:
-        case EServerError::MaxSumExceeded: {
+        case EServerError::MaxSumExceeded:
+        {
             return true;
         }
 
-        default: {
+        default:
+        {
             return PaymentBase::isCriticalError(aError);
         }
     }
 }
 
 //------------------------------------------------------------------------------
-bool Payment::check(bool aFakeCheck) {
+bool Payment::check(bool aFakeCheck)
+{
     // Если фиктивный чек, то генерируем временную сессию.
-    if (aFakeCheck) {
+    if (aFakeCheck)
+    {
         toLog(LogLevel::Normal, QString("Payment %1. %2, operator: %3 (%4), session: %5.")
                                     .arg(getID())
                                     .arg(CPayment::Requests::FakeCheck)
                                     .arg(mProviderSettings.id)
                                     .arg(mProviderSettings.name)
                                     .arg(getSession()));
-    } else {
+    }
+    else
+    {
         toLog(LogLevel::Normal, QString("Payment %1. %2, operator: %3 (%4), session: %5, amount_all: %6, amount: %7.")
                                     .arg(getID())
                                     .arg(CPayment::Requests::Check)
@@ -158,14 +185,16 @@ bool Payment::check(bool aFakeCheck) {
 
     QScopedPointer<Request> request(
         createRequest(aFakeCheck ? CPayment::Requests::FakeCheck : CPayment::Requests::Check));
-    if (!request) {
+    if (!request)
+    {
         toLog(LogLevel::Error, QString("Payment %1. Failed to create request for operation.").arg(getID()));
 
         return false;
     }
 
     QUrl url(mProviderSettings.processor.requests[CPayment::Requests::Check].url);
-    if (!url.isValid()) {
+    if (!url.isValid())
+    {
         toLog(LogLevel::Error, QString("Payment %1. Can't find url for operation.").arg(getID()));
 
         setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::BadProvider, true));
@@ -174,21 +203,28 @@ bool Payment::check(bool aFakeCheck) {
     }
 
     QScopedPointer<Response> response(sendRequest(url, *request));
-    if (response) {
-        if (response->isOk()) {
+    if (response)
+    {
+        if (response->isOk())
+        {
             toLog(LogLevel::Normal, QString("Payment %1. Checked.").arg(getID()));
 
-            if (aFakeCheck) {
+            if (aFakeCheck)
+            {
                 // Для MNP нужно пересчитывать лимиты платежа после проверки номера
                 calculateLimits();
-            } else {
+            }
+            else
+            {
                 // после фейковой проверки номера блокируем обновление лимитов платежа
                 setBlockUpdateLimits(true);
             }
 
             return true;
         }
-    } else {
+    }
+    else
+    {
         setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::NetworkError, true));
     }
 
@@ -196,7 +232,8 @@ bool Payment::check(bool aFakeCheck) {
 }
 
 //------------------------------------------------------------------------------
-bool Payment::pay() {
+bool Payment::pay()
+{
     toLog(LogLevel::Normal, QString("Payment %1. %2, operator: %3 (%4), session: %5, amount_all: %6, amount: %7.")
                                 .arg(getID())
                                 .arg(CPayment::Requests::Pay)
@@ -207,14 +244,16 @@ bool Payment::pay() {
                                 .arg(getAmount()));
 
     QScopedPointer<Request> request(createRequest(CPayment::Requests::Pay));
-    if (!request) {
+    if (!request)
+    {
         toLog(LogLevel::Error, QString("Payment %1. Failed to create request for operation.").arg(getID()));
 
         return false;
     }
 
     QUrl url(mProviderSettings.processor.requests[CPayment::Requests::Pay].url);
-    if (!url.isValid()) {
+    if (!url.isValid())
+    {
         toLog(LogLevel::Error, QString("Payment %1. Can't find url for operation.").arg(getID()));
 
         setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::BadProvider, true));
@@ -223,13 +262,17 @@ bool Payment::pay() {
     }
 
     QScopedPointer<Response> response(sendRequest(url, *request));
-    if (response) {
-        if (response->isOk()) {
+    if (response)
+    {
+        if (response->isOk())
+        {
             toLog(LogLevel::Normal, QString("Payment %1. Paid.").arg(getID()));
 
             return true;
         }
-    } else {
+    }
+    else
+    {
         setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::NetworkError, true));
     }
 
@@ -237,7 +280,8 @@ bool Payment::pay() {
 }
 
 //------------------------------------------------------------------------------
-bool Payment::status() {
+bool Payment::status()
+{
     toLog(LogLevel::Normal, QString("Payment %1. %2, operator: %3 (%4), session: %5.")
                                 .arg(getID())
                                 .arg(CPayment::Requests::Status)
@@ -246,14 +290,16 @@ bool Payment::status() {
                                 .arg(getSession()));
 
     QScopedPointer<Request> request(createRequest(CPayment::Requests::Status));
-    if (!request) {
+    if (!request)
+    {
         toLog(LogLevel::Error, QString("Payment %1. Failed to create request for operation.").arg(getID()));
 
         return false;
     }
 
     QUrl url(mProviderSettings.processor.requests[CPayment::Requests::Status].url);
-    if (!url.isValid()) {
+    if (!url.isValid())
+    {
         toLog(LogLevel::Error, QString("Payment %1. Can't find url for operation.").arg(getID()));
 
         setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::BadProvider, true));
@@ -262,11 +308,14 @@ bool Payment::status() {
     }
 
     QScopedPointer<Response> response(sendRequest(url, *request));
-    if (response) {
+    if (response)
+    {
         toLog(LogLevel::Normal, QString("Payment %1. Status retrieved.").arg(getID()));
 
         return true;
-    } else {
+    }
+    else
+    {
         setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::NetworkError, true));
 
         return false;
@@ -274,7 +323,8 @@ bool Payment::status() {
 }
 
 //------------------------------------------------------------------------------
-void Payment::setProcessError() {
+void Payment::setProcessError()
+{
     int tryCount = getParameter(PPSDK::CPayment::Parameters::NumberOfTries).value.toInt();
     int serverError = getParameter(PPSDK::CPayment::Parameters::ServerError).value.toInt();
 
@@ -282,11 +332,14 @@ void Payment::setProcessError() {
         static_cast<int>(CPayment::NextTryDateIncrement * pow(1.3f, tryCount) * 60)));
 
     // Время установки статуса BadPayment
-    if (tryCount > CPayment::TriesLimit) {
+    if (tryCount > CPayment::TriesLimit)
+    {
         toLog(LogLevel::Normal, QString("Payment %1. Try count limit exceeded.").arg(getID()));
 
         setStatus(PPSDK::EPaymentStatus::BadPayment);
-    } else {
+    }
+    else
+    {
         toLog(LogLevel::Normal, QString("Payment %1. Next try will be at %2.")
                                     .arg(getID())
                                     .arg(getNextTryDate().toString(CPayment::DateLogFormat)));
@@ -294,12 +347,16 @@ void Payment::setProcessError() {
         setStatus(PPSDK::EPaymentStatus::ProcessError);
     }
 
-    if (serverError != ELocalError::NetworkError) {
+    if (serverError != ELocalError::NetworkError)
+    {
         // Количество попыток проведения платежа увеличиваем только
         // если ошибка не связана с транспортом.
         setParameter(SParameter(PPSDK::CPayment::Parameters::NumberOfTries, ++tryCount, true));
-    } else {
-        if (!tryCount) {
+    }
+    else
+    {
+        if (!tryCount)
+        {
             // Для правильной отправки статусов на мониторинг
             setParameter(SParameter(PPSDK::CPayment::Parameters::NumberOfTries, 1, true));
         }
@@ -307,10 +364,12 @@ void Payment::setProcessError() {
 }
 
 //------------------------------------------------------------------------------
-void Payment::performTransaction() {
+void Payment::performTransaction()
+{
     toLog(LogLevel::Normal, QString("Payment %1. Processing...").arg(getID()));
 
-    if (check(false)) {
+    if (check(false))
+    {
         performTransactionPay();
 
         return;
@@ -320,11 +379,13 @@ void Payment::performTransaction() {
 
     int serverError = getParameter(PPSDK::CPayment::Parameters::ServerError).value.toInt();
 
-    if (serverError == ELocalError::NetworkError) {
+    if (serverError == ELocalError::NetworkError)
+    {
         return;
     }
 
-    if (isCriticalError(serverError)) {
+    if (isCriticalError(serverError))
+    {
         toLog(LogLevel::Normal,
               QString("Payment %1. Server error %2 is critical. Payment marked as bad.").arg(getID()).arg(serverError));
 
@@ -334,18 +395,21 @@ void Payment::performTransaction() {
         return;
     }
 
-    if (serverError == EServerError::OperatorNumberReject) {
+    if (serverError == EServerError::OperatorNumberReject)
+    {
         updateNumberOfTries();
 
         return;
     }
 
     // Проверим статус если сессия уже существует...
-    if (serverError == EServerError::SessionAlreadyExist && status()) {
+    if (serverError == EServerError::SessionAlreadyExist && status())
+    {
         serverError = getParameter(PPSDK::CPayment::Parameters::ServerError).value.toInt();
         int serverResult = getParameter(PPSDK::CPayment::Parameters::ServerResult).value.toInt();
 
-        if (serverResult >= EServerResult::Error3 && serverError == EServerError::Ok) {
+        if (serverResult >= EServerResult::Error3 && serverError == EServerError::Ok)
+        {
             toLog(LogLevel::Normal, QString("Payment %1. Already complete. STATUS=%2 ERROR=%3.")
                                         .arg(getID())
                                         .arg(serverResult)
@@ -354,7 +418,8 @@ void Payment::performTransaction() {
             setParameter(SParameter(PPSDK::CPayment::Parameters::Step, CPayment::Steps::Pay, true));
             setStatus(PPSDK::EPaymentStatus::Completed);
 
-            if (!getPaymentFactory()->savePayment(this)) {
+            if (!getPaymentFactory()->savePayment(this))
+            {
                 toLog(LogLevel::Error, QString("Payment %1. Failed to save data before pay request.").arg(getID()));
 
                 setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::DatabaseError, true));
@@ -364,11 +429,13 @@ void Payment::performTransaction() {
 }
 
 //------------------------------------------------------------------------------
-void Payment::performTransactionPay() {
+void Payment::performTransactionPay()
+{
     // Если дошли до этапа оплаты, сохраняем данные в базу, чтобы предотвратить задвоение платежа.
     setParameter(SParameter(PPSDK::CPayment::Parameters::Step, CPayment::Steps::Pay, true));
 
-    if (!getPaymentFactory()->savePayment(this)) {
+    if (!getPaymentFactory()->savePayment(this))
+    {
         toLog(LogLevel::Error, QString("Payment %1. Failed to save data before pay request.").arg(getID()));
 
         setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::DatabaseError, true));
@@ -376,16 +443,20 @@ void Payment::performTransactionPay() {
         return;
     }
 
-    if (pay()) {
+    if (pay())
+    {
         setStatus(PPSDK::EPaymentStatus::Completed);
 
         toLog(LogLevel::Normal, QString("Payment %1. Complete.").arg(getID()));
-    } else {
+    }
+    else
+    {
         setProcessError();
 
         int serverError = getParameter(PPSDK::CPayment::Parameters::ServerError).value.toInt();
 
-        if (isCriticalError(serverError)) {
+        if (isCriticalError(serverError))
+        {
             setStatus(PPSDK::EPaymentStatus::BadPayment);
             setPriority(Low);
         }
@@ -393,10 +464,12 @@ void Payment::performTransactionPay() {
 }
 
 //------------------------------------------------------------------------------
-void Payment::updateNumberOfTries() {
+void Payment::updateNumberOfTries()
+{
     int tryCount = getParameter(PPSDK::CPayment::Parameters::NumberOfTries).value.toInt();
 
-    switch (tryCount) {
+    switch (tryCount)
+    {
         case 1:
         case 2:
             setNextTryDate(QDateTime::currentDateTime().addSecs(((tryCount - 1) * 24 + 1) * 60 * 60));
@@ -417,20 +490,25 @@ void Payment::updateNumberOfTries() {
 }
 
 //------------------------------------------------------------------------------
-void Payment::process() {
+void Payment::process()
+{
     // TODO: добавить проверку на возможность проведения платежа.
-    if (getCreationDate().addDays(60) < QDateTime::currentDateTime()) {
+    if (getCreationDate().addDays(60) < QDateTime::currentDateTime())
+    {
         toLog(LogLevel::Normal, QString("Payment %1. Old payment. Cannot be processed.").arg(getID()));
     }
 
     bool processed = false;
 
-    while (!processed) {
+    while (!processed)
+    {
         processed = true;
 
-        switch (getStatus()) {
+        switch (getStatus())
+        {
             // Неиспользованный остаток.
-            case PPSDK::EPaymentStatus::LostChange: {
+            case PPSDK::EPaymentStatus::LostChange:
+            {
                 setParameter(SParameter(PPSDK::CPayment::Parameters::NextTryDate,
                                         QDateTime::currentDateTime().addDays(1), true));
 
@@ -440,31 +518,46 @@ void Payment::process() {
             // Возможно, требуется провести.
             case PPSDK::EPaymentStatus::Init:
             case PPSDK::EPaymentStatus::ReadyForCheck:
-            case PPSDK::EPaymentStatus::ProcessError: {
+            case PPSDK::EPaymentStatus::ProcessError:
+            {
                 int step = getParameter(PPSDK::CPayment::Parameters::Step).value.toInt();
 
-                if (step == CPayment::Steps::Init) {
-                    if (getSession().isEmpty()) {
+                if (step == CPayment::Steps::Init)
+                {
+                    if (getSession().isEmpty())
+                    {
                         setParameter(SParameter(PPSDK::CPayment::Parameters::Session, getInitialSession(), true));
-                    } else {
+                    }
+                    else
+                    {
                         setParameter(SParameter(PPSDK::CPayment::Parameters::Session, createPaymentSession(), true));
                     }
 
                     performTransaction();
-                } else {
-                    if (!status()) {
+                }
+                else
+                {
+                    if (!status())
+                    {
                         setProcessError();
-                    } else {
+                    }
+                    else
+                    {
                         int serverResult = getParameter(PPSDK::CPayment::Parameters::ServerResult).value.toInt();
                         int serverError = getParameter(PPSDK::CPayment::Parameters::ServerError).value.toInt();
 
-                        switch (serverResult) {
-                            case EServerResult::Empty: {
-                                if (serverError == EServerError::SessionNotExist) {
+                        switch (serverResult)
+                        {
+                            case EServerResult::Empty:
+                            {
+                                if (serverError == EServerError::SessionNotExist)
+                                {
                                     processed = false;
                                     setParameter(
                                         SParameter(PPSDK::CPayment::Parameters::Step, CPayment::Steps::Init, true));
-                                } else {
+                                }
+                                else
+                                {
                                     setProcessError();
                                 }
 
@@ -472,7 +565,8 @@ void Payment::process() {
                             }
 
                             case EServerResult::Ok:
-                            case EServerResult::Error1: {
+                            case EServerResult::Error1:
+                            {
                                 processed = false;
                                 setParameter(
                                     SParameter(PPSDK::CPayment::Parameters::Step, CPayment::Steps::Init, true));
@@ -484,7 +578,8 @@ void Payment::process() {
                             case EServerResult::Error3:
                             case EServerResult::Error4:
                             case EServerResult::Error5:
-                            case EServerResult::Error6: {
+                            case EServerResult::Error6:
+                            {
                                 setProcessError();
 
                                 toLog(LogLevel::Normal,
@@ -493,12 +588,16 @@ void Payment::process() {
                                 break;
                             }
 
-                            case EServerResult::StatusCheckOk: {
-                                if (serverError == EServerError::Ok) {
+                            case EServerResult::StatusCheckOk:
+                            {
+                                if (serverError == EServerError::Ok)
+                                {
                                     setStatus(PPSDK::EPaymentStatus::Completed);
 
                                     toLog(LogLevel::Normal, QString("Payment %1. Already complete.").arg(getID()));
-                                } else {
+                                }
+                                else
+                                {
                                     processed = false;
                                     setParameter(
                                         SParameter(PPSDK::CPayment::Parameters::Step, CPayment::Steps::Init, true));
@@ -507,7 +606,8 @@ void Payment::process() {
                                 break;
                             }
 
-                            default: {
+                            default:
+                            {
                                 toLog(LogLevel::Error,
                                       QString("Payment %1. Unknown server result: %2.").arg(getID()).arg(serverResult));
 
@@ -520,13 +620,15 @@ void Payment::process() {
                 break;
             }
 
-            case PPSDK::EPaymentStatus::Cheated: {
+            case PPSDK::EPaymentStatus::Cheated:
+            {
                 toLog(LogLevel::Error, QString("Payment %1. Cannot handle cheated payment.").arg(getID()));
 
                 break;
             }
 
-            default: {
+            default:
+            {
                 toLog(LogLevel::Error,
                       QString("Payment %1. Cannot handle payment status %2.").arg(getID()).arg(getStatus()));
 
@@ -537,12 +639,15 @@ void Payment::process() {
 }
 
 //------------------------------------------------------------------------------
-bool Payment::remove() {
-    if (PaymentBase::remove()) {
+bool Payment::remove()
+{
+    if (PaymentBase::remove())
+    {
         return true;
     }
 
-    if (!status()) {
+    if (!status())
+    {
         // Не удалось выполнить запрос статуса
         return false;
     }
@@ -550,7 +655,8 @@ bool Payment::remove() {
     int serverResult = getParameter(PPSDK::CPayment::Parameters::ServerResult).value.toInt();
     int serverError = getParameter(PPSDK::CPayment::Parameters::ServerError).value.toInt();
 
-    switch (serverResult) {
+    switch (serverResult)
+    {
         case EServerResult::Empty:
         case EServerResult::Ok:
         case EServerResult::Error1:
@@ -559,7 +665,8 @@ bool Payment::remove() {
             return true;
 
         case EServerResult::StatusCheckOk:
-            if (serverError) {
+            if (serverError)
+            {
                 setStatus(PPSDK::EPaymentStatus::Deleted);
                 toLog(LogLevel::Normal, QString("Payment %1. Deleted. (server result:%2, server error:%3)")
                                             .arg(getID())
@@ -578,11 +685,14 @@ bool Payment::remove() {
 }
 
 //------------------------------------------------------------------------------
-bool Payment::performStep(int aStep) {
+bool Payment::performStep(int aStep)
+{
     bool result = false;
 
-    switch (aStep) {
-        case PPSDK::EPaymentStep::DataCheck: {
+    switch (aStep)
+    {
+        case PPSDK::EPaymentStep::DataCheck:
+        {
             // Для проверки номера генерируем временную сессию.
             QString session = getSession();
 
@@ -595,7 +705,8 @@ bool Payment::performStep(int aStep) {
             break;
         }
 
-        case PPSDK::EPaymentStep::Pay: {
+        case PPSDK::EPaymentStep::Pay:
+        {
             setStatus(PPSDK::EPaymentStatus::ProcessError);
 
             process();
@@ -605,7 +716,8 @@ bool Payment::performStep(int aStep) {
             break;
         }
 
-        default: {
+        default:
+        {
             toLog(LogLevel::Warning, QString("Payment %1. Unknown step: %2.").arg(getID()).arg(aStep));
             break;
         }

@@ -16,7 +16,8 @@
 #include <AdBackend/Client.h>
 
 //------------------------------------------------------------------------------
-class AdSourcePlugin : public QObject, public SDK::GUI::IAdSource, public SDK::Plugin::IPlugin {
+class AdSourcePlugin : public QObject, public SDK::GUI::IAdSource, public SDK::Plugin::IPlugin
+{
     Q_OBJECT
 
   public:

@@ -5,9 +5,11 @@
 #include "Hardware/Acceptors/CCTalkAcceptorConstants.h"
 
 //--------------------------------------------------------------------------------
-namespace CCCTalk {
+namespace CCCTalk
+{
     /// Варианты теста соленоидов (маски для тестирования соленоидов).
-    namespace CoilMask {
+    namespace CoilMask
+    {
         const uchar Accept = 1 << 0;  /// Зачисление монеты.
         const uchar Sorter1 = 1 << 1; /// Сортировщик 1.
         const uchar Sorter2 = 1 << 2; /// Сортировщик 2.
@@ -15,7 +17,8 @@ namespace CCCTalk {
     } // namespace CoilMask
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// После теста соленоидов.
         const int TestCoils = 1000;
 
@@ -28,9 +31,11 @@ namespace CCCTalk {
 
     //--------------------------------------------------------------------------------
     /// Ошибки.
-    class ErrorData : public ErrorDataBase {
+    class ErrorData : public ErrorDataBase
+    {
       public:
-        ErrorData() {
+        ErrorData()
+        {
             add(0, DeviceStatusCode::OK::OK);
             add(1, BillAcceptorStatusCode::Reject::Unknown, true);
             add(2, BillAcceptorStatusCode::Reject::InhibitNote, true);
@@ -67,7 +72,8 @@ namespace CCCTalk {
             add(31, BillAcceptorStatusCode::MechanicFailure::JammedCoin, false, "Manifold opto timeout");
             add(32, BillAcceptorStatusCode::MechanicFailure::JammedCoin, true, "Manifold opto blocked");
 
-            for (uchar i = 128; i < 160; ++i) {
+            for (uchar i = 128; i < 160; ++i)
+            {
                 add(i, BillAcceptorStatusCode::Reject::InhibitNote, true,
                     QString("Inhibited coin (Type %1)").arg(i).toLocal8Bit().data());
             }

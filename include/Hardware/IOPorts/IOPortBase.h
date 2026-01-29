@@ -10,7 +10,8 @@
 #include <Hardware/Common/MetaDevice.h>
 
 //--------------------------------------------------------------------------------
-class IOPortBase : public MetaDevice<SDK::Driver::IIOPort> {
+class IOPortBase : public MetaDevice<SDK::Driver::IIOPort>
+{
   public:
     IOPortBase();
 
@@ -29,12 +30,14 @@ class IOPortBase : public MetaDevice<SDK::Driver::IIOPort> {
     virtual bool clear();
 
     /// Установить параметры порта.
-    virtual bool setParameters(const SDK::Driver::TPortParameters & /*aParameters*/) {
+    virtual bool setParameters(const SDK::Driver::TPortParameters & /*aParameters*/)
+    {
         return true;
     }
 
     /// Получить параметры порта.
-    virtual void getParameters(SDK::Driver::TPortParameters & /*aParameters*/) {
+    virtual void getParameters(SDK::Driver::TPortParameters & /*aParameters*/)
+    {
     }
 
     /// Получить тип порта.

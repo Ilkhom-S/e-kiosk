@@ -7,27 +7,32 @@
 // Project
 #include "DatabaseUtils.h"
 
-namespace UcsDB {
+namespace UcsDB
+{
 
     const char *DateFormat = "yyyy-MM-dd hh:mm:ss";
 
     //------------------------------------------------------------------------------
     DatabaseUtils::DatabaseUtils(SDK::PaymentProcessor::IDatabaseService *aDatabaseService, ILog *aLog)
-        : ILogable(aLog), mDatabase(aDatabaseService), mReadOnly(true) {
+        : ILogable(aLog), mDatabase(aDatabaseService), mReadOnly(true)
+    {
         initTables();
     }
 
     //------------------------------------------------------------------------------
-    bool DatabaseUtils::isReadOnly() const {
+    bool DatabaseUtils::isReadOnly() const
+    {
         return mReadOnly;
     }
 
     //------------------------------------------------------------------------------
-    bool DatabaseUtils::save(const Encashment &aEncashment) {
+    bool DatabaseUtils::save(const Encashment &aEncashment)
+    {
         auto query = mDatabase->prepareQuery("INSERT INTO [ucs_encashments] (`create_date`, `receipt`, `printed`) "
                                              "VALUES (:create_date, :receipt, :printed);");
 
-        if (!query) {
+        if (!query)
+        {
             toLog(LogLevel::Error, QString("Failed to save aEncashment %1.").arg(aEncashment.date.toString()));
 
             return false;
@@ -41,14 +46,17 @@ namespace UcsDB {
     }
 
     //------------------------------------------------------------------------------
-    QList<UcsDB::Encashment> DatabaseUtils::getAllNotPrinted() const {
+    QList<UcsDB::Encashment> DatabaseUtils::getAllNotPrinted() const
+    {
         QList<UcsDB::Encashment> result;
 
         auto query = mDatabase->createAndExecQuery(
             "SELECT `create_date`, `receipt`, `printed` FROM [ucs_encashments] WHERE printed = 0;");
 
-        if (query->first()) {
-            do {
+        if (query->first())
+        {
+            do
+            {
                 UcsDB::Encashment encashment;
 
                 encashment.date = QDateTime::fromString(query->value(0).toString(), DateFormat);
@@ -63,11 +71,13 @@ namespace UcsDB {
     }
 
     //------------------------------------------------------------------------------
-    bool DatabaseUtils::markAsPrinted(const Encashment &aEncashment) {
+    bool DatabaseUtils::markAsPrinted(const Encashment &aEncashment)
+    {
         auto query =
             mDatabase->prepareQuery("UPDATE [ucs_encashments] SET `printed` = 1 WHERE `create_date` = :create_date;");
 
-        if (!query) {
+        if (!query)
+        {
             toLog(LogLevel::Error, QString("Failed to update aEncashment %1.").arg(aEncashment.date.toString()));
 
             return false;
@@ -79,7 +89,8 @@ namespace UcsDB {
     }
 
     //------------------------------------------------------------------------------
-    bool DatabaseUtils::initTables() {
+    bool DatabaseUtils::initTables()
+    {
         QStringList sqls;
 
         sqls << "CREATE TABLE IF NOT EXISTS [ucs_encashments] ([create_date] DATETIME PRIMARY KEY, [receipt] TEXT NOT "
@@ -87,8 +98,10 @@ namespace UcsDB {
              << "CREATE INDEX IF NOT EXISTS [ucs_encashments_printed] ON [ucs_encashments] ([printed]);";
 
         // Создаём таблицы
-        foreach (auto sql, sqls) {
-            if (!mDatabase->execQuery(sql)) {
+        foreach (auto sql, sqls)
+        {
+            if (!mDatabase->execQuery(sql))
+            {
                 toLog(LogLevel::Error, QString("Failed to execute SQL: '%1'.").arg(sql));
 
                 return false;
@@ -101,7 +114,8 @@ namespace UcsDB {
     }
 
     //------------------------------------------------------------------------------
-    Encashment::Encashment() : date(QDateTime::currentDateTime()), printed(0) {
+    Encashment::Encashment() : date(QDateTime::currentDateTime()), printed(0)
+    {
     }
 
 } // namespace UcsDB

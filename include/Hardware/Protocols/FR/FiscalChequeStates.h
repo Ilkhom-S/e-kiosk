@@ -4,8 +4,10 @@
 
 //--------------------------------------------------------------------------------
 /// Cостояния фискального чека.
-namespace EFiscalDocumentState {
-    enum Enum {
+namespace EFiscalDocumentState
+{
+    enum Enum
+    {
         Opened,       /// Открыт.
         Sale,         /// Продажа.
         Closed,       /// Закрыт.

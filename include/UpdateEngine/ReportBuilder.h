@@ -16,12 +16,14 @@
 #include <SDK/PaymentProcessor/Core/IRemoteService.h>
 
 //------------------------------------------------------------------------
-namespace CReportBuilder {
+namespace CReportBuilder
+{
     const QString LogName = "ReportBuilder";
 } // namespace CReportBuilder
 
 //------------------------------------------------------------------------
-class ReportBuilder : public QObject, protected ILogable {
+class ReportBuilder : public QObject, protected ILogable
+{
     Q_OBJECT
 
   public:

@@ -11,7 +11,8 @@
 #include "AFPFRDataTypes.h"
 
 //--------------------------------------------------------------------------------
-namespace CAFPFR {
+namespace CAFPFR
+{
     /// Минимальный размер данных ответа.
     const int MinAnswerDataSize = 4;
 
@@ -38,11 +39,14 @@ namespace CAFPFR {
 
     //------------------------------------------------------------------------------------------------
     /// Статусы.
-    namespace Statuses {
+    namespace Statuses
+    {
         /// Cтатусы принтера.
-        class CPrinter : public BitmapDeviceCodeSpecification {
+        class CPrinter : public BitmapDeviceCodeSpecification
+        {
           public:
-            CPrinter() {
+            CPrinter()
+            {
                 addStatus(0, PrinterStatusCode::Error::PrinterFR);
                 addStatus(1, PrinterStatusCode::Error::PaperEnd);
                 addStatus(2, DeviceStatusCode::Error::CoverIsOpened);
@@ -54,9 +58,11 @@ namespace CAFPFR {
         static CPrinter Printer;
 
         /// Cтатусы ФР.
-        class CFR : public BitmapDeviceCodeSpecification {
+        class CFR : public BitmapDeviceCodeSpecification
+        {
           public:
-            CFR() {
+            CFR()
+            {
                 addStatus(1, FRStatusCode::Warning::NotFiscalized);
                 addStatus(4, FRStatusCode::Error::FS, "", true);
                 addStatus(5, FRStatusCode::Error::FSClosed);
@@ -68,7 +74,8 @@ namespace CAFPFR {
 
     //------------------------------------------------------------------------------------------------
     /// Данные ФР.
-    namespace FRInfo {
+    namespace FRInfo
+    {
         const SData SerialNumber = SData(1, EAnswerTypes::FInt, "serial number"); /// Заводской номер.
         const SData Firmware = SData(2, EAnswerTypes::FString, "firmware");       /// Id прошивки.
         const SData INN = SData(3, EAnswerTypes::FInt, "INN");                    /// ИНН.
@@ -92,9 +99,11 @@ namespace CAFPFR {
 
     //------------------------------------------------------------------------------------------------
     /// Типы документов.
-    class CPayOffTypeData : public CSpecification<SDK::Driver::EPayOffTypes::Enum, char> {
+    class CPayOffTypeData : public CSpecification<SDK::Driver::EPayOffTypes::Enum, char>
+    {
       public:
-        CPayOffTypeData() {
+        CPayOffTypeData()
+        {
             using namespace SDK::Driver;
 
             append(EPayOffTypes::Debit, 2);
@@ -106,7 +115,8 @@ namespace CAFPFR {
 
     static CPayOffTypeData PayOffTypeData;
 
-    namespace DocumentTypes {
+    namespace DocumentTypes
+    {
         const char NonFiscal = 1; /// Нефискальный документ.
         const char PayIn = 4;     /// Внесение.
         const char PayOut = 5;    /// Выплата.
@@ -114,14 +124,16 @@ namespace CAFPFR {
 
     //------------------------------------------------------------------------------------------------
     /// Данные ФН.
-    namespace FSData {
+    namespace FSData
+    {
         /// Режим - фискальный.
         const int FiscalMode = 3;
     } // namespace FSData
 
     //------------------------------------------------------------------------------------------------
     /// Параметры.
-    namespace FRParameters {
+    namespace FRParameters
+    {
         const SData NotPrintDocument =
             SData(2, EAnswerTypes::Int, "cheque parameters: not print document", 0); /// Непечать  документов.
         const SData PrintingOnClose = SData(2, EAnswerTypes::Int, "cheque parameters: print document on closing",
@@ -142,14 +154,16 @@ namespace CAFPFR {
         ADD_AFP_FF(85, ProviderPhone);           // 1171 (Телефон поставщика).
 
         /// Имена отделов.
-        inline SData SectionName(int aIndex) {
+        inline SData SectionName(int aIndex)
+        {
             return SData(50, EAnswerTypes::String, QString("section %1 name").arg(aIndex), NoBit, aIndex);
         }
     } // namespace FRParameters
 
     //------------------------------------------------------------------------------------------------
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char GetFRData = '\x02';                /// Запрос сведений.
         const char GetPrinterStatus = '\x04';         /// Запрос статуса ПУ.
         const char GetFRStatus = '\x05';              /// Запрос статуса ФР.
@@ -178,10 +192,13 @@ namespace CAFPFR {
 
     //------------------------------------------------------------------------------------------------
     /// Запросы.
-    namespace Requests {
-        class CData : public CDataBase {
+    namespace Requests
+    {
+        class CData : public CDataBase
+        {
           public:
-            CData() {
+            CData()
+            {
                 using namespace EAnswerTypes;
                 using namespace Commands;
 
@@ -213,15 +230,18 @@ namespace CAFPFR {
 
     //------------------------------------------------------------------------------------------------
     /// Ошибки.
-    namespace Errors {
+    namespace Errors
+    {
         const char WrongState = '\x01';     /// Функция невыполнима при данном статусе.
         const char UnknownCommand = '\x03'; /// Некорректный формат или параметр команды.
         const char NeedZReport =
             '\x0A'; /// Текущая смена больше 24 часов. Установка даты времени больше чем на 24 часа.
 
-        class Data : public FRError::Data {
+        class Data : public FRError::Data
+        {
           public:
-            Data() {
+            Data()
+            {
                 using namespace FRError;
 
                 // Ошибки выполнения команд
@@ -258,9 +278,11 @@ namespace CAFPFR {
 
     //--------------------------------------------------------------------------------
     /// Теги для обработки флагом команды.
-    class CTags : public CSpecification<Tags::Type::Enum, char> {
+    class CTags : public CSpecification<Tags::Type::Enum, char>
+    {
       public:
-        CTags() {
+        CTags()
+        {
             append(Tags::Type::Bold, '\x08');
             append(Tags::Type::DoubleHeight, '\x10');
             append(Tags::Type::DoubleWidth, '\x20');

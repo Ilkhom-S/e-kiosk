@@ -10,11 +10,13 @@
 // Project
 #include "StatisticRecord.h"
 
-namespace Ad {
+namespace Ad
+{
 
     //------------------------------------------------------------------------
     /// Интерфейс базы данных.
-    class IDatabaseUtils {
+    class IDatabaseUtils
+    {
       public:
         /// Инкриминировать значение счетчика показов канала
         virtual bool addStatisticRecord(qint64 aId, const QString &aChannel) = 0;
@@ -30,7 +32,8 @@ namespace Ad {
         virtual bool deleteStatisticRecords(const QList<SStatisticRecord> &aRecords) = 0;
 
       protected:
-        virtual ~IDatabaseUtils() {
+        virtual ~IDatabaseUtils()
+        {
         }
     };
 

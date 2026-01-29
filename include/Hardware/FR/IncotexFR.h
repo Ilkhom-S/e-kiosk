@@ -10,7 +10,8 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола Incotex.
-class IncotexFR : public ProtocolBase {
+class IncotexFR : public ProtocolBase
+{
     friend class MStarPrinters;
 
   public:

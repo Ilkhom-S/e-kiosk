@@ -13,7 +13,8 @@ class IServiceWindow;
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------
-class MainServiceWindow : public QWidget, public Ui::MainServiceWindow {
+class MainServiceWindow : public QWidget, public Ui::MainServiceWindow
+{
     Q_OBJECT
 
   public:
@@ -22,7 +23,8 @@ class MainServiceWindow : public QWidget, public Ui::MainServiceWindow {
     bool initialize();
     void shutdown();
 
-    QWidget *getMainWidget() {
+    QWidget *getMainWidget()
+    {
         return wPasswordPage;
     }
 

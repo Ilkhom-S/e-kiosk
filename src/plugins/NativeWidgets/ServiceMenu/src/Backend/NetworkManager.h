@@ -15,8 +15,10 @@
 // Project
 #include "IConfigManager.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
         class ICore;
         class INetworkService;
         class TerminalSettings;
@@ -25,7 +27,8 @@ namespace SDK {
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class NetworkManager : public QObject, public IConfigManager {
+class NetworkManager : public QObject, public IConfigManager
+{
     Q_OBJECT
 
   public:

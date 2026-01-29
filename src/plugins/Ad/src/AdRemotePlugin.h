@@ -24,7 +24,8 @@ using SDK::PaymentProcessor::Humo::RequestSender;
 using SDK::PaymentProcessor::Humo::Response;
 
 //------------------------------------------------------------------------------
-class AdRemotePlugin : public SDK::PaymentProcessor::IRemoteClient, public SDK::Plugin::IPlugin, public ILogable {
+class AdRemotePlugin : public SDK::PaymentProcessor::IRemoteClient, public SDK::Plugin::IPlugin, public ILogable
+{
     Q_OBJECT
 
   public:

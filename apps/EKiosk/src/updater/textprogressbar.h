@@ -5,7 +5,8 @@
 #include <QtCore/QString>
 #include <Common/QtHeadersEnd.h>
 
-class TextProgressBar {
+class TextProgressBar
+{
   public:
     TextProgressBar();
 

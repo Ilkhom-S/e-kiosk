@@ -8,14 +8,17 @@
 #include "Hardware/CardReaders/MifareReaderModelDataTypes.h"
 
 //------------------------------------------------------------------------------
-namespace CMifareReader {
+namespace CMifareReader
+{
     /// Неизвестный ридер c PC/SC интерфейсом
     const char UnknownModel[] = "Unknown PC/SC Reader";
 
     /// Данные моделей.
-    class DetectingData : public CUSBDevice::ProductDataBase<SModelData> {
+    class DetectingData : public CUSBDevice::ProductDataBase<SModelData>
+    {
       public:
-        DetectingData() {
+        DetectingData()
+        {
             add(0x0001, "ACR30");
             add(0x0100, "AET65 ICC");
             add(0x0102, "AET62 PICC");
@@ -86,7 +89,8 @@ namespace CMifareReader {
         }
 
       protected:
-        void add(quint16 aPID, const QString &aModel, int aSAM = 0, bool aCCID = true, bool aVerified = false) {
+        void add(quint16 aPID, const QString &aModel, int aSAM = 0, bool aCCID = true, bool aVerified = false)
+        {
             append(aPID, SModelData(aModel, aSAM, aCCID, aVerified));
             mProductData.insert(aPID, CUSBDevice::SProductData(aModel, aVerified));
         }

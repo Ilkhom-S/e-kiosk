@@ -6,7 +6,8 @@
 #include "PaymentRequest.h"
 
 //---------------------------------------------------------------------------
-class PaymentPayRequest : public PaymentRequest {
+class PaymentPayRequest : public PaymentRequest
+{
   public:
     PaymentPayRequest(Payment *aPayment);
 };

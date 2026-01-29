@@ -7,7 +7,8 @@
 #include "../Base/ShtrihSerialFR.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class ShtrihRetractorFRLite : public T {
+template <class T> class ShtrihRetractorFRLite : public T
+{
     SET_SUBSERIES("Ejector")
 
   protected:

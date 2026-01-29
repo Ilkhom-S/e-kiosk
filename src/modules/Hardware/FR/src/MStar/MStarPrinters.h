@@ -6,7 +6,8 @@
 #include <Hardware/FR/IncotexFR.h>
 
 //--------------------------------------------------------------------------------
-class MStarPrinters : public SerialFRBase {
+class MStarPrinters : public SerialFRBase
+{
     SET_SERIES(ProtocolNames::FR::Incotex)
 
   public:

@@ -18,7 +18,8 @@ class DataStream;
 class NetworkTaskManager;
 
 //------------------------------------------------------------------------
-class NetworkTask : public QObject {
+class NetworkTask : public QObject
+{
     Q_OBJECT
 
     friend class NetworkTaskManager;
@@ -27,7 +28,8 @@ class NetworkTask : public QObject {
     typedef QMap<QByteArray, QByteArray> TByteMap;
 
     /// Ошибки закачки
-    enum Error {
+    enum Error
+    {
         NoError = 0,
         StreamWriteError = -1,      /// Не удалось произвести запись в переданный поток данных.
         UnknownOperation = -2,      /// Неизвестный тип запроса к серверу.
@@ -43,7 +45,8 @@ class NetworkTask : public QObject {
     };
 
     /// Флаги, влияющие на процесс выполнения запроса.
-    enum Flags {
+    enum Flags
+    {
         None = 0x0,
         BlockingMode = 0x1, /// Выполнить закачку в блокирующем режиме.
         Continue = 0x2,     /// Продолжить прерванную ранее закачку.
@@ -53,7 +56,13 @@ class NetworkTask : public QObject {
     };
 
     /// Тип сетевого запроса.
-    enum Type { Head = 0, Get, Post, Put };
+    enum Type
+    {
+        Head = 0,
+        Get,
+        Post,
+        Put
+    };
 
     NetworkTask();
     virtual ~NetworkTask();

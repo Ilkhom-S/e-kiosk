@@ -12,7 +12,8 @@
 #include "IServiceWindow.h"
 
 //------------------------------------------------------------------------
-class TokenServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::TokenServiceWindow {
+class TokenServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::TokenServiceWindow
+{
     Q_OBJECT
 
   public:

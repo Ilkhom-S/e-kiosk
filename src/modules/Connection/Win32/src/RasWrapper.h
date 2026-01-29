@@ -21,12 +21,15 @@
 #define WINVER OLD_WINVER
 #undef OLD_WINVER
 
-namespace RasApi {
+namespace RasApi
+{
 
     //--------------------------------------------------------------------------------
     /// Версии Windows для управления различиями в API.
-    namespace EOSVersion {
-        enum Enum {
+    namespace EOSVersion
+    {
+        enum Enum
+        {
             Unknown = 0,
             Windows2000,
             WindowsXP,
@@ -42,8 +45,10 @@ namespace RasApi {
 
     //--------------------------------------------------------------------------------
     /// Свойства соединения для RASENTRY::dwfOptions.
-    namespace EConnectionOption {
-        enum Enum {
+    namespace EConnectionOption
+    {
+        enum Enum
+        {
             UseCountryAndAreaCodes = RASEO_UseCountryAndAreaCodes,
             SpecificIpAddr = RASEO_SpecificIpAddr,
             SpecificNameServers = RASEO_SpecificNameServers,
@@ -82,8 +87,10 @@ namespace RasApi {
 
     //--------------------------------------------------------------------------------
     /// Свойства соединения для RASENTRY::dwfOptions2.
-    namespace EConnectionOption2 {
-        enum Enum {
+    namespace EConnectionOption2
+    {
+        enum Enum
+        {
             SecureFileAndPrint = RASEO2_SecureFileAndPrint,
             SecureClientForMSNet = RASEO2_SecureClientForMSNet,
             DontNegotiateMultilink = RASEO2_DontNegotiateMultilink,
@@ -117,16 +124,23 @@ namespace RasApi {
 
     //--------------------------------------------------------------------------------
     /// Свойства соединения для RASCONN::dwFlags.
-    namespace EConnectionFlag {
-        enum Enum { AllUsers = RASCF_AllUsers, GlobalCreds = RASCF_GlobalCreds };
+    namespace EConnectionFlag
+    {
+        enum Enum
+        {
+            AllUsers = RASCF_AllUsers,
+            GlobalCreds = RASCF_GlobalCreds
+        };
 
         typedef size_t FlagSet;
     } // namespace EConnectionFlag
 
     //--------------------------------------------------------------------------------
     /// Тип устройства для RASDEVINFO::szDeviceType.
-    namespace EDeviceType {
-        enum Enum {
+    namespace EDeviceType
+    {
+        enum Enum
+        {
             Unknown,
             Modem,
             Isdn,
@@ -150,8 +164,10 @@ namespace RasApi {
 
     //--------------------------------------------------------------------------------
     /// Тип протокола для RASENTRY::dwProtocols.
-    namespace ENetworkProtocol {
-        enum Enum {
+    namespace ENetworkProtocol
+    {
+        enum Enum
+        {
             Ipx = RASNP_Ipx,
             Ip = RASNP_Ip,
             /* эти значения только для Висты и выше
@@ -164,35 +180,65 @@ namespace RasApi {
 
     //--------------------------------------------------------------------------------
     /// Тип framing protocol для RASENTRY::dwFramingProtocol.
-    namespace EFramingProtocol {
-        enum Enum { Ppp = RASFP_Ppp, Slip = RASFP_Slip };
+    namespace EFramingProtocol
+    {
+        enum Enum
+        {
+            Ppp = RASFP_Ppp,
+            Slip = RASFP_Slip
+        };
     } // namespace EFramingProtocol
 
     //--------------------------------------------------------------------------------
-    namespace EPhonebookEntry {
+    namespace EPhonebookEntry
+    {
         /// Тип телефонной книги для RASENTRYNAME::dwFlags.
-        enum PhonebookTypeEnum { AllUsers = REN_AllUsers, Private = REN_User };
+        enum PhonebookTypeEnum
+        {
+            AllUsers = REN_AllUsers,
+            Private = REN_User
+        };
 
         /// Тип записи телефонной книги для RASENTRY::dwType.
-        enum TypeEnum { Phone = RASET_Phone, Vpn = RASET_Vpn, Internet = RASET_Internet, Broadband = RASET_Broadband };
+        enum TypeEnum
+        {
+            Phone = RASET_Phone,
+            Vpn = RASET_Vpn,
+            Internet = RASET_Internet,
+            Broadband = RASET_Broadband
+        };
     } // namespace EPhonebookEntry
 
     //--------------------------------------------------------------------------------
     /// Способ набора multilink записей для RASENTRY::dwDialMode.
-    namespace EDialMode {
-        enum Enum { DialAll = RASEDM_DialAll, DialAsNeeded = RASEDM_DialAsNeeded };
+    namespace EDialMode
+    {
+        enum Enum
+        {
+            DialAll = RASEDM_DialAll,
+            DialAsNeeded = RASEDM_DialAsNeeded
+        };
     } // namespace EDialMode
 
     //--------------------------------------------------------------------------------
     /// Тип шифрования для RASENTRY::dwEncryptionType.
-    namespace EEncryptionType {
-        enum Enum { None = ET_None, Require = ET_Require, RequireMax = ET_RequireMax, Optional = ET_Optional };
+    namespace EEncryptionType
+    {
+        enum Enum
+        {
+            None = ET_None,
+            Require = ET_Require,
+            RequireMax = ET_RequireMax,
+            Optional = ET_Optional
+        };
     } // namespace EEncryptionType
 
     //--------------------------------------------------------------------------------
     /// Свойства VPN для RASENTRY::dwVpnStrategy.
-    namespace EVpnStrategy {
-        enum Enum {
+    namespace EVpnStrategy
+    {
+        enum Enum
+        {
             Default = VS_Default,
             PptpOnly = VS_PptpOnly,
             PptpFirst = VS_PptpFirst,
@@ -211,8 +257,10 @@ namespace RasApi {
 
     //--------------------------------------------------------------------------------
     /// Коды ошибок, возвращаемые RAS API.
-    namespace EErrorCode {
-        enum Enum {
+    namespace EErrorCode
+    {
+        enum Enum
+        {
             NoError = ERROR_SUCCESS,
             InvalidName = ERROR_INVALID_NAME,
             InvalidBuffer = ERROR_BUFFER_INVALID,
@@ -226,24 +274,37 @@ namespace RasApi {
 
     //--------------------------------------------------------------------------------
     /// Статус соединения для RASCONNSTATUS::rasconnstate.
-    namespace EConnectionStatus {
-        enum Enum { Connected = RASCS_Connected, Disconnected = RASCS_Disconnected };
+    namespace EConnectionStatus
+    {
+        enum Enum
+        {
+            Connected = RASCS_Connected,
+            Disconnected = RASCS_Disconnected
+        };
     } // namespace EConnectionStatus
 
     //--------------------------------------------------------------------------------
     /// Время простоя соединения перед разрывом для RASENTRY::dwIdleDisconnectSeconds.
-    namespace EIdleDisconnect {
-        enum Enum { Disabled = RASIDS_Disabled, UseGlobalValue = RASIDS_UseGlobalValue };
+    namespace EIdleDisconnect
+    {
+        enum Enum
+        {
+            Disabled = RASIDS_Disabled,
+            UseGlobalValue = RASIDS_UseGlobalValue
+        };
     } // namespace EIdleDisconnect
 
     //------------------------------------------------------------------------------
     // База для классов, возвращающих результат операции
-    class RasBase {
+    class RasBase
+    {
       public:
-        DWORD getLastError() const {
+        DWORD getLastError() const
+        {
             return mLastError;
         }
-        bool isValid() const {
+        bool isValid() const
+        {
             return mLastError == ERROR_SUCCESS;
         }
 
@@ -253,7 +314,8 @@ namespace RasApi {
 
     //------------------------------------------------------------------------------
     /// IP-адрес.
-    class IpAddress {
+    class IpAddress
+    {
       public:
         IpAddress();
         IpAddress(const RASIPADDR &aIpAddress);
@@ -270,7 +332,8 @@ namespace RasApi {
 
     //------------------------------------------------------------------------------
     /// Элемент телефонной книги.
-    class PhonebookEntryName {
+    class PhonebookEntryName
+    {
       public:
         PhonebookEntryName();
         PhonebookEntryName(const RASENTRYNAME &aEntry);
@@ -292,7 +355,8 @@ namespace RasApi {
 
     //------------------------------------------------------------------------------
     /// Параметры элемента телефонной книги.
-    class PhonebookEntry : public RasBase {
+    class PhonebookEntry : public RasBase
+    {
       public:
         PhonebookEntry();
         ~PhonebookEntry();
@@ -421,7 +485,8 @@ namespace RasApi {
 
     //------------------------------------------------------------------------------
     /// Dialup-соединение
-    class Connection {
+    class Connection
+    {
       public:
         Connection();
         Connection(const RASCONN &aConnection);
@@ -465,7 +530,8 @@ namespace RasApi {
 
     //------------------------------------------------------------------------------
     /// Сетевое устройство.
-    class Device {
+    class Device
+    {
       public:
         Device();
         Device(const RASDEVINFO &aDevice);
@@ -484,7 +550,8 @@ namespace RasApi {
 
     //------------------------------------------------------------------------------
     /// Параметры соединения.
-    class DialParams {
+    class DialParams
+    {
       public:
         DialParams();
         DialParams(const RASDIALPARAMS &aParams);
@@ -529,7 +596,8 @@ namespace RasApi {
 
     //------------------------------------------------------------------------------
     /// Перечислитель элементов телефонной книги.
-    class PhonebookEntryEnumerator : public RasBase {
+    class PhonebookEntryEnumerator : public RasBase
+    {
       public:
         PhonebookEntryEnumerator(const std::wstring &aPhonebookPath = L"");
         ~PhonebookEntryEnumerator();
@@ -546,7 +614,8 @@ namespace RasApi {
 
     //------------------------------------------------------------------------------
     /// Перечислитель сетевых соединений в системе.
-    class ConnectionEnumerator : public RasBase {
+    class ConnectionEnumerator : public RasBase
+    {
       public:
         ConnectionEnumerator();
         ~ConnectionEnumerator();
@@ -563,7 +632,8 @@ namespace RasApi {
 
     //------------------------------------------------------------------------------
     /// Перечислитель сетевых устройств в системе.
-    class DeviceEnumerator : public RasBase {
+    class DeviceEnumerator : public RasBase
+    {
       public:
         DeviceEnumerator();
         ~DeviceEnumerator();

@@ -23,11 +23,18 @@ class IDeviceBackend;
 /// завершения редактирования параметров оно отошлёт слоту сигнал об
 /// изменении состояния.
 
-class EditorPane : public QObject {
+class EditorPane : public QObject
+{
     Q_OBJECT
 
   public:
-    enum EditorType { Enum = 0, Bool, Number, Text };
+    enum EditorType
+    {
+        Enum = 0,
+        Bool,
+        Number,
+        Text
+    };
 
     EditorPane();
 

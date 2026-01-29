@@ -10,7 +10,8 @@
 using namespace SDK::Driver;
 
 //---------------------------------------------------------------------------
-template <class T> bool CCTalkComplexEnableAcceptor<T>::applyParTable() {
+template <class T> bool CCTalkComplexEnableAcceptor<T>::applyParTable()
+{
     QByteArray commandData = this->getParTableData() + CCCTalk::DefaultSorterMask;
 
     return this->processCommand(CCCTalk::Command::ModifyInhibitsAndRegesters, commandData + commandData);
@@ -19,10 +20,12 @@ template <class T> bool CCTalkComplexEnableAcceptor<T>::applyParTable() {
 //--------------------------------------------------------------------------------
 template <class T>
 void CCTalkComplexEnableAcceptor<T>::postPollingAction(const TStatusCollection &aNewStatusCollection,
-                                                       const TStatusCollection &aOldStatusCollection) {
+                                                       const TStatusCollection &aOldStatusCollection)
+{
     if (aOldStatusCollection.contains(BillAcceptorStatusCode::Warning::Cheated) &&
         !aNewStatusCollection.contains(BillAcceptorStatusCode::Warning::Cheated) &&
-        this->getConfigParameter(CHardware::CashAcceptor::Enabled).toBool()) {
+        this->getConfigParameter(CHardware::CashAcceptor::Enabled).toBool())
+    {
         this->reset(true);
         bool enabled = this->enableMoneyAcceptingMode(true);
         this->setConfigParameter(CHardware::CashAcceptor::Enabled, enabled);

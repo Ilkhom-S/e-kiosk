@@ -12,12 +12,15 @@
 // Modules
 #include <Common/ILog.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
         /// Интерфейс фабрики платежей.
-        class IPaymentFactory {
+        class IPaymentFactory
+        {
           public:
             /// Тип сериализатора.
             typedef boost::function<bool(SDK::PaymentProcessor::IPayment *)> TSerializer;
@@ -62,7 +65,8 @@ namespace SDK {
             virtual bool savePayment(IPayment *aPayment) = 0;
 
             /// Деструктор.
-            virtual ~IPaymentFactory() {
+            virtual ~IPaymentFactory()
+            {
             }
         };
 

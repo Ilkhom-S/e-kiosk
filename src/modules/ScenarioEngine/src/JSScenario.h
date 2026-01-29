@@ -21,11 +21,13 @@
 
 #include "Scenario.h"
 
-namespace GUI {
+namespace GUI
+{
 
     //---------------------------------------------------------------------------
     /// Базовый класс сценария.
-    class JSScenario : public Scenario {
+    class JSScenario : public Scenario
+    {
         Q_OBJECT
 
         Q_PROPERTY(QVariantMap context READ getContext)
@@ -49,7 +51,8 @@ namespace GUI {
         /// Инициализация сценария. Вызывается из скрипта.
         virtual bool initialize(const QList<SScriptObject> &aScriptObjects);
 
-        virtual void setStateHook(const QList<SExternalStateHook> &aHook) {
+        virtual void setStateHook(const QList<SExternalStateHook> &aHook)
+        {
             mHooks << aHook;
         }
 
@@ -115,7 +118,8 @@ namespace GUI {
         QVariantMap getContext() const;
 
         /// Этап сценария (состояние конечного автомата).
-        struct SState {
+        struct SState
+        {
             QString name;           /// Название состояния.
             QAbstractState *qstate; /// Состояние для QStateMachine.
             QVariantMap parameters; /// Разные параметры состояния.

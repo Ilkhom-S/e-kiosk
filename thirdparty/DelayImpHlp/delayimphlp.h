@@ -92,16 +92,12 @@
 #define DL_REPEAT_BINARY_PARAM_IMPL0(a, b) a
 #define DL_REPEAT_BINARY_PARAM_IMPL1(a, b) b
 
-#define DL_REPEAT_BINARY_PARAM_IMPL2(n, p1, p2)                                \
-  DL_COMMA_IF(n) DL_CAT(p1, n) DL_CAT(p2, n)
-#define DL_REPEAT_BINARY_PARAM_IMPL(n, d)                                      \
-  DL_REPEAT_BINARY_PARAM_IMPL2(n, DL_REPEAT_BINARY_PARAM_IMPL0 d,              \
-                               DL_REPEAT_BINARY_PARAM_IMPL1 d)
+#define DL_REPEAT_BINARY_PARAM_IMPL2(n, p1, p2) DL_COMMA_IF(n) DL_CAT(p1, n) DL_CAT(p2, n)
+#define DL_REPEAT_BINARY_PARAM_IMPL(n, d)                                                                              \
+    DL_REPEAT_BINARY_PARAM_IMPL2(n, DL_REPEAT_BINARY_PARAM_IMPL0 d, DL_REPEAT_BINARY_PARAM_IMPL1 d)
 
-#define DL_REPEAT_BINARY_PARAM_N(c, p1, p2)                                    \
-  DL_REPEAT_IMPL_N(c, DL_REPEAT_BINARY_PARAM_IMPL, (p1, p2))
-#define DL_REPEAT_TRAILING_BINARY_PARAM_N(c, p1, p2)                           \
-  DL_COMMA_IF(c) DL_REPEAT_BINARY_PARAM_N(c, p1, p2)
+#define DL_REPEAT_BINARY_PARAM_N(c, p1, p2) DL_REPEAT_IMPL_N(c, DL_REPEAT_BINARY_PARAM_IMPL, (p1, p2))
+#define DL_REPEAT_TRAILING_BINARY_PARAM_N(c, p1, p2) DL_COMMA_IF(c) DL_REPEAT_BINARY_PARAM_N(c, p1, p2)
 
 // DL_SEQ_SIZE
 
@@ -204,247 +200,330 @@
 
 //  delay load names
 
-namespace delayload {
+namespace delayload
+{
 
-template <bool> struct SelectTypeTraits {
-  template <class T, class U> struct Type {
-    typedef T type;
-  };
-};
+    template <bool> struct SelectTypeTraits
+    {
+        template <class T, class U> struct Type
+        {
+            typedef T type;
+        };
+    };
 
-template <> struct SelectTypeTraits<false> {
-  template <class T, class U> struct Type {
-    typedef U type;
-  };
-};
+    template <> struct SelectTypeTraits<false>
+    {
+        template <class T, class U> struct Type
+        {
+            typedef U type;
+        };
+    };
 
-template <bool flag, class T, class U> struct SelectType {
-  typedef typename SelectTypeTraits<flag>::template Type<T, U>::type value;
-};
+    template <bool flag, class T, class U> struct SelectType
+    {
+        typedef typename SelectTypeTraits<flag>::template Type<T, U>::type value;
+    };
 
-template <class T> struct Type2Type {
-  typedef T type;
-};
+    template <class T> struct Type2Type
+    {
+        typedef T type;
+    };
 
-template <class T, class U> struct IsEqualType {
-private:
-  typedef char yes;
-  typedef char no[2];
-  static yes &check(Type2Type<T>);
-  static no &check(...);
+    template <class T, class U> struct IsEqualType
+    {
+      private:
+        typedef char yes;
+        typedef char no[2];
+        static yes &check(Type2Type<T>);
+        static no &check(...);
 
-public:
-  enum { value = sizeof(check(Type2Type<U>())) == sizeof(yes) };
-};
+      public:
+        enum
+        {
+            value = sizeof(check(Type2Type<U>())) == sizeof(yes)
+        };
+    };
 
 #define DL_NAME_ID(id) DL_CAT(CNameId, id)
 
-#define DL_DECLARE_NAME_ID_IMPL(id, name, ret, text)                           \
-  struct DL_NAME_ID(id) {                                                      \
-    enum { length = sizeof(name) };                                            \
-    static ret GetStr() { return (ret)text(name); }                            \
-  };
+#define DL_DECLARE_NAME_ID_IMPL(id, name, ret, text)                                                                   \
+    struct DL_NAME_ID(id)                                                                                              \
+    {                                                                                                                  \
+        enum                                                                                                           \
+        {                                                                                                              \
+            length = sizeof(name)                                                                                      \
+        };                                                                                                             \
+        static ret GetStr()                                                                                            \
+        {                                                                                                              \
+            return (ret)text(name);                                                                                    \
+        }                                                                                                              \
+    };
 
-#define DL_DECLARE_NAME_ID_A(id, name)                                         \
-  DL_DECLARE_NAME_ID_IMPL(id, name, LPCSTR, DL_EMPTY())
-#define DL_DECLARE_NAME_ID(id, name)                                           \
-  DL_DECLARE_NAME_ID_IMPL(id, name, LPCTSTR, _T)
+#define DL_DECLARE_NAME_ID_A(id, name) DL_DECLARE_NAME_ID_IMPL(id, name, LPCSTR, DL_EMPTY())
+#define DL_DECLARE_NAME_ID(id, name) DL_DECLARE_NAME_ID_IMPL(id, name, LPCTSTR, _T)
 
 #ifdef DL_MT
-//  MT only
-struct CLWMutex {
-  CLWMutex(volatile LONG &pFlag) : m_pFlag(pFlag) {}
-  CLWMutex(const CLWMutex &lwSource) : m_pFlag(lwSource.m_pFlag) {}
-  CLWMutex &operator=(const CLWMutex &lwSource) {
-    m_pFlag = lwSource.m_pFlag;
-    return *this;
-  }
-  void Lock() {
-    while (::InterlockedExchange(&m_pFlag, TRUE))
-      ::Sleep(1);
-  }
-  void Unlock() { ::InterlockedExchange(&m_pFlag, FALSE); }
+    //  MT only
+    struct CLWMutex
+    {
+        CLWMutex(volatile LONG &pFlag) : m_pFlag(pFlag)
+        {
+        }
+        CLWMutex(const CLWMutex &lwSource) : m_pFlag(lwSource.m_pFlag)
+        {
+        }
+        CLWMutex &operator=(const CLWMutex &lwSource)
+        {
+            m_pFlag = lwSource.m_pFlag;
+            return *this;
+        }
+        void Lock()
+        {
+            while (::InterlockedExchange(&m_pFlag, TRUE))
+                ::Sleep(1);
+        }
+        void Unlock()
+        {
+            ::InterlockedExchange(&m_pFlag, FALSE);
+        }
 
-private:
-  volatile LONG &m_pFlag;
-};
+      private:
+        volatile LONG &m_pFlag;
+    };
 
-template <class T> struct CAutoLock {
-  CAutoLock(T &obj) : m_objLock(obj) { m_objLock.Lock(); }
-  ~CAutoLock() { m_objLock.Unlock(); }
+    template <class T> struct CAutoLock
+    {
+        CAutoLock(T &obj) : m_objLock(obj)
+        {
+            m_objLock.Lock();
+        }
+        ~CAutoLock()
+        {
+            m_objLock.Unlock();
+        }
 
-private:
-  CAutoLock(const CAutoLock &);
-  CAutoLock &operator=(const CAutoLock &);
+      private:
+        CAutoLock(const CAutoLock &);
+        CAutoLock &operator=(const CAutoLock &);
 
-private:
-  T &m_objLock;
-};
+      private:
+        T &m_objLock;
+    };
 
 #endif // DL_MT
 
-struct CModuleLoadLibraryPolicy {
-  static HMODULE Load(LPCTSTR szFileName) { return ::LoadLibrary(szFileName); }
-  static BOOL Free(HMODULE hModule) { return ::FreeLibrary(hModule); }
-};
+    struct CModuleLoadLibraryPolicy
+    {
+        static HMODULE Load(LPCTSTR szFileName)
+        {
+            return ::LoadLibrary(szFileName);
+        }
+        static BOOL Free(HMODULE hModule)
+        {
+            return ::FreeLibrary(hModule);
+        }
+    };
 
-struct CModuleGetModuleHandlePolicy {
-  static HMODULE Load(LPCTSTR szFileName) {
-    return ::GetModuleHandle(szFileName);
-  }
-  static BOOL Free(HMODULE /*hModule*/) { return TRUE; }
-};
+    struct CModuleGetModuleHandlePolicy
+    {
+        static HMODULE Load(LPCTSTR szFileName)
+        {
+            return ::GetModuleHandle(szFileName);
+        }
+        static BOOL Free(HMODULE /*hModule*/)
+        {
+            return TRUE;
+        }
+    };
 
-template <class Name, class LoadPolicy = CModuleLoadLibraryPolicy>
-class CModule {
-public:
-  typedef CModule<Name, LoadPolicy> type;
-  typedef Name name_type;
-  static type &GetModule() {
+    template <class Name, class LoadPolicy = CModuleLoadLibraryPolicy> class CModule
+    {
+      public:
+        typedef CModule<Name, LoadPolicy> type;
+        typedef Name name_type;
+        static type &GetModule()
+        {
 #ifdef DL_MT
-    static volatile LONG lMutex = FALSE;
-    CLWMutex theMutex(lMutex);
-    CAutoLock<CLWMutex> autoLock(theMutex);
+            static volatile LONG lMutex = FALSE;
+            CLWMutex theMutex(lMutex);
+            CAutoLock<CLWMutex> autoLock(theMutex);
 #endif // DL_MT
-    static type Module;
-    return Module;
-  }
-  HMODULE GetModuleHandle() const { return m_hModule; }
-  HMODULE LoadModule() {
-    return (m_hModule = LoadPolicy::Load(name_type::GetStr()));
-  }
-  BOOL IsLoaded() const { return m_hModule != NULL; }
-  //  Caution - use with care. Not thread-safe
-  BOOL UnloadModule() {
-    HMODULE hModule = m_hModule;
-    m_hModule = NULL;
-    return LoadPolicy::Free(hModule);
-  }
-  ~CModule() {
-    if (m_hModule)
-      UnloadModule();
-  }
+            static type Module;
+            return Module;
+        }
+        HMODULE GetModuleHandle() const
+        {
+            return m_hModule;
+        }
+        HMODULE LoadModule()
+        {
+            return (m_hModule = LoadPolicy::Load(name_type::GetStr()));
+        }
+        BOOL IsLoaded() const
+        {
+            return m_hModule != NULL;
+        }
+        //  Caution - use with care. Not thread-safe
+        BOOL UnloadModule()
+        {
+            HMODULE hModule = m_hModule;
+            m_hModule = NULL;
+            return LoadPolicy::Free(hModule);
+        }
+        ~CModule()
+        {
+            if (m_hModule)
+                UnloadModule();
+        }
 
-private:
-  CModule() { LoadModule(); }
-  HMODULE m_hModule;
-};
+      private:
+        CModule()
+        {
+            LoadModule();
+        }
+        HMODULE m_hModule;
+    };
 
-// try to minimize proxy function size
+    // try to minimize proxy function size
 
-static BOOL inline DL_GetProcAddressImpl(
+    static BOOL inline DL_GetProcAddressImpl(
 #ifdef DL_MT
-    volatile LONG &pMutex, const FARPROC pProxyDef,
+        volatile LONG &pMutex, const FARPROC pProxyDef,
 #endif // DL_MT
-    volatile FARPROC &pProxy, HMODULE hModule, LPCSTR lpProcName) {
+        volatile FARPROC &pProxy, HMODULE hModule, LPCSTR lpProcName)
+    {
 #ifdef DL_MT
-  CLWMutex theMutex(pMutex);
-  CAutoLock<CLWMutex> autoLock(theMutex);
-  //  test for first entry
-  if (pProxy != pProxyDef)
-    return TRUE;
+        CLWMutex theMutex(pMutex);
+        CAutoLock<CLWMutex> autoLock(theMutex);
+        //  test for first entry
+        if (pProxy != pProxyDef)
+            return TRUE;
 #endif // DL_MT
-  FARPROC pFunction = ::GetProcAddress(hModule, lpProcName);
-  if (pFunction) {
-    pProxy = pFunction;
-    return TRUE;
-  }
-  return FALSE;
-}
-
-template <class Module, class Name, class Proxy> class CDynFunction {
-public:
-  typedef CDynFunction<Module, Name, Proxy> type;
-  typedef Proxy proxy_type;
-  typedef Module module_type;
-  typedef Name name_type;
-  typedef typename proxy_type::fun_type fun_type;
-
-  static fun_type &GetProxy() {
-    static fun_type proxy = proxy_type::template Proxy<type>::ProxyFun;
-    return proxy;
-  }
-  static void Reset() {
-    GetProxy() = proxy_type::template Proxy<type>::ProxyFun;
-  }
-  static BOOL IsProxy() {
-    return (GetProxy() == proxy_type::template Proxy<type>::ProxyFun);
-  }
-  static BOOL InitFunction() {
-#ifdef DL_MT
-    static volatile LONG lMutex = FALSE;
-#endif // DL_MT
-    const module_type &theModule = module_type::GetModule();
-    if (theModule.IsLoaded())
-      return DL_GetProcAddressImpl(
-#ifdef DL_MT
-          lMutex, (const FARPROC)proxy_type::template Proxy<type>::ProxyFun,
-#endif // DL_MT
-          (volatile FARPROC &)GetProxy(), theModule.GetModuleHandle(),
-          name_type::GetStr());
-    return FALSE;
-  }
-};
-
-struct CDynFunException {
-  CDynFunException() : m_sMessage(NULL) {};
-  ~CDynFunException() { free(m_sMessage); };
-  CDynFunException(LPCTSTR sMessage) : m_sMessage(NULL) {
-    SetMessage(sMessage);
-  }
-  CDynFunException(const CDynFunException &other) : m_sMessage(NULL) {
-    SetMessage(other.m_sMessage);
-  }
-  CDynFunException &operator=(const CDynFunException &other) {
-    SetMessage(other.m_sMessage);
-    return *this;
-  }
-  void SetMessage(LPCTSTR sMessage) {
-    free(m_sMessage);
-    m_sMessage = (LPTSTR)malloc((_tcslen(sMessage) + 1) * sizeof(TCHAR));
-    if (m_sMessage)
-      _tcscpy_s(m_sMessage, _tcslen(m_sMessage), sMessage);
-  }
-  LPCTSTR GetMessage() const { return m_sMessage; }
-
-private:
-  LPTSTR m_sMessage;
-};
-
-template <class E = CDynFunException> struct CFunProxyThrowPolicy {
-  template <class DynFunction> struct FunctionTrait {
-    //  we don't care about return value - anywhere it could not be used
-    typedef typename DynFunction::proxy_type::ret_type raw_ret_type;
-    typedef typename SelectType<IsEqualType<raw_ret_type, void>::value, int,
-                                raw_ret_type>::value ret_type;
-    static ret_type MakeReturn() {
-      TCHAR szMessage[DynFunction::name_type::length + 64];
-      _stprintf_s(szMessage, _T("Can't resolve procedure <%hs>: %d"),
-                  DynFunction::name_type::GetStr(), GetLastError());
-      throw E(szMessage);
-      //	return ret_type();
+        FARPROC pFunction = ::GetProcAddress(hModule, lpProcName);
+        if (pFunction)
+        {
+            pProxy = pFunction;
+            return TRUE;
+        }
+        return FALSE;
     }
-  };
-};
 
-//  we need not to implement void return type value policy,
-//  coz void function can only throw on error
+    template <class Module, class Name, class Proxy> class CDynFunction
+    {
+      public:
+        typedef CDynFunction<Module, Name, Proxy> type;
+        typedef Proxy proxy_type;
+        typedef Module module_type;
+        typedef Name name_type;
+        typedef typename proxy_type::fun_type fun_type;
 
-template <class R, R value = R()> struct CFunProxyValuePolicy {
-  template <class DynFunction> struct FunctionTrait {
-    static typename DynFunction::proxy_type::ret_type MakeReturn() {
-      return value;
-    }
-  };
-};
+        static fun_type &GetProxy()
+        {
+            static fun_type proxy = proxy_type::template Proxy<type>::ProxyFun;
+            return proxy;
+        }
+        static void Reset()
+        {
+            GetProxy() = proxy_type::template Proxy<type>::ProxyFun;
+        }
+        static BOOL IsProxy()
+        {
+            return (GetProxy() == proxy_type::template Proxy<type>::ProxyFun);
+        }
+        static BOOL InitFunction()
+        {
+#ifdef DL_MT
+            static volatile LONG lMutex = FALSE;
+#endif // DL_MT
+            const module_type &theModule = module_type::GetModule();
+            if (theModule.IsLoaded())
+                return DL_GetProcAddressImpl(
+#ifdef DL_MT
+                    lMutex, (const FARPROC)proxy_type::template Proxy<type>::ProxyFun,
+#endif // DL_MT
+                    (volatile FARPROC &)GetProxy(), theModule.GetModuleHandle(), name_type::GetStr());
+            return FALSE;
+        }
+    };
 
-struct CFunProxyDefPolicy {
-  template <class DynFunction> struct FunctionTrait {
-    static typename DynFunction::proxy_type::ret_type MakeReturn() {
-      return DynFunction::proxy_type::ret_type();
-    }
-  };
-};
+    struct CDynFunException
+    {
+        CDynFunException() : m_sMessage(NULL) {};
+        ~CDynFunException()
+        {
+            free(m_sMessage);
+        };
+        CDynFunException(LPCTSTR sMessage) : m_sMessage(NULL)
+        {
+            SetMessage(sMessage);
+        }
+        CDynFunException(const CDynFunException &other) : m_sMessage(NULL)
+        {
+            SetMessage(other.m_sMessage);
+        }
+        CDynFunException &operator=(const CDynFunException &other)
+        {
+            SetMessage(other.m_sMessage);
+            return *this;
+        }
+        void SetMessage(LPCTSTR sMessage)
+        {
+            free(m_sMessage);
+            m_sMessage = (LPTSTR)malloc((_tcslen(sMessage) + 1) * sizeof(TCHAR));
+            if (m_sMessage)
+                _tcscpy_s(m_sMessage, _tcslen(m_sMessage), sMessage);
+        }
+        LPCTSTR GetMessage() const
+        {
+            return m_sMessage;
+        }
+
+      private:
+        LPTSTR m_sMessage;
+    };
+
+    template <class E = CDynFunException> struct CFunProxyThrowPolicy
+    {
+        template <class DynFunction> struct FunctionTrait
+        {
+            //  we don't care about return value - anywhere it could not be used
+            typedef typename DynFunction::proxy_type::ret_type raw_ret_type;
+            typedef typename SelectType<IsEqualType<raw_ret_type, void>::value, int, raw_ret_type>::value ret_type;
+            static ret_type MakeReturn()
+            {
+                TCHAR szMessage[DynFunction::name_type::length + 64];
+                _stprintf_s(szMessage, _T("Can't resolve procedure <%hs>: %d"), DynFunction::name_type::GetStr(),
+                            GetLastError());
+                throw E(szMessage);
+                //	return ret_type();
+            }
+        };
+    };
+
+    //  we need not to implement void return type value policy,
+    //  coz void function can only throw on error
+
+    template <class R, R value = R()> struct CFunProxyValuePolicy
+    {
+        template <class DynFunction> struct FunctionTrait
+        {
+            static typename DynFunction::proxy_type::ret_type MakeReturn()
+            {
+                return value;
+            }
+        };
+    };
+
+    struct CFunProxyDefPolicy
+    {
+        template <class DynFunction> struct FunctionTrait
+        {
+            static typename DynFunction::proxy_type::ret_type MakeReturn()
+            {
+                return DynFunction::proxy_type::ret_type();
+            }
+        };
+    };
 
 #define DL_FUN_PROXY_CC(cc) DL_CAT(CFunProxy, cc)
 
@@ -453,93 +532,87 @@ struct CFunProxyDefPolicy {
 #define DL_FUN_PROXY_IMPL(cc, n) DL_CAT(DL_FUN_PROXY(cc, n), Impl)
 #define DL_FUN_PROXY_IMPL1(cc, n) DL_CAT(DL_FUN_PROXY(cc, n), Impl1)
 
-#define DL_DECLARE_FUN_PROXY_IMPL(call_conv, param_count)                      \
-  template <typename R> struct DL_FUN_PROXY_IMPL(call_conv, param_count) {     \
-    template <class DynFunction DL_REPEAT_TRAILING_PARAM_N(param_count,        \
-                                                           typename P),        \
-              class Policy>                                                    \
-    struct RetProxy {                                                          \
-      static R call_conv ProxyFun(DL_REPEAT_BINARY_PARAM_N(param_count, P,     \
-                                                           v)) {               \
-        if (DynFunction::InitFunction())                                       \
-          return DynFunction::GetProxy()(DL_REPEAT_PARAM_N(param_count, v));   \
-        return Policy::template FunctionTrait<DynFunction>::MakeReturn();      \
-      }                                                                        \
-    };                                                                         \
-  };                                                                           \
-                                                                               \
-  template <> struct DL_FUN_PROXY_IMPL(call_conv, param_count)<void> {         \
-    template <class DynFunction DL_REPEAT_TRAILING_PARAM_N(param_count,        \
-                                                           typename P),        \
-              class Policy>                                                    \
-    struct RetProxy {                                                          \
-      static void call_conv ProxyFun(DL_REPEAT_BINARY_PARAM_N(param_count, P,  \
-                                                              v)) {            \
-        if (DynFunction::InitFunction())                                       \
-          DynFunction::GetProxy()(DL_REPEAT_PARAM_N(param_count, v));          \
-        else                                                                   \
-          Policy::template FunctionTrait<DynFunction>::MakeReturn();           \
-      }                                                                        \
-    };                                                                         \
-  };
+#define DL_DECLARE_FUN_PROXY_IMPL(call_conv, param_count)                                                              \
+    template <typename R> struct DL_FUN_PROXY_IMPL(call_conv, param_count)                                             \
+    {                                                                                                                  \
+        template <class DynFunction DL_REPEAT_TRAILING_PARAM_N(param_count, typename P), class Policy> struct RetProxy \
+        {                                                                                                              \
+            static R call_conv ProxyFun(DL_REPEAT_BINARY_PARAM_N(param_count, P, v))                                   \
+            {                                                                                                          \
+                if (DynFunction::InitFunction())                                                                       \
+                    return DynFunction::GetProxy()(DL_REPEAT_PARAM_N(param_count, v));                                 \
+                return Policy::template FunctionTrait<DynFunction>::MakeReturn();                                      \
+            }                                                                                                          \
+        };                                                                                                             \
+    };                                                                                                                 \
+                                                                                                                       \
+    template <> struct DL_FUN_PROXY_IMPL(call_conv, param_count)<void>                                                 \
+    {                                                                                                                  \
+        template <class DynFunction DL_REPEAT_TRAILING_PARAM_N(param_count, typename P), class Policy> struct RetProxy \
+        {                                                                                                              \
+            static void call_conv ProxyFun(DL_REPEAT_BINARY_PARAM_N(param_count, P, v))                                \
+            {                                                                                                          \
+                if (DynFunction::InitFunction())                                                                       \
+                    DynFunction::GetProxy()(DL_REPEAT_PARAM_N(param_count, v));                                        \
+                else                                                                                                   \
+                    Policy::template FunctionTrait<DynFunction>::MakeReturn();                                         \
+            }                                                                                                          \
+        };                                                                                                             \
+    };
 
-//  instantiate ProxyFunImpl for zero parameters count
+    //  instantiate ProxyFunImpl for zero parameters count
 
-// VC6 bug - nested class inheritance from class instantiated with selecttype
-// causes compiler error
+    // VC6 bug - nested class inheritance from class instantiated with selecttype
+    // causes compiler error
 
-#define DL_DECLARE_FUN_PROXY_IMPL1(call_conv, param_count)                     \
-  DL_DECLARE_FUN_PROXY_IMPL(call_conv, param_count)                            \
-  template <class R DL_REPEAT_TRAILING_PARAM_N(param_count, typename P),       \
-            class DynFunction, class Policy>                                   \
-  struct DL_FUN_PROXY_IMPL1(call_conv, param_count)                            \
-      : public SelectType<IsEqualType<P0, void>::value,                        \
-                          typename DL_FUN_PROXY_IMPL(call_conv, 0) <           \
-                              R>::template RetProxy<DynFunction, Policy>,      \
-        typename DL_FUN_PROXY_IMPL(call_conv, param_count)<R>::                \
-                template RetProxy<DynFunction DL_REPEAT_TRAILING_PARAM_N(      \
-                                      param_count, P),                         \
-                                  Policy> > ::value {};
+#define DL_DECLARE_FUN_PROXY_IMPL1(call_conv, param_count)                                                             \
+    DL_DECLARE_FUN_PROXY_IMPL(call_conv, param_count)                                                                  \
+    template <class R DL_REPEAT_TRAILING_PARAM_N(param_count, typename P), class DynFunction, class Policy>            \
+    struct DL_FUN_PROXY_IMPL1(call_conv, param_count)                                                                  \
+        : public SelectType<IsEqualType<P0, void>::value,                                                              \
+                            typename DL_FUN_PROXY_IMPL(call_conv, 0) < R>::template RetProxy<DynFunction, Policy>,     \
+          typename DL_FUN_PROXY_IMPL(                                                                                  \
+              call_conv,                                                                                               \
+              param_count)<R>::template RetProxy<DynFunction DL_REPEAT_TRAILING_PARAM_N(param_count, P), Policy> >     \
+              ::value                                                                                                  \
+    {                                                                                                                  \
+    };
 
-#define DL_DECLARE_FUN_PROXY(call_conv, param_count)                           \
-  DL_DECLARE_FUN_PROXY_IMPL1(call_conv, param_count)                           \
-  template <typename R DL_REPEAT_TRAILING_PARAM_N(param_count, typename P),    \
-            class Policy = CFunProxyValuePolicy<R>>                            \
-  struct DL_FUN_PROXY(call_conv, param_count) {                                \
-    typedef R(call_conv *fun_type)(DL_REPEAT_PARAM_N(param_count, P));         \
-    typedef R ret_type;                                                        \
-    template <class DynFunction>                                               \
-    struct Proxy                                                               \
-        : public DL_FUN_PROXY_IMPL1(                                           \
-              call_conv,                                                       \
-              param_count)<R DL_REPEAT_TRAILING_PARAM_N(param_count, P),       \
-                           DynFunction, Policy> {};                            \
-  };
+#define DL_DECLARE_FUN_PROXY(call_conv, param_count)                                                                   \
+    DL_DECLARE_FUN_PROXY_IMPL1(call_conv, param_count)                                                                 \
+    template <typename R DL_REPEAT_TRAILING_PARAM_N(param_count, typename P), class Policy = CFunProxyValuePolicy<R>>  \
+    struct DL_FUN_PROXY(call_conv, param_count)                                                                        \
+    {                                                                                                                  \
+        typedef R(call_conv *fun_type)(DL_REPEAT_PARAM_N(param_count, P));                                             \
+        typedef R ret_type;                                                                                            \
+        template <class DynFunction>                                                                                   \
+        struct Proxy : public DL_FUN_PROXY_IMPL1(                                                                      \
+                           call_conv, param_count)<R DL_REPEAT_TRAILING_PARAM_N(param_count, P), DynFunction, Policy>  \
+        {                                                                                                              \
+        };                                                                                                             \
+    };
 
 #define DL_REPEAT_DECLARE_FUN_PROXY_IMPL0(n, cc)
 #define DL_REPEAT_DECLARE_FUN_PROXY_IMPL1(n, cc) DL_DECLARE_FUN_PROXY(cc, n)
-#define DL_REPEAT_DECLARE_FUN_PROXY_IMPL2(n, cc)                               \
-  DL_IF(DL_BOOL(n), DL_REPEAT_DECLARE_FUN_PROXY_IMPL1,                         \
-        DL_REPEAT_DECLARE_FUN_PROXY_IMPL0)(n, cc)
+#define DL_REPEAT_DECLARE_FUN_PROXY_IMPL2(n, cc)                                                                       \
+    DL_IF(DL_BOOL(n), DL_REPEAT_DECLARE_FUN_PROXY_IMPL1, DL_REPEAT_DECLARE_FUN_PROXY_IMPL0)(n, cc)
 
 #ifndef DL_USE_BOOST_PP
-#define DL_REPEAT_DECLARE_FUN_PROXY_IMPL(n, cc)                                \
-  DL_REPEAT_DECLARE_FUN_PROXY_IMPL2(n, cc)
+#define DL_REPEAT_DECLARE_FUN_PROXY_IMPL(n, cc) DL_REPEAT_DECLARE_FUN_PROXY_IMPL2(n, cc)
 #else
-#define DL_REPEAT_DECLARE_FUN_PROXY_IMPL(a, n, cc)                             \
-  DL_REPEAT_DECLARE_FUN_PROXY_IMPL2(n, cc)
+#define DL_REPEAT_DECLARE_FUN_PROXY_IMPL(a, n, cc) DL_REPEAT_DECLARE_FUN_PROXY_IMPL2(n, cc)
 #endif
 
-#define DL_REPEAT_DECLARE_FUN_PROXY(cc)                                        \
-  DL_REPEAT_N(DL_MAX_REPEAT, DL_REPEAT_DECLARE_FUN_PROXY_IMPL, cc)
+#define DL_REPEAT_DECLARE_FUN_PROXY(cc) DL_REPEAT_N(DL_MAX_REPEAT, DL_REPEAT_DECLARE_FUN_PROXY_IMPL, cc)
 
 } // namespace delayload
 
-#define DL_DECLARE_FUN_PROXY_CC(call_conv)                                     \
-  namespace delayload {                                                        \
-  DL_DECLARE_FUN_PROXY_IMPL(call_conv, 0)                                      \
-  DL_REPEAT_DECLARE_FUN_PROXY(call_conv /*1...DL_MAX_REPEAT*/)                 \
-  }
+#define DL_DECLARE_FUN_PROXY_CC(call_conv)                                                                             \
+    namespace delayload                                                                                                \
+    {                                                                                                                  \
+        DL_DECLARE_FUN_PROXY_IMPL(call_conv, 0)                                                                        \
+        DL_REPEAT_DECLARE_FUN_PROXY(call_conv /*1...DL_MAX_REPEAT*/)                                                   \
+    }
 
 //  instantiate winapi proxy
 #ifndef DL_NO_STDCALL
@@ -556,19 +629,19 @@ DL_DECLARE_FUN_PROXY_CC(__cdecl)
 
 //  module definitions
 
-#define DL_USE_MODULE_LOAD_POLICY_BEGIN(nmspace, name, load_policy)            \
-  namespace nmspace {                                                          \
-  namespace internal_types {                                                   \
-  DL_DECLARE_NAME_ID(nmspace, name)                                            \
-  typedef delayload::CModule<DL_NAME_ID(nmspace), load_policy> module_type;    \
-  }
+#define DL_USE_MODULE_LOAD_POLICY_BEGIN(nmspace, name, load_policy)                                                    \
+    namespace nmspace                                                                                                  \
+    {                                                                                                                  \
+        namespace internal_types                                                                                       \
+        {                                                                                                              \
+            DL_DECLARE_NAME_ID(nmspace, name)                                                                          \
+            typedef delayload::CModule<DL_NAME_ID(nmspace), load_policy> module_type;                                  \
+        }
 
-#define DL_USE_MODULE_BEGIN(nmspace, name)                                     \
-  DL_USE_MODULE_LOAD_POLICY_BEGIN(nmspace, name,                               \
-                                  delayload::CModuleLoadLibraryPolicy)
-#define DL_USE_MODULE_NON_LOAD_BEGIN(nmspace, name)                            \
-  DL_USE_MODULE_LOAD_POLICY_BEGIN(nmspace, name,                               \
-                                  delayload::CModuleGetModuleHandlePolicy)
+#define DL_USE_MODULE_BEGIN(nmspace, name)                                                                             \
+    DL_USE_MODULE_LOAD_POLICY_BEGIN(nmspace, name, delayload::CModuleLoadLibraryPolicy)
+#define DL_USE_MODULE_NON_LOAD_BEGIN(nmspace, name)                                                                    \
+    DL_USE_MODULE_LOAD_POLICY_BEGIN(nmspace, name, delayload::CModuleGetModuleHandlePolicy)
 
 #define DL_USE_MODULE_END() }
 
@@ -576,65 +649,49 @@ DL_DECLARE_FUN_PROXY_CC(__cdecl)
 
 #define DL_FUN_TYPE(name_id) DL_CAT(name_id, _fun_type)
 
-#define DL_DECLARE_FUN_ERR_POLICY_CC_EX(cc, name, name_id, r, p, pl)           \
-  namespace internal_types {                                                   \
-  DL_DECLARE_NAME_ID_A(name, name_id)                                          \
-  typedef delayload::CDynFunction<                                             \
-      module_type, DL_NAME_ID(name),                                           \
-      delayload::DL_FUN_PROXY(cc, DL_SEQ_SIZE(p)) < r, DL_SEQ_ENUM(p), pl> >   \
-      DL_FUN_TYPE(name);                                                       \
-  }                                                                            \
-  static internal_types::DL_FUN_TYPE(name)::fun_type &name =                   \
-      internal_types::DL_FUN_TYPE(name)::GetProxy();
+#define DL_DECLARE_FUN_ERR_POLICY_CC_EX(cc, name, name_id, r, p, pl)                                                   \
+    namespace internal_types                                                                                           \
+    {                                                                                                                  \
+        DL_DECLARE_NAME_ID_A(name, name_id)                                                                            \
+        typedef delayload::CDynFunction<module_type, DL_NAME_ID(name),                                                 \
+                                        delayload::DL_FUN_PROXY(cc, DL_SEQ_SIZE(p)) < r, DL_SEQ_ENUM(p), pl> >         \
+            DL_FUN_TYPE(name);                                                                                         \
+    }                                                                                                                  \
+    static internal_types::DL_FUN_TYPE(name)::fun_type &name = internal_types::DL_FUN_TYPE(name)::GetProxy();
 
 //  extended set of macros to support import by ord && rename imported
 //  functions
 
-#define DL_DECLARE_FUN_ERR_POLICY_EX(name, name_id, r, p, pl)                  \
-  DL_DECLARE_FUN_ERR_POLICY_CC_EX(WINAPI, name, name_id, r, p, pl)
-#define DL_DECLARE_FUN_CC_EX(cc, name, name_id, r, p)                          \
-  DL_DECLARE_FUN_ERR_POLICY_CC_EX(cc, name, name_id, r, p,                     \
-                                  delayload::CFunProxyDefPolicy)
-#define DL_DECLARE_FUN_EX(name, name_id, r, p)                                 \
-  DL_DECLARE_FUN_CC_EX(WINAPI, name, name_id, r, p)
-#define DL_DECLARE_FUN_THROW_CC_EX(cc, name, name_id, r, p)                    \
-  DL_DECLARE_FUN_ERR_POLICY_CC_EX(cc, name, name_id, r, p,                     \
-                                  delayload::CFunProxyThrowPolicy<>)
-#define DL_DECLARE_FUN_THROW_EX(name, name_id, r, p)                           \
-  DL_DECLARE_FUN_THROW_CC_EX(WINAPI, name, name_id, r, p)
-#define DL_DECLARE_FUN_ERR_CC_EX(cc, name, name_id, r, p, e)                   \
-  DL_DECLARE_FUN_ERR_POLICY_CC_EX(                                             \
-      cc, name, name_id, r, p,                                                 \
-      delayload::CFunProxyValuePolicy<r DL_COMMA() e>)
-#define DL_DECLARE_FUN_ERR_EX(name, name_id, r, p, e)                          \
-  DL_DECLARE_FUN_ERR_CC_EX(WINAPI, name, name_id, r, p, e)
+#define DL_DECLARE_FUN_ERR_POLICY_EX(name, name_id, r, p, pl)                                                          \
+    DL_DECLARE_FUN_ERR_POLICY_CC_EX(WINAPI, name, name_id, r, p, pl)
+#define DL_DECLARE_FUN_CC_EX(cc, name, name_id, r, p)                                                                  \
+    DL_DECLARE_FUN_ERR_POLICY_CC_EX(cc, name, name_id, r, p, delayload::CFunProxyDefPolicy)
+#define DL_DECLARE_FUN_EX(name, name_id, r, p) DL_DECLARE_FUN_CC_EX(WINAPI, name, name_id, r, p)
+#define DL_DECLARE_FUN_THROW_CC_EX(cc, name, name_id, r, p)                                                            \
+    DL_DECLARE_FUN_ERR_POLICY_CC_EX(cc, name, name_id, r, p, delayload::CFunProxyThrowPolicy<>)
+#define DL_DECLARE_FUN_THROW_EX(name, name_id, r, p) DL_DECLARE_FUN_THROW_CC_EX(WINAPI, name, name_id, r, p)
+#define DL_DECLARE_FUN_ERR_CC_EX(cc, name, name_id, r, p, e)                                                           \
+    DL_DECLARE_FUN_ERR_POLICY_CC_EX(cc, name, name_id, r, p, delayload::CFunProxyValuePolicy<r DL_COMMA() e>)
+#define DL_DECLARE_FUN_ERR_EX(name, name_id, r, p, e) DL_DECLARE_FUN_ERR_CC_EX(WINAPI, name, name_id, r, p, e)
 
 //  simplified set of macroses, compatible with previous versions
 
-#define DL_DECLARE_FUN_ERR_POLICY_CC(cc, name, r, p, pl)                       \
-  DL_DECLARE_FUN_ERR_POLICY_CC_EX(cc, name, DL_STRINGIZE(name), r, p, pl)
-#define DL_DECLARE_FUN_ERR_POLICY(name, r, p, pl)                              \
-  DL_DECLARE_FUN_ERR_POLICY_EX(name, DL_STRINGIZE(name), r, p, pl)
-#define DL_DECLARE_FUN_CC(cc, name, r, p)                                      \
-  DL_DECLARE_FUN_CC_EX(cc, name, DL_STRINGIZE(name), r, p)
-#define DL_DECLARE_FUN(name, r, p)                                             \
-  DL_DECLARE_FUN_EX(name, DL_STRINGIZE(name), r, p)
-#define DL_DECLARE_FUN_THROW_CC(cc, name, r, p)                                \
-  DL_DECLARE_FUN_THROW_CC_EX(cc, name, DL_STRINGIZE(name), r, p)
-#define DL_DECLARE_FUN_THROW(name, r, p)                                       \
-  DL_DECLARE_FUN_THROW_EX(name, DL_STRINGIZE(name), r, p)
-#define DL_DECLARE_FUN_ERR_CC(cc, name, r, p, e)                               \
-  DL_DECLARE_FUN_ERR_CC_EX(cc, name, DL_STRINGIZE(name), r, p, e)
-#define DL_DECLARE_FUN_ERR(name, r, p, e)                                      \
-  DL_DECLARE_FUN_ERR_EX(name, DL_STRINGIZE(name), r, p, e)
+#define DL_DECLARE_FUN_ERR_POLICY_CC(cc, name, r, p, pl)                                                               \
+    DL_DECLARE_FUN_ERR_POLICY_CC_EX(cc, name, DL_STRINGIZE(name), r, p, pl)
+#define DL_DECLARE_FUN_ERR_POLICY(name, r, p, pl) DL_DECLARE_FUN_ERR_POLICY_EX(name, DL_STRINGIZE(name), r, p, pl)
+#define DL_DECLARE_FUN_CC(cc, name, r, p) DL_DECLARE_FUN_CC_EX(cc, name, DL_STRINGIZE(name), r, p)
+#define DL_DECLARE_FUN(name, r, p) DL_DECLARE_FUN_EX(name, DL_STRINGIZE(name), r, p)
+#define DL_DECLARE_FUN_THROW_CC(cc, name, r, p) DL_DECLARE_FUN_THROW_CC_EX(cc, name, DL_STRINGIZE(name), r, p)
+#define DL_DECLARE_FUN_THROW(name, r, p) DL_DECLARE_FUN_THROW_EX(name, DL_STRINGIZE(name), r, p)
+#define DL_DECLARE_FUN_ERR_CC(cc, name, r, p, e) DL_DECLARE_FUN_ERR_CC_EX(cc, name, DL_STRINGIZE(name), r, p, e)
+#define DL_DECLARE_FUN_ERR(name, r, p, e) DL_DECLARE_FUN_ERR_EX(name, DL_STRINGIZE(name), r, p, e)
 
 #define DL_GET_MODULE(nmspace) nmspace::internal_types::module_type::GetModule()
 #define DL_LOAD_MODULE(nmspace) DL_GET_MODULE(nmspace).LoadModule()
 #define DL_UNLOAD_MODULE(nmspace) DL_GET_MODULE(nmspace).UnloadModule()
 #define DL_IS_MODULE_LOADED(nmspace) DL_GET_MODULE(nmspace).IsLoaded()
 
-#define DL_GET_FUN_TYPE(nmspace, name)                                         \
-  nmspace::internal_types::DL_FUN_TYPE(name)
+#define DL_GET_FUN_TYPE(nmspace, name) nmspace::internal_types::DL_FUN_TYPE(name)
 #define DL_RESET_FUN(nmspace, name) DL_GET_FUN_TYPE(nmspace, name)::Reset()
 #define DL_IS_FUN_PROXY(nmspace, name) DL_GET_FUN_TYPE(nmspace, name)::IsProxy()
 

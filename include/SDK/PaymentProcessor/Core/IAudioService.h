@@ -8,11 +8,14 @@
 #include <QtCore/QString>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        class IAudioService {
+        class IAudioService
+        {
           public:
             /// Воспроизвести звуковой файл.
             virtual void play(const QString &aFileName) = 0;
@@ -21,7 +24,8 @@ namespace SDK {
             virtual void stop() = 0;
 
           protected:
-            virtual ~IAudioService() {
+            virtual ~IAudioService()
+            {
             }
         };
 

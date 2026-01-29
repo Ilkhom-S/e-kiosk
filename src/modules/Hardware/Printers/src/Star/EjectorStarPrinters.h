@@ -5,7 +5,8 @@
 #include "StarPrinters.h"
 
 //--------------------------------------------------------------------------------
-class EjectorStarPrinter : public StarPrinter {
+class EjectorStarPrinter : public StarPrinter
+{
     SET_SUBSERIES("Ejector")
 
   public:

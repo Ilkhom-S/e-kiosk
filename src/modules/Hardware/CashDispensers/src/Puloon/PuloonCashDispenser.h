@@ -10,7 +10,8 @@
 #include "Hardware/Dispensers/PortDispenser.h"
 
 //--------------------------------------------------------------------------------
-class PuloonLCDM : public PortDispenser {
+class PuloonLCDM : public PortDispenser
+{
     SET_SERIES("Puloon")
 
   public:

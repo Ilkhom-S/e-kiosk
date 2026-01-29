@@ -3,17 +3,22 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-namespace CCCNet {
-    namespace Commands {
-        struct SData {
+namespace CCCNet
+{
+    namespace Commands
+    {
+        struct SData
+        {
             bool deviceACK;
             bool hostACK;
             int timeout;
 
-            SData() : deviceACK(true), hostACK(false), timeout(0) {
+            SData() : deviceACK(true), hostACK(false), timeout(0)
+            {
             }
             SData(bool aDeviceACK, bool aHostACK, int aTimeout)
-                : deviceACK(aDeviceACK), hostACK(aHostACK), timeout(aTimeout) {
+                : deviceACK(aDeviceACK), hostACK(aHostACK), timeout(aTimeout)
+            {
             }
         };
     } // namespace Commands

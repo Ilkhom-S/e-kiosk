@@ -9,7 +9,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------------
-class ProviderListFilter : public QSortFilterProxyModel {
+class ProviderListFilter : public QSortFilterProxyModel
+{
     Q_OBJECT
 
     Q_PROPERTY(bool empty READ getEmpty NOTIFY emptyChanged);
@@ -42,22 +43,26 @@ class ProviderListFilter : public QSortFilterProxyModel {
 };
 
 //------------------------------------------------------------------------------
-class ProviderObject : public QObject {
+class ProviderObject : public QObject
+{
     Q_OBJECT
 
     Q_PROPERTY(qint64 id READ getId);
     Q_PROPERTY(QString name READ getName);
 
   public:
-    ProviderObject(QObject *aParent, qint64 aId, const QString &aName) : QObject(aParent), mId(aId), mName(aName) {
+    ProviderObject(QObject *aParent, qint64 aId, const QString &aName) : QObject(aParent), mId(aId), mName(aName)
+    {
     }
 
   public:
-    qint64 getId() const {
+    qint64 getId() const
+    {
         return mId;
     }
 
-    QString getName() const {
+    QString getName() const
+    {
         return mName;
     }
 

@@ -12,17 +12,21 @@
 #include <SDK/PaymentProcessor/Core/Event.h>
 #include <SDK/PaymentProcessor/Payment/Amount.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         class ICore;
         class IFundsService;
 
-        namespace Scripting {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
             /// Прокси класс для работы с купюроприёмниками и другими средствами приёма денег.
-            class FundsService : public QObject {
+            class FundsService : public QObject
+            {
                 Q_OBJECT
 
               public:

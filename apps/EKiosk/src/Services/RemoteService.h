@@ -30,11 +30,13 @@ class IHardwareDatabaseUtils;
 class QFileSystemWatcher;
 
 //---------------------------------------------------------------------------
-class RemoteService : public SDK::PaymentProcessor::IRemoteService, public PPSDK::IService, protected ILogable {
+class RemoteService : public SDK::PaymentProcessor::IRemoteService, public PPSDK::IService, protected ILogable
+{
     Q_OBJECT
 
   public:
-    struct UpdateCommand {
+    struct UpdateCommand
+    {
         int ID;
         EStatus status;
 

@@ -6,7 +6,8 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний устройств на протоколе PRIM.
-namespace CPrimFR {
+namespace CPrimFR
+{
     /// Начало пакета - фиксированный байт.
     const char Prefix = ASCII::STX;
 
@@ -23,7 +24,8 @@ namespace CPrimFR {
     const char AnswerEndMark[] = "\x1C\x03";
 
     /// Количество повторов
-    namespace RepeatingCount {
+    namespace RepeatingCount
+    {
         /// Посылка некорректна по протоколу.
         const int Protocol = 3;
 

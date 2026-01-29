@@ -17,22 +17,27 @@
 #include <Hardware/Common/Specifications.h>
 
 //--------------------------------------------------------------------------------
-namespace CCCTalk {
-    struct SVendorData {
+namespace CCCTalk
+{
+    struct SVendorData
+    {
         QString vendor;
         QString shortVendor;
         bool complexEnabling;
 
-        SVendorData() : complexEnabling(false) {
+        SVendorData() : complexEnabling(false)
+        {
         }
         SVendorData(const QString &aVendor, const QString &aShortVendor, bool aComplexEnabling = false)
-            : vendor(aVendor), shortVendor(aShortVendor), complexEnabling(aComplexEnabling) {
+            : vendor(aVendor), shortVendor(aShortVendor), complexEnabling(aComplexEnabling)
+        {
         }
     };
 
     typedef QMap<QString, SVendorData>::iterator TVendorDataIt;
 
-    class CVendorData : public CSpecification<QString, SVendorData> {
+    class CVendorData : public CSpecification<QString, SVendorData>
+    {
       public:
         CVendorData();
         QString getName(const QString &aId);
@@ -58,7 +63,8 @@ namespace CCCTalk {
     typedef QMap<int, double> TMinVersions;
     typedef QSet<uchar> TUnsupported;
 
-    struct SModelData {
+    struct SModelData
+    {
         TMinVersions minVersions; /// минимальные версии в зависимости от валюты.
         TUnsupported unsupported; /// неподдерживаемые команды.
         uchar fault;              /// неисправность при нажатиии на кнопку режекта.
@@ -66,10 +72,12 @@ namespace CCCTalk {
         QString model;            /// модель.
         bool verified;            /// модель протестирована.
 
-        SModelData() : fault(0), error(0), verified(false) {
+        SModelData() : fault(0), error(0), verified(false)
+        {
         }
         SModelData(uchar aFault, uchar aError, const QString &aModel, bool aVerified)
-            : fault(aFault), error(aError), model(aModel), verified(aVerified) {
+            : fault(aFault), error(aError), model(aModel), verified(aVerified)
+        {
         }
     };
 
@@ -77,7 +85,8 @@ namespace CCCTalk {
     typedef QMap<QString, SModelData> TModelData;
     typedef QMap<QString, TModelData>::iterator TModelDataIt;
 
-    class CModelDataBase : public CSpecification<QString, TModelData> {
+    class CModelDataBase : public CSpecification<QString, TModelData>
+    {
       public:
         QStringList getModels(bool aComplexEnabling);
         QString getData(const QByteArray &aVendorID, const QByteArray &aModelID, SModelData &aModelData);

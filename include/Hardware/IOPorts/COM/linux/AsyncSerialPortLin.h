@@ -21,7 +21,8 @@
 #include <Hardware/IOPorts/IOPortBase.h>
 
 //--------------------------------------------------------------------------------
-class AsyncSerialPortLin : public IOPortBase {
+class AsyncSerialPortLin : public IOPortBase
+{
     SET_SERIES("COM")
 
   public:

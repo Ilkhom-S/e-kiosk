@@ -6,7 +6,8 @@
 #include "Common/ConnectionBase.h"
 
 //--------------------------------------------------------------------------------
-class LocalConnection : public ConnectionBase {
+class LocalConnection : public ConnectionBase
+{
   public:
     /// Конструктор.
     LocalConnection(const QString &aName, NetworkTaskManager *aNetwork, ILog *aLog);

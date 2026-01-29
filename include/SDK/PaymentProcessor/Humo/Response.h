@@ -10,13 +10,18 @@
 // Project
 #include "ErrorCodes.h"
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Humo {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Humo
+        {
 
             //---------------------------------------------------------------------------
-            namespace CResponse {
-                namespace Parameters {
+            namespace CResponse
+            {
+                namespace Parameters
+                {
                     const char Result[] = "RESULT";
                     const char Error[] = "ERROR";
                     const char ErrorCode[] = "ERROR_CODE";
@@ -29,7 +34,8 @@ namespace SDK {
             class Request;
 
             //---------------------------------------------------------------------------
-            class Response {
+            class Response
+            {
                 Q_DISABLE_COPY(Response)
 
               public:

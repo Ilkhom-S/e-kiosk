@@ -12,7 +12,8 @@
 #include "Common/QtHeadersEnd.h"
 
 //---------------------------------------------------------------------------
-class InputBox : public QWidget {
+class InputBox : public QWidget
+{
     Q_OBJECT
 
   public:

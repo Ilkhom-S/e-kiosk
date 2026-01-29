@@ -8,7 +8,8 @@
 
 class SendRequest;
 
-class PayDaemons : public SendRequest {
+class PayDaemons : public SendRequest
+{
     Q_OBJECT
 
   public:

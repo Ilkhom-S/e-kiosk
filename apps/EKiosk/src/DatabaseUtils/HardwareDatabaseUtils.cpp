@@ -23,28 +23,33 @@
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::getDeviceParams(const QString & /*aDeviceConfigName*/, QVariantMap & /*aParameters*/) {
+bool DatabaseUtils::getDeviceParams(const QString & /*aDeviceConfigName*/, QVariantMap & /*aParameters*/)
+{
     Q_ASSERT(false);
     return false;
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::isDeviceParamExists(const QString & /*aDeviceConfigName*/) {
+bool DatabaseUtils::isDeviceParamExists(const QString & /*aDeviceConfigName*/)
+{
     Q_ASSERT(false);
     return false;
 }
 
 //---------------------------------------------------------------------------
-QVariant DatabaseUtils::getDeviceParam(const QString &aDeviceConfigName, const QString &aParamName) {
+QVariant DatabaseUtils::getDeviceParam(const QString &aDeviceConfigName, const QString &aParamName)
+{
     QString queryMessage = "SELECT `value` FROM `device_param` WHERE `name` = :param_name AND "
                            "`fk_device_id` = (SELECT `id` FROM `device` WHERE `name` = :config_name)";
 
     QScopedPointer<IDatabaseQuery> dbQuery(mDatabase.createQuery(queryMessage));
-    if (!dbQuery.isNull()) {
+    if (!dbQuery.isNull())
+    {
         dbQuery->bindValue(":param_name", aParamName);
         dbQuery->bindValue(":config_name", aDeviceConfigName);
 
-        if (dbQuery->exec() && dbQuery->first()) {
+        if (dbQuery->exec() && dbQuery->first())
+        {
             return dbQuery->value(0);
         }
     }
@@ -54,9 +59,12 @@ QVariant DatabaseUtils::getDeviceParam(const QString &aDeviceConfigName, const Q
 
 //---------------------------------------------------------------------------
 bool DatabaseUtils::setDeviceParam(const QString &aDeviceConfigName, const QString &aParamName,
-                                   const QVariant &aParamValue) {
-    if (!hasDevice(aDeviceConfigName)) {
-        if (!addDevice(aDeviceConfigName)) {
+                                   const QVariant &aParamValue)
+{
+    if (!hasDevice(aDeviceConfigName))
+    {
+        if (!addDevice(aDeviceConfigName))
+        {
             return false;
         }
     }
@@ -68,7 +76,8 @@ bool DatabaseUtils::setDeviceParam(const QString &aDeviceConfigName, const QStri
                 ":param_value, (SELECT `id` FROM `device` WHERE `name` = :config_name))");
 
     QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(queryMessage));
-    if (!query) {
+    if (!query)
+    {
         return false;
     }
 
@@ -80,7 +89,8 @@ bool DatabaseUtils::setDeviceParam(const QString &aDeviceConfigName, const QStri
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::hasDevice(const QString &aDeviceConfigName) {
+bool DatabaseUtils::hasDevice(const QString &aDeviceConfigName)
+{
     QScopedPointer<IDatabaseQuery> dbQuery(mDatabase.createQuery("SELECT * FROM `device` WHERE `name` = :config_name"));
 
     dbQuery->bindValue(":config_name", aDeviceConfigName);
@@ -89,7 +99,8 @@ bool DatabaseUtils::hasDevice(const QString &aDeviceConfigName) {
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::addDevice(const QString &aDeviceConfigName) {
+bool DatabaseUtils::addDevice(const QString &aDeviceConfigName)
+{
     QMutexLocker lock(&mAccessMutex);
 
     int deviceType = SDK::Driver::EDeviceType::fromString(aDeviceConfigName.section('.', 2, 2));
@@ -97,7 +108,8 @@ bool DatabaseUtils::addDevice(const QString &aDeviceConfigName) {
     QScopedPointer<IDatabaseQuery> dbQuery(
         mDatabase.createQuery("INSERT OR REPLACE INTO `device` (`name`, `type`) VALUES (:config_name, :device_type)"));
 
-    if (!dbQuery) {
+    if (!dbQuery)
+    {
         return false;
     }
 
@@ -108,22 +120,27 @@ bool DatabaseUtils::addDevice(const QString &aDeviceConfigName) {
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::removeDeviceParams(const QString & /*aDeviceConfigName*/) {
+bool DatabaseUtils::removeDeviceParams(const QString & /*aDeviceConfigName*/)
+{
     Q_ASSERT(false);
     return false;
 }
 
 //---------------------------------------------------------------------------
-bool DatabaseUtils::cleanDevicesStatuses() {
+bool DatabaseUtils::cleanDevicesStatuses()
+{
     Q_ASSERT(false);
     return false;
 }
 
 //---------------------------------------------------------------------------
 bool DatabaseUtils::addDeviceStatus(const QString &aDeviceConfigName, SDK::Driver::EWarningLevel::Enum aErrorLevel,
-                                    const QString &aStatusString) {
-    if (!hasDevice(aDeviceConfigName)) {
-        if (!addDevice(aDeviceConfigName)) {
+                                    const QString &aStatusString)
+{
+    if (!hasDevice(aDeviceConfigName))
+    {
+        if (!addDevice(aDeviceConfigName))
+        {
             return false;
         }
     }
@@ -135,7 +152,8 @@ bool DatabaseUtils::addDeviceStatus(const QString &aDeviceConfigName, SDK::Drive
                                    "`id` FROM `device` WHERE `name` = :config_name)");
 
     QScopedPointer<IDatabaseQuery> dbQuery(mDatabase.createQuery(queryMessage));
-    if (!dbQuery) {
+    if (!dbQuery)
+    {
         return false;
     }
 
@@ -143,19 +161,23 @@ bool DatabaseUtils::addDeviceStatus(const QString &aDeviceConfigName, SDK::Drive
 
     bool is = false;
 
-    if (dbQuery->exec() && dbQuery->last()) {
+    if (dbQuery->exec() && dbQuery->last())
+    {
         if (aErrorLevel == static_cast<SDK::Driver::EWarningLevel::Enum>(dbQuery->value(0).toInt()) &&
-            aStatusString == dbQuery->value(1).toString()) {
+            aStatusString == dbQuery->value(1).toString())
+        {
             is = true;
         }
     }
 
-    if (!is) {
+    if (!is)
+    {
         queryMessage = "INSERT INTO `device_status` (`description`, `level`, `create_date`, `fk_device_id`)"
                        " VALUES (:statusDescription, :level, :createDate, (SELECT `id` FROM `device` WHERE `name` = "
                        ":config_name))";
 
-        if (!dbQuery->prepare(queryMessage)) {
+        if (!dbQuery->prepare(queryMessage))
+        {
             return false;
         }
 
@@ -165,16 +187,21 @@ bool DatabaseUtils::addDeviceStatus(const QString &aDeviceConfigName, SDK::Drive
         dbQuery->bindValue(":config_name", aDeviceConfigName);
 
         return dbQuery->exec();
-    } else {
+    }
+    else
+    {
         return true;
     }
 }
 
 //---------------------------------------------------------------------------
-void DatabaseUtils::removeUnknownDevice(const QStringList &aCurrentDevicesList) {
-    auto formatDeviceList = [&]() -> QString {
+void DatabaseUtils::removeUnknownDevice(const QStringList &aCurrentDevicesList)
+{
+    auto formatDeviceList = [&]() -> QString
+    {
         QStringList result;
-        foreach (auto c, aCurrentDevicesList) {
+        foreach (auto c, aCurrentDevicesList)
+        {
             result << QString("'%1'").arg(c);
         }
 
@@ -186,7 +213,8 @@ void DatabaseUtils::removeUnknownDevice(const QStringList &aCurrentDevicesList) 
     QScopedPointer<IDatabaseQuery> dbQuery(
         mDatabase.createQuery(QString("DELETE FROM `device` WHERE `name` NOT IN (%1)").arg(formatDeviceList())));
 
-    if (dbQuery) {
+    if (dbQuery)
+    {
         dbQuery->exec();
     }
 

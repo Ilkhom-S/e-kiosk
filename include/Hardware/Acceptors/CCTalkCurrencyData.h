@@ -16,22 +16,28 @@
 #include <Hardware/CashAcceptors/CashAcceptorStatusCodes.h>
 
 /// Константы, команды и коды состояний устройств на протоколе ccTalk.
-namespace CCCTalk {
-    struct SCurrencyData {
+namespace CCCTalk
+{
+    struct SCurrencyData
+    {
         QString country;
         int code;
 
-        SCurrencyData() : country(""), code(Currency::NoCurrency) {
+        SCurrencyData() : country(""), code(Currency::NoCurrency)
+        {
         }
-        SCurrencyData(const QString &aCountry, int aCode) : country(aCountry), code(aCode) {
+        SCurrencyData(const QString &aCountry, int aCode) : country(aCountry), code(aCode)
+        {
         }
     };
 
     const char TeachMode[] = "TM";
 
-    class CCurrencyData : public CSpecification<QByteArray, SCurrencyData> {
+    class CCurrencyData : public CSpecification<QByteArray, SCurrencyData>
+    {
       public:
-        CCurrencyData() {
+        CCurrencyData()
+        {
             append("AL", "Albania");
             append("AD", "Andorra", Currency::EUR);
             append("AT", "Austria", Currency::EUR);
@@ -278,7 +284,8 @@ namespace CCCTalk {
         }
 
       private:
-        void append(const QByteArray &aCountryCode, const QString &aCountry, int aCode = Currency::NoCurrency) {
+        void append(const QByteArray &aCountryCode, const QString &aCountry, int aCode = Currency::NoCurrency)
+        {
             mBuffer.insert(aCountryCode, SCurrencyData(aCountry, aCode));
         }
     };

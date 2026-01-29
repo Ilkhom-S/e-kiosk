@@ -21,7 +21,8 @@
 // Project
 #include "SplashScreen.h"
 
-SplashScreen::SplashScreen(QWidget *aParent) : QWidget(aParent, Qt::SplashScreen) {
+SplashScreen::SplashScreen(QWidget *aParent) : QWidget(aParent, Qt::SplashScreen)
+{
     ui.setupUi(this);
     showMinimized();
 
@@ -31,11 +32,13 @@ SplashScreen::SplashScreen(QWidget *aParent) : QWidget(aParent, Qt::SplashScreen
 }
 
 //----------------------------------------------------------------------------
-SplashScreen::~SplashScreen() {
+SplashScreen::~SplashScreen()
+{
 }
 
 //----------------------------------------------------------------------------
-void SplashScreen::closeEvent(QCloseEvent *aEvent) {
+void SplashScreen::closeEvent(QCloseEvent *aEvent)
+{
     aEvent->ignore();
     showMinimized();
 }

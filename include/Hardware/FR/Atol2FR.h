@@ -6,7 +6,8 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола KKM.
-class Atol2FRProtocol : public ProtocolBase {
+class Atol2FRProtocol : public ProtocolBase
+{
   public:
     /// Выполнить команду протокола.
     TResult processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, int aTimeout);

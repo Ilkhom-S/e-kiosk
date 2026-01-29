@@ -1,6 +1,5 @@
 /* @file Парсинг Intel-HEX файлов прошивок. */
 
-
 // Modules
 #include "Hardware/Protocols/Common/ProtocolUtils.h"
 
@@ -8,8 +7,10 @@
 #include "IntelHex.h"
 
 //--------------------------------------------------------------------------------
-bool IntelHex::parseRecord(const QString &aRecord, SRecordData &aData, QString &aErrorDescription) {
-    if (aRecord.size() < CIntelHex::MinRecordLength) {
+bool IntelHex::parseRecord(const QString &aRecord, SRecordData &aData, QString &aErrorDescription)
+{
+    if (aRecord.size() < CIntelHex::MinRecordLength)
+    {
         aErrorDescription =
             QString("Invalid length = %1, need %2 min").arg(aRecord.size()).arg(CIntelHex::MinRecordLength);
         return false;
@@ -17,7 +18,8 @@ bool IntelHex::parseRecord(const QString &aRecord, SRecordData &aData, QString &
 
     char prefix = aRecord[0].cell();
 
-    if (prefix != CIntelHex::Prefix) {
+    if (prefix != CIntelHex::Prefix)
+    {
         aErrorDescription = QString("Invalid prefix = %1, need %2")
                                 .arg(ProtocolUtils::toHexLog(prefix))
                                 .arg(ProtocolUtils::toHexLog(CIntelHex::Prefix));
@@ -27,7 +29,8 @@ bool IntelHex::parseRecord(const QString &aRecord, SRecordData &aData, QString &
     QString record = aRecord.mid(1);
     QRegularExpression regExp("^[0-9a-fA-F]+$");
 
-    if (regExp.match(record).capturedStart() == -1) {
+    if (regExp.match(record).capturedStart() == -1)
+    {
         aErrorDescription = "Invalid character(s)";
         return false;
     }
@@ -37,7 +40,8 @@ bool IntelHex::parseRecord(const QString &aRecord, SRecordData &aData, QString &
     int length = uchar(data[0]);
     int recordLength = data.size() - 5;
 
-    if (length != recordLength) {
+    if (length != recordLength)
+    {
         aErrorDescription = QString("Invalid length %1, need %2").arg(recordLength).arg(length);
         return false;
     }
@@ -45,7 +49,8 @@ bool IntelHex::parseRecord(const QString &aRecord, SRecordData &aData, QString &
     char CRC = data[data.size() - 1];
     char recordCRC = ASCII::NUL - std::accumulate(data.begin(), data.end() - 1, ASCII::NUL);
 
-    if (CRC != recordCRC) {
+    if (CRC != recordCRC)
+    {
         aErrorDescription = QString("Invalid CRC %1, need %2").arg(recordCRC).arg(CRC);
         return false;
     }
@@ -59,7 +64,8 @@ bool IntelHex::parseRecord(const QString &aRecord, SRecordData &aData, QString &
 
 //--------------------------------------------------------------------------------
 bool IntelHex::parseRecords(const QStringList &aRecords, TAddressedBlockList &aAddressedBlockList, int aBlockSize,
-                            QString &aErrorDescription) {
+                            QString &aErrorDescription)
+{
     aAddressedBlockList.clear();
     QStringList records(aRecords);
 
@@ -70,39 +76,50 @@ bool IntelHex::parseRecords(const QStringList &aRecords, TAddressedBlockList &aA
 
     ushort addressShift = 0;
 
-    for (int i = 0; i < records.size(); ++i) {
+    for (int i = 0; i < records.size(); ++i)
+    {
         SRecordData recordData;
 
-        if (!parseRecord(records[i], recordData, aErrorDescription)) {
+        if (!parseRecord(records[i], recordData, aErrorDescription))
+        {
             aErrorDescription += QString(", message %1 {%2}").arg(i + 1).arg(records[i]);
             return false;
         }
 
-        switch (recordData.type) {
-            case EType::DataBlock: {
+        switch (recordData.type)
+        {
+            case EType::DataBlock:
+            {
                 int recordDataSize = recordData.data.size();
                 QString messageLog = QString(", message %1 {%2}").arg(i + 1).arg(records[i]);
 
-                if (!recordDataSize) {
+                if (!recordDataSize)
+                {
                     aErrorDescription += "Block is empty" + messageLog;
                     return false;
                 }
-                if (aBlockSize < recordDataSize) {
+                if (aBlockSize < recordDataSize)
+                {
                     aErrorDescription += QString("Block size = %1 is lesseer than record data size = %2")
                                              .arg(aBlockSize)
                                              .arg(recordDataSize) +
                                          messageLog;
                     return false;
-                } else if (aBlockSize % recordDataSize) {
+                }
+                else if (aBlockSize % recordDataSize)
+                {
                     aErrorDescription += QString("Block size = %1 is not divisible by record data size = %2")
                                              .arg(aBlockSize)
                                              .arg(recordDataSize) +
                                          messageLog;
                     return false;
-                } else if (!aAddressedBlockList.isEmpty()) {
+                }
+                else if (!aAddressedBlockList.isEmpty())
+                {
                     int prevRecordSize = aAddressedBlockList.last().second.size();
 
-                    if ((prevRecordSize != aBlockSize) && (prevRecordSize != recordDataSize)) {
+                    if ((prevRecordSize != aBlockSize) && (prevRecordSize != recordDataSize))
+                    {
                         aErrorDescription += QString("Record data size = %1 is not equal to previous one = %2")
                                                  .arg(recordDataSize)
                                                  .arg(prevRecordSize) +
@@ -117,14 +134,16 @@ bool IntelHex::parseRecords(const QStringList &aRecords, TAddressedBlockList &aA
 
                 if ((recordDataSize != aBlockSize) && (aAddressedBlockList.size() >= amount) &&
                     (std::find_if(aAddressedBlockList.end() - amount, aAddressedBlockList.end(),
-                                  [&](const TAddressedBlock &aBlock) -> bool {
-                                      return aBlock.second.size() != recordDataSize;
-                                  }) == aAddressedBlockList.end())) {
-                    for (int j = 0; j < amount - 1; ++j) {
+                                  [&](const TAddressedBlock &aBlock) -> bool
+                                  { return aBlock.second.size() != recordDataSize; }) == aAddressedBlockList.end()))
+                {
+                    for (int j = 0; j < amount - 1; ++j)
+                    {
                         int index = aAddressedBlockList.size() - amount + j;
 
                         if ((aAddressedBlockList[index].first + aAddressedBlockList[index].second.size()) !=
-                            aAddressedBlockList[index + 1].first) {
+                            aAddressedBlockList[index + 1].first)
+                        {
                             aErrorDescription += QString("The continuity of the address location of the data blocks is "
                                                          "disrupted in the %1 block")
                                                      .arg(index + 2);
@@ -134,7 +153,8 @@ bool IntelHex::parseRecords(const QStringList &aRecords, TAddressedBlockList &aA
 
                     int startIndex = aAddressedBlockList.size() - amount;
 
-                    for (int j = 1; j < amount; ++j) {
+                    for (int j = 1; j < amount; ++j)
+                    {
                         aAddressedBlockList[startIndex].second += aAddressedBlockList[startIndex + j].second;
                     }
 
@@ -143,25 +163,29 @@ bool IntelHex::parseRecords(const QStringList &aRecords, TAddressedBlockList &aA
 
                 break;
             }
-            case EType::EndOfFile: {
-                if (i != (records.size() - 1)) {
+            case EType::EndOfFile:
+            {
+                if (i != (records.size() - 1))
+                {
                     aErrorDescription += "The end of file record is not at the end of file";
                     return false;
                 }
 
                 return true;
             }
-            case EType::ExtendedAddress: {
-                if (!aAddressedBlockList.isEmpty()) {
+            case EType::ExtendedAddress:
+            {
+                if (!aAddressedBlockList.isEmpty())
+                {
                     int lastSize = aAddressedBlockList.last().second.size();
                     int amount = aBlockSize / lastSize;
 
                     if ((lastSize != aBlockSize) &&
                         ((aAddressedBlockList.size() < amount) ||
                          (std::find_if(aAddressedBlockList.end() - amount, aAddressedBlockList.end(),
-                                       [&](const TAddressedBlock &aBlock) -> bool {
-                                           return aBlock.second.size() != lastSize;
-                                       }) != aAddressedBlockList.end()))) {
+                                       [&](const TAddressedBlock &aBlock) -> bool
+                                       { return aBlock.second.size() != lastSize; }) != aAddressedBlockList.end())))
+                    {
                         aErrorDescription +=
                             QString("The extended address shift is changed, but in the middle of last block = %1")
                                 .arg(i);
@@ -173,7 +197,8 @@ bool IntelHex::parseRecords(const QStringList &aRecords, TAddressedBlockList &aA
 
                 break;
             }
-            default: {
+            default:
+            {
                 aErrorDescription =
                     QString("Unknown type %1, message %2 {%3}").arg(recordData.type).arg(i + 1).arg(records[i]);
                 return false;
@@ -181,7 +206,8 @@ bool IntelHex::parseRecords(const QStringList &aRecords, TAddressedBlockList &aA
         }
     }
 
-    if (aAddressedBlockList.isEmpty()) {
+    if (aAddressedBlockList.isEmpty())
+    {
         aErrorDescription = "The resulting addressed block list is empty";
         return false;
     }

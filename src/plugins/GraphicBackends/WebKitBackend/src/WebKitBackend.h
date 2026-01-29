@@ -19,7 +19,8 @@
 #include "WebGraphicsItem.h"
 
 //------------------------------------------------------------------------------
-class WebKitBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsBackend {
+class WebKitBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsBackend
+{
     Q_OBJECT
 
   public:

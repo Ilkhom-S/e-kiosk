@@ -5,12 +5,15 @@
 #include <QtCore/QVector>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //----------------------------------------------------------------------------
         /// Диапазон номерной ёмкости.
-        struct SRange {
+        struct SRange
+        {
             /// Границы диапазона.
             qint64 from;
             qint64 to;

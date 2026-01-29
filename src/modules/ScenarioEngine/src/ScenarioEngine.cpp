@@ -16,10 +16,12 @@
 #endif
 #include "ScenarioEngine.h"
 
-namespace GUI {
+namespace GUI
+{
 
     //---------------------------------------------------------------------------
-    namespace CScenarioEngine {
+    namespace CScenarioEngine
+    {
         /// Название лога.
         const char LogName[] = "Interface";
 
@@ -36,22 +38,26 @@ namespace GUI {
     } // namespace CScenarioEngine
 
     //---------------------------------------------------------------------------
-    ScenarioEngine::ScenarioEngine() : ILogable(CScenarioEngine::LogName), mLogPadding(0) {
+    ScenarioEngine::ScenarioEngine() : ILogable(CScenarioEngine::LogName), mLogPadding(0)
+    {
     }
 
     //---------------------------------------------------------------------------
-    ScenarioEngine::~ScenarioEngine() {
+    ScenarioEngine::~ScenarioEngine()
+    {
     }
 
     //---------------------------------------------------------------------------
-    void ScenarioEngine::addDirectory(const QString &aDirectory) {
+    void ScenarioEngine::addDirectory(const QString &aDirectory)
+    {
         // Ищем в данном каталоге сценарии рекурсивно
         QDirIterator dirEntry(aDirectory, QStringList(CScenarioEngine::ScenarioFileMask), QDir::Files,
                               QDirIterator::Subdirectories);
 
         QMap<QString, QPair<QString, QString>> scenarios;
 
-        while (dirEntry.hasNext()) {
+        while (dirEntry.hasNext())
+        {
             dirEntry.next();
 
             QSettings file(dirEntry.fileInfo().absoluteFilePath(), QSettings::IniFormat);
@@ -62,7 +68,8 @@ namespace GUI {
 #endif
 
             // не путаем с другими файлами
-            if (file.childGroups().contains(CScenarioEngine::ScenarioGroup)) {
+            if (file.childGroups().contains(CScenarioEngine::ScenarioGroup))
+            {
                 file.beginGroup(CScenarioEngine::ScenarioGroup);
                 scenarios[file.value(CScenarioEngine::NameKey).toString()] = qMakePair(
                     dirEntry.fileInfo().absolutePath() + "/" + file.value(CScenarioEngine::ScriptKey).toString(),
@@ -70,14 +77,19 @@ namespace GUI {
             }
         }
 
-        foreach (QString key, scenarios.keys()) {
+        foreach (QString key, scenarios.keys())
+        {
             QPair<QString, QString> params;
             QString basePath;
 
-            if (!params.second.isEmpty()) {
-                if (scenarios.contains(params.second)) {
+            if (!params.second.isEmpty())
+            {
+                if (scenarios.contains(params.second))
+                {
                     basePath = scenarios[params.second].first;
-                } else {
+                }
+                else
+                {
                     toLog(LogLevel::Error, QString("Failed to find base scenario for %1.").arg(key));
                     continue;
                 }
@@ -88,7 +100,8 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void ScenarioEngine::addScenario(Scenario *aScenario) {
+    void ScenarioEngine::addScenario(Scenario *aScenario)
+    {
         connect(aScenario, SIGNAL(finished(const QVariantMap &)), SLOT(finished(const QVariantMap &)),
                 Qt::UniqueConnection);
 
@@ -107,12 +120,14 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    bool ScenarioEngine::initialize() const {
+    bool ScenarioEngine::initialize() const
+    {
         return !mScenarioStorage.isEmpty();
     }
 
     //---------------------------------------------------------------------------
-    void ScenarioEngine::finalize() {
+    void ScenarioEngine::finalize()
+    {
         mScenarioStorage.clear();
         mScenarioStack.clear();
         mScenarios.clear();
@@ -120,30 +135,40 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void ScenarioEngine::resetTimeout() {
-        if (!mScenarioStack.isEmpty()) {
+    void ScenarioEngine::resetTimeout()
+    {
+        if (!mScenarioStack.isEmpty())
+        {
             mScenarioStack.top()->resetTimeout();
         }
     }
 
     //---------------------------------------------------------------------------
-    void ScenarioEngine::signalTriggered(const QString &aSignal, const QVariantMap &aArguments) {
-        if (mScenarioStack.isEmpty()) {
+    void ScenarioEngine::signalTriggered(const QString &aSignal, const QVariantMap &aArguments)
+    {
+        if (mScenarioStack.isEmpty())
+        {
             toLog(LogLevel::Warning, QString("Cannot handle '%1' signal, no scenario is running."));
-        } else {
+        }
+        else
+        {
             mScenarioStack.top()->signalTriggered(aSignal, aArguments);
         }
     }
 
     //---------------------------------------------------------------------------
-    bool ScenarioEngine::startScenario(const QString &aScenario, const QVariantMap &aParameters) {
+    bool ScenarioEngine::startScenario(const QString &aScenario, const QVariantMap &aParameters)
+    {
         TScenarioDescriptorMap::Iterator sc = mScenarios.find(aScenario);
 
-        if (sc != mScenarios.end()) {
-            if (!mScenarioStack.isEmpty()) {
+        if (sc != mScenarios.end())
+        {
+            if (!mScenarioStack.isEmpty())
+            {
                 auto prevScenario = mScenarioStack.top();
 
-                if (prevScenario->getName() == aScenario) {
+                if (prevScenario->getName() == aScenario)
+                {
                     return true;
                 }
 
@@ -158,10 +183,12 @@ namespace GUI {
             // Сценарий еще не создан
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             if (!sc->instance ||
-                std::find(mScenarioStack.begin(), mScenarioStack.end(), sc->instance) != mScenarioStack.end()) {
+                std::find(mScenarioStack.begin(), mScenarioStack.end(), sc->instance) != mScenarioStack.end())
+            {
 #else
             if (!sc->instance ||
-                qFind(mScenarioStack.begin(), mScenarioStack.end(), sc->instance) != mScenarioStack.end()) {
+                qFind(mScenarioStack.begin(), mScenarioStack.end(), sc->instance) != mScenarioStack.end())
+            {
 #endif
                 // Запускаем новый экземпляр сценария.
                 scenario = new JSScenario(sc->name, sc->path, sc->basePath, getLog());
@@ -172,7 +199,8 @@ namespace GUI {
                 mScenarioStorage.insertMulti(aScenario, QSharedPointer<Scenario>(scenario));
 #endif
 
-                if (scenario->initialize(mScriptObjects)) {
+                if (scenario->initialize(mScriptObjects))
+                {
                     connect(scenario, SIGNAL(finished(const QVariantMap &)), SLOT(finished(const QVariantMap &)),
                             Qt::UniqueConnection);
                     scenario->setLog(getLog());
@@ -180,26 +208,34 @@ namespace GUI {
                     sc->instance = scenario;
                     mScenarios.insert(aScenario, *sc);
 
-                    foreach (QSharedPointer<Scenario> s, mScenarioStorage) {
-                        if (s->getStateHook().isEmpty()) {
+                    foreach (QSharedPointer<Scenario> s, mScenarioStorage)
+                    {
+                        if (s->getStateHook().isEmpty())
+                        {
                             continue;
                         }
 
                         QList<Scenario::SExternalStateHook> hooks;
 
-                        foreach (Scenario::SExternalStateHook hook, s->getStateHook()) {
-                            if (hook.targetScenario == scenario->getName()) {
+                        foreach (Scenario::SExternalStateHook hook, s->getStateHook())
+                        {
+                            if (hook.targetScenario == scenario->getName())
+                            {
                                 hooks << hook;
                             }
                         }
 
                         scenario->setStateHook(hooks);
                     }
-                } else {
+                }
+                else
+                {
                     toLog(LogLevel::Error, QString("Skipping invalid scenario %1.").arg(sc->name));
                     return false;
                 }
-            } else {
+            }
+            else
+            {
                 scenario = sc->instance;
             }
 
@@ -210,7 +246,9 @@ namespace GUI {
             getLog()->adjustPadding(1);
 
             scenario->start(aParameters);
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Error, QString("Failed to start '%1' scenario: not found").arg(aScenario));
             return false;
         }
@@ -219,8 +257,10 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void ScenarioEngine::finished(const QVariantMap &aResult) {
-        if (mScenarioStack.isEmpty()) {
+    void ScenarioEngine::finished(const QVariantMap &aResult)
+    {
+        if (mScenarioStack.isEmpty())
+        {
             toLog(LogLevel::Error, "Some scenario has finished but the stack is empty.");
             return;
         }
@@ -228,17 +268,21 @@ namespace GUI {
         getLog()->adjustPadding(-1);
 
         auto sourceScenario = dynamic_cast<GUI::Scenario *>(sender());
-        if (sourceScenario && sourceScenario->getName() != mScenarioStack.top()->getName()) {
+        if (sourceScenario && sourceScenario->getName() != mScenarioStack.top()->getName())
+        {
             toLog(LogLevel::Warning, QString("Received a signal from the scenario '%1', but '%2' is active.")
                                          .arg(sourceScenario->getName())
                                          .arg(mScenarioStack.top()->getName()));
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Normal, QString("STOP %1 scenario.").arg(mScenarioStack.top()->getName()));
             mScenarioStack.top()->stop();
 
             mScenarioStack.pop();
 
-            if (!mScenarioStack.isEmpty()) {
+            if (!mScenarioStack.isEmpty())
+            {
                 toLog(LogLevel::Normal, QString("RESUME %1 scenario.").arg(mScenarioStack.top()->getName()));
                 mScenarioStack.top()->resume(aResult);
                 emit scenarioChanged(mScenarioStack.top()->getName());
@@ -247,11 +291,14 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    bool ScenarioEngine::canStop() const {
+    bool ScenarioEngine::canStop() const
+    {
         bool result = true;
 
-        foreach (auto scenario, mScenarioStack) {
-            if (!scenario->canStop()) {
+        foreach (auto scenario, mScenarioStack)
+        {
+            if (!scenario->canStop())
+            {
                 result = false;
             }
         }

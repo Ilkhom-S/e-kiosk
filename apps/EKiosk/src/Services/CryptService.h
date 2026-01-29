@@ -16,7 +16,8 @@ class ICryptEngine;
 class IApplication;
 
 //---------------------------------------------------------------------------
-class CryptService : public SDK::PaymentProcessor::IService, public SDK::PaymentProcessor::ICryptService {
+class CryptService : public SDK::PaymentProcessor::IService, public SDK::PaymentProcessor::ICryptService
+{
   public:
     static CryptService *instance(IApplication *aApplication);
 

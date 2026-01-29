@@ -1,6 +1,7 @@
 /* @file Константы для отчета с данными ФР. */
 
-namespace CFRReport {
+namespace CFRReport
+{
     const char ZReport[] = "z_report";
     const char Number[] = "number";
 

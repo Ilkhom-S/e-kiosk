@@ -9,13 +9,17 @@
 #include <QtCore/QObjectList>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Scripting {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
             /// Прокси класс для списков, контролирующих время жизни своих элементов.
-            class ScriptArray : public QObject {
+            class ScriptArray : public QObject
+            {
                 Q_OBJECT
 
                 /// Контейнер.
@@ -26,28 +30,33 @@ namespace SDK {
 
               public:
                 /// Конструктор.
-                ScriptArray(QObject *aParent) : QObject(aParent) {
+                ScriptArray(QObject *aParent) : QObject(aParent)
+                {
                 }
 
                 /// Добавить объект.
-                ScriptArray &append(QObject *aObject) {
+                ScriptArray &append(QObject *aObject)
+                {
                     mContainer.append(aObject);
                     return *this;
                 }
 
               public slots:
                 /// Проверка контейнера на пустоту.
-                bool isEmpty() const {
+                bool isEmpty() const
+                {
                     return mContainer.isEmpty();
                 }
 
               private:
                 /// Получить значения.
-                QObjectList getValues() const {
+                QObjectList getValues() const
+                {
                     return mContainer;
                 }
                 /// Получить длину.
-                int getLength() const {
+                int getLength() const
+                {
                     return mContainer.size();
                 }
 

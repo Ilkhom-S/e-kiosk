@@ -9,7 +9,8 @@
 #include "PrimexPrinterData.h"
 
 //--------------------------------------------------------------------------------
-class PrimexNP2511 : public TSerialPrinterBase {
+class PrimexNP2511 : public TSerialPrinterBase
+{
   public:
     PrimexNP2511();
 

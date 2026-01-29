@@ -15,7 +15,8 @@
 class UnmanagedConnectionWindow;
 
 //---------------------------------------------------------------------------
-class UnmanagedWizardPage : public WizardPageBase {
+class UnmanagedWizardPage : public WizardPageBase
+{
     Q_OBJECT
 
   public:

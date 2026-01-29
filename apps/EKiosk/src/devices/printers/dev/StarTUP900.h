@@ -5,7 +5,8 @@
 
 class BasePrinterDevices;
 
-namespace CMDStarTUP900 {
+namespace CMDStarTUP900
+{
     const char charTimeOut = 40;
     const int TimeOutAfterWriting = 100; /// Таймаут порта после запроса.
     const int MaxBufferSize = 1024;      /// Размер буфера.
@@ -61,7 +62,8 @@ namespace CMDStarTUP900 {
     const int LogoRegistryTimeOut = 3000;
 }; // namespace CMDStarTUP900
 
-class StarTUP900_PRINTER : public BasePrinterDevices {
+class StarTUP900_PRINTER : public BasePrinterDevices
+{
 
   public:
     StarTUP900_PRINTER(QObject *parent = 0);

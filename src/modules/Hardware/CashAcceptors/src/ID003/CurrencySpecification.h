@@ -9,10 +9,13 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CID003 {
-    class CCurrencyCodes : public CSpecification<char, int> {
+namespace CID003
+{
+    class CCurrencyCodes : public CSpecification<char, int>
+    {
       public:
-        CCurrencyCodes() {
+        CCurrencyCodes()
+        {
             using namespace Currency;
 
             append('\x27', RUB);

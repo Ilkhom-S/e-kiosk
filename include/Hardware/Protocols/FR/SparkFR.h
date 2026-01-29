@@ -6,7 +6,8 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола KKM.
-class SparkFRProtocol : public ProtocolBase {
+class SparkFRProtocol : public ProtocolBase
+{
   public:
     /// Выполнить команду.
     TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData, int aTimeout);

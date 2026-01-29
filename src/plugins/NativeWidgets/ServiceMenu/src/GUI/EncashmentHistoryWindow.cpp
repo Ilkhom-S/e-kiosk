@@ -18,7 +18,8 @@
 #include "ServiceTags.h"
 
 EncashmentHistoryWindow::EncashmentHistoryWindow(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), mBackend(aBackend) {
+    : QWidget(aParent), mBackend(aBackend)
+{
     setupUi(this);
 
     mSignalMapper = new QSignalMapper(this);
@@ -26,13 +27,16 @@ EncashmentHistoryWindow::EncashmentHistoryWindow(ServiceMenuBackend *aBackend, Q
 }
 
 //------------------------------------------------------------------------
-EncashmentHistoryWindow::~EncashmentHistoryWindow() {
+EncashmentHistoryWindow::~EncashmentHistoryWindow()
+{
 }
 
 //------------------------------------------------------------------------
-void EncashmentHistoryWindow::updateHistory() {
+void EncashmentHistoryWindow::updateHistory()
+{
     // clear all
-    foreach (auto button, mWidgets) {
+    foreach (auto button, mWidgets)
+    {
         gridHistoryLayout->removeWidget(button);
         button->deleteLater();
     }
@@ -41,7 +45,8 @@ void EncashmentHistoryWindow::updateHistory() {
     auto paymentManager = mBackend->getPaymentManager();
     int count = paymentManager->getEncashmentsHistoryCount();
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++)
+    {
         QVariantMap encashment = paymentManager->getEncashmentInfo(i);
 
         QString text = QString("[%1] %2\n")
@@ -65,7 +70,8 @@ void EncashmentHistoryWindow::updateHistory() {
 }
 
 //------------------------------------------------------------------------
-void EncashmentHistoryWindow::printEncashment(int aIndex) {
+void EncashmentHistoryWindow::printEncashment(int aIndex)
+{
     auto paymentManager = mBackend->getPaymentManager();
 
     paymentManager->printEncashment(aIndex);

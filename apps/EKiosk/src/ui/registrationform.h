@@ -16,24 +16,33 @@
 #include "createdialupconnection.h"
 #include "keypud.h"
 
-namespace Ui {
+namespace Ui
+{
     class RegistrationForm;
 }
 
-class RegistrationForm : public QDialog {
+class RegistrationForm : public QDialog
+{
     Q_OBJECT
 
   public:
-    enum Page {
+    enum Page
+    {
         SelectTpl = 0,
         SearchDevice = 1,
         SelectConnection = 2,
         EnterAuthData = 3,
     };
 
-    enum Status { Info = 0, Success = 1, Error = 2 };
+    enum Status
+    {
+        Info = 0,
+        Success = 1,
+        Error = 2
+    };
 
-    enum SearchDev {
+    enum SearchDev
+    {
         search_validator = 0,
         search_printer = 1,
         search_modem = 2,

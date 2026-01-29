@@ -25,7 +25,8 @@ class PaymentTableModel;
 class PaymentManager;
 
 //----------------------------------------------------------------------------
-class PaymentServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::PaymentServiceWindow {
+class PaymentServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::PaymentServiceWindow
+{
     Q_OBJECT
 
   public:
@@ -61,7 +62,13 @@ class PaymentServiceWindow : public QFrame, public ServiceWindowBase, protected 
     void showColumn(bool aShow);
 
   private:
-    enum DateRange { DayRange, WeekRange, MonthRange, ThreeMonthRange };
+    enum DateRange
+    {
+        DayRange,
+        WeekRange,
+        MonthRange,
+        ThreeMonthRange
+    };
 
     ServiceMenuBackend *mBackend;
     PaymentManager *mPaymentManager;
@@ -76,11 +83,13 @@ class PaymentServiceWindow : public QFrame, public ServiceWindowBase, protected 
 };
 
 //----------------------------------------------------------------------------
-class PaymentTableModel : public QAbstractTableModel {
+class PaymentTableModel : public QAbstractTableModel
+{
     Q_OBJECT
 
   public:
-    enum Column {
+    enum Column
+    {
         Id,
         Provider,
         ProviderFields,
@@ -96,7 +105,11 @@ class PaymentTableModel : public QAbstractTableModel {
         Processed
     };
 
-    enum Role { DataRole = Qt::UserRole, IDRole };
+    enum Role
+    {
+        DataRole = Qt::UserRole,
+        IDRole
+    };
 
     PaymentTableModel(bool aFiscalMode, PaymentManager *aPaymentMananger, QObject *aParent = 0);
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -134,14 +147,17 @@ class PaymentTableModel : public QAbstractTableModel {
     QSet<qint64> mPrintingQueue;
 
     /// очередь платежей на перепроводку
-    struct ProcessPayments {
+    struct ProcessPayments
+    {
         QList<PaymentInfo> payments;
         int processed;
 
-        ProcessPayments() : processed(0) {
+        ProcessPayments() : processed(0)
+        {
         }
 
-        void clear() {
+        void clear()
+        {
             payments.clear();
             processed = 0;
         }
@@ -152,10 +168,16 @@ class PaymentTableModel : public QAbstractTableModel {
 };
 
 //---------------------------------------------------------------------------
-class PaymentProxyModel : public QSortFilterProxyModel {
+class PaymentProxyModel : public QSortFilterProxyModel
+{
     Q_OBJECT
   public:
-    enum PaymentFilter { AllPayments, PrintedPayments, ProcessedPayments };
+    enum PaymentFilter
+    {
+        AllPayments,
+        PrintedPayments,
+        ProcessedPayments
+    };
 
     PaymentProxyModel(QObject *parent = 0);
     void showColumn(int aColumn, bool aShow);

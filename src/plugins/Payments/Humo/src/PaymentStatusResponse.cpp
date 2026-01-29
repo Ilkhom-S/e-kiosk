@@ -5,11 +5,13 @@
 
 //---------------------------------------------------------------------------
 PaymentStatusResponse::PaymentStatusResponse(const Request &aRequest, const QString &aResponseString)
-    : PaymentResponse(aRequest, aResponseString) {
+    : PaymentResponse(aRequest, aResponseString)
+{
 }
 
 //---------------------------------------------------------------------------
-bool PaymentStatusResponse::isOk() {
+bool PaymentStatusResponse::isOk()
+{
     return ((getError() == EServerError::Ok) && (getResult() == EServerResult::StatusCheckOk)) ? true : false;
 }
 

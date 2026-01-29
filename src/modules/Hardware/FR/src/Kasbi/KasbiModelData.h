@@ -5,31 +5,39 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CKasbiFR {
+namespace CKasbiFR
+{
     /// Модели.
-    namespace Models {
+    namespace Models
+    {
         /// Название модели по умолчанию.
         const char Default[] = "Kasbi FR";
 
         /// Данные модели.
-        struct SData {
+        struct SData
+        {
             QString name;
             bool verified;
 
-            SData() : name(Default), verified(false) {
+            SData() : name(Default), verified(false)
+            {
             }
-            SData(const QString &aName, bool aVerified) : name(aName), verified(aVerified) {
+            SData(const QString &aName, bool aVerified) : name(aName), verified(aVerified)
+            {
             }
         };
 
-        class CData : public CSpecification<QString, SData> {
+        class CData : public CSpecification<QString, SData>
+        {
           public:
-            CData() {
+            CData()
+            {
                 add("Terminal-FA", "Kasbi Terminal-FA");
             }
 
           private:
-            void add(const QString &aId, const QString &aName, bool aVerified = true) {
+            void add(const QString &aId, const QString &aName, bool aVerified = true)
+            {
                 append(aId, SData(aName, aVerified));
             }
         };

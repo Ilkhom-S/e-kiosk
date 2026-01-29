@@ -3,7 +3,8 @@
 #pragma once
 
 //------------------------------------------------------------------------
-namespace PluginParameterTranslations {
+namespace PluginParameterTranslations
+{
     static const char *FiscalMode = QT_TRANSLATE_NOOP("FRParameters", "FRParameters#fiscal_mode");
     static const char *AutoCloseSessionAbility =
         QT_TRANSLATE_NOOP("FRParameters", "FRParameters#auto_close_session_ability");

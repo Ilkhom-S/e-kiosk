@@ -6,7 +6,8 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола ShtrihFR.
-class ShtrihFRProtocol : public ProtocolBase {
+class ShtrihFRProtocol : public ProtocolBase
+{
   public:
     ShtrihFRProtocol();
 

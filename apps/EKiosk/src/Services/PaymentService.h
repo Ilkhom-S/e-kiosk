@@ -32,14 +32,21 @@ class IApplication;
 class IPaymentDatabaseUtils;
 
 //---------------------------------------------------------------------------
-namespace EPaymentCommandResult {
-    enum Enum { OK, Error, NotFound };
+namespace EPaymentCommandResult
+{
+    enum Enum
+    {
+        OK,
+        Error,
+        NotFound
+    };
 } // namespace EPaymentCommandResult
 
 Q_DECLARE_METATYPE(EPaymentCommandResult::Enum)
 
 //---------------------------------------------------------------------------
-class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, protected ILogable {
+class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, protected ILogable
+{
     Q_OBJECT
 
   public:

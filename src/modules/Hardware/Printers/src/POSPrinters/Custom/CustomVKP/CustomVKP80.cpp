@@ -6,7 +6,8 @@
 template class CustomVKP80<TSerialPrinterBase>;
 
 //--------------------------------------------------------------------------------
-template <class T> CustomVKP80<T>::CustomVKP80() {
+template <class T> CustomVKP80<T>::CustomVKP80()
+{
     this->mParameters = POSPrinters::CommonParameters;
 
     // статусы ошибок
@@ -50,10 +51,12 @@ template <class T> CustomVKP80<T>::CustomVKP80() {
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void CustomVKP80<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
+template <class T> void CustomVKP80<T>::setDeviceConfiguration(const QVariantMap &aConfiguration)
+{
     this->setDeviceConfiguration(aConfiguration);
 
-    if (aConfiguration.contains(CHardware::Codepage)) {
+    if (aConfiguration.contains(CHardware::Codepage))
+    {
         using namespace CHardware::Codepages;
 
         QString codepage = aConfiguration[CHardware::Codepage].toString();
@@ -64,13 +67,16 @@ template <class T> void CustomVKP80<T>::setDeviceConfiguration(const QVariantMap
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool CustomVKP80<T>::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
-    if (this->mOverflow) {
+template <class T> bool CustomVKP80<T>::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt)
+{
+    if (this->mOverflow)
+    {
         PollingExpector expector;
         QByteArray data;
 
         if (!expector.wait([&]() -> bool { return this->getAnswer(data, 10) && data.contains(ASCII::XOn); },
-                           CCustomVKP80::XOnWaiting)) {
+                           CCustomVKP80::XOnWaiting))
+        {
             return false;
         }
 
@@ -79,8 +85,10 @@ template <class T> bool CustomVKP80<T>::printReceipt(const Tags::TLexemeReceipt 
 
     bool result = this->printReceipt(aLexemeReceipt);
 
-    if (!this->getConfigParameter(CHardware::Printer::OutCall).toBool()) {
-        auto condition = [&]() -> bool {
+    if (!this->getConfigParameter(CHardware::Printer::OutCall).toBool())
+    {
+        auto condition = [&]() -> bool
+        {
             TStatusCodes statusCodes;
             return this->getStatus(statusCodes) && !statusCodes.contains(PrinterStatusCode::OK::MotorMotion);
         };
@@ -91,7 +99,8 @@ template <class T> bool CustomVKP80<T>::printReceipt(const Tags::TLexemeReceipt 
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool CustomVKP80<T>::updateParametersOut() {
+template <class T> bool CustomVKP80<T>::updateParametersOut()
+{
     return this->updateParameters();
 }
 

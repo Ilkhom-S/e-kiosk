@@ -4,14 +4,17 @@
 
 class QObject;
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
         class Event;
 
         //------------------------------------------------------------------------------
-        class IEventService {
+        class IEventService
+        {
           public:
             /// Генерация события aEvent.
             virtual void sendEvent(const Event &aEvent) = 0;
@@ -24,7 +27,8 @@ namespace SDK {
             virtual void unsubscribe(const QObject *aObject, const char *aSlot) = 0;
 
           protected:
-            virtual ~IEventService() {
+            virtual ~IEventService()
+            {
             }
         };
 

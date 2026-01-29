@@ -11,7 +11,8 @@
 class IApplication;
 
 //---------------------------------------------------------------------------
-namespace CGUISignals {
+namespace CGUISignals
+{
     const char StartGUI[] = "start_ui";
     const char StopGUI[] = "stop_ui";
     const char UpdateGUI[] = "update_ui";
@@ -19,12 +20,17 @@ namespace CGUISignals {
 } // namespace CGUISignals
 
 //---------------------------------------------------------------------------
-class IdleScenario : public GUI::Scenario {
+class IdleScenario : public GUI::Scenario
+{
     Q_OBJECT
     Q_ENUMS(Command)
 
   public:
-    enum Command { None, Autoencashment };
+    enum Command
+    {
+        None,
+        Autoencashment
+    };
 
   public:
     IdleScenario(IApplication *mApplication);

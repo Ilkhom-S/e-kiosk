@@ -5,9 +5,11 @@
 #include "../Retractor/ShtrihRetractorFRLite.h"
 
 //--------------------------------------------------------------------------------
-namespace CMStarTK2FR {
+namespace CMStarTK2FR
+{
     /// Настройки печати.
-    namespace Printing {
+    namespace Printing
+    {
         const char All = '\x00';       /// Печатать всё.
         const char NoFiscal = '\x00';  /// Не печатать фискальный чек.
         const char NoZReport = '\x03'; /// Не печатать Z-отчёт.
@@ -20,7 +22,8 @@ namespace CMStarTK2FR {
 //--------------------------------------------------------------------------------
 typedef ShtrihRetractorFRLite<ShtrihOnlineFRBase<ShtrihSerialFRBase>> TMStarTK2FR;
 
-class MStarTK2FR : public TMStarTK2FR {
+class MStarTK2FR : public TMStarTK2FR
+{
     SET_SUBSERIES("MStarTK2")
 
   public:

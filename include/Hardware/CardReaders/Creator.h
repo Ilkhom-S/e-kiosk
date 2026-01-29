@@ -5,7 +5,8 @@
 #include "Hardware/Common/ProtocolBase.h"
 
 //--------------------------------------------------------------------------------
-class Creator : public ProtocolBase {
+class Creator : public ProtocolBase
+{
   public:
     Creator();
 

@@ -13,13 +13,15 @@
 class DialupConnectionWindow;
 
 //------------------------------------------------------------------------
-namespace CDialupWizardPage {
+namespace CDialupWizardPage
+{
     /// Минимальное время, когда будет показан экран ожидания при тесте соединения
     const int MinimumPingTime = 1000;
 } // namespace CDialupWizardPage
 
 //------------------------------------------------------------------------
-class DialupWizardPage : public WizardPageBase {
+class DialupWizardPage : public WizardPageBase
+{
     Q_OBJECT
 
   public:

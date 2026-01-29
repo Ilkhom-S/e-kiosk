@@ -10,15 +10,23 @@
 #include <QtCore/QMetaType>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //--------------------------------------------------------------------------------
-        namespace ECashReceiver {
-            enum Enum { BillAcceptor, CoinAcceptor };
+        namespace ECashReceiver
+        {
+            enum Enum
+            {
+                BillAcceptor,
+                CoinAcceptor
+            };
         } // namespace ECashReceiver
 
-        struct SPar {
+        struct SPar
+        {
             double nominal;   /// Номинал.
             int currencyId;   /// Цифровой код валюты.
             QString currency; /// Буквенный код валюты.

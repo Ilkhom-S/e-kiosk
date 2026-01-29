@@ -11,16 +11,21 @@
 #include "Log.h"
 #include "Translator.h"
 
-Translator::Translator(const QString &aInterfacePath) : mInterfacePath(aInterfacePath) {
+Translator::Translator(const QString &aInterfacePath) : mInterfacePath(aInterfacePath)
+{
     // Загружаем настройки интерфейса.
     QSettings settings(mInterfacePath + QDir::separator() + "interface.ini", QSettings::IniFormat);
     settings.setIniCodec("UTF-8");
     settings.beginGroup("locale");
 
-    foreach (QString key, settings.allKeys()) {
-        if (key == "default") {
+    foreach (QString key, settings.allKeys())
+    {
+        if (key == "default")
+        {
             mDefaultLanguage = settings.value(key).toString();
-        } else {
+        }
+        else
+        {
             mLanguages[key] = settings.value(key).toString();
         }
     }
@@ -30,20 +35,26 @@ Translator::Translator(const QString &aInterfacePath) : mInterfacePath(aInterfac
 }
 
 //------------------------------------------------------------------------------
-QString Translator::tr(const QString &aString) {
+QString Translator::tr(const QString &aString)
+{
     QString translation;
     QString moduleName = aString.section('#', 0, 0);
 
-    if (!moduleName.isEmpty()) {
+    if (!moduleName.isEmpty())
+    {
         QMap<QString, QTranslator *>::iterator translator = mTranslators.find(moduleName);
 
-        if (translator == mTranslators.end()) {
+        if (translator == mTranslators.end())
+        {
             // Подгружаем транслятор.
             QScopedPointer<QTranslator> tr(new QTranslator());
             if (tr->load(moduleName, mInterfacePath + QDir::separator() + "locale", "",
-                         QString("_%1.qm").arg(mCurrentLanguage))) {
+                         QString("_%1.qm").arg(mCurrentLanguage)))
+            {
                 translator = mTranslators.insert(moduleName, tr.take());
-            } else {
+            }
+            else
+            {
                 Log(Log::Error) << "Failed to load translation file " << moduleName << " in " << mInterfacePath;
                 return aString;
             }
@@ -56,15 +67,19 @@ QString Translator::tr(const QString &aString) {
 }
 
 //------------------------------------------------------------------------------
-void Translator::setLanguage(const QString &aLanguage) {
-    if (aLanguage != mCurrentLanguage) {
-        if (!mLanguages.contains(aLanguage)) {
+void Translator::setLanguage(const QString &aLanguage)
+{
+    if (aLanguage != mCurrentLanguage)
+    {
+        if (!mLanguages.contains(aLanguage))
+        {
             Log(Log::Error) << "Language " << aLanguage << " is not supported.";
             return;
         }
 
         // Удаляем все загруженные трансляторы.
-        foreach (QTranslator *tr, mTranslators.values()) {
+        foreach (QTranslator *tr, mTranslators.values())
+        {
             delete tr;
         }
 
@@ -75,20 +90,24 @@ void Translator::setLanguage(const QString &aLanguage) {
 }
 
 //------------------------------------------------------------------------------
-QString Translator::getLanguage() const {
+QString Translator::getLanguage() const
+{
     return mCurrentLanguage;
 }
 
 //------------------------------------------------------------------------------
-QString Translator::getDefaultLanguage() const {
+QString Translator::getDefaultLanguage() const
+{
     return mDefaultLanguage;
 }
 
 //------------------------------------------------------------------------------
-QStringList Translator::getLanguageList() const {
+QStringList Translator::getLanguageList() const
+{
     QStringList result;
 
-    foreach (QString key, mLanguages.keys()) {
+    foreach (QString key, mLanguages.keys())
+    {
         result << QString("%1.%2").arg(key).arg(mLanguages[key]);
     }
 

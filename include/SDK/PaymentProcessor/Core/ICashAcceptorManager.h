@@ -14,11 +14,14 @@
 // SDK
 #include <SDK/PaymentProcessor/Payment/Amount.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        class ICashAcceptorManager : public QObject {
+        class ICashAcceptorManager : public QObject
+        {
             Q_OBJECT
 
           public:
@@ -51,7 +54,8 @@ namespace SDK {
             void disabled(qint64 aPayment);
 
           protected:
-            virtual ~ICashAcceptorManager() {
+            virtual ~ICashAcceptorManager()
+            {
             }
         };
 

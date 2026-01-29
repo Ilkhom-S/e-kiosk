@@ -8,7 +8,8 @@
 // Project
 #include "PluginLibraryDefinition.h"
 
-CoinAcceptorPluginFactory::CoinAcceptorPluginFactory() {
+CoinAcceptorPluginFactory::CoinAcceptorPluginFactory()
+{
     mName = "CoinAcceptor";
     mDescription = "CoinAcceptor driver library";
     mAuthor = "Humo";

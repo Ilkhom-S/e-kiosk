@@ -5,29 +5,36 @@
 #include <SDK/PaymentProcessor/Core/IDeviceService.h>
 #include <SDK/PaymentProcessor/Scripting/DeviceService.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
-        namespace Scripting {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
+        namespace Scripting
+        {
 
             //------------------------------------------------------------------------------
-            DeviceService::DeviceService(ICore *aCore) : mCore(aCore), mDeviceService(mCore->getDeviceService()) {
+            DeviceService::DeviceService(ICore *aCore) : mCore(aCore), mDeviceService(mCore->getDeviceService())
+            {
                 connect(mDeviceService, SIGNAL(deviceDetected(const QString &)), this,
                         SLOT(onDeviceDetected(const QString &)));
                 connect(mDeviceService, SIGNAL(detectionStopped()), this, SLOT(onDetectionStopped()));
             }
 
             //------------------------------------------------------------------------------
-            void DeviceService::detect() {
+            void DeviceService::detect()
+            {
                 mDeviceService->detect();
             }
 
             //------------------------------------------------------------------------------
-            void DeviceService::onDeviceDetected(const QString &aConfigName) {
+            void DeviceService::onDeviceDetected(const QString &aConfigName)
+            {
                 emit deviceDetected(aConfigName);
             }
 
             //------------------------------------------------------------------------------
-            void DeviceService::onDetectionStopped() {
+            void DeviceService::onDetectionStopped()
+            {
                 emit detectionStopped();
             }
 

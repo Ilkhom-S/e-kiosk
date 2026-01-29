@@ -11,7 +11,8 @@
 #include "Hardware/Common/ASCII.h"
 
 //--------------------------------------------------------------------------------
-namespace CAFPFR {
+namespace CAFPFR
+{
     /// Префикс.
     const char Prefix = ASCII::STX;
 

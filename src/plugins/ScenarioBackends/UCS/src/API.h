@@ -33,7 +33,8 @@ namespace PPSDK = SDK::PaymentProcessor;
 class NetworkTaskManager;
 
 //---------------------------------------------------------------------------
-namespace Ucs {
+namespace Ucs
+{
     const char LogName[] = "Ucs";
     const char ScriptObjectName[] = "Ucs";
     const char EncashmentTask[] = "ucs_encash_sync";
@@ -46,7 +47,8 @@ namespace Ucs {
 } // namespace Ucs
 
 //---------------------------------------------------------------------------
-namespace Ucs {
+namespace Ucs
+{
     class BaseResponse;
     typedef QSharedPointer<BaseResponse> BaseResponsePtr;
 
@@ -55,21 +57,25 @@ namespace Ucs {
 
     //---------------------------------------------------------------------------
     /// API для работы с сервисом
-    class API : public SDK::PaymentProcessor::Scripting::IBackendScenarioObject, public ILogable {
+    class API : public SDK::PaymentProcessor::Scripting::IBackendScenarioObject, public ILogable
+    {
         Q_OBJECT
 
         API(SDK::PaymentProcessor::ICore *aCore, ILog *aLog);
 
       public:
-        struct TResponse {
+        struct TResponse
+        {
             int result;
             APIState::Enum state;
             QByteArray response;
 
-            TResponse::TResponse() : result(-1), state(APIState::None) {
+            TResponse::TResponse() : result(-1), state(APIState::None)
+            {
             }
             explicit TResponse::TResponse(int aResult, APIState::Enum aState, const QByteArray &aResponse)
-                : result(aResult), state(aState), response(aResponse) {
+                : result(aResult), state(aState), response(aResponse)
+            {
             }
         };
 
@@ -77,7 +83,8 @@ namespace Ucs {
         static QSharedPointer<API> getInstance(SDK::PaymentProcessor::ICore *aCore, ILog *aLog);
 
       public:
-        virtual QString getName() const {
+        virtual QString getName() const
+        {
             return Ucs::ScriptObjectName;
         }
 
@@ -101,12 +108,14 @@ namespace Ucs {
         void breakSale();
         void status();
 
-        bool encashmentOK() {
+        bool encashmentOK()
+        {
             return !mNeedEncashment;
         }
         void encashment(bool aOnDemand = true);
         /// Возвращает последнюю ошибку
-        bool isOK() {
+        bool isOK()
+        {
             return mLastError.isEmpty();
         }
 

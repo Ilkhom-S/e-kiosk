@@ -9,7 +9,8 @@
 #include <Hardware/Printers/PrinterStatusCodes.h>
 
 //--------------------------------------------------------------------------------
-namespace CWindowsPrinter {
+namespace CWindowsPrinter
+{
 #define ADD_SYSTEM_CODE(aCodeType, aCodeName, aStatusCodeType, aStatusCodeName)                                        \
     appendStatus(aCodeType##aCodeName, aStatusCodeType##StatusCode::aStatusCodeName,                                   \
                  QString(#aCodeName).replace("_", " ").toLower());
@@ -20,9 +21,11 @@ namespace CWindowsPrinter {
     ADD_SYSTEM_CODE(JOB_STATUS, aCodeName, aStatusCodeType, aStatusCodeName)
 
     /// Статусы.
-    class Statuses : public DeviceCodeSpecificationBase<ulong> {
+    class Statuses : public DeviceCodeSpecificationBase<ulong>
+    {
       public:
-        Statuses() {
+        Statuses()
+        {
             ADD_SYSTEM_STATUS(_BUSY, Device, OK::Busy);
             ADD_SYSTEM_STATUS(_DOOR_OPEN, Device, Error::CoverIsOpened);
             ADD_SYSTEM_STATUS(_ERROR, Device, Error::Unknown);
@@ -49,9 +52,11 @@ namespace CWindowsPrinter {
     };
 
     /// Статусы заданий печати.
-    class JobStatuses : public DeviceCodeSpecificationBase<ulong> {
+    class JobStatuses : public DeviceCodeSpecificationBase<ulong>
+    {
       public:
-        JobStatuses() {
+        JobStatuses()
+        {
             ADD_SYSTEM_JOB_STATUS(_BLOCKED_DEVQ, Device, Error::Unknown);
             ADD_SYSTEM_JOB_STATUS(_ERROR, Device, Error::Unknown);
             ADD_SYSTEM_JOB_STATUS(_OFFLINE, Device, Error::Unknown);

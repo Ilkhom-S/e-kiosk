@@ -11,11 +11,13 @@
 // System
 #include "../../common/PluginTestBase.h"
 
-class WebEngineBackendTest : public QObject {
+class WebEngineBackendTest : public QObject
+{
     Q_OBJECT
 
   public:
-    WebEngineBackendTest() : m_testBase("webengine_backendd.dll") {
+    WebEngineBackendTest() : m_testBase("webengine_backendd.dll")
+    {
     }
 
   private slots:
@@ -35,7 +37,8 @@ class WebEngineBackendTest : public QObject {
     PluginTestBase m_testBase;
 };
 
-void WebEngineBackendTest::testPluginExists() {
+void WebEngineBackendTest::testPluginExists()
+{
     // Test that the WebEngineBackend plugin DLL was built successfully
     QString pluginPath = "webengine_backendd.dll";
     QVERIFY(QFile::exists(pluginPath));
@@ -45,13 +48,15 @@ void WebEngineBackendTest::testPluginExists() {
     QVERIFY(pluginFile.size() > 0);
 }
 
-void WebEngineBackendTest::testPluginLoading() {
+void WebEngineBackendTest::testPluginLoading()
+{
     // Test loading the plugin factory
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
 }
 
-void WebEngineBackendTest::testFactoryInterface() {
+void WebEngineBackendTest::testFactoryInterface()
+{
     // Test factory interface methods
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -63,7 +68,8 @@ void WebEngineBackendTest::testFactoryInterface() {
     QVERIFY(!factory->getPluginList().isEmpty());
 }
 
-void WebEngineBackendTest::testPluginCreation() {
+void WebEngineBackendTest::testPluginCreation()
+{
     // Test plugin creation
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -75,7 +81,8 @@ void WebEngineBackendTest::testPluginCreation() {
     factory->destroyPlugin(plugin);
 }
 
-void WebEngineBackendTest::testPluginInitialization() {
+void WebEngineBackendTest::testPluginInitialization()
+{
     // Test plugin initialization with mock kernel
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -92,7 +99,8 @@ void WebEngineBackendTest::testPluginInitialization() {
     factory->destroyPlugin(plugin);
 }
 
-void WebEngineBackendTest::testPluginLifecycle() {
+void WebEngineBackendTest::testPluginLifecycle()
+{
     // Test plugin lifecycle methods
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);

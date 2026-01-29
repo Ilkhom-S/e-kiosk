@@ -13,11 +13,14 @@
 #include <SDK/GUI/IAdSource.h>
 #include <SDK/PaymentProcessor/Scripting/IBackendScenarioObject.h>
 
-namespace SDK {
-    namespace PaymentProcessor {
+namespace SDK
+{
+    namespace PaymentProcessor
+    {
 
         //------------------------------------------------------------------------------
-        class IGUIService {
+        class IGUIService
+        {
           public:
             /// Отображает виджет.
             virtual bool show(const QString &aWidget, const QVariantMap &aParameters) = 0;
@@ -55,7 +58,8 @@ namespace SDK {
             virtual QObject *getBackendObject(const QString &aName) const = 0;
 
           protected:
-            virtual ~IGUIService() {
+            virtual ~IGUIService()
+            {
             }
         };
 

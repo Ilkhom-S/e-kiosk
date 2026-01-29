@@ -15,7 +15,8 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний устройств на протоколе V2e.
-namespace CV2e {
+namespace CV2e
+{
     /// IRQ.
     const char IRQ = '\x55';
 
@@ -23,7 +24,8 @@ namespace CV2e {
     const int FirmwareBytesAmount = 16;
 
     /// Таймауты, [мс].
-    namespace Timeouts {
+    namespace Timeouts
+    {
         /// Выход из Busy.
         const int Busy = 5 * 1000;
 
@@ -32,7 +34,8 @@ namespace CV2e {
     } // namespace Timeouts
 
     /// Интервалы поллинга.
-    namespace PollingIntervals {
+    namespace PollingIntervals
+    {
         /// При включении на прием денег.
         const int Enabled = 360;
     } // namespace PollingIntervals
@@ -53,7 +56,8 @@ namespace CV2e {
     const char ProtocolID = 1;
 
     /// Команды V2e протокола для валидатора.
-    namespace Commands {
+    namespace Commands
+    {
         const char Poll = '\xCC';           /// Статус.
         const char Identification = '\xD8'; /// Идентификация.
         const char Stack = '\x80';          /// Уложить в стекер.
@@ -70,9 +74,11 @@ namespace CV2e {
 
     //--------------------------------------------------------------------------------
     /// Спецификация статусов.
-    class DeviceCodeSpecification : public BitmapDeviceCodeSpecification {
+    class DeviceCodeSpecification : public BitmapDeviceCodeSpecification
+    {
       public:
-        DeviceCodeSpecification() {
+        DeviceCodeSpecification()
+        {
             /// Операции с купюрой.
             addStatus(0, 7, BillAcceptorStatusCode::BillOperation::Stacked);
             addStatus(0, 6, BillAcceptorStatusCode::Busy::Returned);
@@ -114,21 +120,25 @@ namespace CV2e {
 
         /// Получить спецификации девайс-кодов по байт-массиву. байт-массив не должен содержать лишних байтов перед
         /// статусными байтами.
-        virtual void getSpecification(const QByteArray &aBuffer, TDeviceCodeSpecifications &aSpecifications) {
+        virtual void getSpecification(const QByteArray &aBuffer, TDeviceCodeSpecifications &aSpecifications)
+        {
             BitmapDeviceCodeSpecification::getSpecification(aBuffer, aSpecifications);
 
-            if ((aBuffer.size() > 1) && (aBuffer[1] & 0x10)) {
+            if ((aBuffer.size() > 1) && (aBuffer[1] & 0x10))
+            {
                 mErrors.getSpecification(QByteArray(1, aBuffer[1]), aSpecifications);
             }
         }
 
         // TODO: при рефакторинге - завязать на статус-код
-        bool isBusy(const QByteArray &aBuffer) {
+        bool isBusy(const QByteArray &aBuffer)
+        {
             TDeviceCodeSpecifications specifications;
             getSpecification(aBuffer, specifications);
 
             return std::find_if(specifications.begin(), specifications.end(),
-                                [&](const SDeviceCodeSpecification &aSpecification) -> bool {
+                                [&](const SDeviceCodeSpecification &aSpecification) -> bool
+                                {
                                     int statusCode = aSpecification.statusCode;
                                     return (statusCode == DeviceStatusCode::OK::Initialization) ||
                                            (statusCode == BillAcceptorStatusCode::OperationError::Communication);

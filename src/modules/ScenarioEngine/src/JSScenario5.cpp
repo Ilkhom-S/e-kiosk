@@ -15,10 +15,12 @@
 // Project
 #include "JSScenario5.h"
 
-namespace GUI {
+namespace GUI
+{
 
     //---------------------------------------------------------------------------
-    namespace CJSScenario {
+    namespace CJSScenario
+    {
         /// Название сервиса для Core API.
         const char ServiceName[] = "ScenarioEngine";
 
@@ -50,14 +52,17 @@ namespace GUI {
 
     //---------------------------------------------------------------------------
     /// Событие сценария.
-    class ScenarioEvent : public QEvent {
+    class ScenarioEvent : public QEvent
+    {
       public:
         /// Пользовательский тип.
         static const int Type = QEvent::User + 1;
 
-        ScenarioEvent(const QString &aSignal) : QEvent(QEvent::Type(Type)), mSignal(aSignal) {
+        ScenarioEvent(const QString &aSignal) : QEvent(QEvent::Type(Type)), mSignal(aSignal)
+        {
         }
-        QString getSignal() const {
+        QString getSignal() const
+        {
             return mSignal;
         }
 
@@ -67,15 +72,20 @@ namespace GUI {
 
     //---------------------------------------------------------------------------
     /// Переход между состояниями сценария.
-    class ScenarioTransition : public QAbstractTransition {
+    class ScenarioTransition : public QAbstractTransition
+    {
       public:
-        ScenarioTransition(const QString &aSignal) : mSignal(aSignal) {
+        ScenarioTransition(const QString &aSignal) : mSignal(aSignal)
+        {
         }
 
-        virtual void onTransition(QEvent *) {
+        virtual void onTransition(QEvent *)
+        {
         }
-        virtual bool eventTest(QEvent *aEvent) {
-            if (aEvent->type() == ScenarioEvent::Type) {
+        virtual bool eventTest(QEvent *aEvent)
+        {
+            if (aEvent->type() == ScenarioEvent::Type)
+            {
                 ScenarioEvent *se = static_cast<ScenarioEvent *>(aEvent);
                 return mSignal == se->getSignal();
             }
@@ -89,17 +99,20 @@ namespace GUI {
 
     //---------------------------------------------------------------------------
     JSScenario::JSScenario(const QString &aName, const QString &aPath, const QString &aBasePath, ILog *aLog)
-        : Scenario(aName, aLog), mBasePath(aBasePath), mPath(aPath), mIsPaused(true) {
+        : Scenario(aName, aLog), mBasePath(aBasePath), mPath(aPath), mIsPaused(true)
+    {
         connect(&mEnterSignalMapper, SIGNAL(mapped(const QString &)), SLOT(onEnterState(const QString &)));
         connect(&mExitSignalMapper, SIGNAL(mapped(const QString &)), SLOT(onExitState(const QString &)));
     }
 
     //---------------------------------------------------------------------------
-    JSScenario::~JSScenario() {
+    JSScenario::~JSScenario()
+    {
     }
 
     //---------------------------------------------------------------------------
-    void JSScenario::start(const QVariantMap &aContext) {
+    void JSScenario::start(const QVariantMap &aContext)
+    {
         mContext = aContext;
         mCurrentState = mInitialState;
 
@@ -115,7 +128,8 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void JSScenario::pause() {
+    void JSScenario::pause()
+    {
         mIsPaused = true;
 
         mTimeoutTimer.stop();
@@ -125,9 +139,11 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void JSScenario::resume(const QVariantMap &aContext) {
+    void JSScenario::resume(const QVariantMap &aContext)
+    {
         // Очищаем контекст от совпадающих ключей
-        foreach (QString key, aContext.keys()) {
+        foreach (QString key, aContext.keys())
+        {
             mContext.remove(key);
         }
 
@@ -146,7 +162,8 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    bool JSScenario::initialize(const QList<SScriptObject> &aScriptObjects) {
+    bool JSScenario::initialize(const QList<SScriptObject> &aScriptObjects)
+    {
         mStateMachine = QSharedPointer<QStateMachine>(new QStateMachine);
         mScriptEngine = QSharedPointer<QScriptEngine>(new QScriptEngine);
 
@@ -155,7 +172,8 @@ namespace GUI {
                 SLOT(onException(const QScriptValue &)));
 
         // Добавляем в скрипты внешние объекты.
-        foreach (const SScriptObject &object, aScriptObjects) {
+        foreach (const SScriptObject &object, aScriptObjects)
+        {
             mScriptEngine->globalObject().setProperty(object.name,
                                                       object.isType ? mScriptEngine->newQMetaObject(object.metaObject)
                                                                     : mScriptEngine->newQObject(object.object));
@@ -167,8 +185,10 @@ namespace GUI {
         mScriptEngine->installTranslatorFunctions();
 
         // Загружаем базовый сценарий, если такой имеется.
-        if (!mBasePath.isEmpty()) {
-            if (!loadScript(mScriptEngine.data(), mName, mBasePath)) {
+        if (!mBasePath.isEmpty())
+        {
+            if (!loadScript(mScriptEngine.data(), mName, mBasePath))
+            {
                 toLog(LogLevel::Error,
                       QString("Failed to load base scenario script %1 for scenario %2.").arg(mBasePath).arg(mName));
                 return false;
@@ -178,14 +198,16 @@ namespace GUI {
             functionCall(CJSScenario::ScriptInitFunction, QVariantMap(), mName + ":" + CJSScenario::ScriptInitFunction);
         }
 
-        if (!loadScript(mScriptEngine.data(), mName, mPath)) {
+        if (!loadScript(mScriptEngine.data(), mName, mPath))
+        {
             return false;
         }
 
         // Инициализируем скрипт сценария.
         QScriptValue result = functionCall(CJSScenario::ScriptInitFunction, QVariantMap(),
                                            QString("%1:%2").arg(mName).arg(CJSScenario::ScriptInitFunction));
-        if (result.isError()) {
+        if (result.isError())
+        {
             toLog(LogLevel::Error, QString("Failed to initialize '%1' scenario: %2").arg(mName).arg(result.toString()));
             return false;
         }
@@ -194,11 +216,13 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    bool JSScenario::canStop() {
+    bool JSScenario::canStop()
+    {
         QScriptValue result = functionCall(CJSScenario::ScriptCanStopFunction, QVariantMap(),
                                            QString("%1:%2").arg(mName).arg(CJSScenario::ScriptCanStopFunction));
 
-        if (result.isError()) {
+        if (result.isError())
+        {
             toLog(LogLevel::Error, QString("Failed to call '%1' scenario: %2").arg(mName).arg(result.toString()));
             return true;
         }
@@ -207,9 +231,11 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void JSScenario::signalTriggered(const QString &aSignal, const QVariantMap &aArguments) {
+    void JSScenario::signalTriggered(const QString &aSignal, const QVariantMap &aArguments)
+    {
         // Если переход не зарегистрирован, не обрабатываем его.
-        if (!mTransitions.contains(mCurrentState, aSignal)) {
+        if (!mTransitions.contains(mCurrentState, aSignal))
+        {
             toLog(LogLevel::Debug,
                   QString("Transition from state '%1' by signal '%2' not found.").arg(mCurrentState).arg(aSignal));
 
@@ -217,12 +243,14 @@ namespace GUI {
         }
 
         // State-машина была активирована, но еще не вошла в рабочее состояние (срабатывание приведет к утечке памяти).
-        if (!mStateMachine->isRunning()) {
+        if (!mStateMachine->isRunning())
+        {
             return;
         }
 
         // Переход не был выполнен.
-        if (!mSignalArguments.isEmpty()) {
+        if (!mSignalArguments.isEmpty())
+        {
             toLog(LogLevel::Debug,
                   QString("Transition from state '%1' was not completed but new signal '%2' was happened.")
                       .arg(mCurrentState)
@@ -238,23 +266,29 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void JSScenario::addState(const QString &aStateName, const QVariantMap &aParameters) {
+    void JSScenario::addState(const QString &aStateName, const QVariantMap &aParameters)
+    {
         Q_ASSERT(!aStateName.isEmpty());
 
         SState state;
         state.name = aStateName;
         state.parameters = aParameters;
 
-        if (state.name.isEmpty()) {
+        if (state.name.isEmpty())
+        {
             toLog(LogLevel::Error, QString("Failed to add a state to '%1' scenario: name not specified.").arg(mName));
             return;
         }
 
         // Начальное, конечное или обычное состояние.
-        if (aParameters.contains(CJSScenario::ParamFinal)) {
+        if (aParameters.contains(CJSScenario::ParamFinal))
+        {
             state.qstate = new QFinalState();
-        } else {
-            if (aParameters.contains(CJSScenario::ParamInitial)) {
+        }
+        else
+        {
+            if (aParameters.contains(CJSScenario::ParamInitial))
+            {
                 mInitialState = state.name;
             }
 
@@ -272,13 +306,15 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void JSScenario::addTransition(const QString &aSource, const QString &aTarget, const QString &aSignal) {
+    void JSScenario::addTransition(const QString &aSource, const QString &aTarget, const QString &aSignal)
+    {
         Q_ASSERT(!aSignal.isEmpty());
 
         TStateList::iterator src = mStates.find(aSource);
         TStateList::iterator dst = mStates.find(aTarget);
 
-        if (src == mStates.end() || dst == mStates.end()) {
+        if (src == mStates.end() || dst == mStates.end())
+        {
             toLog(
                 LogLevel::Error,
                 QString(
@@ -293,7 +329,8 @@ namespace GUI {
         transition->setTargetState(dst->qstate);
 
         QState *state = dynamic_cast<QState *>(src->qstate);
-        if (!state) {
+        if (!state)
+        {
             toLog(LogLevel::Error,
                   QString("Failed to add '%1->%2' transition to '%3' scenario: source state cannot have transitions.")
                       .arg(aSource)
@@ -307,14 +344,17 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void JSScenario::setDefaultTimeout(int aSeconds, const QScriptValue &aHandler) {
+    void JSScenario::setDefaultTimeout(int aSeconds, const QScriptValue &aHandler)
+    {
         mDefaultTimeout = aSeconds;
         mTimeoutHandler = aHandler;
     }
 
     //---------------------------------------------------------------------------
-    void JSScenario::onEnterState(const QString &aState) {
-        if (mIsPaused) {
+    void JSScenario::onEnterState(const QString &aState)
+    {
+        if (mIsPaused)
+        {
             toLog(LogLevel::Warning, QString("Scenario %1 is paused. Skip state %2.").arg(mName).arg(aState));
             return;
         }
@@ -327,23 +367,28 @@ namespace GUI {
         QVariantMap::iterator t = s->parameters.find("timeout");
         int timeout = mDefaultTimeout;
 
-        if (t != s->parameters.end()) {
+        if (t != s->parameters.end())
+        {
             timeout = t->toInt();
         }
 
-        if (timeout > 0) {
+        if (timeout > 0)
+        {
             setStateTimeout(timeout);
         }
 
         mCurrentState = aState;
 
         // Если достигли конечного состояния - копируем результат.
-        if (final) {
+        if (final)
+        {
             mContext[CJSScenario::ParamResult] = s->parameters[CJSScenario::ParamResult];
         }
 
-        foreach (Scenario::SExternalStateHook hook, mHooks) {
-            if (hook.targetScenario == getName() && hook.targetState == mCurrentState) {
+        foreach (Scenario::SExternalStateHook hook, mHooks)
+        {
+            if (hook.targetScenario == getName() && hook.targetState == mCurrentState)
+            {
                 mSignalArguments = hook.hook(getContext(), mSignalArguments);
             }
         }
@@ -355,8 +400,10 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void JSScenario::onExitState(const QString &aState) {
-        if (mIsPaused) {
+    void JSScenario::onExitState(const QString &aState)
+    {
+        if (mIsPaused)
+        {
             toLog(LogLevel::Warning, QString("Scenario %1 in da pause. Skip state %2.").arg(mName).arg(aState));
             return;
         }
@@ -368,21 +415,27 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void JSScenario::onTimeout() {
+    void JSScenario::onTimeout()
+    {
         bool handled = false;
 
-        if (mTimeoutHandler.isFunction()) {
+        if (mTimeoutHandler.isFunction())
+        {
             QScriptValue result = mTimeoutHandler.call(QScriptValue(), QScriptValueList() << mCurrentState);
-            if (result.isError()) {
+            if (result.isError())
+            {
                 toLog(LogLevel::Error, QString("An exception occured during executing '%1' timeout handler: %2.")
                                            .arg(mName)
                                            .arg(result.toString()));
-            } else {
+            }
+            else
+            {
                 handled = result.toBool();
             }
         }
 
-        if (!handled) {
+        if (!handled)
+        {
             mSignalArguments.clear();
             signalTriggered("timeout");
         }
@@ -391,7 +444,8 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void JSScenario::onFinish() {
+    void JSScenario::onFinish()
+    {
         mTimeoutTimer.stop();
 
         QScriptValue resultError = functionCall(CJSScenario::ScriptStopFunction, QVariantMap(),
@@ -404,44 +458,56 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    QString JSScenario::getState() const {
+    QString JSScenario::getState() const
+    {
         return mCurrentState;
     }
 
     //---------------------------------------------------------------------------
-    QVariantMap JSScenario::getContext() const {
+    QVariantMap JSScenario::getContext() const
+    {
         return mContext;
     }
 
     //---------------------------------------------------------------------------
     QScriptValue JSScenario::functionCall(const QString &aFunction, const QVariantMap &aArguments,
-                                          const QString &aNameForLog) {
+                                          const QString &aNameForLog)
+    {
         QScriptValue function = mScriptEngine->globalObject().property(aFunction);
 
         QScriptValue result;
 
-        if (function.isValid()) {
+        if (function.isValid())
+        {
             toLog(LogLevel::Normal, QString("CALL %1 function.").arg(aNameForLog));
 
-            if (aArguments.isEmpty()) {
+            if (aArguments.isEmpty())
+            {
                 result = function.call();
-            } else {
+            }
+            else
+            {
                 QScriptValueList arguments;
                 arguments << function.engine()->toScriptValue<QVariantMap>(aArguments);
 
                 result = function.call(QScriptValue(), arguments);
             }
 
-            if (function.engine()->hasUncaughtException()) {
+            if (function.engine()->hasUncaughtException())
+            {
                 toLog(LogLevel::Error, QString("An exception occured while calling %1(line %2): %3\nBacktrace:\n%4.")
                                            .arg(aNameForLog)
                                            .arg(function.engine()->uncaughtExceptionLineNumber())
                                            .arg(function.engine()->uncaughtException().toString())
                                            .arg(function.engine()->uncaughtExceptionBacktrace().join("\n")));
-            } else if (!result.isValid()) {
+            }
+            else if (!result.isValid())
+            {
                 toLog(LogLevel::Error, QString("%1 is not a function.").arg(aNameForLog));
             }
-        } else {
+        }
+        else
+        {
             toLog(LogLevel::Debug, QString("Failed to call %1, not a valid script object.").arg(aNameForLog));
         }
 
@@ -449,11 +515,12 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    bool JSScenario::loadScript(QScriptEngine *aScriptEngine, const QString &aScenarioName,
-                                const QString &aScriptPath) {
+    bool JSScenario::loadScript(QScriptEngine *aScriptEngine, const QString &aScenarioName, const QString &aScriptPath)
+    {
         // Загружаем скрипт сценария.
         QFile script(aScriptPath);
-        if (!script.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        if (!script.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
             toLog(LogLevel::Error, QString("Failed to open '%1' scenario script %2: %3")
                                        .arg(aScenarioName)
                                        .arg(aScriptPath)
@@ -466,7 +533,8 @@ namespace GUI {
 
         // Проверка синтаксиса скрипта.
         QScriptSyntaxCheckResult syntax = QScriptEngine::checkSyntax(program);
-        if (syntax.state() == QScriptSyntaxCheckResult::Error) {
+        if (syntax.state() == QScriptSyntaxCheckResult::Error)
+        {
             toLog(LogLevel::Error, QString("Failed to execute '%1'. Syntax error at line %2 column %3. %4.")
                                        .arg(aScriptPath)
                                        .arg(syntax.errorLineNumber())
@@ -477,7 +545,8 @@ namespace GUI {
         }
 
         QScriptValue result = aScriptEngine->evaluate(program);
-        if (result.isError()) {
+        if (result.isError())
+        {
             toLog(LogLevel::Error,
                   QString("Failed to execute '%1' scenario script: %2").arg(aScenarioName).arg(result.toString()));
             return false;
@@ -487,17 +556,20 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    QScriptValue JSScenario::includeScript(QScriptContext *aContext, QScriptEngine *aEngine, void *aScenario) {
+    QScriptValue JSScenario::includeScript(QScriptContext *aContext, QScriptEngine *aEngine, void *aScenario)
+    {
         JSScenario *self = static_cast<JSScenario *>(aScenario);
 
         QString includeFilePath = self->mPath.section("/", 0, -2) + "/" + aContext->argument(0).toString();
         QString namespaceName = aContext->argument(1).toString();
 
-        if (!namespaceName.isEmpty()) {
+        if (!namespaceName.isEmpty())
+        {
             aEngine->pushContext();
 
             // Добавляем другой файл в текущий контекст.
-            if (!self->loadScript(aEngine, self->mName, includeFilePath)) {
+            if (!self->loadScript(aEngine, self->mName, includeFilePath))
+            {
                 aEngine->popContext();
                 return QScriptValue(false);
             }
@@ -510,12 +582,15 @@ namespace GUI {
             aEngine->globalObject().setProperty(namespaceName, vars);
 
             return QScriptValue(true);
-        } else {
+        }
+        else
+        {
             // Устанавливаем объект активации от внешнего контекста.
             aContext->setActivationObject(aContext->parentContext()->activationObject());
 
             // Добавляем другой скрипт в текущий контекст.
-            if (self->loadScript(aEngine, self->mName, includeFilePath)) {
+            if (self->loadScript(aEngine, self->mName, includeFilePath))
+            {
                 return QScriptValue(true);
             }
 
@@ -524,7 +599,8 @@ namespace GUI {
     }
 
     //---------------------------------------------------------------------------
-    void JSScenario::onException(const QScriptValue &aException) {
+    void JSScenario::onException(const QScriptValue &aException)
+    {
         toLog(LogLevel::Error,
               QString("An exception occured in scenario %1: %2").arg(getName()).arg(aException.toString()));
     }

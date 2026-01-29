@@ -4,7 +4,8 @@
 #include "CCNetCashAcceptorConstants.h"
 
 //---------------------------------------------------------------------------
-CCNetRecycler::CCNetRecycler() {
+CCNetRecycler::CCNetRecycler()
+{
     // данные устройства
     mDeviceName = CCCNet::Models::CashcodeG200;
     mSupportedModels = QStringList() << mDeviceName;
@@ -17,10 +18,12 @@ CCNetRecycler::CCNetRecycler() {
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetRecycler::processReset() {
+bool CCNetRecycler::processReset()
+{
     bool result = processCommand(CCCNet::Commands::Reset);
 
-    if (!waitNotBusyPowerUp()) {
+    if (!waitNotBusyPowerUp())
+    {
         result = processCommand(CCCNet::Commands::Reset);
         waitNotBusyPowerUp();
     }
