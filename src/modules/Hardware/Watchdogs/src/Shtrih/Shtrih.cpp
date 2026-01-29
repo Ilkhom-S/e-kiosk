@@ -226,7 +226,9 @@ bool Shtrih::unpackData(const QByteArray &aPacket, const QByteArray &aAnswer,
         }
 
         // Префикс.
-        if (aAnswer[position++] != CShtrih::Constants::Prefix)
+        uchar prefix = aAnswer[position];
+        position++;
+        if (prefix != CShtrih::Constants::Prefix)
         {
             toLog(LogLevel::Error,
                   QString("Shtrih: prefix unpacked error, prefix = 0x%1, need = 0x%2")
@@ -236,7 +238,10 @@ bool Shtrih::unpackData(const QByteArray &aPacket, const QByteArray &aAnswer,
         }
 
         // Счетчик посылок.
-        if (aPacket[position] != aAnswer[position++])
+        uchar packetCounter = aPacket[position];
+        uchar answerCounter = aAnswer[position];
+        position++;
+        if (packetCounter != answerCounter)
         {
             toLog(LogLevel::Error, QString("Shtrih: message counter unpacked error, value = %1, need = %2")
                                        .arg(uchar(aAnswer[position - 1]))
@@ -245,8 +250,9 @@ bool Shtrih::unpackData(const QByteArray &aPacket, const QByteArray &aAnswer,
         }
 
         // Адрес устройства.
-        char packetAddress = aPacket[position];
-        char answerAddress = aAnswer[position++];
+        uchar packetAddress = aPacket[position];
+        uchar answerAddress = aAnswer[position];
+        position++;
 
         if ((answerAddress == CShtrih::Constants::NoAddress) ||
             (answerAddress == CShtrih::Constants::BroadcastAddress) ||
@@ -260,7 +266,8 @@ bool Shtrih::unpackData(const QByteArray &aPacket, const QByteArray &aAnswer,
         }
 
         // Длина сообщения.
-        int length = aAnswer[position++];
+        int length = aAnswer[position];
+        position++;
 
         if (!length)
         {
@@ -478,7 +485,7 @@ bool Shtrih::isBroadcastCommand(const QByteArray &aPacket) const
 //---------------------------------------------------------------------------
 bool Shtrih::isDeviceAddressExist(const QByteArray &aPacket) const
 {
-    char address = aPacket[CShtrih::Position::Bytes::Address];
+    uchar address = aPacket[CShtrih::Position::Bytes::Address];
 
     if (address != CShtrih::Constants::NoAddress)
     {

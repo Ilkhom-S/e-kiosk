@@ -309,13 +309,12 @@ bool StarPrinter::isConnected()
     {
         STAR_FILTER_MODELS(it->ejector != models[modelName].ejector);
     }
-    else if (!models.isEmpty() &&
-             (std::find_if(models.begin(), models.end(),
-                           [](const CSTAR::SModelData &aModelData) -> bool
-                           {
-                               return aModelData.ejector !=
-                                      aModelData.ejector; // Здесь должна быть логика сравнения с первым
-                           }) != models.end()))
+    else if (!models.isEmpty() && (std::find_if(models.begin(), models.end(),
+                                                [&models](const CSTAR::SModelData &aModelData) -> bool
+                                                {
+                                                    return aModelData.ejector !=
+                                                           models.begin()->ejector; // Compare with first element
+                                                }) != models.end()))
     {
 
         CSTAR::MemorySwitches::CMainSettings mainSettings;
@@ -813,7 +812,7 @@ bool StarPrinter::waitEjectorState(bool aBusy)
 
     // TODO: добавить условие аварийного выхода при ошибке
     TStatusCodes statusCodes;
-    auto condition = [&]() -> bool
+    auto condition = [&statusCodes, &aBusy]() -> bool
     {
         return !statusCodes.isEmpty() && !statusCodes.contains(DeviceStatusCode::Error::NotAvailable) &&
                (aBusy == statusCodes.contains(PrinterStatusCode::OK::PaperInPresenter));

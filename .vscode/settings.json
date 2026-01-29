@@ -79,5 +79,8 @@
     "--exclude=${workspaceFolder}/vcpkg_installed"
   ],
 
-  "markdown.validate.fileLinks.relativePathBase": "workspaceFolder"
+  "markdown.validate.fileLinks.relativePathBase": "workspaceFolder",
+  "chat.tools.terminal.autoApprove": {
+    "clang++": true
+  }
 }
