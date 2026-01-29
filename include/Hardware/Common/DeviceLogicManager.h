@@ -11,11 +11,19 @@
 
 //--------------------------------------------------------------------------------
 /// Обобщенные состояния выполнения запроса.
-namespace ERequestStatus {
-    enum Enum { Success = 0, InProcess, Fail };
+namespace ERequestStatus
+{
+    enum Enum
+    {
+        Success = 0,
+        InProcess,
+        Fail
+    };
 } // namespace ERequestStatus
 
 //--------------------------------------------------------------------------------
-class DeviceLogicManager : public DeviceLogManager, public DeviceConfigManager {};
+class DeviceLogicManager : public DeviceLogManager, public DeviceConfigManager
+{
+};
 
 //--------------------------------------------------------------------------------

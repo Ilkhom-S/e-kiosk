@@ -8,7 +8,8 @@
 //---------------------------------------------------------------------------------------------
 typedef VirtualDeviceBase<CashAcceptorBase<DeviceBase<ProtoCashAcceptor>>> TVirtualCashAcceptor;
 
-class VirtualCashAcceptor : public TVirtualCashAcceptor {
+class VirtualCashAcceptor : public TVirtualCashAcceptor
+{
   public:
     VirtualCashAcceptor();
 

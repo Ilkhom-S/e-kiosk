@@ -1,17 +1,16 @@
 /* @file Плагин драйвера виртуальных устройств. */
 
-// Modules
-#include "Hardware/Plugins/CommonParameters.h"
-
-// Project
+// System
 #include "CashAcceptor/VirtualCashAcceptor.h"
 #include "CashDispenser/VirtualCashDispenser.h"
+#include "Hardware/Plugins/CommonParameters.h"
 
 using namespace SDK::Plugin;
 using namespace SDK::Driver;
 
 //------------------------------------------------------------------------
-namespace VirtualDevicesPluginParameterTranslations {
+namespace VirtualDevicesPluginParameterTranslations
+{
     static const char *NotesPerEscrow =
         QT_TRANSLATE_NOOP("VirtualCashAcceptor", "VirtualCashAcceptor#notes_per_escrow");
     static const char *Units = QT_TRANSLATE_NOOP("VirtualDispenser", "VirtualDispenser#units");
@@ -22,12 +21,14 @@ namespace VirtualDevicesPluginParameterTranslations {
 namespace VDPPT = VirtualDevicesPluginParameterTranslations;
 
 //--------------------------------------------------------------------------------------
-template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstanceName) {
+template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstanceName)
+{
     return new DevicePluginBase<T>("Virtual device", aEnvironment, aInstanceName);
 }
 
 //--------------------------------------------------------------------------------------
-TParameterList CAParameters() {
+TParameterList CAParameters()
+{
     return modifyPriority(createNamedList<VirtualCashAcceptor>("Virtual cash acceptor"), EDetectingPriority::Fallback)
            // Количество зачисляемых одновременно купюр.
            << SPluginParameter(CHardware::VirtualCashAcceptor::NotesPerEscrow, true, VDPPT::NotesPerEscrow, QString(),
@@ -36,11 +37,14 @@ TParameterList CAParameters() {
 }
 
 //--------------------------------------------------------------------------------------
-TParameterList dispenserParameters() {
-    auto getList = [](int aStart, int aEnd) -> QStringList {
+TParameterList dispenserParameters()
+{
+    auto getList = [](int aStart, int aEnd) -> QStringList
+    {
         QStringList result;
 
-        for (int i = aStart; i <= aEnd; i++) {
+        for (int i = aStart; i <= aEnd; i++)
+        {
             result << QString::number(i);
         }
 

@@ -5,7 +5,8 @@
 #include <Hardware/Watchdogs/WatchdogBase.h>
 
 //--------------------------------------------------------------------------------
-namespace CPlatix {
+namespace CPlatix
+{
     /// Начальный байт пакета.
     const char Sync = '\xC0';
 
@@ -16,7 +17,8 @@ namespace CPlatix {
     const int MinAnswerSize = 4;
 
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char RebootPC = '\x00';   /// Ребут компа.
         const char ResetModem = '\x01'; /// Сброс модема.
         const char GetID = '\x10';      /// Запрос ID.
@@ -25,7 +27,8 @@ namespace CPlatix {
 } // namespace CPlatix
 
 //--------------------------------------------------------------------------------
-class Platix : public WatchdogBase {
+class Platix : public WatchdogBase
+{
     SET_SERIES("Platix")
 
   public:

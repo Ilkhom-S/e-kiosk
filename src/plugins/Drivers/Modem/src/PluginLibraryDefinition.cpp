@@ -8,7 +8,8 @@
 // Project
 #include "PluginLibraryDefinition.h"
 
-ModemsPluginFactory::ModemsPluginFactory() {
+ModemsPluginFactory::ModemsPluginFactory()
+{
     mName = "Modems";
     mDescription = "Modem driver library.";
     mAuthor = "Humo";

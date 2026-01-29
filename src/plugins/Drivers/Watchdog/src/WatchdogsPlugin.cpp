@@ -1,29 +1,34 @@
 /* @file Плагин c драйверами сторожевых таймеров. */
 
-#include "Hardware/Plugins/CommonParameters.h"
-#include "Hardware/Watchdogs/WatchdogDevices.h"
+// System
+#include <Hardware/Plugins/CommonParameters.h>
+#include <Hardware/Watchdogs/WatchdogDevices.h>
 
 using namespace SDK::Plugin;
 using namespace SDK::Driver;
 
 //------------------------------------------------------------------------------
-template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
+template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath)
+{
     return new DevicePluginBase<T>("Watchdogs", aEnvironment, aInstancePath);
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList defaultParameters(const QString &aModel) {
+template <class T> TParameterList defaultParameters(const QString &aModel)
+{
     return modifyPriority(createNamedList<T>(aModel), EDetectingPriority::VeryHigh);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter addSensor(const QString &aName, const QString &aTranslation) {
+SPluginParameter addSensor(const QString &aName, const QString &aTranslation)
+{
     return SPluginParameter(aName, false, aTranslation, QString(), CHardwareSDK::Values::Auto,
                             QStringList() << CHardwareSDK::Values::Use << CHardwareSDK::Values::NotUse, false);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter addSensorAction(const QString &aName, const QString &aTranslation) {
+SPluginParameter addSensorAction(const QString &aName, const QString &aTranslation)
+{
     return SPluginParameter(aName, false, aTranslation, QString(), CHardwareSDK::Values::NotUse,
                             QStringList() << CHardwareSDK::Values::NotUse
                                           << CHardware::Watchdog::Sensor::ActionValue::LockTerminal
@@ -36,7 +41,8 @@ SPluginParameter addSensorAction(const QString &aName, const QString &aTranslati
 << addSensorAction(CHardware::Watchdog::Sensor::Action::aName, aSensorActionTranslation)*/
 
 //------------------------------------------------------------------------------
-QVector<SPluginParameter> AlarmParameters(const QString &aModel) {
+QVector<SPluginParameter> AlarmParameters(const QString &aModel)
+{
     return defaultParameters<Alarm>(aModel)
            << ADD_SENSOR(LowerUnit, QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#lower_unit_sensor"),
                          QT_TRANSLATE_NOOP("WatchdogParameters", "WatchdogParameters#lower_unit_sensor_action"))

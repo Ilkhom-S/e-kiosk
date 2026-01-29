@@ -11,7 +11,8 @@
 #include <memory>
 
 //--------------------------------------------------------------------------------
-class DeviceConfigManager {
+class DeviceConfigManager
+{
   public:
     DeviceConfigManager();
 

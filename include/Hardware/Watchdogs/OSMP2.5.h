@@ -7,7 +7,8 @@
 #include <Hardware/Protocols/Wachdogs/OSMPWD.h>
 
 //--------------------------------------------------------------------------------
-class OSMP25 : public WatchdogBase {
+class OSMP25 : public WatchdogBase
+{
     SET_SERIES("OSMP2,5")
 
   public:

@@ -9,7 +9,8 @@
 #include <Hardware/Watchdogs/OSMPWdData.h>
 
 //--------------------------------------------------------------------------------
-namespace COSMP {
+namespace COSMP
+{
     /// Проверка на неправильную идентификацию
     const QByteArray WrongDeviceCheck = QByteArray::fromRawData("\xa5\x00\x00\x5b", 4);
 
@@ -18,7 +19,8 @@ namespace COSMP {
 } // namespace COSMP
 
 //--------------------------------------------------------------------------------
-class OSMP : public WatchdogBase {
+class OSMP : public WatchdogBase
+{
     typedef QMap<EOSMPCommandId::Enum, const char *> TData;
 
     SET_SERIES("OSMP")

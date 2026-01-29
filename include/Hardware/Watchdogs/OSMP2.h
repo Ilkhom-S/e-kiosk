@@ -9,23 +9,29 @@
 #include <Hardware/Watchdogs/OSMP.h>
 
 //--------------------------------------------------------------------------------
-namespace COSMP2Sensor {
-    struct SStatusCodeData {
+namespace COSMP2Sensor
+{
+    struct SStatusCodeData
+    {
         int statusCode;
         bool invert;
         int enable;
 
-        SStatusCodeData() : statusCode(DeviceStatusCode::OK::OK), invert(false), enable(-1) {
+        SStatusCodeData() : statusCode(DeviceStatusCode::OK::OK), invert(false), enable(-1)
+        {
         }
         SStatusCodeData(int aStatusCode, bool aInvert, int aEnable)
-            : statusCode(aStatusCode), invert(aInvert), enable(aEnable) {
+            : statusCode(aStatusCode), invert(aInvert), enable(aEnable)
+        {
         }
     };
 
     /// Спецификация состояний сенсоров.
-    class CSensorCodeSpecification : public CSpecification<int, SStatusCodeData> {
+    class CSensorCodeSpecification : public CSpecification<int, SStatusCodeData>
+    {
       public:
-        CSensorCodeSpecification() {
+        CSensorCodeSpecification()
+        {
             add(0, 6, WatchdogStatusCode::Warning::Door, false, 5);
             add(0, 3, WatchdogStatusCode::Error::SensorBlock, true);
 
@@ -39,7 +45,8 @@ namespace COSMP2Sensor {
         }
 
       private:
-        void add(int aByte, int aBit, int aStatusCode, bool aInvert, int aEnable = -1) {
+        void add(int aByte, int aBit, int aStatusCode, bool aInvert, int aEnable = -1)
+        {
             append(aByte * 8 + aBit, SStatusCodeData(aStatusCode, aInvert, aEnable));
         }
     };
@@ -48,7 +55,8 @@ namespace COSMP2Sensor {
 } // namespace COSMP2Sensor
 
 //--------------------------------------------------------------------------------
-class OSMP2 : public OSMP {
+class OSMP2 : public OSMP
+{
     SET_SERIES("OSMP2")
 
   public:

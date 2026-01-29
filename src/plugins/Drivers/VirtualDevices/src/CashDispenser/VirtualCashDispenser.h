@@ -8,7 +8,8 @@
 #include <Hardware/Dispensers/DispenserBase.h>
 
 //---------------------------------------------------------------------------------------------
-namespace CVirtualDispenser {
+namespace CVirtualDispenser
+{
     /// Задержка выдачи 1 предмета.
     const int ItemDispenseDelay = 300;
 } // namespace CVirtualDispenser
@@ -16,7 +17,8 @@ namespace CVirtualDispenser {
 //--------------------------------------------------------------------------------
 typedef VirtualDeviceBase<DispenserBase<DeviceBase<ProtoDispenser>>> TVirtualDispenser;
 
-class VirtualDispenser : public TVirtualDispenser {
+class VirtualDispenser : public TVirtualDispenser
+{
   public:
     VirtualDispenser();
 

@@ -8,9 +8,11 @@
 #include "Hardware/Printers/PrinterBase.h"
 
 //---------------------------------------------------------------------------------------------
-namespace CVirtualPrinter {
+namespace CVirtualPrinter
+{
     /// Задержки, [мс].
-    namespace Delay {
+    namespace Delay
+    {
         /// Онлайн-проверка статуса.
         const int OnlineReadyChecking = 500;
 
@@ -22,7 +24,8 @@ namespace CVirtualPrinter {
 //--------------------------------------------------------------------------------
 typedef VirtualDeviceBase<PrinterBase<PollingDeviceBase<DeviceBase<ProtoPrinter>>>> TVirtualPrinter;
 
-class VirtualPrinter : public TVirtualPrinter {
+class VirtualPrinter : public TVirtualPrinter
+{
   public:
     VirtualPrinter();
 

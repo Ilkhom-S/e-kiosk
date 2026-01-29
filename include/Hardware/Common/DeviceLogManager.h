@@ -6,24 +6,32 @@
 #include <Common/ILog.h>
 
 //--------------------------------------------------------------------------------
-class DeviceLogManager {
+class DeviceLogManager
+{
   public:
-    DeviceLogManager() : mLog(nullptr) {
+    DeviceLogManager() : mLog(nullptr)
+    {
     }
-    DeviceLogManager(ILog *aLog) : mLog(aLog) {
+    DeviceLogManager(ILog *aLog) : mLog(aLog)
+    {
     }
 
-    /// Логгировать.
-    void toLog(LogLevel::Enum aLevel, const QString &aMessage) const {
-        if (mLog) {
+    /// Логировать.
+    void toLog(LogLevel::Enum aLevel, const QString &aMessage) const
+    {
+        if (mLog)
+        {
             mLog->write(aLevel, aMessage);
-        } else {
+        }
+        else
+        {
             qCritical("Log pointer is empty. Message:%s.", aMessage.toLocal8Bit().data());
         }
     }
 
     /// Установить лог.
-    void setLog(ILog *aLog) {
+    void setLog(ILog *aLog)
+    {
         mLog = aLog;
     }
 

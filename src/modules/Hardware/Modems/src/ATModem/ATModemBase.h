@@ -9,7 +9,8 @@
 // Project
 #include "ATGSMModemConstants.h"
 //--------------------------------------------------------------------------------
-class ATModemBase : public SerialDeviceBase<PortDeviceBase<DeviceBase<ProtoModem>>> {
+class ATModemBase : public SerialDeviceBase<PortDeviceBase<DeviceBase<ProtoModem>>>
+{
   public:
     ATModemBase();
 

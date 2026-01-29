@@ -3,22 +3,24 @@
 // STL
 #include <algorithm>
 
-// Modules
-#include "Hardware/Dispensers/DispenserStatusCodes.h"
+// System
 #include "Hardware/Dispensers/DispenserData.h"
+#include "Hardware/Dispensers/DispenserStatusCodes.h"
 
 // Project
 #include "VirtualPrinter.h"
 
-//---------------------------------------------------------------------------
-VirtualPrinter::VirtualPrinter() {
+VirtualPrinter::VirtualPrinter()
+{
     mDeviceName = "Virtual printer";
     mMaxBadAnswers = 0;
 }
 
 //--------------------------------------------------------------------------------
-bool VirtualPrinter::isDeviceReady(bool aOnline) {
-    if (aOnline) {
+bool VirtualPrinter::isDeviceReady(bool aOnline)
+{
+    if (aOnline)
+    {
         SleepHelper::msleep(CVirtualPrinter::Delay::OnlineReadyChecking);
     }
 
@@ -28,8 +30,10 @@ bool VirtualPrinter::isDeviceReady(bool aOnline) {
 }
 
 //--------------------------------------------------------------------------------
-bool VirtualPrinter::print(const QStringList &aReceipt) {
-    if (!isDeviceReady(false)) {
+bool VirtualPrinter::print(const QStringList &aReceipt)
+{
+    if (!isDeviceReady(false))
+    {
         toLog(LogLevel::Normal, mDeviceName + ": Failed to print receipt");
         return false;
     }
@@ -38,11 +42,14 @@ bool VirtualPrinter::print(const QStringList &aReceipt) {
     makeLexemeReceipt(aReceipt, lexemeReceipt);
     QStringList receipt;
 
-    for (int i = 0; i < lexemeReceipt.size(); ++i) {
+    for (int i = 0; i < lexemeReceipt.size(); ++i)
+    {
         QString line;
 
-        for (int j = 0; j < lexemeReceipt[i].size(); ++j) {
-            for (int k = 0; k < lexemeReceipt[i][j].size(); ++k) {
+        for (int j = 0; j < lexemeReceipt[i].size(); ++j)
+        {
+            for (int k = 0; k < lexemeReceipt[i][j].size(); ++k)
+            {
                 line += lexemeReceipt[i][j][k].data;
             }
         }
@@ -50,11 +57,14 @@ bool VirtualPrinter::print(const QStringList &aReceipt) {
         receipt << line;
     }
 
-    if (!receipt.isEmpty()) {
+    if (!receipt.isEmpty())
+    {
         toLog(LogLevel::Normal, "Printing receipt:\n" + receipt.join("\n"));
         SleepHelper::msleep(CVirtualPrinter::Delay::Printing);
         toLog(LogLevel::Normal, "Receipt has been printed successfully");
-    } else {
+    }
+    else
+    {
         toLog(LogLevel::Normal, mDeviceName + ": receipt is empty");
     }
 
@@ -62,10 +72,14 @@ bool VirtualPrinter::print(const QStringList &aReceipt) {
 }
 
 //--------------------------------------------------------------------------------
-void VirtualPrinter::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &aModifiers) {
-    if (!(aModifiers ^ (Qt::ControlModifier | Qt::ShiftModifier)) && !isKeyModifier(aKey)) {
-        switch (aKey) {
-            case Qt::Key_F9: {
+void VirtualPrinter::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &aModifiers)
+{
+    if (!(aModifiers ^ (Qt::ControlModifier | Qt::ShiftModifier)) && !isKeyModifier(aKey))
+    {
+        switch (aKey)
+        {
+            case Qt::Key_F9:
+            {
                 changeStatusCode(DeviceStatusCode::Error::NotAvailable);
                 break;
             }

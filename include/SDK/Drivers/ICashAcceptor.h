@@ -7,11 +7,14 @@
 #include <SDK/Drivers/CashAcceptor/Par.h>
 #include <SDK/Drivers/CashAcceptor/CashAcceptorStatus.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //--------------------------------------------------------------------------------
-        class ICashAcceptor : public IDevice {
+        class ICashAcceptor : public IDevice
+        {
           public:
             /// Была принята купюра номиналом aPar.
             static const char *EscrowSignal; // SIGNAL(escrow(SDK::Driver::SPar aNote));
@@ -39,7 +42,8 @@ namespace SDK {
             virtual bool reject() = 0;
 
           protected:
-            virtual ~ICashAcceptor() {
+            virtual ~ICashAcceptor()
+            {
             }
         };
 

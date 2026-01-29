@@ -11,12 +11,16 @@
 #include <SDK/Drivers/CardReader/CardReaderStatus.h>
 
 //------------------------------------------------------------------------------
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         /// Типы карт.
-        namespace ECardType {
-            enum Enum {
+        namespace ECardType
+        {
+            enum Enum
+            {
                 RF, /// Радиочастотные.
 
                 MS,    /// С магнитной полосой.
@@ -26,7 +30,8 @@ namespace SDK {
             };
         } // namespace ECardType
 
-        class ICardReader : public IDevice {
+        class ICardReader : public IDevice
+        {
           public:
             /// Карта вставлена.
             static const char *InsertedSignal; // = SIGNAL(inserted(ECardType::Enum, const QVariantMap &));
@@ -41,7 +46,8 @@ namespace SDK {
             virtual void eject() = 0;
 
           protected:
-            virtual ~ICardReader() {
+            virtual ~ICardReader()
+            {
             }
         };
 

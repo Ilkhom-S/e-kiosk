@@ -23,11 +23,14 @@ class QObject;
 
 namespace DSDK = SDK::Driver;
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //--------------------------------------------------------------------------------
-        class IDevice {
+        class IDevice
+        {
           public:
             /// Статус устройства изменен.
             static const char
@@ -44,7 +47,8 @@ namespace SDK {
 
             //--------------------------------------------------------------------------------
             /// Интерфейс итератора для поиска устройств на разных параметрах.
-            class IDetectingIterator {
+            class IDetectingIterator
+            {
               public:
                 /// Переход к следующим параметрам устройства.
                 virtual bool moveNext() = 0;
@@ -53,7 +57,8 @@ namespace SDK {
                 virtual bool find() = 0;
 
               protected:
-                virtual ~IDetectingIterator() {
+                virtual ~IDetectingIterator()
+                {
                 }
             };
 
@@ -95,7 +100,8 @@ namespace SDK {
             virtual void setLog(ILog *aLog) = 0;
 
           protected:
-            virtual ~IDevice() {
+            virtual ~IDevice()
+            {
             }
         };
 

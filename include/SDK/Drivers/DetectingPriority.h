@@ -7,13 +7,23 @@
 #include <QtCore/QMetaType>
 #include <Common/QtHeadersEnd.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //---------------------------------------------------------------------------
         /// Приоритет авто-поиска устройств.
-        namespace EDetectingPriority {
-            enum Enum { Fallback, Low, Normal, High, VeryHigh };
+        namespace EDetectingPriority
+        {
+            enum Enum
+            {
+                Fallback,
+                Low,
+                Normal,
+                High,
+                VeryHigh
+            };
         } // namespace EDetectingPriority
 
     } // namespace Driver

@@ -4,13 +4,23 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний устройств на протоколе AT.
-namespace AT {
-    namespace EModemDialect {
-        enum Enum { DefaultAtGsm, Siemens, SimCom, Huawei, ZTE };
+namespace AT
+{
+    namespace EModemDialect
+    {
+        enum Enum
+        {
+            DefaultAtGsm,
+            Siemens,
+            SimCom,
+            Huawei,
+            ZTE
+        };
     } // namespace EModemDialect
 
     /// Команды.
-    namespace Commands {
+    namespace Commands
+    {
         const char AT[] = "";   /// Префикс AT добавляется автоматически.
         const char ATZ[] = "Z"; /// Сброс конфигурации.
         const char ATE[] = "E";
@@ -34,11 +44,13 @@ namespace AT {
         const char DeleteSMS[] = "+CMGD=";    /// Удаление SMS.
         const char StrgZ = 0x1A;              /// ^Z, символ, завершающий отправку SMS.
 
-        namespace Huawei {
+        namespace Huawei
+        {
             const char SIMID[] = "^ICCID?"; /// SIM card identification number
         } // namespace Huawei
 
-        namespace Siemens {
+        namespace Siemens
+        {
             const char Restart[] = "+CFUN=1,1";      /// Перегрузить модем и заставить его перерегистрироваться в сети.
                                                      /// Требует 5 секундного ожидания.
             const char SIMID[] = "^SCID";            /// SIM card identification number
@@ -47,12 +59,14 @@ namespace AT {
             const char InactiveCellInfo[] = "^MONP"; /// получение уровня сигнала не активных базовых станции
         } // namespace Siemens
 
-        namespace ZTE {
+        namespace ZTE
+        {
             const char SIMID[] = "+CRSM=176,12258,0,0,10"; /// SIM card identification number
             const char PowerOn[] = "+CFUN=1";              /// Подать питание на GSM модуль
         } // namespace ZTE
 
-        namespace SimCom {
+        namespace SimCom
+        {
             const char Restart[] = "+CFUN=1,1";  /// Перегрузить модем и заставить его перерегистрироваться в сети.
                                                  /// Требует 5 секундного ожидания.
             const char CSCS[] = "+CSCS=\"GSM\""; /// Переключение кодировки USSD запросов.

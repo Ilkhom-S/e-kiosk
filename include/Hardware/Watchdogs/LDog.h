@@ -9,7 +9,8 @@
 #include <Hardware/Watchdogs/WatchdogBase.h>
 
 //--------------------------------------------------------------------------------
-class LDog : public WatchdogBase {
+class LDog : public WatchdogBase
+{
     SET_SERIES("LDog")
 
   public:
@@ -33,7 +34,7 @@ class LDog : public WatchdogBase {
     TResult processCommand(char aCommand, const QByteArray &aCommandData, QByteArray *aAnswer = nullptr);
 
     /// Установить таймауты.
-    bool setToumeouts(bool aEnabled);
+    bool setTimeouts(bool aEnabled);
 
     /// Выдержать паузу перед запросом в устройство.
     void makePause(char aCommand);

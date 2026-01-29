@@ -5,11 +5,13 @@
 #include <Hardware/Watchdogs/OSMP.h>
 
 //--------------------------------------------------------------------------------
-class STOD : public OSMP {
+class STOD : public OSMP
+{
     SET_SERIES("STOD")
 
   public:
-    STOD() {
+    STOD()
+    {
         mDeviceName = "STOD";
 
         mData[EOSMPCommandId::IdentificationData] = "STODSIM";

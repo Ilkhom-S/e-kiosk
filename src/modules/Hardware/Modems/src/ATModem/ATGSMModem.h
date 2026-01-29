@@ -12,8 +12,10 @@
 #include "ATData.h"
 
 //--------------------------------------------------------------------------------
-namespace ENetworkAccessability {
-    enum Enum {
+namespace ENetworkAccessability
+{
+    enum Enum
+    {
         NotRegistered,
         RegisteredHomeNetwork,
         SearchingOperator,
@@ -24,7 +26,8 @@ namespace ENetworkAccessability {
 } // namespace ENetworkAccessability
 
 //--------------------------------------------------------------------------------
-class ATGSMModem : public ATModemBase {
+class ATGSMModem : public ATModemBase
+{
   public:
     ATGSMModem();
 

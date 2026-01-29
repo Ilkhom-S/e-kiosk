@@ -11,12 +11,16 @@
 // SDK
 #include <SDK/Drivers/Components.h>
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         /// Возможные типы устройств, должны быть согласованы с путями драйверов.
-        namespace EDeviceType {
-            enum Enum {
+        namespace EDeviceType
+        {
+            enum Enum
+            {
                 BillAcceptor,
                 CoinAcceptor,
                 Printer,
@@ -31,12 +35,15 @@ namespace SDK {
                 Health
             };
 
-            namespace {
+            namespace
+            {
                 /// Преобразует строку в тип устройства.
-                Enum fromString(const QString &aDeviceType) {
+                Enum fromString(const QString &aDeviceType)
+                {
                     static QMap<QString, Enum> translation;
 
-                    if (translation.isEmpty()) {
+                    if (translation.isEmpty())
+                    {
                         translation[CComponents::BillAcceptor] = BillAcceptor;
                         translation[CComponents::CoinAcceptor] = CoinAcceptor;
                         translation[CComponents::Printer] = Printer;

@@ -2,11 +2,14 @@
 
 #pragma once
 
-namespace SDK {
-    namespace Driver {
+namespace SDK
+{
+    namespace Driver
+    {
 
         //---------------------------------------------------------------------------
-        namespace CAllHardware {
+        namespace CAllHardware
+        {
             /// Общие константы.
             const char RequiredDevice[] = "required_device";
             const char DeviceData[] = "device_data";
@@ -29,31 +32,36 @@ namespace SDK {
             const char LibraryVersion[] = "library_version";
 
             /// Значения настроек.
-            namespace Values {
+            namespace Values
+            {
                 const char Use[] = "use";
                 const char NotUse[] = "not_use";
                 const char Auto[] = "auto";
             } // namespace Values
 
             /// Типы поиска устройств.
-            namespace SearchingTypes {
+            namespace SearchingTypes
+            {
                 const char Loading[] = "loading";
                 const char AutoDetecting[] = "auto_detecting";
             } // namespace SearchingTypes
 
             /// Варианты нахождения устройств.
-            namespace ExistenceTypes {
+            namespace ExistenceTypes
+            {
                 const char Unique[] = "unique";
                 const char Multiple[] = "multiple";
             } // namespace ExistenceTypes
 
             /// Константы устройств приема денег.
-            namespace CashAcceptor {
+            namespace CashAcceptor
+            {
                 const char SystemCurrencyId[] = "system_currency_id";
             } // namespace CashAcceptor
 
             /// Константы фискального регистратора.
-            namespace FR {
+            namespace FR
+            {
                 const char FSSerialNumber[] = "fs_serial_number";
                 const char TaxSystems[] = "tax_systems";
                 const char AgentFlags[] = "agent_flags";
@@ -73,7 +81,8 @@ namespace SDK {
             } // namespace FR
 
             /// Константы принтера.
-            namespace Printer {
+            namespace Printer
+            {
                 const char LineSize[] = "line_size";
                 const char ReceiptTemplate[] = "receipt_template";
                 const char PrintingMode[] = "printing_mode";
@@ -83,7 +92,8 @@ namespace SDK {
             } // namespace Printer
 
             /// Константы HID-устройств.
-            namespace HID {
+            namespace HID
+            {
                 /// Аттрибуты, передаваемые в сигнале о новых введённых данных
                 const char *const Text = "text";                         // QString
                 const char *const Image = "image";                       // QImage
@@ -92,9 +102,11 @@ namespace SDK {
             } // namespace HID
 
             /// Константы порта.
-            namespace Port {
+            namespace Port
+            {
                 /// Константы TCP-порта.
-                namespace TCP {
+                namespace TCP
+                {
                     const char IP[] = "ip";
                     const char Number[] = "port_number";
                 } // namespace TCP
