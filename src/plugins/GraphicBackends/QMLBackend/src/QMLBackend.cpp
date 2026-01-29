@@ -68,7 +68,8 @@ QMLBackend::QMLBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInst
 #endif
 
     // Регистрируем типы событий.
-    qmlRegisterUncreatableType<SDK::PaymentProcessor::EEventType>(
+    qmlRegisterUncreatableMetaObject(
+        SDK::PaymentProcessor::EEventType::staticMetaObject, // The meta-object from Q_NAMESPACE
         QString("%1.%2")
             .arg(SDK::PaymentProcessor::Scripting::CProxyNames::Core)
             .arg(CQMLBackend::TypesExportNamespace)

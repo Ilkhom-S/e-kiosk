@@ -13,8 +13,7 @@ file(GLOB VIRTUALDEVICES_SOURCES
 set(VIRTUALDEVICES_VERSION_RC ${CMAKE_SOURCE_DIR}/include/Common/CoreVersion.rc)
 list(APPEND VIRTUALDEVICES_SOURCES ${VIRTUALDEVICES_VERSION_RC})
 
-ek_add_plugin(virtual_devices
-    FOLDER "plugins/Drivers"
+ek_add_driver_plugin(virtual_devices
     SOURCES ${VIRTUALDEVICES_SOURCES}
     QT_MODULES Gui
     DEPENDS
