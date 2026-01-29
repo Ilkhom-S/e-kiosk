@@ -4,20 +4,20 @@ Hardware device driver plugins.
 
 ## Available Drivers
 
-| Plugin                            | Devices           | Status          |
-| --------------------------------- | ----------------- | --------------- |
-| [BillAcceptor](BillAcceptor/)     | Bill validators   | ✅ Production   |
-| [BillDispensers](BillDispensers/) | Cash dispensers   | ✅ Production   |
-| [CardReader](CardReader/)         | Card readers      | ✅ Production   |
-| [CoinAcceptor](CoinAcceptor/)     | Coin validators   | ✅ Production   |
-| [FR](FR/)                         | Fiscal registers  | ⚠️ Russia-only  |
-| [HID](HID/)                       | USB HID devices   | ✅ Production   |
-| [IOPort](IOPort/)                 | Port devices      | ✅ Production   |
-| [Modem](Modem/)                   | Modems            | ✅ Production   |
-| [Parameters](Parameters/)         | Device parameters | ✅ Utility      |
-| [Printer](Printer/)               | Printers          | ✅ Production   |
-| [VirtualDevices](VirtualDevices/) | Test devices      | ✅ Testing      |
-| [Watchdog](Watchdog/)             | Watchdog timers   | ⚠️ Windows-only |
+| Plugin                            | Devices           | Status         |
+| --------------------------------- | ----------------- | -------------- |
+| [BillAcceptor](BillAcceptor/)     | Bill validators   | ✅ Production  |
+| [BillDispensers](BillDispensers/) | Cash dispensers   | ✅ Production  |
+| [CardReader](CardReader/)         | Card readers      | ✅ Production  |
+| [CoinAcceptor](CoinAcceptor/)     | Coin validators   | ✅ Production  |
+| [FR](FR/)                         | Fiscal registers  | ⚠️ Russia-only |
+| [HID](HID/)                       | USB HID devices   | ✅ Production  |
+| [IOPort](IOPort/)                 | Port devices      | ✅ Production  |
+| [Modem](Modem/)                   | Modems            | ✅ Production  |
+| [Parameters](Parameters/)         | Device parameters | ✅ Utility     |
+| [Printer](Printer/)               | Printers          | ✅ Production  |
+| [VirtualDevices](VirtualDevices/) | Test devices      | ✅ Testing     |
+| [Watchdog](Watchdog/)             | Watchdog timers   | ✅ Production  |
 
 ## Creating a Driver
 
