@@ -56,6 +56,8 @@ function(ek_add_application TARGET_NAME)
             target_link_libraries(${TARGET_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::${qt_module})
         endforeach()
     endif()
+    # Add default BasicApplication dependency that all applications need
+    target_link_libraries(${TARGET_NAME} PRIVATE BasicApplication)
     if(ARG_DEPENDS)
         target_link_libraries(${TARGET_NAME} PRIVATE ${ARG_DEPENDS})
     endif()

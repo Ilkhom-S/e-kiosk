@@ -35,8 +35,11 @@ This document tracks the migration from a monolithic to a modular architecture.
 - [x] Update TemplatePlugin to use C++ static metadata instead of JSON files
 - [x] Complete Migrator3000 scenario plugin modernization: remove Qt plugin dependencies, add PPSDK and QtScript/QtQml dependencies, fix AUTOMOC processing
   - Note: Migrator3000 is now deprecated and will be removed in a future release
-- [x] Fix Qt 6 deprecation warnings for QVariant::type() usage throughout the codebase, replacing with typeId() and QMetaType equivalents
+- [x] Fix Qt 6 deprecation warnings for QScopedPointer::take() usage throughout the codebase, replacing with std::unique_ptr and release() method
 - [x] Fix AUTOMOC processing issues for Qt classes with Q_OBJECT macros by adding public headers to CMake SOURCES (GraphicsEngine, DeviceManager, ScenarioEngine, UpdateEngine)
+- [x] Fix compiler warning for unhandled enumeration values 'EMoney' and 'BankCard' in PaymentDatabaseUtils.cpp switch statement
+- [x] Fix Boost.Bind deprecation warning by updating includes to use modern <boost/bind/bind.hpp> + using namespace boost::placeholders
+- [x] Fix QMessageBox constructor deprecation warning by updating to use StandardButtons overload instead of deprecated parameter-based constructor
 
 ## Version Pinning
 

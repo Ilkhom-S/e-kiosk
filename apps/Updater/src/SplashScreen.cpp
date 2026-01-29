@@ -15,7 +15,7 @@
 #include <Common/BasicApplication.h>
 
 // ThirdParty
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/bind/placeholders.hpp>
 
 // Project

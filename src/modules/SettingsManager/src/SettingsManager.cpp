@@ -246,7 +246,15 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree)
 
         switch (token)
         {
-            // Встетили открывающий тег.
+            // Начало документа
+            case QXmlStreamReader::StartDocument:
+                break;
+
+            // Конец документа
+            case QXmlStreamReader::EndDocument:
+                break;
+
+            // Встретили открывающий тег.
             case QXmlStreamReader::StartElement:
             {
                 QString key = xmlReader.name().toString().toLower();
@@ -295,6 +303,22 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree)
                 break;
             }
 
+            // Комментарий - игнорируем
+            case QXmlStreamReader::Comment:
+                break;
+
+            // DTD - игнорируем
+            case QXmlStreamReader::DTD:
+                break;
+
+            // Ссылка на сущность - игнорируем
+            case QXmlStreamReader::EntityReference:
+                break;
+
+            // Инструкция обработки - игнорируем
+            case QXmlStreamReader::ProcessingInstruction:
+                break;
+
             // Ошибка в формате документа.
             case QXmlStreamReader::Invalid:
             {
@@ -308,6 +332,10 @@ bool SettingsManager::readXML(const QString &aFileName, TPtree &aTree)
 
                 return false;
             }
+
+            // NoToken и другие непредвиденные токены
+            default:
+                break;
         }
     }
 

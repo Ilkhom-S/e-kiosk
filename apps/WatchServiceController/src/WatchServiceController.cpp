@@ -188,16 +188,14 @@ void WatchServiceController::onStopServiceClicked()
 //----------------------------------------------------------------------------
 void WatchServiceController::onCloseIconClicked()
 {
-    QMessageBox msgBox(tr("#exit"), tr("#confirm_close_trayicon"), QMessageBox::Question, 0, 0, 0, 0,
-                       Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint | Qt::WindowStaysOnTopHint);
+    QMessageBox msgBox(QMessageBox::Question, tr("#exit"), tr("#confirm_close_trayicon"),
+                       QMessageBox::Yes | QMessageBox::No, nullptr);
 
     msgBox.setWindowIcon(QIcon(":/icons/tray.png"));
-
-    QPushButton *yesButton = msgBox.addButton(tr("#yes"), QMessageBox::YesRole);
-    msgBox.addButton(tr("#no"), QMessageBox::NoRole);
+    msgBox.setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint | Qt::WindowStaysOnTopHint);
 
     msgBox.exec();
-    if (msgBox.clickedButton() == yesButton)
+    if (msgBox.standardButton(msgBox.clickedButton()) == QMessageBox::Yes)
     {
         QCoreApplication::instance()->quit();
     }
@@ -208,7 +206,7 @@ void WatchServiceController::onTrayIconActivated(QSystemTrayIcon::ActivationReas
 {
     onCheck();
 
-    // Вызываем контекстнео меню по нажатию левой кнопки мыши
+    // Вызываем контекстное меню по нажатию левой кнопки мыши
     if (aReason == QSystemTrayIcon::Trigger)
     {
         mMenu.popup(QCursor::pos());

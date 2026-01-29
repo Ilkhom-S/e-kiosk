@@ -4,6 +4,7 @@
 
 // STL
 #include <algorithm>
+#include <memory>
 
 // Project
 #include "DeviceSlot.h"
@@ -395,9 +396,9 @@ QWidget *EditorPane::getWidget()
 //------------------------------------------------------------------------
 QWidget *EditorPane::createWidget()
 {
-    QScopedPointer<QWidget> widget(new QWidget());
+    std::unique_ptr<QWidget> widget(new QWidget());
 
-    mUi.setupUi(widget.data());
+    mUi.setupUi(widget.get());
 
     connect(mUi.lwParameters, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
             SLOT(onParameterRowChanged(QListWidgetItem *, QListWidgetItem *)));
@@ -423,7 +424,7 @@ QWidget *EditorPane::createWidget()
 
     mUi.lwParameters->setItemDelegate(new EditorPaneListItemDelegate());
 
-    return widget.take();
+    return widget.release();
 }
 
 //------------------------------------------------------------------------

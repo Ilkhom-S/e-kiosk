@@ -34,7 +34,6 @@ ek_add_application(updater
     ${UPDATER_VERSION_RC}
     QT_MODULES ${UPDATER_QT_MODULES}
     DEPENDS
-    BasicApplication
     Log
     SysUtils
     DebugUtils

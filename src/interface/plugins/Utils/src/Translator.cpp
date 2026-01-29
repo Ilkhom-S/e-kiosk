@@ -1,5 +1,8 @@
 /* @file Функции для перевода строк в QML. */
 
+// STL
+#include <memory>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QDir>
@@ -47,11 +50,11 @@ QString Translator::tr(const QString &aString)
         if (translator == mTranslators.end())
         {
             // Подгружаем транслятор.
-            QScopedPointer<QTranslator> tr(new QTranslator());
+            std::unique_ptr<QTranslator> tr(new QTranslator());
             if (tr->load(moduleName, mInterfacePath + QDir::separator() + "locale", "",
                          QString("_%1.qm").arg(mCurrentLanguage)))
             {
-                translator = mTranslators.insert(moduleName, tr.take());
+                translator = mTranslators.insert(moduleName, tr.release());
             }
             else
             {

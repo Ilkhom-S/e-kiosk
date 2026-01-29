@@ -30,7 +30,6 @@ ek_add_application(client
     SOURCES ${SOURCES} ${HEADERS} ${UI_FILES} ${RESOURCE_FILES}
     QT_MODULES Core Widgets Sql PrintSupport Network Multimedia Xml SerialPort WebSockets WebEngineWidgets Core5Compat
     LIBRARIES
-    BasicApplication
     EK::QZint
     PPSDK
     PPSDK

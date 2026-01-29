@@ -323,7 +323,7 @@ bool TerminalService::isDisabled() const
 }
 
 //---------------------------------------------------------------------------
-// TODO: перейти от эвентов к методам интерфейса ITerminalService.
+// TODO: перейти от ивентов к методам интерфейса ITerminalService.
 void TerminalService::onEvent(const SDK::PaymentProcessor::Event &aEvent)
 {
     PPSDK::EEventType::Enum eventType = static_cast<PPSDK::EEventType::Enum>(aEvent.getType());
@@ -375,6 +375,10 @@ void TerminalService::onEvent(const SDK::PaymentProcessor::Event &aEvent)
 
             break;
         }
+
+        // Обработка остальных типов событий - игнорируем
+        default:
+            break;
     }
 }
 

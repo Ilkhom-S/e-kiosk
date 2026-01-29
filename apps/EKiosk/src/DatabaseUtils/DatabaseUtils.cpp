@@ -1,5 +1,8 @@
 /* @file Реализация интерфейсов для работы с БД. */
 
+// STL
+#include <memory>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QFile>
@@ -187,9 +190,9 @@ IDatabaseQuery *DatabaseUtils::prepareQuery(const QString &aQuery)
 {
     QMutexLocker lock(&mAccessMutex);
 
-    QScopedPointer<IDatabaseQuery> query(mDatabase.createQuery(aQuery));
+    std::unique_ptr<IDatabaseQuery> query(mDatabase.createQuery(aQuery));
 
-    return query ? query.take() : nullptr;
+    return query ? query.release() : nullptr;
 }
 
 //---------------------------------------------------------------------------

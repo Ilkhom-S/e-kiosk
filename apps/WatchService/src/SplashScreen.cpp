@@ -2,6 +2,7 @@
 
 // STL
 #include <algorithm>
+#include <memory>
 
 // Qt
 #include <Common/QtHeadersBegin.h>
@@ -18,8 +19,10 @@
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
 // ThirdParty
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/bind/placeholders.hpp>
+
+using namespace boost::placeholders;
 
 // System
 #include <SettingsManager/SettingsManager.h>
@@ -172,13 +175,13 @@ void SplashScreen::setState(const QString &aSender, const QString &aState)
         QString("QWidget { background-image: url(%1); min-width: 48; max-width: 48; min-height: 48; max-height: 48; }")
             .arg(stateImagePath);
 
-    QScopedPointer<QWidget> widget(new QWidget(this));
+    std::unique_ptr<QWidget> widget(new QWidget(this));
     widget->setStyleSheet(css);
 
     // FIXME: временно для #21549
     // ui.stateLayout->addWidget(widget.get());
 
-    mStates << SState(aSender, aState, widget.take());
+    mStates << SState(aSender, aState, widget.release());
 }
 
 //----------------------------------------------------------------------------

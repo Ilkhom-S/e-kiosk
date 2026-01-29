@@ -1,3 +1,6 @@
+// STL
+#include <memory>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QDateTime>
@@ -171,11 +174,11 @@ IDatabaseQuery *MySqlDatabaseProxy::execQuery(const QString &strQuery)
         return nullptr;
     }
 
-    QScopedPointer<IDatabaseQuery> dbQuery(new DatabaseQuery(*mDb, mQueryChecker));
+    std::unique_ptr<IDatabaseQuery> dbQuery(new DatabaseQuery(*mDb, mQueryChecker));
 
-    QSqlQuery *dbQtQuery = dynamic_cast<QSqlQuery *>(dbQuery.data());
+    QSqlQuery *dbQtQuery = dynamic_cast<QSqlQuery *>(dbQuery.get());
 
-    return safeExec(dbQtQuery, strQuery) ? dbQuery.take() : nullptr;
+    return safeExec(dbQtQuery, strQuery) ? dbQuery.release() : nullptr;
 }
 
 //---------------------------------------------------------------------------

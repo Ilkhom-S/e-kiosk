@@ -7,7 +7,7 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QDateTime>
+#include <QDateTime>
 #include <QtCore/QDir>
 #include <QtCore/QMutexLocker>
 #include <QtCore/QStringList>
@@ -905,6 +905,10 @@ PPSDK::SEncashment DatabaseUtils::performEncashment(const QVariantMap &aParamete
 
                     case PPSDK::EAmountType::Coin:
                         coins << elem;
+                        break;
+
+                    default:
+                        // EMoney and BankCard are electronic payment methods, not physical currency
                         break;
                 }
             }

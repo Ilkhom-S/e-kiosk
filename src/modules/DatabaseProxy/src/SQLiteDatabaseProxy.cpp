@@ -1,4 +1,7 @@
 
+// STL
+#include <memory>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QDir>
@@ -201,13 +204,13 @@ IDatabaseQuery *SQLiteDatabaseProxy::execQuery(const QString &aQuery)
         return nullptr;
     }
 
-    QScopedPointer<IDatabaseQuery> dbQuery(createQuery());
+    std::unique_ptr<IDatabaseQuery> dbQuery(createQuery());
 
-    QSqlQuery *dbQtQuery = dynamic_cast<QSqlQuery *>(dbQuery.data());
+    QSqlQuery *dbQtQuery = dynamic_cast<QSqlQuery *>(dbQuery.get());
 
     if (safeExec(dbQtQuery, aQuery))
     {
-        return dbQuery.take();
+        return dbQuery.release();
     }
 
     return nullptr;

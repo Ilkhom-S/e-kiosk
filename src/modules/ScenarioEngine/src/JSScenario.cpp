@@ -1,5 +1,8 @@
 /* @file Сценарий на основе javascript. */
 
+// STL
+#include <memory>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtGlobal>
@@ -374,7 +377,7 @@ namespace GUI
             return;
         }
 
-        QScopedPointer<ScenarioTransition> transition(new ScenarioTransition(aSignal));
+        std::unique_ptr<ScenarioTransition> transition(new ScenarioTransition(aSignal));
         transition->setTargetState(dst->qstate);
 
         QState *state = dynamic_cast<QState *>(src->qstate);
@@ -388,7 +391,7 @@ namespace GUI
             return;
         }
 
-        state->addTransition(transition.take());
+        state->addTransition(transition.release());
         mTransitions.insert(aSource, aSignal);
     }
 
