@@ -236,7 +236,7 @@ TResult CCTalkCAProtocol::processCommand(const QByteArray &aCommandData, QByteAr
             toLog(LogLevel::Normal,
                   QString("ccTalk: %1 in answer, %2")
                       .arg(nak ? "NAK" : "BYSY")
-                      .arg((busyNAKRepeat <= CCCTalk::MaxBusyNAKRepeats) ? "repeat sending the messsage"
+                      .arg((busyNAKRepeat <= CCCTalk::MaxBusyNAKRepeats) ? "repeat sending the message"
                                                                          : "cancel sending!"));
         }
     } while ((busy || nak) && (++busyNAKRepeat < CCCTalk::MaxBusyNAKRepeats));

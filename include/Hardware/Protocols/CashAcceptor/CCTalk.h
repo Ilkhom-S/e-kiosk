@@ -38,11 +38,11 @@ class CCTalkCAProtocol : public ProtocolBase
     bool getAnswer(QByteArray &aAnswer, const QByteArray &aCommandData);
 
     /// Вычислить контрольную сумму пакета данных.
-    uchar calcCRC8(const QByteArray &aData);
+    static uchar calcCRC8(const QByteArray &aData);
     ushort calcCRC16(const QByteArray &aData);
 
     /// Адрес устройства.
-    char mAddress;
+    uchar mAddress;
 
     /// тип CRC.
     QString mType;
