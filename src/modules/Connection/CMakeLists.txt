@@ -14,6 +14,12 @@ if(WIN32)
         Win32/src/*.h
     )
     list(APPEND CONNECTION_SOURCES ${CONNECTION_WIN32_SOURCES})
+elseif(APPLE)
+    file(GLOB CONNECTION_MACOS_SOURCES
+        macOS/src/*.cpp
+        macOS/src/*.h
+    )
+    list(APPEND CONNECTION_SOURCES ${CONNECTION_MACOS_SOURCES})
 endif()
 
 # Ensure Qt components are found for this module

@@ -28,6 +28,7 @@ ek_add_plugin(service_menu
     PluginsSDK
     DriversSDK
     PPSDK
+    PPSDKImpl
     NetworkTaskManager
     KeysUtils
     Log

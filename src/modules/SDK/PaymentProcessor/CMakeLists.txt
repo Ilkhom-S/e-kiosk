@@ -26,6 +26,7 @@ target_compile_definitions(PPSDK INTERFACE _UNICODE UNICODE)
 file(GLOB_RECURSE PPSDK_SOURCES
     src/*.cpp
     src/*.h
+    src/moc_*.cpp
 )
 
 # Also include interface headers for moc generation
