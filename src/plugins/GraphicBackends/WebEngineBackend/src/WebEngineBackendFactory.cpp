@@ -12,8 +12,11 @@
 #include "WebEngineBackend.h"
 #include "WebEngineBackendFactory.h"
 
-QString SDK::Plugin::PluginFactory::mModuleName = "webengine_backend";
-QString SDK::Plugin::PluginFactory::mName = "WebEngineBackend";
-QString SDK::Plugin::PluginFactory::mDescription = "WebEngine based graphics backend for HTML widgets";
-QString SDK::Plugin::PluginFactory::mAuthor = "Humo";
-QString SDK::Plugin::PluginFactory::mVersion = "1.0";
+WebEngineBackendFactory::WebEngineBackendFactory()
+{
+    mModuleName = "webengine_backend";
+    mName = "WebEngineBackend";
+    mDescription = "WebEngine based graphics backend for HTML widgets";
+    mAuthor = "Humo";
+    mVersion = "1.0";
+}

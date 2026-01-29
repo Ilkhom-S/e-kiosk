@@ -9,7 +9,11 @@ class VirtualBillAcceptorPluginFactory : public SDK::Plugin::PluginFactory
 {
     Q_OBJECT
     Q_INTERFACES(SDK::Plugin::IPluginFactory)
-    Q_PLUGIN_METADATA(IID "com.humo.virtual_bill_acceptor")
+    Q_PLUGIN_METADATA(IID "SDK.Plugin.PluginFactory")
+
+  public:
+    /// Конструктор фабрики.
+    VirtualBillAcceptorPluginFactory();
 };
 
 //------------------------------------------------------------------------------

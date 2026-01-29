@@ -5,10 +5,16 @@
 // SDK
 #include <SDK/Plugins/PluginFactory.h>
 
-QString SDK::Plugin::PluginFactory::mName = "Service menu native widget";
-QString SDK::Plugin::PluginFactory::mDescription = "Service menu.";
-QString SDK::Plugin::PluginFactory::mAuthor = "Humo";
-QString SDK::Plugin::PluginFactory::mVersion = "1.0";
-QString SDK::Plugin::PluginFactory::mModuleName = "service_menu"; // Название dll/so модуля без расширения
+// Project
+#include "PluginLibraryDefinition.h"
+
+ServiceMenuPluginFactory::ServiceMenuPluginFactory()
+{
+    mName = "Service menu native widget";
+    mDescription = "Service menu.";
+    mAuthor = "Humo";
+    mVersion = "1.0";
+    mModuleName = "service_menu"; // Название dll/so модуля без расширения
+}
 
 //--------------------------------------------------------------------------

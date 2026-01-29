@@ -5,6 +5,9 @@
 // SDK
 #include <SDK/Plugins/PluginFactory.h>
 
+// Project
+#include "PluginLibraryDefinition.h"
+
 VirtualBillAcceptorPluginFactory::VirtualBillAcceptorPluginFactory()
 {
     mName = "VirtualDevices";

@@ -2,35 +2,36 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QStringList>
 #include <QtCore/QRegularExpression>
+#include <QtCore/QStringList>
 #include <Common/QtHeadersEnd.h>
 
-// Project
+// System
 #include "Hardware/Common/ASCII.h"
+
+// Project
 #include "DeviceUtils.h"
 
-//--------------------------------------------------------------------------------
 bool DeviceUtils::isComplexFirmwareOld(const QString &aFirmware, const QString &aActualFirmware)
 {
     QStringList actualFirmwareData = QString(aActualFirmware).split(ASCII::Dot);
-    QStringList devicefirmwareData = QString(aFirmware).replace(QRegularExpression("[^0-9\\.]+"), "").split(ASCII::Dot);
+    QStringList deviceFirmwareData = QString(aFirmware).replace(QRegularExpression("[^0-9\\.]+"), "").split(ASCII::Dot);
 
     for (int i = 0; i < actualFirmwareData.size(); ++i)
     {
-        if (i == devicefirmwareData.size())
+        if (i == deviceFirmwareData.size())
         {
             QStringList actualFirmwareRest = actualFirmwareData.mid(i);
             bool actualFirmwareRestGreater =
                 std::find_if(actualFirmwareRest.begin(), actualFirmwareRest.end(), [](const QString &aSection) -> bool
                              { return aSection.toInt(); }) != actualFirmwareRest.end();
 
-            return (actualFirmwareData[i - 1].toInt() > devicefirmwareData[i - 1].toInt()) ||
-                   ((actualFirmwareData[i - 1].toInt() == devicefirmwareData[i - 1].toInt()) &&
+            return (actualFirmwareData[i - 1].toInt() > deviceFirmwareData[i - 1].toInt()) ||
+                   ((actualFirmwareData[i - 1].toInt() == deviceFirmwareData[i - 1].toInt()) &&
                     actualFirmwareRestGreater);
         }
 
-        if (actualFirmwareData[i].toInt() > devicefirmwareData[i].toInt())
+        if (actualFirmwareData[i].toInt() > deviceFirmwareData[i].toInt())
         {
             return true;
         }

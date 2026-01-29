@@ -7,71 +7,9 @@
 #include <QtCore/QTextStream>
 #include <Common/QtHeadersEnd.h>
 
-// Project
-#include "ProtocolUtils.h"
+// System
+#include <Hardware/Protocols/Common/ProtocolUtils.h>
 
-template QString ProtocolUtils::toHexLog(char);
-template QString ProtocolUtils::toHexLog(uchar);
-template QString ProtocolUtils::toHexLog(ushort);
-template QString ProtocolUtils::toHexLog(unsigned long);
-template QString ProtocolUtils::toHexLog(quint16);
-template QString ProtocolUtils::toHexLog(quint32);
-template QString ProtocolUtils::toHexLog(int);
-
-template QString ProtocolUtils::clean(const QString &aData);
-template QByteArray ProtocolUtils::clean(const QByteArray &aData);
-
-template QString ProtocolUtils::revert(const QString &);
-template QByteArray ProtocolUtils::revert(const QByteArray &);
-
-//--------------------------------------------------------------------------------
-template <class T> QString ProtocolUtils::toHexLog(T aData)
-{
-    int size = sizeof(T) * 2;
-
-    return "0x" + QString("%1").arg(qulonglong(aData), size, 16, QChar(ASCII::Zero)).toUpper().right(size);
-}
-
-//--------------------------------------------------------------------------------
-template <class T> T ProtocolUtils::clean(const T &aData)
-{
-    T result(aData);
-    result.replace(ASCII::TAB, ASCII::Space);
-
-    for (char ch = ASCII::NUL; ch < ASCII::Space; ++ch)
-    {
-        result.replace(ch, "");
-    }
-
-    result.replace(ASCII::DEL, ASCII::Space);
-
-    int size = 0;
-
-    do
-    {
-        size = result.size();
-        result.replace("  ", " ");
-    } while (size != result.size());
-
-    int index = 0;
-
-    while (result[index++] == ASCII::Space)
-    {
-    }
-    result.remove(0, --index);
-
-    index = result.size();
-
-    while (index && (result[--index] == ASCII::Space))
-    {
-    }
-    index++;
-    result.remove(index, result.size() - index);
-
-    return (result == " ") ? "" : result;
-}
-
-//--------------------------------------------------------------------------------
 bool ProtocolUtils::getBit(const QByteArray &aBuffer, int aShift, bool invert)
 {
     int byteNumber = aShift / 8;
@@ -218,20 +156,6 @@ char ProtocolUtils::mask(char aData, const QString &aMask)
     }
 
     return aData;
-}
-
-//--------------------------------------------------------------------------------
-template <class T> T ProtocolUtils::revert(const T &aBuffer)
-{
-    T result(aBuffer);
-
-    for (int i = 1; i < aBuffer.size(); ++i)
-    {
-        result.prepend(result[i]);
-        result.remove(i + 1, 1);
-    }
-
-    return result;
 }
 
 //--------------------------------------------------------------------------------

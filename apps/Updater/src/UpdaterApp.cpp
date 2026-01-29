@@ -270,7 +270,9 @@ void UpdaterApp::run()
     mUpdater->setParent(this);
     mUpdater->setProxy(proxy);
     mUpdater->setAcceptedKeys(acceptKeys);
+#ifdef Q_OS_WIN32
     mUpdater->useBITS(!woBITS, settings.value("bits/priority", CBITS::HIGH).toInt());
+#endif
     connect(mUpdater, SIGNAL(progress(int)), &mReportBuilder, SLOT(setProgress(int)));
 
     // Создаем файл отчета.

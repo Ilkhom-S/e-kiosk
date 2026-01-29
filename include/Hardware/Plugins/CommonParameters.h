@@ -140,7 +140,7 @@ namespace SDK
         }
 
         //------------------------------------------------------------------------------
-        /// Приоритет при автопоиске.
+        /// Приоритет при авто поиске.
         inline SPluginParameter setNormalPriority()
         {
             QVariantMap possibleValues;
@@ -151,7 +151,7 @@ namespace SDK
         }
 
         //------------------------------------------------------------------------------
-        /// Множественный тип атвопоиска устройства.
+        /// Множественный тип авто поиска устройства.
         inline SPluginParameter setMultipleExistence()
         {
             return SPluginParameter(CHardwareSDK::Existence, false, QString(), QString(),

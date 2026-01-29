@@ -33,6 +33,8 @@ file(GLOB HARDWARECOMMON_PROTO_HEADERS
 
 file(GLOB HARDWARECOMMON_COMMON_HEADERS
     ${CMAKE_SOURCE_DIR}/include/Hardware/Common/*.h
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Common/*.tpp
+    ${CMAKE_SOURCE_DIR}/include/Hardware/Protocols/Common/*.tpp
 )
 
 set(ALL_SOURCES

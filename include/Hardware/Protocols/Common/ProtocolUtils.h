@@ -62,3 +62,5 @@ namespace ProtocolUtils
 } // namespace ProtocolUtils
 
 //--------------------------------------------------------------------------------
+
+#include <Hardware/Protocols/Common/ProtocolUtils.tpp>

@@ -9,6 +9,6 @@ class WatchdogPluginFactory : public SDK::Plugin::PluginFactory
     Q_PLUGIN_METADATA(IID "SDK.Plugin.PluginFactory")
     Q_INTERFACES(SDK::Plugin::IPluginFactory)
   public:
-    WatchdogPluginFactory() = default;
+    WatchdogPluginFactory();
     ~WatchdogPluginFactory() override = default;
 };

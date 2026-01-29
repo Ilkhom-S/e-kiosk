@@ -148,7 +148,7 @@ template <class T> PrinterBase<T>::PrinterBase()
     this->mMaxBadAnswers = 2;
 
     // восстановимые ошибки
-    QMap<int, SStatusCodeSpecification>& statusCodesData = this->mStatusCodesSpecification->data();
+    QMap<int, SStatusCodeSpecification> &statusCodesData = this->mStatusCodesSpecification->data();
 
     for (auto it = statusCodesData.begin(); it != statusCodesData.end(); ++it)
     {
@@ -408,7 +408,8 @@ template <class T> void PrinterBase<T>::setDeviceConfiguration(const QVariantMap
 
     if (aConfiguration.contains(CHardware::Printer::PrintingMode))
     {
-        this->mPrintingMode = SDK::Driver::EPrintingModes::Enum(aConfiguration[CHardware::Printer::PrintingMode].toInt());
+        this->mPrintingMode =
+            SDK::Driver::EPrintingModes::Enum(aConfiguration[CHardware::Printer::PrintingMode].toInt());
 
         if (this->mPrintingMode == SDK::Driver::EPrintingModes::Glue)
         {
@@ -503,8 +504,8 @@ template <class T> bool PrinterBase<T>::printReceipt(const Tags::TLexemeReceipt 
                 this->mLineTags += lexeme.tags;
             }
 
-            bool containsDH =
-                this->mLineTags.contains(Tags::Type::DoubleHeight) && this->mTagEngine->contains(Tags::Type::DoubleHeight);
+            bool containsDH = this->mLineTags.contains(Tags::Type::DoubleHeight) &&
+                              this->mTagEngine->contains(Tags::Type::DoubleHeight);
             this->mActualStringCount += containsDH ? 2 : 1;
 
             if (!this->printLine(line))
@@ -563,9 +564,10 @@ template <class T> bool PrinterBase<T>::processReceipt(const QStringList &aRecei
 template <class T> bool PrinterBase<T>::receiptProcessing()
 {
     bool needCutting = this->getConfigParameter(CHardware::Printer::NeedCutting).toBool();
-    bool needPresenting = !this->getConfigParameter(CHardware::Printer::Commands::Presentation).toByteArray().isEmpty() &&
-                          (this->getConfigParameter(CHardware::Printer::Settings::Loop) == CHardwareSDK::Values::Use) &&
-                          this->getConfigParameter(CHardware::Printer::Settings::PresentationLength).toInt();
+    bool needPresenting =
+        !this->getConfigParameter(CHardware::Printer::Commands::Presentation).toByteArray().isEmpty() &&
+        (this->getConfigParameter(CHardware::Printer::Settings::Loop) == CHardwareSDK::Values::Use) &&
+        this->getConfigParameter(CHardware::Printer::Settings::PresentationLength).toInt();
 
     bool feeding = this->feed();
     bool cutting = !needCutting || this->cut();

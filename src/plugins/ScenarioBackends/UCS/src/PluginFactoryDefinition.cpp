@@ -5,10 +5,16 @@
 // SDK
 #include <SDK/Plugins/PluginFactory.h>
 
-QString SDK::Plugin::PluginFactory::mName = "ucs";
-QString SDK::Plugin::PluginFactory::mDescription = "Scenario backend for UCS Pay System";
-QString SDK::Plugin::PluginFactory::mAuthor = "Humo";
-QString SDK::Plugin::PluginFactory::mVersion = "1.0";
-QString SDK::Plugin::PluginFactory::mModuleName = "ucs";
+// Project
+#include "PluginLibraryDefinition.h"
+
+UcsPluginFactory::UcsPluginFactory()
+{
+    mName = "ucs";
+    mDescription = "Scenario backend for UCS Pay System";
+    mAuthor = "Humo";
+    mVersion = "1.0";
+    mModuleName = "ucs";
+}
 
 //------------------------------------------------------------------------------

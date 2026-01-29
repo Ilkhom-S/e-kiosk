@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "Hardware/Common/PollingDeviceBase.h"
-#include "Hardware/Common/VirtualDeviceBase.h"
-#include "Hardware/Common/ProtoDevices.h"
-#include "Hardware/Printers/PrinterBase.h"
+#include <Hardware/Common/PollingDeviceBase.h>
+#include <Hardware/Common/VirtualDeviceBase.h>
+#include <Hardware/Common/ProtoDevices.h>
+#include <Hardware/Printers/PrinterBase.h>
 
 //---------------------------------------------------------------------------------------------
 namespace CVirtualPrinter
@@ -22,7 +22,7 @@ namespace CVirtualPrinter
 } // namespace CVirtualPrinter
 
 //--------------------------------------------------------------------------------
-typedef VirtualDeviceBase<PrinterBase<PollingDeviceBase<DeviceBase<ProtoPrinter>>>> TVirtualPrinter;
+typedef VirtualDeviceBase<PrinterBase<PollingDeviceBase<ProtoPrinter>>> TVirtualPrinter;
 
 class VirtualPrinter : public TVirtualPrinter
 {
@@ -38,6 +38,9 @@ class VirtualPrinter : public TVirtualPrinter
 
     /// Готов ли к печати.
     virtual bool isDeviceReady(bool aOnline);
+
+    /// Инициализация устройства.
+    virtual bool updateParameters();
 };
 
 //--------------------------------------------------------------------------------

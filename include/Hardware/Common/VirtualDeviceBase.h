@@ -1,4 +1,4 @@
-/* @file Базовый класс виртуальных устройств. */
+/* @file Базовый класс виртуальных устройств.*/
 
 #pragma once
 
@@ -29,8 +29,8 @@ template <class T> class VirtualDeviceBase : public T
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
-    /// Фильтр событий, для отслеживаения нажатия кнопок.
-    virtual bool eventFilter(QObject *aWatched, QEvent *aEvent);
+    /// Фильтр событий, для отслеживания нажатия кнопок.
+    virtual bool eventFilter(QObject * /*aWatched*/, QEvent *aEvent);
 
     /// Фильтровать нажатие кнопки(ок).
     virtual void filterKeyEvent(int /*aKey*/, const Qt::KeyboardModifiers & /*aModifiers*/) {};
@@ -45,4 +45,4 @@ template <class T> class VirtualDeviceBase : public T
     TStatusCodes mStatusCodes;
 };
 
-//-----------------------------------------------------------------------------------------------------------
+#include <Hardware/Common/VirtualDeviceBase.tpp>

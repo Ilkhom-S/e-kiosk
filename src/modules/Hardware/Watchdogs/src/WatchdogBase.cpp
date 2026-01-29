@@ -1,4 +1,4 @@
-/* @file Базовый класс сторожевого устойства. */
+/* @file Базовый класс сторожевого устройства. */
 
 // System
 #include <Hardware/Watchdogs/WatchdogBase.h>

@@ -81,6 +81,16 @@
       mContext.unite(aContext);
   #endif
   ```
+## Header Inclusion Style
+
+- **Angle Brackets (`<>`):** Use for all headers located in the project's global `include/` directories or module interfaces (e.g., `#include <Hardware/Common/VirtualDeviceBase.h>`). This treats internal modules as library components.
+- **Double Quotes (`""`):** Use **only** for "private" headers located in the same immediate directory as the source file (e.g., `#include "LocalHelper_p.h"`).
+- **Refactoring:** When modifying or refactoring files, automatically convert relative path includes (e.g., `#include "../../Common/file.h"`) to the bracketed absolute-path style relative to the include root.- **Refactoring:** When modifying or refactoring files, automatically convert relative path includes (e.g., `#include "../../Common/file.h"`) to the bracketed absolute-path style relative to the include root.
+
+### Template File Placement
+- **Location:** Place `.tpp` files in the same directory as their corresponding `.h` file within the `include/` tree.
+- **Inclusion:** At the very end of the `.h` file, after the class closing brace and any namespaces, add `#include <Path/To/File.tpp>`.
+- **CMake:** Do not list `.tpp` files as compilation units in `add_library`, but include them in `target_sources` for IDE visibility.
 
 ## Cross-Platform and Qt Version Compatibility Requirements
 

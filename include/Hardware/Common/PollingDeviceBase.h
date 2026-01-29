@@ -76,3 +76,5 @@ template <class T> class PollingDeviceBase : public DeviceBase<T>
 };
 
 //--------------------------------------------------------------------------------
+
+#include <Hardware/Common/PollingDeviceBase.tpp>

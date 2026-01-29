@@ -96,3 +96,5 @@ template <class T> class SerialDeviceBase : public T
 double getFrameSize(const SDK::Driver::TPortParameters &aPortParameters);
 
 //---------------------------------------------------------------------------
+
+#include <Hardware/Common/SerialDeviceBase.tpp>

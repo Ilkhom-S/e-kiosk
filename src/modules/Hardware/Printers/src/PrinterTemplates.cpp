@@ -4,6 +4,7 @@
 
 // System
 #include "Base/Port/PortPrinterBase.cpp"
+#include <Hardware/Common/VirtualDeviceBase.h>
 #include "POSPrinters/Citizen/CitizenPPU700/CitizenPPU700.cpp"
 #include "POSPrinters/Common/POSPrinter.cpp"
 #include "POSPrinters/Custom/CustomPrinters.cpp"

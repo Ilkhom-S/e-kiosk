@@ -14,6 +14,8 @@ ek_add_plugin(watchdogs
     DEPENDS
     HardwareCommon
     HardwareWatchdogs
+    HardwareProtocols
+    PluginsSDK
     DriversSDK
     HardwareIOPorts
     ek_common

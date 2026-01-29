@@ -5,10 +5,16 @@
 // SDK
 #include <SDK/Plugins/PluginFactory.h>
 
-QString SDK::Plugin::PluginFactory::mName = "uniteller";
-QString SDK::Plugin::PluginFactory::mDescription = "Native scenario for Uniteller";
-QString SDK::Plugin::PluginFactory::mAuthor = "Humo";
-QString SDK::Plugin::PluginFactory::mVersion = "1.0";
-QString SDK::Plugin::PluginFactory::mModuleName = "uniteller";
+// Project
+#include "PluginLibraryDefinition.h"
+
+UnitellerPluginFactory::UnitellerPluginFactory()
+{
+    mName = "uniteller";
+    mDescription = "Native scenario for Uniteller";
+    mAuthor = "Humo";
+    mVersion = "1.0";
+    mModuleName = "uniteller";
+}
 
 //------------------------------------------------------------------------------

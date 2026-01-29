@@ -102,3 +102,5 @@ template <class T> class PortDeviceBase : public T
 };
 
 //---------------------------------------------------------------------------
+
+#include <Hardware/Common/PortDeviceBase.tpp>

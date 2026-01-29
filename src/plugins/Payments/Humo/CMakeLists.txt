@@ -13,7 +13,7 @@ ek_add_plugin(humo_payments
     QT_MODULES Core Xml Network
     DEPENDS
     PluginsSDK
-    PPSDK
+    PPSDKImpl
     NetworkTaskManager
     PaymentBase
     ek_boost

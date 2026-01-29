@@ -49,9 +49,6 @@ if(WIN32)
     target_link_libraries(updater PRIVATE Advapi32 User32)
 endif()
 
-# Link TaskScheduler for Windows Task Scheduler integration
-target_link_libraries(updater PRIVATE TaskSchedulerPhishMe)
-
 # Link SingleApplication for single-instance app support (Qt5/Qt6 compatible)
 if(TARGET SingleApplication::SingleApplication)
     target_link_libraries(updater PUBLIC SingleApplication::SingleApplication)

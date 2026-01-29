@@ -72,19 +72,13 @@ bool VirtualPrinter::print(const QStringList &aReceipt)
 }
 
 //--------------------------------------------------------------------------------
-void VirtualPrinter::filterKeyEvent(int aKey, const Qt::KeyboardModifiers &aModifiers)
+bool VirtualPrinter::updateParameters()
 {
-    if (!(aModifiers ^ (Qt::ControlModifier | Qt::ShiftModifier)) && !isKeyModifier(aKey))
-    {
-        switch (aKey)
-        {
-            case Qt::Key_F9:
-            {
-                changeStatusCode(DeviceStatusCode::Error::NotAvailable);
-                break;
-            }
-        }
-    }
+    return true;
 }
 
 //--------------------------------------------------------------------------------
+void VirtualPrinter::filterKeyEvent(int /*aKey*/, const Qt::KeyboardModifiers & /*aModifiers*/)
+{
+    // Virtual printer doesn't handle key events
+}
