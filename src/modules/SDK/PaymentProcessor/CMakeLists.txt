@@ -1,44 +1,27 @@
 # PPSDK (PaymentProcessor SDK) module
 
-# Create interface library for headers
-add_library(PPSDK INTERFACE)
-set_target_properties(PPSDK PROPERTIES FOLDER "modules/SDK")
-
-# Add include directories
-target_include_directories(PPSDK INTERFACE
-    ${EK_INCLUDES_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
-
-# Link Qt modules
-target_link_libraries(PPSDK INTERFACE
-    Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Widgets
-    Qt${QT_VERSION_MAJOR}::Qml
-    ek_boost
-    ek_common
-)
-
-# Add compile definitions
-target_compile_definitions(PPSDK INTERFACE _UNICODE UNICODE)
-
-# Create implementation library
+# Create single PPSDK library (equivalent to QBS structure)
 file(GLOB_RECURSE PPSDK_SOURCES
     src/*.cpp
     src/*.h
-    src/moc_*.cpp
+    src/Humo/*.cpp
+    src/Humo/*.h
+    src/Scripting/*.cpp
+    src/Scripting/*.h
+    src/Security/*.*
 )
 
-# Also include interface headers for moc generation
+# Include interface headers for moc generation (equivalent to QBS files list)
 file(GLOB_RECURSE PPSDK_INTERFACE_HEADERS
     ${EK_INCLUDES_DIR}/SDK/PaymentProcessor/**/*.h
 )
 
 include(${CMAKE_SOURCE_DIR}/cmake/EKLibrary.cmake)
-ek_add_library(PPSDKImpl
+ek_add_library(PPSDK
     FOLDER "modules/SDK"
     SOURCES ${PPSDK_SOURCES} ${PPSDK_INTERFACE_HEADERS}
     QT_MODULES Core Widgets Qml
-    DEPENDS PPSDK
+    INCLUDE_DIRS ${EK_INCLUDES_DIR}
+    DEPENDS ek_boost ek_common
     COMPILE_DEFINITIONS _UNICODE UNICODE
 )

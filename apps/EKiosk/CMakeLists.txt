@@ -33,7 +33,7 @@ ek_add_application(client
     BasicApplication
     EK::QZint
     PPSDK
-    PPSDKImpl
+    PPSDK
     GUISDK
     PluginsSDK
     DriversSDK

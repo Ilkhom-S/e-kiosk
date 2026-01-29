@@ -39,7 +39,7 @@ ek_add_plugin(ad
     NetworkTaskManager
     AdBackend
     PluginsSDK
-    PPSDKImpl
+    PPSDK
     ek_common
     ek_boost
     INCLUDE_DIRS

@@ -16,6 +16,6 @@ ek_add_plugin(migrator3000_scenario
     NetworkTaskManager
     ScenarioEngine
     PluginsSDK
-    PPSDKImpl
+    PPSDK
     ek_boost
 )
