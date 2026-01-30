@@ -7,8 +7,9 @@ This guide explains how to build EKiosk on supported platforms.
 - **Windows 7**: Qt 5.15 LTS (VC toolset 142) with required modules
 - **Windows 10+**: Qt 6.8 LTS with required modules
 - **Linux**: Qt 6.8 LTS with required modules
+- **macOS**: Qt 6.8 LTS with required modules
 - CMake 3.16+
-- Ninja or MSVC (Windows) or GCC/Clang (Linux)
+- Ninja or MSVC (Windows) or GCC/Clang (Linux/macOS)
 
 ## Platform-Specific Qt Versions
 
@@ -16,6 +17,7 @@ EKiosk automatically selects the appropriate Qt version based on your platform:
 
 - **Windows 7**: Uses Qt 5.15 LTS with VC toolset 142
 - **Windows 10+ and Linux**: Uses Qt 6.8 LTS
+- **macOS**: Uses Qt 6.8 LTS
 
 The CMake configuration will detect your platform and select the correct Qt version automatically.
 
@@ -28,6 +30,7 @@ Before configuring the project, set the appropriate Qt path environment variable
 - **Windows Qt 5 x86 MSVC**: `QT5_X86_PATH=C:/Qt/5.15.2/msvc2019`
 - **Windows Qt 6 x86 MSVC**: `QT6_X86_PATH=C:/Qt/6.8.0/msvc2019`
 - **Linux Qt 6 x64**: `LINUX_QT_PATH=/opt/Qt/6.8.0/gcc_64`
+- **macOS Qt 6 x64**: `MACOS_QT_PATH=/opt/Qt/6.8.0/macos`
 
 Adjust the paths to match your actual Qt installation directories. These variables are used by the CMake presets to automatically set `CMAKE_PREFIX_PATH`.
 
@@ -70,6 +73,68 @@ For permanent setup, add them to your system environment variables or include th
    ```
 
 4. Run the desired executable from `apps/`.
+
+## macOS Build and Deployment
+
+EKiosk builds create proper macOS app bundles for GUI applications, with automatic ad-hoc code signing for development.
+
+### Building on macOS
+
+1. Ensure Qt 6.8 LTS is installed (e.g., via Homebrew or official installer).
+2. Set `CMAKE_PREFIX_PATH` to your Qt installation:
+
+   ```sh
+   export CMAKE_PREFIX_PATH="/opt/Qt/6.8.0/macos"
+   ```
+
+3. Configure and build as usual:
+
+   ```sh
+   cmake --preset <your-preset>
+   cmake --build build/<your-preset>
+   ```
+
+GUI applications will be built as `.app` bundles in `build/<preset>/bin/`.
+
+### Running Applications
+
+For bundled apps, run the executable inside the bundle:
+
+```sh
+./build/<preset>/bin/tray.app/Contents/MacOS/tray
+```
+
+For debugging, use LLDB or Xcode:
+
+```sh
+lldb ./build/<preset>/bin/tray.app/Contents/MacOS/tray
+```
+
+### Code Signing
+
+- **Development**: Automatic ad-hoc signing ensures apps run without code signing errors.
+- **Production**: For distribution, sign with a proper Apple Developer certificate:
+
+  ```sh
+  codesign --force --deep --sign "Developer ID Application: Your Name" your-app.app
+  ```
+
+### Debugging macOS Apps
+
+- Use LLDB for debugging: `lldb path/to/executable`
+- Common issues:
+  - Code signing exceptions: Ensure ad-hoc signing is applied
+  - Bundle structure: GUI apps must be built as MACOSX_BUNDLE
+  - Entitlements: Add plist for special permissions (e.g., accessibility)
+
+### Deployment
+
+- Bundles include all necessary Qt frameworks via `macdeployqt`
+- For distribution, notarize with Apple:
+
+  ```sh
+  xcrun altool --notarize-app --primary-bundle-id "com.yourcompany.ekiosk" --username "your-apple-id" --password "app-specific-password" --file your-app.zip
+  ```
 
 ## Test Mode (Developer/Debug)
 

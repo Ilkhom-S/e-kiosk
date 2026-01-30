@@ -98,6 +98,12 @@ function(ek_add_plugin TARGET_NAME)
             LIBRARY DESTINATION lib/${ARG_INSTALL_DIR}
         )
     endif()
+    if(APPLE)
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND codesign --force --deep --sign - $<TARGET_FILE:${TARGET_NAME}>
+            COMMENT "Signing ${TARGET_NAME} with ad-hoc signature"
+        )
+    endif()
 endfunction()
 # EKDriverPlugin.cmake - Helper function for creating driver plugins
 # Based on the QBS template from TerminalClient
@@ -162,4 +168,10 @@ function(ek_add_driver_plugin TARGET_NAME)
         RUNTIME DESTINATION plugins/drivers
         LIBRARY DESTINATION plugins/drivers
     )
+    if(APPLE)
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND codesign --force --deep --sign - $<TARGET_FILE:${TARGET_NAME}>
+            COMMENT "Signing ${TARGET_NAME} with ad-hoc signature"
+        )
+    endif()
 endfunction()

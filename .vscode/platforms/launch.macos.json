@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug EKiosk (macOS)",
+      "name": "Debug EKiosk",
       "type": "lldb",
       "request": "launch",
       "program": "${workspaceFolder}/build/macos-qt6/bin/clientd",
@@ -12,7 +12,7 @@
       "preLaunchTask": "CMake: build"
     },
     {
-      "name": "Debug Tray (macOS)",
+      "name": "Debug Tray (WatchServiceController)",
       "type": "lldb",
       "request": "launch",
       "program": "${workspaceFolder}/build/macos-qt6/bin/trayd",
@@ -22,7 +22,7 @@
       "preLaunchTask": "CMake: build"
     },
     {
-      "name": "Run EKiosk (macOS)",
+      "name": "Run EKiosk",
       "type": "lldb",
       "request": "launch",
       "program": "${workspaceFolder}/build/macos-qt6/bin/clientd",
@@ -32,7 +32,7 @@
       "preLaunchTask": "CMake: build"
     },
     {
-      "name": "Debug WatchService (macOS)",
+      "name": "Debug WatchService (guard)",
       "type": "lldb",
       "request": "launch",
       "program": "${workspaceFolder}/build/macos-qt6/bin/guardd",

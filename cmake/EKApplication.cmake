@@ -11,6 +11,8 @@ function(ek_add_application TARGET_NAME)
     else()
         if(WIN32)
             add_executable(${TARGET_NAME} WIN32 ${ARG_SOURCES} ${ARG_RESOURCES})
+        elseif(APPLE)
+            add_executable(${TARGET_NAME} MACOSX_BUNDLE ${ARG_SOURCES} ${ARG_RESOURCES})
         else()
             add_executable(${TARGET_NAME} ${ARG_SOURCES} ${ARG_RESOURCES})
         endif()
@@ -78,6 +80,13 @@ function(ek_add_application TARGET_NAME)
         target_compile_definitions(${TARGET_NAME} PRIVATE _USING_V110_SDK71_)
     endif()
     install(TARGETS ${TARGET_NAME}
+        BUNDLE DESTINATION bin
         RUNTIME DESTINATION bin
     )
+    if(APPLE)
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND codesign --force --deep --sign - $<TARGET_FILE:${TARGET_NAME}>
+            COMMENT "Signing ${TARGET_NAME} with ad-hoc signature"
+        )
+    endif()
 endfunction()
