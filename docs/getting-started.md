@@ -4,13 +4,18 @@ Welcome to the EKiosk project! This guide will help you set up your development 
 
 ## Prerequisites
 
-- **Qt 5.15.x (or later)** with Qt Widgets, SerialPort, WebSockets, etc.  
+- **Qt versions** (platform-specific):
+  - Windows 7: Qt 5.15 LTS
+  - Windows 10+: Qt 6.8 LTS
+  - Linux: Qt 6.8 LTS
+  - macOS: Qt 6.8 LTS
+  Install Qt with Qt Widgets, SerialPort, WebSockets, etc.  
    [Download Qt](https://www.qt.io/download) and install the required modules for your platform.
 - **CMake 3.16+**  
    [Download CMake](https://cmake.org/download/)
 - **vcpkg** (required for dependency management; the project will not build without it)  
    [Install vcpkg](https://github.com/microsoft/vcpkg#quick-start)
-- **Ninja** or **MSVC** (Windows) or **GCC/Clang** (Linux)  
+- **Ninja** or **MSVC** (Windows) or **GCC/Clang** (Linux/macOS)  
    [Ninja](https://ninja-build.org/), [MSVC](https://visualstudio.microsoft.com/), [GCC](https://gcc.gnu.org/), [Clang](https://clang.llvm.org/)
 - **Git**  
    [Download Git](https://git-scm.com/downloads)
@@ -29,6 +34,19 @@ You can set the following environment variables to customize installation paths 
 | `EK_LIB_DIR`          | `${CMAKE_INSTALL_LIBDIR}`         | Installation directory for libraries relative to CMAKE_INSTALL_PREFIX               |
 | `EK_PLUGIN_DIR`       | `${CMAKE_INSTALL_LIBDIR}/plugins` | Installation directory for plugins relative to CMAKE_INSTALL_PREFIX                 |
 | `EK_TRANSLATIONS_DIR` | `bin/locale`                      | Installation directory for translation files (.qm) relative to CMAKE_INSTALL_PREFIX |
+
+## Qt Environment Variables
+
+Before configuring the project, set the appropriate Qt path environment variables based on your platform and Qt version:
+
+- **Windows Qt 5 x64 MSVC**: `QT5_X64_PATH=C:/Qt/5.15.2/msvc2019_64`
+- **Windows Qt 6 x64 MSVC**: `QT6_X64_PATH=C:/Qt/6.8.0/msvc2019_64`
+- **Windows Qt 5 x86 MSVC**: `QT5_X86_PATH=C:/Qt/5.15.2/msvc2019`
+- **Windows Qt 6 x86 MSVC**: `QT6_X86_PATH=C:/Qt/6.8.0/msvc2019`
+- **Linux Qt 6 x64**: `LINUX_QT_PATH=/opt/Qt/6.8.0/gcc_64`
+- **macOS Qt 6 x64**: `MACOS_QT_PATH=/opt/Qt/6.8.0/macos`
+
+Adjust the paths to match your actual Qt installation directories. These variables are used by the CMake presets to automatically set `CMAKE_PREFIX_PATH`.
 
 ## Quick Start
 

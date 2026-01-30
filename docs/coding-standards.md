@@ -77,6 +77,7 @@ All code, CMake, and tests must be written to support both Qt5 and Qt6 where pos
 
 - **Windows 7**: Qt 5.15 LTS (VC toolset 142) - transitional support only
 - **Windows 10+ and Linux**: Qt 6.8 LTS
+- **macOS**: Qt 6.8 LTS
 
 Use platform detection in CMake to select appropriate Qt versions:
 
@@ -90,7 +91,7 @@ if(WIN32)
         find_package(Qt5 REQUIRED)
     endif()
 else()
-    # Linux - Qt 6
+    # Linux and macOS - Qt 6
     find_package(Qt6 REQUIRED)
 endif()
 ```
