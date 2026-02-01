@@ -9,8 +9,8 @@ Welcome to the EKiosk project! This guide will help you set up your development 
   - Windows 10+: Qt 6.8 LTS
   - Linux: Qt 6.8 LTS
   - macOS: Qt 6.8 LTS
-  Install Qt with Qt Widgets, SerialPort, WebSockets, etc.  
-   [Download Qt](https://www.qt.io/download) and install the required modules for your platform.
+    Install Qt with Qt Widgets, SerialPort, WebSockets, etc.  
+     [Download Qt](https://www.qt.io/download) and install the required modules for your platform.
 - **CMake 3.16+**  
    [Download CMake](https://cmake.org/download/)
 - **vcpkg** (required for dependency management; the project will not build without it)  

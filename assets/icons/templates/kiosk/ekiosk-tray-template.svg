@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+    <!-- Template mask for macOS menu bar: white glyph on transparent background. -->
+    <!-- Use this to export a monochrome template PNG for the menu bar (1x and 2x). -->
+    <rect x="16" y="14" width="8" height="36" fill="#FFFFFF" rx="1" />
+    <rect x="40" y="14" width="8" height="36" fill="#FFFFFF" rx="1" />
+    <rect x="16" y="28" width="32" height="8" fill="#FFFFFF" rx="1" />
+</svg>

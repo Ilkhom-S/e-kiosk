@@ -112,18 +112,36 @@ lldb ./build/<preset>/bin/tray.app/Contents/MacOS/tray
 
 ### Code Signing
 
-- **Development**: Automatic ad-hoc signing ensures apps run without code signing errors.
+- **Development**: Automatic ad-hoc signing ensures apps run without code signing validation errors during debugging.
 - **Production**: For distribution, sign with a proper Apple Developer certificate:
 
   ```sh
   codesign --force --deep --sign "Developer ID Application: Your Name" your-app.app
   ```
 
+**Troubleshooting Code Signing Issues:**
+
+If you encounter `__cxa_throw` exceptions from the Security framework during debugging:
+
+1. **Disable Qt code signing validation**: Set the environment variable `QT_MAC_DISABLE_CODE_SIGNING_CHECK=1` in your application code before creating QApplication:
+
+   ```cpp
+   qputenv("QT_MAC_DISABLE_CODE_SIGNING_CHECK", "1");
+   ```
+
+2. **Ensure ad-hoc signing is enabled**: The CMake build system automatically applies ad-hoc signing (`codesign --force --deep --sign -`) to all macOS applications and plugins.
+
+3. **Check for proper Qt attributes**: Applications should set `QApplication::setAttribute(Qt::AA_DisableSessionManager)` before creating the QApplication instance.
+
+4. **Verify bundle structure**: GUI applications must be built as `MACOSX_BUNDLE` targets.
+
+5. **For production builds**: Use a proper Apple Developer certificate instead of ad-hoc signing.
+
 ### Debugging macOS Apps
 
 - Use LLDB for debugging: `lldb path/to/executable`
 - Common issues:
-  - Code signing exceptions: Ensure ad-hoc signing is applied
+  - **Code signing validation errors**: Ensure ad-hoc signing is applied and Qt attributes are set properly (see Code Signing section above)
   - Bundle structure: GUI apps must be built as MACOSX_BUNDLE
   - Entitlements: Add plist for special permissions (e.g., accessibility)
 

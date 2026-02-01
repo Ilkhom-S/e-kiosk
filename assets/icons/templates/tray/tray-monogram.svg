@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+    <!-- Monochrome template for macOS menu bar: white H glyph on transparent background. -->
+    <!-- Use this to export a monochrome template PNG for the menu bar (1x and 2x). -->
+    <rect x="18" y="16" width="7" height="32" fill="#FFFFFF" rx="1" />
+    <rect x="39" y="16" width="7" height="32" fill="#FFFFFF" rx="1" />
+    <rect x="18" y="30" width="28" height="7" fill="#FFFFFF" rx="1" />
+</svg>

@@ -34,6 +34,12 @@ ek_add_application(tray
     DEPENDS WatchServiceClient MessageQueue SysUtils DebugUtils
 )
 
+if(APPLE)
+    set_target_properties(tray PROPERTIES MACOSX_BUNDLE_ICON_FILE tray-app-icon.icns)
+    set_source_files_properties(src/icons/tray-app-icon.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    target_sources(tray PRIVATE src/icons/tray-app-icon.icns)
+endif()
+
 # Optional single-instance support via project SingleApplication wrapper (EK::SingleApplication)
 if(TARGET EK::SingleApplication)
     set(QAPPLICATION_CLASS QGuiApplication CACHE STRING "Inheritance class for SingleApplication")

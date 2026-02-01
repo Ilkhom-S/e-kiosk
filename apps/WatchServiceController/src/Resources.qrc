@@ -1,8 +1,31 @@
+<!DOCTYPE RCC>
 <RCC>
     <qresource prefix="/">
-        <file>icons/play.ico</file>
-        <file>icons/stop.ico</file>
-        <file>icons/tray.png</file>
-        <file>icons/tray_stopped.png</file>
+        <file>icons/tray-monogram-128.png</file>
+        <file>icons/tray-monogram-256.png</file>
+        <file>icons/tray-monogram-48.png</file>
+        <file>icons/tray-monogram-512.png</file>
+        <file>icons/tray-monogram-64.png</file>
+        <file>icons/tray-monogram-96.png</file>
+        <file>icons/tray-monogram-ico-16.png</file>
+        <file>icons/tray-monogram-ico-256.png</file>
+        <file>icons/tray-monogram-ico-32.png</file>
+        <file>icons/tray-monogram-ico-48.png</file>
+        <file>icons/tray-monogram-stopped-128.png</file>
+        <file>icons/tray-monogram-stopped-256.png</file>
+        <file>icons/tray-monogram-stopped-48.png</file>
+        <file>icons/tray-monogram-stopped-512.png</file>
+        <file>icons/tray-monogram-stopped-64.png</file>
+        <file>icons/tray-monogram-stopped-96.png</file>
+        <file>icons/tray-monogram-stopped-ico-16.png</file>
+        <file>icons/tray-monogram-stopped-ico-256.png</file>
+        <file>icons/tray-monogram-stopped-ico-32.png</file>
+        <file>icons/tray-monogram-stopped-ico-48.png</file>
+        <file>icons/tray-monogram-stopped.ico</file>
+        <file>icons/tray-monogram-stopped.png</file>
+        <file>icons/tray-monogram-stopped@2x.png</file>
+        <file>icons/tray-monogram.ico</file>
+        <file>icons/tray-monogram.png</file>
+        <file>icons/tray-monogram@2x.png</file>
     </qresource>
 </RCC>

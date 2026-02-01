@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <!-- Colored app icon with orange background -->
+    <rect width="512" height="512" fill="#FF6600" rx="64" />
+    <g fill="#FFFFFF" transform="scale(8)">
+        <rect x="16" y="14" width="8" height="36" rx="1" />
+        <rect x="40" y="14" width="8" height="36" rx="1" />
+        <rect x="16" y="28" width="32" height="8" rx="1" />
+    </g>
+</svg>

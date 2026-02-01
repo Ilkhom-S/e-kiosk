@@ -15,6 +15,17 @@
 #pragma comment(lib, "Shlwapi.lib")
 #endif
 
+#ifdef Q_OS_MAC
+#include <mach-o/dyld.h>
+#include <unistd.h>
+#include <limits.h>
+#endif
+
+#ifdef Q_OS_LINUX
+#include <unistd.h>
+#include <limits.h>
+#endif
+
 #include <Common/Version.h>
 #include <SysUtils/ISysUtils.h>
 
@@ -197,7 +208,91 @@ bool SimpleLog::init()
                     }
                 }
 #else
-#pragma error
+                // Unix implementation (Linux/macOS)
+                {
+                    // Get the executable path using /proc/self/exe (Linux) or _NSGetExecutablePath (macOS)
+                    QString exePath;
+#ifdef __linux__
+                    char buf[PATH_MAX];
+                    ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+                    if (len != -1)
+                    {
+                        buf[len] = '\0';
+                        exePath = QString::fromLocal8Bit(buf);
+                    }
+#elif defined(__APPLE__)
+                    char buf[PATH_MAX];
+                    uint32_t size = sizeof(buf);
+                    if (_NSGetExecutablePath(buf, &size) == 0)
+                    {
+                        char resolved[PATH_MAX];
+                        if (realpath(buf, resolved) != NULL)
+                        {
+                            exePath = QString::fromLocal8Bit(resolved);
+                        }
+                        else
+                        {
+                            exePath = QString::fromLocal8Bit(buf);
+                        }
+                    }
+#endif
+                    if (exePath.isEmpty())
+                    {
+                        // Fallback: use current working directory + argv[0] from QCoreApplication
+                        // This might not work if QApplication isn't created yet
+                        exePath = QDir::currentPath() + "/tray"; // fallback
+                    }
+
+                    QFileInfo exeInfo(exePath);
+                    QString iniDirPath = exeInfo.absolutePath();
+
+                    // For macOS app bundles, the .ini file is in the directory containing the .app bundle,
+                    // not inside the bundle itself
+#ifdef __APPLE__
+                    if (exePath.contains(".app/Contents/MacOS/"))
+                    {
+                        // Go up three levels: from Contents/MacOS/ to the directory containing the .app
+                        QDir bundleDir(exeInfo.absolutePath()); // Contents/MacOS
+                        bundleDir.cdUp();                       // Contents
+                        bundleDir.cdUp();                       // .app bundle
+                        bundleDir.cdUp();                       // directory containing .app
+                        iniDirPath = bundleDir.absolutePath();
+                    }
+#endif
+
+                    QString settingsFilePath =
+                        QDir::toNativeSeparators(iniDirPath + "/" + exeInfo.completeBaseName() + ".ini");
+                    QSettings mSettings(ISysUtils::rmBOM(settingsFilePath), QSettings::IniFormat);
+
+                    if (mSettings.contains("common/working_directory"))
+                    {
+                        QString directory = mSettings.value("common/working_directory").toString();
+                        if (QDir::isAbsolutePath(directory))
+                        {
+                            workingDirectory = QDir::toNativeSeparators(QDir::cleanPath(directory));
+                        }
+                        else
+                        {
+                            workingDirectory = QDir::toNativeSeparators(QDir::cleanPath(iniDirPath + "/" + directory));
+                        }
+                    }
+                    else
+                    {
+                        // For macOS app bundles, default to the directory containing the .app bundle
+#ifdef __APPLE__
+                        if (exePath.contains(".app/Contents/MacOS/"))
+                        {
+                            workingDirectory = iniDirPath; // This is already the bin directory
+                        }
+                        else
+                        {
+                            workingDirectory = iniDirPath;
+                        }
+#else
+                        workingDirectory = iniDirPath;
+#endif
+                    }
+                }
 #endif
                 logPath =
                     workingDirectory + "/logs/" + QDate::currentDate().toString("yyyy.MM.dd ") + mDestination + ".log";

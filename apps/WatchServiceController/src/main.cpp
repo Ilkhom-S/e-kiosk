@@ -1,6 +1,7 @@
 /* @file Реализация модуля управления сторожевым сервисом через сокет. */
 
 // STL
+#include <cstdlib>
 #include <iostream>
 
 // Qt
@@ -23,11 +24,10 @@
 
 int main(int aArgc, char *aArgv[])
 {
-
-    // Enable crash diagnostics and stack trace logging
-    SetUnhandledExceptionsHandler(nullptr);
-
     BasicQtApplication<SingleApplication> application("WatchServiceController", Humo::getVersion(), aArgc, aArgv);
+
+    // Логер: явный лог старта
+    LOG(application.getLog(), LogLevel::Normal, "[tray] main() started");
 
     // Load translations
     QTranslator translator;
@@ -39,25 +39,15 @@ int main(int aArgc, char *aArgv[])
         QApplication::installTranslator(&translator);
     }
 
-    if (!application.isPrimaryInstance())
-    {
-        // notify running instance and exit
-        application.getQtApplication().sendMessage("Instance!!!");
-        LOG(application.getLog(), LogLevel::Warning, "Another instance is already running.");
-        return 0;
-    }
-
-    // TODO: restore breakpad integration when compatible with SingleApplication
-
     // Перенаправляем логи.
     ILog::getInstance(CIMessageQueueClient::DefaultLog)->setDestination(application.getLog()->getName());
 
     // application.getQtApplication().initialize();
     application.getQtApplication().setQuitOnLastWindowClosed(false);
+    application.getQtApplication().setWindowIcon(QIcon(":/icons/tray-monogram.png"));
 
     WatchServiceController controller;
 
+    LOG(application.getLog(), LogLevel::Normal, "[tray] entering event loop");
     return application.exec();
 }
-
-//----------------------------------------------------------------------------

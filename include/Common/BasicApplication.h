@@ -57,6 +57,9 @@ class BasicApplication
     /// for file-based logging with daily rotation.
     virtual ILog *getLog() const;
 
+    /// Выводит стандартный заголовок в лог (вызывается после создания QApplication).
+    void writeLogHeader();
+
     /// Возвращает экземпляр приложения.
     static BasicApplication *getInstance();
 
@@ -154,21 +157,7 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &a
     mQtApplication.setApplicationVersion(aVersion);
 
     QFileInfo fileInfo(mQtApplication.applicationFilePath());
-    QDir translations(getWorkingDirectory(), QString("%1_*.qm").arg(fileInfo.baseName()));
 
-    if (translations.count())
-    {
-        QString translation = translations.entryInfoList().first().absoluteFilePath();
-        mTranslator.reset(new QTranslator(&mQtApplication));
-
-        if (mTranslator->load(translation))
-        {
-            mQtApplication.installTranslator(mTranslator.data());
-            getLog()->write(LogLevel::Normal, QString("Translation %1 loaded.").arg(translation));
-        }
-        else
-        {
-            getLog()->write(LogLevel::Warning, QString("Failed to load translation %1.").arg(translation));
-        }
-    }
+    // Now that Qt application is created, write the log header
+    writeLogHeader();
 }

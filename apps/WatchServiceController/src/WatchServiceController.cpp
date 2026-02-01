@@ -69,7 +69,14 @@ WatchServiceController::WatchServiceController()
             SLOT(onTrayIconActivated(QSystemTrayIcon::ActivationReason)));
 
     mIcon.setContextMenu(&mMenu);
-    mIcon.setIcon(QIcon(":/icons/tray.png"));
+#ifdef Q_OS_MACOS
+    // macOS menu bar icons should be monochrome
+    QIcon trayIcon(":/icons/tray-monogram-template.png");
+#else
+    QIcon trayIcon(":/icons/tray-monogram.png");
+#endif
+    qDebug() << "Tray icon is null:" << trayIcon.isNull() << "available sizes:" << trayIcon.availableSizes();
+    mIcon.setIcon(trayIcon);
     mIcon.show();
 
     LOG(getLog(), LogLevel::Normal, "WatchServiceController started.");
@@ -104,7 +111,7 @@ void WatchServiceController::onCheck()
 
     if (mClient->isConnected())
     {
-        mIcon.setIcon(QIcon(":/icons/tray.png"));
+        mIcon.setIcon(QIcon(":/icons/tray-monogram.png"));
         foreach (auto action, mStartServiceActions)
         {
             action->setEnabled(false);
@@ -113,7 +120,7 @@ void WatchServiceController::onCheck()
     }
     else
     {
-        mIcon.setIcon(QIcon(":/icons/tray_stopped.png"));
+        mIcon.setIcon(QIcon(":/icons/tray-monogram-stopped.png"));
         foreach (auto action, mStartServiceActions)
         {
             action->setEnabled(true);
@@ -191,7 +198,7 @@ void WatchServiceController::onCloseIconClicked()
     QMessageBox msgBox(QMessageBox::Question, tr("#exit"), tr("#confirm_close_trayicon"),
                        QMessageBox::Yes | QMessageBox::No, nullptr);
 
-    msgBox.setWindowIcon(QIcon(":/icons/tray.png"));
+    msgBox.setWindowIcon(QIcon(":/icons/tray-monogram.png"));
     msgBox.setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint | Qt::WindowStaysOnTopHint);
 
     msgBox.exec();

@@ -23,3 +23,18 @@ EKiosk uses platform-specific Qt versions for optimal compatibility:
 - Windows 7 builds use Qt 5.15 LTS with VC toolset 142.
 - Windows 10+ and Linux builds use Qt 6.8 LTS.
 - Some device drivers may require platform-specific code.
+
+## macOS Development Notes
+
+For macOS development and debugging:
+
+- **Code Signing**: Applications are automatically signed with ad-hoc signing for development. This allows debugging without proper Apple Developer certificates.
+- **Qt Code Signing Validation**: To prevent Security framework validation errors during debugging, set `QT_MAC_DISABLE_CODE_SIGNING_CHECK=1` before creating QApplication:
+
+  ```cpp
+  qputenv("QT_MAC_DISABLE_CODE_SIGNING_CHECK", "1");
+  QApplication::setAttribute(Qt::AA_DisableSessionManager);
+  ```
+
+- **App Bundles**: GUI applications are built as `.app` bundles. Run the executable at `Contents/MacOS/<appname>` inside the bundle.
+- **Debugging**: Use LLDB or VS Code with CodeLLDB extension for debugging macOS applications.

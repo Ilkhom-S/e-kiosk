@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+    <!-- Kiosk / terminal silhouette: screen + base (brand color) -->
+    <rect x="12" y="8" width="40" height="34" rx="4" fill="#FA5300" />
+    <rect x="18" y="14" width="28" height="20" rx="2" fill="#ffffff" />
+    <rect x="24" y="40" width="16" height="6" rx="2" fill="#FA5300" />
+</svg>

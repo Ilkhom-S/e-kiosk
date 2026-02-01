@@ -117,16 +117,7 @@ BasicApplication::BasicApplication(const QString &aName, const QString &aVersion
         m_singleApp.reset(new SingleApplication(aArgumentCount, aArguments, true)); // true = allow secondary instances
     }
 
-    // Выводим стандартный заголовок в лог
-    if (m_log)
-    {
-        m_log->write(LogLevel::Normal, "**********************************************************");
-        m_log->write(LogLevel::Normal, QString("Application: %1").arg(getName()));
-        m_log->write(LogLevel::Normal, QString("File: %1").arg(getFileName()));
-        m_log->write(LogLevel::Normal, QString("Version: %1").arg(getVersion()));
-        m_log->write(LogLevel::Normal, QString("Operating system: %1").arg(getOSVersion()));
-        m_log->write(LogLevel::Normal, "**********************************************************");
-    }
+    // Logging header will be written later after QApplication is created
 
 #ifdef Q_OS_WIN
     // Инициализация COM Security для работы с WMI
@@ -140,6 +131,21 @@ BasicApplication::BasicApplication(const QString &aName, const QString &aVersion
                 .arg(QString::fromWCharArray((const wchar_t *)_com_error(hr).ErrorMessage())));
     }
 #endif
+}
+
+//---------------------------------------------------------------------------
+// Выводит стандартный заголовок в лог (вызывается после создания QApplication).
+void BasicApplication::writeLogHeader()
+{
+    if (m_log)
+    {
+        m_log->write(LogLevel::Normal, "**********************************************************");
+        m_log->write(LogLevel::Normal, QString("Application: %1").arg(getName()));
+        m_log->write(LogLevel::Normal, QString("File: %1").arg(getFileName()));
+        m_log->write(LogLevel::Normal, QString("Version: %1").arg(getVersion()));
+        m_log->write(LogLevel::Normal, QString("Operating system: %1").arg(getOSVersion()));
+        m_log->write(LogLevel::Normal, "**********************************************************");
+    }
 }
 
 BasicApplication::~BasicApplication() = default;
@@ -184,7 +190,20 @@ QString BasicApplication::getVersion() const
 // Возвращает имя исполняемого файла.
 QString BasicApplication::getFileName() const
 {
-    return QFileInfo(QCoreApplication::applicationFilePath()).fileName();
+    // If QApplication exists, use its applicationFilePath
+    if (QCoreApplication::instance())
+    {
+        return QFileInfo(QCoreApplication::applicationFilePath()).fileName();
+    }
+    else
+    {
+        // Fallback: use the executable path from arguments
+        if (m_argumentCount > 0)
+        {
+            return QFileInfo(QString::fromLocal8Bit(m_arguments[0])).fileName();
+        }
+        return QString(); // Empty string if no arguments
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -326,3 +345,23 @@ bool SafeQApplication::notify(QObject *aReceiver, QEvent *aEvent)
     return QApplication::notify(aReceiver, aEvent);
 }
 #endif
+
+//---------------------------------------------------------------------------
+// Specialization for SingleApplication
+template <>
+BasicQtApplication<SingleApplication>::BasicQtApplication(const QString &aName, const QString &aVersion,
+                                                          int &aArgumentCount, char **aArguments)
+    : BasicApplication(aName, aVersion, aArgumentCount, aArguments,
+                       false), // Don't create SingleApplication in BasicApplication
+      mQtApplication(
+          aArgumentCount, aArguments, true,
+          SingleApplication::Mode::ExcludeAppPath) // allowSecondary = true, exclude app path to avoid conflicts
+{
+    mQtApplication.setApplicationName(aName);
+    mQtApplication.setApplicationVersion(aVersion);
+
+    QFileInfo fileInfo(mQtApplication.applicationFilePath());
+
+    // Now that Qt application is created, write the log header
+    writeLogHeader();
+}
