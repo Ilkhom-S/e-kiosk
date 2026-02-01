@@ -46,6 +46,11 @@ int main(int aArgc, char *aArgv[])
     application.getQtApplication().setQuitOnLastWindowClosed(false);
     application.getQtApplication().setWindowIcon(QIcon(":/icons/tray-monogram.png"));
 
+#ifdef Q_OS_WIN
+    // On Windows, ensure no windows are shown in taskbar for pure tray apps
+    application.getQtApplication().setAttribute(Qt::AA_DontShowIconsInTaskbar);
+#endif
+
     WatchServiceController controller;
 
     LOG(application.getLog(), LogLevel::Normal, "[tray] entering event loop");

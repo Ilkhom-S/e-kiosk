@@ -83,11 +83,11 @@ function(ek_add_application TARGET_NAME)
         BUNDLE DESTINATION bin
         RUNTIME DESTINATION bin
     )
-    if(APPLE)
-        # Use ad-hoc signing for development (allows debugging without proper certificate)
-        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-            COMMAND codesign --force --deep --sign - $<TARGET_FILE:${TARGET_NAME}>
-            COMMENT "Ad-hoc signing ${TARGET_NAME} for development"
-        )
-    endif()
+    # if(APPLE)
+    #     # Use ad-hoc signing for development (allows debugging without proper certificate)
+    #     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    #         COMMAND codesign --force --deep --sign - $<TARGET_FILE:${TARGET_NAME}>
+    #         COMMENT "Ad-hoc signing ${TARGET_NAME} for development"
+    #     )
+    # endif()
 endfunction()
