@@ -15,28 +15,7 @@
     "build",
     "vcpkg_installed"
   ],
-  "openInExternalApp.openMapper": [
-    {
-      "extensionName": "qml",
-      "apps": [
-        {
-          "title": "Qt Design Studio",
-          "openCommand": "/Applications/QtDesignStudio.app"
-        }
-      ]
-    }
-  ],
-  // Exclude the same folders from C++ extension's indexing
-  "C_Cpp.default.exclude": [
-    "**/build/*",
-    "**/thirdparty/*",
-    "**/vcpkg_installed/*"
-  ],
-  // Use compile_commands.json for accurate IntelliSense
-  "C_Cpp.default.compileCommands": "${workspaceFolder}/build/win-msvc-qt5-x64/compile_commands.json",
-  // Use CMake Tools as configuration provider if installed
-  // Optional: speed up file watching
-
+  "C_Cpp.default.compileCommands": "${workspaceFolder}/build/macos-qt6/compile_commands.json",
   "emeraldwalk.runonsave": {
     "commands": [
       {
@@ -51,7 +30,7 @@
   },
   "C_Cpp.default.cppStandard": "c++14",
   "C_Cpp.default.cStandard": "c11",
-  "C_Cpp.default.intelliSenseMode": "windows-msvc-x64",
+  "C_Cpp.default.intelliSenseMode": "macos-clang-x64",
   "C_Cpp.codeAnalysis.clangTidy.enabled": true,
   "C_Cpp.codeAnalysis.clangTidy.path": "clang-tidy",
   "C_Cpp.formatting": "clangFormat",
@@ -59,27 +38,11 @@
     "source.fixAll.clang-tidy": "explicit"
   },
   "cmake.configureOnOpen": true,
-  "cmake.defaultActiveConfigurePreset": "msvc",
-  "cmake.buildPreset": "msvc",
   "cmake.buildDirectory": "${workspaceFolder}/build",
   "cmake.configureArgs": [],
   "cmake.buildArgs": [],
   "cmake.ctestArgs": [],
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-
-  // If you use a cppcheck extension that supports these settings, they will
-  // exclude vendored folders from on-the-fly checks and save-time runs.
-  "cppcheck.excludes": [
-    "${workspaceFolder}/thirdparty",
-    "${workspaceFolder}/vcpkg_installed"
-  ],
-  "cppcheck.additionalArgs": [
-    "--suppress=missingIncludeSystem",
-    "--exclude=${workspaceFolder}/thirdparty",
-    "--exclude=${workspaceFolder}/vcpkg_installed"
-  ],
-
-  "markdown.validate.fileLinks.relativePathBase": "workspaceFolder",
   "chat.tools.terminal.autoApprove": {
     "clang++": true
   }

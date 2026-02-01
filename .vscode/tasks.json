@@ -29,7 +29,7 @@
     },
 
     {
-      "args": ["--build", "${workspaceFolder}/build/msvc"],
+      "args": ["--build", "${workspaceFolder}/build/macos-qt6"],
       "command": "cmake",
       "group": {
         "isDefault": true,
@@ -50,8 +50,8 @@
         "-S",
         "${workspaceFolder}",
         "-B",
-        "${workspaceFolder}/build/msvc",
-        "-DCMAKE_PREFIX_PATH=C:/Qt/5.15.2/msvc2019_64"
+        "${workspaceFolder}/build/macos-qt6",
+        "-DCMAKE_PREFIX_PATH=/usr/local/opt/qt6"
       ],
       "command": "cmake",
       "group": "build",
@@ -65,7 +65,12 @@
       "type": "shell"
     },
     {
-      "args": ["--build", "${workspaceFolder}/build/msvc", "--target", "clean"],
+      "args": [
+        "--build",
+        "${workspaceFolder}/build/macos-qt6",
+        "--target",
+        "clean"
+      ],
       "command": "cmake",
       "group": "build",
       "label": "clean",

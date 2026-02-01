@@ -3,42 +3,54 @@
   "configurations": [
     {
       "name": "Debug EKiosk (macOS)",
-      "type": "lldb",
+      "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/macos-qt6/bin/client.app/Contents/MacOS/client",
       "args": [],
+      "stopAtEntry": false,
       "cwd": "${workspaceFolder}/build/macos-qt6/bin",
-      "console": "integratedTerminal",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
       "preLaunchTask": "CMake: build"
     },
     {
       "name": "Debug Tray (macOS)",
-      "type": "lldb",
+      "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/macos-qt6/bin/tray.app/Contents/MacOS/tray",
       "args": [],
+      "stopAtEntry": false,
       "cwd": "${workspaceFolder}/build/macos-qt6/bin",
-      "console": "integratedTerminal",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
       "preLaunchTask": "CMake: build"
     },
     {
       "name": "Run EKiosk (macOS)",
-      "type": "lldb",
+      "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/macos-qt6/bin/client.app/Contents/MacOS/client",
       "args": [],
+      "stopAtEntry": false,
       "cwd": "${workspaceFolder}/build/macos-qt6/bin",
-      "console": "externalTerminal",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
       "preLaunchTask": "CMake: build"
     },
     {
       "name": "Debug WatchService (macOS)",
-      "type": "lldb",
+      "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/macos-qt6/bin/guard.app/Contents/MacOS/guard",
       "args": [],
+      "stopAtEntry": false,
       "cwd": "${workspaceFolder}/build/macos-qt6/bin",
-      "console": "integratedTerminal",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
       "preLaunchTask": "CMake: build"
     }
   ]
