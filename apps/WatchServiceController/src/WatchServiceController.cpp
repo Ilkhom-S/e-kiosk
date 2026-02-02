@@ -44,9 +44,7 @@ WatchServiceController::WatchServiceController()
         icon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
         auto action = mMenu.addAction(icon, tr("#start_service_menu"));
         // Remove manual disabled pixmap creation - let Qt handle disabled state with template
-        connect(action, &QAction::triggered, mSignalMapper, [this, action]() {
-            mSignalMapper->map(action);
-        });
+        connect(action, &QAction::triggered, mSignalMapper, [this, action]() { mSignalMapper->map(action); });
         mSignalMapper->setMapping(action, QString("-start_scenario=service_menu"));
         mStartServiceActions << action;
 
@@ -56,9 +54,7 @@ WatchServiceController::WatchServiceController()
             icon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
             action->setIcon(icon);
         }
-        connect(action, &QAction::triggered, mSignalMapper, [this, action]() {
-            mSignalMapper->map(action);
-        });
+        connect(action, &QAction::triggered, mSignalMapper, [this, action]() { mSignalMapper->map(action); });
         mSignalMapper->setMapping(action, QString("-start_scenario=first_setup"));
         mStartServiceActions << action;
 
@@ -71,9 +67,7 @@ WatchServiceController::WatchServiceController()
         icon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
         action->setIcon(icon);
     }
-    connect(action, &QAction::triggered, mSignalMapper, [this, action]() {
-        mSignalMapper->map(action);
-    });
+    connect(action, &QAction::triggered, mSignalMapper, [this, action]() { mSignalMapper->map(action); });
 
     mSignalMapper->setMapping(action, QString("--disable-web-security"));
     mStartServiceActions << action;
@@ -249,7 +243,7 @@ void WatchServiceController::onCloseIconClicked()
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     msgBox.setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint | Qt::WindowStaysOnTopHint);
 
-#ifdef Q_OS_MACOS
+#ifdef Q_OS_MAC
     // On macOS, add the icon to the dialog since window icons don't show in title bar
     QPixmap iconPixmap(":/icons/tray-app-icon.png");
     if (!iconPixmap.isNull())
@@ -273,7 +267,7 @@ void WatchServiceController::onTrayIconActivated(QSystemTrayIcon::ActivationReas
     onCheck();
 
     // Handle tray icon activation based on platform
-#ifdef Q_OS_MACOS
+#ifdef Q_OS_MAC
     // On macOS, the context menu is shown automatically by the system
     // when the tray icon has a context menu set, so we don't need to show it manually
     Q_UNUSED(aReason)

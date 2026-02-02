@@ -68,7 +68,7 @@ class WatchServiceController : public QObject
     QAction *mStopServiceAction;
     QAction *mCloseTrayIconAction;
 
-#ifdef Q_OS_MACOS
+#ifdef Q_OS_MAC
     void setMacOSTrayIconAsTemplate();
 #endif
 };
