@@ -42,35 +42,35 @@ WatchServiceController::WatchServiceController()
     {
         QIcon icon(":/icons/menu-settingsTemplate.png");
         icon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
-        auto action = mMenu.addAction(icon, tr("#start_service_menu"));
+        auto settingsAction = mMenu.addAction(icon, tr("#start_service_menu"));
         // Remove manual disabled pixmap creation - let Qt handle disabled state with template
-        connect(action, &QAction::triggered, mSignalMapper, [this, action]() { mSignalMapper->map(action); });
-        mSignalMapper->setMapping(action, QString("-start_scenario=service_menu"));
-        mStartServiceActions << action;
+        connect(settingsAction, &QAction::triggered, mSignalMapper, [this, settingsAction]() { mSignalMapper->map(settingsAction); });
+        mSignalMapper->setMapping(settingsAction, QString("-start_scenario=service_menu"));
+        mStartServiceActions << settingsAction;
 
-        action = mMenu.addAction(QIcon(":/icons/menu-setupTemplate.png"), tr("#start_first_setup"));
+        auto setupAction = mMenu.addAction(QIcon(":/icons/menu-setupTemplate.png"), tr("#start_first_setup"));
         {
-            QIcon icon = action->icon();
+            QIcon icon = setupAction->icon();
             icon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
-            action->setIcon(icon);
+            setupAction->setIcon(icon);
         }
-        connect(action, &QAction::triggered, mSignalMapper, [this, action]() { mSignalMapper->map(action); });
-        mSignalMapper->setMapping(action, QString("-start_scenario=first_setup"));
-        mStartServiceActions << action;
+        connect(setupAction, &QAction::triggered, mSignalMapper, [this, setupAction]() { mSignalMapper->map(setupAction); });
+        mSignalMapper->setMapping(setupAction, QString("-start_scenario=first_setup"));
+        mStartServiceActions << setupAction;
 
         mMenu.addSeparator();
     }
 
-    auto action = mMenu.addAction(QIcon(":/icons/menu-playTemplate.png"), tr("#start_service"));
+    auto playAction = mMenu.addAction(QIcon(":/icons/menu-playTemplate.png"), tr("#start_service"));
     {
-        QIcon icon = action->icon();
+        QIcon icon = playAction->icon();
         icon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
-        action->setIcon(icon);
+        playAction->setIcon(icon);
     }
-    connect(action, &QAction::triggered, mSignalMapper, [this, action]() { mSignalMapper->map(action); });
+    connect(playAction, &QAction::triggered, mSignalMapper, [this, playAction]() { mSignalMapper->map(playAction); });
 
-    mSignalMapper->setMapping(action, QString("--disable-web-security"));
-    mStartServiceActions << action;
+    mSignalMapper->setMapping(playAction, QString("--disable-web-security"));
+    mStartServiceActions << playAction;
 
     mStopServiceAction = mMenu.addAction(QIcon(":/icons/menu-stopTemplate.png"), tr("#stop_service"));
     {
