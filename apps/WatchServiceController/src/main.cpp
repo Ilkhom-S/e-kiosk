@@ -42,7 +42,6 @@ int main(int aArgc, char *aArgv[])
     // Перенаправляем логи.
     ILog::getInstance(CIMessageQueueClient::DefaultLog)->setDestination(application.getLog()->getName());
 
-    // application.getQtApplication().initialize();
     application.getQtApplication().setQuitOnLastWindowClosed(false);
 #ifndef Q_OS_MACOS
     application.getQtApplication().setWindowIcon(QIcon(":/icons/tray-monogram.png"));
