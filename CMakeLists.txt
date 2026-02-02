@@ -23,6 +23,10 @@ endif()
 
 project(EKioskRoot VERSION 1.0.0 LANGUAGES CXX C)
 
+if(APPLE)
+    enable_language(OBJCXX)
+endif()
+
 # Allow overriding the public include directory via the EK_INCLUDES_DIR environment variable
 # Final fallback is ${CMAKE_SOURCE_DIR}/include to keep local builds working.
 if(DEFINED ENV{EK_INCLUDES_DIR})

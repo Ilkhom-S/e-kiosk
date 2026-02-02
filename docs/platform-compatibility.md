@@ -38,3 +38,34 @@ For macOS development and debugging:
 
 - **App Bundles**: GUI applications are built as `.app` bundles. Run the executable at `Contents/MacOS/<appname>` inside the bundle.
 - **Debugging**: Use LLDB or VS Code with CodeLLDB extension for debugging macOS applications.
+
+## macOS Icon Guidelines
+
+### Template Icons for Theme Support
+
+For icons that need to adapt to light/dark theme switching:
+
+1. **SVG Template Naming**: Name SVG source files with "Template" suffix (e.g., `iconTemplate.svg`)
+2. **Qt Icon Creation**: Use `QIcon(":/icons/iconTemplate.png")` and call `icon.setIsMask(true)`
+3. **Automatic Inversion**: macOS automatically inverts template icons based on theme
+4. **Black Fill**: Use solid black (#000000) fill in SVG templates for best results
+5. **Disabled State**: Let Qt handle disabled state automatically - do not create custom disabled pixmaps
+6. **Color Elements**: Template icons should be monochrome - colored elements (like red dots) will not invert properly
+
+### Template Icon Limitations
+
+- **Monochrome Only**: Template icons are inverted as a whole - colored elements don't adapt meaningfully
+- **Status Indicators**: For colored status indicators, consider using separate non-template icons or different visual approaches
+- **Context Menus**: Disabled menu item icons may not follow template behavior - test thoroughly
+
+### Bundle Configuration
+
+- Set `LSUIElement = YES` in Info.plist for status bar only apps
+- Include `CFBundleIconFile` pointing to .icns file for Finder display
+- Use `macdeployqt` for proper framework bundling
+
+### Icon Generation
+
+- Use the project's `scripts/generate_icons.py` script to generate PNG/ICO/ICNS files from SVG templates
+- All generated icon files are automatically included in Qt resources via Resources.qrc
+- Template icons are identified by the "Template" suffix in filenames

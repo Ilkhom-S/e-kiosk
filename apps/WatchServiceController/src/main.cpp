@@ -44,7 +44,9 @@ int main(int aArgc, char *aArgv[])
 
     // application.getQtApplication().initialize();
     application.getQtApplication().setQuitOnLastWindowClosed(false);
+#ifndef Q_OS_MACOS
     application.getQtApplication().setWindowIcon(QIcon(":/icons/tray-monogram.png"));
+#endif
 
 #ifdef Q_OS_WIN
     // On Windows, ensure no windows are shown in taskbar for pure tray apps

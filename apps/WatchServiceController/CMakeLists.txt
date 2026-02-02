@@ -39,9 +39,19 @@ if(APPLE)
     set_target_properties(tray PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/Info.plist"
         MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_ICON_FILE tray-app-icon.icns
     )
     # No dock icon for background apps
-    # target_sources(tray PRIVATE src/icons/tray-app-icon.icns)
+    target_sources(tray PRIVATE src/icons/tray-app-icon.icns)
+
+    # Compile WatchServiceController.cpp as Objective-C++ for macOS theme support
+    set_source_files_properties(src/WatchServiceController.cpp PROPERTIES LANGUAGE OBJCXX)
+
+    # Copy icon to bundle Resources
+    add_custom_command(TARGET tray POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:tray>/Contents/Resources
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/tray-app-icon.icns $<TARGET_BUNDLE_DIR:tray>/Contents/Resources/AppIcon.icns
+    )
 endif()
 
 # Optional single-instance support via project SingleApplication wrapper (EK::SingleApplication)

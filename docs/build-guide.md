@@ -252,3 +252,36 @@ ek_generate_ini_template(tray "${CMAKE_SOURCE_DIR}/runtimes/common/data/tray.ini
 
 - Always document all variables in the template in Russian.
 - See `cmake/README.md` for full details and examples.
+
+## Icon Generation
+
+EKiosk uses a Python script to generate icon files from SVG templates for cross-platform compatibility.
+
+### Generating Icons
+
+Run the icon generation script to create PNG, ICO, and ICNS files from SVG sources:
+
+```sh
+python3 scripts/generate_icons.py --apps <app-name> [--force]
+```
+
+- `--apps`: Specify which app's icons to generate (e.g., `WatchServiceController`)
+- `--force`: Regenerate all icons even if they exist
+
+### Template Icons for macOS
+
+For macOS light/dark theme support:
+
+1. **SVG Templates**: Name SVG files with "Template" suffix (e.g., `iconTemplate.svg`)
+2. **Qt Integration**: Use `QIcon(":/icons/iconTemplate.png")` and call `icon.setIsMask(true)`
+3. **Automatic Theme Adaptation**: macOS automatically inverts template icons based on system theme
+4. **Black Fill**: Use solid black (#000000) fill in SVG templates for best results
+
+**Important Limitations:**
+
+- Template icons are monochrome and invert as a whole
+- Colored elements (like status dots) will not adapt properly
+- Context menu disabled states may not follow template behavior
+- For colored status indicators, use separate non-template icons
+
+The script automatically generates all required icon sizes and formats from the SVG templates.
