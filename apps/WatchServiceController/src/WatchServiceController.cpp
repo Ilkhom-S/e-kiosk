@@ -148,11 +148,14 @@ void WatchServiceController::onCheck()
         QIcon stoppedIcon(":/icons/tray-monogram-stoppedTemplate.png");
         stoppedIcon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
         mIcon.setIcon(stoppedIcon);
+        // Disable all menu items except close when not connected
         foreach (auto action, mStartServiceActions)
         {
-            action->setEnabled(true);
+            action->setEnabled(false);
         }
         mStopServiceAction->setEnabled(false);
+        // Keep close action enabled
+        mCloseTrayIconAction->setEnabled(true);
     }
 
     mIcon.show();
