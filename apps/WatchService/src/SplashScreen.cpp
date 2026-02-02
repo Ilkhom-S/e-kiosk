@@ -161,9 +161,8 @@ void SplashScreen::setState(const QString &aSender, const QString &aState)
             if (it->date.secsTo(QDateTime::currentDateTime()) < CSplashScreen::MinStateShowSeconds)
             {
                 // Use new Qt5/6 compatible signal/slot syntax with lambda
-                QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000, it->widget, [widget = it->widget]() {
-                    widget->deleteLater();
-                });
+                QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000, it->widget,
+                                   [widget = it->widget]() { widget->deleteLater(); });
             }
             else
             {
@@ -209,9 +208,8 @@ void SplashScreen::removeStates(const QString &aSender)
             if (it->date.secsTo(QDateTime::currentDateTime()) < CSplashScreen::MinStateShowSeconds)
             {
                 // Use new Qt5/6 compatible signal/slot syntax with lambda
-                QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000, it->widget, [widget = it->widget]() {
-                    widget->deleteLater();
-                });
+                QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000, it->widget,
+                                   [widget = it->widget]() { widget->deleteLater(); });
             }
             else
             {

@@ -163,7 +163,7 @@ class WatchService : public QObject, protected ILogable
     /// Обработка клика по защитному экрану.
     void onScreenActivity(int aArea);
 
-    /// Обнуляем накопленные экраные клики
+    /// Обнуляем накопленные экранные клики
     void onScreenActivityTimeout();
 
     /// От одного из модулей пришло сообщение.

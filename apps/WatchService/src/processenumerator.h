@@ -4,7 +4,6 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QMap>
 #include <Common/QtHeadersEnd.h>

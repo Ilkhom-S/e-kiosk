@@ -189,9 +189,7 @@ void WatchService::initialize()
         else
         {
             // Use new Qt5/6 compatible signal/slot syntax with lambda
-            QTimer::singleShot(CWatchService::ReInitializeTimeout, this, [this]() {
-                reinitialize();
-            });
+            QTimer::singleShot(CWatchService::ReInitializeTimeout, this, [this]() { reinitialize(); });
 
             mInitializeFailedCounter++;
         }
@@ -227,8 +225,7 @@ void WatchService::initialize()
 #endif
     }
 
-    connect(qApp, &QApplication::commitDataRequest, this, &WatchService::closeBySystemRequest,
-            Qt::DirectConnection);
+    connect(qApp, &QApplication::commitDataRequest, this, &WatchService::closeBySystemRequest, Qt::DirectConnection);
 }
 
 //----------------------------------------------------------------------------
@@ -461,9 +458,7 @@ void WatchService::messageReceived(const QByteArray &aMessage)
                     toLog(LogLevel::Normal, QString("Module %1 is auto started. Re run it after 10 min.").arg(module));
 
                     // принудительная остановка модуля с признаком авто запуска возможна только на 10 минут
-                    QTimer::singleShot(10 * 60 * 1000, this, [this]() {
-                        checkAutoStartModules();
-                    });
+                    QTimer::singleShot(10 * 60 * 1000, this, [this]() { checkAutoStartModules(); });
                 }
 
                 onCheckModules();
@@ -636,8 +631,8 @@ void WatchService::onCheckModules()
             if (!(it.value().process))
             {
                 it.value().process = new QProcess(this);
-                connect(it.value().process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-                        this, &WatchService::onModuleFinished);
+                connect(it.value().process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
+                        &WatchService::onModuleFinished);
             }
 
             if (it.value().process->state() == QProcess::NotRunning)
@@ -881,9 +876,7 @@ void WatchService::doCloseModules(QString aSender)
 
             if (canClose)
             {
-                QTimer::singleShot(1000, this, [this]() {
-                    closeModules();
-                });
+                QTimer::singleShot(1000, this, [this]() { closeModules(); });
 
                 canClose = false;
             }
@@ -1065,9 +1058,7 @@ void WatchService::closeAction()
     {
         toLog(LogLevel::Normal, "Setting 5 min timeout to run modules again.");
 
-        QTimer::singleShot(5 * 60 * 1000, this, [this]() {
-            reinitialize();
-        });
+        QTimer::singleShot(5 * 60 * 1000, this, [this]() { reinitialize(); });
     }
     else if (mCloseAction == ECloseAction::Restart)
     {
@@ -1139,9 +1130,7 @@ void WatchService::startModule(SModule &aModule)
     SleepHelper::msleep(aModule.afterStartDelay);
 
     // Заполняем структуру использования памяти после старта процесса
-    QTimer::singleShot(2 * 60 * 1000, this, [this]() {
-        checkProcessMemory();
-    });
+    QTimer::singleShot(2 * 60 * 1000, this, [this]() { checkProcessMemory(); });
 }
 
 //----------------------------------------------------------------------------
