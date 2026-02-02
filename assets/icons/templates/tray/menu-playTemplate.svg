@@ -1,3 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 3v10l8-5-8-5z" fill="#000" />
+    <!-- 
+        Shifted x by +0.5 for optical balance.
+        Added rx for a soft, modern Apple feel.
+    -->
+    <path d="M5.5 3.37c-.67-.4-1.5.08-1.5.86v7.54c0 .78.83 1.26 1.5.86l6.3-3.77c.67-.4.67-1.33 0-1.73l-6.3-3.76z"
+        fill="#000000" />
 </svg>

@@ -1,12 +1,5 @@
 /* @file Модуль управления сторожевым сервисом через сокет. */
 
-#ifdef Q_OS_MACOS
-// macOS imports for native status bar access
-#include <QtGui/qpa/qplatformnativeinterface.h>
-#include <QtGui/qpa/qplatformwindow.h>
-#import <Cocoa/Cocoa.h>
-#endif
-
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QCoreApplication>
@@ -107,20 +100,6 @@ WatchServiceController::WatchServiceController()
     mIcon.setIcon(trayIcon);
     mIcon.show();
 
-    // Connect to theme changes to update tray icon
-    connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this,
-            [this]()
-            {
-                if (mClient->isConnected())
-                {
-                    mIcon.setIcon(getBadgedTrayIcon(":/icons/tray-monogramTemplate.png", false));
-                }
-                else
-                {
-                    mIcon.setIcon(getBadgedTrayIcon(":/icons/tray-monogram-stoppedTemplate.png", true));
-                }
-            });
-
     LOG(getLog(), LogLevel::Normal, "WatchServiceController started.");
 }
 
@@ -142,47 +121,6 @@ ILog *WatchServiceController::getLog()
 }
 
 //----------------------------------------------------------------------------
-QIcon WatchServiceController::getBadgedTrayIcon(const QString &iconPath, bool hasNotification)
-{
-    // Use template icon for macOS theme adaptation
-    QIcon baseIcon(iconPath);
-
-    if (!hasNotification)
-    {
-// macOS: Ensure template behavior
-#ifdef Q_OS_MACOS
-        baseIcon.setIsMask(true);
-#endif
-        return baseIcon;
-    }
-
-    // Prepare pixmap for painting (32x32 for retina support)
-    QPixmap pixmap = baseIcon.pixmap(32, 32);
-    pixmap.setDevicePixelRatio(2.0); // Ensures sharpness on Retina/4K
-
-    QPainter painter(&pixmap);
-    painter.setRenderHint(QPainter::Antialiasing);
-
-    // Draw the Badge (Red Dot) - positioned in top-right corner
-    int dotSize = 8;
-    int margin = 2;
-    painter.setBrush(Qt::red);
-    painter.setPen(QPen(Qt::white, 1)); // White border makes it pop on any theme
-    painter.drawEllipse(pixmap.width() - dotSize - margin, margin, dotSize, dotSize);
-    painter.end();
-
-    QIcon finalIcon(pixmap);
-
-// macOS: Ensure it still behaves as a template
-#ifdef Q_OS_MACOS
-    finalIcon.setIsMask(true);
-#endif
-
-    LOG(getLog(), LogLevel::Normal, QString("Created badged icon for %1").arg(iconPath));
-    return finalIcon;
-}
-
-//----------------------------------------------------------------------------
 void WatchServiceController::onCheck()
 {
     if (!mClient->isConnected())
@@ -194,8 +132,9 @@ void WatchServiceController::onCheck()
 
     if (mClient->isConnected())
     {
-        // Connected state: show normal template icon without badge
-        QIcon normalIcon = getBadgedTrayIcon(":/icons/tray-monogramTemplate.png", false); // false = no notification
+        // Connected state: show normal template icon
+        QIcon normalIcon(":/icons/tray-monogramTemplate.png");
+        normalIcon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
         mIcon.setIcon(normalIcon);
         foreach (auto action, mStartServiceActions)
         {
@@ -206,8 +145,8 @@ void WatchServiceController::onCheck()
     else
     {
         // Disconnected state: show slashed H icon to indicate stopped state
-        QIcon stoppedIcon =
-            getBadgedTrayIcon(":/icons/tray-monogram-stoppedTemplate.png", false); // false = no additional badge needed
+        QIcon stoppedIcon(":/icons/tray-monogram-stoppedTemplate.png");
+        stoppedIcon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
         mIcon.setIcon(stoppedIcon);
         foreach (auto action, mStartServiceActions)
         {
@@ -327,10 +266,5 @@ void WatchServiceController::onTrayIconActivated(QSystemTrayIcon::ActivationReas
     }
 #endif
 }
-
-//----------------------------------------------------------------------------
-
-#ifdef Q_OS_MACOS
-#endif
 
 //----------------------------------------------------------------------------

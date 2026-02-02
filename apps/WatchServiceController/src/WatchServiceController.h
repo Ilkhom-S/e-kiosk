@@ -37,9 +37,6 @@ class WatchServiceController : public QObject
 
     ILog *getLog();
 
-    // Platform-agnostic badge creation for status icons
-    QIcon getBadgedTrayIcon(const QString &iconPath, bool hasNotification);
-
   private slots:
     // Попытка соединения со сторожевым сервисом.
     void onCheck();

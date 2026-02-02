@@ -116,13 +116,14 @@ def find_converter() -> dict:
     cs_cli = find_cairosvg_cli()
     if cs_cli:
         return {'type': 'cairosvg-cli', 'cmd': cs_cli}
-    inkscape = find_inkscape_executable()
-    if inkscape:
-        return {'type': 'inkscape', 'cmd': inkscape}
+    # Prioritize rsvg-convert for better SVG transparency handling, then ImageMagick
     if which('rsvg-convert'):
         return {'type': 'rsvg-convert', 'cmd': which('rsvg-convert')}
     if which('convert'):
         return {'type': 'convert', 'cmd': which('convert')}
+    inkscape = find_inkscape_executable()
+    if inkscape:
+        return {'type': 'inkscape', 'cmd': inkscape}
     return {'type': 'none'}
 
 
@@ -153,7 +154,16 @@ def svg_to_png_external(svg_path: Path, out_path: Path, width: int, height: int)
         run_cmd([conv['cmd'], '-w', str(width), '-h', str(height), str(svg_path), '-o', str(out_path)])
         return
     if t == 'convert':
-        run_cmd([conv['cmd'], str(svg_path), '-resize', f'{width}x{height}', str(out_path)])
+        # Use modern ImageMagick syntax: magick input.svg -background transparent -alpha on -resize WxH output.png
+        cmd = [conv['cmd']]
+        if conv['cmd'].endswith('/convert') or conv['cmd'] == 'convert':
+            # If using legacy convert command, use magick directly
+            magick_path = conv['cmd'].replace('convert', 'magick')
+            if which(magick_path):
+                cmd = [magick_path]
+            else:
+                cmd = [conv['cmd']]
+        run_cmd(cmd + [str(svg_path), '-background', 'transparent', '-alpha', 'on', '-resize', f'{width}x{height}', str(out_path)])
         return
     if t == 'cairosvg-cli':
         # cairosvg input.svg -o output.png -f png -w width -h height
@@ -176,8 +186,13 @@ def build_ico_from_pngs(png_paths: list[Path], out_ico: Path) -> None:
     if Image is None:
         # try external convert
         if which('convert'):
-            # ImageMagick can produce ico from list of pngs
-            cmd = ['convert'] + [str(p) for p in png_paths] + [str(out_ico)]
+            # ImageMagick can produce ico from list of pngs - use modern syntax
+            convert_path = which('convert')
+            magick_path = convert_path.replace('convert', 'magick') if convert_path else None
+            if magick_path and which(magick_path):
+                cmd = [magick_path] + [str(p) for p in png_paths] + [str(out_ico)]
+            else:
+                cmd = ['convert'] + [str(p) for p in png_paths] + [str(out_ico)]
             run_cmd(cmd)
             return
         raise RuntimeError('Pillow not installed and ImageMagick convert not available to build ICO')

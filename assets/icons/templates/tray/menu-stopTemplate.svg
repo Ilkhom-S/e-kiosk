@@ -1,3 +1,7 @@
 <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-    <rect x="3" y="3" width="10" height="10" fill="#000" />
+    <!-- 
+        Centered 10x10 square.
+        rx=2.5 provides the modern 'Squircle' feel used in macOS 2026.
+    -->
+    <rect x="3" y="3" width="10" height="10" rx="2.5" fill="#000000" />
 </svg>

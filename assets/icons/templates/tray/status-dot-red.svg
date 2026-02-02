@@ -1,4 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-    <!-- Red status dot overlay - NOT a template, stays red in all themes -->
-    <circle cx="48" cy="12" r="6" fill="#FF0000" />
-</svg>

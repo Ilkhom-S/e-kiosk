@@ -44,7 +44,7 @@ int main(int aArgc, char *aArgv[])
 
     application.getQtApplication().setQuitOnLastWindowClosed(false);
 #ifndef Q_OS_MACOS
-    application.getQtApplication().setWindowIcon(QIcon(":/icons/tray-monogram.png"));
+    application.getQtApplication().setWindowIcon(QIcon(":/icons/tray-monogramTemplate.png"));
 #endif
 
 #ifdef Q_OS_WIN
