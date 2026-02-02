@@ -1,9 +1,5 @@
 /* @file Вспомогательный экран, закрывающий рабочий стол. */
 
-// STL
-#include <algorithm>
-#include <memory>
-
 // Qt
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QDir>
@@ -22,17 +18,21 @@
 #include <boost/bind/bind.hpp>
 #include <boost/bind/placeholders.hpp>
 
-using namespace boost::placeholders;
-
 // System
 #include <SettingsManager/SettingsManager.h>
 
 // Project
 #include "SplashScreen.h"
 
+using namespace boost::placeholders;
+
+// STL
+#include <algorithm>
+#include <memory>
+
 namespace CSplashScreen
 {
-    const char DefaultBackgroundStyle[] = "QWidget#wgtBackground { background-color: #335599; }";
+    const char DefaultBackgroundStyle[] = "QWidget#wgtBackground { background-color: #f07e1b; }";
     const char CustomBackgroundStyle[] = "QWidget#wgtBackground { border-image: url(%1); }";
     const char StateImagesPath[] = ":/images/states/";
     const char StateImageExtension[] = ".png";
@@ -40,6 +40,7 @@ namespace CSplashScreen
 } // namespace CSplashScreen
 
 //----------------------------------------------------------------------------
+// Конструктор экрана заставки
 SplashScreen::SplashScreen(const QString &aLog, QWidget *aParent)
     : ILogable(aLog),
 #ifdef _DEBUG
@@ -60,16 +61,19 @@ SplashScreen::SplashScreen(const QString &aLog, QWidget *aParent)
 }
 
 //----------------------------------------------------------------------------
+// Деструктор экрана заставки
 SplashScreen::~SplashScreen()
 {
 }
 
 //----------------------------------------------------------------------------
+// Инициализация экрана заставки
 void SplashScreen::onInit()
 {
 }
 
 //----------------------------------------------------------------------------
+// Обработка события закрытия окна
 void SplashScreen::closeEvent(QCloseEvent *aEvent)
 {
     toLog(LogLevel::Normal, "Close splash screen by event.");
@@ -81,6 +85,7 @@ void SplashScreen::closeEvent(QCloseEvent *aEvent)
 }
 
 //----------------------------------------------------------------------------
+// Фильтр событий для обработки кликов мыши
 bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent)
 {
     if (aEvent->type() == QEvent::MouseButtonPress)
@@ -109,12 +114,14 @@ bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent)
 }
 
 //----------------------------------------------------------------------------
+// Проверка попадания точки в область
 bool SplashScreen::testPoint(const TAreas::value_type &aArea, const QPoint &aPoint) const
 {
     return aArea.second.contains(aPoint);
 }
 
 //----------------------------------------------------------------------------
+// Обновление областей клика на экране
 void SplashScreen::updateAreas()
 {
     int width = rect().width();
@@ -128,6 +135,7 @@ void SplashScreen::updateAreas()
 }
 
 //----------------------------------------------------------------------------
+// Установка состояния экрана заставки
 void SplashScreen::setState(const QString &aSender, const QString &aState)
 {
     // Проверим, есть ли такое состояние у нас в списке.
@@ -185,6 +193,7 @@ void SplashScreen::setState(const QString &aSender, const QString &aState)
 }
 
 //----------------------------------------------------------------------------
+// Удаление состояний для указанного отправителя
 void SplashScreen::removeStates(const QString &aSender)
 {
     TStateList::iterator it;
@@ -210,6 +219,7 @@ void SplashScreen::removeStates(const QString &aSender)
 }
 
 //----------------------------------------------------------------------------
+// Установка пользовательского фона экрана заставки
 void SplashScreen::setCustomBackground(const QString &aPath)
 {
     aPath.isEmpty() ? setStyleSheet(CSplashScreen::DefaultBackgroundStyle)
