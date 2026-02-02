@@ -40,13 +40,15 @@ WatchServiceController::WatchServiceController()
     mSignalMapper = new QSignalMapper(this);
 
     {
-        auto settingsAction = mMenu.addAction(createTemplateIcon(":/icons/menu-settingsTemplate.png"), tr("#start_service_menu"));
+        auto settingsAction =
+            mMenu.addAction(createTemplateIcon(":/icons/menu-settingsTemplate.png"), tr("#start_service_menu"));
         connect(settingsAction, &QAction::triggered, mSignalMapper,
                 [this, settingsAction]() { mSignalMapper->map(settingsAction); });
         mSignalMapper->setMapping(settingsAction, QString("-start_scenario=service_menu"));
         mStartServiceActions << settingsAction;
 
-        auto setupAction = mMenu.addAction(createTemplateIcon(":/icons/menu-setupTemplate.png"), tr("#start_first_setup"));
+        auto setupAction =
+            mMenu.addAction(createTemplateIcon(":/icons/menu-setupTemplate.png"), tr("#start_first_setup"));
         connect(setupAction, &QAction::triggered, mSignalMapper,
                 [this, setupAction]() { mSignalMapper->map(setupAction); });
         mSignalMapper->setMapping(setupAction, QString("-start_scenario=first_setup"));
@@ -173,6 +175,13 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments)
 
     if (!mClient->isConnected())
     {
+        // Validate application instance
+        if (!BasicApplication::getInstance())
+        {
+            LOG(getLog(), LogLevel::Error, "Cannot start service: BasicApplication instance is null");
+            return;
+        }
+
         // Platform-agnostic executable/app bundle name with debug suffix support
         QString executableName = "guard";
 #ifdef QT_DEBUG
@@ -184,8 +193,23 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments)
         executableName += ".app";
 #endif
 
-        QString path = QDir::cleanPath(QDir::toNativeSeparators(BasicApplication::getInstance()->getWorkingDirectory() +
-                                                                QDir::separator() + executableName));
+        QString workingDir = BasicApplication::getInstance()->getWorkingDirectory();
+        
+        // Validate working directory
+        if (!QDir(workingDir).exists())
+        {
+            LOG(getLog(), LogLevel::Error, QString("Cannot start service: working directory does not exist: %1").arg(workingDir));
+            return;
+        }
+
+        QString path = QDir::cleanPath(QDir::toNativeSeparators(workingDir + QDir::separator() + executableName));
+
+        // Validate executable exists
+        if (!QFile::exists(path))
+        {
+            LOG(getLog(), LogLevel::Error, QString("Cannot start service: executable does not exist: %1").arg(path));
+            return;
+        }
 
         QStringList parameters;
 
@@ -194,7 +218,17 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments)
             parameters << QString("-client_options=%1").arg(aArguments);
         }
 
-        QProcess::startDetached(path, parameters, BasicApplication::getInstance()->getWorkingDirectory());
+        // Attempt to start the process
+        bool started = QProcess::startDetached(path, parameters, workingDir);
+        
+        if (started)
+        {
+            LOG(getLog(), LogLevel::Normal, QString("Successfully started service process: %1").arg(path));
+        }
+        else
+        {
+            LOG(getLog(), LogLevel::Error, QString("Failed to start service process: %1").arg(path));
+        }
     }
     else
     {
