@@ -136,9 +136,10 @@ void WatchServiceController::onCheck()
         QIcon normalIcon(":/icons/tray-monogramTemplate.png");
         normalIcon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
         mIcon.setIcon(normalIcon);
+        // Enable all menu items when connected so user can interact
         foreach (auto action, mStartServiceActions)
         {
-            action->setEnabled(false);
+            action->setEnabled(true);
         }
         mStopServiceAction->setEnabled(true);
     }
