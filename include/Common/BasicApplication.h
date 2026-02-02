@@ -106,6 +106,10 @@ template <class T> class BasicQtApplication : public BasicApplication
     BasicQtApplication(const QString &aName, const QString &aVersion, int &aArgumentCount, char **aArguments);
     virtual ~BasicQtApplication() override
     {
+        if (mQtApplication)
+        {
+            mQtApplication->~TApplication();
+        }
     }
 
     /// Возвращает true, если это первичный экземпляр приложения.
@@ -113,7 +117,7 @@ template <class T> class BasicQtApplication : public BasicApplication
     {
         if (std::is_same<T, SingleApplication>::value)
         {
-            return static_cast<const SingleApplication &>(mQtApplication).isPrimary();
+            return static_cast<const SingleApplication &>(*mQtApplication).isPrimary();
         }
         else
         {
@@ -124,23 +128,23 @@ template <class T> class BasicQtApplication : public BasicApplication
     /// Запускает цикл обработки событий.
     int exec()
     {
-        return mQtApplication.exec();
+        return mQtApplication->exec();
     }
 
     /// Возвращает аргументы командной строки.
     QStringList getArguments() const
     {
-        return mQtApplication.arguments();
+        return mQtApplication->arguments();
     }
 
     /// Возвращает экземпляр Qt приложения.
     TApplication &getQtApplication()
     {
-        return mQtApplication;
+        return *mQtApplication;
     }
 
   private:
-    TApplication mQtApplication;
+    TApplication *mQtApplication;
     QScopedPointer<QTranslator> mTranslator;
 };
 
@@ -151,12 +155,19 @@ template <typename T>
 BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &aVersion, int &aArgumentCount,
                                           char **aArguments)
     : BasicApplication(aName, aVersion, aArgumentCount, aArguments, !std::is_same<T, SingleApplication>::value),
-      mQtApplication(aArgumentCount, aArguments)
+      mQtApplication(nullptr)
 {
-    mQtApplication.setApplicationName(aName);
-    mQtApplication.setApplicationVersion(aVersion);
+    // Set application name before creating SingleApplication so it can generate the correct shared memory key
+    QCoreApplication::setApplicationName(aName);
+    QCoreApplication::setApplicationVersion(aVersion);
 
-    QFileInfo fileInfo(mQtApplication.applicationFilePath());
+    // Allocate memory for the Qt application
+    mQtApplication = static_cast<TApplication *>(::operator new(sizeof(TApplication)));
+
+    // Construct the Qt application (SingleApplication or regular QApplication)
+    new (mQtApplication) TApplication(aArgumentCount, aArguments);
+
+    QFileInfo fileInfo(mQtApplication->applicationFilePath());
 
     // Now that Qt application is created, write the log header
     writeLogHeader();
