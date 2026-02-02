@@ -93,6 +93,19 @@ QIcon WatchServiceController::createTemplateIcon(const QString &path)
 //----------------------------------------------------------------------------
 WatchServiceController::~WatchServiceController()
 {
+    // Stop timer to prevent further processing
+    mTimer.stop();
+
+    // Hide tray icon
+    mIcon.hide();
+
+    // Disconnect all signals (Qt does this automatically, but explicit for clarity)
+    disconnect(&mTimer, &QTimer::timeout, this, &WatchServiceController::onCheck);
+    disconnect(&mIcon, &QSystemTrayIcon::activated, this, &WatchServiceController::onTrayIconActivated);
+    disconnect(mSignalMapper, SIGNAL(mapped(QString)), this, SLOT(onStartServiceClicked(QString)));
+    disconnect(mStopServiceAction, &QAction::triggered, this, &WatchServiceController::onStopServiceClicked);
+    disconnect(mCloseTrayIconAction, &QAction::triggered, this, &WatchServiceController::onCloseIconClicked);
+
     LOG(getLog(), LogLevel::Normal, "WatchServiceController stopped.");
 }
 
