@@ -29,7 +29,7 @@ namespace CWatchServiceController
 WatchServiceController::WatchServiceController()
     : mClient(createWatchServiceClient(CWatchService::Modules::WatchServiceController)), mLastCommand(Unknown)
 {
-    connect(&mTimer, SIGNAL(timeout()), SLOT(onCheck()));
+    connect(&mTimer, &QTimer::timeout, this, &WatchServiceController::onCheck);
 
     mClient->subscribeOnDisconnected(this);
     mClient->subscribeOnCloseCommandReceived(this);
@@ -44,7 +44,9 @@ WatchServiceController::WatchServiceController()
         icon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
         auto action = mMenu.addAction(icon, tr("#start_service_menu"));
         // Remove manual disabled pixmap creation - let Qt handle disabled state with template
-        connect(action, SIGNAL(triggered(bool)), mSignalMapper, SLOT(map()));
+        connect(action, &QAction::triggered, mSignalMapper, [this, action]() {
+            mSignalMapper->map(action);
+        });
         mSignalMapper->setMapping(action, QString("-start_scenario=service_menu"));
         mStartServiceActions << action;
 
@@ -54,7 +56,9 @@ WatchServiceController::WatchServiceController()
             icon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
             action->setIcon(icon);
         }
-        connect(action, SIGNAL(triggered(bool)), mSignalMapper, SLOT(map()));
+        connect(action, &QAction::triggered, mSignalMapper, [this, action]() {
+            mSignalMapper->map(action);
+        });
         mSignalMapper->setMapping(action, QString("-start_scenario=first_setup"));
         mStartServiceActions << action;
 
@@ -67,7 +71,9 @@ WatchServiceController::WatchServiceController()
         icon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
         action->setIcon(icon);
     }
-    connect(action, SIGNAL(triggered(bool)), mSignalMapper, SLOT(map()));
+    connect(action, &QAction::triggered, mSignalMapper, [this, action]() {
+        mSignalMapper->map(action);
+    });
 
     mSignalMapper->setMapping(action, QString("--disable-web-security"));
     mStartServiceActions << action;
@@ -87,11 +93,10 @@ WatchServiceController::WatchServiceController()
     }
 
     connect(mSignalMapper, SIGNAL(mapped(QString)), SLOT(onStartServiceClicked(QString)));
-    connect(mStopServiceAction, SIGNAL(triggered(bool)), SLOT(onStopServiceClicked()));
-    connect(mCloseTrayIconAction, SIGNAL(triggered(bool)), SLOT(onCloseIconClicked()));
+    connect(mStopServiceAction, &QAction::triggered, this, &WatchServiceController::onStopServiceClicked);
+    connect(mCloseTrayIconAction, &QAction::triggered, this, &WatchServiceController::onCloseIconClicked);
 
-    connect(&mIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
-            SLOT(onTrayIconActivated(QSystemTrayIcon::ActivationReason)));
+    connect(&mIcon, &QSystemTrayIcon::activated, this, &WatchServiceController::onTrayIconActivated);
 
     mIcon.setContextMenu(&mMenu);
     QIcon trayIcon(":/icons/tray-monogramTemplate.png");
