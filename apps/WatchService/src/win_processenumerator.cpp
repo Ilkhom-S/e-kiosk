@@ -1,14 +1,20 @@
 /* @file Реализация перечислителя процессов в системе. */
 
-// Windows
+// Platform
 #include <windows.h>
-#include <psapi.h>
 
-// stl
+// STL
 #include <algorithm>
+
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QMap>
+#include <QtCore/QString>
+#include <Common/QtHeadersEnd.h>
 
 // Project
 #include "processenumerator.h"
+#include <psapi.h>
 
 #pragma comment(lib, "Psapi.lib")
 
