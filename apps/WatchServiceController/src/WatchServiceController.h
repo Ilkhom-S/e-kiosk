@@ -33,8 +33,6 @@ class WatchServiceController : public QObject
     ~WatchServiceController();
 
   private:
-    void onTrayIconContextMenu();
-
     ILog *getLog();
 
   private slots:
