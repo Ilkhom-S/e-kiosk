@@ -55,7 +55,8 @@ SplashScreen::SplashScreen(const QString &aLog, QWidget *aParent)
     // ui.lblSupportPhone->hide();
     // ui.lblTerminalName->hide();
 
-    QTimer::singleShot(0, this, SLOT(onInit()));
+    // Use new Qt5/6 compatible signal/slot syntax
+    QTimer::singleShot(0, this, &SplashScreen::onInit);
 
     installEventFilter(this);
 }
@@ -159,7 +160,10 @@ void SplashScreen::setState(const QString &aSender, const QString &aState)
 
             if (it->date.secsTo(QDateTime::currentDateTime()) < CSplashScreen::MinStateShowSeconds)
             {
-                QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000, it->widget, SLOT(deleteLater()));
+                // Use new Qt5/6 compatible signal/slot syntax with lambda
+                QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000, it->widget, [widget = it->widget]() {
+                    widget->deleteLater();
+                });
             }
             else
             {
@@ -204,7 +208,10 @@ void SplashScreen::removeStates(const QString &aSender)
         {
             if (it->date.secsTo(QDateTime::currentDateTime()) < CSplashScreen::MinStateShowSeconds)
             {
-                QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000, it->widget, SLOT(deleteLater()));
+                // Use new Qt5/6 compatible signal/slot syntax with lambda
+                QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000, it->widget, [widget = it->widget]() {
+                    widget->deleteLater();
+                });
             }
             else
             {
