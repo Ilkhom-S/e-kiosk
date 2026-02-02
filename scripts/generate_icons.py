@@ -257,7 +257,7 @@ def generate_for_app(svg_dir: Path, app: str, force: bool = False) -> None:
         'WatchServiceController': 'tray',
         'EKiosk': 'kiosk',
         'Updater': 'updater',
-        'Guard': 'guard',
+        'WatchService': 'guard',
         'Card': 'card',  # For payment card related apps
         # Add more mappings as needed
     }
@@ -343,7 +343,7 @@ def generate_for_app(svg_dir: Path, app: str, force: bool = False) -> None:
             print(f'  Warning: failed to create ICO: {e}', file=sys.stderr)
 
         # Special case: generate .icns for macOS app icons
-        if name == 'tray-app-icon':
+        if name in ('tray-app-icon', 'guard-app-icon'):
             generate_icns(svg, app_icons / f'{name}.icns', force)
 
 

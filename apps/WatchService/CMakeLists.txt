@@ -45,6 +45,21 @@ if(WIN32)
     target_link_libraries(guard PRIVATE Advapi32 User32 Winspool)
 endif()
 
+if(APPLE)
+    # Configure as GUI app with icon
+    set_target_properties(guard PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_ICON_FILE guard-app-icon.icns
+    )
+    target_sources(guard PRIVATE src/icons/guard-app-icon.icns)
+
+    # Copy icon to bundle Resources
+    add_custom_command(TARGET guard POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:guard>/Contents/Resources
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/guard-app-icon.icns $<TARGET_BUNDLE_DIR:guard>/Contents/Resources/AppIcon.icns
+    )
+endif()
+
 # Link SingleApplication for single-instance app support (Qt5/Qt6 compatible)
 # Uses itay-grudev/SingleApplication: https://github.com/itay-grudev/SingleApplication
 if(TARGET SingleApplication::SingleApplication)
