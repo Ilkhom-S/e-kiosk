@@ -32,11 +32,12 @@ void qtMessageHandler(QtMsgType /*aType*/, const QMessageLogContext & /*aContext
 }
 
 //----------------------------------------------------------------------------
+// Точка входа в приложение сторожевого сервиса
 int main(int aArgc, char *aArgv[])
 {
     BasicQtApplication<SingleApplication> application(CWatchService::Name, Humo::getVersion(), aArgc, aArgv);
 
-    // Load translations
+    // Загружаем переводы
     QTranslator translator;
     QString locale = QLocale::system().name();
     QString qmFile = QString("watchservice_%1.qm").arg(locale);
