@@ -89,7 +89,8 @@ void TimeChangeListener::emitTimeChanged()
 
         emit timeChanged(mTimeOffset);
 
-        QTimer::singleShot(2000, this, SLOT(cleanTimeOffset()));
+        // Use new Qt5/6 compatible signal/slot syntax with lambda
+        QTimer::singleShot(2000, this, [this]() { cleanTimeOffset(); });
     }
 }
 
