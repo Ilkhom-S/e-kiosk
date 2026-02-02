@@ -46,8 +46,9 @@ if(WIN32)
 endif()
 
 if(APPLE)
-    # Configure as GUI app with icon
+    # Configure as GUI app with custom Info.plist
     set_target_properties(guard PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/Info.plist"
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_ICON_FILE AppIcon
         MACOSX_BUNDLE_GUI_IDENTIFIER "com.humo.guard"
