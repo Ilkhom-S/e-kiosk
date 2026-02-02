@@ -359,11 +359,14 @@ BasicQtApplication<SingleApplication>::BasicQtApplication(const QString &aName, 
     QCoreApplication::setApplicationName(aName);
     QCoreApplication::setApplicationVersion(aVersion);
 
+    // Create unique userData to avoid conflicts with stale shared memory from crashed instances
+    QString userData = QString::number(QDateTime::currentMSecsSinceEpoch()) + "_" + QString::number(QCoreApplication::applicationPid());
+
     // Allocate memory for the Qt application
     mQtApplication = static_cast<SingleApplication *>(::operator new(sizeof(SingleApplication)));
 
     // Construct the Qt application (SingleApplication with allowSecondary = true, exclude app path to avoid conflicts)
-    new (mQtApplication) SingleApplication(aArgumentCount, aArguments, true, SingleApplication::Mode::ExcludeAppPath);
+    new (mQtApplication) SingleApplication(aArgumentCount, aArguments, true, SingleApplication::Mode::ExcludeAppPath, 1000, userData);
 
     QFileInfo fileInfo(mQtApplication->applicationFilePath());
 
