@@ -20,7 +20,7 @@
 // Constants for CPU speed detection
 namespace
 {
-    const unsigned DefaultCpuSpeedMHz = 2000; // 2 GHz fallback
+    const unsigned DefaultCpuSpeedMHz = 2000;        // 2 GHz fallback
     const unsigned MinReasonableCpuSpeedMHz = 100;   // 100 MHz minimum
     const unsigned MaxReasonableCpuSpeedMHz = 10000; // 10 GHz maximum
 } // namespace
@@ -51,8 +51,7 @@ unsigned CPUSpeed()
         qint64 now, end;
         qint64 counter;
 
-        if (QueryPerformanceFrequency((PLARGE_INTEGER)&frequency) &&
-            QueryPerformanceCounter((PLARGE_INTEGER)&end))
+        if (QueryPerformanceFrequency((PLARGE_INTEGER)&frequency) && QueryPerformanceCounter((PLARGE_INTEGER)&end))
         {
             end += frequency;
             counter = rdtsc();

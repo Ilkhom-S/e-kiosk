@@ -219,11 +219,12 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments)
         }
 
         QString workingDir = BasicApplication::getInstance()->getWorkingDirectory();
-        
+
         // Validate working directory
         if (!QDir(workingDir).exists())
         {
-            LOG(getLog(), LogLevel::Error, QString("Cannot start service: working directory does not exist: %1").arg(workingDir));
+            LOG(getLog(), LogLevel::Error,
+                QString("Cannot start service: working directory does not exist: %1").arg(workingDir));
             return;
         }
 
@@ -246,7 +247,7 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments)
 
         // Attempt to start the process
         bool started = QProcess::startDetached(path, parameters, workingDir);
-        
+
         if (started)
         {
             LOG(getLog(), LogLevel::Normal, QString("Successfully started service process: %1").arg(path));
