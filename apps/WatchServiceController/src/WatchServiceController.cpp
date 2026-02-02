@@ -91,6 +91,29 @@ QIcon WatchServiceController::createTemplateIcon(const QString &path)
 }
 
 //----------------------------------------------------------------------------
+// Helper to get platform-specific executable path
+QString WatchServiceController::getExecutablePath(const QString &baseName) const
+{
+    QString executableName = baseName;
+
+    // Add debug suffix if in debug mode
+#ifdef QT_DEBUG
+    executableName += "d";
+#endif
+
+    // Add platform-specific extension
+#ifdef Q_OS_WIN
+    executableName += ".exe";
+#elif defined(Q_OS_MAC)
+    executableName += ".app";
+#endif
+
+    // Get working directory and construct full path
+    QString workingDir = BasicApplication::getInstance()->getWorkingDirectory();
+    return QDir::cleanPath(QDir::toNativeSeparators(workingDir + QDir::separator() + executableName));
+}
+
+//----------------------------------------------------------------------------
 WatchServiceController::~WatchServiceController()
 {
     // Stop timer to prevent further processing
@@ -195,17 +218,6 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments)
             return;
         }
 
-        // Platform-agnostic executable/app bundle name with debug suffix support
-        QString executableName = "guard";
-#ifdef QT_DEBUG
-        executableName += "d";
-#endif
-#ifdef Q_OS_WIN
-        executableName += ".exe";
-#elif defined(Q_OS_MAC)
-        executableName += ".app";
-#endif
-
         QString workingDir = BasicApplication::getInstance()->getWorkingDirectory();
         
         // Validate working directory
@@ -215,7 +227,8 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments)
             return;
         }
 
-        QString path = QDir::cleanPath(QDir::toNativeSeparators(workingDir + QDir::separator() + executableName));
+        // Get platform-specific executable path
+        QString path = getExecutablePath("guard");
 
         // Validate executable exists
         if (!QFile::exists(path))

@@ -38,6 +38,9 @@ class WatchServiceController : public QObject
     // Helper to create template icons for macOS
     QIcon createTemplateIcon(const QString &path);
 
+    // Helper to get platform-specific executable path
+    QString getExecutablePath(const QString &baseName) const;
+
   private slots:
     // Попытка соединения со сторожевым сервисом.
     void onCheck();
