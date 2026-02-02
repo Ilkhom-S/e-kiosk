@@ -35,6 +35,9 @@ class WatchServiceController : public QObject
   private:
     ILog *getLog();
 
+    // Helper to create template icons for macOS
+    QIcon createTemplateIcon(const QString &path);
+
   private slots:
     // Попытка соединения со сторожевым сервисом.
     void onCheck();
