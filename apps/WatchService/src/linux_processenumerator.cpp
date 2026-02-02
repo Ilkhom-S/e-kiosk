@@ -116,6 +116,33 @@ bool ProcessEnumerator::killInternal(PID aPid, quint32 &aErrorCode) const
     }
 }
 
-//----------------------------------------------------------------------------</content>
-<parameter name = "filePath"> / Users / ilkhom / Projects / Humo / e -
-    kiosk / apps / WatchService / src / linux_processenumerator.cpp
+//----------------------------------------------------------------------------
+// Base class method implementations
+//----------------------------------------------------------------------------
+
+ProcessEnumerator::ProcessEnumerator()
+{
+    enumerate();
+}
+
+//----------------------------------------------------------------------------
+ProcessEnumerator::const_iterator ProcessEnumerator::begin() const
+{
+    return mProcesses.begin();
+}
+
+//----------------------------------------------------------------------------
+ProcessEnumerator::const_iterator ProcessEnumerator::end() const
+{
+    return mProcesses.end();
+}
+
+//----------------------------------------------------------------------------
+bool ProcessEnumerator::kill(PID aPid, quint32 &aErrorCode) const
+{
+    // On Linux, we don't have special handling for explorer-like processes
+    // Just call the internal kill method
+    return killInternal(aPid, aErrorCode);
+}
+
+//----------------------------------------------------------------------------

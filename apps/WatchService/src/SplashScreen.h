@@ -79,6 +79,7 @@ class SplashScreen : public QWidget, protected ILogable
 
     TAreas mAreas;
     TStateList mStates;
+    bool mQuitRequested;
 };
 
 //----------------------------------------------------------------------------

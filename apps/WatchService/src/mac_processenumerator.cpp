@@ -115,3 +115,32 @@ bool ProcessEnumerator::killInternal(PID aPid, quint32 &aErrorCode) const
 }
 
 //----------------------------------------------------------------------------
+// Base class method implementations
+//----------------------------------------------------------------------------
+
+ProcessEnumerator::ProcessEnumerator()
+{
+    enumerate();
+}
+
+//----------------------------------------------------------------------------
+ProcessEnumerator::const_iterator ProcessEnumerator::begin() const
+{
+    return mProcesses.begin();
+}
+
+//----------------------------------------------------------------------------
+ProcessEnumerator::const_iterator ProcessEnumerator::end() const
+{
+    return mProcesses.end();
+}
+
+//----------------------------------------------------------------------------
+bool ProcessEnumerator::kill(PID aPid, quint32 &aErrorCode) const
+{
+    // On macOS, we don't have special handling for explorer-like processes
+    // Just call the internal kill method
+    return killInternal(aPid, aErrorCode);
+}
+
+//----------------------------------------------------------------------------

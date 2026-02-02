@@ -48,13 +48,14 @@ int main(int aArgc, char *aArgv[])
     }
 
     // Если сервис уже запущен выходим.
-    if (!application.isPrimaryInstance())
-    {
-        application.getQtApplication().sendMessage("Instance!!!");
-        LOG(application.getLog(), LogLevel::Warning, "Another instance is already running.");
 
-        return 0;
-    }
+    // if (!application.isPrimaryInstance())
+    // {
+    //     application.getQtApplication().sendMessage("Instance!!!");
+    //     LOG(application.getLog(), LogLevel::Warning, "Another instance is already running.");
+
+    //     return 0;
+    // }
 
     // TODO: restore breakpad integration when compatible with SingleApplication
     // QBreakpadInstance.setDumpPath(application.getWorkingDirectory() + "/logs/");

@@ -48,6 +48,8 @@ SplashScreen::SplashScreen(const QString &aLog, QWidget *aParent)
 #else
       QWidget(aParent, Qt::WindowStaysOnTopHint)
 #endif
+      ,
+      mQuitRequested(false)
 {
     ui.setupUi(this);
 
@@ -59,6 +61,15 @@ SplashScreen::SplashScreen(const QString &aLog, QWidget *aParent)
     QTimer::singleShot(0, this, &SplashScreen::onInit);
 
     installEventFilter(this);
+
+    // Connect to aboutToQuit signal to know when application quit is requested
+    // Moved to onInit to avoid premature quit detection during startup
+    // connect(qApp, &QApplication::aboutToQuit, this,
+    //         [this]()
+    //         {
+    //             toLog(LogLevel::Normal, "aboutToQuit signal received - setting mQuitRequested to true");
+    //             mQuitRequested = true;
+    //         });
 }
 
 //----------------------------------------------------------------------------
@@ -71,18 +82,39 @@ SplashScreen::~SplashScreen()
 // Инициализация экрана заставки
 void SplashScreen::onInit()
 {
+    toLog(LogLevel::Normal, "SplashScreen onInit called");
+
+    // Connect to aboutToQuit signal after initialization to avoid premature quit detection
+    connect(qApp, &QApplication::aboutToQuit, this,
+            [this]()
+            {
+                toLog(LogLevel::Normal, "aboutToQuit signal received - setting mQuitRequested to true");
+                mQuitRequested = true;
+            });
+
+    toLog(LogLevel::Normal, "SplashScreen onInit completed");
 }
 
 //----------------------------------------------------------------------------
 // Обработка события закрытия окна
 void SplashScreen::closeEvent(QCloseEvent *aEvent)
 {
-    toLog(LogLevel::Normal, "Close splash screen by event.");
+    toLog(LogLevel::Normal, QString("Close splash screen by event. mQuitRequested=%1").arg(mQuitRequested));
 
-    aEvent->ignore();
-    showMinimized();
-
-    emit hidden();
+    // If quit is requested (e.g., from application menu), allow the window to close
+    if (mQuitRequested)
+    {
+        aEvent->accept();
+        toLog(LogLevel::Normal, "Quit requested - accepting close event.");
+    }
+    else
+    {
+        // Otherwise, just minimize the window (don't close it)
+        aEvent->ignore();
+        showMinimized();
+        emit hidden();
+        toLog(LogLevel::Normal, "Close ignored - minimizing window instead.");
+    }
 }
 
 //----------------------------------------------------------------------------
