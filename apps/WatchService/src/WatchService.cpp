@@ -30,6 +30,9 @@
 #include "processenumerator.h"
 #endif
 
+// STL
+// (No STL includes needed)
+
 //----------------------------------------------------------------------------
 namespace CWatchService
 {
@@ -94,17 +97,14 @@ WatchService::WatchService()
     : ILogable(BasicApplication::getInstance()->getLog()->getName()), mSplashScreen(getLog()->getName()),
       mCloseAction(ECloseAction::None), mScreenProtectionEnabled(true), mFirstRun(true), mInitializeFailedCounter(0)
 {
-    connect(this, SIGNAL(screenUnprotected()), &mSplashScreen, SLOT(showFullScreen()));
-    connect(this, SIGNAL(screenProtected()), &mSplashScreen, SLOT(hide()));
-
-    connect(this, SIGNAL(stateChanged(QString, QString)), &mSplashScreen, SLOT(setState(QString, QString)));
-    connect(this, SIGNAL(stateReset(QString)), &mSplashScreen, SLOT(removeStates(QString)));
-
-    connect(&mSplashScreen, SIGNAL(clicked(int)), SLOT(onScreenActivity(int)));
-
-    connect(&mTimer, SIGNAL(timeout()), SLOT(onCheckModules()));
-
-    connect(&mScreenActivityTimer, SIGNAL(timeout()), this, SLOT(onScreenActivityTimeout()));
+    // Use new Qt5/6 compatible signal/slot syntax
+    connect(this, &WatchService::screenUnprotected, &mSplashScreen, &SplashScreen::showFullScreen);
+    connect(this, &WatchService::screenProtected, &mSplashScreen, &SplashScreen::hide);
+    connect(this, &WatchService::stateChanged, &mSplashScreen, &SplashScreen::setState);
+    connect(this, &WatchService::stateReset, &mSplashScreen, &SplashScreen::removeStates);
+    connect(&mSplashScreen, &SplashScreen::clicked, this, &WatchService::onScreenActivity);
+    connect(&mTimer, &QTimer::timeout, this, &WatchService::onCheckModules);
+    connect(&mScreenActivityTimer, &QTimer::timeout, this, &WatchService::onScreenActivityTimeout);
 
     initialize();
 }
@@ -188,7 +188,10 @@ void WatchService::initialize()
         }
         else
         {
-            QTimer::singleShot(CWatchService::ReInitializeTimeout, this, SLOT(reinitialize()));
+            // Use new Qt5/6 compatible signal/slot syntax with lambda
+            QTimer::singleShot(CWatchService::ReInitializeTimeout, this, [this]() {
+                reinitialize();
+            });
 
             mInitializeFailedCounter++;
         }
@@ -201,13 +204,13 @@ void WatchService::initialize()
 
         // Запускаем таймер проверки использования памяти
         mCheckMemoryTimer = QSharedPointer<QTimer>(new QTimer(this));
-        connect(mCheckMemoryTimer.data(), SIGNAL(timeout()), this, SLOT(checkProcessMemory()));
+        connect(mCheckMemoryTimer.data(), &QTimer::timeout, this, &WatchService::checkProcessMemory);
         mCheckMemoryTimer->start(CWatchService::CheckMemoryUsageTimeout * 60 * 1000);
 
         mFirstRun = false;
 
         mTimeChangeListener = QSharedPointer<TimeChangeListener>(new TimeChangeListener(this));
-        connect(mTimeChangeListener.data(), SIGNAL(timeChanged(qint64)), this, SLOT(onTimeChanged(qint64)));
+        connect(mTimeChangeListener.data(), &TimeChangeListener::timeChanged, this, &WatchService::onTimeChanged);
 
         // Сбрасываем
         mRestartParameters.clear();
@@ -216,7 +219,7 @@ void WatchService::initialize()
 		if (!mForbiddenModules.isEmpty())
 		{
 			mCheckForbiddenTimer = QSharedPointer<QTimer>(new QTimer(this));
-			connect(mCheckForbiddenTimer.data(), SIGNAL(timeout()), this, SLOT(checkForbiddenModules()));
+			connect(mCheckForbiddenTimer.data(), &QTimer::timeout, this, &WatchService::checkForbiddenModules);
 			mCheckForbiddenTimer->start(mCheckForbiddenTimeout);
 
 			QMetaObject::invokeMethod(this, "checkForbiddenModules", Qt::QueuedConnection);
@@ -224,7 +227,7 @@ void WatchService::initialize()
 #endif
     }
 
-    connect(qApp, SIGNAL(commitDataRequest(QSessionManager &)), this, SLOT(closeBySystemRequest(QSessionManager &)),
+    connect(qApp, &QApplication::commitDataRequest, this, &WatchService::closeBySystemRequest,
             Qt::DirectConnection);
 }
 
@@ -458,7 +461,9 @@ void WatchService::messageReceived(const QByteArray &aMessage)
                     toLog(LogLevel::Normal, QString("Module %1 is auto started. Re run it after 10 min.").arg(module));
 
                     // принудительная остановка модуля с признаком авто запуска возможна только на 10 минут
-                    QTimer::singleShot(10 * 60 * 1000, this, SLOT(checkAutoStartModules()));
+                    QTimer::singleShot(10 * 60 * 1000, this, [this]() {
+                        checkAutoStartModules();
+                    });
                 }
 
                 onCheckModules();
@@ -631,8 +636,8 @@ void WatchService::onCheckModules()
             if (!(it.value().process))
             {
                 it.value().process = new QProcess(this);
-                connect(it.value().process, SIGNAL(finished(int, QProcess::ExitStatus)),
-                        SLOT(onModuleFinished(int, QProcess::ExitStatus)));
+                connect(it.value().process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+                        this, &WatchService::onModuleFinished);
             }
 
             if (it.value().process->state() == QProcess::NotRunning)
@@ -876,7 +881,9 @@ void WatchService::doCloseModules(QString aSender)
 
             if (canClose)
             {
-                QTimer::singleShot(1000, this, SLOT(closeModules()));
+                QTimer::singleShot(1000, this, [this]() {
+                    closeModules();
+                });
 
                 canClose = false;
             }
@@ -1058,7 +1065,9 @@ void WatchService::closeAction()
     {
         toLog(LogLevel::Normal, "Setting 5 min timeout to run modules again.");
 
-        QTimer::singleShot(5 * 60 * 1000, this, SLOT(reinitialize()));
+        QTimer::singleShot(5 * 60 * 1000, this, [this]() {
+            reinitialize();
+        });
     }
     else if (mCloseAction == ECloseAction::Restart)
     {
@@ -1130,7 +1139,9 @@ void WatchService::startModule(SModule &aModule)
     SleepHelper::msleep(aModule.afterStartDelay);
 
     // Заполняем структуру использования памяти после старта процесса
-    QTimer::singleShot(2 * 60 * 1000, this, SLOT(checkProcessMemory()));
+    QTimer::singleShot(2 * 60 * 1000, this, [this]() {
+        checkProcessMemory();
+    });
 }
 
 //----------------------------------------------------------------------------
