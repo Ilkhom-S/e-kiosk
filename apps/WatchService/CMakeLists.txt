@@ -51,10 +51,6 @@ if(APPLE)
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/Info.plist"
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_ICON_FILE AppIcon
-        MACOSX_BUNDLE_GUI_IDENTIFIER "com.humo.guard"
-        MACOSX_BUNDLE_BUNDLE_NAME "Guard"
-        MACOSX_BUNDLE_BUNDLE_VERSION "1.0"
-        MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0"
     )
     target_sources(guard PRIVATE src/icons/guard-app-icon.icns)
 
