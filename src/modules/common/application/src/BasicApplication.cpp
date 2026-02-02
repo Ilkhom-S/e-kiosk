@@ -353,14 +353,19 @@ BasicQtApplication<SingleApplication>::BasicQtApplication(const QString &aName, 
                                                           int &aArgumentCount, char **aArguments)
     : BasicApplication(aName, aVersion, aArgumentCount, aArguments,
                        false), // Don't create SingleApplication in BasicApplication
-      mQtApplication(
-          aArgumentCount, aArguments, true,
-          SingleApplication::Mode::ExcludeAppPath) // allowSecondary = true, exclude app path to avoid conflicts
+      mQtApplication(nullptr)
 {
-    mQtApplication.setApplicationName(aName);
-    mQtApplication.setApplicationVersion(aVersion);
+    // Set application name before creating SingleApplication so it can generate the correct shared memory key
+    QCoreApplication::setApplicationName(aName);
+    QCoreApplication::setApplicationVersion(aVersion);
 
-    QFileInfo fileInfo(mQtApplication.applicationFilePath());
+    // Allocate memory for the Qt application
+    mQtApplication = static_cast<SingleApplication *>(::operator new(sizeof(SingleApplication)));
+
+    // Construct the Qt application (SingleApplication with allowSecondary = true, exclude app path to avoid conflicts)
+    new (mQtApplication) SingleApplication(aArgumentCount, aArguments, true, SingleApplication::Mode::ExcludeAppPath);
+
+    QFileInfo fileInfo(mQtApplication->applicationFilePath());
 
     // Now that Qt application is created, write the log header
     writeLogHeader();
