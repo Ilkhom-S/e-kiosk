@@ -205,10 +205,10 @@ void WatchServiceController::onCheck()
     }
     else
     {
-        // Create badged icon for stopped state using platform-agnostic approach
-        QIcon badgedIcon =
-            getBadgedTrayIcon(":/icons/tray-monogram-stoppedTemplate.png", true); // true = has notification (red dot)
-        mIcon.setIcon(badgedIcon);
+        // Disconnected state: show slashed H icon to indicate stopped state
+        QIcon stoppedIcon =
+            getBadgedTrayIcon(":/icons/tray-monogram-stoppedTemplate.png", false); // false = no additional badge needed
+        mIcon.setIcon(stoppedIcon);
         foreach (auto action, mStartServiceActions)
         {
             action->setEnabled(true);
