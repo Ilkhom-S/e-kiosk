@@ -5,8 +5,18 @@ file(GLOB WATCHSERVICE_SOURCES
     src/*.h
 )
 
-if(NOT WIN32)
-    list(REMOVE_ITEM WATCHSERVICE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/win_processenumerator.cpp)
+# Remove platform-specific process enumerator implementations
+list(REMOVE_ITEM WATCHSERVICE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/win_processenumerator.cpp)
+list(REMOVE_ITEM WATCHSERVICE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/linux_processenumerator.cpp)
+list(REMOVE_ITEM WATCHSERVICE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/mac_processenumerator.cpp)
+
+# Add the appropriate platform-specific implementation
+if(WIN32)
+    list(APPEND WATCHSERVICE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/win_processenumerator.cpp)
+elseif(APPLE)
+    list(APPEND WATCHSERVICE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/mac_processenumerator.cpp)
+else()
+    list(APPEND WATCHSERVICE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/linux_processenumerator.cpp)
 endif()
 
 file(GLOB WATCHSERVICE_UI_FILES
