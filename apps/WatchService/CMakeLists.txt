@@ -49,7 +49,7 @@ if(APPLE)
     # Configure as GUI app with icon
     set_target_properties(guard PROPERTIES
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_ICON_FILE guard-app-icon.icns
+        MACOSX_BUNDLE_ICON_FILE AppIcon
     )
     target_sources(guard PRIVATE src/icons/guard-app-icon.icns)
 
