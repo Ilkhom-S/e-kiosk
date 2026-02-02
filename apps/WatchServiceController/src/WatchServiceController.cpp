@@ -192,13 +192,15 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments)
 
     if (!mClient->isConnected())
     {
-        // Platform-agnostic executable name with debug suffix support
+        // Platform-agnostic executable/app bundle name with debug suffix support
         QString executableName = "guard";
 #ifdef QT_DEBUG
         executableName += "d";
 #endif
 #ifdef Q_OS_WIN
         executableName += ".exe";
+#elif defined(Q_OS_MAC)
+        executableName += ".app";
 #endif
 
         QString path = QDir::cleanPath(QDir::toNativeSeparators(BasicApplication::getInstance()->getWorkingDirectory() +
