@@ -1,5 +1,15 @@
 /* @file Реализация сторожевого сервиса как обычного приложения. */
 
+// STL
+#include <cstdlib>
+#include <iostream>
+
+// Qt
+#include <Common/QtHeadersBegin.h>
+#include <QtCore/QTranslator>
+#include <QtWidgets/QApplication>
+#include <Common/QtHeadersEnd.h>
+
 // Modules
 #include <Common/BasicApplication.h>
 #include <Common/Version.h>
@@ -25,6 +35,16 @@ void qtMessageHandler(QtMsgType /*aType*/, const QMessageLogContext & /*aContext
 int main(int aArgc, char *aArgv[])
 {
     BasicQtApplication<SingleApplication> application(CWatchService::Name, Humo::getVersion(), aArgc, aArgv);
+
+    // Load translations
+    QTranslator translator;
+    QString locale = QLocale::system().name();
+    QString qmFile = QString("watchservice_%1.qm").arg(locale);
+    QString qmPath = QDir(QApplication::applicationDirPath()).absoluteFilePath("locale/" + qmFile);
+    if (translator.load(qmPath))
+    {
+        QApplication::installTranslator(&translator);
+    }
 
     // Если сервис уже запущен выходим.
     if (!application.isPrimaryInstance())
