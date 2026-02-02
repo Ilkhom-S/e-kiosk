@@ -178,7 +178,7 @@ class WatchService : public QObject, protected ILogable
     /// Проверка используемой памяти процессом
     void checkProcessMemory();
 
-    /// Запсутить все autoStart модули
+    /// Запустить все autoStart модули
     void checkAutoStartModules();
 
   private:
@@ -264,7 +264,7 @@ private:
     /// Параметры при перезапуске
     QString mRestartParameters;
 
-    QSharedPointer<TimeChangeListener> mTimeChangeListner;
+    QSharedPointer<TimeChangeListener> mTimeChangeListener;
     QSharedPointer<QTimer> mCheckMemoryTimer;
 
     int mInitializeFailedCounter;

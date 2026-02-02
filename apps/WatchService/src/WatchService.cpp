@@ -39,7 +39,7 @@ namespace CWatchService
 
     const int ReInitializeTimeout = 7 * 1000;
     const int ReInitializeFailMaxCount = 85;
-    const int ContunueExecutionExitCode = 54321;
+    const int ContinueExecutionExitCode = 54321;
 } // namespace CWatchService
 
 //----------------------------------------------------------------------------
@@ -206,8 +206,8 @@ void WatchService::initialize()
 
         mFirstRun = false;
 
-        mTimeChangeListner = QSharedPointer<TimeChangeListener>(new TimeChangeListener(this));
-        connect(mTimeChangeListner.data(), SIGNAL(timeChanged(qint64)), this, SLOT(onTimeChanged(qint64)));
+        mTimeChangeListener = QSharedPointer<TimeChangeListener>(new TimeChangeListener(this));
+        connect(mTimeChangeListener.data(), SIGNAL(timeChanged(qint64)), this, SLOT(onTimeChanged(qint64)));
 
         // Сбрасываем
         mRestartParameters.clear();
@@ -259,7 +259,7 @@ void WatchService::reinitialize()
 
     mTimer.stop();
     mCheckMemoryTimer.clear();
-    mTimeChangeListner.clear();
+    mTimeChangeListener.clear();
 
     if (mServer)
     {
@@ -455,9 +455,9 @@ void WatchService::messageReceived(const QByteArray &aMessage)
 
                 if (it.value().autoStart)
                 {
-                    toLog(LogLevel::Normal, QString("Module %1 is autostarted. Re run it after 10 min.").arg(module));
+                    toLog(LogLevel::Normal, QString("Module %1 is auto started. Re run it after 10 min.").arg(module));
 
-                    // принудительная остановка модуля с признаком автозапуска возможна только на 10 минут
+                    // принудительная остановка модуля с признаком авто запуска возможна только на 10 минут
                     QTimer::singleShot(10 * 60 * 1000, this, SLOT(checkAutoStartModules()));
                 }
 
@@ -770,7 +770,7 @@ void WatchService::onModuleFinished(int aExitCode, QProcess::ExitStatus aExitSta
                                              .arg(aExitStatus == QProcess::CrashExit ? "crashed" : "exited")
                                              .arg(aExitCode));
 
-                if (aExitCode != CWatchService::ContunueExecutionExitCode)
+                if (aExitCode != CWatchService::ContinueExecutionExitCode)
                 {
                     // Уведомляем о закрытии модуля
                     mServer->sendMessage(QString("type=%1;sender=%2")
