@@ -143,7 +143,6 @@ ctest -R BasicApplication
 - Adopted from TerminalClient repo with Qt5/Qt6 compatibility
 - BasicQtApplication template added for Qt app management
 - Configuration keys standardized (some legacy keys may differ)
-- **2026 Refactoring**: Template implementations moved to `.tpp` file, member variables normalized to camelCase, unused `isPrimaryInstance()` method removed, single-instance handling delegated to SingleApplication library
 
 ---
 
