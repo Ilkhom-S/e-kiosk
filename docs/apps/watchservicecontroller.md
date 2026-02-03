@@ -8,6 +8,7 @@ WatchServiceController provides a **system tray interface** for monitoring and c
 
 ## Purpose
 
+- **Service Management**: Start and stop the WatchService (guard) daemon
 - **Status Monitoring**: Real-time display of WatchService and module status
 - **Manual Control**: Start, stop, and restart applications manually
 - **Log Access**: Quick access to application logs and error messages
@@ -20,6 +21,7 @@ WatchServiceController provides a **system tray interface** for monitoring and c
 
 The application provides a comprehensive system tray menu with:
 
+- **Service Control**: Start/stop the WatchService daemon
 - **Status Indicators**: Visual status of WatchService and monitored applications
 - **Application Control**: Start/stop/restart individual modules
 - **Log Viewer**: Access to application logs and error messages
@@ -63,6 +65,10 @@ NotificationTimeout=5000
 ServiceHost=localhost
 ServicePort=8080
 ConnectionTimeout=30000
+
+[common]
+; Path to WatchService executable
+guard_executable_path=guard${EXE_SUFFIX}
 ```
 
 ### Configuration Parameters
@@ -78,6 +84,10 @@ ConnectionTimeout=30000
 | WatchService | ServiceHost         | string | localhost | WatchService host              |
 | WatchService | ServicePort         | int    | 8080      | WatchService port              |
 | WatchService | ConnectionTimeout   | int    | 30000     | Connection timeout (ms)        |
+
+**Additional Configuration:**
+
+- **`common/guard_executable_path`**: Path to WatchService executable (default: `guard${EXE_SUFFIX}`)
 
 ## Installation and Startup
 
@@ -113,12 +123,14 @@ ConnectionTimeout=30000
 ### Normal Operation
 
 1. **Launch**: Application starts and appears in system tray
-2. **Connection**: Automatically connects to WatchService
-3. **Monitoring**: Displays real-time status of all modules
-4. **Interaction**: Right-click tray icon for menu access
+2. **Service Control**: Can start/stop the WatchService daemon if needed
+3. **Connection**: Automatically connects to WatchService when running
+4. **Monitoring**: Displays real-time status of all modules
+5. **Interaction**: Right-click tray icon for menu access
 
 ### Tray Menu Options
 
+- **Start Service**: Launch the WatchService (guard) daemon
 - **Start Application**: Launch specific module
 - **Stop Application**: Stop specific module
 - **Restart Application**: Restart specific module
