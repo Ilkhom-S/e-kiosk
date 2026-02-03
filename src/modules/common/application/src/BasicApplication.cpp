@@ -96,12 +96,12 @@ BasicApplication::BasicApplication(const QString &aName, const QString &aVersion
 #endif
 
     // Устанавливаем рабочий каталог
-    mWorkingDirectory = info.absolutePath();
+    mWorkingDirectory = basePath;
     if (mSettings->contains("common/working_directory"))
     {
         QString directory = mSettings->value("common/working_directory").toString();
         mWorkingDirectory = QDir::toNativeSeparators(QDir::cleanPath(
-            (QDir::isAbsolutePath(directory) ? "" : (info.absolutePath() + QDir::separator())) + directory));
+            (QDir::isAbsolutePath(directory) ? "" : (basePath + QDir::separator())) + directory));
     }
 
     // Register singleton instance pointer
