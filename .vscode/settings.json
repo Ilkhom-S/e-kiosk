@@ -42,6 +42,11 @@
   "cmake.configureArgs": [],
   "cmake.buildArgs": [],
   "cmake.ctestArgs": [],
+  "cmake.debugConfig": {
+    "type": "cppdbg",
+    "MIMode": "lldb",
+    "miDebuggerPath": "/Users/ilkhom/.vscode/extensions/ms-vscode.cpptools-1.30.3-darwin-arm64/debugAdapters/lldb-mi/bin/lldb-mi"
+  },
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
   "chat.tools.terminal.autoApprove": {
     "clang++": true

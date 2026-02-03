@@ -39,6 +39,31 @@ For macOS development and debugging:
 - **App Bundles**: GUI applications are built as `.app` bundles. Run the executable at `Contents/MacOS/<appname>` inside the bundle.
 - **Debugging**: Use LLDB or VS Code with CodeLLDB extension for debugging macOS applications.
 
+### LLDB Debugging Configuration
+
+Due to a known issue with CMake Tools on macOS (see [vscode-cmake-tools#3908](https://github.com/microsoft/vscode-cmake-tools/issues/3908)), the system LLDB does not support the Machine Interface (MI) mode required by VS Code's debugger. To enable debugging:
+
+1. **Configure CMake Tools**: Add the following to `.vscode/settings.json`:
+
+   ```json
+   "cmake.debugConfig": {
+     "type": "cppdbg",
+     "MIMode": "lldb",
+     "miDebuggerPath": "/Users/<username>/.vscode/extensions/ms-vscode.cpptools-<version>-darwin-arm64/debugAdapters/lldb-mi/bin/lldb-mi"
+   }
+   ```
+
+   Replace `<username>` with your macOS username and `<version>` with your C++ extension version (e.g., `1.30.3`).
+
+2. **Alternative**: If the above doesn't work, replace the system LLDB binary (not recommended):
+
+   ```bash
+   sudo mv /Library/Developer/CommandLineTools/usr/bin/lldb /Library/Developer/CommandLineTools/usr/bin/lldb.original
+   sudo ln -s /Users/<username>/.vscode/extensions/ms-vscode.cpptools-<version>-darwin-arm64/debugAdapters/lldb-mi/bin/lldb-mi /Library/Developer/CommandLineTools/usr/bin/lldb
+   ```
+
+   To restore: `sudo mv /Library/Developer/CommandLineTools/usr/bin/lldb.original /Library/Developer/CommandLineTools/usr/bin/lldb`
+
 ## macOS Icon Guidelines
 
 ### Template Icons for Theme Support

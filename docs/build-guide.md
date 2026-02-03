@@ -140,6 +140,18 @@ If you encounter `__cxa_throw` exceptions from the Security framework during deb
 ### Debugging macOS Apps
 
 - Use LLDB for debugging: `lldb path/to/executable`
+- **VS Code CMake Tools LLDB Issue**: Due to [vscode-cmake-tools#3908](https://github.com/microsoft/vscode-cmake-tools/issues/3908), CMake Tools on macOS uses the system LLDB which doesn't support the Machine Interface (MI) mode. Configure VS Code settings to use the C++ extension's LLDB-MI:
+
+  ```json
+  "cmake.debugConfig": {
+    "type": "cppdbg",
+    "MIMode": "lldb",
+    "miDebuggerPath": "/Users/<username>/.vscode/extensions/ms-vscode.cpptools-<version>-darwin-arm64/debugAdapters/lldb-mi/bin/lldb-mi"
+  }
+  ```
+
+  Replace `<username>` and `<version>` with your actual values (e.g., `ilkhom` and `1.30.3`).
+
 - Common issues:
   - **Code signing validation errors**: Ensure ad-hoc signing is applied and Qt attributes are set properly (see Code Signing section above)
   - Bundle structure: GUI apps must be built as MACOSX_BUNDLE
