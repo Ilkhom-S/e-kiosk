@@ -228,15 +228,8 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments)
             return;
         }
 
-        // Get guard executable path from configuration
-        QString path =
-            BasicApplication::getInstance()->getSettings().value("common/guard_executable_path", "guard").toString();
-
-        // Resolve relative paths to working directory
-        if (!QDir::isAbsolutePath(path))
-        {
-            path = QDir::cleanPath(QDir(workingDir).absoluteFilePath(path));
-        }
+        // Get platform-specific executable path
+        QString path = getExecutablePath("guard");
 
         // Validate executable exists
         if (!QFile::exists(path))

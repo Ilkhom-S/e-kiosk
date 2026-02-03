@@ -17,10 +17,6 @@ ad_path = ad
 ; Рабочий каталог для логов и временных файлов
 working_directory = @WORKING_DIRECTORY@
 
-; Путь к исполняемому файлу службы охраны (WatchService/guard)
-; Относительно рабочей директории или абсолютный путь
-guard_executable_path = guard${EXE_SUFFIX}
-
 ; Включить автономный режим (true/false)
 ;standalone = true
 

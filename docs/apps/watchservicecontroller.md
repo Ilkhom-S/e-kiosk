@@ -65,10 +65,6 @@ NotificationTimeout=5000
 ServiceHost=localhost
 ServicePort=8080
 ConnectionTimeout=30000
-
-[common]
-; Path to WatchService executable
-guard_executable_path=guard${EXE_SUFFIX}
 ```
 
 ### Configuration Parameters
@@ -84,10 +80,6 @@ guard_executable_path=guard${EXE_SUFFIX}
 | WatchService | ServiceHost         | string | localhost | WatchService host              |
 | WatchService | ServicePort         | int    | 8080      | WatchService port              |
 | WatchService | ConnectionTimeout   | int    | 30000     | Connection timeout (ms)        |
-
-**Additional Configuration:**
-
-- **`common/guard_executable_path`**: Path to WatchService executable (default: `guard${EXE_SUFFIX}`)
 
 ## Installation and Startup
 
