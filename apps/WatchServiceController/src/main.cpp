@@ -25,15 +25,21 @@
 
 int main(int aArgc, char *aArgv[])
 {
+
+    BasicQtApplication<SingleApplication> application("WatchServiceController", Humo::getVersion(), aArgc, aArgv);
+
+#ifndef Q_OS_MACOS
     // Check for single instance BEFORE creating QApplication
-    SingleApplication single_instance_guard(aArgc, aArgv, true);
-    if (single_instance_guard.isSecondary())
+    if (application.getQtApplication().isSecondary())
     {
-        std::cout << "Another instance is already running." << std::endl;
+        // single_instance_guard.sendMessage(application.getQtApplication().arguments().join(' ').toUtf8());
+        qDebug() << "App already running.";
+        qDebug() << "Primary instance PID: " << application.getQtApplication().primaryPid();
+        qDebug() << "Primary instance user: " << application.getQtApplication().primaryUser();
+        LOG(application.getLog(), LogLevel::Warning, "Another instance is already running.");
         return 0;
     }
-
-    BasicQtApplication<QApplication> application("WatchServiceController", Humo::getVersion(), aArgc, aArgv);
+#endif
 
     // Load translations
     QTranslator translator;
