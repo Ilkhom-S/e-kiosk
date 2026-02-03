@@ -110,6 +110,8 @@ test=false
 
 **Config file:** `user.ini`, `watchservice.ini`
 
+See [WatchService Application Documentation](../apps/watchservice.md) for complete configuration details.
+
 - `guard/taboo_enabled`: Enable forbidden app monitoring (bool)
 - `applications`: List of forbidden applications (string list)
 - `check_timeout`: Timeout for forbidden app check (int, ms)

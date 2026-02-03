@@ -1,47 +1,80 @@
 # WatchService (guard)
 
-Process monitoring Windows service.
+**🔧 Developer Documentation** - Technical details for building and developing the WatchService application.
+
+**📖 For administrators and operators**: See [User Guide](../../docs/apps/watchservice.md) for configuration and operational guidance.
 
 ## Purpose
 
-Runs as a Windows service to:
+Cross-platform process supervisor and kiosk management daemon that:
 
-- Monitor PaymentProcessor process
-- Restart on crash
-- Report status to server
-- Provide health endpoints
+- Monitors configured application modules
+- Automatically restarts failed processes
+- Manages screen protection for unattended kiosks
+- Provides health monitoring via message queues
+- Ensures single-instance operation
 
 ## Building
 
+### Prerequisites
+
+- Qt 5.15+ or Qt 6.x
+- CMake 3.16+
+- C++11 compatible compiler
+
+### Build Commands
+
 ```bash
-cmake --build . --target guard --config Release
+# Configure (macOS example)
+cmake -S . -B build/macos-qt6 -DCMAKE_PREFIX_PATH=/usr/local/opt/qt6
+
+# Build
+cmake --build build/macos-qt6 --target guard
+
+# Run
+./build/macos-qt6/bin/guard.app/Contents/MacOS/guard
 ```
+
+### Platform-Specific Notes
+
+- **macOS**: Uses Qt6 from Homebrew (`/usr/local/opt/qt6`)
+- **Linux**: Uses system Qt6 packages
+- **Windows**: Uses MSVC with Qt6
 
 ## Installation
 
-```powershell
-# Install as Windows service
-WatchService.exe --install
+WatchService runs as a regular Qt application. No special installation is required - it can be started directly or integrated into system startup scripts.
 
-# Start service
-net start TerminalWatchService
+### Startup Methods
 
-# Stop service
-net stop TerminalWatchService
+**Manual startup:**
 
-# Uninstall service
-WatchService.exe --uninstall
+```bash
+# macOS
+./build/macos-qt6/bin/guard.app/Contents/MacOS/guard
+
+# Linux
+./build/linux-qt6/bin/guard
+
+# Windows
+./build/windows-qt6/bin/guard.exe
 ```
+
+**System integration:**
+
+- Add to system startup scripts
+- Use launchd (macOS), systemd (Linux), or Task Scheduler (Windows)
+- Configure as a background service using platform-specific tools
 
 ## Command Line Options
 
-| Option        | Description         |
-| ------------- | ------------------- |
-| `--install`   | Install as service  |
-| `--uninstall` | Remove service      |
-| `--start`     | Start service       |
-| `--stop`      | Stop service        |
-| `--console`   | Run in console mode |
+| Option                | Description                                  |
+| --------------------- | -------------------------------------------- |
+| `--config <file>`     | Specify configuration file path              |
+| `--log-level <level>` | Set logging level (debug, info, warn, error) |
+| `--daemon`            | Run in background (daemon mode)              |
+| `--help`              | Show help information                        |
+| `--version`           | Show version information                     |
 
 ## Configuration
 
@@ -65,25 +98,54 @@ Interval=60000
 
 ## Architecture
 
+WatchService is built using Qt's SingleApplication framework to ensure only one instance runs at a time. It uses Qt's QProcess for managing child processes and QTimer for health monitoring.
+
+### Key Components
+
+- **SingleApplication**: Prevents multiple instances using Qt's cross-platform single instance detection
+- **ProcessManager**: Manages child processes using QProcess with proper signal handling
+- **HealthMonitor**: Monitors process health using QTimer and configurable timeouts
+- **MessageQueue**: Inter-process communication using Qt signals and slots
+- **Configuration**: INI-based configuration with module definitions and priorities
+
+### Process Hierarchy
+
+```text
+WatchService (Qt SingleApplication)
+├── ProcessManager
+│   ├── Child Process 1 (QProcess)
+│   ├── Child Process 2 (QProcess)
+│   └── ...
+├── HealthMonitor (QTimer)
+└── MessageQueue (Qt signals/slots)
+```
+
 ```mermaid
 flowchart TB
-    ServiceManager["Windows Service Manager"]
+    QtApp["Qt SingleApplication"]
 
-    ServiceManager --> WatchService
+    QtApp --> WatchService
 
     subgraph WatchService["WatchService"]
         subgraph Monitors["Monitoring"]
-            ProcessMonitor["ProcessMonitor<br/>- Watch PID<br/>- Restart<br/>- Count"]
-            HealthCheck["HealthCheck (HTTP)<br/>- /health<br/>- /status"]
+            ProcessManager["ProcessManager<br/>- QProcess<br/>- Signal handling<br/>- Restart logic"]
+            HealthMonitor["HealthMonitor<br/>- QTimer<br/>- Timeouts<br/>- Health checks"]
         end
-        subgraph Actions["Actions"]
-            Launcher["Launcher<br/>- Start app<br/>- Kill app"]
-            StatusReporter["StatusReporter<br/>- Send to server<br/>- Heartbeat"]
+
+        subgraph Communication["Communication"]
+            MessageQueue["MessageQueue<br/>- Qt signals/slots<br/>- IPC<br/>- Status updates"]
         end
-        ProcessMonitor --> Launcher
+
+        subgraph Config["Configuration"]
+            IniConfig["INI Configuration<br/>- Module definitions<br/>- Priorities<br/>- Timeouts"]
+        end
     end
 
-    WatchService --> PaymentProcessor["PaymentProcessor<br/>(client.exe)"]
+    ProcessManager --> ChildProcess1["Child Process 1<br/>(QProcess)"]
+    ProcessManager --> ChildProcess2["Child Process 2<br/>(QProcess)"]
+    HealthMonitor --> ProcessManager
+    MessageQueue --> HealthMonitor
+    IniConfig --> ProcessManager
 ```
 
 ## Health Check API
@@ -106,7 +168,7 @@ WatchService communicates with modules using a text-based message protocol over 
 
 Messages use semicolon-separated key-value pairs:
 
-```
+```text
 sender=SENDER_NAME;target=TARGET_MODULE;type=COMMAND_TYPE;params=PARAMETERS
 ```
 
@@ -157,32 +219,40 @@ sender=watch_service;type=close
 
 ## Key Files
 
-| File                   | Purpose           |
-| ---------------------- | ----------------- |
-| `main.cpp`             | Entry point       |
-| `WatchService.cpp`     | Service logic     |
-| `ProcessMonitor.cpp`   | Process watching  |
-| `ServiceInstaller.cpp` | Install/uninstall |
+| File                 | Purpose                          |
+| -------------------- | -------------------------------- |
+| `main.cpp`           | Qt application entry point       |
+| `WatchService.cpp`   | Main service logic using Qt      |
+| `ProcessManager.cpp` | Process management with QProcess |
+| `HealthMonitor.cpp`  | Health monitoring with QTimer    |
+| `MessageQueue.cpp`   | Inter-process communication      |
 
 ## Dependencies
 
-- `SysUtils` - Windows APIs
-- `NetworkTaskManager` - Reporting
-- `SettingsManager` - Configuration
+- **Qt Core**: SingleApplication, QProcess, QTimer, signals/slots
+- **Common**: BasicApplication, logging infrastructure
+- **NetworkTaskManager**: Health check reporting
+- **SettingsManager**: Configuration management
+- **MessageQueue**: Inter-process communication
 
 ## Platform Support
 
-| Platform | Status | Notes                |
-| -------- | ------ | -------------------- |
-| Windows  | ✅     | Full Windows Service |
-| Linux    | ❌     | TODO: systemd daemon |
-| macOS    | ❌     | TODO: launchd daemon |
+| Platform | Status | Notes                         |
+| -------- | ------ | ----------------------------- |
+| Windows  | ✅     | Qt-based, full cross-platform |
+| Linux    | ✅     | Qt-based, full cross-platform |
+| macOS    | ✅     | Qt-based, full cross-platform |
 
-## Migration TODO
+## Implementation Notes
 
-For Linux/macOS support:
+- Uses Qt SingleApplication for cross-platform single-instance detection
+- QProcess provides platform-independent child process management
+- QTimer handles health monitoring with proper Qt event loop integration
+- Message queues use Qt signals/slots for thread-safe inter-process communication
+- Configuration is INI-based with Qt's QSettings compatibility
 
-1. Create `LinuxDaemon` implementation
-2. Create `MacOSDaemon` implementation
-3. Abstract service registration
-4. Platform-specific process APIs
+## Related Documentation
+
+- **📖 [User Guide](../../docs/apps/watchservice.md)**: Configuration, operation, and troubleshooting
+- **[Configuration Reference](../../docs/configuration-reference.md)**: All configuration options
+- **[Modules Documentation](../../docs/modules/)**: Reusable code components

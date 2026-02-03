@@ -15,19 +15,6 @@
       "preLaunchTask": "CMake: build"
     },
     {
-      "name": "Debug Tray (macOS)",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/macos-qt6/bin/tray.app/Contents/MacOS/tray",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/macos-qt6/bin",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "lldb",
-      "preLaunchTask": "CMake: build"
-    },
-    {
       "name": "Run EKiosk (macOS)",
       "type": "cppdbg",
       "request": "launch",
@@ -41,7 +28,20 @@
       "preLaunchTask": "CMake: build"
     },
     {
-      "name": "Debug WatchService (macOS)",
+      "name": "Debug Tray (CMake)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/macos-qt6/bin/tray.app/Contents/MacOS/tray",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/build/macos-qt6/bin",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "preLaunchTask": "CMake: build"
+    },
+    {
+      "name": "Debug Guard (CMake)",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/macos-qt6/bin/guard.app/Contents/MacOS/guard",
