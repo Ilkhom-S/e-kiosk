@@ -13,7 +13,8 @@ src/modules/common/application/
 │   └── BasicApplication.cpp    # Implementation (public interface in include/Common/BasicApplication.h)
 └── include/
     └── Common/
-        └── BasicApplication.h  # Public interface
+        ├── BasicApplication.h  # Public interface
+        └── BasicApplication.tpp # Template implementations
 ```
 
 **Contributor notes:**

@@ -13,7 +13,6 @@ BasicApplication is a Qt application wrapper that provides configuration loading
 
 int main(int argc, char *argv[]) {
     BasicApplication app("MyApp", "1.0.0", argc, argv);
-    if (!app.isPrimaryInstance()) return 1;
 
     // App is ready with settings loaded, logging initialized
     MainWindow w;
@@ -29,7 +28,6 @@ For Qt GUI apps with translation support:
 
 int main(int argc, char *argv[]) {
     BasicQtApplication<QApplication> app("MyApp", "1.0.0", argc, argv);
-    if (!app.isPrimaryInstance()) return 1;
 
     MainWindow w;
     w.show();
@@ -44,7 +42,7 @@ int main(int argc, char *argv[]) {
 - **Configuration Loading**: Automatically loads settings from `appname.ini` and user-specific `user.ini`
 - **Working Directory Management**: Configurable via INI for flexible deployment
 - **Logging**: Integrated ILog with configurable levels from user settings
-- **Single-instance Enforcement**: Prevents multiple instances via SingleApplication
+- **Single-instance Enforcement**: Automatic via SingleApplication library (use `BasicQtApplication<SingleApplication>` for explicit control)
 - **Test Mode Detection**: CLI argument or environment variable for development
 - **OS Utilities**: Cross-platform OS version detection
 - **Qt Integration**: BasicQtApplication template for Qt apps with translation loading
@@ -108,7 +106,6 @@ Enable test mode (disables kiosk restrictions) via:
 - `app.getWorkingDirectory()` — Get configured working directory
 - `app.getLog()` — Access the initialized logger
 - `app.isTestMode()` — Check if running in test mode
-- `app.isPrimaryInstance()` — Check if this is the primary app instance
 - `BasicQtApplication<T>(name, version, argc, argv)` — For Qt apps (T = QApplication, QCoreApplication, etc.)
 - `qtApp.getQtApplication()` — Access the underlying Qt app instance
 
@@ -146,6 +143,7 @@ ctest -R BasicApplication
 - Adopted from TerminalClient repo with Qt5/Qt6 compatibility
 - BasicQtApplication template added for Qt app management
 - Configuration keys standardized (some legacy keys may differ)
+- **2026 Refactoring**: Template implementations moved to `.tpp` file, member variables normalized to camelCase, unused `isPrimaryInstance()` method removed, single-instance handling delegated to SingleApplication library
 
 ---
 
