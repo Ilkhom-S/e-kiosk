@@ -58,7 +58,9 @@ WatchServiceController::WatchServiceController()
     }
 
     auto playAction = mMenu.addAction(createTemplateIcon(":/icons/menu-playTemplate.png"), tr("#start_service"));
-    connect(playAction, &QAction::triggered, [this]() { onStartServiceClicked(""); });
+    connect(playAction, &QAction::triggered, mSignalMapper, [this, playAction]() { mSignalMapper->map(playAction); });
+
+    mSignalMapper->setMapping(playAction, QString("--disable-web-security"));
     mStartServiceActions << playAction;
 
     mStopServiceAction = mMenu.addAction(createTemplateIcon(":/icons/menu-stopTemplate.png"), tr("#stop_service"));
