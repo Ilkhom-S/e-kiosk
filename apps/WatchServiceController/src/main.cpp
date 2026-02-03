@@ -25,6 +25,14 @@
 
 int main(int aArgc, char *aArgv[])
 {
+    // Check for single instance BEFORE creating QApplication
+    SingleApplication single_instance_guard(aArgc, aArgv, true);
+    if (single_instance_guard.isSecondary())
+    {
+        std::cout << "Another instance is already running." << std::endl;
+        return 0;
+    }
+
     BasicQtApplication<QApplication> application("WatchServiceController", Humo::getVersion(), aArgc, aArgv);
 
     // Load translations

@@ -56,6 +56,7 @@ endif()
 
 # Optional single-instance support via project SingleApplication wrapper (EK::SingleApplication)
 if(TARGET EK::SingleApplication)
+    set(QAPPLICATION_CLASS FreeStandingSingleApplication)
     target_link_libraries(tray PUBLIC EK::SingleApplication)
 else()
     message(WARNING "EK::SingleApplication not found - single-instance app support disabled")

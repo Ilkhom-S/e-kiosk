@@ -14,8 +14,8 @@ if(EXISTS "${THIRD_PARTY_DIR}/SingleApplication")
 
     # Configure SingleApplication with EKiosk settings
     set(QT_DEFAULT_MAJOR_VERSION ${QT_VERSION_MAJOR} CACHE STRING "Qt version to use" FORCE)
-    set(QAPPLICATION_CLASS QApplication CACHE STRING "Qt application base class" FORCE)
-    set(SINGLEAPPLICATION_INSTALL OFF CACHE BOOL "Disable install" FORCE)
+    # set(QAPPLICATION_CLASS QApplication CACHE STRING "Qt application base class" FORCE)
+    # set(SINGLEAPPLICATION_INSTALL OFF CACHE BOOL "Disable install" FORCE)
 
 
     # Add the SingleApplication subdirectory

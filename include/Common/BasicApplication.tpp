@@ -14,7 +14,7 @@
 template <typename T>
 BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &aVersion, int &aArgumentCount,
                                           char **aArguments)
-    : BasicApplication(aName, aVersion, aArgumentCount, aArguments), mQtApplication(aArgumentCount, aArguments)
+    : BasicApplication(aName, aVersion, aArgumentCount, aArguments), mQtApplication(aArgumentCount, aArguments, true)
 {
     // Set application name and version on the Qt application instance
     mQtApplication.setApplicationName(aName);
