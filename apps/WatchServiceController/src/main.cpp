@@ -8,6 +8,7 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QTranslator>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QMessageBox>
 #include <Common/QtHeadersEnd.h>
 
 // Modules
@@ -21,11 +22,10 @@
 
 // Project
 #include "WatchServiceController.h"
-#include <singleapplication.h>
 
 int main(int aArgc, char *aArgv[])
 {
-    BasicQtApplication<SingleApplication> application("WatchServiceController", Humo::getVersion(), aArgc, aArgv);
+    BasicQtApplication<QApplication> application("WatchServiceController", Humo::getVersion(), aArgc, aArgv);
 
     // Load translations
     QTranslator translator;

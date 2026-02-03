@@ -56,7 +56,6 @@ endif()
 
 # Optional single-instance support via project SingleApplication wrapper (EK::SingleApplication)
 if(TARGET EK::SingleApplication)
-    set(QAPPLICATION_CLASS QGuiApplication CACHE STRING "Inheritance class for SingleApplication")
     target_link_libraries(tray PUBLIC EK::SingleApplication)
 else()
     message(WARNING "EK::SingleApplication not found - single-instance app support disabled")
