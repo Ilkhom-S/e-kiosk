@@ -286,6 +286,17 @@ level = 0  ; Debug level
 - **Configuration Reload**: Requires restart for configuration changes
 - **Resource Management**: Properly manages process lifecycles and cleanup
 
+### Management Interfaces
+
+While WatchService manages core kiosk services, the **WatchServiceController** (tray application) provides a user-friendly system tray interface for:
+
+- **Real-time Monitoring**: Visual status indicators for all modules
+- **Manual Control**: Start/stop/restart individual services
+- **Log Access**: Quick access to application logs
+- **Configuration**: Easy access to settings and config files
+
+**Note**: The tray application connects to WatchService dynamically and is not typically configured as an auto-started module. It should be started separately by administrators when management access is needed.
+
 ## Related Documentation
 
 - **🔧 [Developer Guide](../../apps/WatchService/README.md)**: Technical implementation, building, and development details

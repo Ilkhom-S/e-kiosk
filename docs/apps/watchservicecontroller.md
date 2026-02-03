@@ -201,6 +201,27 @@ The tray provides fine-grained control over individual modules:
 - **Status Tracking**: Real-time status updates for all modules
 - **Error Reporting**: Detailed error messages and recovery suggestions
 
+### Optional Auto-Start Configuration
+
+While the tray application is primarily a user interface tool and not typically auto-started by WatchService, it can be configured as a module for environments requiring automatic tray availability:
+
+```ini
+[module_tray_controller]
+name = tray_controller
+file = {WS_DIR}/tray${EXE_SUFFIX}
+workingdirectory = {WS_DIR}
+autostart = true
+startmode = normal
+priority = 10
+close_priority = 0
+gui = true
+firstpingtimeout = 30
+killtimeout = 60
+maxstartcount = 3
+```
+
+**Note**: Auto-starting the tray app is optional and typically not recommended for production kiosk deployments where the interface should only be available to administrators.
+
 ## Platform-Specific Notes
 
 ### Windows
@@ -256,5 +277,4 @@ The tray provides fine-grained control over individual modules:
 - **🔧 [Developer Guide](../../apps/WatchServiceController/README.md)**: Technical implementation details
 - **[WatchService User Guide](watchservice.md)**: Main service documentation
 - **[Configuration Reference](../configuration-reference.md)**: Complete configuration options
-- **[Troubleshooting Guide](../troubleshooting.md)**: General troubleshooting</content>
-  <parameter name="filePath">/Users/ilkhom/Projects/Humo/e-kiosk/docs/apps/watchservicecontroller.md
+- **[Troubleshooting Guide](../troubleshooting.md)**: General troubleshooting
