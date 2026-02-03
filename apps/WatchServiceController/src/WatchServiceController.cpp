@@ -157,26 +157,21 @@ void WatchServiceController::onCheck()
     {
         // Connected state: show normal template icon
         mIcon.setIcon(createTemplateIcon(":/icons/tray-monogramTemplate.png"));
-        // Enable all menu items when connected so user can interact
-        foreach (auto action, mStartServiceActions)
-        {
-            action->setEnabled(true);
-        }
-        mStopServiceAction->setEnabled(true);
     }
     else
     {
         // Disconnected state: show slashed H icon to indicate stopped state
         mIcon.setIcon(createTemplateIcon(":/icons/tray-monogram-stoppedTemplate.png"));
-        // Disable all menu items except close when not connected
-        foreach (auto action, mStartServiceActions)
-        {
-            action->setEnabled(false);
-        }
-        mStopServiceAction->setEnabled(false);
-        // Keep close action enabled
-        mCloseTrayIconAction->setEnabled(true);
     }
+
+    // Always enable start/stop service actions regardless of connection status
+    foreach (auto action, mStartServiceActions)
+    {
+        action->setEnabled(true);
+    }
+    mStopServiceAction->setEnabled(true);
+    // Keep close action enabled
+    mCloseTrayIconAction->setEnabled(true);
 
     mIcon.show();
 }
