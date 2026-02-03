@@ -42,15 +42,13 @@ WatchServiceController::WatchServiceController()
     {
         auto settingsAction =
             mMenu.addAction(createTemplateIcon(":/icons/menu-settingsTemplate.png"), tr("#start_service_menu"));
-        connect(settingsAction, &QAction::triggered, mSignalMapper,
-                [this, settingsAction]() { mSignalMapper->map(settingsAction); });
+        connect(settingsAction, SIGNAL(triggered(bool)), mSignalMapper, SLOT(map()));
         mSignalMapper->setMapping(settingsAction, QString("-start_scenario=service_menu"));
         mStartServiceActions << settingsAction;
 
         auto setupAction =
             mMenu.addAction(createTemplateIcon(":/icons/menu-setupTemplate.png"), tr("#start_first_setup"));
-        connect(setupAction, &QAction::triggered, mSignalMapper,
-                [this, setupAction]() { mSignalMapper->map(setupAction); });
+        connect(setupAction, SIGNAL(triggered(bool)), mSignalMapper, SLOT(map()));
         mSignalMapper->setMapping(setupAction, QString("-start_scenario=first_setup"));
         mStartServiceActions << setupAction;
 
@@ -58,8 +56,7 @@ WatchServiceController::WatchServiceController()
     }
 
     auto playAction = mMenu.addAction(createTemplateIcon(":/icons/menu-playTemplate.png"), tr("#start_service"));
-    connect(playAction, &QAction::triggered, mSignalMapper, [this, playAction]() { mSignalMapper->map(playAction); });
-
+    connect(playAction, SIGNAL(triggered(bool)), mSignalMapper, SLOT(map()));
     mSignalMapper->setMapping(playAction, QString("--disable-web-security"));
     mStartServiceActions << playAction;
 
@@ -68,10 +65,11 @@ WatchServiceController::WatchServiceController()
     mCloseTrayIconAction = mMenu.addAction(createTemplateIcon(":/icons/menu-closeTemplate.png"), tr("#close"));
 
     connect(mSignalMapper, SIGNAL(mapped(QString)), SLOT(onStartServiceClicked(QString)));
-    connect(mStopServiceAction, &QAction::triggered, this, &WatchServiceController::onStopServiceClicked);
-    connect(mCloseTrayIconAction, &QAction::triggered, this, &WatchServiceController::onCloseIconClicked);
+    connect(mStopServiceAction, SIGNAL(triggered(bool)), SLOT(onStopServiceClicked()));
+    connect(mCloseTrayIconAction, SIGNAL(triggered(bool)), SLOT(onCloseIconClicked()));
 
-    connect(&mIcon, &QSystemTrayIcon::activated, this, &WatchServiceController::onTrayIconActivated);
+    connect(&mIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
+            SLOT(onTrayIconActivated(QSystemTrayIcon::ActivationReason)));
 
     mIcon.setContextMenu(&mMenu);
     mIcon.setIcon(createTemplateIcon(":/icons/tray-monogramTemplate.png"));
