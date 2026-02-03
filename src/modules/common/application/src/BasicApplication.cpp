@@ -61,8 +61,35 @@ BasicApplication::BasicApplication(const QString &aName, const QString &aVersion
     // Инициализируем настройки из .ini файла на основе пути к исполняемому
     // файлу
     QFileInfo info(QString::fromLocal8Bit(mArguments[0]));
+    QString basePath = info.absolutePath();
+
+    // На macOS для app bundle нужно использовать директорию, содержащую .app,
+    // а не внутреннюю структуру bundle
+#ifdef Q_OS_MAC
+    if (basePath.contains(".app/Contents/MacOS"))
+    {
+        // Убираем .app/Contents/MacOS из пути, чтобы получить директорию с .app
+        int appBundleIndex = basePath.indexOf(".app/Contents/MacOS");
+        if (appBundleIndex != -1)
+        {
+            QString appPath = basePath.left(appBundleIndex + 4); // +4 для ".app"
+            // Получаем родительскую директорию .app
+            QDir appDir(appPath);
+            if (appDir.cdUp()) // Переходим в родительскую директорию
+            {
+                basePath = appDir.absolutePath();
+            }
+            else
+            {
+                basePath = appDir.absolutePath(); // fallback
+            }
+        }
+    }
+#endif
+
     QString settingsFilePath =
-        QDir::toNativeSeparators(info.absolutePath() + QDir::separator() + info.completeBaseName() + ".ini");
+        QDir::toNativeSeparators(basePath + QDir::separator() + info.completeBaseName() + ".ini");
+
     mSettings.reset(new QSettings(ISysUtils::rmBOM(settingsFilePath), QSettings::IniFormat));
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) && defined(Q_OS_WIN)
     mSettings->setIniCodec("UTF-8");
@@ -96,7 +123,7 @@ BasicApplication::BasicApplication(const QString &aName, const QString &aVersion
 
     // Initialize logger
 #ifdef QT_DEBUG
-    mLog = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::Console);
+    mLog = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::Debug);
 #else
     mLog = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::File);
 #endif
