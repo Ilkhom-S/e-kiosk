@@ -56,7 +56,6 @@ endif()
 
 # Optional single-instance support via project SingleApplication wrapper (EK::SingleApplication)
 if(TARGET EK::SingleApplication)
-    set(QAPPLICATION_CLASS FreeStandingSingleApplication)
     target_link_libraries(tray PUBLIC EK::SingleApplication)
 else()
     message(WARNING "EK::SingleApplication not found - single-instance app support disabled")
@@ -65,6 +64,8 @@ endif()
 # Translations
 file(GLOB TS_FILES src/locale/*.ts)
 if(TS_FILES)
+    # Ensure output directory exists
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/locale)
     ek_add_translations(WatchServiceControllerTranslations
         SOURCES ${TS_FILES}
         OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
@@ -72,12 +73,12 @@ if(TS_FILES)
     )
     if(TARGET WatchServiceControllerTranslations_translations)
         add_dependencies(tray WatchServiceControllerTranslations_translations)
-        # Copy translation files to executable directory for debugging
+        # Copy translation files to bin/locale for cross-platform compatibility
         add_custom_command(TARGET tray POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_BINARY_DIR}/locale
-            $<TARGET_FILE_DIR:tray>/locale
-            COMMENT "Copying translation files to executable directory"
+            ${CMAKE_BINARY_DIR}/bin/locale
+            COMMENT "Copying translation files to bin/locale for cross-platform compatibility"
         )
     endif()
 endif()

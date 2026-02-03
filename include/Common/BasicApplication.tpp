@@ -29,24 +29,25 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &a
     searchPaths << getWorkingDirectory();                                  // Working directory
     searchPaths << QDir(getWorkingDirectory()).absoluteFilePath("locale"); // locale subdirectory in working dir
 
-    // On macOS, also check app bundle locations
-#ifdef Q_OS_MACOS
-    QString appDir = mQtApplication.applicationDirPath();
-    searchPaths << QDir(appDir).absoluteFilePath("../Resources/locale"); // Contents/Resources/locale
-    searchPaths << QDir(appDir).absoluteFilePath("locale");              // Contents/MacOS/locale (fallback)
+    // Also check bin/locale for cross-platform compatibility
+    QString binDir = QDir(getWorkingDirectory()).absoluteFilePath("../");
+    searchPaths << QDir(binDir).absoluteFilePath("locale");               // bin/locale (cross-platform)
+    
 #endif
 
-    getLog()->write(LogLevel::Info, QString("Searching for translations for %1 in:").arg(appName));
-    for (const QString &path : searchPaths) {
-        getLog()->write(LogLevel::Info, QString("  - %1").arg(path));
+    getLog()->write(LogLevel::Normal, QString("Searching for translations for %1 in:").arg(appName));
+    for (const QString &path : searchPaths)
+    {
+        getLog()->write(LogLevel::Normal, QString("  - %1").arg(path));
     }
 
     bool translationLoaded = false;
     for (const QString &searchPath : searchPaths)
     {
         QDir translationsDir(searchPath);
-        if (!translationsDir.exists()) {
-            getLog()->write(LogLevel::Info, QString("Directory does not exist: %1").arg(searchPath));
+        if (!translationsDir.exists())
+        {
+            getLog()->write(LogLevel::Normal, QString("Directory does not exist: %1").arg(searchPath));
             continue;
         }
 
@@ -55,12 +56,14 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &a
         translationsDir.setNameFilters(translationFilters);
 
         QStringList translationFiles = translationsDir.entryList(QDir::Files, QDir::Name);
-        getLog()->write(LogLevel::Info, QString("Found %1 potential translation files in %2").arg(translationFiles.size()).arg(searchPath));
-        
+        getLog()->write(
+            LogLevel::Normal,
+            QString("Found %1 potential translation files in %2").arg(translationFiles.size()).arg(searchPath));
+
         if (!translationFiles.isEmpty())
         {
             QString translationFile = translationsDir.absoluteFilePath(translationFiles.first());
-            getLog()->write(LogLevel::Info, QString("Trying to load: %1").arg(translationFile));
+            getLog()->write(LogLevel::Normal, QString("Trying to load: %1").arg(translationFile));
             mTranslator = QSharedPointer<QTranslator>(new QTranslator(&mQtApplication));
 
             if (mTranslator->load(translationFile))
