@@ -100,8 +100,8 @@ BasicApplication::BasicApplication(const QString &aName, const QString &aVersion
     if (mSettings->contains("common/working_directory"))
     {
         QString directory = mSettings->value("common/working_directory").toString();
-        mWorkingDirectory = QDir::toNativeSeparators(QDir::cleanPath(
-            (QDir::isAbsolutePath(directory) ? "" : (basePath + QDir::separator())) + directory));
+        mWorkingDirectory = QDir::toNativeSeparators(
+            QDir::cleanPath((QDir::isAbsolutePath(directory) ? "" : (basePath + QDir::separator())) + directory));
     }
 
     // Register singleton instance pointer
@@ -123,7 +123,7 @@ BasicApplication::BasicApplication(const QString &aName, const QString &aVersion
 
     // Initialize logger
 #ifdef QT_DEBUG
-    mLog = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::Debug);
+    mLog = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::Console);
 #else
     mLog = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::File);
 #endif
