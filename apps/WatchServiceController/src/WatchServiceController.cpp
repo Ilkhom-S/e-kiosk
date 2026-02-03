@@ -37,34 +37,29 @@ WatchServiceController::WatchServiceController()
     mTimer.setInterval(CWatchServiceController::CheckTimeout);
     mTimer.start();
 
-    mSignalMapper = new QSignalMapper(this);
-
+    // Create menu actions with direct connections instead of signal mapper
     {
         auto settingsAction =
             mMenu.addAction(createTemplateIcon(":/icons/menu-settingsTemplate.png"), tr("#start_service_menu"));
-        connect(settingsAction, SIGNAL(triggered(bool)), mSignalMapper, SLOT(map()));
-        mSignalMapper->setMapping(settingsAction, QString("-start_scenario=service_menu"));
+        connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(onStartServiceMenuClicked()));
         mStartServiceActions << settingsAction;
 
         auto setupAction =
             mMenu.addAction(createTemplateIcon(":/icons/menu-setupTemplate.png"), tr("#start_first_setup"));
-        connect(setupAction, SIGNAL(triggered(bool)), mSignalMapper, SLOT(map()));
-        mSignalMapper->setMapping(setupAction, QString("-start_scenario=first_setup"));
+        connect(setupAction, SIGNAL(triggered(bool)), this, SLOT(onStartFirstSetupClicked()));
         mStartServiceActions << setupAction;
 
         mMenu.addSeparator();
     }
 
     auto playAction = mMenu.addAction(createTemplateIcon(":/icons/menu-playTemplate.png"), tr("#start_service"));
-    connect(playAction, SIGNAL(triggered(bool)), mSignalMapper, SLOT(map()));
-    mSignalMapper->setMapping(playAction, QString("--disable-web-security"));
+    connect(playAction, SIGNAL(triggered(bool)), this, SLOT(onStartServiceClickedDirect()));
     mStartServiceActions << playAction;
 
     mStopServiceAction = mMenu.addAction(createTemplateIcon(":/icons/menu-stopTemplate.png"), tr("#stop_service"));
     mMenu.addSeparator();
     mCloseTrayIconAction = mMenu.addAction(createTemplateIcon(":/icons/menu-closeTemplate.png"), tr("#close"));
 
-    connect(mSignalMapper, SIGNAL(mapped(QString)), SLOT(onStartServiceClicked(QString)));
     connect(mStopServiceAction, SIGNAL(triggered(bool)), SLOT(onStopServiceClicked()));
     connect(mCloseTrayIconAction, SIGNAL(triggered(bool)), SLOT(onCloseIconClicked()));
 
@@ -73,7 +68,6 @@ WatchServiceController::WatchServiceController()
 
     mIcon.setContextMenu(&mMenu);
     mIcon.setIcon(createTemplateIcon(":/icons/tray-monogramTemplate.png"));
-    qDebug() << "Tray icon is null:" << mIcon.icon().isNull() << "available sizes:" << mIcon.icon().availableSizes();
     mIcon.show();
 
     LOG(getLog(), LogLevel::Normal, "WatchServiceController started.");
@@ -132,7 +126,6 @@ WatchServiceController::~WatchServiceController()
     // Disconnect all signals (Qt does this automatically, but explicit for clarity)
     disconnect(&mTimer, &QTimer::timeout, this, &WatchServiceController::onCheck);
     disconnect(&mIcon, &QSystemTrayIcon::activated, this, &WatchServiceController::onTrayIconActivated);
-    disconnect(mSignalMapper, SIGNAL(mapped(QString)), this, SLOT(onStartServiceClicked(QString)));
     disconnect(mStopServiceAction, &QAction::triggered, this, &WatchServiceController::onStopServiceClicked);
     disconnect(mCloseTrayIconAction, &QAction::triggered, this, &WatchServiceController::onCloseIconClicked);
 
@@ -324,6 +317,23 @@ void WatchServiceController::onTrayIconActivated(QSystemTrayIcon::ActivationReas
         mMenu.activateWindow();
     }
 #endif
+}
+
+//----------------------------------------------------------------------------
+// Direct connection slots for menu actions
+void WatchServiceController::onStartServiceMenuClicked()
+{
+    onStartServiceClicked("-start_scenario=service_menu");
+}
+
+void WatchServiceController::onStartFirstSetupClicked()
+{
+    onStartServiceClicked("-start_scenario=first_setup");
+}
+
+void WatchServiceController::onStartServiceClickedDirect()
+{
+    onStartServiceClicked("--disable-web-security");
 }
 
 //----------------------------------------------------------------------------

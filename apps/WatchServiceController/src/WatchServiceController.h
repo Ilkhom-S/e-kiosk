@@ -6,7 +6,6 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
-#include <QtCore/QSignalMapper>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QSystemTrayIcon>
 #include <Common/QtHeadersEnd.h>
@@ -57,6 +56,11 @@ class WatchServiceController : public QObject
     void onStopServiceClicked();
     void onCloseIconClicked();
 
+    // Direct action slots
+    void onStartServiceMenuClicked();
+    void onStartFirstSetupClicked();
+    void onStartServiceClickedDirect();
+
   private:
     QSharedPointer<IWatchServiceClient> mClient;
 
@@ -67,7 +71,6 @@ class WatchServiceController : public QObject
     QSystemTrayIcon mIcon;
     QMenu mMenu;
 
-    QSignalMapper *mSignalMapper;
     QList<QAction *> mStartServiceActions;
     QAction *mStopServiceAction;
     QAction *mCloseTrayIconAction;

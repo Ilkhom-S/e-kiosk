@@ -95,7 +95,11 @@ BasicApplication::BasicApplication(const QString &aName, const QString &aVersion
     }
 
     // Initialize logger
+#ifdef QT_DEBUG
+    mLog = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::Console);
+#else
     mLog = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::File);
+#endif
     if (mLog)
     {
         mLog->setDestination(aName.isEmpty() ? "basic_app" : aName.toLower());
