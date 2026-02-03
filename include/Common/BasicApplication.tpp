@@ -28,10 +28,6 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &a
     QStringList searchPaths;
     searchPaths << getWorkingDirectory();                                  // Working directory
     searchPaths << QDir(getWorkingDirectory()).absoluteFilePath("locale"); // locale subdirectory in working dir
-
-    // Also check bin/locale for cross-platform compatibility
-    QString binDir = QDir(getWorkingDirectory()).absoluteFilePath("../");
-    searchPaths << QDir(binDir).absoluteFilePath("locale");               // bin/locale (cross-platform)
     
     // On macOS, also check app bundle locations
 #ifdef Q_OS_MACOS
@@ -40,12 +36,26 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &a
     searchPaths << QDir(appDir).absoluteFilePath("locale");              // Contents/MacOS/locale (fallback)
 #endif
 
+    getLog()->write(LogLevel::Info, QString("DEBUG: Searching for translations for %1").arg(appName));
+    for (const QString &path : searchPaths) {
+        getLog()->write(LogLevel::Info, QString("DEBUG: Checking path: %1").arg(path));
+        QDir testDir(path);
+        if (testDir.exists()) {
+            QStringList files = testDir.entryList(QStringList() << "*.qm", QDir::Files);
+            getLog()->write(LogLevel::Info, QString("DEBUG: Directory exists, found %1 .qm files").arg(files.size()));
+        } else {
+            getLog()->write(LogLevel::Info, QString("DEBUG: Directory does not exist"));
+        }
+    }
+
     bool translationLoaded = false;
     for (const QString &searchPath : searchPaths)
     {
         QDir translationsDir(searchPath);
         if (!translationsDir.exists())
+        {
             continue;
+        }
 
         QStringList translationFilters;
         translationFilters << QString("%1_*.qm").arg(appName);
@@ -70,18 +80,6 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &a
             }
         }
     }
-                mQtApplication.installTranslator(mTranslator.data());
-                getLog()->write(LogLevel::Normal, QString("Translation %1 loaded.").arg(translationFile));
-                translationLoaded = true;
-                break; // Stop after loading the first translation file
-            }
-            else
-            {
-                getLog()->write(LogLevel::Warning, QString("Failed to load translation %1.").arg(translationFile));
-            }
-        }
-    }
-
     if (!translationLoaded)
     {
         getLog()->write(LogLevel::Normal, QString("No translations found for %1 in searched locations.").arg(appName));
