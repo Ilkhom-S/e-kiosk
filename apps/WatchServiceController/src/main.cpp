@@ -41,15 +41,7 @@ int main(int aArgc, char *aArgv[])
     }
 #endif
 
-    // Load translations
-    QTranslator translator;
-    QString locale = QLocale::system().name();
-    QString qmFile = QString("WatchServiceController_%1.qm").arg(locale);
-    QString qmPath = QDir(QApplication::applicationDirPath()).absoluteFilePath("locale/" + qmFile);
-    if (translator.load(qmPath))
-    {
-        QApplication::installTranslator(&translator);
-    }
+    // Translation loading is handled automatically by BasicQtApplication
 
     // Перенаправляем логи.
     ILog::getInstance(CIMessageQueueClient::DefaultLog)->setDestination(application.getLog()->getName());

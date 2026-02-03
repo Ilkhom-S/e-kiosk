@@ -23,26 +23,48 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &a
     QFileInfo fileInfo(mQtApplication.applicationFilePath());
 
     // Load translations automatically
-    QDir translationsDir(getWorkingDirectory());
-    QStringList translationFilters;
-    translationFilters << QString("%1_*.qm").arg(fileInfo.baseName());
-    translationsDir.setNameFilters(translationFilters);
-
-    QStringList translationFiles = translationsDir.entryList(QDir::Files, QDir::Name);
-    if (!translationFiles.isEmpty())
+    QFileInfo fileInfo(mQtApplication.applicationFilePath());
+    QString appName = fileInfo.baseName();
+    
+    // Check both working directory and locale subdirectory
+    QStringList searchPaths;
+    searchPaths << getWorkingDirectory();  // Working directory
+    searchPaths << QDir(getWorkingDirectory()).absoluteFilePath("locale");  // locale subdirectory
+    
+    bool translationLoaded = false;
+    for (const QString &searchPath : searchPaths)
     {
-        QString translationFile = translationsDir.absoluteFilePath(translationFiles.first());
-        mTranslator = QSharedPointer<QTranslator>(new QTranslator(&mQtApplication));
+        QDir translationsDir(searchPath);
+        if (!translationsDir.exists())
+            continue;
+            
+        QStringList translationFilters;
+        translationFilters << QString("%1_*.qm").arg(appName);
+        translationsDir.setNameFilters(translationFilters);
 
-        if (mTranslator->load(translationFile))
+        QStringList translationFiles = translationsDir.entryList(QDir::Files, QDir::Name);
+        if (!translationFiles.isEmpty())
         {
-            mQtApplication.installTranslator(mTranslator.data());
-            getLog()->write(LogLevel::Normal, QString("Translation %1 loaded.").arg(translationFile));
+            QString translationFile = translationsDir.absoluteFilePath(translationFiles.first());
+            mTranslator = QSharedPointer<QTranslator>(new QTranslator(&mQtApplication));
+
+            if (mTranslator->load(translationFile))
+            {
+                mQtApplication.installTranslator(mTranslator.data());
+                getLog()->write(LogLevel::Normal, QString("Translation %1 loaded.").arg(translationFile));
+                translationLoaded = true;
+                break;  // Stop after loading the first translation file
+            }
+            else
+            {
+                getLog()->write(LogLevel::Warning, QString("Failed to load translation %1.").arg(translationFile));
+            }
         }
-        else
-        {
-            getLog()->write(LogLevel::Warning, QString("Failed to load translation %1.").arg(translationFile));
-        }
+    }
+    
+    if (!translationLoaded)
+    {
+        getLog()->write(LogLevel::Info, QString("No translations found for %1 in working directory or locale folder.").arg(appName));
     }
 
     // Now that Qt application is created, write the log header
