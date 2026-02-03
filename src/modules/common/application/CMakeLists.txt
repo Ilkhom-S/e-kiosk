@@ -13,6 +13,9 @@ ek_add_library(BasicApplication
     DEPENDS ek_common Log DebugUtils SysUtils EK::SingleApplication
 )
 
+# Add template implementation file for IDE visibility
+target_sources(BasicApplication PRIVATE ${CMAKE_SOURCE_DIR}/include/Common/BasicApplication.tpp)
+
 # Enable automoc for QObject-derived types
 set_target_properties(BasicApplication PROPERTIES AUTOMOC ON)
 

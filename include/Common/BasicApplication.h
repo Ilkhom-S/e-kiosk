@@ -32,7 +32,7 @@ class BasicApplication
     /// Конструктор инициализирует имя и версию приложения и принимает
     /// аргументы командной строки (для распознавания `test` режимов и пр.)
     explicit BasicApplication(const QString &aName = QString(), const QString &aVersion = QString(),
-                              int aArgumentCount = 0, char **aArguments = nullptr, bool aUseSingleApp = true);
+                              int aArgumentCount = 0, char **aArguments = nullptr);
     virtual ~BasicApplication();
 
     /// Возвращает имя приложения.
@@ -65,33 +65,29 @@ class BasicApplication
 
     /// Runtime helpers
     bool isTestMode() const;
-    virtual bool isPrimaryInstance() const;
+
     bool startDetachedProcess(const QString &program, const QStringList &args = QStringList());
 
   protected:
     void setInstance();
 
+    // Singleton instance pointer
+    static BasicApplication *mInstance;
+
   private:
     // Internal helpers
     void detectTestMode();
 
-    QString m_name;
-    QString m_version;
-    QString m_workingDirectory;
-    QScopedPointer<QSettings> m_settings; // initialized in constructor
-    int m_argumentCount;
-    char **m_arguments;
-    ILog *m_log = nullptr; // initialized in constructor
-
-    // SingleApplication for single-instance
-    QScopedPointer<SingleApplication> m_singleApp;
+    QString mName;
+    QString mVersion;
+    QString mWorkingDirectory;
+    QScopedPointer<QSettings> mSettings; // initialized in constructor
+    int mArgumentCount;
+    char **mArguments;
+    ILog *mLog = nullptr; // initialized in constructor
 
     // Runtime state
-    bool m_testMode = false;
-    bool m_useSingleApp = true;
-
-    // Singleton instance pointer
-    static BasicApplication *s_instance;
+    bool mTestMode = false;
 };
 
 //---------------------------------------------------------------------------
@@ -104,71 +100,32 @@ template <class T> class BasicQtApplication : public BasicApplication
     typedef T TApplication;
 
     BasicQtApplication(const QString &aName, const QString &aVersion, int &aArgumentCount, char **aArguments);
-    virtual ~BasicQtApplication() override
-    {
-        if (mQtApplication)
-        {
-            mQtApplication->~TApplication();
-        }
-    }
-
-    /// Возвращает true, если это первичный экземпляр приложения.
-    virtual bool isPrimaryInstance() const override
-    {
-        if (std::is_same<T, SingleApplication>::value)
-        {
-            return static_cast<const SingleApplication &>(*mQtApplication).isPrimary();
-        }
-        else
-        {
-            return BasicApplication::isPrimaryInstance();
-        }
-    }
+    virtual ~BasicQtApplication() override = default;
 
     /// Запускает цикл обработки событий.
     int exec()
     {
-        return mQtApplication->exec();
+        return mQtApplication.exec();
     }
 
     /// Возвращает аргументы командной строки.
     QStringList getArguments() const
     {
-        return mQtApplication->arguments();
+        return mQtApplication.arguments();
     }
 
     /// Возвращает экземпляр Qt приложения.
     TApplication &getQtApplication()
     {
-        return *mQtApplication;
+        return mQtApplication;
     }
 
   private:
-    TApplication *mQtApplication;
-    QScopedPointer<QTranslator> mTranslator;
+    TApplication mQtApplication;
+    QSharedPointer<QTranslator> mTranslator;
 };
 
 //---------------------------------------------------------------------------
 // Реализация BasicQtApplication
 
-template <typename T>
-BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &aVersion, int &aArgumentCount,
-                                          char **aArguments)
-    : BasicApplication(aName, aVersion, aArgumentCount, aArguments, !std::is_same<T, SingleApplication>::value),
-      mQtApplication(nullptr)
-{
-    // Set application name before creating SingleApplication so it can generate the correct shared memory key
-    QCoreApplication::setApplicationName(aName);
-    QCoreApplication::setApplicationVersion(aVersion);
-
-    // Allocate memory for the Qt application
-    mQtApplication = static_cast<TApplication *>(::operator new(sizeof(TApplication)));
-
-    // Construct the Qt application (SingleApplication or regular QApplication)
-    new (mQtApplication) TApplication(aArgumentCount, aArguments);
-
-    QFileInfo fileInfo(mQtApplication->applicationFilePath());
-
-    // Now that Qt application is created, write the log header
-    writeLogHeader();
-}
+#include <Common/BasicApplication.tpp>

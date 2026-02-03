@@ -16,10 +16,10 @@ int main(int argc, char *argv[])
 
     BasicApplication app(QString(), QString(), argc, argv);
 
-    if (!app.isPrimaryInstance())
-    {
-        return 1;
-    }
+    // if (!app.isPrimaryInstance())
+    // {
+    //     return 1;
+    // }
 
     auto arguments = qtApp.arguments();
     auto fileName = arguments.at(0);

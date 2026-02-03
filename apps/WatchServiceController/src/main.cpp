@@ -13,6 +13,7 @@
 // Modules
 #include <Common/BasicApplication.h>
 #include <Common/ExitCodes.h>
+#include <Common/SafeApplication.h>
 #include <Common/Version.h>
 
 // System
@@ -25,9 +26,6 @@
 int main(int aArgc, char *aArgv[])
 {
     BasicQtApplication<SingleApplication> application("WatchServiceController", Humo::getVersion(), aArgc, aArgv);
-
-    // Логер: явный лог старта
-    LOG(application.getLog(), LogLevel::Normal, "[tray] main() started");
 
     // Load translations
     QTranslator translator;
