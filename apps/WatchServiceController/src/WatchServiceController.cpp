@@ -58,9 +58,7 @@ WatchServiceController::WatchServiceController()
     }
 
     auto playAction = mMenu.addAction(createTemplateIcon(":/icons/menu-playTemplate.png"), tr("#start_service"));
-    connect(playAction, &QAction::triggered, mSignalMapper, [this, playAction]() { mSignalMapper->map(playAction); });
-
-    mSignalMapper->setMapping(playAction, QString(""));
+    connect(playAction, &QAction::triggered, [this]() { onStartServiceClicked(""); });
     mStartServiceActions << playAction;
 
     mStopServiceAction = mMenu.addAction(createTemplateIcon(":/icons/menu-stopTemplate.png"), tr("#stop_service"));
