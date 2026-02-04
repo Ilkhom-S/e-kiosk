@@ -23,7 +23,7 @@ endmacro()
 #   ek_generate_ini_template(<name> <template> <output_dir> [VAR value ...])
 #
 # Example:
-#   ek_generate_ini_template(tray "${CMAKE_SOURCE_DIR}/runtimes/common/data/tray.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+#   ek_generate_ini_template(controller "${CMAKE_SOURCE_DIR}/runtimes/common/data/controller.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 #
 # This macro configures a .ini file from a template, substituting CMake variables.
 

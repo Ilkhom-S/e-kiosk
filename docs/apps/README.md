@@ -22,9 +22,9 @@ Process supervisor and kiosk management daemon for monitoring critical applicati
 - **Configuration**: Complex module-based configuration system
 - **📖 [User Guide](watchservice.md) | 🔧 [Developer Guide](../../apps/WatchService/README.md)**
 
-### [WatchServiceController (Tray Application)](watchservicecontroller.md)
+### [WatchServiceController (Controller Application)](watchservicecontroller.md)
 
-System tray interface for monitoring and controlling the WatchService daemon.
+Controller interface for monitoring and controlling the WatchService daemon.
 
 - **Purpose**: User-friendly interface for WatchService management and monitoring
 - **Key Features**: System tray status, manual control, log access, configuration management

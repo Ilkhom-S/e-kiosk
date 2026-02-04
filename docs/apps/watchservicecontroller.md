@@ -136,9 +136,9 @@ ConnectionTimeout=30000
 
 ### Common Issues
 
-#### Tray Icon Not Visible
+#### Controller Icon Not Visible
 
-**Symptoms:** Tray icon doesn't appear in system tray
+**Symptoms:** Controller icon doesn't appear in system tray
 
 **Solutions:**
 
@@ -172,8 +172,8 @@ ConnectionTimeout=30000
 Application logs are typically located in:
 
 - **Windows**: `%APPDATA%\EKiosk\controller.log`
-- **Linux**: `~/.local/share/EKiosk/tray.log`
-- **macOS**: `~/Library/Application Support/EKiosk/tray.log`
+- **Linux**: `~/.local/share/EKiosk/controller.log`
+- **macOS**: `~/Library/Application Support/EKiosk/controller.log`
 
 ### Debug Mode
 
@@ -189,7 +189,7 @@ File=tray_debug.log
 
 ### Communication Protocol
 
-The tray application communicates with WatchService using:
+The controller application communicates with WatchService using:
 
 - **Message Queue**: Qt signals/slots for IPC
 - **Status Updates**: Real-time status notifications
@@ -198,33 +198,12 @@ The tray application communicates with WatchService using:
 
 ### Module Management
 
-The tray provides fine-grained control over individual modules:
+The controller provides fine-grained control over individual modules:
 
 - **Individual Control**: Start/stop specific modules without affecting others
 - **Dependency Awareness**: Respects module dependencies and priorities
 - **Status Tracking**: Real-time status updates for all modules
 - **Error Reporting**: Detailed error messages and recovery suggestions
-
-### Optional Auto-Start Configuration
-
-While the controller application is primarily a user interface tool and not typically auto-started by WatchService, it can be configured as a module for environments requiring automatic controller availability:
-
-```ini
-[module_controller]
-name = controller
-file = {WS_DIR}/controller${EXE_SUFFIX}
-workingdirectory = {WS_DIR}
-autostart = true
-startmode = normal
-priority = 10
-close_priority = 0
-gui = true
-firstpingtimeout = 30
-killtimeout = 60
-maxstartcount = 3
-```
-
-**Note**: Auto-starting the tray app is optional and typically not recommended for production kiosk deployments where the interface should only be available to administrators.
 
 ## Platform-Specific Notes
 

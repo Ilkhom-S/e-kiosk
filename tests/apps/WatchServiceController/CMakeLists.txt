@@ -1,4 +1,4 @@
-# Tests for WatchServiceController (tray app)
+# Tests for WatchServiceController (controller app)
 
 if(WIN32)
     find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test Widgets REQUIRED)
