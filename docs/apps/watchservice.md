@@ -97,7 +97,7 @@ gui = false
 #### Basic Module Settings
 
 - **`name`** (string): Unique module identifier
-- **`file`** (string): Executable path (supports `{WS_DIR}` and `${EXE_SUFFIX}` variables for cross-platform compatibility)
+- **`file`** (string): Executable path (supports `{WS_DIR}` macro for WatchService directory and `${EXE_SUFFIX}` for platform-specific extensions)
 - **`workingdirectory`** (string): Working directory for the module
 - **`arguments`** (string): Command line arguments (optional)
 
@@ -122,8 +122,10 @@ gui = false
 
 WatchService supports variable substitution in configuration values:
 
-- **`{WS_DIR}`**: WatchService working directory
+- **`{WS_DIR}`**: WatchService current working directory (used for relative paths to executables)
 - **`${EXE_SUFFIX}`**: Platform-specific executable suffix (`.exe` on Windows, empty on Unix)
+
+**Example**: `file={WS_DIR}/../../ekiosk${EXE_SUFFIX}` resolves to the ekiosk executable relative to WatchService directory.
 
 #### UI Integration
 
