@@ -2,7 +2,7 @@
 # Handles version configuration and file generation for EKiosk
 # Usage:
 #   include(scripts/build/cmake/EKVersionConfig.cmake)
-#   ek_configure_version(VERSION "3.0.0" BUILD "123")
+#   ek_configure_version(VERSION "4.0.0" BUILD "123")
 
 function(ek_get_version OUT_VERSION OUT_BUILD)
     if(DEFINED ENV{EK_VERSION})
@@ -10,7 +10,7 @@ function(ek_get_version OUT_VERSION OUT_BUILD)
     elseif(DEFINED EK_VERSION)
         set(_version "${EK_VERSION}")
     else()
-        set(_version "3.0.0")
+        set(_version "4.0.0")
     endif()
 
     if(DEFINED ENV{BUILD_NUMBER})
@@ -57,7 +57,7 @@ function(ek_configure_version)
         else()
             set(_build_repl "${ARG_BUILD}")
         endif()
-        string(REPLACE "3.0.0" "${ARG_VERSION}" _version_h_content "${_version_h_content}")
+        string(REPLACE "4.0.0" "${ARG_VERSION}" _version_h_content "${_version_h_content}")
         string(REPLACE "000000000000" "${_build_repl}" _version_h_content "${_version_h_content}")
         string(REPLACE "0.0.0.0" "${ARG_VERSION}.${ARG_BUILD}" _version_h_content "${_version_h_content}")
         string(REPLACE "0,0,0,0" "${VERSION_COMMA}" _version_h_content "${_version_h_content}")

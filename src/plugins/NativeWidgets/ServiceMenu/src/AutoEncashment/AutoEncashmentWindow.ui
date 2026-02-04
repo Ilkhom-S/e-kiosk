@@ -129,7 +129,7 @@ QWidget#wNumericPad QPushButton
      <item>
       <widget class="QLabel" name="lbVersion">
        <property name="text">
-        <string notr="true">Версия 3.0.0.0</string>
+        <string notr="true">Версия 4.0.0.0</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

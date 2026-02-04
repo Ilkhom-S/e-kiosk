@@ -137,7 +137,7 @@ Each application start and stop is marked in the main log with entries like:
 
 ```text
 02:45:14.670 [I] ******************************** LOG [EKiosk] STOP.
-02:45:18.585 [I] ******************************** LOG [EKiosk] STARTED. EKiosk 3.0.0 build 202601131240.
+02:45:18.585 [I] ******************************** LOG [EKiosk] STARTED. EKiosk 4.0.0 build 202601131240.
 ```
 
 Missing stop markers indicate abnormal termination. Possible causes:
