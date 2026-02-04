@@ -9,19 +9,18 @@ WatchServiceController provides a **system tray interface** for monitoring and c
 ## Purpose
 
 - **Service Management**: Start and stop the WatchService (watchdog) daemon
-- **Status Monitoring**: Real-time display of WatchService and module status
+- **Application Launch**: Launch kiosk application with different scenarios
 - **System Integration**: Native system tray integration on all platforms
 
 ## Features
 
 ### System Tray Interface
 
-The application provides a comprehensive system tray menu with:
+The application provides a system tray menu with:
 
 - **Service Control**: Start/stop the WatchService daemon
-- **Status Indicators**: Visual status of WatchService and monitored applications
-- **Application Control**: Start/stop/restart individual modules
-- **System Information**: Version information and system status
+- **Status Indicators**: Visual connection status (connected/disconnected)
+- **Application Launch**: Launch kiosk application with different scenarios
 
 ## Configuration
 
@@ -34,8 +33,7 @@ The application provides a comprehensive system tray menu with:
 1. **Launch**: Application starts and appears in system tray
 2. **Service Control**: Can start/stop the WatchService daemon if needed
 3. **Connection**: Automatically connects to WatchService when running
-4. **Monitoring**: Displays real-time status of all modules
-5. **Interaction**: Right-click tray icon for menu access
+4. **Interaction**: Right-click tray icon for menu access
 
 ### Tray Menu Options
 
