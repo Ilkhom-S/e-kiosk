@@ -96,7 +96,7 @@ gui = false
 
 #### Basic Module Settings
 
-- **`name`** (string): Unique module identifier
+- **`name`** (string): Module name/identifier (e.g., "ekiosk", "updater")
 - **`file`** (string): Executable path (supports `{WS_DIR}` macro for WatchService directory and `${EXE_SUFFIX}` for platform-specific extensions)
 - **`workingdirectory`** (string): Working directory for the module
 - **`arguments`** (string): Command line arguments (optional)
