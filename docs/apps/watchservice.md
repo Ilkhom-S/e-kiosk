@@ -110,8 +110,6 @@ firstpingtimeout = 60
 kill_timeout = 10000
 ```
 
-#### Priority System
-
 ### Forbidden Application Configuration
 
 ```ini
