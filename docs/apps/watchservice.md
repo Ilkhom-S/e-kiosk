@@ -124,17 +124,7 @@ WatchService supports variable substitution in configuration values:
 
 **Example**: `file={WS_DIR}/../../ekiosk${EXE_SUFFIX}` resolves to the ekiosk executable relative to WatchService directory.
 
-### Special Features
-
-#### Screen Protection
-
-WatchService automatically manages screen protection:
-
-- **Protection Active**: Shows splash screen when no GUI modules are running
-- **Protection Inactive**: Hides splash screen when GUI modules are active
-- **Custom Background**: Configurable via `use_custom_background` setting
-
-#### Forbidden Application Monitoring
+### Forbidden Application Configuration
 
 ```ini
 [extensions]
@@ -148,6 +138,16 @@ check_timeout = 60000
 - **`watchdog/taboo_enabled`** (bool): Enable forbidden app monitoring
 - **`applications`** (string list): Comma-separated list of forbidden executables
 - **`check_timeout`** (int): Check interval in milliseconds
+
+### Special Features
+
+#### Screen Protection
+
+WatchService automatically manages screen protection:
+
+- **Protection Active**: Shows splash screen when no GUI modules are running
+- **Protection Inactive**: Hides splash screen when GUI modules are active
+- **Custom Background**: Configurable via `use_custom_background` setting
 
 ## Health Check Mechanism
 
