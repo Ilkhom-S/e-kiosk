@@ -213,14 +213,6 @@ Enable verbose logging by setting log level in configuration:
 level = 0  ; Debug level
 ```
 
-## Integration Notes
-
-- **Single Instance**: Only one WatchService instance can run per user session
-- **Message Queue**: Uses internal message queue for module communication
-- **Qt Integration**: Built with Qt framework for cross-platform compatibility
-- **Configuration Reload**: Requires restart for configuration changes
-- **Resource Management**: Properly manages process life cycles and cleanup
-
 ## Related Documentation
 
 - **🔧 [Developer Guide](../../apps/WatchService/README.md)**: Technical implementation, building, and development details
