@@ -255,7 +255,7 @@ killtimeout = 60
 maxstartcount = 3
 ```
 
-**Note**: This configuration is recommended only for development environments. In production, start the tray controller manually when administrative access is needed.
+**Note**: This configuration is recommended only for development environments. In production, start the controller manually when administrative access is needed.
 
 ## Troubleshooting
 

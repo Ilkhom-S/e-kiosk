@@ -207,12 +207,12 @@ The tray provides fine-grained control over individual modules:
 
 ### Optional Auto-Start Configuration
 
-While the tray application is primarily a user interface tool and not typically auto-started by WatchService, it can be configured as a module for environments requiring automatic tray availability:
+While the controller application is primarily a user interface tool and not typically auto-started by WatchService, it can be configured as a module for environments requiring automatic controller availability:
 
 ```ini
-[module_tray_controller]
-name = tray_controller
-file = {WS_DIR}/tray${EXE_SUFFIX}
+[module_controller]
+name = controller
+file = {WS_DIR}/controller${EXE_SUFFIX}
 workingdirectory = {WS_DIR}
 autostart = true
 startmode = normal

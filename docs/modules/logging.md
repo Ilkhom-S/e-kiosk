@@ -119,7 +119,7 @@ Common subsystem log names used in EKiosk:
 - `Updater/UpdaterTrace` - Update system
 - `UserAssistant` - User assistance module
 - `WatchService` - Service management module
-- `WatchServiceController` - Tray application log
+- `WatchServiceController` - Controller application log
 - `Watchdog` - Watchdog device driver
 
 ### Application Lifecycle Markers
@@ -128,7 +128,7 @@ Common subsystem log names used in EKiosk:
 - `Updater/UpdaterTrace` - Update system
 - `UserAssistant` - User assistance module
 - `WatchService` - Service management module
-- `WatchServiceController` - Tray application log
+- `WatchServiceController` - Controller application log
 - `Watchdog` - Watchdog device driver
 
 ### Application Lifecycle Markers
