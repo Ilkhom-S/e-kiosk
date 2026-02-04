@@ -10,10 +10,9 @@ System tray controller for WatchService providing cross-platform system tray int
 
 Provides system tray interface to:
 
-- Show service status
-- Control PaymentProcessor
-- View logs
-- Quick access to settings
+- Show service connection status
+- Start/stop the WatchService daemon
+- Launch kiosk application with different scenarios
 
 ## Building
 
@@ -86,18 +85,15 @@ cmake --build build/macos-qt6 --target controller
 
 ```text
 ┌─────────────────────────────┐
-│ ● Status: Running           │  ← Green/Red indicator
+│ ● Status: Connected         │  ← Connected/Disconnected indicator
 ├─────────────────────────────┤
-│ Start Application           │
-│ Stop Application            │
-│ Restart Application         │
+│ Start service menu          │
+│ Start first setup           │
+│ Start service               │
 ├─────────────────────────────┤
-│ View Logs...                │
-│ Open Config Folder          │
-│ Settings...                 │
+│ Stop service                │
 ├─────────────────────────────┤
-│ About                       │
-│ Exit                        │
+│ Close                       │
 └─────────────────────────────┘
 ```
 
@@ -105,23 +101,12 @@ cmake --build build/macos-qt6 --target controller
 
 | Icon | Status               |
 | ---- | -------------------- |
-| 🟢   | Application running  |
-| 🔴   | Application stopped  |
-| 🟡   | Starting/restarting  |
-| ⚠️   | Error/crash detected |
+| 🟢   | Connected to service |
+| 🔴   | Disconnected         |
 
 ## Configuration
 
-```ini
-[Controller]
-AutoStart=true
-ShowNotifications=true
-MinimizeOnClose=true
-
-[Display]
-IconTheme=default
-ShowStatusInMenu=true
-```
+WatchServiceController currently does not read configuration files. All settings are hardcoded or use system defaults. Future versions may support configuration files for customization.
 
 ## Architecture
 
@@ -130,10 +115,10 @@ flowchart TB
     subgraph Controller["WatchServiceController"]
         subgraph UI["UI Components"]
             SystemTrayIcon["SystemTrayIcon<br/>- Icon<br/>- Menu<br/>- Tooltip"]
-            MenuActions["MenuActions<br/>- Start/Stop<br/>- View logs"]
+            MenuActions["MenuActions<br/>- Start/Stop<br/>- Launch scenarios"]
         end
         subgraph IPC["Communication"]
-            WatchServiceClient["WatchService Client<br/>- Status query<br/>- Commands"]
+            WatchServiceClient["WatchService Client<br/>- Connection status<br/>- Service control"]
             MessageQueue["MessageQueue<br/>- IPC with watchdog"]
         end
         SystemTrayIcon --> MenuActions
@@ -145,18 +130,16 @@ flowchart TB
 
 ## Key Files
 
-| File                 | Purpose                    |
-| -------------------- | -------------------------- |
-| `main.cpp`           | Entry point                |
-| `TrayController.cpp` | Tray logic                 |
-| `TrayMenu.cpp`       | Menu creation              |
-| `ServiceClient.cpp`  | WatchService communication |
+| File                        | Purpose                        |
+| --------------------------- | ------------------------------ |
+| `main.cpp`                  | Application entry point        |
+| `WatchServiceController.h`  | Main controller class header   |
+| `WatchServiceController.cpp`| Main controller implementation |
 
 ## Dependencies
 
 - `WatchServiceClient` - Service communication
 - `MessageQueue` - IPC
-- `SettingsManager` - Configuration
 - Qt Widgets module
 
 ## Platform Support
@@ -170,10 +153,11 @@ flowchart TB
 ## Implementation Notes
 
 - Uses Qt's cross-platform QSystemTrayIcon for system tray functionality
-- Communicates with WatchService via MessageQueue for IPC
-- Supports all major desktop environments on Linux
-- Provides fallback behavior when system tray is not available
-- Configuration managed through Qt's QSettings framework
+- Communicates with WatchService via WatchServiceClient for service control
+- Supports launching kiosk application with different startup scenarios
+- Provides connection status indication through tray icon changes
+- Single instance application using SingleApplication framework
+- Configuration managed through hardcoded defaults (no external config files)
 
 ## Related Documentation
 
