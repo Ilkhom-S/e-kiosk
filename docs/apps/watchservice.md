@@ -53,14 +53,14 @@ workingdirectory = {WS_DIR}
 
 ; Startup behavior
 autostart = true
-startmode = auto
+startmode = normal
 priority = 1
 close_priority = 1
 afterstartdelay = 5000
 
 ; Health monitoring
 maxstartcount = 3
-firstpingtimeout = 30000
+firstpingtimeout = 60
 kill_timeout = 10000
 
 ; UI behavior
@@ -78,14 +78,14 @@ workingdirectory = {WS_DIR}
 
 ; Startup behavior
 autostart = false
-startmode = auto
+startmode = normal
 priority = 3
 close_priority = 2
 afterstartdelay = 0
 
 ; Health monitoring
 maxstartcount = 1
-firstpingtimeout = 30000
+firstpingtimeout = 60
 kill_timeout = 10000
 
 ; UI behavior
@@ -105,16 +105,17 @@ gui = false
 
 - **`autostart`** (bool): Start module automatically on WatchService startup, or manually on command
 - **`startmode`** (string):
-  - `auto`: Automatic startup mode
-  - `manual`: Manual startup only
-- **`priority`** (int): Startup priority (lower = starts first)
-- **`close_priority`** (int): Shutdown priority (lower = stops first)
-- **`afterstartdelay`** (int): Delay after startup in milliseconds
+  - `normal`: Normal startup
+  - `service`: Service startup
+  - `exclusive`: Requires termination of all other modules
+- **`priority`** (int): Startup priority (lower number = starts earlier)
+- **`close_priority`** (int): Shutdown priority (lower number = stops earlier)
+- **`afterstartdelay`** (int): Delay after startup in milliseconds (optional)
 
 #### Health Monitoring
 
-- **`maxstartcount`** (int): Maximum restart attempts (0 = unlimited)
-- **`firstpingtimeout`** (int): Initial ping timeout in milliseconds (default: 30000)
+- **`maxstartcount`** (int): Maximum restart attempts (0 = unlimited restarts, optional)
+- **`firstpingtimeout`** (int): Initial ping timeout in seconds (default: 60)
 - **`kill_timeout`** (int): Ping interval in milliseconds (default: 10000)
 - **`needtostart`** (bool): Runtime control flag
 
@@ -129,7 +130,7 @@ WatchService supports variable substitution in configuration values:
 
 #### UI Integration
 
-- **`gui`** (bool): Module has graphical interface
+- **`gui`** (bool): Whether module has graphical interface that blocks access to desktop and Windows menu
 
 ### Special Features
 
