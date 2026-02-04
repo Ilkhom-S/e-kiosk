@@ -14,7 +14,7 @@ Usage examples:
   python3 scripts/generate_icons.py --apps WatchServiceController
   python3 scripts/generate_icons.py --source assets/icons/templates --apps WatchServiceController,EKiosk
 
-For app icons, create tray-app-icon.svg in the app's template directory to generate .icns files for macOS.
+For app icons, create controller-app-icon.svg in the app's template directory to generate .icns files for macOS.
 
 Dependencies (preferred):
   pip install cairosvg Pillow
@@ -269,7 +269,7 @@ def generate_for_app(svg_dir: Path, app: str, force: bool = False) -> None:
     if not app_svg_dir.exists():
         app_svg_dir = svg_dir
 
-    # Common patterns: tray.svg (colored), tray_template.svg (single-color for macOS), tray_stopped.svg etc.
+    # Common patterns: controller.svg (colored), controller_template.svg (single-color for macOS), controller_stopped.svg etc.
     svgs = list(app_svg_dir.glob('*.svg'))
     if not svgs:
         print(f'No SVGs found in {app_svg_dir} (or {svg_dir})', file=sys.stderr)
@@ -278,7 +278,7 @@ def generate_for_app(svg_dir: Path, app: str, force: bool = False) -> None:
     print(f'Generating icons for app {app} from {app_svg_dir} into {app_icons}')
 
     for svg in svgs:
-        name = svg.stem  # e.g., tray, tray_template
+        name = svg.stem  # e.g., controller, controller_template
 
         if name.endswith('_template') or name.endswith('-template') or 'template' in name:
             # macOS-style template (single-color) — generate status sizes
@@ -297,7 +297,7 @@ def generate_for_app(svg_dir: Path, app: str, force: bool = False) -> None:
             continue
 
         # Regular colored icon: generate baseline PNG sizes and an ICO
-        # Baseline sizes for app icons / tray: produce 48, 64, 128, 256, 512
+        # Baseline sizes for app icons / controller: produce 48, 64, 128, 256, 512
         sizes = [48, 64, 128, 256, 512]
         pngs: list[Path] = []
         for s in sizes:
@@ -306,7 +306,7 @@ def generate_for_app(svg_dir: Path, app: str, force: bool = False) -> None:
                 render_svg_to_png(svg, out, s, s)
             pngs.append(out)
 
-        # Create a convenient primary filenames used by Resources.qrc: e.g., tray.png -> choose 48 as tray.png
+        # Create a convenient primary filenames used by Resources.qrc: e.g., controller.png -> choose 48 as controller.png
         primary = app_icons / f'{name}.png'
         primary_2x = app_icons / f'{name}@2x.png'
         if force or not primary.exists():
