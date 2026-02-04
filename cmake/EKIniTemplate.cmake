@@ -9,11 +9,13 @@ macro(ek_generate_ini_for_all_configs NAME TEMPLATE)
             set(_ini_output_dir "${CMAKE_CURRENT_BINARY_DIR}/${_cfg}")
         endif()
         set(WORKING_DIRECTORY "${_ini_output_dir}")
+        set(LOG_PATH "${_ini_output_dir}/logs")
         ek_generate_ini_template(
             ${NAME}
             "${TEMPLATE}"
             "${_ini_output_dir}"
             WORKING_DIRECTORY "${WORKING_DIRECTORY}"
+            LOG_PATH "${LOG_PATH}"
         )
     endforeach()
 endmacro()

@@ -5,3 +5,7 @@
 [Module1]
 ; Путь к исполняемому файлу модуля (macOS)
 file={WS_DIR}/../../ekiosk.app/Contents/MacOS/ekiosk
+
+[module_updater]
+; Путь к исполняемому файлу модуля (macOS)
+file={WS_DIR}/../../updater.app/Contents/MacOS/updater

@@ -14,6 +14,17 @@ CHECK_TIMEOUT=60000
 ; - LOG_PATH: Путь к файлу лога
 ; - CHECK_TIMEOUT: Таймаут проверки (мс)
 
+[taboo]
+; Запрещенные приложения
+applications=explorer.exe,taskmgr.exe,processhacker.exe,iexplore.exe,browser.exe,chrome.exe,firefox.exe,opera.exe
+
+; Таймаут проверки запрещенных приложений
+check_timeout=60000
+
+; Описание:
+; - applications: Список запрещенных приложений через запятую
+; - check_timeout: Таймаут проверки запрещенных приложений (мс)
+
 [Module1]
 ; Имя модуля
 name=ekiosk
@@ -61,3 +72,37 @@ kill_timeout=10000
 ; - gui: Наличие графического интерфейса у модуля
 ; - firstpingtimeout: Таймаут ожидания первого пинга от модуля (мс)
 ; - kill_timeout: Таймаут принудительного завершения процесса (мс)
+
+[module_updater]
+; Имя модуля
+name=updater
+
+; Рабочая директория модуля
+workingdirectory={WS_DIR}
+
+; Режим запуска (auto/manual)
+startmode=auto
+
+; Автоматический запуск при старте watchdog
+autostart=false
+
+; Приоритет запуска (меньше - раньше)
+priority=3
+
+; Приоритет закрытия (меньше - раньше)
+close_priority=2
+
+; Задержка после запуска (мс)
+afterstartdelay=0
+
+; Максимальное количество перезапусков
+maxstartcount=1
+
+; Графический интерфейс (true/false)
+gui=false
+
+; Таймаут первого пинга (мс)
+firstpingtimeout=30000
+
+; Таймаут принудительного завершения (мс)
+kill_timeout=10000

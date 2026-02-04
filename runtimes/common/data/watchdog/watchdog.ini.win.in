@@ -5,3 +5,7 @@
 [Module1]
 ; Путь к исполняемому файлу модуля (Windows)
 file={WS_DIR}/../../ekiosk.exe
+
+[module_updater]
+; Путь к исполняемому файлу модуля (Windows)
+file={WS_DIR}/../../updater.exe
