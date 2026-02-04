@@ -118,6 +118,8 @@ WatchService supports variable substitution in configuration values:
 
 **Example**: `file={WS_DIR}/ekiosk.exe` resolves to the ekiosk executable relative to WatchService directory.
 
+**Note**: For general settings management and configuration file handling, see the [SettingsManager documentation](../../modules/SettingsManager/README.md).
+
 ### Forbidden Application Configuration
 
 ```ini
