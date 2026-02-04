@@ -81,35 +81,6 @@ ConnectionTimeout=30000
 | WatchService | ServicePort         | int    | 8080      | WatchService port              |
 | WatchService | ConnectionTimeout   | int    | 30000     | Connection timeout (ms)        |
 
-## Installation and Startup
-
-### System Integration
-
-**Windows:**
-
-- Add to Startup folder for auto-start
-- Can be configured as system service
-
-**Linux:**
-
-- Add desktop file to `~/.config/autostart/`
-- Use systemd user service
-
-**macOS:**
-
-- Add to Login Items in System Preferences
-- Use launchd user agent
-
-### Manual Startup
-
-```bash
-# From build directory
-./WatchServiceController
-
-# With options
-./WatchServiceController --minimized --no-autostart
-```
-
 ## Operation
 
 ### Normal Operation
@@ -184,76 +155,6 @@ Enable debug logging by setting:
 Level=debug
 File=tray_debug.log
 ```
-
-## Integration with WatchService
-
-### Communication Protocol
-
-The controller application communicates with WatchService using:
-
-- **Message Queue**: Qt signals/slots for IPC
-- **Status Updates**: Real-time status notifications
-- **Command Execution**: Remote start/stop/restart commands
-- **Health Monitoring**: Ping/pong health checks
-
-### Module Management
-
-The controller provides fine-grained control over individual modules:
-
-- **Individual Control**: Start/stop specific modules without affecting others
-- **Dependency Awareness**: Respects module dependencies and priorities
-- **Status Tracking**: Real-time status updates for all modules
-- **Error Reporting**: Detailed error messages and recovery suggestions
-
-## Platform-Specific Notes
-
-### Windows
-
-- Full system tray support
-- Native Windows notifications
-- Integration with Windows Task Manager
-- Startup folder integration
-
-### Linux
-
-- Depends on desktop environment tray support
-- May require specific Qt platform plugins
-- Systemd user service integration
-- X11/Wayland compatibility
-
-### macOS
-
-- Native macOS menu bar integration
-- Notification Center integration
-- Launchd user agent support
-- App bundle support
-
-## Security Considerations
-
-- **IPC Security**: Communication with WatchService should be secured
-- **Configuration Access**: Sensitive settings should be protected
-- **Log Security**: Log files may contain sensitive information
-- **Network Security**: Remote connections should use secure protocols
-
-## Performance Tuning
-
-### Memory Usage
-
-- Monitor memory usage in long-running deployments
-- Configure appropriate log rotation
-- Clean up unused resources
-
-### CPU Usage
-
-- Status update frequency can be adjusted
-- Notification frequency can be limited
-- Background processing can be optimized
-
-### Network Usage
-
-- Connection keep-alive settings
-- Timeout configurations
-- Retry logic for network failures
 
 ## Related Documentation
 
