@@ -55,7 +55,7 @@ Modules are defined in separate INI sections with the patterns shown above. Each
   - `service`: Service startup
   - `exclusive`: Requires termination of all other modules
 - **`priority`** (int): Startup priority (lower number = starts earlier)
-- **`close_priority`** (int): Shutdown priority (lower number = stops earlier)
+- **`close_priority`** (int): Shutdown priority (lower number = stops earlier). Modules stop in ascending order: 0 stops first, 1 stops second, etc.
 - **`afterstartdelay`** (int): Delay after startup in milliseconds (optional)
 
 #### Health Monitoring
@@ -120,15 +120,6 @@ Modules start in ascending priority order (lower numbers first):
 priority = 0  → Starts first
 priority = 1  → Starts second
 priority = 2  → Starts third
-```
-
-##### Shutdown Priority
-
-Modules stop in ascending close_priority order:
-
-```text
-close_priority = 0  → Stops first
-close_priority = 1  → Stops second
 ```
 
 ##### Exclusive Mode
