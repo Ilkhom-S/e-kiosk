@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-    <!-- Template mask for kiosk: white glyph on transparent background. -->
-    <rect x="12" y="8" width="40" height="34" rx="4" fill="#FFFFFF" />
-    <rect x="18" y="14" width="28" height="20" rx="2" fill="#000000" />
-    <rect x="24" y="40" width="16" height="6" rx="2" fill="#FFFFFF" />
-</svg>

@@ -3,23 +3,24 @@
 To maintain a premium, unified aesthetic across the **macOS Sequoia**, **Windows 11**, and **Linux** versions of the Humo Kiosk suite, all icons must follow these technical and visual standards.
 
 ## 1. Visual Hierarchy
+
 The ecosystem is divided into two tiers to help users and admins distinguish between platform tools and third-party services:
 
-| Tier | Background | Glyph Color | Usage |
-| :--- | :--- | :--- | :--- |
-| **Core Suite** | **Brand Orange Gradient** | White (#FFFFFF) | Kiosk Client, Controller, Guard, Updater |
-| **Providers** | **Dark Charcoal Gradient** | White (#FFFFFF) | Banks, Utilities, Mobile Operators |
+| Tier           | Background                 | Glyph Color     | Usage                                    |
+| :------------- | :------------------------- | :-------------- | :--------------------------------------- |
+| **Core Suite** | **Brand Orange Gradient**  | White (#FFFFFF) | Kiosk Client, Controller, Guard, Updater |
+| **Providers**  | **Dark Charcoal Gradient** | White (#FFFFFF) | Banks, Utilities, Mobile Operators       |
 
 ---
 
 ## 2. Technical Specifications
 
-* **Canvas Size:** 512 x 512 px.
-* **Corner Radius:** 112px (Standard Apple Squircle).
-* **Namespace (Critical):** All SVGs **MUST** include `xmlns="http://www.w3.org/2000/svg"`. Without this exact URL, the `rsvg-convert` tool will fail with "XML does not have root."
-* **Bezel (The "Charm"):** Icons utilize a dual-hairline rim light to simulate glass depth.
-  * **Top-Left:** 1.5pt White Stroke (0.8 Opacity).
-  * **Bottom-Right:** 1.2pt White Stroke (0.4 Opacity).
+- **Canvas Size:** 512 x 512 px.
+- **Corner Radius:** 112px (Standard Apple Squircle).
+- **Namespace (Critical):** All SVGs **MUST** include `xmlns="http://www.w3.org/2000/svg"`. Without this exact URL, the `rsvg-convert` tool will fail with "XML does not have root."
+- **Bezel (The "Charm"):** Icons utilize a dual-hairline rim light to simulate glass depth.
+  - **Top-Left:** 1.5pt White Stroke (0.8 Opacity).
+  - **Bottom-Right:** 1.2pt White Stroke (0.4 Opacity).
 
 ---
 
@@ -66,9 +67,9 @@ Third-party providers should use the following SVG structure. Simply replace the
 
 ### Source Files
 
-* All vector icon sources are organized by app in `assets/icons/templates/` subdirectories
-* Core suite apps use brand orange gradient backgrounds
-* Provider apps use dark charcoal gradient backgrounds
+- All vector icon sources are organized by app in `assets/icons/templates/` subdirectories
+- Core suite apps use brand orange gradient backgrounds
+- Provider apps use dark charcoal gradient backgrounds
 
 ### Automated Export: `scripts/generate_icons.py`
 
@@ -80,23 +81,25 @@ python3 scripts/generate_icons.py --apps Updater
 
 ### Recommended PNG Exports
 
-* 1x: 16, 22, 24, 32, 48, 64
-* 2x (retina): 32, 44, 48, 64, 96, 128
-* For macOS template: export monochrome PNGs at 1x and 2x
+- 1x: 16, 22, 24, 32, 48, 64
+- 2x (retina): 32, 44, 48, 64, 96, 128
+- For macOS template: export monochrome PNGs at 1x and 2x
 
 ### Converter Requirements
 
-* **Preferred:** `cairosvg` Python module (`pip install cairosvg Pillow`)
-* **Fallbacks:** Inkscape (CLI), `rsvg-convert`, ImageMagick `convert`
+- **Preferred:** `cairosvg` Python module (`pip install cairosvg Pillow`)
+- **Fallbacks:** Inkscape (CLI), `rsvg-convert`, ImageMagick `convert`
 
 ## 5. Integration
 
-* Place generated icons in `apps/<app>/src/icons/`
-* Reference icons in your Qt `.qrc` resource files for use in the app
-* Ensure proper namespace declaration in all SVG sources
+- Place generated icons in `apps/<app>/src/icons/`
+- Reference icons in your Qt `.qrc` resource files for use in the app
+- Ensure proper namespace declaration in all SVG sources
 
 ## 6. Platform-Specific Notes
 
-* **macOS:** For menu bar (template) images, supply a monochrome PNG (alpha mask)
-* **Windows:** ICO files are automatically generated from PNG sources
+- **macOS:** For menu bar (template) images, supply a monochrome PNG (alpha mask)
+- **Windows:** ICO files are automatically generated from PNG sources
+- **Windows:** ICO files are automatically generated from PNG sources
+
 * **Linux:** PNG files are used directly in desktop environments

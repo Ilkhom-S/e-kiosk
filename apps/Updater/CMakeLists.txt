@@ -44,8 +44,44 @@ ek_add_application(updater
     INCLUDE_DIRS src
 )
 
+if(APPLE)
+    # Configure as standard application that shows in dock
+    set_target_properties(updater PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/Info.plist"
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_ICON_FILE updater-app-icon.icns
+    )
+    # Copy icon to bundle Resources
+    add_custom_command(TARGET updater POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:updater>/Contents/Resources
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/updater-app-icon.icns $<TARGET_BUNDLE_DIR:updater>/Contents/Resources/AppIcon.icns
+    )
+endif()
+
 if(WIN32)
     target_link_libraries(updater PRIVATE Advapi32 User32)
+endif()
+
+# Translations
+file(GLOB TS_FILES src/locale/updater_*.ts)
+if(TS_FILES)
+    # Ensure output directory exists
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/locale)
+    ek_add_translations(UpdaterTranslations
+        SOURCES ${TS_FILES}
+        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        INSTALL
+    )
+    if(TARGET UpdaterTranslations_translations)
+        add_dependencies(updater UpdaterTranslations_translations)
+        # Copy translation files to bin/locale for cross-platform compatibility
+        add_custom_command(TARGET updater POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_BINARY_DIR}/locale
+            ${CMAKE_BINARY_DIR}/bin/locale
+            COMMENT "Copying translation files to bin/locale for cross-platform compatibility"
+        )
+    endif()
 endif()
 
 # Link SingleApplication for single-instance app support (Qt5/Qt6 compatible)
