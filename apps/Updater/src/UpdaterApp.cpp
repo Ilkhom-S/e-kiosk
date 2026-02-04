@@ -594,7 +594,7 @@ void UpdaterApp::onUpdateComplete(CUpdaterErrors::Enum aError)
     {
         // Запускаем controller
         if (!QProcess::startDetached(getWorkingDirectory() + QDir::separator() +
-                                     CWatchService::Modules::WatchServiceController + ".exe"))
+                                     CWatchService::Modules::WatchServiceController + getExecutableExtension()))
         {
             getLog()->write(LogLevel::Error, "Failed to launch controller app.");
         }
@@ -638,8 +638,8 @@ int UpdaterApp::getResultCode() const
 void UpdaterApp::onConfigReady(CUpdaterErrors::Enum aError)
 {
     // Удаляем из конфигурации шаблоны чеков
-    cleanDir(QDir::currentPath() + "/user/templates");
-    QDir(QDir::currentPath() + "/user").rmdir("templates");
+    cleanDir(QDir::currentPath() + QDir::separator() + "user" + QDir::separator() + "templates");
+    QDir(QDir::currentPath() + QDir::separator() + "user").rmdir("templates");
 
     // Перезапускаем ПО.
     mWatchServiceClient->restartService(QStringList());
@@ -692,6 +692,28 @@ QString UpdaterApp::getUpdaterTempDir() const
 
     tempDir.cd(tempDirName);
     return tempDir.canonicalPath();
+}
+
+//---------------------------------------------------------------------------
+QString UpdaterApp::getExecutableExtension() const
+{
+#ifdef Q_OS_WIN
+    return ".exe";
+#else
+    return QString();
+#endif
+}
+
+//---------------------------------------------------------------------------
+QString UpdaterApp::getLibraryExtension() const
+{
+#ifdef Q_OS_WIN
+    return ".dll";
+#elif defined(Q_OS_MAC)
+    return ".dylib";
+#else
+    return ".so";
+#endif
 }
 
 //---------------------------------------------------------------------------
@@ -775,8 +797,10 @@ bool UpdaterApp::CopyToTempPath()
     QDir(tempDirPath).mkdir("platforms");
     QDir(tempDirPath).mkdir("imageformats");
 
-    return copyFiles(updaterFileInfo.path() + "/platforms", "*.dll", tempDirPath + "/platforms") &&
-           copyFiles(updaterFileInfo.path() + "/imageformats", "*.dll", tempDirPath + "/imageformats");
+    return copyFiles(updaterFileInfo.path() + QDir::separator() + "platforms", "*" + getLibraryExtension(),
+                     tempDirPath + QDir::separator() + "platforms") &&
+           copyFiles(updaterFileInfo.path() + QDir::separator() + "imageformats", "*" + getLibraryExtension(),
+                     tempDirPath + QDir::separator() + "imageformats");
 }
 
 //---------------------------------------------------------------------------
@@ -786,7 +810,7 @@ bool UpdaterApp::copyFiles(const QString &from, const QString &mask, const QStri
 
     Q_FOREACH (QString file, fromDir.entryList(QStringList() << mask))
     {
-        QString dstFileName = to + "/" + QFileInfo(file).fileName();
+        QString dstFileName = to + QDir::separator() + QFileInfo(file).fileName();
         getLog()->write(LogLevel::Normal, QString("Copy: '%1'.").arg(file));
         if (!QFile::copy(fromDir.filePath(file), dstFileName))
         {

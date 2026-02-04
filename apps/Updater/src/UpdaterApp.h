@@ -146,6 +146,12 @@ class UpdaterApp : public QObject, public BasicQtApplication<SafeQApplication>
     /// возвращает временную папку, откуда будем запускать updater
     QString getUpdaterTempDir() const;
 
+    /// Возвращает расширение исполняемого файла для текущей платформы
+    QString getExecutableExtension() const;
+
+    /// Возвращает расширение библиотек для текущей платформы
+    QString getLibraryExtension() const;
+
     /// Закрытие приложения через aTimeout секунд с признаком ошибки aError
     void delayedExit(int aTimeout, CUpdaterErrors::Enum aError);
 
