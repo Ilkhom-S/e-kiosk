@@ -48,9 +48,9 @@ The application provides a comprehensive system tray menu with:
 
 ### Log Files
 
-Application logs are located at `logs/{yyyy.mm.dd}/WatchServiceController.log` in the installation directory, where `{yyyy.mm.dd}` represents the current date in YYYY.MM.DD format.
+Application logs are located at `logs/{yyyy.mm.dd} WatchServiceController.log` in the installation directory, where `{yyyy.mm.dd}` represents the current date in YYYY.MM.DD format.
 
-For example, if installed in `/opt/ekiosk/`, logs would be at `/opt/ekiosk/logs/2026.02.04/WatchServiceController.log`.
+For example, if installed in `/opt/ekiosk/`, logs would be at `/opt/ekiosk/logs/2026.02.04 WatchServiceController.log`.
 
 ### Debug Mode
 
