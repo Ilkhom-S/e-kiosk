@@ -6,10 +6,10 @@ To maintain a premium, unified aesthetic across the **macOS Sequoia**, **Windows
 
 The ecosystem is divided into two tiers to help users and admins distinguish between platform tools and third-party services:
 
-| Tier           | Background                 | Glyph Color     | Usage                                    |
-| :------------- | :------------------------- | :-------------- | :--------------------------------------- |
-| **Core Suite** | **Brand Orange Gradient**  | White (#FFFFFF) | Kiosk Client, Controller, Guard, Updater |
-| **Providers**  | **Dark Charcoal Gradient** | White (#FFFFFF) | Banks, Utilities, Mobile Operators       |
+| Tier           | Background                 | Glyph Color     | Usage                                       |
+| :------------- | :------------------------- | :-------------- | :------------------------------------------ |
+| **Core Suite** | **Brand Orange Gradient**  | White (#FFFFFF) | Kiosk Client, Controller, Watchdog, Updater |
+| **Providers**  | **Dark Charcoal Gradient** | White (#FFFFFF) | Banks, Utilities, Mobile Operators          |
 
 ---
 
@@ -102,4 +102,4 @@ python3 scripts/generate_icons.py --apps Updater
 - **Windows:** ICO files are automatically generated from PNG sources
 - **Windows:** ICO files are automatically generated from PNG sources
 
-* **Linux:** PNG files are used directly in desktop environments
+- **Linux:** PNG files are used directly in desktop environments

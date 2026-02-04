@@ -340,7 +340,7 @@ void WatchServiceController::onStartServiceClicked(const QString &aArguments)
         }
 
         // Get platform-specific executable path
-        QString path = getExecutablePath("guard");
+        QString path = getExecutablePath("watchdog");
 
         // Validate executable exists
         if (!QFile::exists(path))

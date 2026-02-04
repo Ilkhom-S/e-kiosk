@@ -343,7 +343,7 @@ void WatchService::loadConfiguration()
 	QSettings userSettings(ISysUtils::rmBOM(BasicApplication::getInstance()->getWorkingDirectory() + "/user/user.ini"), QSettings::IniFormat);
 	userSettings.setIniCodec("UTF-8");
 
-	if (userSettings.value("guard/taboo_enabled").toString() == "true")
+	if (userSettings.value("watchdog/taboo_enabled").toString() == "true")
 	{
 		settings.beginGroup("taboo");
 		mForbiddenModules = settings.value("applications", "").toStringList();

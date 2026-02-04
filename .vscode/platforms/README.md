@@ -35,4 +35,4 @@ Both platforms provide:
 - **Debug EKiosk**: Debug the main client application
 - **Debug Tray**: Debug the tray/watch service controller
 - **Run EKiosk**: Run the client without debugging
-- **Debug WatchService**: Debug the guard service
+- **Debug WatchService**: Debug the watchdog service

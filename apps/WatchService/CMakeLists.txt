@@ -1,4 +1,4 @@
-# WatchService (guard) application
+# WatchService (watchdog) application
 
 file(GLOB WATCHSERVICE_SOURCES
     src/*.cpp
@@ -33,7 +33,7 @@ file(GLOB WATCHSERVICE_RC_FILES
 
 set(WS_VERSION_RC ${CMAKE_SOURCE_DIR}/include/Common/CoreVersion.rc)
 
-ek_add_application(guard
+ek_add_application(watchdog
     FOLDER "apps"
     SOURCES
     ${WATCHSERVICE_SOURCES}
@@ -52,35 +52,35 @@ ek_add_application(guard
 )
 
 if(WIN32)
-    target_link_libraries(guard PRIVATE Advapi32 User32 Winspool)
+    target_link_libraries(watchdog PRIVATE Advapi32 User32 Winspool)
 endif()
 
 if(APPLE)
     # Configure as GUI app with custom Info.plist
-    set_target_properties(guard PROPERTIES
+    set_target_properties(watchdog PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/Info.plist"
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_ICON_FILE AppIcon
     )
-    target_sources(guard PRIVATE src/icons/guard-app-icon.icns)
+    target_sources(watchdog PRIVATE src/icons/watchdog-app-icon.icns)
 
     # Copy icon to bundle Resources
-    add_custom_command(TARGET guard POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:guard>/Contents/Resources
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/guard-app-icon.icns $<TARGET_BUNDLE_DIR:guard>/Contents/Resources/AppIcon.icns
+    add_custom_command(TARGET watchdog POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:watchdog>/Contents/Resources
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/watchdog-app-icon.icns $<TARGET_BUNDLE_DIR:watchdog>/Contents/Resources/AppIcon.icns
     )
 endif()
 
 # Link SingleApplication for single-instance app support (Qt5/Qt6 compatible)
 # Uses itay-grudev/SingleApplication: https://github.com/itay-grudev/SingleApplication
 if(TARGET SingleApplication::SingleApplication)
-    target_link_libraries(guard PUBLIC SingleApplication::SingleApplication)
+    target_link_libraries(watchdog PUBLIC SingleApplication::SingleApplication)
 else()
     message(WARNING "SingleApplication not found - single-instance app support disabled")
 endif()
 
 # Translations
-file(GLOB TS_FILES src/locale/guard_*.ts)
+file(GLOB TS_FILES src/locale/watchdog_*.ts)
 if(TS_FILES)
     # Ensure output directory exists
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/locale)
@@ -90,9 +90,9 @@ if(TS_FILES)
         INSTALL
     )
     if(TARGET WatchServiceTranslations_translations)
-        add_dependencies(guard WatchServiceTranslations_translations)
+        add_dependencies(watchdog WatchServiceTranslations_translations)
         # Copy translation files to bin/locale directory
-        add_custom_command(TARGET guard POST_BUILD
+        add_custom_command(TARGET watchdog POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_BINARY_DIR}/locale
             ${CMAKE_BINARY_DIR}/bin/locale
@@ -101,6 +101,6 @@ if(TS_FILES)
     endif()
 endif()
 
-# Генерация guard.ini для всех конфигураций
+# Генерация watchdog.ini для всех конфигураций
 include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
-ek_generate_ini_for_all_configs(guard "${CMAKE_SOURCE_DIR}/runtimes/common/data/guard.ini.in")
+ek_generate_ini_for_all_configs(watchdog "${CMAKE_SOURCE_DIR}/runtimes/common/data/watchdog.ini.in")

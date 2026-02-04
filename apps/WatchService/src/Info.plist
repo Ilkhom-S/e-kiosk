@@ -9,11 +9,11 @@
         <key>CFBundleIconFile</key>
         <string>AppIcon</string>
         <key>CFBundleIdentifier</key>
-        <string>com.humo.guard</string>
+        <string>com.humo.watchdog</string>
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
         <key>CFBundleName</key>
-        <string>Guard</string>
+        <string>Watchdog</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>

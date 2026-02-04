@@ -613,7 +613,7 @@ void UpdaterApp::onUpdateComplete(CUpdaterErrors::Enum aError)
         }
     }
 
-    // Завершаем работу приложения через 10 секунд, что бы guard успел отобразить окно блокировки
+    // Завершаем работу приложения через 10 секунд, что бы watchdog успел отобразить окно блокировки
     delayedExit(10, aError);
 }
 
@@ -644,7 +644,7 @@ void UpdaterApp::onConfigReady(CUpdaterErrors::Enum aError)
     // Перезапускаем ПО.
     mWatchServiceClient->restartService(QStringList());
 
-    // Завершаем работу приложения через 5 секунд, что бы guard успел получить сигнал перезагрузки ТК
+    // Завершаем работу приложения через 5 секунд, что бы watchdog успел получить сигнал перезагрузки ТК
     delayedExit(5, aError);
 }
 
@@ -898,7 +898,7 @@ void UpdaterApp::updateErrorDescription()
     if (descriptions.isEmpty())
     {
         descriptions.insert(CUpdaterApp::ExitCode::ErrorRunFromTempDir, tr("#error_run_from_temp_dir"));
-        descriptions.insert(CUpdaterApp::ExitCode::NoWatchService, tr("#error_connection_to_guard"));
+        descriptions.insert(CUpdaterApp::ExitCode::NoWatchService, tr("#error_connection_to_watchdog"));
         descriptions.insert(CUpdaterApp::ExitCode::UnknownCommand, tr("#error_unknown_command"));
         descriptions.insert(CUpdaterApp::ExitCode::SecondInstance, tr("#error_second_instance"));
         descriptions.insert(CUpdaterApp::ExitCode::UnknownError, tr("#error_unknown"));

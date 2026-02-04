@@ -134,13 +134,13 @@ flowchart TB
         end
         subgraph IPC["Communication"]
             WatchServiceClient["WatchService Client<br/>- Status query<br/>- Commands"]
-            MessageQueue["MessageQueue<br/>- IPC with guard"]
+            MessageQueue["MessageQueue<br/>- IPC with watchdog"]
         end
         SystemTrayIcon --> MenuActions
         WatchServiceClient --> MessageQueue
     end
 
-    Controller --> WatchService["WatchService<br/>(guard)"]
+    Controller --> WatchService["WatchService<br/>(watchdog)"]
 ```
 
 ## Key Files

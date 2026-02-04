@@ -8,19 +8,19 @@
         <file>images/states/4_1.png</file>
         <file>images/states/5_1.png</file>
         <file>images/states/7_1.png</file>
-        <file>icons/guard-app-icon-128.png</file>
-        <file>icons/guard-app-icon-256.png</file>
-        <file>icons/guard-app-icon-48.png</file>
-        <file>icons/guard-app-icon-512.png</file>
-        <file>icons/guard-app-icon-64.png</file>
-        <file>icons/guard-app-icon-96.png</file>
-        <file>icons/guard-app-icon-ico-16.png</file>
-        <file>icons/guard-app-icon-ico-256.png</file>
-        <file>icons/guard-app-icon-ico-32.png</file>
-        <file>icons/guard-app-icon-ico-48.png</file>
-        <file>icons/guard-app-icon.icns</file>
-        <file>icons/guard-app-icon.ico</file>
-        <file>icons/guard-app-icon.png</file>
-        <file>icons/guard-app-icon@2x.png</file>
+        <file>icons/watchdog-app-icon-128.png</file>
+        <file>icons/watchdog-app-icon-256.png</file>
+        <file>icons/watchdog-app-icon-48.png</file>
+        <file>icons/watchdog-app-icon-512.png</file>
+        <file>icons/watchdog-app-icon-64.png</file>
+        <file>icons/watchdog-app-icon-96.png</file>
+        <file>icons/watchdog-app-icon-ico-16.png</file>
+        <file>icons/watchdog-app-icon-ico-256.png</file>
+        <file>icons/watchdog-app-icon-ico-32.png</file>
+        <file>icons/watchdog-app-icon-ico-48.png</file>
+        <file>icons/watchdog-app-icon.icns</file>
+        <file>icons/watchdog-app-icon.ico</file>
+        <file>icons/watchdog-app-icon.png</file>
+        <file>icons/watchdog-app-icon@2x.png</file>
     </qresource>
 </RCC>

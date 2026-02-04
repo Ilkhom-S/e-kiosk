@@ -8,7 +8,7 @@ WatchServiceController provides a **system tray interface** for monitoring and c
 
 ## Purpose
 
-- **Service Management**: Start and stop the WatchService (guard) daemon
+- **Service Management**: Start and stop the WatchService (watchdog) daemon
 - **Status Monitoring**: Real-time display of WatchService and module status
 - **Manual Control**: Start, stop, and restart applications manually
 - **Log Access**: Quick access to application logs and error messages
@@ -122,7 +122,7 @@ ConnectionTimeout=30000
 
 ### Tray Menu Options
 
-- **Start Service**: Launch the WatchService (guard) daemon
+- **Start Service**: Launch the WatchService (watchdog) daemon
 - **Start Application**: Launch specific module
 - **Stop Application**: Stop specific module
 - **Restart Application**: Restart specific module

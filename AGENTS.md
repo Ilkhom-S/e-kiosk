@@ -875,7 +875,7 @@ All commits must follow the [Conventional Commits](https://www.conventionalcommi
 
 **Recommended scopes for this project:**
 
-- apps/kiosk, apps/updater, apps/guard
+- apps/kiosk, apps/updater, apps/watchdog
 - src, include, thirdparty, tests, docs, cmake
 - devices, modules, ui, connection, db, other, updater
 - build, ci, config, migration
@@ -938,7 +938,7 @@ Always include a **Platform Compatibility** section for every module, specifying
 
 ## Folder Structure (2026 Modular Redesign)
 
-- **apps/**: Contains all executable applications (e.g., kiosk, updater, guard). Each app has its own folder.
+- **apps/**: Contains all executable applications (e.g., kiosk, updater, watchdog). Each app has its own folder.
   - Each app (e.g., `kiosk`) has its own `src/` for code, and a `CMakeLists.txt` at the app root.
   - Platform/build folders (e.g., `msvc/`) can also be placed at the app root.
 - **src/**: Shared code and libraries, to be refactored from apps/kiosk/src as modularization proceeds.

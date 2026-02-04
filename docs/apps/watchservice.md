@@ -1,4 +1,4 @@
-# WatchService (Guard Application)
+# WatchService (Watchdog Application)
 
 ## Overview
 
@@ -13,7 +13,7 @@ WatchService is a critical system component that acts as a **process supervisor 
 - **Screen Protection**: Displays protective splash screen when no GUI applications are active
 - **Health Checks**: Performs periodic health checks via ping messages
 - **Priority Management**: Ensures applications start/stop in correct order
-- **Single Instance**: Prevents multiple guard instances from running
+- **Single Instance**: Prevents multiple watchdog instances from running
 
 ## Architecture
 
@@ -112,14 +112,14 @@ WatchService automatically manages screen protection:
 
 ```ini
 [extensions]
-guard/taboo_enabled = true
+watchdog/taboo_enabled = true
 
 [taboo]
 applications = notepad${EXE_SUFFIX},calc${EXE_SUFFIX},explorer${EXE_SUFFIX}
 check_timeout = 60000
 ```
 
-- **`guard/taboo_enabled`** (bool): Enable forbidden app monitoring
+- **`watchdog/taboo_enabled`** (bool): Enable forbidden app monitoring
 - **`applications`** (string list): Comma-separated list of forbidden executables
 - **`check_timeout`** (int): Check interval in milliseconds
 

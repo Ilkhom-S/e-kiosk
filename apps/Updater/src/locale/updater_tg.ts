@@ -30,7 +30,7 @@
         <message>
             <location filename="../UpdaterApp.cpp" line="846" />
             <source>#error_connection_to_guard</source>
-            <translation>Хатои пайвастшавӣ бо guard.exe</translation>
+            <translation>Хатои пайвастшавӣ бо watchdog.exe</translation>
         </message>
         <message>
             <location filename="../UpdaterApp.cpp" line="847" />

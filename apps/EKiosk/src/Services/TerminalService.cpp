@@ -137,7 +137,7 @@ bool TerminalService::initialize()
     }
     else
     {
-        toLog(LogLevel::Error, "Guard service module is not available.");
+        toLog(LogLevel::Error, "Watchdog service module is not available.");
         return false;
     }
 }

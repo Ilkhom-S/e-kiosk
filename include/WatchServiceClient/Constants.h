@@ -72,7 +72,7 @@ namespace CWatchService
     namespace Modules
     {
         /// Сторожевой сервис.
-        const QString WatchService = "guard";
+        const QString WatchService = "watchdog";
         /// EKiosk.
         const QString EKiosk = "ekiosk";
         /// Обновитель.

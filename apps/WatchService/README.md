@@ -1,4 +1,4 @@
-# WatchService (guard)
+# WatchService (watchdog)
 
 **🔧 Developer Documentation** - Technical details for building and developing the WatchService application.
 
@@ -29,10 +29,10 @@ Cross-platform process supervisor and kiosk management daemon that:
 cmake -S . -B build/macos-qt6 -DCMAKE_PREFIX_PATH=/usr/local/opt/qt6
 
 # Build
-cmake --build build/macos-qt6 --target guard
+cmake --build build/macos-qt6 --target watchdog
 
 # Run
-./build/macos-qt6/bin/guard.app/Contents/MacOS/guard
+./build/macos-qt6/bin/watchdog.app/Contents/MacOS/watchdog
 ```
 
 ### Platform-Specific Notes
@@ -51,13 +51,13 @@ WatchService runs as a regular Qt application. No special installation is requir
 
 ```bash
 # macOS
-./build/macos-qt6/bin/guard.app/Contents/MacOS/guard
+./build/macos-qt6/bin/watchdog.app/Contents/MacOS/watchdog
 
 # Linux
-./build/linux-qt6/bin/guard
+./build/linux-qt6/bin/watchdog
 
 # Windows
-./build/windows-qt6/bin/guard.exe
+./build/windows-qt6/bin/watchdog.exe
 ```
 
 **System integration:**

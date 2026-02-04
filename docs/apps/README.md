@@ -11,7 +11,7 @@ Each application has **two levels of documentation**:
 
 ## Available Applications
 
-### [WatchService (Guard Application)](watchservice.md)
+### [WatchService (Watchdog Application)](watchservice.md)
 
 Process supervisor and kiosk management daemon for monitoring critical applications.
 
