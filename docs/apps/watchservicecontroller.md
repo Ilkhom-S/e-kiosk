@@ -23,15 +23,6 @@ The application provides a comprehensive system tray menu with:
 - **Application Control**: Start/stop/restart individual modules
 - **System Information**: Version information and system status
 
-### Status Indicators
-
-| Icon | Status   | Description                       |
-| ---- | -------- | --------------------------------- |
-| 🟢   | Running  | Application is running normally   |
-| 🔴   | Stopped  | Application is stopped            |
-| 🟡   | Starting | Application is starting up        |
-| ⚠️   | Error    | Application has errors or crashed |
-
 ## Configuration
 
 **Note:** WatchServiceController currently does not read configuration files. All settings are hardcoded or use system defaults. Future versions may support configuration files for customization.
