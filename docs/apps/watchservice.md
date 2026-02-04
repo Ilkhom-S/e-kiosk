@@ -35,29 +35,59 @@ WatchService runs as a background daemon that:
 
 ### Module Configuration Format
 
-Each module is defined in a separate INI section with the pattern `[module_<name>]`:
+Modules are defined in separate INI sections. Common patterns include:
+
+- `[Module1]`, `[Module2]`, etc. - For numbered main modules
+- `[module_<name>]` - For named modules (e.g., `[module_updater]`)
+
+#### Main Application Module Example
 
 ```ini
-[module_payment_processor]
+[Module1]
 ; Basic module information
-name = payment_processor
-file = {WS_DIR}/payment_processor${EXE_SUFFIX}
+name = ekiosk
+file = {WS_DIR}/../../ekiosk${EXE_SUFFIX}
 workingdirectory = {WS_DIR}
 
 ; Startup behavior
 autostart = true
-startmode = normal
+startmode = auto
 priority = 1
-close_priority = 0
-afterstartdelay = 3000
+close_priority = 1
+afterstartdelay = 5000
 
 ; Health monitoring
-maxstartcount = 0
-firstpingtimeout = 60
-killtimeout = 30
+maxstartcount = 3
+firstpingtimeout = 30000
+kill_timeout = 10000
 
 ; UI behavior
 gui = true
+```
+
+#### Updater Service Module Example
+
+```ini
+[module_updater]
+; Basic module information
+name = updater
+file = {WS_DIR}/../../updater${EXE_SUFFIX}
+workingdirectory = {WS_DIR}
+
+; Startup behavior
+autostart = false
+startmode = auto
+priority = 3
+close_priority = 2
+afterstartdelay = 0
+
+; Health monitoring
+maxstartcount = 1
+firstpingtimeout = 30000
+kill_timeout = 10000
+
+; UI behavior
+gui = false
 ```
 
 ### Configuration Parameters
@@ -73,9 +103,8 @@ gui = true
 
 - **`autostart`** (bool): Start module automatically on WatchService startup
 - **`startmode`** (string):
-  - `normal`: Standard startup
-  - `service`: Run as background service
-  - `exclusive`: Exclusive mode (pauses other modules)
+  - `auto`: Automatic startup mode
+  - `manual`: Manual startup only
 - **`priority`** (int): Startup priority (lower = starts first)
 - **`close_priority`** (int): Shutdown priority (lower = stops first)
 - **`afterstartdelay`** (int): Delay after startup in milliseconds
@@ -83,8 +112,8 @@ gui = true
 #### Health Monitoring
 
 - **`maxstartcount`** (int): Maximum restart attempts (0 = unlimited)
-- **`firstpingtimeout`** (int): Initial ping timeout in seconds (default: 60)
-- **`killtimeout`** (int): Ping interval in seconds (default: 30)
+- **`firstpingtimeout`** (int): Initial ping timeout in milliseconds (default: 30000)
+- **`kill_timeout`** (int): Ping interval in milliseconds (default: 10000)
 - **`needtostart`** (bool): Runtime control flag
 
 ### Configuration Variables
