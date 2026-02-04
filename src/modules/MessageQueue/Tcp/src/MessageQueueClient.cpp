@@ -7,7 +7,7 @@
 MessageQueueClient::MessageQueueClient() : ILogable(CIMessageQueueClient::DefaultLog)
 {
     QObject::connect(&m_socket, SIGNAL(readyRead()), this, SLOT(onSocketReadyRead()));
-    QObject::connect(&m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
+    QObject::connect(&m_socket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this,
                      SLOT(onSocketError(QAbstractSocket::SocketError)));
     QObject::connect(&m_socket, SIGNAL(disconnected()), this, SLOT(onSocketDisconnected()));
     // QObject::connect(&m_answerTimer, SIGNAL(timeout()), this, SLOT(onSocketDisconnected()));
