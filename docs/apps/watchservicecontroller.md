@@ -39,47 +39,7 @@ The application provides a comprehensive system tray menu with:
 
 ## Configuration
 
-### File Location
-
-- **Primary**: `apps/WatchServiceController/src/controller.ini` (template)
-- **Runtime**: Generated `controller.ini` in build directory
-- **User Overrides**: `user.ini` for runtime adjustments
-
-### Configuration Options
-
-```ini
-[Controller]
-; Auto-start behavior
-AutoStart=true
-ShowNotifications=true
-MinimizeOnClose=true
-
-[Display]
-; UI customization
-IconTheme=default
-ShowStatusInMenu=true
-NotificationTimeout=5000
-
-[WatchService]
-; Connection settings
-ServiceHost=localhost
-ServicePort=8080
-ConnectionTimeout=30000
-```
-
-### Configuration Parameters
-
-| Section      | Parameter           | Type   | Default   | Description                    |
-| ------------ | ------------------- | ------ | --------- | ------------------------------ |
-| Controller   | AutoStart           | bool   | true      | Auto-start with system         |
-| Controller   | ShowNotifications   | bool   | true      | Show system notifications      |
-| Controller   | MinimizeOnClose     | bool   | true      | Minimize to tray on close      |
-| Display      | IconTheme           | string | default   | Icon theme to use              |
-| Display      | ShowStatusInMenu    | bool   | true      | Show status in menu            |
-| Display      | NotificationTimeout | int    | 5000      | Notification display time (ms) |
-| WatchService | ServiceHost         | string | localhost | WatchService host              |
-| WatchService | ServicePort         | int    | 8080      | WatchService port              |
-| WatchService | ConnectionTimeout   | int    | 30000     | Connection timeout (ms)        |
+**Note:** WatchServiceController currently does not read configuration files. All settings are hardcoded or use system defaults. Future versions may support configuration files for customization.
 
 ## Operation
 
