@@ -45,6 +45,9 @@
   "cmake.debugConfig": {
     "type": "cppdbg",
     "MIMode": "lldb",
+    "logging": {
+      "moduleLoad": false
+    },
     "miDebuggerPath": "/Users/ilkhom/.vscode/extensions/ms-vscode.cpptools-1.30.3-darwin-arm64/debugAdapters/lldb-mi/bin/lldb-mi"
   },
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",

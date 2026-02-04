@@ -51,7 +51,8 @@
         "${workspaceFolder}",
         "-B",
         "${workspaceFolder}/build/macos-qt6",
-        "-DCMAKE_PREFIX_PATH=/usr/local/opt/qt6"
+        "-DCMAKE_PREFIX_PATH=/usr/local/opt/qt6",
+        "-DCMAKE_BUILD_TYPE=Debug"
       ],
       "command": "cmake",
       "group": "build",
@@ -69,17 +70,56 @@
         "--build",
         "${workspaceFolder}/build/macos-qt6",
         "--target",
-        "clean"
+        "controller"
       ],
       "command": "cmake",
       "group": "build",
-      "label": "clean",
+      "label": "build-controller",
       "presentation": {
         "echo": true,
         "focus": false,
         "panel": "shared",
         "reveal": "silent"
       },
+      "problemMatcher": "$gcc",
+      "type": "shell"
+    },
+    {
+      "args": [
+        "--build",
+        "${workspaceFolder}/build/macos-qt6",
+        "--target",
+        "ekiosk"
+      ],
+      "command": "cmake",
+      "group": "build",
+      "label": "build-ekiosk",
+      "presentation": {
+        "echo": true,
+        "focus": false,
+        "panel": "shared",
+        "reveal": "silent"
+      },
+      "problemMatcher": "$gcc",
+      "type": "shell"
+    },
+    {
+      "args": [
+        "--build",
+        "${workspaceFolder}/build/macos-qt6",
+        "--target",
+        "watchdog"
+      ],
+      "command": "cmake",
+      "group": "build",
+      "label": "build-watchdog",
+      "presentation": {
+        "echo": true,
+        "focus": false,
+        "panel": "shared",
+        "reveal": "silent"
+      },
+      "problemMatcher": "$gcc",
       "type": "shell"
     }
   ]
