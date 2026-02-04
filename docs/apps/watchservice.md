@@ -70,7 +70,7 @@ Modules are defined in separate INI sections with the patterns shown above. Each
 [module_ekiosk]
 ; Basic module information
 name = ekiosk
-file = {WS_DIR}/../../ekiosk
+file = {WS_DIR}/ekiosk.exe
 workingdirectory = {WS_DIR}
 gui = true
 
@@ -93,7 +93,7 @@ kill_timeout = 10000
 [module_updater]
 ; Basic module information
 name = updater
-file = {WS_DIR}/../../updater
+file = {WS_DIR}/updater.exe
 workingdirectory = {WS_DIR}
 gui = false
 
@@ -116,7 +116,7 @@ WatchService supports variable substitution in configuration values:
 
 - **`{WS_DIR}`**: WatchService current working directory (used for relative paths in file and workingdirectory parameters)
 
-**Example**: `file={WS_DIR}/../../ekiosk` resolves to the ekiosk executable relative to WatchService directory.
+**Example**: `file={WS_DIR}/ekiosk.exe` resolves to the ekiosk executable relative to WatchService directory.
 
 ### Forbidden Application Configuration
 
