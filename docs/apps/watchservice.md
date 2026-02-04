@@ -50,6 +50,7 @@ Modules are defined in separate INI sections. Common patterns include:
 name = ekiosk
 file = {WS_DIR}/../../ekiosk${EXE_SUFFIX}
 workingdirectory = {WS_DIR}
+gui = true
 
 ; Startup behavior
 autostart = true
@@ -62,9 +63,6 @@ afterstartdelay = 5000
 maxstartcount = 3
 firstpingtimeout = 60
 kill_timeout = 10000
-
-; UI behavior
-gui = true
 ```
 
 #### Updater Service Module Example
@@ -75,6 +73,7 @@ gui = true
 name = updater
 file = {WS_DIR}/../../updater${EXE_SUFFIX}
 workingdirectory = {WS_DIR}
+gui = false
 
 ; Startup behavior
 autostart = false
@@ -87,9 +86,6 @@ afterstartdelay = 0
 maxstartcount = 1
 firstpingtimeout = 60
 kill_timeout = 10000
-
-; UI behavior
-gui = false
 ```
 
 ### Configuration Parameters
@@ -100,6 +96,7 @@ gui = false
 - **`file`** (string): Executable path (supports `{WS_DIR}` macro for WatchService directory and `${EXE_SUFFIX}` for platform-specific extensions)
 - **`workingdirectory`** (string): Working directory for the module (supports `{WS_DIR}` macro)
 - **`arguments`** (string): Command line arguments (optional)
+- **`gui`** (bool): Whether module has graphical interface that blocks access to desktop and Windows menu
 
 #### Startup Control
 
@@ -126,10 +123,6 @@ WatchService supports variable substitution in configuration values:
 - **`${EXE_SUFFIX}`**: Platform-specific executable suffix (`.exe` on Windows, empty on Unix)
 
 **Example**: `file={WS_DIR}/../../ekiosk${EXE_SUFFIX}` resolves to the ekiosk executable relative to WatchService directory.
-
-#### UI Integration
-
-- **`gui`** (bool): Whether module has graphical interface that blocks access to desktop and Windows menu
 
 ### Special Features
 
