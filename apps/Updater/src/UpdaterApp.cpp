@@ -676,7 +676,7 @@ void UpdaterApp::delayedExit(int aTimeout, CUpdaterErrors::Enum aError)
 //---------------------------------------------------------------------------
 QString UpdaterApp::getUpdaterTempDir() const
 {
-    const QString tempDirName = "cyberplat_updater_temp";
+    const QString tempDirName = "ekiosk_updater_temp";
 
     QDir tempDir = QDir::tempPath();
 
