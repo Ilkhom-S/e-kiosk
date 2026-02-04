@@ -110,6 +110,35 @@ firstpingtimeout = 60
 kill_timeout = 10000
 ```
 
+#### Priority System
+
+##### Startup Priority
+
+Modules start in ascending priority order (lower numbers first):
+
+```text
+priority = 0  → Starts first
+priority = 1  → Starts second
+priority = 2  → Starts third
+```
+
+##### Shutdown Priority
+
+Modules stop in ascending close_priority order:
+
+```text
+close_priority = 0  → Stops first
+close_priority = 1  → Stops second
+```
+
+##### Exclusive Mode
+
+When a module with `startmode = exclusive` runs:
+
+- All other non-exclusive modules are paused
+- Exclusive module gets full system resources
+- Other modules resume when exclusive module stops
+
 ### Forbidden Application Configuration
 
 ```ini
@@ -134,35 +163,6 @@ WatchService supports variable substitution in configuration values:
 **Example**: `file={WS_DIR}/ekiosk.exe` resolves to the ekiosk executable relative to WatchService directory.
 
 **Note**: For general settings management and configuration file handling, see the [SettingsManager documentation](../../modules/SettingsManager/README.md).
-
-### Priority System
-
-#### Startup Priority
-
-Modules start in ascending priority order (lower numbers first):
-
-```text
-priority = 0  → Starts first
-priority = 1  → Starts second
-priority = 2  → Starts third
-```
-
-#### Shutdown Priority
-
-Modules stop in ascending close_priority order:
-
-```text
-close_priority = 0  → Stops first
-close_priority = 1  → Stops second
-```
-
-#### Exclusive Mode
-
-When a module with `startmode = exclusive` runs:
-
-- All other non-exclusive modules are paused
-- Exclusive module gets full system resources
-- Other modules resume when exclusive module stops
 
 ### Screen Protection
 
