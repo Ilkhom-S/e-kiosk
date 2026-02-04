@@ -204,11 +204,6 @@ QString WatchServiceController::getExecutablePath(const QString &baseName) const
 {
     QString executableName = baseName;
 
-    // Add debug suffix if in debug mode
-#ifdef QT_DEBUG
-    executableName += "d";
-#endif
-
     // Add platform-specific extension
 #ifdef Q_OS_WIN
     executableName += ".exe";
@@ -217,9 +212,6 @@ QString WatchServiceController::getExecutablePath(const QString &baseName) const
     return QDir::cleanPath(QDir::toNativeSeparators(workingDir + QDir::separator() + executableName));
 #elif defined(Q_OS_MAC)
     executableName += ".app/Contents/MacOS/" + baseName;
-#ifdef QT_DEBUG
-    executableName += "d";
-#endif
     // Get working directory and construct full path
     QString workingDir = BasicApplication::getInstance()->getWorkingDirectory();
     return QDir::cleanPath(QDir::toNativeSeparators(workingDir + QDir::separator() + executableName));
