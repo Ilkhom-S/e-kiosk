@@ -65,6 +65,15 @@ Provides HTTP/HTTPS network operations and task management.
 - **Dependencies**: Qt Core, Qt Network, Log, SettingsManager
 - **Platform**: Cross-platform (Windows, Linux, macOS)
 
+### [Watchdog Service](watchdog.md)
+
+Application monitoring and management service with automatic restart capabilities.
+
+- **Purpose**: Monitor application modules, manage startup/shutdown priorities, block forbidden applications
+- **Key Features**: Module lifecycle management, priority-based startup/shutdown, forbidden application blocking, cross-platform process monitoring
+- **Dependencies**: Qt Core, Qt Widgets, SysUtils, DebugUtils, SettingsManager, MessageQueue
+- **Platform**: Cross-platform (Windows, Linux, macOS)
+
 ## Module Organization
 
 Each module documentation includes:
