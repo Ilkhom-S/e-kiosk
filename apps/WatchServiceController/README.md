@@ -130,11 +130,11 @@ flowchart TB
 
 ## Key Files
 
-| File                        | Purpose                        |
-| --------------------------- | ------------------------------ |
-| `main.cpp`                  | Application entry point        |
-| `WatchServiceController.h`  | Main controller class header   |
-| `WatchServiceController.cpp`| Main controller implementation |
+| File                         | Purpose                        |
+| ---------------------------- | ------------------------------ |
+| `main.cpp`                   | Application entry point        |
+| `WatchServiceController.h`   | Main controller class header   |
+| `WatchServiceController.cpp` | Main controller implementation |
 
 ## Dependencies
 

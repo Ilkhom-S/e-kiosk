@@ -34,7 +34,20 @@ The Updater supports different types of update operations:
 
 ## Configuration
 
-**Note:** Updater reads configuration from command-line parameters and settings files. It does not have interactive configuration options.
+Updater uses a combination of configuration files and command-line parameters:
+
+### Configuration Files
+
+The application reads settings from `updater.ini` files located in the working directory:
+
+- **Component Settings**: Define optional components and update behavior
+- **Directory Exclusions**: Specify directories to exclude from updates
+- **BITS Configuration**: Windows-specific background download settings
+- **Validation Rules**: Required files for integrity verification
+
+### Command-Line Parameters
+
+All operations are controlled through command-line arguments passed by WatchService. These parameters can override configuration file settings when needed.
 
 ## Operation
 
