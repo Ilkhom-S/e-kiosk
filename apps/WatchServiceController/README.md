@@ -1,4 +1,4 @@
-# WatchServiceController (tray)
+# WatchServiceController (controller)
 
 **🔧 Developer Documentation** - Technical details for building and developing the WatchServiceController application.
 
@@ -30,10 +30,10 @@ Provides system tray interface to:
 cmake -S . -B build/macos-qt6 -DCMAKE_PREFIX_PATH=/usr/local/opt/qt6
 
 # Build
-cmake --build build/macos-qt6 --target tray
+cmake --build build/macos-qt6 --target controller
 
 # Run
-./build/macos-qt6/bin/tray.app/Contents/MacOS/tray
+./build/macos-qt6/bin/controller.app/Contents/MacOS/controller
 ```
 
 ### Platform-Specific Notes
@@ -50,26 +50,26 @@ cmake --build build/macos-qt6 --target tray
 
 ```bash
 # macOS
-./build/macos-qt6/bin/tray.app/Contents/MacOS/tray
+./build/macos-qt6/bin/controller.app/Contents/MacOS/controller
 
 # Linux
-./build/linux-qt6/bin/tray
+./build/linux-qt6/bin/controller
 
 # Windows
-./build/windows-qt6/bin/tray.exe
+./build/windows-qt6/bin/controller.exe
 ```
 
 **Command line options:**
 
 ```bash
 # Normal mode
-./tray
+./controller
 
 # Start minimized to tray
-./tray --minimized
+./controller --minimized
 
 # Don't auto-start client
-./tray --no-autostart
+./controller --no-autostart
 ```
 
 ## Command Line Options
@@ -113,7 +113,7 @@ cmake --build build/macos-qt6 --target tray
 ## Configuration
 
 ```ini
-[Tray]
+[Controller]
 AutoStart=true
 ShowNotifications=true
 MinimizeOnClose=true

@@ -66,20 +66,20 @@
         <file>icons/menu-stopTemplate.ico</file>
         <file>icons/menu-stopTemplate.png</file>
         <file>icons/menu-stopTemplate@2x.png</file>
-        <file>icons/tray-app-icon-128.png</file>
-        <file>icons/tray-app-icon-256.png</file>
-        <file>icons/tray-app-icon-48.png</file>
-        <file>icons/tray-app-icon-512.png</file>
-        <file>icons/tray-app-icon-64.png</file>
-        <file>icons/tray-app-icon-96.png</file>
-        <file>icons/tray-app-icon-ico-16.png</file>
-        <file>icons/tray-app-icon-ico-256.png</file>
-        <file>icons/tray-app-icon-ico-32.png</file>
-        <file>icons/tray-app-icon-ico-48.png</file>
-        <file>icons/tray-app-icon.icns</file>
-        <file>icons/tray-app-icon.ico</file>
-        <file>icons/tray-app-icon.png</file>
-        <file>icons/tray-app-icon@2x.png</file>
+        <file>icons/controller-app-icon-128.png</file>
+        <file>icons/controller-app-icon-256.png</file>
+        <file>icons/controller-app-icon-48.png</file>
+        <file>icons/controller-app-icon-512.png</file>
+        <file>icons/controller-app-icon-64.png</file>
+        <file>icons/controller-app-icon-96.png</file>
+        <file>icons/controller-app-icon-ico-16.png</file>
+        <file>icons/controller-app-icon-ico-256.png</file>
+        <file>icons/controller-app-icon-ico-32.png</file>
+        <file>icons/controller-app-icon-ico-48.png</file>
+        <file>icons/controller-app-icon.icns</file>
+        <file>icons/controller-app-icon.ico</file>
+        <file>icons/controller-app-icon.png</file>
+        <file>icons/controller-app-icon@2x.png</file>
         <file>icons/tray-monogram-stoppedTemplate-128.png</file>
         <file>icons/tray-monogram-stoppedTemplate-256.png</file>
         <file>icons/tray-monogram-stoppedTemplate-48.png</file>

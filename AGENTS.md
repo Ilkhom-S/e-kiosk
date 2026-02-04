@@ -2,11 +2,11 @@
 
 ## INI Templates and Russian Documentation
 
-- All automatically generated or template-based .ini files for application configuration (e.g., tray.ini, ekiosk.ini) **must include documentation and comments in Russian**. This is required because most users and operators do not read English.
+- All automatically generated or template-based .ini files for application configuration (e.g., controller.ini, ekiosk.ini) **must include documentation and comments in Russian**. This is required because most users and operators do not read English.
 - When generating or updating ini templates (e.g., via CMake or in runtimes/common/data/), ensure all parameter descriptions, section headers, and usage notes are in Russian.
 - When documenting configuration keys in README.md or other user-facing docs, provide Russian-language examples and explanations for ini files.
 - If you add new required keys for an app, update the corresponding .ini template and its Russian comments.
-- See runtimes/common/data/tray.ini.in for an example of a fully documented Russian-language ini template.
+- See runtimes/common/data/controller.ini.in for an example of a fully documented Russian-language ini template.
 
 ## C++ Guidelines
 
@@ -409,15 +409,15 @@ When refactoring a module from private headers to public headers:
 - All ini/configuration files for applications and modules must be generated from templates using the `ek_generate_ini_template` CMake macro.
 - This macro ensures that all variables (such as working directories, output paths, etc.) are substituted at build time, and that ini files are always up-to-date and consistent.
 - **Usage:**
-  1. Prepare a template ini file (e.g., `tray.ini.in`) with CMake variables like `@WORKING_DIRECTORY@` and Russian-language comments for all parameters.
+  1. Prepare a template ini file (e.g., `controller.ini.in`) with CMake variables like `@WORKING_DIRECTORY@` and Russian-language comments for all parameters.
   2. In your app/module `CMakeLists.txt`, call:
 
      ```cmake
      set(WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
-     ek_generate_ini_template(tray "${CMAKE_SOURCE_DIR}/runtimes/common/data/tray.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+     ek_generate_ini_template(controller "${CMAKE_SOURCE_DIR}/runtimes/common/data/controller.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${WORKING_DIRECTORY}")
      ```
 
-  3. The macro will generate `tray.ini` in the output directory, with all variables replaced by their build-time values.
+  3. The macro will generate `controller.ini` in the output directory, with all variables replaced by their build-time values.
 
 - See `cmake/README.md` and `docs/build-guide.md` for full documentation and examples.
 - **Policy:** All ini templates must be fully documented in Russian, and all new configuration keys must be added to the template and documented accordingly.

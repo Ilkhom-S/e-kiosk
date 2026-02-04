@@ -12,10 +12,10 @@
       "preLaunchTask": "CMake: build"
     },
     {
-      "name": "Debug Tray (WatchServiceController)",
+      "name": "Debug Controller (WatchServiceController)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/msvc/bin/trayd.exe",
+      "program": "${workspaceFolder}/build/msvc/bin/controllerd.exe",
       "args": [],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",

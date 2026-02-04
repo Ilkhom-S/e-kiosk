@@ -1,4 +1,4 @@
-# WatchServiceController (Tray Application)
+# WatchServiceController (Controller Application)
 
 ## Overview
 
@@ -41,14 +41,14 @@ The application provides a comprehensive system tray menu with:
 
 ### File Location
 
-- **Primary**: `apps/WatchServiceController/src/tray.ini` (template)
-- **Runtime**: Generated `tray.ini` in build directory
+- **Primary**: `apps/WatchServiceController/src/controller.ini` (template)
+- **Runtime**: Generated `controller.ini` in build directory
 - **User Overrides**: `user.ini` for runtime adjustments
 
 ### Configuration Options
 
 ```ini
-[Tray]
+[Controller]
 ; Auto-start behavior
 AutoStart=true
 ShowNotifications=true
@@ -71,9 +71,9 @@ ConnectionTimeout=30000
 
 | Section      | Parameter           | Type   | Default   | Description                    |
 | ------------ | ------------------- | ------ | --------- | ------------------------------ |
-| Tray         | AutoStart           | bool   | true      | Auto-start with system         |
-| Tray         | ShowNotifications   | bool   | true      | Show system notifications      |
-| Tray         | MinimizeOnClose     | bool   | true      | Minimize to tray on close      |
+| Controller   | AutoStart           | bool   | true      | Auto-start with system         |
+| Controller   | ShowNotifications   | bool   | true      | Show system notifications      |
+| Controller   | MinimizeOnClose     | bool   | true      | Minimize to tray on close      |
 | Display      | IconTheme           | string | default   | Icon theme to use              |
 | Display      | ShowStatusInMenu    | bool   | true      | Show status in menu            |
 | Display      | NotificationTimeout | int    | 5000      | Notification display time (ms) |
@@ -171,7 +171,7 @@ ConnectionTimeout=30000
 
 Application logs are typically located in:
 
-- **Windows**: `%APPDATA%\EKiosk\tray.log`
+- **Windows**: `%APPDATA%\EKiosk\controller.log`
 - **Linux**: `~/.local/share/EKiosk/tray.log`
 - **macOS**: `~/Library/Application Support/EKiosk/tray.log`
 

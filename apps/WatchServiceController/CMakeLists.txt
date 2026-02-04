@@ -3,7 +3,7 @@
 
 include_directories(${CMAKE_SOURCE_DIR}/thirdparty/SingleApplication)
 # Генерация ini-файлов для всех конфигураций через хелпер
-ek_generate_ini_for_all_configs(tray "${CMAKE_SOURCE_DIR}/runtimes/common/data/tray.ini.in")
+ek_generate_ini_for_all_configs(controller "${CMAKE_SOURCE_DIR}/runtimes/common/data/controller.ini.in")
 
 file(GLOB WSC_SOURCES
     src/*.cpp
@@ -22,7 +22,7 @@ set(WSC_VERSION_RC ${CMAKE_SOURCE_DIR}/include/Common/CoreVersion.rc)
 
 
 # App includes sources directly
-ek_add_application(tray
+ek_add_application(controller
     FOLDER "apps"
     SOURCES
     ${WSC_SOURCES}
@@ -36,33 +36,33 @@ ek_add_application(tray
 
 if(APPLE)
     # Configure as background app that only shows in menu bar, not dock
-    set_target_properties(tray PROPERTIES
+    set_target_properties(controller PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/Info.plist"
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_ICON_FILE tray-app-icon.icns
+        MACOSX_BUNDLE_ICON_FILE controller-app-icon.icns
     )
     # No dock icon for background apps
-    target_sources(tray PRIVATE src/icons/tray-app-icon.icns)
+    target_sources(controller PRIVATE src/icons/controller-app-icon.icns)
 
     # Compile WatchServiceController.cpp as Objective-C++ for macOS theme support
     set_source_files_properties(src/WatchServiceController.cpp PROPERTIES LANGUAGE OBJCXX)
 
     # Copy icon to bundle Resources
-    add_custom_command(TARGET tray POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:tray>/Contents/Resources
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/tray-app-icon.icns $<TARGET_BUNDLE_DIR:tray>/Contents/Resources/AppIcon.icns
+    add_custom_command(TARGET controller POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:controller>/Contents/Resources
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/controller-app-icon.icns $<TARGET_BUNDLE_DIR:controller>/Contents/Resources/AppIcon.icns
     )
 endif()
 
 # Optional single-instance support via project SingleApplication wrapper (EK::SingleApplication)
 if(TARGET EK::SingleApplication)
-    target_link_libraries(tray PUBLIC EK::SingleApplication)
+    target_link_libraries(controller PUBLIC EK::SingleApplication)
 else()
     message(WARNING "EK::SingleApplication not found - single-instance app support disabled")
 endif()
 
 # Translations
-file(GLOB TS_FILES src/locale/tray_*.ts)
+file(GLOB TS_FILES src/locale/controller_*.ts)
 if(TS_FILES)
     # Ensure output directory exists
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/locale)
@@ -72,9 +72,9 @@ if(TS_FILES)
         INSTALL
     )
     if(TARGET WatchServiceControllerTranslations_translations)
-        add_dependencies(tray WatchServiceControllerTranslations_translations)
+        add_dependencies(controller WatchServiceControllerTranslations_translations)
         # Copy translation files to bin/locale for cross-platform compatibility
-        add_custom_command(TARGET tray POST_BUILD
+        add_custom_command(TARGET controller POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_BINARY_DIR}/locale
             ${CMAKE_BINARY_DIR}/bin/locale

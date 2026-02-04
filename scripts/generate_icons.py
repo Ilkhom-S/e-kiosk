@@ -5,7 +5,7 @@ generate_icons.py
 Convert SVG templates into platform-specific raster icons, ICO files, and macOS .icns files.
 
 Templates are organized by app in subdirectories under assets/icons/templates/:
-- tray/ : WatchServiceController (tray app)
+- controller/ : WatchServiceController (controller app)
 - kiosk/ : EKiosk (main kiosk app)
 - card/ : Card-related apps
 - updater/ : Updater apps
@@ -254,7 +254,7 @@ def generate_for_app(svg_dir: Path, app: str, force: bool = False) -> None:
 
     # Map app names to their template subdirectories
     app_template_dirs = {
-        'WatchServiceController': 'tray',
+        'WatchServiceController': 'controller',
         'EKiosk': 'kiosk',
         'Updater': 'updater',
         'WatchService': 'watchdog',
@@ -343,7 +343,7 @@ def generate_for_app(svg_dir: Path, app: str, force: bool = False) -> None:
             print(f'  Warning: failed to create ICO: {e}', file=sys.stderr)
 
         # Special case: generate .icns for macOS app icons
-        if name in ('tray-app-icon', 'watchdog-app-icon', 'updater-app-icon', 'ekiosk-app-icon'):
+        if name in ('tray-app-icon', 'controller-app-icon', 'watchdog-app-icon', 'updater-app-icon', 'ekiosk-app-icon'):
             generate_icns(svg, app_icons / f'{name}.icns', force)
 
 
