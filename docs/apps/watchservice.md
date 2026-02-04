@@ -94,6 +94,14 @@ check_timeout = 60000
 
 ### Special Features
 
+#### Screen Protection
+
+WatchService automatically manages screen protection:
+
+- **Protection Active**: Shows splash screen when no GUI modules are running
+- **Protection Inactive**: Hides splash screen when GUI modules are active
+- **Custom Background**: Configurable via `use_custom_background` setting
+
 ### Configuration Examples
 
 #### Main Application Module Example
@@ -195,36 +203,6 @@ firstpingtimeout = 30
 kill_timeout = 15
 maxstartcount = 1
 ```
-
-#### Development/Debugging Controller
-
-For development and debugging, you can configure the controller to auto-start with WatchService:
-
-```ini
-[module_controller]
-name = controller
-file = {WS_DIR}/controller
-workingdirectory = {WS_DIR}
-autostart = true
-startmode = normal
-priority = 5
-close_priority = 1
-afterstartdelay = 2000
-gui = true
-firstpingtimeout = 30
-kill_timeout = 60
-maxstartcount = 3
-```
-
-**Note**: This configuration is recommended only for development environments. In production, start the controller manually when administrative access is needed.
-
-#### Screen Protection
-
-WatchService automatically manages screen protection:
-
-- **Protection Active**: Shows splash screen when no GUI modules are running
-- **Protection Inactive**: Hides splash screen when GUI modules are active
-- **Custom Background**: Configurable via `use_custom_background` setting
 
 ## Health Check Mechanism
 
