@@ -39,9 +39,10 @@ The application provides a comprehensive system tray menu with:
 
 ### Tray Menu Options
 
-- **Start/Stop WatchdogService**: Start or stop the WatchdogService (watchdog) daemon
-- **Start service menu**: Opens kiosk service menu screen
-- **Start first setup**: Starts kiosk for initial setup
+- **Start service menu**: Launches the kiosk application with the service menu scenario
+- **Start first setup**: Launches the kiosk application with the initial setup scenario
+- **Start service**: Launches the kiosk application with web security disabled
+- **Stop service**: Stops the WatchService (watchdog) daemon
 - **Close**: Closes the controller app
 
 ## Logging
