@@ -110,16 +110,6 @@ firstpingtimeout = 60
 kill_timeout = 10000
 ```
 
-### Configuration Variables
-
-WatchService supports variable substitution in configuration values:
-
-- **`{WS_DIR}`**: WatchService current working directory (used for relative paths in file and workingdirectory parameters)
-
-**Example**: `file={WS_DIR}/ekiosk.exe` resolves to the ekiosk executable relative to WatchService directory.
-
-**Note**: For general settings management and configuration file handling, see the [SettingsManager documentation](../../modules/SettingsManager/README.md).
-
 ### Forbidden Application Configuration
 
 ```ini
@@ -134,6 +124,16 @@ check_timeout = 60000
 - **`watchdog/taboo_enabled`** (bool): Enable forbidden app monitoring
 - **`applications`** (string list): Comma-separated list of forbidden executables
 - **`check_timeout`** (int): Check interval in milliseconds
+
+### Configuration Variables
+
+WatchService supports variable substitution in configuration values:
+
+- **`{WS_DIR}`**: WatchService current working directory (used for relative paths in file and workingdirectory parameters)
+
+**Example**: `file={WS_DIR}/ekiosk.exe` resolves to the ekiosk executable relative to WatchService directory.
+
+**Note**: For general settings management and configuration file handling, see the [SettingsManager documentation](../../modules/SettingsManager/README.md).
 
 ### Special Features
 
