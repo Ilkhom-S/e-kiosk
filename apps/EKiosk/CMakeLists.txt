@@ -69,7 +69,7 @@ if(APPLE)
     # Copy icon to bundle Resources
     add_custom_command(TARGET ekiosk POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:ekiosk>/Contents/Resources
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/client-app-icon.icns $<TARGET_BUNDLE_DIR:ekiosk>/Contents/Resources/AppIcon.icns
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/ekiosk-app-icon.icns $<TARGET_BUNDLE_DIR:ekiosk>/Contents/Resources/AppIcon.icns
     )
 endif()
 
