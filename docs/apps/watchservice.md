@@ -116,8 +116,7 @@ gui = false
 
 - **`maxstartcount`** (int): Maximum restart attempts (0 = unlimited restarts, optional)
 - **`firstpingtimeout`** (int): Initial ping timeout in seconds (default: 60)
-- **`kill_timeout`** (int): Ping interval in milliseconds (default: 10000)
-- **`needtostart`** (bool): Runtime control flag
+- **`kill_timeout`** (int): Ping interval in seconds (default: 30 for fast PCs, 180 for slow PCs)
 
 ### Configuration Variables
 
