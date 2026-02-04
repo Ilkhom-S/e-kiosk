@@ -272,12 +272,13 @@ void WatchServiceController::onCheck()
         mIcon.setIcon(createTemplateIcon(":/icons/controller-monogram-stoppedTemplate.png"));
     }
 
-    // Always enable start/stop service actions regardless of connection status
+    // Enable/disable start/stop service actions based on connection status
+    bool isConnected = mClient->isConnected();
     foreach (auto action, mStartServiceActions)
     {
-        action->setEnabled(true);
+        action->setEnabled(!isConnected); // Enable start when not connected
     }
-    mStopServiceAction->setEnabled(true);
+    mStopServiceAction->setEnabled(isConnected); // Enable stop when connected
     // Keep close action enabled
     mCloseTrayIconAction->setEnabled(true);
 
