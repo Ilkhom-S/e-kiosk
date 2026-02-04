@@ -56,6 +56,5 @@ int main(int aArgc, char *aArgv[])
 
     WatchServiceController controller;
 
-    LOG(application.getLog(), LogLevel::Normal, "[tray] entering event loop");
     return application.exec();
 }

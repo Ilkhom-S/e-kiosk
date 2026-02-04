@@ -4,6 +4,7 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
+#include <QtCore/QFile>
 #include <QtCore/QProcess>
 #include <QtGui/QPainter>
 #include <QtGui/QStyleHints>
@@ -74,11 +75,126 @@ WatchServiceController::WatchServiceController()
 }
 
 //----------------------------------------------------------------------------
-// Helper to create template icons for macOS
-QIcon WatchServiceController::createTemplateIcon(const QString &path)
+// Helper to create template icons for macOS with multiple sizes for better scaling
+QIcon WatchServiceController::createTemplateIcon(const QString &basePath)
 {
-    QIcon icon(path);
+    QIcon icon;
+
+    // Extract base name without extension and without resource prefix
+    QString baseName = basePath;
+    if (baseName.startsWith(":/"))
+    {
+        baseName = baseName.mid(2); // Remove :/ prefix
+    }
+    if (baseName.endsWith(".png"))
+    {
+        baseName = baseName.left(baseName.length() - 4); // Remove .png extension
+    }
+
+    // Load multiple sizes for better scaling on different DPI and contexts
+    // Available sizes: 16, 32, 48, 64, 96, 128, 256, 512
+    static const QList<int> sizes = {16, 32, 48, 64, 96, 128, 256, 512};
+    QStringList loadedSizes;
+
+    for (int size : sizes)
+    {
+        QString sizePath;
+        if (size == 48)
+        {
+            // Default size - use the base path
+            sizePath = basePath;
+        }
+        else
+        {
+            // Size-specific variants (ico sizes for smaller ones)
+            if (size <= 48)
+            {
+                sizePath = QString(":/%1-ico-%2.png").arg(baseName).arg(size);
+            }
+            else
+            {
+                sizePath = QString(":/%1-%2.png").arg(baseName).arg(size);
+            }
+        }
+
+        // Check if the size variant exists in resources by trying to load it
+        QPixmap pixmap(sizePath);
+        if (!pixmap.isNull())
+        {
+            icon.addPixmap(pixmap);
+            loadedSizes << QString("%1px").arg(size);
+        }
+    }
+
+    // If no sizes were loaded, fall back to the original single-size approach
+    if (icon.isNull())
+    {
+        icon = QIcon(basePath);
+    }
+
     icon.setIsMask(true); // Ensures the 'Template' behavior is activated for macOS
+    return icon;
+}
+
+//----------------------------------------------------------------------------
+// Helper to create app icons with multiple sizes for better scaling (non-template icons)
+QIcon WatchServiceController::createAppIcon(const QString &basePath)
+{
+    QIcon icon;
+
+    // Extract base name without extension and without resource prefix
+    QString baseName = basePath;
+    if (baseName.startsWith(":/"))
+    {
+        baseName = baseName.mid(2); // Remove :/ prefix
+    }
+    if (baseName.endsWith(".png"))
+    {
+        baseName = baseName.left(baseName.length() - 4); // Remove .png extension
+    }
+
+    // Load multiple sizes for better scaling on different DPI and contexts
+    // Available sizes: 16, 32, 48, 64, 96, 128, 256, 512
+    static const QList<int> sizes = {16, 32, 48, 64, 96, 128, 256, 512};
+    QStringList loadedSizes;
+
+    for (int size : sizes)
+    {
+        QString sizePath;
+        if (size == 48)
+        {
+            // Default size - use the base path
+            sizePath = basePath;
+        }
+        else
+        {
+            // Size-specific variants (ico sizes for smaller ones)
+            if (size <= 48)
+            {
+                sizePath = QString(":/%1-ico-%2.png").arg(baseName).arg(size);
+            }
+            else
+            {
+                sizePath = QString(":/%1-%2.png").arg(baseName).arg(size);
+            }
+        }
+
+        // Check if the size variant exists in resources by trying to load it
+        QPixmap pixmap(sizePath);
+        if (!pixmap.isNull())
+        {
+            icon.addPixmap(pixmap);
+            loadedSizes << QString("%1px").arg(size);
+        }
+    }
+
+    // If no sizes were loaded, fall back to the original single-size approach
+    if (icon.isNull())
+    {
+        icon = QIcon(basePath);
+    }
+
+    // Note: No setIsMask(true) for app icons - they should render normally
     return icon;
 }
 
@@ -283,14 +399,16 @@ void WatchServiceController::onCloseIconClicked()
 
 #ifdef Q_OS_MAC
     // On macOS, add the icon to the dialog since window icons don't show in title bar
-    QPixmap iconPixmap(":/icons/tray-app-icon.png");
+    // Use multi-size loading for crisp rendering
+    QIcon appIcon = createAppIcon(":/icons/tray-app-icon.png");
+    QPixmap iconPixmap = appIcon.pixmap(64, 64, QIcon::Normal, QIcon::On);
     if (!iconPixmap.isNull())
     {
-        msgBox.setIconPixmap(iconPixmap.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        msgBox.setIconPixmap(iconPixmap);
     }
 #endif
 
-    msgBox.setWindowIcon(QIcon(":/icons/tray-app-icon.png"));
+    msgBox.setWindowIcon(createAppIcon(":/icons/tray-app-icon.png"));
 
     int result = msgBox.exec();
     if (result == QMessageBox::Yes)

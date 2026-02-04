@@ -37,6 +37,9 @@ class WatchServiceController : public QObject
     // Helper to create template icons for macOS
     QIcon createTemplateIcon(const QString &path);
 
+    // Helper to create app icons with multiple sizes for better scaling
+    QIcon createAppIcon(const QString &path);
+
     // Helper to get platform-specific executable path
     QString getExecutablePath(const QString &baseName) const;
 
