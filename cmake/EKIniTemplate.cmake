@@ -26,37 +26,33 @@ endmacro()
 #   ek_generate_ini_template(controller "${CMAKE_SOURCE_DIR}/runtimes/common/data/controller.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 #
 # This macro configures a .ini file from a template, substituting CMake variables.
-# Automatically sets platform-specific variables:
-#   - CONTROLLER_APP: controller executable/bundle name
-#   - EKIOSK_APP: ekiosk executable/bundle name
-#   - WATCHDOG_APP: watchdog executable/bundle name
-#   - BILL_ACCEPTORS_LIB: bill acceptors library name
-#
-# Platform mappings:
-#   Windows: .exe executables, .dll libraries
-#   macOS: .app bundles, .dylib libraries
-#   Linux: no extension executables, .so libraries
+# Automatically selects platform-specific templates if available:
+#   - <template>.win.in for Windows
+#   - <template>.mac.in for macOS
+#   - <template>.linux.in for Linux
+#   Falls back to <template>.in if platform-specific version doesn't exist
 
 function(ek_generate_ini_template NAME TEMPLATE OUTPUT_DIR)
-    # Set platform-specific variables for application and library names
+    # Determine platform-specific template path
+    # Replace .in extension with platform-specific extension
+    string(REGEX REPLACE "\\.in$" "" _template_base "${TEMPLATE}")
     if(WIN32)
-        # Windows: executables have .exe extension, libraries have .dll extension
-        set(CONTROLLER_APP "controller.exe")
-        set(EKIOSK_APP "ekiosk.exe")
-        set(WATCHDOG_APP "watchdog.exe")
-        set(BILL_ACCEPTORS_LIB "bill_acceptors.dll")
+        set(_platform_template "${_template_base}.win.in")
     elseif(APPLE)
-        # macOS: applications are .app bundles, libraries are .dylib
-        set(CONTROLLER_APP "controller.app")
-        set(EKIOSK_APP "ekiosk.app")
-        set(WATCHDOG_APP "watchdog.app")
-        set(BILL_ACCEPTORS_LIB "libbill_acceptors.dylib")
+        set(_platform_template "${_template_base}.mac.in")
+    elseif(UNIX)
+        set(_platform_template "${_template_base}.linux.in")
     else()
-        # Linux/Unix: executables have no extension, libraries are .so
-        set(CONTROLLER_APP "controller")
-        set(EKIOSK_APP "ekiosk")
-        set(WATCHDOG_APP "watchdog")
-        set(BILL_ACCEPTORS_LIB "libbill_acceptors.so")
+        set(_platform_template "${TEMPLATE}")
+    endif()
+
+    # Use platform-specific template if it exists, otherwise use the generic one
+    if(EXISTS "${_platform_template}")
+        set(_actual_template "${_platform_template}")
+        message(STATUS "Using platform-specific template: ${_actual_template}")
+    else()
+        set(_actual_template "${TEMPLATE}")
+        message(STATUS "Using generic template: ${_actual_template}")
     endif()
 
     # Process user-provided variables
@@ -72,6 +68,6 @@ function(ek_generate_ini_template NAME TEMPLATE OUTPUT_DIR)
 
     set(_out_ini "${OUTPUT_DIR}/${NAME}.ini")
     file(MAKE_DIRECTORY "${OUTPUT_DIR}")
-    configure_file("${TEMPLATE}" "${_out_ini}" @ONLY)
-    message(STATUS "Generated ini: ${_out_ini} from ${TEMPLATE}")
+    configure_file("${_actual_template}" "${_out_ini}" @ONLY)
+    message(STATUS "Generated ini: ${_out_ini} from ${_actual_template}")
 endfunction()

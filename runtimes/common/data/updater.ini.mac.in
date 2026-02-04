@@ -1,0 +1,18 @@
+; Updater configuration template
+; Platform-specific file extensions are handled via CMake variable substitution
+; Windows: .exe for executables, .dll for libraries
+; macOS: .app for application bundles, .dylib for dynamic libraries
+; Linux: no extension for executables, .so for shared libraries
+
+[component]
+optional=logo, numcapacity
+
+[directory]
+ignore=tclib
+
+[validator]
+; Required files for updater validation (macOS)
+required_files=controller.app, ekiosk.app, watchdog.app, libbill_acceptors.dylib
+
+[bits]
+ignore=true
