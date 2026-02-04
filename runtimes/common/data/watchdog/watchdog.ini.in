@@ -1,6 +1,7 @@
-; WatchService (watchdog) конфигурационный файл
+; WatchService (watchdog) конфигурационный файл - Generic/Common sections
 ; Все параметры должны быть задокументированы на русском языке
 ; Этот шаблон используется для генерации watchdog.ini при сборке приложения
+; Platform-specific paths are merged from platform-specific templates
 
 [Общие]
 ; Путь к логам
@@ -16,9 +17,6 @@ CHECK_TIMEOUT=60000
 [Module1]
 ; Имя модуля
 name=ekiosk
-
-; Путь к исполняемому файлу модуля
-file={WS_DIR}/../../ekiosk.app/Contents/MacOS/ekiosk
 
 ; Рабочая директория модуля
 workingdirectory={WS_DIR}

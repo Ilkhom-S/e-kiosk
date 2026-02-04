@@ -203,13 +203,30 @@ ek_enable_static_analysis(kiosk CPPCHECK CLANG_TIDY)
 
 ### EKIniTemplate.cmake
 
-**Purpose:** Generate .ini files from templates with CMake variable substitution (for app/module configuration).
+**Purpose:** Generate .ini files from templates with CMake variable substitution and platform-specific merging (for app/module configuration).
 
 **How it works:**
 
-- Provides the `ek_generate_ini_template` macro for generating ini/config files from a template at build time.
+- Provides the `ek_generate_ini_template` macro for generating ini/config files from templates at build time.
+- **Merged Template System**: Automatically merges generic templates with platform-specific overrides for maintainability.
 - Substitutes CMake variables (e.g. `@WORKING_DIRECTORY@`) in the template with values provided in the macro call.
 - Ensures all ini files are generated with up-to-date, build-specific values (e.g. working directory, output paths).
+
+**Template Structure:**
+
+EKiosk uses a merged template system to eliminate duplication:
+
+```
+runtimes/common/data/{name}/
+├── {name}.ini.in           (generic/common sections)
+├── {name}.win.in          (Windows-specific overrides)
+├── {name}.mac.in          (macOS-specific overrides)
+└── {name}.linux.in         (Linux-specific overrides)
+```
+
+- **Generic template** (`{name}.ini.in`): Contains platform-independent configuration sections
+- **Platform-specific templates** (`{name}.{platform}.in`): Contain only platform-specific overrides/additions
+- **Result**: CMake merges generic + platform-specific templates automatically
 
 **Usage:**
 
@@ -219,35 +236,52 @@ ek_enable_static_analysis(kiosk CPPCHECK CLANG_TIDY)
    include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
    ```
 
-2. **Prepare a template ini file:**
+2. **Prepare merged template files:**
 
-   Example (`controller.ini.in`):
+   Generic template (`updater.ini.in`):
 
    ```ini
-   [common]
-   working_directory = @WORKING_DIRECTORY@
+   [component]
+   optional=logo, numcapacity
+
+   [directory]
+   ignore=tclib
+
+   [bits]
+   ignore=true
+   ```
+
+   Platform-specific template (`updater.ini.mac.in`):
+
+   ```ini
+   [validator]
+   ; Required files for updater validation (macOS)
+   required_files=controller.app, ekiosk.app, watchdog.app, libbill_acceptors.dylib
    ```
 
 3. **Call the macro in your app/module `CMakeLists.txt`:**
 
    ```cmake
    set(WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
-   ek_generate_ini_template(controller "${CMAKE_SOURCE_DIR}/runtimes/common/data/controller.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+   ek_generate_ini_template(updater "${CMAKE_SOURCE_DIR}/runtimes/common/data/updater/updater.ini.in" "${CMAKE_BINARY_DIR}/apps/Updater" WORKING_DIRECTORY "${WORKING_DIRECTORY}")
    ```
 
    - The first argument is the output ini name (without extension).
-   - The second is the path to the template.
+   - The second is the path to the generic template.
    - The third is the output directory.
    - All following arguments are pairs: `VAR value` (these become `@VAR@` in the template).
 
 **Result:**
 
-- The generated ini file will be at `${CMAKE_BINARY_DIR}/apps/WatchServiceController/controller.ini` with all variables substituted.
+- The generated ini file combines generic + platform-specific content automatically.
+- Falls back to generic-only if no platform-specific template exists.
+- All variables are substituted with build-time values.
 
 **Best practices:**
 
 - Document all template variables in the ini template (in Russian, per project policy).
 - Use this macro for all app/module ini/configuration files to ensure consistency and up-to-date values.
+- Keep generic templates with common settings, platform-specific templates with only overrides.
 - See `runtimes/common/data/controller.ini.in` for a full example.
 
 ---

@@ -1,0 +1,7 @@
+; WatchService (watchdog) конфигурационный файл - macOS specific sections
+; This file contains only macOS-specific overrides/additions
+; Will be merged with the generic template
+
+[Module1]
+; Путь к исполняемому файлу модуля (macOS)
+file={WS_DIR}/../../ekiosk.app/Contents/MacOS/ekiosk

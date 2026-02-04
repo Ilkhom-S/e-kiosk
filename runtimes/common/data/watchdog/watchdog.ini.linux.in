@@ -1,0 +1,7 @@
+; WatchService (watchdog) конфигурационный файл - Linux specific sections
+; This file contains only Linux-specific overrides/additions
+; Will be merged with the generic template
+
+[Module1]
+; Путь к исполняемому файлу модуля (Linux)
+file={WS_DIR}/../../ekiosk

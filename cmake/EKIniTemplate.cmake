@@ -50,31 +50,40 @@ function(ek_generate_ini_template NAME TEMPLATE OUTPUT_DIR)
     elseif(UNIX)
         set(_platform_template "${_template_dir}/${_template_base}.ini.linux.in")
     else()
-        set(_platform_template "${TEMPLATE}")
+        set(_platform_template "")
     endif()
 
-    # Use platform-specific template if it exists, otherwise use the generic one
+    # Start with the generic template content
+    set(_merged_content "")
+    if(EXISTS "${TEMPLATE}")
+        file(READ "${TEMPLATE}" _generic_content)
+        set(_merged_content "${_generic_content}")
+    endif()
+
+    # If platform-specific template exists, merge it with generic content
     if(EXISTS "${_platform_template}")
-        set(_actual_template "${_platform_template}")
-        message(STATUS "Using platform-specific template: ${_actual_template}")
+        file(READ "${_platform_template}" _platform_content)
+        # Simple merge: append platform-specific content (it will override sections)
+        set(_merged_content "${_merged_content}\n\n${_platform_content}")
+        message(STATUS "Merged platform-specific template: ${_platform_template}")
     else()
-        set(_actual_template "${TEMPLATE}")
-        message(STATUS "Using generic template: ${_actual_template}")
+        message(STATUS "Using generic template only: ${TEMPLATE}")
     endif()
 
-    # Process user-provided variables
+    # Process user-provided variables for substitution
     set(_i 0)
     list(LENGTH ARGN _len)
     while(_i LESS _len)
         list(GET ARGN ${_i} _var)
         math(EXPR _j "${_i} + 1")
         list(GET ARGN ${_j} _val)
-        set(${_var} "${_val}")
+        string(REPLACE "@${_var}@" "${_val}" _merged_content "${_merged_content}")
         math(EXPR _i "${_i} + 2")
     endwhile()
 
+    # Write the merged content to output file
     set(_out_ini "${OUTPUT_DIR}/${NAME}.ini")
     file(MAKE_DIRECTORY "${OUTPUT_DIR}")
-    configure_file("${_actual_template}" "${_out_ini}" @ONLY)
-    message(STATUS "Generated ini: ${_out_ini} from ${_actual_template}")
+    file(WRITE "${_out_ini}" "${_merged_content}")
+    message(STATUS "Generated ini: ${_out_ini}")
 endfunction()

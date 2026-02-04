@@ -1,18 +1,7 @@
-; Updater configuration template
-; Platform-specific file extensions are handled via CMake variable substitution
-; Windows: .exe for executables, .dll for libraries
-; macOS: .app for application bundles, .dylib for dynamic libraries
-; Linux: no extension for executables, .so for shared libraries
-
-[component]
-optional=logo, numcapacity
-
-[directory]
-ignore=tclib
+; Updater configuration template - Windows specific sections
+; This file contains only Windows-specific overrides/additions
+; Will be merged with the generic template
 
 [validator]
 ; Required files for updater validation (Windows)
 required_files=controller.exe, ekiosk.exe, watchdog.exe, bill_acceptors.dll
-
-[bits]
-ignore=true

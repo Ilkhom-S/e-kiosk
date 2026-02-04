@@ -245,22 +245,60 @@ Do not change the .clang-format file without team consensus.
 
 For all application and module configuration files (.ini), EKiosk uses a CMake macro to generate ini files from templates with build-time variable substitution. This ensures all config files are up-to-date and documented in Russian.
 
+**Merged Template System:**
+
+EKiosk uses a smart merged template system to eliminate duplication between platforms:
+
+```
+runtimes/common/data/{name}/
+├── {name}.ini.in           (generic/common sections)
+├── {name}.win.in          (Windows-specific overrides)
+├── {name}.mac.in          (macOS-specific overrides)
+└── {name}.linux.in         (Linux-specific overrides)
+```
+
+- **Generic template** (`{name}.ini.in`): Contains platform-independent configuration
+- **Platform-specific templates** (`{name}.{platform}.in`): Contain only platform-specific overrides/additions
+- **Automatic merging**: CMake combines generic + platform-specific templates at build time
+
 **How to use:**
 
-1. Prepare a template ini file (e.g. `controller.ini.in`) with CMake variables like `@WORKING_DIRECTORY@`.
+1. Prepare merged template files:
+
+   Generic template (`updater.ini.in`):
+
+   ```ini
+   [component]
+   optional=logo, numcapacity
+
+   [directory]
+   ignore=tclib
+
+   [bits]
+   ignore=true
+   ```
+
+   Platform-specific template (`updater.ini.mac.in`):
+
+   ```ini
+   [validator]
+   ; Required files for updater validation (macOS)
+   required_files=controller.app, ekiosk.app, watchdog.app, libbill_acceptors.dylib
+   ```
+
 2. In your app/module `CMakeLists.txt`, call:
 
 ```cmake
 set(WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
-ek_generate_ini_template(controller "${CMAKE_SOURCE_DIR}/runtimes/common/data/controller.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+ek_generate_ini_template(updater "${CMAKE_SOURCE_DIR}/runtimes/common/data/updater/updater.ini.in" "${CMAKE_BINARY_DIR}/apps/Updater" WORKING_DIRECTORY "${WORKING_DIRECTORY}")
 ```
 
 - The first argument is the output ini name (no extension).
-- The second is the template path.
+- The second is the path to the generic template.
 - The third is the output directory.
 - All following arguments are pairs: `VAR value` (these become `@VAR@` in the template).
 
-**Result:** The generated ini file will be in the build output directory, with all variables replaced by their build-time values.
+**Result:** The generated ini file combines generic + platform-specific content automatically, with all variables replaced by their build-time values.
 
 - Always document all variables in the template in Russian.
 - See `cmake/README.md` for full details and examples.

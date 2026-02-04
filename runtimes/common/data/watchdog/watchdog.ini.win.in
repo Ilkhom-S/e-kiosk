@@ -1,0 +1,7 @@
+; WatchService (watchdog) конфигурационный файл - Windows specific sections
+; This file contains only Windows-specific overrides/additions
+; Will be merged with the generic template
+
+[Module1]
+; Путь к исполняемому файлу модуля (Windows)
+file={WS_DIR}/../../ekiosk.exe
