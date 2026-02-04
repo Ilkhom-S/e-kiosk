@@ -22,7 +22,6 @@ The application provides a comprehensive system tray menu with:
 - **Service Control**: Start/stop the WatchService daemon
 - **Status Indicators**: Visual status of WatchService and monitored applications
 - **Application Control**: Start/stop/restart individual modules
-- **Configuration Access**: Open configuration files and settings
 - **System Information**: Version information and system status
 
 ### Status Indicators
