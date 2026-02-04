@@ -80,7 +80,7 @@ WatchService runs as a regular Qt application. No special installation is requir
 
 ```ini
 [WatchService]
-ProcessPath=client.exe
+ProcessPath=ekiosk.exe
 ProcessArgs=--fullscreen
 RestartDelay=5000
 MaxRestarts=5

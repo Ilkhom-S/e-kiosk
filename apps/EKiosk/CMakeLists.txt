@@ -10,7 +10,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/EKStaticAnalysis.cmake)
 
 # Генерация ini-файлов для всех конфигураций через хелпер
-ek_generate_ini_for_all_configs(client "${CMAKE_SOURCE_DIR}/runtimes/common/data/ekiosk.ini.in")
+ek_generate_ini_for_all_configs(ekiosk "${CMAKE_SOURCE_DIR}/runtimes/common/data/ekiosk.ini.in")
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE HEADERS src/*.h)
@@ -29,7 +29,7 @@ if(NOT WIN32)
 endif()
 
 # Application target with Qt modules and resources
-ek_add_application(client
+ek_add_application(ekiosk
     FOLDER "apps"
     SOURCES ${SOURCES} ${HEADERS} ${UI_FILES} ${RESOURCE_FILES} ${RC_FILES}
     QT_MODULES Core Widgets Sql PrintSupport Network Multimedia Xml SerialPort WebSockets WebEngineWidgets Core5Compat
@@ -61,35 +61,35 @@ ek_add_application(client
 
 if(APPLE)
     # Configure as standard application that shows in dock
-    set_target_properties(client PROPERTIES
+    set_target_properties(ekiosk PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/Info.plist"
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_ICON_FILE AppIcon
     )
     # Copy icon to bundle Resources
-    add_custom_command(TARGET client POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:client>/Contents/Resources
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/client-app-icon.icns $<TARGET_BUNDLE_DIR:client>/Contents/Resources/AppIcon.icns
+    add_custom_command(TARGET ekiosk POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:ekiosk>/Contents/Resources
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/client-app-icon.icns $<TARGET_BUNDLE_DIR:ekiosk>/Contents/Resources/AppIcon.icns
     )
 endif()
 
 # Link common include INTERFACE target so `include/` headers are available
-target_link_libraries(client PUBLIC ek_common)
+target_link_libraries(ekiosk PUBLIC ek_common)
 
 # Add zint include directory for qzint.h header
-target_include_directories(client PRIVATE "${CMAKE_SOURCE_DIR}/thirdparty/zint/backend_qt")
+target_include_directories(ekiosk PRIVATE "${CMAKE_SOURCE_DIR}/thirdparty/zint/backend_qt")
 
 # Link Boost includes for SDK headers that use Boost
-# target_link_libraries(client PUBLIC ek_boost)  # Removed to avoid linking issues
+# target_link_libraries(ekiosk PUBLIC ek_boost)  # Removed to avoid linking issues
 
 # Option to enable test mode (disables kiosk restrictions, e.g. killing explorer.exe)
 option(EKIOSK_TEST_MODE "Enable test mode (no kiosk restrictions)" ON)
 if(EKIOSK_TEST_MODE)
-    target_compile_definitions(client PRIVATE EKIOSK_TEST_MODE)
+    target_compile_definitions(ekiosk PRIVATE EKIOSK_TEST_MODE)
 endif()
 
 # Static analysis (optional, but recommended)
-# ek_enable_static_analysis(client CPPCHECK CLANG_TIDY)
+# ek_enable_static_analysis(ekiosk CPPCHECK CLANG_TIDY)
 
 # Translations
 file(GLOB TS_FILES src/locale/client_*.ts)
@@ -102,9 +102,9 @@ if(TS_FILES)
         INSTALL
     )
     if(TARGET EKioskTranslations_translations)
-        add_dependencies(client EKioskTranslations_translations)
+        add_dependencies(ekiosk EKioskTranslations_translations)
         # Copy translation files to bin/locale directory
-        add_custom_command(TARGET client POST_BUILD
+        add_custom_command(TARGET ekiosk POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_BINARY_DIR}/locale
             ${CMAKE_BINARY_DIR}/bin/locale

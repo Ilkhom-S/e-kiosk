@@ -510,7 +510,7 @@ void UpdaterApp::onDownloadComplete()
     // Останавливаем tray.exe (watch_service_controller)
     mWatchServiceClient->closeModule(CWatchService::Modules::WatchServiceController);
 
-    // Останавливаем client.exe
+    // Останавливаем ekiosk.exe
     mWatchServiceClient->subscribeOnModuleClosed(this);
     mWatchServiceClient->closeModule(CWatchService::Modules::PaymentProcessor);
 
