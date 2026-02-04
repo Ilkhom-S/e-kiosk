@@ -10,7 +10,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/EKStaticAnalysis.cmake)
 
 # Генерация ini-файлов для всех конфигураций через хелпер
-ek_generate_ini_for_all_configs(ekiosk "${CMAKE_SOURCE_DIR}/runtimes/common/data/ekiosk.ini.in")
+ek_generate_ini_for_all_configs(ekiosk "${CMAKE_SOURCE_DIR}/runtimes/common/data/ekiosk/ekiosk.ini.in")
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE HEADERS src/*.h)

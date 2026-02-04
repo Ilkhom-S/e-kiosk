@@ -103,4 +103,4 @@ endif()
 
 # Генерация watchdog.ini для всех конфигураций
 include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
-ek_generate_ini_for_all_configs(watchdog "${CMAKE_SOURCE_DIR}/runtimes/common/data/watchdog.ini.in")
+ek_generate_ini_for_all_configs(watchdog "${CMAKE_SOURCE_DIR}/runtimes/common/data/watchdog/watchdog.ini.in")

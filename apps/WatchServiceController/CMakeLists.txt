@@ -3,7 +3,7 @@
 
 include_directories(${CMAKE_SOURCE_DIR}/thirdparty/SingleApplication)
 # Генерация ini-файлов для всех конфигураций через хелпер
-ek_generate_ini_for_all_configs(controller "${CMAKE_SOURCE_DIR}/runtimes/common/data/controller.ini.in")
+ek_generate_ini_for_all_configs(controller "${CMAKE_SOURCE_DIR}/runtimes/common/data/controller/controller.ini.in")
 
 file(GLOB WSC_SOURCES
     src/*.cpp

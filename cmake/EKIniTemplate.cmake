@@ -26,22 +26,29 @@ endmacro()
 #   ek_generate_ini_template(controller "${CMAKE_SOURCE_DIR}/runtimes/common/data/controller.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 #
 # This macro configures a .ini file from a template, substituting CMake variables.
-# Automatically selects platform-specific templates if available:
-#   - <template>.win.in for Windows
-#   - <template>.mac.in for macOS
-#   - <template>.linux.in for Linux
-#   Falls back to <template>.in if platform-specific version doesn't exist
+# Automatically selects platform-specific templates using directory structure:
+#   runtimes/common/data/{name}/
+#     ├── {name}.ini.in           (generic template)
+#     ├── {name}.win.in          (Windows-specific)
+#     ├── {name}.mac.in          (macOS-specific)
+#     └── {name}.linux.in         (Linux-specific)
+#
+# Falls back to generic template if platform-specific version doesn't exist
 
 function(ek_generate_ini_template NAME TEMPLATE OUTPUT_DIR)
+    # Extract directory and base name from template path
+    get_filename_component(_template_dir "${TEMPLATE}" DIRECTORY)
+    get_filename_component(_template_name "${TEMPLATE}" NAME_WE) # Remove .in extension
+    get_filename_component(_template_base "${_template_name}" NAME_WE) # Remove .ini extension
+
     # Determine platform-specific template path
-    # Replace .in extension with platform-specific extension
-    string(REGEX REPLACE "\\.in$" "" _template_base "${TEMPLATE}")
+    # Look in same directory as generic template (e.g., updater/updater.ini.mac.in)
     if(WIN32)
-        set(_platform_template "${_template_base}.win.in")
+        set(_platform_template "${_template_dir}/${_template_base}.ini.win.in")
     elseif(APPLE)
-        set(_platform_template "${_template_base}.mac.in")
+        set(_platform_template "${_template_dir}/${_template_base}.ini.mac.in")
     elseif(UNIX)
-        set(_platform_template "${_template_base}.linux.in")
+        set(_platform_template "${_template_dir}/${_template_base}.ini.linux.in")
     else()
         set(_platform_template "${TEMPLATE}")
     endif()

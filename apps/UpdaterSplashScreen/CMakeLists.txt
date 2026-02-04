@@ -33,4 +33,4 @@ endif()
 
 # Генерация updatersplash.ini для всех конфигураций
 include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
-ek_generate_ini_for_all_configs(updatersplash "${CMAKE_SOURCE_DIR}/runtimes/common/data/updatersplash.ini.in")
+ek_generate_ini_for_all_configs(updatersplash "${CMAKE_SOURCE_DIR}/runtimes/common/data/updatersplash/updatersplash.ini.in")
