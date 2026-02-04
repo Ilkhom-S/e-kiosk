@@ -48,7 +48,7 @@ Modules are defined in separate INI sections. Common patterns include:
 [module_ekiosk]
 ; Basic module information
 name = ekiosk
-file = {WS_DIR}/../../ekiosk${EXE_SUFFIX}
+file = {WS_DIR}/../../ekiosk
 workingdirectory = {WS_DIR}
 gui = true
 
@@ -71,7 +71,7 @@ kill_timeout = 10000
 [module_updater]
 ; Basic module information
 name = updater
-file = {WS_DIR}/../../updater${EXE_SUFFIX}
+file = {WS_DIR}/../../updater
 workingdirectory = {WS_DIR}
 gui = false
 
@@ -93,7 +93,7 @@ kill_timeout = 10000
 #### Basic Module Settings
 
 - **`name`** (string): Module name/identifier (e.g., "ekiosk", "updater")
-- **`file`** (string): Executable path (supports `{WS_DIR}` macro for WatchService directory and `${EXE_SUFFIX}` for platform-specific extensions)
+- **`file`** (string): Executable path (supports `{WS_DIR}` macro for WatchService directory)
 - **`workingdirectory`** (string): Working directory for the module (supports `{WS_DIR}` macro)
 - **`arguments`** (string): Command line arguments (optional)
 - **`gui`** (bool): Whether module has graphical interface that blocks access to desktop and Windows menu
@@ -120,9 +120,8 @@ kill_timeout = 10000
 WatchService supports variable substitution in configuration values:
 
 - **`{WS_DIR}`**: WatchService current working directory (used for relative paths in file and workingdirectory parameters)
-- **`${EXE_SUFFIX}`**: Platform-specific executable suffix (`.exe` on Windows, empty on Unix)
 
-**Example**: `file={WS_DIR}/../../ekiosk${EXE_SUFFIX}` resolves to the ekiosk executable relative to WatchService directory.
+**Example**: `file={WS_DIR}/../../ekiosk` resolves to the ekiosk executable relative to WatchService directory.
 
 ### Forbidden Application Configuration
 
@@ -131,7 +130,7 @@ WatchService supports variable substitution in configuration values:
 watchdog/taboo_enabled = true
 
 [taboo]
-applications = notepad${EXE_SUFFIX},calc${EXE_SUFFIX},explorer${EXE_SUFFIX}
+applications = notepad.exe,calc.exe,explorer.exe
 check_timeout = 60000
 ```
 
