@@ -92,7 +92,7 @@ endif()
 # ek_enable_static_analysis(ekiosk CPPCHECK CLANG_TIDY)
 
 # Translations
-file(GLOB TS_FILES src/locale/client_*.ts)
+file(GLOB TS_FILES src/locale/ekiosk_*.ts)
 if(TS_FILES)
     # Ensure output directory exists
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/locale)
