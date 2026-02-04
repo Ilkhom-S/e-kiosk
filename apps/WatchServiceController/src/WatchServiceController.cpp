@@ -68,7 +68,7 @@ WatchServiceController::WatchServiceController()
             SLOT(onTrayIconActivated(QSystemTrayIcon::ActivationReason)));
 
     mIcon.setContextMenu(&mMenu);
-    mIcon.setIcon(createTemplateIcon(":/icons/tray-monogramTemplate.png"));
+    mIcon.setIcon(createTemplateIcon(":/icons/controller-monogramTemplate.png"));
     mIcon.show();
 
     LOG(getLog(), LogLevel::Normal, "WatchServiceController started.");
@@ -272,12 +272,12 @@ void WatchServiceController::onCheck()
     if (mClient->isConnected())
     {
         // Connected state: show normal template icon
-        mIcon.setIcon(createTemplateIcon(":/icons/tray-monogramTemplate.png"));
+        mIcon.setIcon(createTemplateIcon(":/icons/controller-monogramTemplate.png"));
     }
     else
     {
         // Disconnected state: show slashed H icon to indicate stopped state
-        mIcon.setIcon(createTemplateIcon(":/icons/tray-monogram-stoppedTemplate.png"));
+        mIcon.setIcon(createTemplateIcon(":/icons/controller-monogram-stoppedTemplate.png"));
     }
 
     // Always enable start/stop service actions regardless of connection status
@@ -400,7 +400,7 @@ void WatchServiceController::onCloseIconClicked()
 #ifdef Q_OS_MAC
     // On macOS, add the icon to the dialog since window icons don't show in title bar
     // Use multi-size loading for crisp rendering
-    QIcon appIcon = createAppIcon(":/icons/tray-app-icon.png");
+    QIcon appIcon = createAppIcon(":/icons/controller-app-icon.png");
     QPixmap iconPixmap = appIcon.pixmap(64, 64, QIcon::Normal, QIcon::On);
     if (!iconPixmap.isNull())
     {
@@ -408,7 +408,7 @@ void WatchServiceController::onCloseIconClicked()
     }
 #endif
 
-    msgBox.setWindowIcon(createAppIcon(":/icons/tray-app-icon.png"));
+    msgBox.setWindowIcon(createAppIcon(":/icons/controller-app-icon.png"));
 
     int result = msgBox.exec();
     if (result == QMessageBox::Yes)

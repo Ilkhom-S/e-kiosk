@@ -80,31 +80,31 @@
         <file>icons/controller-app-icon.ico</file>
         <file>icons/controller-app-icon.png</file>
         <file>icons/controller-app-icon@2x.png</file>
-        <file>icons/tray-monogram-stoppedTemplate-128.png</file>
-        <file>icons/tray-monogram-stoppedTemplate-256.png</file>
-        <file>icons/tray-monogram-stoppedTemplate-48.png</file>
-        <file>icons/tray-monogram-stoppedTemplate-512.png</file>
-        <file>icons/tray-monogram-stoppedTemplate-64.png</file>
-        <file>icons/tray-monogram-stoppedTemplate-96.png</file>
-        <file>icons/tray-monogram-stoppedTemplate-ico-16.png</file>
-        <file>icons/tray-monogram-stoppedTemplate-ico-256.png</file>
-        <file>icons/tray-monogram-stoppedTemplate-ico-32.png</file>
-        <file>icons/tray-monogram-stoppedTemplate-ico-48.png</file>
-        <file>icons/tray-monogram-stoppedTemplate.ico</file>
-        <file>icons/tray-monogram-stoppedTemplate.png</file>
-        <file>icons/tray-monogram-stoppedTemplate@2x.png</file>
-        <file>icons/tray-monogramTemplate-128.png</file>
-        <file>icons/tray-monogramTemplate-256.png</file>
-        <file>icons/tray-monogramTemplate-48.png</file>
-        <file>icons/tray-monogramTemplate-512.png</file>
-        <file>icons/tray-monogramTemplate-64.png</file>
-        <file>icons/tray-monogramTemplate-96.png</file>
-        <file>icons/tray-monogramTemplate-ico-16.png</file>
-        <file>icons/tray-monogramTemplate-ico-256.png</file>
-        <file>icons/tray-monogramTemplate-ico-32.png</file>
-        <file>icons/tray-monogramTemplate-ico-48.png</file>
-        <file>icons/tray-monogramTemplate.ico</file>
-        <file>icons/tray-monogramTemplate.png</file>
-        <file>icons/tray-monogramTemplate@2x.png</file>
+        <file>icons/controller-monogram-stoppedTemplate-128.png</file>
+        <file>icons/controller-monogram-stoppedTemplate-256.png</file>
+        <file>icons/controller-monogram-stoppedTemplate-48.png</file>
+        <file>icons/controller-monogram-stoppedTemplate-512.png</file>
+        <file>icons/controller-monogram-stoppedTemplate-64.png</file>
+        <file>icons/controller-monogram-stoppedTemplate-96.png</file>
+        <file>icons/controller-monogram-stoppedTemplate-ico-16.png</file>
+        <file>icons/controller-monogram-stoppedTemplate-ico-256.png</file>
+        <file>icons/controller-monogram-stoppedTemplate-ico-32.png</file>
+        <file>icons/controller-monogram-stoppedTemplate-ico-48.png</file>
+        <file>icons/controller-monogram-stoppedTemplate.ico</file>
+        <file>icons/controller-monogram-stoppedTemplate.png</file>
+        <file>icons/controller-monogram-stoppedTemplate@2x.png</file>
+        <file>icons/controller-monogramTemplate-128.png</file>
+        <file>icons/controller-monogramTemplate-256.png</file>
+        <file>icons/controller-monogramTemplate-48.png</file>
+        <file>icons/controller-monogramTemplate-512.png</file>
+        <file>icons/controller-monogramTemplate-64.png</file>
+        <file>icons/controller-monogramTemplate-96.png</file>
+        <file>icons/controller-monogramTemplate-ico-16.png</file>
+        <file>icons/controller-monogramTemplate-ico-256.png</file>
+        <file>icons/controller-monogramTemplate-ico-32.png</file>
+        <file>icons/controller-monogramTemplate-ico-48.png</file>
+        <file>icons/controller-monogramTemplate.ico</file>
+        <file>icons/controller-monogramTemplate.png</file>
+        <file>icons/controller-monogramTemplate@2x.png</file>
     </qresource>
 </RCC>
