@@ -19,7 +19,7 @@ WatchService is a critical system component that acts as a **process supervisor 
 
 WatchService runs as a background daemon that:
 
-1. **Loads Configuration**: Reads module definitions from `WatchService.ini`
+1. **Loads Configuration**: Reads module definitions from `watchdog.ini`
 2. **Starts Modules**: Launches configured applications based on priority and dependencies
 3. **Monitors Health**: Sends periodic ping messages and monitors responses
 4. **Manages Screen**: Shows/hides protective screen based on running GUI applications
@@ -29,8 +29,8 @@ WatchService runs as a background daemon that:
 
 ### File Location
 
-- **Primary**: `apps/WatchService/src/WatchService.ini` (template)
-- **Runtime**: Generated `WatchService.ini` in build directory
+- **Primary**: `runtimes/common/data/watchdog/watchdog.ini.in` (template)
+- **Runtime**: Generated `watchdog.ini` in build directory
 - **User Overrides**: `user.ini` for runtime adjustments
 
 ### Module Configuration Format
