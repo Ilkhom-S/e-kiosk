@@ -41,8 +41,6 @@ int main(int aArgc, char *aArgv[])
     }
 #endif
 
-    // Translation loading is handled automatically by BasicQtApplication
-
     // Перенаправляем логи.
     ILog::getInstance(CIMessageQueueClient::DefaultLog)->setDestination(application.getLog()->getName());
 

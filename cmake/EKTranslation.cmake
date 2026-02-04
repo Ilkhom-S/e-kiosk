@@ -4,7 +4,7 @@ option(EK_ENABLE_TRANSLATIONS "Enable building translations (Qt LinguistTools or
 
 function(ek_add_translations TARGET_NAME)
     set(options INSTALL)
-    set(oneValueArgs OUTPUT_DIR TS_DIR INSTALL_DIR)
+    set(oneValueArgs OUTPUT_DIR TS_DIR INSTALL_DIR FOLDER)
     set(multiValueArgs SOURCES)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -65,6 +65,16 @@ function(ek_add_translations TARGET_NAME)
         list(APPEND _qm_files ${_qm_file})
     endforeach()
     add_custom_target(${TARGET_NAME}_translations ALL DEPENDS ${_qm_files})
+
+    # Set folder for translation targets in IDE project outlines
+    if(ARG_FOLDER)
+        set(_ek_folder "${ARG_FOLDER}")
+    else()
+        # Default to translations folder for all translation targets
+        set(_ek_folder "translations")
+    endif()
+    set_target_properties(${TARGET_NAME}_translations PROPERTIES FOLDER "${_ek_folder}")
+
     if(TARGET ${TARGET_NAME})
         add_dependencies(${TARGET_NAME} ${TARGET_NAME}_translations)
     endif()

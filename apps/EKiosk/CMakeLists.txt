@@ -72,3 +72,25 @@ endif()
 
 # Static analysis (optional, but recommended)
 # ek_enable_static_analysis(client CPPCHECK CLANG_TIDY)
+
+# Translations
+file(GLOB TS_FILES src/locale/client_*.ts)
+if(TS_FILES)
+    # Ensure output directory exists
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/locale)
+    ek_add_translations(EKioskTranslations
+        SOURCES ${TS_FILES}
+        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        INSTALL
+    )
+    if(TARGET EKioskTranslations_translations)
+        add_dependencies(client EKioskTranslations_translations)
+        # Copy translation files to bin/locale directory
+        add_custom_command(TARGET client POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_BINARY_DIR}/locale
+            ${CMAKE_BINARY_DIR}/bin/locale
+            COMMENT "Copying translation files to bin/locale directory"
+        )
+    endif()
+endif()

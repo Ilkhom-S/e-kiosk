@@ -62,7 +62,7 @@ else()
 endif()
 
 # Translations
-file(GLOB TS_FILES src/locale/*.ts)
+file(GLOB TS_FILES src/locale/tray_*.ts)
 if(TS_FILES)
     # Ensure output directory exists
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/locale)

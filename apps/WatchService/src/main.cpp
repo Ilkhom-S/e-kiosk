@@ -6,7 +6,6 @@
 
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QTranslator>
 #include <QtWidgets/QApplication>
 #include <Common/QtHeadersEnd.h>
 
@@ -36,16 +35,6 @@ void qtMessageHandler(QtMsgType /*aType*/, const QMessageLogContext & /*aContext
 int main(int aArgc, char *aArgv[])
 {
     BasicQtApplication<SingleApplication> application(CWatchService::Name, Humo::getVersion(), aArgc, aArgv);
-
-    // Загружаем переводы
-    QTranslator translator;
-    QString locale = QLocale::system().name();
-    QString qmFile = QString("watchservice_%1.qm").arg(locale);
-    QString qmPath = QDir(QApplication::applicationDirPath()).absoluteFilePath("locale/" + qmFile);
-    if (translator.load(qmPath))
-    {
-        QApplication::installTranslator(&translator);
-    }
 
     // TODO: restore breakpad integration when compatible with SingleApplication
     // QBreakpadInstance.setDumpPath(application.getWorkingDirectory() + "/logs/");

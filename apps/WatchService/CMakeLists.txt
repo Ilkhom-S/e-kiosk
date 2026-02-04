@@ -80,8 +80,10 @@ else()
 endif()
 
 # Translations
-file(GLOB TS_FILES src/locale/*.ts)
+file(GLOB TS_FILES src/locale/guard_*.ts)
 if(TS_FILES)
+    # Ensure output directory exists
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/locale)
     ek_add_translations(WatchServiceTranslations
         SOURCES ${TS_FILES}
         OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
@@ -89,12 +91,12 @@ if(TS_FILES)
     )
     if(TARGET WatchServiceTranslations_translations)
         add_dependencies(guard WatchServiceTranslations_translations)
-        # Copy translation files to executable directory for debugging
+        # Copy translation files to bin/locale directory
         add_custom_command(TARGET guard POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_BINARY_DIR}/locale
-            $<TARGET_FILE_DIR:guard>/locale
-            COMMENT "Copying translation files to executable directory"
+            ${CMAKE_BINARY_DIR}/bin/locale
+            COMMENT "Copying translation files to bin/locale directory"
         )
     endif()
 endif()

@@ -49,7 +49,12 @@ ek_add_library(mylib SOURCES src/foo.cpp src/bar.cpp)
 Folder / IDE grouping
 
 - All `ek_add_*` helpers support an optional `FOLDER` one-value argument that controls the IDE project folder for the generated target (Visual Studio / other IDEs).
-- When `FOLDER` is omitted, helpers will compute a sensible default (e.g. `modules/<module-name>` for `ek_add_library` called from `src/modules/<module>`, `plugins/<path>` for plugins, `apps/<app-name>` for applications, and `tests/<path>` for tests).
+- When `FOLDER` is omitted, helpers will compute a sensible default:
+  - `ek_add_library`: `modules/<module-name>` for libraries in `src/modules/`, `tests/<module-name>` for libraries in `tests/`
+  - `ek_add_application`: `apps/<app-name>`
+  - `ek_add_plugin`: `plugins/<path>`
+  - `ek_add_test`: `tests/<path>`
+  - `ek_add_translations`: `translations` (groups all translation targets together)
 - You can override the computed value by passing `FOLDER "<your/folder/path>"` in the helper call.
 
 **Why:**
@@ -143,17 +148,40 @@ ek_enable_packaging()
 
 ### EKTranslation.cmake
 
-**Purpose:** Manage Qt translation files (.ts, .qm).
+**Purpose:** Manage Qt translation files (.ts, .qm) with automatic compilation and IDE organization.
 
 **Example:**
 
 ```cmake
-ek_add_translations(${CMAKE_SOURCE_DIR}/translations/*.ts)
+# Basic usage - automatically detects .ts files and organizes under "translations" folder
+file(GLOB TS_FILES src/locale/*.ts)
+ek_add_translations(MyTranslations
+    SOURCES ${TS_FILES}
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+    INSTALL
+)
+
+# Override folder organization
+ek_add_translations(MyTranslations
+    SOURCES ${TS_FILES}
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+    INSTALL
+    FOLDER "custom/translations"
+)
 ```
+
+**Features:**
+
+- Automatic Qt LinguistTools detection (Qt5/Qt6)
+- Fallback to external `lrelease` if Qt tools not found
+- Defaults to `"translations"` folder in IDE project outline
+- Supports custom output directories and install locations
 
 **Why:**
 
 - Automates lrelease, ensures all languages are built
+- Consistent folder organization across all translation targets
+- Handles Qt version differences automatically
 
 ---
 

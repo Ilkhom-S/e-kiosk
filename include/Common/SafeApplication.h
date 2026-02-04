@@ -13,7 +13,10 @@ class SafeQApplication : public SingleApplication
 
   public:
     /// Конструктор.
-    SafeQApplication(int &aArgc, char **aArgv) : SingleApplication(aArgc, aArgv)
+    SafeQApplication(int &aArgc, char **aArgv, bool allowSecondary = false,
+                     SingleApplication::Options options = SingleApplication::Mode::User, int timeout = 1000,
+                     const QString &userData = {})
+        : SingleApplication(aArgc, aArgv, allowSecondary, options, timeout, userData)
     {
     }
 

@@ -36,50 +36,21 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &a
     searchPaths << QDir(appDir).absoluteFilePath("locale");              // Contents/MacOS/locale (fallback)
 #endif
 
-    getLog()->write(LogLevel::Normal, QString("DEBUG: Searching for translations for %1").arg(appName));
-    for (const QString &path : searchPaths)
-    {
-        getLog()->write(LogLevel::Normal, QString("DEBUG: Checking path: %1").arg(path));
-        QDir testDir(path);
-        if (testDir.exists())
-        {
-            QStringList files = testDir.entryList(QStringList() << "*.qm", QDir::Files);
-            getLog()->write(LogLevel::Normal, QString("DEBUG: Directory exists, found %1 .qm files").arg(files.size()));
-        }
-        else
-        {
-            getLog()->write(LogLevel::Normal, QString("DEBUG: Directory does not exist"));
-        }
-    }
-
     bool translationLoaded = false;
     for (const QString &searchPath : searchPaths)
     {
         QDir translationsDir(searchPath);
         if (!translationsDir.exists())
-        {
             continue;
-        }
-
-        // Debug: list all .qm files in directory first
-        QStringList allQmFiles = translationsDir.entryList(QStringList() << "*.qm", QDir::Files);
-        getLog()->write(LogLevel::Info,
-                        QString("DEBUG: All .qm files in %1: %2").arg(searchPath).arg(allQmFiles.join(", ")));
 
         QStringList translationFilters;
         translationFilters << QString("%1_*.qm").arg(appName);
         translationsDir.setNameFilters(translationFilters);
 
         QStringList translationFiles = translationsDir.entryList(QDir::Files, QDir::Name);
-        getLog()->write(LogLevel::Info,
-                        QString("DEBUG: Looking for files matching: %1").arg(translationFilters.join(", ")));
-        getLog()->write(LogLevel::Info,
-                        QString("DEBUG: Found files with setNameFilters: %1").arg(translationFiles.join(", ")));
-
         if (!translationFiles.isEmpty())
         {
             QString translationFile = translationsDir.absoluteFilePath(translationFiles.first());
-            getLog()->write(LogLevel::Info, QString("Trying to load: %1").arg(translationFile));
             mTranslator = QSharedPointer<QTranslator>(new QTranslator(&mQtApplication));
 
             if (mTranslator->load(translationFile))

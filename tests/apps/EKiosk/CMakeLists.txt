@@ -1,18 +1,28 @@
 # Tests for apps/EKiosk
 message(STATUS "Configuring EKiosk app tests")
 
+include(${CMAKE_SOURCE_DIR}/cmake/EKTesting.cmake)
+
 if(WIN32)
-    add_executable(TestPrinterConversion TestPrinterConversion.cpp)
-    set_target_properties(TestPrinterConversion PROPERTIES FOLDER "tests/apps/EKiosk")
+    ek_add_test(TestPrinterConversion
+        SOURCES TestPrinterConversion.cpp
+        FOLDER "tests/apps/EKiosk"
+    )
 
-    add_executable(TestStringConversions TestStringConversions.cpp)
-    set_target_properties(TestStringConversions PROPERTIES FOLDER "tests/apps/EKiosk")
+    ek_add_test(TestStringConversions
+        SOURCES TestStringConversions.cpp
+        FOLDER "tests/apps/EKiosk"
+    )
 
-    add_executable(TestConnectPrivilege TestConnectPrivilege.cpp)
-    set_target_properties(TestConnectPrivilege PROPERTIES FOLDER "tests/apps/EKiosk")
+    ek_add_test(TestConnectPrivilege
+        SOURCES TestConnectPrivilege.cpp
+        FOLDER "tests/apps/EKiosk"
+    )
 
-    add_executable(TestBaseApplication TestBaseApplication.cpp)
-    set_target_properties(TestBaseApplication PROPERTIES FOLDER "tests/apps/EKiosk")
+    ek_add_test(TestBaseApplication
+        SOURCES TestBaseApplication.cpp
+        FOLDER "tests/apps/EKiosk"
+    )
 endif()
 
 add_subdirectory(Example)

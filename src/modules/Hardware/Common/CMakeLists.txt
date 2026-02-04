@@ -1,5 +1,7 @@
 # HardwareCommon module
 
+include(${CMAKE_SOURCE_DIR}/cmake/EKTranslation.cmake)
+
 
 file(GLOB_RECURSE HARDWARECOMMON_SOURCES
     src/*.cpp
@@ -58,27 +60,15 @@ ek_add_library(HardwareCommon
     COMPILE_DEFINITIONS _UNICODE UNICODE
 )
 
-# Add translations target if Qt LinguistTools is available
-if(QT_VERSION_MAJOR EQUAL 5)
-    find_package(Qt5 COMPONENTS LinguistTools QUIET)
-    if(Qt5LinguistTools_FOUND)
-        file(GLOB TS_FILES src/locale/*.ts)
-        if(TS_FILES)
-            qt5_add_translation(QM_FILES ${TS_FILES})
-            add_custom_target(HardwareCommonTranslations ALL DEPENDS ${QM_FILES})
-            install(FILES ${QM_FILES} DESTINATION locale)
-        endif()
-    endif()
-else()
-    find_package(Qt6 COMPONENTS LinguistTools QUIET)
-    if(Qt6LinguistTools_FOUND)
-        file(GLOB TS_FILES src/locale/*.ts)
-        if(TS_FILES)
-            qt6_add_translation(QM_FILES ${TS_FILES})
-            add_custom_target(HardwareCommonTranslations ALL DEPENDS ${QM_FILES})
-            install(FILES ${QM_FILES} DESTINATION locale)
-        endif()
-    endif()
+# Add translations using the EK helper
+file(GLOB TS_FILES src/locale/*.ts)
+if(TS_FILES)
+    ek_add_translations(HardwareCommonTranslations
+        SOURCES ${TS_FILES}
+        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        INSTALL
+        FOLDER "modules/Hardware"
+    )
 endif()
 
 # Ensure EK::LibUSB target is available for this library

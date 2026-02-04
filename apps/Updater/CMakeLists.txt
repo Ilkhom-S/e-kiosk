@@ -56,14 +56,24 @@ else()
 endif()
 
 # Translations
-file(GLOB TS_FILES src/locale/*.ts)
+file(GLOB TS_FILES src/locale/updater_*.ts)
 if(TS_FILES)
+    # Ensure output directory exists
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/locale)
     ek_add_translations(UpdaterTranslations
         SOURCES ${TS_FILES}
+        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        INSTALL
     )
-    # Only add dependency if target was created
-    if(TARGET UpdaterTranslations)
-        add_dependencies(updater UpdaterTranslations)
+    if(TARGET UpdaterTranslations_translations)
+        add_dependencies(updater UpdaterTranslations_translations)
+        # Copy translation files to bin/locale directory
+        add_custom_command(TARGET updater POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_BINARY_DIR}/locale
+            ${CMAKE_BINARY_DIR}/bin/locale
+            COMMENT "Copying translation files to bin/locale directory"
+        )
     endif()
 endif()
 
