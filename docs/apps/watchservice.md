@@ -135,9 +135,7 @@ WatchService supports variable substitution in configuration values:
 
 **Note**: For general settings management and configuration file handling, see the [SettingsManager documentation](../../modules/SettingsManager/README.md).
 
-### Special Features
-
-#### Screen Protection
+### Screen Protection
 
 WatchService automatically manages screen protection:
 
