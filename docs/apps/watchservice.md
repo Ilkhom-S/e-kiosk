@@ -53,7 +53,7 @@ Modules are defined in separate INI sections with the patterns shown above. Each
 - **`startmode`** (string):
   - `normal`: Normal startup
   - `service`: Service startup
-  - `exclusive`: Requires termination of all other modules
+  - `exclusive`: Requires termination of all other modules. When running, pauses all other non-exclusive modules and gets full system resources; other modules resume when exclusive module stops
 - **`priority`** (int): Startup priority (lower number = starts earlier). Modules start in ascending order: 0 starts first, 1 starts second, etc.
 - **`close_priority`** (int): Shutdown priority (lower number = stops earlier). Modules stop in ascending order: 0 stops first, 1 stops second, etc.
 - **`afterstartdelay`** (int): Delay after startup in milliseconds (optional)
@@ -111,14 +111,6 @@ kill_timeout = 10000
 ```
 
 #### Priority System
-
-##### Exclusive Mode
-
-When a module with `startmode = exclusive` runs:
-
-- All other non-exclusive modules are paused
-- Exclusive module gets full system resources
-- Other modules resume when exclusive module stops
 
 ### Forbidden Application Configuration
 
