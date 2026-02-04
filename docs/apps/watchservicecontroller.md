@@ -2,7 +2,7 @@
 
 ## Overview
 
-WatchServiceController provides a **system tray interface** for monitoring and controlling the WatchService daemon. It offers administrators and users a convenient way to interact with the kiosk management system without command-line access.
+WatchServiceController provides a **system tray interface** for monitoring and controlling the WatchService daemon. It offers administrators and users a convenient way to interact with the Self-Service kiosk application without command-line access.
 
 **📖 This document is for administrators and operators** - see [Developer Guide](../../apps/WatchServiceController/README.md) for technical implementation details.
 
