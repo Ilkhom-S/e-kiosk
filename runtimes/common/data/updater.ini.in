@@ -1,14 +1,19 @@
-; Updater конфигурационный файл
-; Все параметры должны быть задокументированы на русском языке
-; Этот шаблон используется для генерации updater.ini при сборке приложения
+; Updater configuration template
+; Platform-specific file extensions are handled via CMake variable substitution
+; Windows: .exe for executables, .dll for libraries
+; macOS: .app for application bundles, .dylib for dynamic libraries
+; Linux: no extension for executables, .so for shared libraries
 
-[Общие]
-; Путь к обновлениям
-UPDATE_PATH=@UPDATE_PATH@
+[component]
+optional=logo, numcapacity
 
-; Путь к логам
-LOG_PATH=@LOG_PATH@
+[directory]
+ignore=tclib
 
-; Описание:
-; - UPDATE_PATH: Папка, где хранятся обновления
-; - LOG_PATH: Путь к файлу лога
+[validator]
+; Required files for updater validation
+; Platform-specific paths are substituted by CMake at build time
+required_files=@CONTROLLER_APP@, @EKIOSK_APP@, @WATCHDOG_APP@, @BILL_ACCEPTORS_LIB@
+
+[bits]
+ignore=true
