@@ -7,8 +7,13 @@
 MessageQueueClient::MessageQueueClient() : ILogable(CIMessageQueueClient::DefaultLog)
 {
     QObject::connect(&m_socket, SIGNAL(readyRead()), this, SLOT(onSocketReadyRead()));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QObject::connect(&m_socket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this,
                      SLOT(onSocketError(QAbstractSocket::SocketError)));
+#else
+    QObject::connect(&m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
+                     SLOT(onSocketError(QAbstractSocket::SocketError)));
+#endif
     QObject::connect(&m_socket, SIGNAL(disconnected()), this, SLOT(onSocketDisconnected()));
     // QObject::connect(&m_answerTimer, SIGNAL(timeout()), this, SLOT(onSocketDisconnected()));
 }
