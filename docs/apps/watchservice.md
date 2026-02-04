@@ -125,7 +125,7 @@ check_timeout = 60000
 - **`applications`** (string list): Comma-separated list of forbidden executables
 - **`check_timeout`** (int): Check interval in milliseconds
 
-### Configuration Variables
+#### Configuration Variables Notes
 
 WatchService supports variable substitution in configuration values:
 
