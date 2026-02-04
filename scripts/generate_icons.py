@@ -11,9 +11,24 @@ Templates are organized by app in subdirectories under assets/icons/templates/:
 - updater/ : Updater apps
 
 Icon Types (determined by filename pattern):
-- App icons: *-app-icon.svg → PNGs, ICO, ICNS files
-- UI icons: menu-*.svg, icon-*.svg, button-*.svg, *ui-*.svg → PNGs only
-- Template icons: *template*.svg → macOS template PNGs
+- App icons: *-app-icon.svg → PNGs, ICO, ICNS files (full app icon set)
+- UI icons: menu-*, icon-*, button-*, toolbar-*, *ui-*, *monogram*Template* → PNGs only (UI sizes)
+- Template icons: *template* (but not UI patterns above) → macOS template PNGs
+
+Naming Convention Details:
+- *-app-icon.svg: Main application icons that need ICO (Windows) and ICNS (macOS) formats
+- menu-*.svg: Context menu icons, toolbar buttons, UI controls
+- icon-*.svg: General UI icons and symbols
+- button-*.svg: Button icons and interactive elements
+- toolbar-*.svg: Toolbar and navigation icons
+- *ui-*.svg: Any UI-related icons
+- *monogram*Template*.svg: Status indicators, small badges (e.g., controller-monogram-stoppedTemplate.svg)
+- *template*.svg: macOS-style single-color icons for status bars
+
+Generated Sizes:
+- App icons: 48, 64, 128, 256, 512px PNGs + ICO (16, 32, 48, 256px) + ICNS
+- UI icons: 16, 24, 32, 48, 64px PNGs (appropriate for UI elements)
+- Template icons: 16, 18, 20, 22, 24px + @2x variants (macOS status bar sizes)
 
 Usage examples:
   python3 scripts/generate_icons.py --apps WatchServiceController
@@ -254,7 +269,19 @@ def generate_icns(svg_path: Path, out_icns: Path, force: bool = False) -> None:
 
 
 def generate_for_app(svg_dir: Path, app: str, force: bool = False) -> None:
-    app_icons = Path('apps') / app / 'src' / 'icons'
+    # Map template subdirectory names back to app directory names
+    template_to_app_dirs = {
+        'controller': 'WatchServiceController',
+        'kiosk': 'EKiosk',
+        'updater': 'Updater',
+        'watchdog': 'WatchService',
+        # Add more reverse mappings as needed
+    }
+
+    # If user specified a template name, map it to the actual app directory
+    actual_app = template_to_app_dirs.get(app, app)
+
+    app_icons = Path('apps') / actual_app / 'src' / 'icons'
     app_icons.mkdir(parents=True, exist_ok=True)
 
     # Map app names to their template subdirectories
@@ -263,11 +290,10 @@ def generate_for_app(svg_dir: Path, app: str, force: bool = False) -> None:
         'EKiosk': 'kiosk',
         'Updater': 'updater',
         'WatchService': 'watchdog',
-        'Card': 'card',  # For payment card related apps
         # Add more mappings as needed
     }
 
-    template_subdir = app_template_dirs.get(app, app.lower())
+    template_subdir = app_template_dirs.get(actual_app, actual_app.lower())
     app_svg_dir = svg_dir / template_subdir
 
     # Fallback to main svg_dir if app-specific dir doesn't exist

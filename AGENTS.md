@@ -1,5 +1,15 @@
 # Coding Standards
 
+## AI Agent Response Guidelines
+
+**CONCISE MODE:** When reporting completed tasks or jobs, provide short answers/results only. Use minimal text with ✅ checkmarks for confirmations and avoid verbose explanations unless specifically requested. Focus on what was accomplished, not how.
+
+Example:
+
+- ✅ **Updated file successfully** - Brief confirmation
+- ❌ **Error occurred** - Brief issue description
+- 📋 **Summary**: 3 files changed, 15 lines modified - Key metrics only
+
 ## INI Templates and Russian Documentation
 
 - All automatically generated or template-based .ini files for application configuration (e.g., controller.ini, ekiosk.ini) **must include documentation and comments in Russian**. This is required because most users and operators do not read English.

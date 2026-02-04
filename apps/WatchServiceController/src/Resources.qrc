@@ -1,71 +1,21 @@
 <!DOCTYPE RCC>
 <RCC>
     <qresource prefix="/">
-        <file>icons/menu-closeTemplate-128.png</file>
-        <file>icons/menu-closeTemplate-256.png</file>
         <file>icons/menu-closeTemplate-48.png</file>
-        <file>icons/menu-closeTemplate-512.png</file>
         <file>icons/menu-closeTemplate-64.png</file>
-        <file>icons/menu-closeTemplate-96.png</file>
-        <file>icons/menu-closeTemplate-ico-16.png</file>
-        <file>icons/menu-closeTemplate-ico-256.png</file>
-        <file>icons/menu-closeTemplate-ico-32.png</file>
-        <file>icons/menu-closeTemplate-ico-48.png</file>
-        <file>icons/menu-closeTemplate.ico</file>
         <file>icons/menu-closeTemplate.png</file>
-        <file>icons/menu-closeTemplate@2x.png</file>
-        <file>icons/menu-playTemplate-128.png</file>
-        <file>icons/menu-playTemplate-256.png</file>
         <file>icons/menu-playTemplate-48.png</file>
-        <file>icons/menu-playTemplate-512.png</file>
         <file>icons/menu-playTemplate-64.png</file>
-        <file>icons/menu-playTemplate-96.png</file>
-        <file>icons/menu-playTemplate-ico-16.png</file>
-        <file>icons/menu-playTemplate-ico-256.png</file>
-        <file>icons/menu-playTemplate-ico-32.png</file>
-        <file>icons/menu-playTemplate-ico-48.png</file>
-        <file>icons/menu-playTemplate.ico</file>
         <file>icons/menu-playTemplate.png</file>
-        <file>icons/menu-playTemplate@2x.png</file>
-        <file>icons/menu-settingsTemplate-128.png</file>
-        <file>icons/menu-settingsTemplate-256.png</file>
         <file>icons/menu-settingsTemplate-48.png</file>
-        <file>icons/menu-settingsTemplate-512.png</file>
         <file>icons/menu-settingsTemplate-64.png</file>
-        <file>icons/menu-settingsTemplate-96.png</file>
-        <file>icons/menu-settingsTemplate-ico-16.png</file>
-        <file>icons/menu-settingsTemplate-ico-256.png</file>
-        <file>icons/menu-settingsTemplate-ico-32.png</file>
-        <file>icons/menu-settingsTemplate-ico-48.png</file>
-        <file>icons/menu-settingsTemplate.ico</file>
         <file>icons/menu-settingsTemplate.png</file>
-        <file>icons/menu-settingsTemplate@2x.png</file>
-        <file>icons/menu-setupTemplate-128.png</file>
-        <file>icons/menu-setupTemplate-256.png</file>
         <file>icons/menu-setupTemplate-48.png</file>
-        <file>icons/menu-setupTemplate-512.png</file>
         <file>icons/menu-setupTemplate-64.png</file>
-        <file>icons/menu-setupTemplate-96.png</file>
-        <file>icons/menu-setupTemplate-ico-16.png</file>
-        <file>icons/menu-setupTemplate-ico-256.png</file>
-        <file>icons/menu-setupTemplate-ico-32.png</file>
-        <file>icons/menu-setupTemplate-ico-48.png</file>
-        <file>icons/menu-setupTemplate.ico</file>
         <file>icons/menu-setupTemplate.png</file>
-        <file>icons/menu-setupTemplate@2x.png</file>
-        <file>icons/menu-stopTemplate-128.png</file>
-        <file>icons/menu-stopTemplate-256.png</file>
         <file>icons/menu-stopTemplate-48.png</file>
-        <file>icons/menu-stopTemplate-512.png</file>
         <file>icons/menu-stopTemplate-64.png</file>
-        <file>icons/menu-stopTemplate-96.png</file>
-        <file>icons/menu-stopTemplate-ico-16.png</file>
-        <file>icons/menu-stopTemplate-ico-256.png</file>
-        <file>icons/menu-stopTemplate-ico-32.png</file>
-        <file>icons/menu-stopTemplate-ico-48.png</file>
-        <file>icons/menu-stopTemplate.ico</file>
         <file>icons/menu-stopTemplate.png</file>
-        <file>icons/menu-stopTemplate@2x.png</file>
         <file>icons/controller-app-icon-128.png</file>
         <file>icons/controller-app-icon-256.png</file>
         <file>icons/controller-app-icon-48.png</file>
@@ -80,31 +30,11 @@
         <file>icons/controller-app-icon.ico</file>
         <file>icons/controller-app-icon.png</file>
         <file>icons/controller-app-icon@2x.png</file>
-        <file>icons/controller-monogram-stoppedTemplate-128.png</file>
-        <file>icons/controller-monogram-stoppedTemplate-256.png</file>
         <file>icons/controller-monogram-stoppedTemplate-48.png</file>
-        <file>icons/controller-monogram-stoppedTemplate-512.png</file>
         <file>icons/controller-monogram-stoppedTemplate-64.png</file>
-        <file>icons/controller-monogram-stoppedTemplate-96.png</file>
-        <file>icons/controller-monogram-stoppedTemplate-ico-16.png</file>
-        <file>icons/controller-monogram-stoppedTemplate-ico-256.png</file>
-        <file>icons/controller-monogram-stoppedTemplate-ico-32.png</file>
-        <file>icons/controller-monogram-stoppedTemplate-ico-48.png</file>
-        <file>icons/controller-monogram-stoppedTemplate.ico</file>
         <file>icons/controller-monogram-stoppedTemplate.png</file>
-        <file>icons/controller-monogram-stoppedTemplate@2x.png</file>
-        <file>icons/controller-monogramTemplate-128.png</file>
-        <file>icons/controller-monogramTemplate-256.png</file>
         <file>icons/controller-monogramTemplate-48.png</file>
-        <file>icons/controller-monogramTemplate-512.png</file>
         <file>icons/controller-monogramTemplate-64.png</file>
-        <file>icons/controller-monogramTemplate-96.png</file>
-        <file>icons/controller-monogramTemplate-ico-16.png</file>
-        <file>icons/controller-monogramTemplate-ico-256.png</file>
-        <file>icons/controller-monogramTemplate-ico-32.png</file>
-        <file>icons/controller-monogramTemplate-ico-48.png</file>
-        <file>icons/controller-monogramTemplate.ico</file>
         <file>icons/controller-monogramTemplate.png</file>
-        <file>icons/controller-monogramTemplate@2x.png</file>
     </qresource>
 </RCC>

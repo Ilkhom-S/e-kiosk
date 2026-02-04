@@ -71,19 +71,64 @@ Third-party providers should use the following SVG structure. Simply replace the
 - Core suite apps use brand orange gradient backgrounds
 - Provider apps use dark charcoal gradient backgrounds
 
+### Icon Types and Naming Conventions
+
+The icon generation system automatically detects icon types based on filename patterns and generates appropriate output formats:
+
+#### App Icons (`*App.svg`)
+
+- **Pattern:** Files ending with `App.svg` (e.g., `EKioskApp.svg`, `ControllerApp.svg`)
+- **Generated Formats:**
+  - PNG: 16, 22, 24, 32, 48, 64, 96, 128, 256, 512px
+  - ICO: Windows icon file (16, 24, 32, 48, 64, 128, 256px)
+  - ICNS: macOS icon file (16, 32, 48, 64, 128, 256, 512px)
+- **Usage:** Application icons for desktop shortcuts, taskbar, dock
+
+#### UI Icons (`*Icon.svg`)
+
+- **Pattern:** Files ending with `Icon.svg` (e.g., `menu-closeIcon.svg`, `settingsIcon.svg`)
+- **Generated Formats:**
+  - PNG: 16, 22, 24, 32, 48, 64, 96, 128px
+- **Usage:** Interface elements, buttons, menus, toolbars
+
+#### Template Icons (`*Template.svg`)
+
+- **Pattern:** Files ending with `Template.svg` (e.g., `menuTemplate.svg`, `statusTemplate.svg`)
+- **Generated Formats:**
+  - PNG: 16, 22, 24, 32, 48, 64px (monochrome for macOS template images)
+- **Usage:** macOS template images, monochrome icons for menu bars
+
 ### Automated Export: `scripts/generate_icons.py`
 
-Use the provided script to generate all required PNG and ICO files for each app:
+Use the provided script to generate all required icon files for each app:
 
 ```bash
-python3 scripts/generate_icons.py --apps Updater
+# Generate icons for specific apps (by app directory name)
+python3 scripts/generate_icons.py --apps WatchServiceController
+
+# Generate icons for multiple apps
+python3 scripts/generate_icons.py --apps WatchServiceController EKiosk Updater
+
+# Generate icons using template subdirectory names (auto-maps to correct app directories)
+python3 scripts/generate_icons.py --apps controller kiosk updater
+
+# Generate all icons
+python3 scripts/generate_icons.py --all
 ```
 
-### Recommended PNG Exports
+**App Name Mapping:** The script automatically maps between app directory names and template subdirectory names:
 
-- 1x: 16, 22, 24, 32, 48, 64
-- 2x (retina): 32, 44, 48, 64, 96, 128
-- For macOS template: export monochrome PNGs at 1x and 2x
+- `WatchServiceController` ↔ `controller` templates
+- `EKiosk` ↔ `kiosk` templates
+- `Updater` ↔ `updater` templates
+- `WatchService` ↔ `watchdog` templates
+
+You can specify either the app directory name (e.g., `WatchServiceController`) or the template subdirectory name (e.g., `controller`) - the script will generate icons to the correct app directory.
+
+- Detects icon types based on filename patterns
+- Generates appropriate output formats for each type
+- Uses multiple converter fallbacks for reliability
+- Organizes output in `apps/<app>/src/icons/` directories
 
 ### Converter Requirements
 
@@ -100,6 +145,27 @@ python3 scripts/generate_icons.py --apps Updater
 
 - **macOS:** For menu bar (template) images, supply a monochrome PNG (alpha mask)
 - **Windows:** ICO files are automatically generated from PNG sources
-- **Windows:** ICO files are automatically generated from PNG sources
-
 - **Linux:** PNG files are used directly in desktop environments
+
+## 7. Troubleshooting
+
+### Common Issues
+
+- **"XML does not have root" error:** Ensure SVG includes `xmlns="http://www.w3.org/2000/svg"`
+- **Icons not generating:** Check that cairosvg or fallback converters are installed
+- **Wrong icon types:** Verify filename follows naming conventions (App.svg, Icon.svg, Template.svg)
+
+### Manual Generation
+
+If automated generation fails, manually export using:
+
+```bash
+# PNG export with cairosvg
+cairosvg input.svg -o output.png -s 64
+
+# ICO generation with ImageMagick
+convert input.png output.ico
+
+# ICNS generation (macOS)
+iconutil -c icns iconset.iconset
+```
