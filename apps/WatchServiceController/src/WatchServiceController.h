@@ -71,11 +71,16 @@ class WatchServiceController : public QObject
     QSharedPointer<IWatchServiceClient> mClient;
 
     LastCommand mLastCommand;
+    bool mPreviousConnectionState; // Track previous connection state to avoid unnecessary UI updates
 
     QTimer mTimer;
 
     QSystemTrayIcon mIcon;
     QMenu mMenu;
+
+    // Pre-created icons to avoid layout issues during updates
+    QIcon mConnectedIcon;
+    QIcon mDisconnectedIcon;
 
     QList<QAction *> mStartServiceActions;
     QAction *mStopServiceAction;

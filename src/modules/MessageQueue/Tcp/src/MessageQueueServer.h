@@ -4,7 +4,6 @@
 #include <Common/QtHeadersBegin.h>
 #include <QtCore/QList>
 #include <QtCore/QMap>
-#include <QtCore/QSignalMapper>
 #include <QtCore/QString>
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QTcpSocket>
@@ -55,12 +54,12 @@ class MessageQueueServer : public QTcpServer, public IMessageQueueServer
     void onDisconnected();
 
   private slots:
-    void onSocketDisconnected(QObject *aObject);
-    void onSocketReadyRead(QObject *aObject);
+    void onSocketDisconnected();
+    void onSocketReadyRead();
+    void onSocketDisconnected(QTcpSocket *socket);
+    void onSocketReadyRead(QTcpSocket *socket);
 
   private:
-    QSignalMapper m_disconnectSignalMapper;
-    QSignalMapper m_readyReadSignalMapper;
     TLocalSocketMap m_sockets;
     TSocketBufferMap m_buffers;
     QString m_queueName;

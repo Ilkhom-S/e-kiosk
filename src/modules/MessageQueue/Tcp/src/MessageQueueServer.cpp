@@ -27,12 +27,16 @@ MessageQueueServer::~MessageQueueServer()
 //----------------------------------------------------------------------------
 bool MessageQueueServer::init()
 {
-    if (!connect(&m_disconnectSignalMapper, SIGNAL(mapped(QObject *)), this, SLOT(onSocketDisconnected(QObject *))) ||
-        !connect(&m_readyReadSignalMapper, SIGNAL(mapped(QObject *)), this, SLOT(onSocketReadyRead(QObject *))))
-        return false;
-
+    // No initialization needed for signal mappers in Qt6 - using lambda connections
     if (!isListening())
-        return listen(QHostAddress::LocalHost, static_cast<qint16>(m_queueName.toInt()));
+    {
+        bool result = listen(QHostAddress::LocalHost, static_cast<qint16>(m_queueName.toInt()));
+        if (!result)
+        {
+            LOG(m_log, LogLevel::Error, QString("Failed to listen on port %1: %2").arg(m_queueName).arg(errorString()));
+        }
+        return result;
+    }
 
     return true;
 }
@@ -77,21 +81,32 @@ void MessageQueueServer::incomingConnection(int aSocketDescriptor)
     QTcpSocket *newSocket = new QTcpSocket(this);
     newSocket->setSocketDescriptor(aSocketDescriptor);
 
-    m_disconnectSignalMapper.setMapping(newSocket, newSocket);
-    connect(newSocket, SIGNAL(disconnected()), &m_disconnectSignalMapper, SLOT(map()));
+    // Use lambda connections instead of QSignalMapper for Qt6 compatibility
+    connect(newSocket, &QTcpSocket::disconnected, this, [this, newSocket]() { onSocketDisconnected(newSocket); });
 
-    m_readyReadSignalMapper.setMapping(newSocket, newSocket);
-    connect(newSocket, SIGNAL(readyRead()), &m_readyReadSignalMapper, SLOT(map()));
+    connect(newSocket, &QTcpSocket::readyRead, this, [this, newSocket]() { onSocketReadyRead(newSocket); });
 
     m_sockets[newSocket] = aSocketDescriptor;
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::onSocketDisconnected(QObject *aObject)
+void MessageQueueServer::onSocketDisconnected()
+{
+    // This method is no longer used with lambda connections
+    // Kept for compatibility but should not be called
+}
+
+//----------------------------------------------------------------------------
+void MessageQueueServer::onSocketReadyRead()
+{
+    // This method is no longer used with lambda connections
+    // Kept for compatibility but should not be called
+}
+
+//----------------------------------------------------------------------------
+void MessageQueueServer::onSocketDisconnected(QTcpSocket *socket)
 {
     emit onDisconnected();
-
-    QTcpSocket *socket = dynamic_cast<QTcpSocket *>(aObject);
 
     if (socket)
     {
@@ -102,16 +117,15 @@ void MessageQueueServer::onSocketDisconnected(QObject *aObject)
         m_sockets.remove(socket);
     }
 
-    aObject->deleteLater();
+    socket->deleteLater();
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::onSocketReadyRead(QObject *aObject)
+void MessageQueueServer::onSocketReadyRead(QTcpSocket *socket)
 {
-    QTcpSocket *socket = dynamic_cast<QTcpSocket *>(aObject);
     if (!socket)
     {
-        LOG(m_log, LogLevel::Error, "Wrong object was passed to onSocketReadyRead slot...");
+        LOG(m_log, LogLevel::Error, "Wrong socket passed to onSocketReadyRead slot...");
         return;
     }
 

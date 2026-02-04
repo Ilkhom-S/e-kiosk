@@ -28,7 +28,8 @@ namespace CWatchServiceController
 
 //----------------------------------------------------------------------------
 WatchServiceController::WatchServiceController()
-    : mClient(createWatchServiceClient(CWatchService::Modules::WatchServiceController)), mLastCommand(Unknown)
+    : mClient(createWatchServiceClient(CWatchService::Modules::WatchServiceController)), mLastCommand(Unknown),
+      mPreviousConnectionState(false)
 {
     connect(&mTimer, &QTimer::timeout, this, &WatchServiceController::onCheck);
 
@@ -68,7 +69,10 @@ WatchServiceController::WatchServiceController()
             SLOT(onTrayIconActivated(QSystemTrayIcon::ActivationReason)));
 
     mIcon.setContextMenu(&mMenu);
-    mIcon.setIcon(createTemplateIcon(":/icons/controller-monogramTemplate.png"));
+
+    // Set initial icon based on connection state
+    updateTrayIcon();
+
     mIcon.show();
 
     LOG(getLog(), LogLevel::Normal, "WatchServiceController started.");
@@ -254,15 +258,13 @@ ILog *WatchServiceController::getLog()
 //----------------------------------------------------------------------------
 void WatchServiceController::onCheck()
 {
-    if (!mClient->isConnected())
+    bool wasConnected = mClient->isConnected();
+
+    if (!wasConnected)
     {
         mLastCommand = Unknown;
-
         mClient->start();
     }
-
-    // Update icon asynchronously to avoid layout recursion on macOS
-    QMetaObject::invokeMethod(this, "updateTrayIcon", Qt::QueuedConnection);
 
     // Enable/disable start/stop service actions based on connection status
     bool isConnected = mClient->isConnected();
@@ -274,7 +276,18 @@ void WatchServiceController::onCheck()
     // Keep close action enabled
     mCloseTrayIconAction->setEnabled(true);
 
-    mIcon.show();
+    // Only update tray icon when connection state actually changes to avoid layout recursion
+    if (isConnected != mPreviousConnectionState)
+    {
+        mPreviousConnectionState = isConnected;
+        LOG(getLog(), LogLevel::Normal,
+            QString("Connection state changed: %1 -> %2").arg(wasConnected).arg(isConnected));
+
+        // Use queued invocation to defer icon update and avoid layout conflicts
+        QMetaObject::invokeMethod(this, "updateTrayIcon", Qt::QueuedConnection);
+    }
+
+    // Note: mIcon.show() is called once in constructor, no need to call it repeatedly
 }
 
 //----------------------------------------------------------------------------
