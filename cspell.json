@@ -211,6 +211,7 @@
     "QTDIR",
     "QTEST",
     "QTSCRIPT",
+    "quintptr",
     "qulonglong",
     "QVERIFY",
     "rasapi",
