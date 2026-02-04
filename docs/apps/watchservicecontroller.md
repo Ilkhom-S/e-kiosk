@@ -44,6 +44,26 @@ The application provides a comprehensive system tray menu with:
 - **Start first setup**: Starts kiosk for initial setup
 - **Close**: Closes the controller app
 
+## Logging
+
+### Log Files
+
+Application logs are typically located in:
+
+- **Windows**: `%APPDATA%\EKiosk\controller.log`
+- **Linux**: `~/.local/share/EKiosk/controller.log`
+- **macOS**: `~/Library/Application Support/EKiosk/controller.log`
+
+### Debug Mode
+
+Enable debug logging by setting:
+
+```ini
+[Logging]
+Level=debug
+File=tray_debug.log
+```
+
 ## Related Documentation
 
 - **🔧 [Developer Guide](../../apps/WatchServiceController/README.md)**: Technical implementation details
