@@ -4,17 +4,13 @@ macro(ek_generate_ini_for_all_configs NAME TEMPLATE)
     set(_ekiosk_configs Debug Release RelWithDebInfo MinSizeRel)
     foreach(_cfg ${_ekiosk_configs})
         string(TOUPPER "${_cfg}" _CFG_UPPER)
-        set(_ini_postfix "")
-        if(_cfg STREQUAL "Debug")
-            set(_ini_postfix "d")
-        endif()
         set(_ini_output_dir "${CMAKE_RUNTIME_OUTPUT_DIRECTORY_${_CFG_UPPER}}")
         if(NOT _ini_output_dir)
             set(_ini_output_dir "${CMAKE_CURRENT_BINARY_DIR}/${_cfg}")
         endif()
         set(WORKING_DIRECTORY "${_ini_output_dir}")
         ek_generate_ini_template(
-            ${NAME}${_ini_postfix}
+            ${NAME}
             "${TEMPLATE}"
             "${_ini_output_dir}"
             WORKING_DIRECTORY "${WORKING_DIRECTORY}"
