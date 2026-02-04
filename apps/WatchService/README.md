@@ -201,7 +201,7 @@ sender=SENDER_NAME;target=TARGET_MODULE;type=COMMAND_TYPE;params=PARAMETERS
 - `watch_service`: WatchService itself
 - `ekiosk`: Main EKiosk application
 - `updater`: Update service
-- `tray`: WatchService controller
+- `controller`: WatchService controller
 - `payment_processor`: Payment processing
 
 ### Example Messages

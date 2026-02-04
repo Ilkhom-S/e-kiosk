@@ -507,7 +507,7 @@ void UpdaterApp::onDownloadComplete()
 
     getLog()->write(LogLevel::Normal, "Download complete. Close modules...");
 
-    // Останавливаем tray.exe (watch_service_controller)
+    // Останавливаем controller.exe (watch_service_controller)
     mWatchServiceClient->closeModule(CWatchService::Modules::WatchServiceController);
 
     // Останавливаем ekiosk.exe
@@ -592,11 +592,11 @@ void UpdaterApp::onUpdateComplete(CUpdaterErrors::Enum aError)
 {
     if (mState == CUpdaterApp::Deploy)
     {
-        // Запускаем tray
+        // Запускаем controller
         if (!QProcess::startDetached(getWorkingDirectory() + QDir::separator() +
                                      CWatchService::Modules::WatchServiceController + ".exe"))
         {
-            getLog()->write(LogLevel::Error, "Failed to launch tray app.");
+            getLog()->write(LogLevel::Error, "Failed to launch controller app.");
         }
 
         // Заново запускаем watchservice и убеждаемся, что он успешно запустился.

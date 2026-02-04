@@ -73,14 +73,12 @@ namespace CWatchService
     {
         /// Сторожевой сервис.
         const QString WatchService = "watchdog";
-        /// EKiosk.
-        const QString EKiosk = "ekiosk";
         /// Обновитель.
         const QString Updater = "updater";
         /// Контроллер сторожевого сервиса.
-        const QString WatchServiceController = "tray";
+        const QString WatchServiceController = "controller";
         /// Платёжный процессор.
-        const QString PaymentProcessor = "payment_processor";
+        const QString PaymentProcessor = "ekiosk";
     } // namespace Modules
 
     namespace Fields
