@@ -39,14 +39,9 @@ The application provides a comprehensive system tray menu with:
 
 ### Tray Menu Options
 
-- **Start Service**: Launch the WatchService (watchdog) daemon
-- **Start Application**: Launch specific module
-- **Stop Application**: Stop specific module
-- **Restart Application**: Restart specific module
-- **Open Config Folder**: Open configuration directory
-- **Settings**: Open configuration editor
-- **About**: Show version and system information
-- **Exit**: Close the tray application
+- **Start/Stop WatchdogService**: Start or stop the WatchdogService (watchdog) daemon
+- **Start service menu**: Opens kiosk service menu screen
+- **Start first setup**: Starts kiosk for initial setup
 
 ## Troubleshooting
 
