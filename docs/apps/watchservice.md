@@ -219,22 +219,11 @@ level = 0  ; Debug level
 - **Message Queue**: Uses internal message queue for module communication
 - **Qt Integration**: Built with Qt framework for cross-platform compatibility
 - **Configuration Reload**: Requires restart for configuration changes
-- **Resource Management**: Properly manages process lifecycles and cleanup
-
-### Management Interfaces
-
-While WatchService manages core kiosk services, the **WatchServiceController** (controller application) provides a user-friendly system tray interface for:
-
-- **Service Control**: Start/stop the WatchService daemon itself
-- **Real-time Monitoring**: Visual status indicators for all modules
-- **Manual Control**: Start/stop/restart individual services
-- **Log Access**: Quick access to application logs
-- **Configuration**: Easy access to settings and config files
-
-**Note**: The controller application connects to WatchService dynamically and is not typically configured as an auto-started module. It should be started separately by administrators when management access is needed.
+- **Resource Management**: Properly manages process life cycles and cleanup
 
 ## Related Documentation
 
 - **🔧 [Developer Guide](../../apps/WatchService/README.md)**: Technical implementation, building, and development details
+- **[WatchServiceController](../../apps/WatchServiceController/README.md)**: System tray interface for WatchService management
 - **[Configuration Reference](../../configuration-reference.md)**: All configuration options
 - **[Modules Documentation](../../modules/)**: Reusable code components
