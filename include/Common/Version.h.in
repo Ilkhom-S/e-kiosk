@@ -9,7 +9,8 @@
 #include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-namespace Humo {
+namespace Humo
+{
     /// Короткая версия приложения.
     const QString ShortVersion = "4.0.0";
     /// Сборка.
@@ -18,7 +19,8 @@ namespace Humo {
     const QString Application = "EKiosk";
 
     /// Получить информацию о сборке.
-    inline const QString getBuild() {
+    inline const QString getBuild()
+    {
 #if defined(_MSC_VER)
 #if (_MSC_VER == 1600)
         return _Build + " MSVC-2010";
@@ -50,7 +52,8 @@ namespace Humo {
 #endif
     }
 
-    inline const QString getVersion() {
+    inline const QString getVersion()
+    {
         return ShortVersion + " build " + getBuild();
     }
 } // namespace Humo
