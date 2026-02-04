@@ -10,7 +10,6 @@ WatchServiceController provides a **system tray interface** for monitoring and c
 
 - **Service Management**: Start and stop the WatchService (watchdog) daemon
 - **Status Monitoring**: Real-time display of WatchService and module status
-- **Manual Control**: Start, stop, and restart applications manually
 - **System Integration**: Native system tray integration on all platforms
 
 ## Features
