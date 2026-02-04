@@ -261,16 +261,8 @@ void WatchServiceController::onCheck()
         mClient->start();
     }
 
-    if (mClient->isConnected())
-    {
-        // Connected state: show normal template icon
-        mIcon.setIcon(createTemplateIcon(":/icons/controller-monogramTemplate.png"));
-    }
-    else
-    {
-        // Disconnected state: show slashed H icon to indicate stopped state
-        mIcon.setIcon(createTemplateIcon(":/icons/controller-monogram-stoppedTemplate.png"));
-    }
+    // Update icon asynchronously to avoid layout recursion on macOS
+    QMetaObject::invokeMethod(this, "updateTrayIcon", Qt::QueuedConnection);
 
     // Enable/disable start/stop service actions based on connection status
     bool isConnected = mClient->isConnected();
@@ -283,6 +275,21 @@ void WatchServiceController::onCheck()
     mCloseTrayIconAction->setEnabled(true);
 
     mIcon.show();
+}
+
+//----------------------------------------------------------------------------
+void WatchServiceController::updateTrayIcon()
+{
+    if (mClient->isConnected())
+    {
+        // Connected state: show normal template icon
+        mIcon.setIcon(createTemplateIcon(":/icons/controller-monogramTemplate.png"));
+    }
+    else
+    {
+        // Disconnected state: show slashed H icon to indicate stopped state
+        mIcon.setIcon(createTemplateIcon(":/icons/controller-monogram-stoppedTemplate.png"));
+    }
 }
 
 //----------------------------------------------------------------------------

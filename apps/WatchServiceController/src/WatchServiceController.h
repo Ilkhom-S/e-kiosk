@@ -47,6 +47,9 @@ class WatchServiceController : public QObject
     // Попытка соединения со сторожевым сервисом.
     void onCheck();
 
+    // Update tray icon asynchronously to avoid layout issues
+    void updateTrayIcon();
+
     // Закрыто соединение со сторожевым сервисом.
     void onDisconnected();
 
