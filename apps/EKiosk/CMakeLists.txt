@@ -11,6 +11,8 @@ include(${CMAKE_SOURCE_DIR}/cmake/EKStaticAnalysis.cmake)
 file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE HEADERS src/*.h)
 file(GLOB_RECURSE UI_FILES src/*.ui)
+file(GLOB RESOURCE_FILES src/*.qrc)
+file(GLOB RC_FILES src/*.rc)
 
 # Exclude Windows-only connection files on non-Windows platforms
 if(NOT WIN32)
@@ -22,12 +24,10 @@ if(NOT WIN32)
     )
 endif()
 
-set(RESOURCE_FILES ${CMAKE_SOURCE_DIR}/ekiosk.qrc)
-
 # Application target with Qt modules and resources
 ek_add_application(client
     FOLDER "apps"
-    SOURCES ${SOURCES} ${HEADERS} ${UI_FILES} ${RESOURCE_FILES}
+    SOURCES ${SOURCES} ${HEADERS} ${UI_FILES} ${RESOURCE_FILES} ${RC_FILES}
     QT_MODULES Core Widgets Sql PrintSupport Network Multimedia Xml SerialPort WebSockets WebEngineWidgets Core5Compat
     LIBRARIES
     EK::QZint
@@ -54,6 +54,20 @@ ek_add_application(client
     KeysUtils
     $<$<PLATFORM_ID:Windows>:rasapi32;winspool;psapi;user32;Advapi32>
 )
+
+if(APPLE)
+    # Configure as standard application that shows in dock
+    set_target_properties(client PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/Info.plist"
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_ICON_FILE AppIcon
+    )
+    # Copy icon to bundle Resources
+    add_custom_command(TARGET client POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_DIR:client>/Contents/Resources
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/icons/client-app-icon.icns $<TARGET_BUNDLE_DIR:client>/Contents/Resources/AppIcon.icns
+    )
+endif()
 
 # Link common include INTERFACE target so `include/` headers are available
 target_link_libraries(client PUBLIC ek_common)

@@ -91,28 +91,6 @@ else()
     message(WARNING "SingleApplication not found - single-instance app support disabled")
 endif()
 
-# Translations
-file(GLOB TS_FILES src/locale/updater_*.ts)
-if(TS_FILES)
-    # Ensure output directory exists
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/locale)
-    ek_add_translations(UpdaterTranslations
-        SOURCES ${TS_FILES}
-        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
-        INSTALL
-    )
-    if(TARGET UpdaterTranslations_translations)
-        add_dependencies(updater UpdaterTranslations_translations)
-        # Copy translation files to bin/locale directory
-        add_custom_command(TARGET updater POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_CURRENT_BINARY_DIR}/locale
-            ${CMAKE_BINARY_DIR}/bin/locale
-            COMMENT "Copying translation files to bin/locale directory"
-        )
-    endif()
-endif()
-
 # Генерация updater.ini для всех конфигураций
 include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
 ek_generate_ini_for_all_configs(updater "${CMAKE_SOURCE_DIR}/runtimes/common/data/updater.ini.in")

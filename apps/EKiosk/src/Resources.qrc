@@ -1,0 +1,19 @@
+<!DOCTYPE RCC>
+<RCC>
+    <qresource prefix="/">
+        <file>icons/client-app-icon-128.png</file>
+        <file>icons/client-app-icon-256.png</file>
+        <file>icons/client-app-icon-48.png</file>
+        <file>icons/client-app-icon-512.png</file>
+        <file>icons/client-app-icon-64.png</file>
+        <file>icons/client-app-icon-96.png</file>
+        <file>icons/client-app-icon-ico-16.png</file>
+        <file>icons/client-app-icon-ico-256.png</file>
+        <file>icons/client-app-icon-ico-32.png</file>
+        <file>icons/client-app-icon-ico-48.png</file>
+        <file>icons/client-app-icon.ico</file>
+        <file>icons/client-app-icon.png</file>
+        <file>icons/client-app-icon@2x.png</file>
+        <file>icons/client-app-icon.icns</file>
+    </qresource>
+</RCC>
