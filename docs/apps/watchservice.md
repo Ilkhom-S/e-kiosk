@@ -33,16 +33,11 @@ WatchService runs as a background daemon that:
 - **Runtime**: Generated `watchdog.ini` in build directory
 - **User Overrides**: `user.ini` for runtime adjustments
 
-### Module Configuration Format
+### Module Configuration Parameters
 
 **Important**: Module section names must contain the word "module" (case-insensitive) to be recognized by WatchService. Sections without "module" in the name will be ignored.
 
-Modules are defined in separate INI sections. Common patterns include:
-
-- `[Module1]`, `[Module2]`, etc. - For numbered main modules
-- `[module_<name>]` - For named modules (e.g., `[module_updater]`, `[module_ekiosk]`)
-
-### Configuration Parameters
+Modules are defined in separate INI sections with the patterns shown above. Each module section can contain the following parameters:
 
 #### Basic Module Settings
 
