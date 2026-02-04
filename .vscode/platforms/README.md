@@ -33,6 +33,6 @@ Or simply replace the contents of `.vscode/launch.json` with the appropriate pla
 Both platforms provide:
 
 - **Debug EKiosk**: Debug the main client application
-- **Debug Tray**: Debug the tray/watch service controller
+- **Debug Controller**: Debug the controller/watch service controller
 - **Run EKiosk**: Run the client without debugging
 - **Debug WatchService**: Debug the watchdog service

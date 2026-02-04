@@ -235,14 +235,14 @@ killtimeout = 15
 maxstartcount = 1
 ```
 
-### Development/Debugging Tray Controller
+### Development/Debugging Controller
 
-For development and debugging, you can configure the tray controller to auto-start with WatchService:
+For development and debugging, you can configure the controller to auto-start with WatchService:
 
 ```ini
-[module_tray_controller]
-name = tray_controller
-file = {WS_DIR}/tray${EXE_SUFFIX}
+[module_controller]
+name = controller
+file = {WS_DIR}/controller${EXE_SUFFIX}
 workingdirectory = {WS_DIR}
 autostart = true
 startmode = normal
@@ -310,7 +310,7 @@ level = 0  ; Debug level
 
 ### Management Interfaces
 
-While WatchService manages core kiosk services, the **WatchServiceController** (tray application) provides a user-friendly system tray interface for:
+While WatchService manages core kiosk services, the **WatchServiceController** (controller application) provides a user-friendly system tray interface for:
 
 - **Service Control**: Start/stop the WatchService daemon itself
 - **Real-time Monitoring**: Visual status indicators for all modules
@@ -318,7 +318,7 @@ While WatchService manages core kiosk services, the **WatchServiceController** (
 - **Log Access**: Quick access to application logs
 - **Configuration**: Easy access to settings and config files
 
-**Note**: The tray application connects to WatchService dynamically and is not typically configured as an auto-started module. It should be started separately by administrators when management access is needed.
+**Note**: The controller application connects to WatchService dynamically and is not typically configured as an auto-started module. It should be started separately by administrators when management access is needed.
 
 ## Related Documentation
 

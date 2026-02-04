@@ -221,7 +221,7 @@ ek_enable_static_analysis(kiosk CPPCHECK CLANG_TIDY)
 
 2. **Prepare a template ini file:**
 
-   Example (`tray.ini.in`):
+   Example (`controller.ini.in`):
 
    ```ini
    [common]
@@ -232,7 +232,7 @@ ek_enable_static_analysis(kiosk CPPCHECK CLANG_TIDY)
 
    ```cmake
    set(WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
-   ek_generate_ini_template(tray "${CMAKE_SOURCE_DIR}/runtimes/common/data/tray.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+   ek_generate_ini_template(controller "${CMAKE_SOURCE_DIR}/runtimes/common/data/controller.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${WORKING_DIRECTORY}")
    ```
 
    - The first argument is the output ini name (without extension).
@@ -242,13 +242,13 @@ ek_enable_static_analysis(kiosk CPPCHECK CLANG_TIDY)
 
 **Result:**
 
-- The generated ini file will be at `${CMAKE_BINARY_DIR}/apps/WatchServiceController/tray.ini` with all variables substituted.
+- The generated ini file will be at `${CMAKE_BINARY_DIR}/apps/WatchServiceController/controller.ini` with all variables substituted.
 
 **Best practices:**
 
 - Document all template variables in the ini template (in Russian, per project policy).
 - Use this macro for all app/module ini/configuration files to ensure consistency and up-to-date values.
-- See `runtimes/common/data/tray.ini.in` for a full example.
+- See `runtimes/common/data/controller.ini.in` for a full example.
 
 ---
 

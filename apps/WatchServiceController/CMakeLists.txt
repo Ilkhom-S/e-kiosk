@@ -1,4 +1,4 @@
-# WatchServiceController (tray) application - refactored to EKiosk CMake helpers
+# WatchServiceController (controller) application - refactored to EKiosk CMake helpers
 
 
 include_directories(${CMAKE_SOURCE_DIR}/thirdparty/SingleApplication)

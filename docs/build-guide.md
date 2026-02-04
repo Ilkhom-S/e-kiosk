@@ -101,13 +101,13 @@ GUI applications will be built as `.app` bundles in `build/<preset>/bin/`.
 For bundled apps, run the executable inside the bundle:
 
 ```sh
-./build/<preset>/bin/tray.app/Contents/MacOS/tray
+./build/<preset>/bin/controller.app/Contents/MacOS/controller
 ```
 
 For debugging, use LLDB or Xcode:
 
 ```sh
-lldb ./build/<preset>/bin/tray.app/Contents/MacOS/tray
+lldb ./build/<preset>/bin/controller.app/Contents/MacOS/controller
 ```
 
 ### Code Signing
@@ -247,12 +247,12 @@ For all application and module configuration files (.ini), EKiosk uses a CMake m
 
 **How to use:**
 
-1. Prepare a template ini file (e.g. `tray.ini.in`) with CMake variables like `@WORKING_DIRECTORY@`.
+1. Prepare a template ini file (e.g. `controller.ini.in`) with CMake variables like `@WORKING_DIRECTORY@`.
 2. In your app/module `CMakeLists.txt`, call:
 
 ```cmake
 set(WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
-ek_generate_ini_template(tray "${CMAKE_SOURCE_DIR}/runtimes/common/data/tray.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+ek_generate_ini_template(controller "${CMAKE_SOURCE_DIR}/runtimes/common/data/controller.ini.in" "${CMAKE_BINARY_DIR}/apps/WatchServiceController" WORKING_DIRECTORY "${WORKING_DIRECTORY}")
 ```
 
 - The first argument is the output ini name (no extension).
