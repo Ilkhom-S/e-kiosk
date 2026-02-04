@@ -64,41 +64,6 @@ Modules are defined in separate INI sections with the patterns shown above. Each
 - **`firstpingtimeout`** (int): Initial ping timeout in seconds (default: 60)
 - **`kill_timeout`** (int): Ping interval in seconds (default: 30 for fast PCs, 180 for slow PCs)
 
-### Configuration Variables
-
-WatchService supports variable substitution in configuration values:
-
-- **`{WS_DIR}`**: WatchService current working directory (used for relative paths in file and workingdirectory parameters)
-
-**Example**: `file={WS_DIR}/../../ekiosk` resolves to the ekiosk executable relative to WatchService directory.
-
-### Forbidden Application Configuration
-
-```ini
-[extensions]
-watchdog/taboo_enabled = true
-
-[taboo]
-applications = notepad.exe,calc.exe,explorer.exe
-check_timeout = 60000
-```
-
-- **`watchdog/taboo_enabled`** (bool): Enable forbidden app monitoring
-- **`applications`** (string list): Comma-separated list of forbidden executables
-- **`check_timeout`** (int): Check interval in milliseconds
-
-### Special Features
-
-#### Screen Protection
-
-WatchService automatically manages screen protection:
-
-- **Protection Active**: Shows splash screen when no GUI modules are running
-- **Protection Inactive**: Hides splash screen when GUI modules are active
-- **Custom Background**: Configurable via `use_custom_background` setting
-
-### Configuration Examples
-
 #### Main Application Module Example
 
 ```ini
@@ -144,6 +109,41 @@ maxstartcount = 1
 firstpingtimeout = 60
 kill_timeout = 10000
 ```
+
+### Configuration Variables
+
+WatchService supports variable substitution in configuration values:
+
+- **`{WS_DIR}`**: WatchService current working directory (used for relative paths in file and workingdirectory parameters)
+
+**Example**: `file={WS_DIR}/../../ekiosk` resolves to the ekiosk executable relative to WatchService directory.
+
+### Forbidden Application Configuration
+
+```ini
+[extensions]
+watchdog/taboo_enabled = true
+
+[taboo]
+applications = notepad.exe,calc.exe,explorer.exe
+check_timeout = 60000
+```
+
+- **`watchdog/taboo_enabled`** (bool): Enable forbidden app monitoring
+- **`applications`** (string list): Comma-separated list of forbidden executables
+- **`check_timeout`** (int): Check interval in milliseconds
+
+### Special Features
+
+#### Screen Protection
+
+WatchService automatically manages screen protection:
+
+- **Protection Active**: Shows splash screen when no GUI modules are running
+- **Protection Inactive**: Hides splash screen when GUI modules are active
+- **Custom Background**: Configurable via `use_custom_background` setting
+
+### Configuration Examples
 
 #### Basic Payment Processor
 
