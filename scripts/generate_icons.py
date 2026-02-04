@@ -10,6 +10,11 @@ Templates are organized by app in subdirectories under assets/icons/templates/:
 - card/ : Card-related apps
 - updater/ : Updater apps
 
+Icon Types (determined by filename pattern):
+- App icons: *-app-icon.svg → PNGs, ICO, ICNS files
+- UI icons: menu-*.svg, icon-*.svg, button-*.svg, *ui-*.svg → PNGs only
+- Template icons: *template*.svg → macOS template PNGs
+
 Usage examples:
   python3 scripts/generate_icons.py --apps WatchServiceController
   python3 scripts/generate_icons.py --source assets/icons/templates --apps WatchServiceController,EKiosk
@@ -278,9 +283,26 @@ def generate_for_app(svg_dir: Path, app: str, force: bool = False) -> None:
     print(f'Generating icons for app {app} from {app_svg_dir} into {app_icons}')
 
     for svg in svgs:
-        name = svg.stem  # e.g., controller, controller_template
+        name = svg.stem  # e.g., controller, controller_template, menu-close
 
-        if name.endswith('_template') or name.endswith('-template') or 'template' in name:
+        # Determine icon type based on naming pattern
+        if name.endswith('-app-icon'):
+            # App icons: generate full set (PNGs, ICO, ICNS)
+            icon_type = 'app'
+        elif (name.startswith(('menu-', 'icon-', 'button-', 'toolbar-')) or
+              'ui-' in name or
+              ('monogram' in name and 'Template' in name)):
+            # UI icons: generate only PNGs in standard UI sizes
+            # Includes: menu-* , icon-* , button-* , toolbar-* , *ui-* , *monogram*Template*
+            icon_type = 'ui'
+        elif name.endswith('_template') or name.endswith('-template') or 'template' in name:
+            # Template icons: generate macOS-style template sizes
+            icon_type = 'template'
+        else:
+            # Default: assume app icon for backward compatibility
+            icon_type = 'app'
+
+        if icon_type == 'template':
             # macOS-style template (single-color) — generate status sizes
             base_sizes = [16, 18, 20, 22, 24]
             generated = []
@@ -296,7 +318,29 @@ def generate_for_app(svg_dir: Path, app: str, force: bool = False) -> None:
             print(f'  Generated template PNGs: {len(generated)}')
             continue
 
-        # Regular colored icon: generate baseline PNG sizes and an ICO
+        elif icon_type == 'ui':
+            # UI icons: generate PNGs in standard UI sizes (no ICO/ICNS)
+            ui_sizes = [16, 24, 32, 48, 64]  # Common UI icon sizes
+            generated = []
+            for s in ui_sizes:
+                out = app_icons / f'{name}-{s}.png'
+                if force or not out.exists():
+                    render_svg_to_png(svg, out, s, s)
+                    generated.append(out)
+
+            # Create a convenient primary filename for UI icons
+            primary = app_icons / f'{name}.png'
+            if force or not primary.exists():
+                # Use 32px as default for UI icons
+                default_size = next((s for s in ui_sizes if s == 32), ui_sizes[0])
+                default_png = app_icons / f'{name}-{default_size}.png'
+                if default_png.exists():
+                    shutil.copy2(default_png, primary)
+
+            print(f'  Generated UI PNGs: {len(generated)}')
+            continue
+
+        # App icons: generate full set (PNGs, ICO, ICNS)
         # Baseline sizes for app icons / controller: produce 48, 64, 128, 256, 512
         sizes = [48, 64, 128, 256, 512]
         pngs: list[Path] = []
