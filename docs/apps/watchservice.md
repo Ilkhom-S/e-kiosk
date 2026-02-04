@@ -103,7 +103,7 @@ gui = false
 
 #### Startup Control
 
-- **`autostart`** (bool): Start module automatically on WatchService startup
+- **`autostart`** (bool): Start module automatically on WatchService startup, or manually on command
 - **`startmode`** (string):
   - `auto`: Automatic startup mode
   - `manual`: Manual startup only
