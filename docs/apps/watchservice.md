@@ -42,52 +42,6 @@ Modules are defined in separate INI sections. Common patterns include:
 - `[Module1]`, `[Module2]`, etc. - For numbered main modules
 - `[module_<name>]` - For named modules (e.g., `[module_updater]`, `[module_ekiosk]`)
 
-#### Main Application Module Example
-
-```ini
-[module_ekiosk]
-; Basic module information
-name = ekiosk
-file = {WS_DIR}/../../ekiosk
-workingdirectory = {WS_DIR}
-gui = true
-
-; Startup behavior
-autostart = true
-startmode = normal
-priority = 1
-close_priority = 1
-afterstartdelay = 5000
-
-; Health monitoring
-maxstartcount = 3
-firstpingtimeout = 60
-kill_timeout = 10000
-```
-
-#### Updater Service Module Example
-
-```ini
-[module_updater]
-; Basic module information
-name = updater
-file = {WS_DIR}/../../updater
-workingdirectory = {WS_DIR}
-gui = false
-
-; Startup behavior
-autostart = false
-startmode = normal
-priority = 3
-close_priority = 2
-afterstartdelay = 0
-
-; Health monitoring
-maxstartcount = 1
-firstpingtimeout = 60
-kill_timeout = 10000
-```
-
 ### Configuration Parameters
 
 #### Basic Module Settings
@@ -139,6 +93,130 @@ check_timeout = 60000
 - **`check_timeout`** (int): Check interval in milliseconds
 
 ### Special Features
+
+### Configuration Examples
+
+#### Main Application Module Example
+
+```ini
+[module_ekiosk]
+; Basic module information
+name = ekiosk
+file = {WS_DIR}/../../ekiosk
+workingdirectory = {WS_DIR}
+gui = true
+
+; Startup behavior
+autostart = true
+startmode = normal
+priority = 1
+close_priority = 1
+afterstartdelay = 5000
+
+; Health monitoring
+maxstartcount = 3
+firstpingtimeout = 60
+kill_timeout = 10000
+```
+
+#### Updater Service Module Example
+
+```ini
+[module_updater]
+; Basic module information
+name = updater
+file = {WS_DIR}/../../updater
+workingdirectory = {WS_DIR}
+gui = false
+
+; Startup behavior
+autostart = false
+startmode = normal
+priority = 3
+close_priority = 2
+afterstartdelay = 0
+
+; Health monitoring
+maxstartcount = 1
+firstpingtimeout = 60
+kill_timeout = 10000
+```
+
+#### Basic Payment Processor
+
+```ini
+[module_payment_processor]
+name = payment_processor
+file = {WS_DIR}/payment_processor
+workingdirectory = {WS_DIR}
+autostart = true
+startmode = normal
+priority = 1
+close_priority = 0
+afterstartdelay = 3000
+gui = true
+firstpingtimeout = 60
+kill_timeout = 30
+maxstartcount = 0
+```
+
+#### Background Database Service
+
+```ini
+[module_mysql]
+name = MYSQL
+file = {WS_DIR}/mysql
+workingdirectory = {WS_DIR}
+autostart = true
+startmode = service
+priority = 0
+close_priority = 3
+afterstartdelay = 5000
+gui = false
+firstpingtimeout = 120
+kill_timeout = 60
+maxstartcount = 3
+```
+
+#### Exclusive Maintenance Mode
+
+```ini
+[module_maintenance]
+name = maintenance
+file = {WS_DIR}/maintenance
+workingdirectory = {WS_DIR}
+autostart = false
+startmode = exclusive
+priority = 10
+close_priority = 0
+afterstartdelay = 1000
+gui = true
+firstpingtimeout = 30
+kill_timeout = 15
+maxstartcount = 1
+```
+
+#### Development/Debugging Controller
+
+For development and debugging, you can configure the controller to auto-start with WatchService:
+
+```ini
+[module_controller]
+name = controller
+file = {WS_DIR}/controller
+workingdirectory = {WS_DIR}
+autostart = true
+startmode = normal
+priority = 5
+close_priority = 1
+afterstartdelay = 2000
+gui = true
+firstpingtimeout = 30
+kill_timeout = 60
+maxstartcount = 3
+```
+
+**Note**: This configuration is recommended only for development environments. In production, start the controller manually when administrative access is needed.
 
 #### Screen Protection
 
@@ -203,84 +281,6 @@ When a module with `startmode = exclusive` runs:
 | `ReInitializeTimeout`       | 7000ms  | Delay before reinitialization attempts |
 | `ReInitializeFailMaxCount`  | 85      | Max reinitialization attempts          |
 | `ContinueExecutionExitCode` | 54321   | Special exit code for continuation     |
-
-## Configuration Examples
-
-### Basic Payment Processor
-
-```ini
-[module_payment_processor]
-name = payment_processor
-file = {WS_DIR}/payment_processor${EXE_SUFFIX}
-workingdirectory = {WS_DIR}
-autostart = true
-startmode = normal
-priority = 1
-close_priority = 0
-afterstartdelay = 3000
-gui = true
-firstpingtimeout = 60
-killtimeout = 30
-maxstartcount = 0
-```
-
-### Background Database Service
-
-```ini
-[module_mysql]
-name = MYSQL
-file = {WS_DIR}/mysql${EXE_SUFFIX}
-workingdirectory = {WS_DIR}
-autostart = true
-startmode = service
-priority = 0
-close_priority = 3
-afterstartdelay = 5000
-gui = false
-firstpingtimeout = 120
-killtimeout = 60
-maxstartcount = 3
-```
-
-### Exclusive Maintenance Mode
-
-```ini
-[module_maintenance]
-name = maintenance
-file = {WS_DIR}/maintenance${EXE_SUFFIX}
-workingdirectory = {WS_DIR}
-autostart = false
-startmode = exclusive
-priority = 10
-close_priority = 0
-afterstartdelay = 1000
-gui = true
-firstpingtimeout = 30
-killtimeout = 15
-maxstartcount = 1
-```
-
-### Development/Debugging Controller
-
-For development and debugging, you can configure the controller to auto-start with WatchService:
-
-```ini
-[module_controller]
-name = controller
-file = {WS_DIR}/controller${EXE_SUFFIX}
-workingdirectory = {WS_DIR}
-autostart = true
-startmode = normal
-priority = 5
-close_priority = 1
-afterstartdelay = 2000
-gui = true
-firstpingtimeout = 30
-killtimeout = 60
-maxstartcount = 3
-```
-
-**Note**: This configuration is recommended only for development environments. In production, start the controller manually when administrative access is needed.
 
 ## Troubleshooting
 
