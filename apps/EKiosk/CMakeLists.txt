@@ -6,7 +6,11 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Sql PrintSup
 
 # Use EKiosk CMake helpers
 include(${CMAKE_SOURCE_DIR}/cmake/EKApplication.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/EKIniTemplate.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/EKStaticAnalysis.cmake)
+
+# Генерация ini-файлов для всех конфигураций через хелпер
+ek_generate_ini_for_all_configs(client "${CMAKE_SOURCE_DIR}/runtimes/common/data/ekiosk.ini.in")
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE HEADERS src/*.h)
