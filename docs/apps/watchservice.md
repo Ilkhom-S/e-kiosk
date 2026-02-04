@@ -35,15 +35,17 @@ WatchService runs as a background daemon that:
 
 ### Module Configuration Format
 
+**Important**: Module section names must contain the word "module" (case-insensitive) to be recognized by WatchService. Sections without "module" in the name will be ignored.
+
 Modules are defined in separate INI sections. Common patterns include:
 
 - `[Module1]`, `[Module2]`, etc. - For numbered main modules
-- `[module_<name>]` - For named modules (e.g., `[module_updater]`)
+- `[module_<name>]` - For named modules (e.g., `[module_updater]`, `[module_ekiosk]`)
 
 #### Main Application Module Example
 
 ```ini
-[Module1]
+[module_ekiosk]
 ; Basic module information
 name = ekiosk
 file = {WS_DIR}/../../ekiosk${EXE_SUFFIX}
