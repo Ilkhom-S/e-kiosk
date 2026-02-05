@@ -8,14 +8,15 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QProcess>
-#include <QtCore5Compat/QTextCodec>
 #include <Common/QtHeadersEnd.h>
 
 // Modules
 #include <Common/ILog.h>
 
+// System
+#include <Packer/Packer.h>
+
 // Project
-#include "Packer.h"
 #include <zlib.h>
 
 namespace CPacker
@@ -27,10 +28,21 @@ namespace CPacker
     const int GZIP_CHUNK_SIZE = 32 * 1024;
 }; // namespace CPacker
 
+//---------------------------------------------------------------------------
+// Возвращает имя исполняемого файла 7za в зависимости от платформы
+QString Packer::getToolExecutableName()
+{
+#ifdef Q_OS_WIN
+    return "7za.exe";
+#else
+    return "7za";
+#endif
+}
+
 //------------------------------------------------------------------------------
 Packer::Packer(const QString &aToolPath, ILog *aLog)
     : mExitCode(0), mUpdateMode(false), mFormat(Zip), mLevel(9), mRecursive(false), mTimeout(CPacker::DefaultTimeout),
-      mToolPath("7za.exe")
+      mToolPath(getToolExecutableName())
 {
     if (aLog)
     {
@@ -45,7 +57,7 @@ void Packer::setToolPath(const QString &aToolPath)
 {
     if (!aToolPath.isEmpty())
     {
-        mToolPath = QDir::toNativeSeparators(QDir::cleanPath(aToolPath + QDir::separator() + "7za.exe"));
+        mToolPath = QDir::toNativeSeparators(QDir::cleanPath(aToolPath + QDir::separator() + getToolExecutableName()));
 
         toLog(LogLevel::Debug, QString("Zip tool path: '%1'").arg(mToolPath));
     }
@@ -86,7 +98,7 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName,
         memset(&header, 0, sizeof(header));
         QByteArray nameBuffer = aFileName.toLatin1();
         nameBuffer.append('\0');
-        header.name = (Bytef *)nameBuffer.constData();
+        header.name = reinterpret_cast<Bytef *>(const_cast<char *>(nameBuffer.constData()));
         header.name_max = nameBuffer.size();
         header.time = QDateTime::currentDateTime().toSecsSinceEpoch();
 
@@ -110,7 +122,7 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName,
             int chunk_size = qMin(CPacker::GZIP_CHUNK_SIZE, input_data_left);
 
             // Set deflator references
-            strm.next_in = (unsigned char *)input_data;
+            strm.next_in = reinterpret_cast<unsigned char *>(const_cast<char *>(input_data));
             strm.avail_in = chunk_size;
 
             // Update interval variables
@@ -126,8 +138,8 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName,
                 // Declare vars
                 char out[CPacker::GZIP_CHUNK_SIZE];
 
-                // Set deflater references
-                strm.next_out = (unsigned char *)out;
+                // Set deflator references
+                strm.next_out = reinterpret_cast<unsigned char *>(out);
                 strm.avail_out = CPacker::GZIP_CHUNK_SIZE;
 
                 // Try to deflate chunk
@@ -149,7 +161,7 @@ bool Packer::gzipCompress(const QByteArray &aInBuffer, const QString &aFileName,
                 // Cumulate result
                 if (have > 0)
                 {
-                    aOutBuffer.append((char *)out, have);
+                    aOutBuffer.append(reinterpret_cast<const char *>(out), have);
                 }
             } while (strm.avail_out == 0);
 
@@ -191,7 +203,7 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QBy
         memset(&header, 0, sizeof(header));
         QByteArray nameBuffer;
         nameBuffer.fill('\0', 256);
-        header.name = (Bytef *)nameBuffer.data();
+        header.name = reinterpret_cast<Bytef *>(nameBuffer.data());
         header.name_max = nameBuffer.size();
 
         ret = inflateGetHeader(&strm, &header);
@@ -217,7 +229,7 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QBy
             }
 
             // Set inflater references
-            strm.next_in = (unsigned char *)input_data;
+            strm.next_in = reinterpret_cast<unsigned char *>(const_cast<char *>(input_data));
             strm.avail_in = chunk_size;
 
             // Update interval variables
@@ -231,7 +243,7 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QBy
                 char out[CPacker::GZIP_CHUNK_SIZE];
 
                 // Set inflater references
-                strm.next_out = (unsigned char *)out;
+                strm.next_out = reinterpret_cast<unsigned char *>(out);
                 strm.avail_out = CPacker::GZIP_CHUNK_SIZE;
 
                 // Try to inflate chunk
@@ -254,16 +266,16 @@ bool Packer::gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QBy
                 // Cumulate result
                 if (have > 0)
                 {
-                    aOutBuffer.append((char *)out, have);
+                    aOutBuffer.append(reinterpret_cast<const char *>(out), have);
                 }
 
             } while (strm.avail_out == 0);
 
         } while (ret != Z_STREAM_END);
 
-        if (strlen((const char *)header.name))
+        if (strlen(reinterpret_cast<const char *>(header.name)))
         {
-            aFileName = QString::fromLatin1((const char *)header.name);
+            aFileName = QString::fromLatin1(reinterpret_cast<const char *>(header.name));
         }
 
         // Clean-up
@@ -297,7 +309,7 @@ QStringList Packer::pack(const QString &aTargetName, const QString &aSourceDir, 
         zipArguments << "-r";
     }
 
-    foreach (auto mask, aSearchMasks)
+    for (const auto &mask : aSearchMasks)
     {
         zipArguments << aSourceDir + QDir::separator() + mask;
     }
@@ -307,7 +319,7 @@ QStringList Packer::pack(const QString &aTargetName, const QString &aSourceDir, 
         zipArguments << QString("-v%1b").arg(aMaxPartSize);
     }
 
-    foreach (auto wildcard, aExcludeWildcard)
+    for (const auto &wildcard : aExcludeWildcard)
     {
         if (!wildcard.isEmpty())
         {
@@ -320,7 +332,7 @@ QStringList Packer::pack(const QString &aTargetName, const QString &aSourceDir, 
     if (!mUpdateMode)
     {
         // remove old archive
-        foreach (const QString &file, QDir(info.absolutePath(), info.fileName() + "*").entryList())
+        for (const QString &file : QDir(info.absolutePath(), info.fileName() + "*").entryList())
         {
             QFile::remove(QDir::toNativeSeparators(QDir::cleanPath(info.absolutePath() + QDir::separator() + file)));
         }
@@ -474,7 +486,7 @@ QString Packer::exitCodeDescription() const
     switch (mExitCode)
     {
         case -1:
-            return "Error or timeout execution 7za.exe";
+            return QString("Error or timeout execution %1").arg(getToolExecutableName());
         case 0:
             return "OK";
         case 1:

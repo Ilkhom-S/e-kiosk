@@ -84,10 +84,17 @@ bool CheckConnection::ping(int timeOut, QString ipAddress)
     QProcess pingProc;
     QString pingCmd;
     QByteArray contents;
-    pingCmd = QString("ping -n 3 -w %1 %2").arg(timeOut * 1000).arg(ipAddress);
-    pingProc.setProcessChannelMode(QProcess::MergedChannels);
 
-    pingProc.start("c:/windows/system32/cmd.exe", QStringList() << "/c" << pingCmd, QIODevice::ReadOnly);
+#ifdef Q_OS_WIN
+    pingCmd = QString("ping -n 3 -w %1 %2").arg(timeOut * 1000).arg(ipAddress);
+    pingProc.start("cmd.exe", QStringList() << "/c" << pingCmd, QIODevice::ReadOnly);
+#else
+    pingCmd = QString("ping -c 3 -W %1 %2").arg(timeOut).arg(ipAddress);
+    pingProc.start("ping", QStringList() << "-c" << "3" << "-W" << QString::number(timeOut) << ipAddress,
+                   QIODevice::ReadOnly);
+#endif
+
+    pingProc.setProcessChannelMode(QProcess::MergedChannels);
     pingProc.waitForFinished(12000);
 
     if (pingProc.state() != QProcess::NotRunning)

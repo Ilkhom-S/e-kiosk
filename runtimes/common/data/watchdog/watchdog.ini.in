@@ -1,10 +1,3 @@
-; WatchService (watchdog) конфигурационный файл - Generic/Common sections
-; Platform-specific paths are merged from platform-specific templates
-
-[Общие]
-LOG_PATH=@LOG_PATH@
-CHECK_TIMEOUT=60000
-
 [module_ekiosk]
 name=ekiosk
 workingdirectory={WS_DIR}

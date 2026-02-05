@@ -692,11 +692,11 @@ void WatchService::onCheckModules()
                     else
                     {
                         toLog(LogLevel::Debug,
-                              QString("Module %1 has excedeed first time ping timeout.").arg(it.key()));
+                              QString("Module %1 has exceeded first time ping timeout.").arg(it.key()));
                     }
                 }
 
-                // Проверка на отлик модуля
+                // Проверка на отклик модуля
                 if (it.value().lastUpdate.addSecs(it.value().killTimeout) < QDateTime::currentDateTime())
                 {
                     // Вырубаем модуль только после второго несоответствия

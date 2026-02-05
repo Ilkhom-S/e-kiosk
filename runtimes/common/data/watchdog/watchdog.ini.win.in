@@ -1,16 +1,12 @@
-; WatchService (watchdog) конфигурационный файл - Windows specific sections
-; This file contains only Windows-specific overrides/additions
-; Will be merged with the generic template
-
 [taboo]
 ; Windows-specific taboo applications that should not be monitored/killed
 applications=explorer.exe,taskmgr.exe,processhacker.exe,iexplore.exe,browser.exe,chrome.exe,firefox.exe,opera.exe
 check_timeout=60000
 
-[Module1]
+[module_ekiosk]
 ; Путь к исполняемому файлу модуля (Windows)
-file={WS_DIR}/../../ekiosk.exe
+file={WS_DIR}/ekiosk.exe
 
 [module_updater]
 ; Путь к исполняемому файлу модуля (Windows)
-file={WS_DIR}/../../updater.exe
+file={WS_DIR}/updater.exe

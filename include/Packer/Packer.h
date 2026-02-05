@@ -47,7 +47,7 @@ class Packer : public ILogable
     void setRecursive(bool aRecursive);
 
   public:
-    /// Архивирует буфер в пямяти в GZ формат
+    /// Архивирует буфер в памяти в GZ формат
     static bool gzipCompress(const QByteArray &aInBuffer, const QString &aFileName, QByteArray &aOutBuffer,
                              int aLevel = 9);
 
@@ -58,7 +58,7 @@ class Packer : public ILogable
     QString pack(const QString &aTargetName, const QString &aSourceDir, const QStringList &aSearchMasks,
                  const QStringList &aExcludeWildcard);
 
-    /// Архивириут файлы в несколько томов, размер которых ограничивается aMaxPartSize в байтах.
+    /// Архивирует файлы в несколько томов, размер которых ограничивается aMaxPartSize в байтах.
     QStringList pack(const QString &aTargetName, const QString &aSourceDir, const QStringList &aSearchMasks,
                      const QStringList &aExcludeWildcard, int aMaxPartSize);
 
@@ -90,6 +90,9 @@ class Packer : public ILogable
     bool mRecursive;
     int mTimeout;
     QProcess mZipProcess;
+
+    /// Возвращает имя исполняемого файла 7za в зависимости от платформы
+    static QString getToolExecutableName();
 };
 
 //------------------------------------------------------------------------------

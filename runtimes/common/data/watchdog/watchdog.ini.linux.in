@@ -1,16 +1,12 @@
-; WatchService (watchdog) конфигурационный файл - Linux specific sections
-; This file contains only Linux-specific overrides/additions
-; Will be merged with the generic template
-
 [taboo]
 ; Linux-specific taboo applications that should not be monitored/killed
 applications=gnome-system-monitor,htop,top,firefox,chromium-browser,chrome,opera
 check_timeout=60000
 
-[Module1]
+[module_ekiosk]
 ; Путь к исполняемому файлу модуля (Linux)
-file={WS_DIR}/../../ekiosk
+file={WS_DIR}/ekiosk
 
 [module_updater]
 ; Путь к исполняемому файлу модуля (Linux)
-file={WS_DIR}/../../updater
+file={WS_DIR}/updater
