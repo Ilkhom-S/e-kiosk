@@ -1,53 +1,79 @@
+/* @file Mainline. */
+
+#ifdef Q_OS_WIN
+#define NOMINMAX
+#include <windows.h>
+#endif
+
+#include <string.h>
+
+// stl
+#include <iostream>
+
 // Qt
 #include <Common/QtHeadersBegin.h>
-#include <QtCore/QProcess>
-#include <QtWidgets/QApplication>
+#include <QtCore/QtGlobal>
+#include <QtCore/QDateTime>
+#include <QtCore/QLoggingCategory>
+// #include <QBreakpadHandler.h>
 #include <Common/QtHeadersEnd.h>
 
-// Modules
-#include <Common/BasicApplication.h>
+// Модули
+#include <Common/Version.h>
+#include <Common/ExitCodes.h>
 
-// Project
-#include "mainwindow.h"
+// Проект
+#include "System/PPApplication.h"
+#include "System/UnhandledException.h"
 
-int main(int argc, char *argv[])
+//---------------------------------------------------------------------------
+int main(int argc, char **argv)
 {
-    QApplication qtApp(argc, argv);
+    int result = 0;
 
-    BasicApplication app(QString(), QString(), argc, argv);
-
-    // if (!app.isPrimaryInstance())
-    // {
-    //     return 1;
-    // }
-
-    auto arguments = qtApp.arguments();
-    auto fileName = arguments.at(0);
-
-    QFileInfo fi(fileName);
-
-    if (fi.fileName().toLower() != "ekiosk.exe")
+    try
     {
-        return 0;
+        qInstallMessageHandler(PPApplication::qtMessageHandler);
+
+        // Чтобы заставить работать QPixmap в потоке, отличном от потока gui (см. qt_pixmap_thread_test() в qpixmap.cpp)
+        // TODO PORT_QT5
+        // QApplication::setGraphicsSystem("raster");
+
+        qputenv("QMLSCENE_DEVICE", "softwarecontext");
+
+        PPApplication application(Humo::Application, Humo::getVersion(), argc, argv);
+
+        // TODO: restore breakpad integration when compatible with SingleApplication
+        // QBreakpadInstance.setDumpPath(PPApplication::getInstance()->getWorkingDirectory() + "/logs/");
+
+        // CatchUnhandledExceptions();
+
+        if (application.getQtApplication().isSecondary())
+        {
+            result = application.exec();
+        }
+        else
+        {
+            qDebug() << "Already running.";
+        }
+    }
+    catch (std::exception &aException)
+    {
+        // TODO: нет лога, так как программа убит
+        // EXCEPTION_FILTER_NO_THROW(???);
+        std::cout << "Exited due to exception: " << aException.what();
+
+        if (!result)
+        {
+            result = ExitCode::Error;
+        }
     }
 
-    MainWindow w;
+    qInstallMessageHandler(0);
 
-    // Если sheller не запущен, то запускаем
-    // DEPRECATED: we migrate to guard instead of this
-    if (!w.hasProcess(sheller))
-    {
-        QProcess::startDetached(sheller, QStringList());
-    }
+    ILog::getInstance(Humo::Application)->write(LogLevel::Debug, QString("Exit main() with %1 result.").arg(result));
 
-    w.testMode = app.isTestMode();
-
-    if (!w.testMode)
-    {
-        qtApp.setOverrideCursor(Qt::BlankCursor);
-    }
-
-    w.init();
-
-    return qtApp.exec();
+    return result;
 }
+
+//---------------------------------------------------------------------------

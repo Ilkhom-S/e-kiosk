@@ -1,0 +1,46 @@
+/* @file Окно приветствия. */
+
+// Проект
+
+// Project
+#include "WelcomeWizardPage.h"
+#include "WizardContext.h"
+
+WelcomeWizardPage::WelcomeWizardPage(HumoServiceBackend *aBackend, QWidget *aParent) : WizardPageBase(aBackend, aParent)
+{
+    setupUi(this);
+
+    connect(btnSetup, SIGNAL(clicked()), SLOT(onRunSetup()));
+}
+
+//---------------------------------------------------------------------------
+bool WelcomeWizardPage::initialize()
+{
+    return true;
+}
+
+//---------------------------------------------------------------------------
+bool WelcomeWizardPage::shutdown()
+{
+    return true;
+}
+
+//---------------------------------------------------------------------------
+bool WelcomeWizardPage::activate()
+{
+    return true;
+}
+
+//---------------------------------------------------------------------------
+bool WelcomeWizardPage::deactivate()
+{
+    return true;
+}
+
+//---------------------------------------------------------------------------
+void WelcomeWizardPage::onRunSetup()
+{
+    emit pageEvent(CWizardContext::RunSetup, true);
+}
+
+//---------------------------------------------------------------------------

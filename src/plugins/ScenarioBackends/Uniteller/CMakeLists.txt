@@ -24,11 +24,14 @@ ek_add_plugin(uniteller
     PaymentBase
 )
 
-# Translations
-file(GLOB TS_FILES src/locale/*.ts)
+# Translations - merge Uniteller and common translations
+file(GLOB TS_FILES_PLUGIN src/locale/*.ts)
+file(GLOB TS_FILES_COMMON ../../../modules/Hardware/Common/src/locale/*.ts)
+set(TS_FILES ${TS_FILES_PLUGIN} ${TS_FILES_COMMON})
 if(TS_FILES)
-    ek_add_translations(UnitellerTranslations
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/locale)
+    ek_add_translations(uniteller
         SOURCES ${TS_FILES}
-        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/locale
     )
 endif()

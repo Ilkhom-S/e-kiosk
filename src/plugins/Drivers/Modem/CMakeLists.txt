@@ -23,8 +23,9 @@ file(GLOB TS_FILES_MODEM src/locale/*.ts)
 file(GLOB TS_FILES_COMMON ../../../modules/Hardware/Common/src/locale/*.ts)
 set(TS_FILES ${TS_FILES_MODEM} ${TS_FILES_COMMON})
 if(TS_FILES)
-    ek_add_translations(ModemTranslations
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/locale)
+    ek_add_translations(modems
         SOURCES ${TS_FILES}
-        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/locale
     )
 endif()

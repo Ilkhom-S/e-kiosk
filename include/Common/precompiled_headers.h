@@ -119,7 +119,6 @@
 #include <QtGui/QClipboard>
 #include <QtGui/QCloseEvent>
 #include <QtGui/QColor>
-#include <QtWidgets/QDesktopWidget>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QFileDialog>
 #include <QtGui/QFont>

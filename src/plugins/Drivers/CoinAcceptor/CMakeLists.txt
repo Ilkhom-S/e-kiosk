@@ -19,13 +19,14 @@ ek_add_driver_plugin(coin_acceptors
     CoinAcceptors
 )
 
-# Translations - reuse BillAcceptor translations (as per QBS)
-file(GLOB TS_FILES_BILLACCEPTOR ../BillAcceptor/src/locale/*.ts)
+# Translations - reuse BillAcceptor translations (same content, easier maintenance)
+file(GLOB TS_FILES_BILL_ACCEPTOR ../BillAcceptor/src/locale/*.ts)
 file(GLOB TS_FILES_COMMON ../../../modules/Hardware/Common/src/locale/*.ts)
-set(TS_FILES ${TS_FILES_BILLACCEPTOR} ${TS_FILES_COMMON})
+set(TS_FILES ${TS_FILES_BILL_ACCEPTOR} ${TS_FILES_COMMON})
 if(TS_FILES)
-    ek_add_translations(CoinAcceptorTranslations
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/locale)
+    ek_add_translations(coin_acceptors
         SOURCES ${TS_FILES}
-        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/locale
     )
 endif()

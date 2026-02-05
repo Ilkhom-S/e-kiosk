@@ -19,7 +19,7 @@ file(GLOB_RECURSE SERVICEMENU_RESOURCES
 set(VERSION_RC ${EK_INCLUDES_DIR}/Common/CoreVersion.rc)
 
 ek_add_plugin(service_menu
-    FOLDER "plugins"
+    FOLDER "plugins/NativeWidgets"
     SOURCES ${SERVICEMENU_SOURCES} ${SERVICEMENU_UI_FILES} ${SERVICEMENU_RESOURCES}
     QT_MODULES Core Gui Widgets Network
     DEPENDS
@@ -64,8 +64,9 @@ endif()
 # Translations
 file(GLOB TS_FILES src/locale/*.ts)
 if(TS_FILES)
-    ek_add_translations(ServiceMenuTranslations
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/locale)
+    ek_add_translations(service_menu
         SOURCES ${TS_FILES}
-        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/locale
+        OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/locale
     )
 endif()
