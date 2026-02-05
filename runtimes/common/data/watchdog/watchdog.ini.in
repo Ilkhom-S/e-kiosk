@@ -5,11 +5,7 @@
 LOG_PATH=@LOG_PATH@
 CHECK_TIMEOUT=60000
 
-[taboo]
-applications=explorer.exe,taskmgr.exe,processhacker.exe,iexplore.exe,browser.exe,chrome.exe,firefox.exe,opera.exe
-check_timeout=60000
-
-[Module1]
+[module_ekiosk]
 name=ekiosk
 workingdirectory={WS_DIR}
 startmode=auto

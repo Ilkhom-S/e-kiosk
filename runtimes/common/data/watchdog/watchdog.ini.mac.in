@@ -2,6 +2,11 @@
 ; This file contains only macOS-specific overrides/additions
 ; Will be merged with the generic template
 
+[taboo]
+; macOS-specific taboo applications that should not be monitored/killed
+applications=Activity Monitor,Terminal,Safari,Firefox,Chrome,Opera
+check_timeout=60000
+
 [Module1]
 ; Путь к исполняемому файлу модуля (macOS)
 file={WS_DIR}/../../ekiosk.app/Contents/MacOS/ekiosk
