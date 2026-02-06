@@ -2,21 +2,18 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
-#include <QtGui/QFont>
 #include <QtCore/QVariantMap>
-#include <Common/QtHeadersEnd.h>
+#include <QtGui/QFont>
 
 //------------------------------------------------------------------------------
-class Skin : public QObject
-{
+class Skin : public QObject {
     Q_OBJECT
 
-  public:
+public:
     Skin(const QObject *aApplication, const QString &aInterfacePath, const QString &aUserPath);
 
-  public:
+public:
     /// Получить имя скина
     QString getName() const;
 
@@ -27,19 +24,19 @@ class Skin : public QObject
 
     bool needReload(const QVariantMap &aParams) const;
 
-  public slots:
+public slots:
     QFont font(const QString &aFontName) const;
     QString color(const QString &aColorName) const;
     QString image(const QString &aImageId) const;
 
-  private:
+private:
     /// Возвращает
     QString skinConfigFileName(const QString &aName) const;
 
     /// Загрузить конфигурацию скина
     bool loadSkinConfig();
 
-  private:
+private:
     QString mName;
     QString mSystemName22;
     QString mPrevName;

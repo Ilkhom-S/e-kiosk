@@ -2,12 +2,8 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Humo/Request.h>
 
 using namespace SDK::PaymentProcessor::Humo;
@@ -15,9 +11,8 @@ using namespace SDK::PaymentProcessor::Humo;
 class Payment;
 
 //---------------------------------------------------------------------------
-class PaymentRequest : public Request
-{
-  public:
+class PaymentRequest : public Request {
+public:
     PaymentRequest(Payment *aPayment, const QString &aName);
 
     /// Добавляет в запрос дополнительные параметры из описания оператора для указанного шага.
@@ -29,7 +24,7 @@ class PaymentRequest : public Request
     /// Возвращает название запроса.
     virtual const QString &getName() const;
 
-  protected:
+protected:
     /// Платёж, ассоциированный с запросом.
     Payment *mPayment;
 

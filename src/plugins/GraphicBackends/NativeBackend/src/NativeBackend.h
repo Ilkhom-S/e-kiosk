@@ -2,27 +2,24 @@
 
 #pragma once
 
+#include <QtCore/QObject>
+#include <QtCore/QPointer>
+
+#include <SDK/GUI/IGraphicsBackend.h>
+#include <SDK/PaymentProcessor/Core/ICore.h>
+#include <SDK/PaymentProcessor/Scripting/Core.h>
+#include <SDK/Plugins/IPlugin.h>
+
 #include <list>
 #include <memory>
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QObject>
-#include <QtCore/QPointer>
-#include <Common/QtHeadersEnd.h>
-
-// SDK
-#include <SDK/Plugins/IPlugin.h>
-#include <SDK/PaymentProcessor/Core/ICore.h>
-#include <SDK/PaymentProcessor/Scripting/Core.h>
-#include <SDK/GUI/IGraphicsBackend.h>
-
 //------------------------------------------------------------------------------
-class NativeBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsBackend
-{
+class NativeBackend : public QObject,
+                      public SDK::Plugin::IPlugin,
+                      public SDK::GUI::IGraphicsBackend {
     Q_OBJECT
 
-  public:
+public:
     NativeBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
     ~NativeBackend();
 
@@ -40,7 +37,8 @@ class NativeBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::G
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
     virtual QString getConfigurationName() const;
 
-    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
+    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
+    /// программы).
     virtual bool saveConfiguration();
 
     /// Проверяет успешно ли инициализировался плагин при создании.
@@ -70,7 +68,7 @@ class NativeBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::G
 
 #pragma endregion
 
-  private:
+private:
     QString mInstancePath;
 
     typedef QMap<QString, SDK::GUI::GraphicsItemInfo> TGraphicsItemsInfo;

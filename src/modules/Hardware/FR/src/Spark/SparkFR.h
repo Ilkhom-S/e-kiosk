@@ -2,27 +2,23 @@
 
 #pragma once
 
-// Modules
 #include "Hardware/FR/PortFRBase.h"
-#include "Hardware/Protocols/FR/SparkFR.h"
 #include "Hardware/Protocols/FR/FiscalChequeStates.h"
-
-// Project
-#include "SparkModelData.h"
+#include "Hardware/Protocols/FR/SparkFR.h"
 #include "SparkFRConstants.h"
+#include "SparkModelData.h"
 
 //--------------------------------------------------------------------------------
-class SparkFR : public TSerialFRBase
-{
+class SparkFR : public TSerialFRBase {
     SET_SERIES("SPARK")
 
-  public:
+public:
     SparkFR();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
@@ -56,7 +52,8 @@ class SparkFR : public TSerialFRBase
     virtual void execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine);
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData,
+    virtual bool performFiscal(const QStringList &aReceipt,
+                               const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
     /// Печать Z отчета.
@@ -78,7 +75,8 @@ class SparkFR : public TSerialFRBase
     virtual bool retract();
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult execCommand(const QByteArray &aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
 
     /// Получить состояние Z-буффера.

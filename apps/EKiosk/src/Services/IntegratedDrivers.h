@@ -5,9 +5,8 @@
 #include "DeviceManager/DeviceManager.h"
 
 //------------------------------------------------------------------------------
-class IntegratedDrivers
-{
-  public:
+class IntegratedDrivers {
+public:
     typedef QSet<QString> TPaths;
 
     IntegratedDrivers();
@@ -22,7 +21,8 @@ class IntegratedDrivers
     void filterModelList(TModelList &aModelList) const;
 
     /// Получение списка параметров драйвера.
-    void filterDriverParameters(const QString &aDriverPath, SDK::Plugin::TParameterList &aParameterList) const;
+    void filterDriverParameters(const QString &aDriverPath,
+                                SDK::Plugin::TParameterList &aParameterList) const;
 
     /// Фильтрация списка путей драйверов.
     void filterDriverList(QStringList &aDriverList) const;
@@ -30,18 +30,13 @@ class IntegratedDrivers
     /// Проверить путь драйвера при создании устройства.
     void checkDriverPath(QString &aDriverPath, const QVariantMap &aConfig);
 
-  private:
-    struct SData
-    {
+private:
+    struct SData {
         TPaths paths;
         QStringList models;
 
-        SData()
-        {
-        }
-        SData(const TPaths &aPaths, const QStringList &aModels) : paths(aPaths), models(aModels)
-        {
-        }
+        SData() {}
+        SData(const TPaths &aPaths, const QStringList &aModels) : paths(aPaths), models(aModels) {}
     };
 
     typedef QMap<QString, SData> TData;

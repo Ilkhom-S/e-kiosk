@@ -5,14 +5,13 @@
 #include <Hardware/CashAcceptors/CCNetCashAcceptorBase.h>
 
 //--------------------------------------------------------------------------------
-class CCNetCreator : public CCNetCashAcceptorBase
-{
+class CCNetCreator : public CCNetCashAcceptorBase {
     SET_SUBSERIES("Creator")
 
-  public:
+public:
     CCNetCreator();
 
-  protected:
+protected:
     /// Запросить и сохранить параметры устройства.
     virtual void processDeviceData(QByteArray &aAnswer);
 

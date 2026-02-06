@@ -2,24 +2,19 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QSharedPointer>
 #include <QtWidgets/QGraphicsProxyWidget>
-#include <Common/QtHeadersEnd.h>
 
 // Plugin SDK
-#include <SDK/Plugins/IPlugin.h>
 #include <SDK/GUI/IGraphicsItem.h>
+#include <SDK/Plugins/IPlugin.h>
 
-// Project
 #include "Backend/ServiceMenuBackend.h"
 #include "MainServiceWindow.h"
 
 //--------------------------------------------------------------------------
-class ServiceMenu : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem
-{
-  public:
+class ServiceMenu : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem {
+public:
     ServiceMenu(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
     ~ServiceMenu();
 
@@ -37,7 +32,8 @@ class ServiceMenu : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
     virtual QString getConfigurationName() const;
 
-    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
+    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
+    /// программы).
     virtual bool saveConfiguration();
 
     /// Проверяет успешно ли инициализировался плагин при создании.
@@ -75,7 +71,7 @@ class ServiceMenu : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem
 
 #pragma endregion
 
-  private:
+private:
     bool mIsReady;
 
     QString mInstancePath;

@@ -2,24 +2,19 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QSharedPointer>
 #include <QtWidgets/QGraphicsProxyWidget>
-#include <Common/QtHeadersEnd.h>
 
 // Plugin SDK
-#include <SDK/Plugins/IPlugin.h>
 #include <SDK/GUI/IGraphicsItem.h>
+#include <SDK/Plugins/IPlugin.h>
 
-// Project
 #include "../Backend/HumoServiceBackend.h"
 #include "MainHumoServiceMenuWindow.h"
 
 //--------------------------------------------------------------------------
-class HumoServiceMenu : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem
-{
-  public:
+class HumoServiceMenu : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem {
+public:
     HumoServiceMenu(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
     ~HumoServiceMenu();
 
@@ -37,7 +32,8 @@ class HumoServiceMenu : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsI
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
     virtual QString getConfigurationName() const;
 
-    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
+    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
+    /// программы).
     virtual bool saveConfiguration();
 
     /// Проверяет успешно ли инициализировался плагин при создании.
@@ -75,7 +71,7 @@ class HumoServiceMenu : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsI
 
 #pragma endregion
 
-  private:
+private:
     bool mIsReady;
 
     QString mInstancePath;

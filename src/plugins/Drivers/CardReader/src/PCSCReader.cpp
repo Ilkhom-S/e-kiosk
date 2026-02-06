@@ -1,61 +1,57 @@
 /* @file Реализация интерфейса работы с PC/SC API. */
 
-// System
+#include "PCSCReader.h"
+
 #include "Hardware/Protocols/Common/ProtocolUtils.h"
+#include "PCSCReaderStatusCodes.h"
 #include "SysUtils/ISysUtils.h"
 
-// Project
-#include "PCSCReader.h"
-#include "PCSCReaderStatusCodes.h"
-
-#define CHECK_SCARD_ERROR(aFunctionName, ...) handleResult(#aFunctionName, aFunctionName(__VA_ARGS__))
+#define CHECK_SCARD_ERROR(aFunctionName, ...)                                                      \
+    handleResult(#aFunctionName, aFunctionName(__VA_ARGS__))
 
 //--------------------------------------------------------------------------------
-PCSCReader::PCSCReader() : mContext(0), mCard(0), mActiveProtocol(SCARD_PROTOCOL_UNDEFINED)
-{
+PCSCReader::PCSCReader() : mContext(0), mCard(0), mActiveProtocol(SCARD_PROTOCOL_UNDEFINED) {
     CHECK_SCARD_ERROR(SCardEstablishContext, SCARD_SCOPE_SYSTEM, NULL, NULL, &mContext);
 }
 
 //--------------------------------------------------------------------------------
-PCSCReader::~PCSCReader()
-{
+PCSCReader::~PCSCReader() {
     disconnect(false);
 
-    if (mContext)
-    {
+    if (mContext) {
         CHECK_SCARD_ERROR(SCardReleaseContext, mContext);
         mContext = 0;
     }
 }
 
 //--------------------------------------------------------------------------------
-bool PCSCReader::reset(QByteArray & /*aAnswer*/)
-{
-    if (!mCard)
-    {
+bool PCSCReader::reset(QByteArray & /*aAnswer*/) {
+    if (!mCard) {
         return false;
     }
 
-    return CHECK_SCARD_ERROR(SCardReconnect, mCard, SCARD_SHARE_SHARED, SCARD_PROTOCOL_Tx, SCARD_UNPOWER_CARD,
+    return CHECK_SCARD_ERROR(SCardReconnect,
+                             mCard,
+                             SCARD_SHARE_SHARED,
+                             SCARD_PROTOCOL_Tx,
+                             SCARD_UNPOWER_CARD,
                              (LPDWORD)&mActiveProtocol);
 }
 
 //--------------------------------------------------------------------------------
-QStringList PCSCReader::getReaderList()
-{
+QStringList PCSCReader::getReaderList() {
     QStringList readers;
     wchar_t *mszReaders = nullptr;
     DWORD dwReaders = SCARD_AUTOALLOCATE;
 
-    if (!CHECK_SCARD_ERROR(SCardListReadersW, mContext, SCARD_ALL_READERS, (LPTSTR)&mszReaders, &dwReaders))
-    {
+    if (!CHECK_SCARD_ERROR(
+            SCardListReadersW, mContext, SCARD_ALL_READERS, (LPTSTR)&mszReaders, &dwReaders)) {
         return readers;
     }
 
     wchar_t *pReader = mszReaders;
 
-    while ('\0' != *pReader)
-    {
+    while ('\0' != *pReader) {
         readers << QString::fromWCharArray(pReader);
         // Advance to the next value.
         pReader = pReader + wcslen(pReader) + 1;
@@ -67,13 +63,11 @@ QStringList PCSCReader::getReaderList()
 }
 
 //--------------------------------------------------------------------------------
-bool PCSCReader::handleResult(const QString &aFunctionName, HRESULT aResultCode)
-{
+bool PCSCReader::handleResult(const QString &aFunctionName, HRESULT aResultCode) {
     // Complete list of APDU responses
     // http://www.eftlab.co.uk/index.php/site-map/knowledge-base/118-apdu-response-list
 
-    if (aResultCode == SCARD_S_SUCCESS)
-    {
+    if (aResultCode == SCARD_S_SUCCESS) {
         return true;
     }
 
@@ -82,8 +76,7 @@ bool PCSCReader::handleResult(const QString &aFunctionName, HRESULT aResultCode)
 
     QString log = ISysUtils::getErrorMessage(aResultCode, false);
 
-    if (log.isEmpty())
-    {
+    if (log.isEmpty()) {
         log = specification.description;
     }
 
@@ -93,8 +86,7 @@ bool PCSCReader::handleResult(const QString &aFunctionName, HRESULT aResultCode)
 }
 
 //--------------------------------------------------------------------------------
-TStatusCodes PCSCReader::getStatusCodes()
-{
+TStatusCodes PCSCReader::getStatusCodes() {
     TStatusCodes statusCodes(mStatusCodes);
     mStatusCodes.clear();
 
@@ -102,12 +94,15 @@ TStatusCodes PCSCReader::getStatusCodes()
 }
 
 //--------------------------------------------------------------------------------
-bool PCSCReader::connect(const QString &aReaderName)
-{
+bool PCSCReader::connect(const QString &aReaderName) {
     // TOSO PORT_QT5 (const wchar_t *)aReaderName.utf16()???
-    if (!CHECK_SCARD_ERROR(SCardConnect, mContext, (const wchar_t *)aReaderName.utf16(), SCARD_SHARE_SHARED,
-                           SCARD_PROTOCOL_Tx, &mCard, (LPDWORD)&mActiveProtocol))
-    {
+    if (!CHECK_SCARD_ERROR(SCardConnect,
+                           mContext,
+                           (const wchar_t *)aReaderName.utf16(),
+                           SCARD_SHARE_SHARED,
+                           SCARD_PROTOCOL_Tx,
+                           &mCard,
+                           (LPDWORD)&mActiveProtocol)) {
         return false;
     }
 
@@ -120,24 +115,26 @@ bool PCSCReader::connect(const QString &aReaderName)
 }
 
 //--------------------------------------------------------------------------------
-void PCSCReader::disconnect(bool aEject)
-{
-    if (mCard)
-    {
+void PCSCReader::disconnect(bool aEject) {
+    if (mCard) {
         CHECK_SCARD_ERROR(SCardDisconnect, mCard, aEject ? SCARD_EJECT_CARD : SCARD_LEAVE_CARD);
         mCard = 0;
     }
 }
 
 //--------------------------------------------------------------------------------
-bool PCSCReader::communicate(const QByteArray &aRequest, QByteArray &aResponse)
-{
+bool PCSCReader::communicate(const QByteArray &aRequest, QByteArray &aResponse) {
     char outBuffer[4096] = {0};
     DWORD dwRecvLength = 4096; // достаточно ;)
 
-    if (!CHECK_SCARD_ERROR(SCardTransmit, mCard, &mPioSendPci, (const byte *)aRequest.constData(), aRequest.size(),
-                           NULL, (LPBYTE)outBuffer, &dwRecvLength))
-    {
+    if (!CHECK_SCARD_ERROR(SCardTransmit,
+                           mCard,
+                           &mPioSendPci,
+                           (const byte *)aRequest.constData(),
+                           aRequest.size(),
+                           NULL,
+                           (LPBYTE)outBuffer,
+                           &dwRecvLength)) {
         return false;
     }
 
@@ -148,8 +145,7 @@ bool PCSCReader::communicate(const QByteArray &aRequest, QByteArray &aResponse)
 }
 
 //--------------------------------------------------------------------------------
-bool PCSCReader::isConnected() const
-{
+bool PCSCReader::isConnected() const {
     return mCard != 0;
 }
 

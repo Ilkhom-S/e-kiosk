@@ -1,21 +1,18 @@
 #pragma once
 
-// System
 #include "../AbstractPrinter.h"
 
 class BasePrinterDevices;
 
-namespace CMDKM1X
-{
-    const int charTimeOut = 50; /// Time out
-    const QString DeviceName = "KM1X";
+namespace CMDKM1X {
+const int charTimeOut = 50; /// Time out
+const QString DeviceName = "KM1X";
 
-    const uchar PrinterCommandFirstByte = 0x1B; /// Первая часть команды.
+const uchar PrinterCommandFirstByte = 0x1B; /// Первая часть команды.
 } // namespace CMDKM1X
 
-class KM1X_PRINTER : public BasePrinterDevices
-{
-  public:
+class KM1X_PRINTER : public BasePrinterDevices {
+public:
     KM1X_PRINTER(QObject *parent = 0);
 
     QString printer_name;
@@ -26,7 +23,7 @@ class KM1X_PRINTER : public BasePrinterDevices
     bool isItYou();
     void print(const QString &aCheck);
 
-  protected:
+protected:
     bool openPort();
     bool printCheck(const QString &aCheck);
 

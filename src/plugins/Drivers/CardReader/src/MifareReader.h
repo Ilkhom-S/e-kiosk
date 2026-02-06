@@ -1,40 +1,36 @@
 /* @file Драйвер PC/SC ридера. */
 #pragma once
 
-// Modules
-#include "Hardware/Common/USBDeviceBase.h"
-#include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/CardReaders/ProtoMifareReader.h"
-
-// Project
+#include "Hardware/Common/PortPollingDeviceBase.h"
+#include "Hardware/Common/USBDeviceBase.h"
 #include "PCSCReader.h"
 
 //------------------------------------------------------------------------------
-namespace CMifareReader
-{
-    /// Запрос получения версии карты.
-    const QByteArray GetVersionRequest = QByteArray::fromRawData("\x80\x60\x00\x00\x00", 5);
+namespace CMifareReader {
+/// Запрос получения версии карты.
+const QByteArray GetVersionRequest = QByteArray::fromRawData("\x80\x60\x00\x00\x00", 5);
 
-    /// Заголовок ответа на запрос версии карты.
-    const char SAM2Header[] = "\x04\x01\x01";
+/// Заголовок ответа на запрос версии карты.
+const char SAM2Header[] = "\x04\x01\x01";
 } // namespace CMifareReader
 
 //------------------------------------------------------------------------------
 typedef USBDeviceBase<PortPollingDeviceBase<ProtoMifareReader>> TMifareReader;
 
-class MifareReader : public TMifareReader
-{
+class MifareReader : public TMifareReader {
     SET_INTERACTION_TYPE(System)
     SET_SERIES("PCSC")
 
-  public:
+public:
     MifareReader();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
 #pragma region SDK::Driver::IDevice
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release();
 #pragma endregion
 
@@ -42,7 +38,8 @@ class MifareReader : public TMifareReader
     /// Проверка доступности устройства и карты.
     virtual bool isDeviceReady() const;
 
-    /// Выбросить карту (для моторизированных ридеров) или отключить электрически (для немоторизованных).
+    /// Выбросить карту (для моторизированных ридеров) или отключить электрически (для
+    /// немоторизованных).
     virtual void eject();
 #pragma endregion
 
@@ -54,7 +51,7 @@ class MifareReader : public TMifareReader
     virtual bool communicate(const QByteArray &aSendMessage, QByteArray &aReceiveMessage);
 #pragma endregion
 
-  protected:
+protected:
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 

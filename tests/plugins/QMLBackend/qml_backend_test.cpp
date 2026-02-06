@@ -1,26 +1,18 @@
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QFile>
 #include <QtCore/QPluginLoader>
 #include <QtTest/QtTest>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/Plugins/IPluginFactory.h>
 
-// System
 #include "../common/PluginTestBase.h"
 
-class QMLBackendTest : public QObject
-{
+class QMLBackendTest : public QObject {
     Q_OBJECT
 
-  public:
-    QMLBackendTest() : m_testBase("D:/plugins/Debug/qml_backendd.dll")
-    {
-    }
+public:
+    QMLBackendTest() : m_testBase("D:/plugins/Debug/qml_backendd.dll") {}
 
-  private slots:
+private slots:
     // Basic plugin build verification
     void testPluginExists();
 
@@ -28,12 +20,11 @@ class QMLBackendTest : public QObject
     void testPluginLoading();
     void testFactoryInterface();
 
-  private:
+private:
     PluginTestBase m_testBase;
 };
 
-void QMLBackendTest::testPluginExists()
-{
+void QMLBackendTest::testPluginExists() {
     // Test that the QML Backend plugin DLL was built successfully
     QString pluginPath = "D:/plugins/Debug/qml_backendd.dll";
     QVERIFY(QFile::exists(pluginPath));
@@ -45,16 +36,14 @@ void QMLBackendTest::testPluginExists()
     qDebug() << "Plugin DLL size:" << pluginFile.size() << "bytes";
 }
 
-void QMLBackendTest::testPluginLoading()
-{
+void QMLBackendTest::testPluginLoading() {
     // Test loading the plugin factory
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
     qDebug() << "Plugin factory loaded and initialized successfully";
 }
 
-void QMLBackendTest::testFactoryInterface()
-{
+void QMLBackendTest::testFactoryInterface() {
     // Test the factory interface methods
     SDK::Plugin::IPluginFactory *factory = m_testBase.loadPluginFactory();
     QVERIFY(factory != nullptr);
@@ -87,10 +76,9 @@ void QMLBackendTest::testFactoryInterface()
 
     // Should contain the QML backend plugin
     bool hasQMLBackend = false;
-    foreach (QString plugin, plugins)
-    {
-        if (plugin.contains("QML", Qt::CaseInsensitive) || plugin.contains("GraphicsBackend", Qt::CaseInsensitive))
-        {
+    foreach (QString plugin, plugins) {
+        if (plugin.contains("QML", Qt::CaseInsensitive) ||
+            plugin.contains("GraphicsBackend", Qt::CaseInsensitive)) {
             hasQMLBackend = true;
             qDebug() << "Found QML Graphics Backend plugin:" << plugin;
             break;

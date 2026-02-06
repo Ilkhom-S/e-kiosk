@@ -1,10 +1,8 @@
 /* @file Реализация фабрики плагина HumoPayments - инициализация метаданных. */
 
-// Project
 #include "HumoPaymentsFactory.h"
 
-HumoPaymentsFactory::HumoPaymentsFactory()
-{
+HumoPaymentsFactory::HumoPaymentsFactory() {
     mModuleName = "humo_payments";
     mName = "Humo Payments";
     mDescription = "Платежный плагин для HUMO, поддержка мультистейдж и дилерских платежей";

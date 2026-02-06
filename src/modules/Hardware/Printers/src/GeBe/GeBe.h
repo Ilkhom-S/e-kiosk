@@ -5,12 +5,11 @@
 #include "Hardware/Printers/PortPrintersBase.h"
 
 //--------------------------------------------------------------------------------
-class GeBe : public TSerialPrinterBase
-{
-  public:
+class GeBe : public TSerialPrinterBase {
+public:
     GeBe();
 
-  protected:
+protected:
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 

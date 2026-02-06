@@ -2,27 +2,21 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
-#include <SDK/Plugins/IPlugin.h>
 #include <SDK/Plugins/IKernel.h>
+#include <SDK/Plugins/IPlugin.h>
 
-// Project
 #include "AdService.h"
 
 //---------------------------------------------------------------------------
 // Note: Adopted from original TerminalClient Ad plugin implementation
 // Platform-specific: Compatible with Qt5/Qt6 for kiosk advertisement management
-class AdPluginImpl : public QObject, public SDK::Plugin::IPlugin
-{
+class AdPluginImpl : public QObject, public SDK::Plugin::IPlugin {
     Q_OBJECT
 
-  public:
+public:
     //---------------------------------------------------------------------------
     // Конструктор плагина
     AdPluginImpl(SDK::Plugin::IEnvironment *environment, const QString &instancePath);
@@ -68,7 +62,7 @@ class AdPluginImpl : public QObject, public SDK::Plugin::IPlugin
     // Остановка плагина
     bool stop();
 
-  private:
+private:
     QString m_instancePath;
     SDK::Plugin::IEnvironment *m_environment;
     SDK::Plugin::IKernel *m_kernel;

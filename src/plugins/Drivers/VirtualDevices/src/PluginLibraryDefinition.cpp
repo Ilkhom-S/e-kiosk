@@ -2,14 +2,11 @@
 
 // Plugin SDK
 
-// SDK
-#include <SDK/Plugins/PluginFactory.h>
-
-// Project
 #include "PluginLibraryDefinition.h"
 
-VirtualBillAcceptorPluginFactory::VirtualBillAcceptorPluginFactory()
-{
+#include <SDK/Plugins/PluginFactory.h>
+
+VirtualBillAcceptorPluginFactory::VirtualBillAcceptorPluginFactory() {
     mName = "VirtualDevices";
     mDescription = "Driver for virtual devices.";
     mAuthor = "Humo";

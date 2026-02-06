@@ -2,29 +2,24 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QSharedPointer>
 #include <QtMultimedia/QMediaPlayer>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
-#include <System/IApplication.h>
 #include <Common/ILogable.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Core/IAudioService.h>
 #include <SDK/PaymentProcessor/Core/IService.h>
+
+#include <System/IApplication.h>
 
 //---------------------------------------------------------------------------
 class AudioService : public QObject,
                      public SDK::PaymentProcessor::IAudioService,
                      public SDK::PaymentProcessor::IService,
-                     private ILogable
-{
+                     private ILogable {
     Q_OBJECT
 
-  public:
+public:
     /// Получение AudioService'а.
     static AudioService *instance(IApplication *aApplication);
 
@@ -65,11 +60,11 @@ class AudioService : public QObject,
 
 #pragma endregion
 
-  private slots:
+private slots:
     /// Изменение состояния проигрывателя музыки
     void stateChanged(QMediaPlayer::PlaybackState aState);
 
-  private:
+private:
     IApplication *mApplication;
     QString mInterfacePath;
     QSharedPointer<QMediaPlayer> mPlayer;

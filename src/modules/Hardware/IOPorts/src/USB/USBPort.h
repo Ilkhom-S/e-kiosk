@@ -1,35 +1,30 @@
 /* @file Кроссплатформенная реализация USB-порта. */
 
 #pragma once
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QMutex>
 #include <QtSerialPort/QSerialPortInfo>
-#include <Common/QtHeadersEnd.h>
 
 #include "Hardware/IOPorts/AsyncSerialPort.h"
 #include "Hardware/IOPorts/DeviceProperties.h" // Для TWinDeviceProperties
 
 //--------------------------------------------------------------------------------
-namespace CUSBPort
-{
-    const int OpeningPause = 500;
+namespace CUSBPort {
+const int OpeningPause = 500;
 
-    namespace DeviceTags
-    {
-        const char ACPI[] = "ACPI";
-        const char Mouse[] = "Mouse";
-        const char USBPDO[] = "USBPDO";
-    } // namespace DeviceTags
+namespace DeviceTags {
+const char ACPI[] = "ACPI";
+const char Mouse[] = "Mouse";
+const char USBPDO[] = "USBPDO";
+} // namespace DeviceTags
 
-    const int DefaultMaxReadSize = 1024;
+const int DefaultMaxReadSize = 1024;
 } // namespace CUSBPort
 
 //--------------------------------------------------------------------------------
-class USBPort : public AsyncSerialPort
-{
+class USBPort : public AsyncSerialPort {
     SET_SERIES("USB")
 
-  public:
+public:
     USBPort();
     virtual ~USBPort() = default;
 
@@ -40,7 +35,7 @@ class USBPort : public AsyncSerialPort
     /// Мы сохраняем тип TWinDeviceProperties для совместимости, но наполняем его данными Qt.
     TDeviceProperties getDevicesProperties(bool aForce, bool aPDODetecting = false);
 
-  protected:
+protected:
     /// Проверить готовность порта.
     virtual bool checkReady();
 

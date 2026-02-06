@@ -2,27 +2,22 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QString>
 #include <QtCore/QMap>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QString>
 
 //----------------------------------------------------------------------------
-class ProcessEnumerator
-{
-  public:
+class ProcessEnumerator {
+public:
     typedef quint32 PID;
 
-    struct ProcessInfo
-    {
+    struct ProcessInfo {
         PID pid;
         QString path;
     };
 
     typedef QMap<PID, ProcessInfo>::const_iterator const_iterator;
 
-  public:
+public:
     ProcessEnumerator();
 
     const_iterator begin() const;
@@ -31,11 +26,11 @@ class ProcessEnumerator
     /// Остановить указанный процесс
     bool kill(PID aPid, quint32 &aErrorCode) const;
 
-  protected:
+protected:
     /// Выполняет перечисление процессов (заполняет mList)
     void enumerate();
 
-  protected:
+protected:
     QMap<PID, ProcessInfo> mProcesses;
 
     /// Остановка процесса грубым способом

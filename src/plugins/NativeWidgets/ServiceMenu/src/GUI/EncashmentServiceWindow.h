@@ -2,25 +2,18 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include "ui_EncashmentServiceWindow.h"
-#include <Common/QtHeadersEnd.h>
-
-// SDK
 #include <SDK/Drivers/WarningLevel.h>
 
-// Project
 #include "GUI/EncashmentWindow.h"
+#include "ui_EncashmentServiceWindow.h"
 
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------
-class EncashmentServiceWindow : public EncashmentWindow
-{
+class EncashmentServiceWindow : public EncashmentWindow {
     Q_OBJECT
 
-  public:
+public:
     EncashmentServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
     virtual bool initialize();
@@ -28,20 +21,22 @@ class EncashmentServiceWindow : public EncashmentWindow
     virtual bool activate();
     virtual bool deactivate();
 
-  protected:
+protected:
     virtual void updateUI();
     void updateInfo();
 
-  private slots:
+private slots:
     void doPayload();
     void onPrintBalance();
-    void onDeviceStatusChanged(const QString &aConfigName, const QString &aStatusString, const QString &aStatusColor,
+    void onDeviceStatusChanged(const QString &aConfigName,
+                               const QString &aStatusString,
+                               const QString &aStatusColor,
                                SDK::Driver::EWarningLevel::Enum aLevel);
 
-  private:
+private:
     Ui::EncashmentServiceWindow ui;
 
-  private:
+private:
     QVariantMap mPayloadSettings;
     QString mPayloadSettingsPath;
     ServiceMenuBackend *mBackend;

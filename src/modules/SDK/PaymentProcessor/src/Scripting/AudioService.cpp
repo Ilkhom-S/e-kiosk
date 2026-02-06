@@ -1,36 +1,29 @@
 /* @file Прокси-класс для работы со звуком в скриптах. */
 
-// SDK
 #include <SDK/PaymentProcessor/Core/IAudioService.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Scripting/AudioService.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        namespace Scripting
-        {
+namespace SDK {
+namespace PaymentProcessor {
+namespace Scripting {
 
-            //------------------------------------------------------------------------------
-            AudioService::AudioService(ICore *aCore) : mCore(aCore), mAudioService(nullptr /*mCore->getAudioService()*/)
-            {
-            }
+//------------------------------------------------------------------------------
+AudioService::AudioService(ICore *aCore)
+    : mCore(aCore), mAudioService(nullptr /*mCore->getAudioService()*/) {}
 
-            //------------------------------------------------------------------------------
-            void AudioService::play(const QString &aFileName)
-            {
-                mAudioService->play(aFileName);
-            }
+//------------------------------------------------------------------------------
+void AudioService::play(const QString &aFileName) {
+    mAudioService->play(aFileName);
+}
 
-            //------------------------------------------------------------------------------
-            void AudioService::stop()
-            {
-                mAudioService->stop();
-            }
+//------------------------------------------------------------------------------
+void AudioService::stop() {
+    mAudioService->stop();
+}
 
-            //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-        } // namespace Scripting
-    } // namespace PaymentProcessor
+} // namespace Scripting
+} // namespace PaymentProcessor
 } // namespace SDK

@@ -2,44 +2,35 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
 
 class IDatabaseQuery;
 
 //---------------------------------------------------------------------------
-namespace CIDatabaseProxy
-{
-    const QString DefaultDatabase = "ek.db";
-    const QString DefaultHost = "";
-    const QString DefaultUser = "";
-    const QString DefaultPassword = "";
-    const int DefaultPort = 0;
-    const QString DateFormat = "yyyy-MM-dd hh:mm:ss.zzz";
-    const QString PaymentDateFormat = "yyyy-MM-dd hh:mm:ss";
-    const QString ShortDateFormat = "yyyy-MM-dd 00:00:00";
-    const QString LogName = "DatabaseProxy";
+namespace CIDatabaseProxy {
+const QString DefaultDatabase = "ek.db";
+const QString DefaultHost = "";
+const QString DefaultUser = "";
+const QString DefaultPassword = "";
+const int DefaultPort = 0;
+const QString DateFormat = "yyyy-MM-dd hh:mm:ss.zzz";
+const QString PaymentDateFormat = "yyyy-MM-dd hh:mm:ss";
+const QString ShortDateFormat = "yyyy-MM-dd 00:00:00";
+const QString LogName = "DatabaseProxy";
 } // namespace CIDatabaseProxy
 
 //---------------------------------------------------------------------------
-class IDatabaseQueryChecker
-{
-  public:
+class IDatabaseQueryChecker {
+public:
     /// Проверка результата работы запроса к БД
     virtual bool isGood(bool aQueryResult) = 0;
 };
 
 //---------------------------------------------------------------------------
-class IDatabaseProxy
-{
-  public:
+class IDatabaseProxy {
+public:
     /// Тип базы данных.
-    enum Type
-    {
-        SQLite = 0,
-        MySql
-    };
+    enum Type { SQLite = 0, MySql };
 
     /// Вызываем этот метод для получения текущей реализации интерфейса БД.
     static IDatabaseProxy *getInstance(IDatabaseQueryChecker *aErrorChecker, Type aType = SQLite);
@@ -93,11 +84,11 @@ class IDatabaseProxy
     /// Сбрасывает изменения, внесённые во время последней транзакции.
     virtual bool rollback() = 0;
 
-  public:
+public:
     /// Проверка целостности базы
     virtual bool checkIntegrity(QStringList &aListErrors) = 0;
 
-  protected:
+protected:
     virtual ~IDatabaseProxy() {};
 };
 

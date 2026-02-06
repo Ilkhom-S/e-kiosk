@@ -2,23 +2,18 @@
 
 #pragma once
 
-// SDK
-#include <SDK/Drivers/IFiscalPrinter.h>
-#include <SDK/Drivers/FR/FiscalPrinterConstants.h>
 #include <SDK/Drivers/FR/FRStatus.h>
+#include <SDK/Drivers/FR/FiscalPrinterConstants.h>
+#include <SDK/Drivers/IFiscalPrinter.h>
 
-// Modules
-#include <Hardware/FR/ProtoFR.h>
-
-// Project
+#include <Hardware/FR/FFEngine.h>
 #include <Hardware/FR/FRBaseConstants.h>
 #include <Hardware/FR/FRErrorDescription.h>
-#include <Hardware/FR/FFEngine.h>
+#include <Hardware/FR/ProtoFR.h>
 
 //--------------------------------------------------------------------------------
-template <class T> class FRBase : public T
-{
-  public:
+template <class T> class FRBase : public T {
+public:
     FRBase();
 
     /// Устанавливает конфигурацию устройству.
@@ -28,20 +23,23 @@ template <class T> class FRBase : public T
     virtual bool isDeviceReady(bool aOnline);
 
     /// Готов ли к обработке данной фискальной команды.
-    virtual bool
-    isFiscalReady(bool aOnline,
-                  SDK::Driver::EFiscalPrinterCommand::Enum aCommand = SDK::Driver::EFiscalPrinterCommand::Sale);
+    virtual bool isFiscalReady(bool aOnline,
+                               SDK::Driver::EFiscalPrinterCommand::Enum aCommand =
+                                   SDK::Driver::EFiscalPrinterCommand::Sale);
 
     /// Печать фискального чека.
-    virtual bool printFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData,
+    virtual bool printFiscal(const QStringList &aReceipt,
+                             const SDK::Driver::SPaymentData &aPaymentData,
                              quint32 *aFDNumber = nullptr);
 
     /// Получить фискальные теги по номеру документа.
-    virtual bool checkFiscalFields(quint32 aFDNumber, SDK::Driver::TFiscalPaymentData &aFPData,
+    virtual bool checkFiscalFields(quint32 aFDNumber,
+                                   SDK::Driver::TFiscalPaymentData &aFPData,
                                    SDK::Driver::TComplexFiscalPaymentData &aPSData);
 
     /// Получить фискальные теги по номеру документа.
-    bool processFiscalFields(quint32 aFDNumber, SDK::Driver::TFiscalPaymentData &aFPData,
+    bool processFiscalFields(quint32 aFDNumber,
+                             SDK::Driver::TFiscalPaymentData &aFPData,
                              SDK::Driver::TComplexFiscalPaymentData &aPSData);
 
     /// Выполнить Z-отчет [и распечатать отложенные Z-отчеты].
@@ -69,7 +67,7 @@ template <class T> class FRBase : public T
     /// Установить лог.
     virtual void setLog(ILog *aLog);
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
@@ -102,10 +100,7 @@ template <class T> class FRBase : public T
     virtual SDK::Driver::EDocumentState::Enum getDocumentState();
 
     /// Открыть смену.
-    virtual bool openSession()
-    {
-        return false;
-    }
+    virtual bool openSession() { return false; }
 
     /// Открыть смену.
     virtual bool openFRSession();
@@ -117,16 +112,10 @@ template <class T> class FRBase : public T
     virtual void cleanStatusCodes(TStatusCodes &aStatusCodes);
 
     /// Получить дату и время ФР.
-    virtual QDateTime getDateTime()
-    {
-        return QDateTime();
-    }
+    virtual QDateTime getDateTime() { return QDateTime(); }
 
     /// Получить номер смены.
-    virtual int getSessionNumber()
-    {
-        return 0;
-    }
+    virtual int getSessionNumber() { return 0; }
 
     /// Загрузить СНО.
     bool checkTaxSystems(char aData);
@@ -163,7 +152,8 @@ template <class T> class FRBase : public T
 
     /// Добавить данные в фискальный тег из конфига или параметра.
     typedef std::function<void(QString &)> TFFConfigData;
-    void addConfigFFData(const QString &aField, const QVariant &aData,
+    void addConfigFFData(const QString &aField,
+                         const QVariant &aData,
                          const TFFConfigData &aFFConfigData = TFFConfigData());
 
     /// Проверить тип оплаты на платеже.
@@ -176,8 +166,7 @@ template <class T> class FRBase : public T
     virtual bool checkTaxes();
 
     /// Проверить параметры налога.
-    virtual bool checkTax(SDK::Driver::TVAT /*aVAT*/, CFR::Taxes::SData & /*aData*/)
-    {
+    virtual bool checkTax(SDK::Driver::TVAT /*aVAT*/, CFR::Taxes::SData & /*aData*/) {
         return true;
     }
 
@@ -194,19 +183,21 @@ template <class T> class FRBase : public T
     virtual bool processXReport() = 0;
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList & /*aReceipt*/, const SDK::Driver::SPaymentData & /*aPaymentData*/,
-                               uint * /*aFDNumber = nullptr*/)
-    {
+    virtual bool performFiscal(const QStringList & /*aReceipt*/,
+                               const SDK::Driver::SPaymentData & /*aPaymentData*/,
+                               uint * /*aFDNumber = nullptr*/) {
         return false;
     }
 
     /// Печать фискального чека.
-    bool processFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData, uint *aFDNumber);
+    bool processFiscal(const QStringList &aReceipt,
+                       const SDK::Driver::SPaymentData &aPaymentData,
+                       uint *aFDNumber);
 
     /// Получить фискальные теги по номеру документа.
-    virtual bool getFiscalFields(quint32 /*aFDNumber*/, SDK::Driver::TFiscalPaymentData & /*aFPData*/,
-                                 SDK::Driver::TComplexFiscalPaymentData & /*aPSData*/)
-    {
+    virtual bool getFiscalFields(quint32 /*aFDNumber*/,
+                                 SDK::Driver::TFiscalPaymentData & /*aFPData*/,
+                                 SDK::Driver::TComplexFiscalPaymentData & /*aPSData*/) {
         return false;
     }
 
@@ -217,10 +208,7 @@ template <class T> class FRBase : public T
     bool setOFDParametersOnSale(const SDK::Driver::SUnitData &aUnitData);
 
     /// Установить TLV-параметр.
-    virtual bool setTLV(int /*aField*/, bool /*aForSale*/ = false)
-    {
-        return true;
-    }
+    virtual bool setTLV(int /*aField*/, bool /*aForSale*/ = false) { return true; }
 
     /// Проверить Z-отчет по таймеру.
     void checkZReportByTimer();
@@ -229,15 +217,13 @@ template <class T> class FRBase : public T
     virtual void onExecZReport();
 
     /// Выполнить Z-отчет.
-    virtual bool execZReport(bool /*aAuto*/)
-    {
-        return false;
-    }
+    virtual bool execZReport(bool /*aAuto*/) { return false; }
 
     /// Печать Z-отчета.
     virtual bool performZReport(bool aPrintDeferredReports) = 0;
 
-    /// Печать X-отчета. Параметром задаётся набор дополнительных строк для печати (например баланс).
+    /// Печать X-отчета. Параметром задаётся набор дополнительных строк для печати (например
+    /// баланс).
     virtual bool performXReport(const QStringList &aReceipt);
 
     /// Печать выплаты.
@@ -247,19 +233,13 @@ template <class T> class FRBase : public T
     bool complexFiscalDocument(TBoolMethod aMethod, const QString &aLog);
 
     /// Печать выплаты.
-    virtual bool processPayout(double /*aAmount*/)
-    {
-        return false;
-    }
+    virtual bool processPayout(double /*aAmount*/) { return false; }
 
     /// Выполнить выплату [и распечатать нефискальный чек - инкассацию].
     bool processEncashment(const QStringList &aReceipt, double aAmount = DBL_MAX);
 
     /// Получить сумму в кассе.
-    virtual double getAmountInCash()
-    {
-        return -1;
-    }
+    virtual double getAmountInCash() { return -1; }
 
     /// Проверить количество неотправленных в ОФД документов.
     void checkOFDNotSentCount(int aOFDNotSentCount, TStatusCodes &aStatusCodes);
@@ -297,7 +277,8 @@ template <class T> class FRBase : public T
     /// Получить статус по типу ошибки устройства.
     static int getErrorStatusCode(FRError::EType::Enum aErrorType);
 
-    /// Является ли срок годности ФН 36 месяцев. По умолчанию (не получилось сделать какую-то проверку) - нет.
+    /// Является ли срок годности ФН 36 месяцев. По умолчанию (не получилось сделать какую-то
+    /// проверку) - нет.
     bool isFS36() const;
 
     /// Наличие ЭКЛЗ.
@@ -348,8 +329,8 @@ template <class T> class FRBase : public T
     /// Является ли онлайновым.
     bool mIsOnline;
 
-    /// Ошибка данных ОФД в ФР: 1. данные ФР некорректны по формату; 2. это точно тестовый сервер; 3. URL или IP точно
-    /// не соответствует порту
+    /// Ошибка данных ОФД в ФР: 1. данные ФР некорректны по формату; 2. это точно тестовый
+    /// сервер; 3. URL или IP точно не соответствует порту
     bool mOFDDataError;
 
     /// Регион.

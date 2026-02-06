@@ -1,25 +1,18 @@
 /* @file Окошко для отображения истории инкассаций. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "EncashmentHistoryWindow.h"
+
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QWidget>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Core/ReceiptTypes.h>
 
-// System
 #include "Backend/HumoServiceBackend.h"
 #include "Backend/PaymentManager.h"
-
-// Project
-#include "EncashmentHistoryWindow.h"
 #include "ServiceTags.h"
 
 EncashmentHistoryWindow::EncashmentHistoryWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), mBackend(aBackend)
-{
+    : QWidget(aParent), mBackend(aBackend) {
     setupUi(this);
 
     mSignalMapper = new QSignalMapper(this);
@@ -27,16 +20,12 @@ EncashmentHistoryWindow::EncashmentHistoryWindow(HumoServiceBackend *aBackend, Q
 }
 
 //------------------------------------------------------------------------
-EncashmentHistoryWindow::~EncashmentHistoryWindow()
-{
-}
+EncashmentHistoryWindow::~EncashmentHistoryWindow() {}
 
 //------------------------------------------------------------------------
-void EncashmentHistoryWindow::updateHistory()
-{
+void EncashmentHistoryWindow::updateHistory() {
     // clear all
-    foreach (auto button, mWidgets)
-    {
+    foreach (auto button, mWidgets) {
         gridHistoryLayout->removeWidget(button);
         button->deleteLater();
     }
@@ -45,8 +34,7 @@ void EncashmentHistoryWindow::updateHistory()
     auto paymentManager = mBackend->getPaymentManager();
     int count = paymentManager->getEncashmentsHistoryCount();
 
-    for (int i = 0; i < count; i++)
-    {
+    for (int i = 0; i < count; i++) {
         QVariantMap encashment = paymentManager->getEncashmentInfo(i);
 
         QString text = QString("[%1] %2\n")
@@ -57,7 +45,8 @@ void EncashmentHistoryWindow::updateHistory()
         QPushButton *button = new QPushButton(text, this);
         button->setMinimumHeight(35);
         button->setMaximumWidth(250);
-        button->setEnabled(paymentManager->canPrint(SDK::PaymentProcessor::CReceiptType::Encashment));
+        button->setEnabled(
+            paymentManager->canPrint(SDK::PaymentProcessor::CReceiptType::Encashment));
 
         connect(button, SIGNAL(clicked()), mSignalMapper, SLOT(map()));
         mSignalMapper->setMapping(button, i);
@@ -66,12 +55,12 @@ void EncashmentHistoryWindow::updateHistory()
         mWidgets << button;
     }
 
-    gridHistoryLayout->addItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding), 5, 0);
+    gridHistoryLayout->addItem(
+        new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding), 5, 0);
 }
 
 //------------------------------------------------------------------------
-void EncashmentHistoryWindow::printEncashment(int aIndex)
-{
+void EncashmentHistoryWindow::printEncashment(int aIndex) {
     auto paymentManager = mBackend->getPaymentManager();
 
     paymentManager->printEncashment(aIndex);

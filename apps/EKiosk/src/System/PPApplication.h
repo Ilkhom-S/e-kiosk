@@ -2,22 +2,19 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QtGlobal>
-#include <QtCore/QObject>
-#include <QtCore/QMutex>
-#include <QtCore/QTimer>
-#include <QtCore/QWaitCondition>
-#include <QtWidgets/QApplication>
-#include <QtCore/QSharedMemory>
 #include <QtCore/QAbstractNativeEventFilter>
 #include <QtCore/QDebug>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QMutex>
+#include <QtCore/QObject>
+#include <QtCore/QSharedMemory>
+#include <QtCore/QTimer>
+#include <QtCore/QWaitCondition>
+#include <QtCore/QtGlobal>
+#include <QtWidgets/QApplication>
 
-// Project
 #include <Common/BasicApplication.h>
 #include <Common/SafeApplication.h>
+
 #include "System/IApplication.h"
 
 class ServiceController;
@@ -28,12 +25,14 @@ class IServiceManager;
 class PPApplication : public QObject,
                       public QAbstractNativeEventFilter,
                       public IApplication,
-                      public BasicQtApplication<SafeQApplication>
-{
+                      public BasicQtApplication<SafeQApplication> {
     Q_OBJECT
 
-  public:
-    PPApplication(const QString &aName, const QString &aVersion, int &aArgumentCount, char **aArguments);
+public:
+    PPApplication(const QString &aName,
+                  const QString &aVersion,
+                  int &aArgumentCount,
+                  char **aArguments);
     virtual ~PPApplication();
 
     int exec();
@@ -48,21 +47,22 @@ class PPApplication : public QObject,
     virtual QString getPluginPath() const;
     virtual QString getUserPluginPath() const;
 
-    static void qtMessageHandler(QtMsgType aType, const QMessageLogContext &aContext, const QString &aMessage);
+    static void
+    qtMessageHandler(QtMsgType aType, const QMessageLogContext &aContext, const QString &aMessage);
 
-  signals:
+signals:
     void screenshot();
 
-  private slots:
+private slots:
     void onScreenshot();
     void exit(int aResultCode);
     void closeBySystemRequest(QSessionManager &aSessionManager);
 
-  private:
+private:
     /// Обработка системных сообщений, отключение скринсейвера, монитора и т.п.
     virtual bool nativeEventFilter(const QByteArray &aEventType, void *aMessage, qintptr *aResult);
 
-  private:
+private:
     ServiceController *mServiceController;
     QList<QImage> mScreenshots;
     QWaitCondition mScreenshotCondition;

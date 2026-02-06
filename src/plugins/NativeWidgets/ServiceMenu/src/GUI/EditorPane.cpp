@@ -2,35 +2,28 @@
 
 // Standard
 
-// STL
+#include "EditorPane.h"
+
 #include <algorithm>
 #include <memory>
 
-// Project
 #include "DeviceSlot.h"
-#include "EditorPane.h"
 #include "EditorPaneListItem.h"
 #include "IDeviceBackend.h"
 #include "SIPStyle.h"
 
-namespace CEditorPane
-{
-    const QString SystemPrinterName = "Default Default";
+namespace CEditorPane {
+const QString SystemPrinterName = "Default Default";
 } // namespace CEditorPane
 
 //------------------------------------------------------------------------
-EditorPane::EditorPane() : mSlot(0), mFirstShow(true)
-{
-}
+EditorPane::EditorPane() : mSlot(0), mFirstShow(true) {}
 
 //------------------------------------------------------------------------
-EditorPane::~EditorPane()
-{
-}
+EditorPane::~EditorPane() {}
 
 //------------------------------------------------------------------------
-void EditorPane::setSlot(IDeviceBackend *aBackend, DeviceSlot *aSlot)
-{
+void EditorPane::setSlot(IDeviceBackend *aBackend, DeviceSlot *aSlot) {
     mSlot = aSlot;
     mValues = aSlot->getParameterValues();
     mFirstShow = true;
@@ -40,39 +33,35 @@ void EditorPane::setSlot(IDeviceBackend *aBackend, DeviceSlot *aSlot)
 
     QStringList models = aBackend->getModels(aSlot->getType());
 
-    foreach (const QString &model, models)
-    {
+    foreach (const QString &model, models) {
         mModels[model] = aBackend->getModelParameters(aSlot->getType(), model);
     }
 
-    if (!mWidget.data())
-    {
+    if (!mWidget.data()) {
         mWidget = createWidget();
     }
 
     // Первоначально доступна только модель устройства.
     SDK::Plugin::SPluginParameter parameter;
 
-    parameter.title = QCoreApplication::translate("Hardware::CommonParameters",
-                                                  QT_TRANSLATE_NOOP("Hardware::CommonParameters", "#model"));
+    parameter.title = QCoreApplication::translate(
+        "Hardware::CommonParameters", QT_TRANSLATE_NOOP("Hardware::CommonParameters", "#model"));
     parameter.description = QCoreApplication::translate(
-        "Hardware::CommonParameters", QT_TRANSLATE_NOOP("Hardware::CommonParameters", "#model_howto"));
+        "Hardware::CommonParameters",
+        QT_TRANSLATE_NOOP("Hardware::CommonParameters", "#model_howto"));
     parameter.name = "model_name";
     parameter.type = SDK::Plugin::SPluginParameter::Set;
     parameter.required = true;
     parameter.readOnly = false;
 
-    foreach (const QString &model, mModels.keys())
-    {
-        if (model == CEditorPane::SystemPrinterName)
-        {
+    foreach (const QString &model, mModels.keys()) {
+        if (model == CEditorPane::SystemPrinterName) {
             parameter.possibleValues.insert(
-                QCoreApplication::translate("Hardware::PrinterParameters",
-                                            QT_TRANSLATE_NOOP("Hardware::PrinterParameters", "#system_printer_name")),
+                QCoreApplication::translate(
+                    "Hardware::PrinterParameters",
+                    QT_TRANSLATE_NOOP("Hardware::PrinterParameters", "#system_printer_name")),
                 model);
-        }
-        else
-        {
+        } else {
             parameter.possibleValues.insert(model, QVariant());
         }
     }
@@ -85,17 +74,13 @@ void EditorPane::setSlot(IDeviceBackend *aBackend, DeviceSlot *aSlot)
 }
 
 //------------------------------------------------------------------------
-void EditorPane::updateView()
-{
+void EditorPane::updateView() {
     // Первоначальная инициализация, выбор модели.
     QVariantMap::iterator model = mValues.find("model_name");
-    if (model != mValues.end())
-    {
+    if (model != mValues.end()) {
         QString modelValue(model.value().toString());
-        foreach (QString modelsValue, mModels.keys())
-        {
-            if (modelsValue.toLower() == modelValue.toLower())
-            {
+        foreach (QString modelsValue, mModels.keys()) {
+            if (modelsValue.toLower() == modelValue.toLower()) {
                 // Модель задана, можно заполнять параметры.
                 SDK::Plugin::TParameterList driverParameters = mModels[modelsValue];
 
@@ -110,11 +95,9 @@ void EditorPane::updateView()
     mUi.lwParameters->clear();
     mUi.lwParameters->blockSignals(false);
 
-    foreach (const SDK::Plugin::SPluginParameter &parameter, mParameters)
-    {
+    foreach (const SDK::Plugin::SPluginParameter &parameter, mParameters) {
         // Добавляем только редактируемые параметры
-        if (parameter.readOnly)
-        {
+        if (parameter.readOnly) {
             continue;
         }
 
@@ -122,13 +105,10 @@ void EditorPane::updateView()
         item->setData(EditorPaneListItem::ParameterName, parameter.title);
 
         // Заполняем параметрами по умолчанию (если есть)
-        if (!parameter.defaultValue.isNull() && mValues[parameter.name].isNull())
-        {
+        if (!parameter.defaultValue.isNull() && mValues[parameter.name].isNull()) {
             item->setData(EditorPaneListItem::ParameterValue, parameter.defaultValue.toString());
             mValues[parameter.name] = parameter.defaultValue;
-        }
-        else
-        {
+        } else {
             item->setData(EditorPaneListItem::ParameterValue, mValues[parameter.name]);
         }
 
@@ -137,31 +117,26 @@ void EditorPane::updateView()
 }
 
 //------------------------------------------------------------------------
-void EditorPane::selectEmptyParameter()
-{
+void EditorPane::selectEmptyParameter() {
     mUi.btnOk->setEnabled(false);
 
-    foreach (const SDK::Plugin::SPluginParameter &parameter, mParameters)
-    {
+    foreach (const SDK::Plugin::SPluginParameter &parameter, mParameters) {
         // TODO parameter.required завязать логику на требуемый ресурс
-        if (mValues.value(parameter.name).isNull() && !parameter.readOnly && parameter.defaultValue.isNull())
-        {
-            QList<QListWidgetItem *> items =
-                mUi.lwParameters->findItems(parameter.title, Qt::MatchCaseSensitive | Qt::MatchStartsWith);
+        if (mValues.value(parameter.name).isNull() && !parameter.readOnly &&
+            parameter.defaultValue.isNull()) {
+            QList<QListWidgetItem *> items = mUi.lwParameters->findItems(
+                parameter.title, Qt::MatchCaseSensitive | Qt::MatchStartsWith);
 
-            if (!items.isEmpty())
-            {
+            if (!items.isEmpty()) {
                 mUi.lwParameters->setCurrentItem(items.first());
                 return;
             }
         }
     }
 
-    if (mFirstShow)
-    {
+    if (mFirstShow) {
         // Всё заполнено, выделяем последний параметр.
-        if (mUi.lwParameters->count())
-        {
+        if (mUi.lwParameters->count()) {
             mUi.lwParameters->setCurrentItem(mUi.lwParameters->item(mUi.lwParameters->count() - 1));
 
             mFirstShow = false;
@@ -172,38 +147,29 @@ void EditorPane::selectEmptyParameter()
 }
 
 //------------------------------------------------------------------------
-void EditorPane::setCurrentParameterValue(const QString &aValue)
-{
+void EditorPane::setCurrentParameterValue(const QString &aValue) {
     QListWidgetItem *item = mUi.lwParameters->currentItem();
 
-    if (item)
-    {
-        for (SDK::Plugin::TParameterList::iterator it = mParameters.begin(); it != mParameters.end(); ++it)
-        {
-            if (it->title == item->data(EditorPaneListItem::ParameterName))
-            {
+    if (item) {
+        for (SDK::Plugin::TParameterList::iterator it = mParameters.begin();
+             it != mParameters.end();
+             ++it) {
+            if (it->title == item->data(EditorPaneListItem::ParameterName)) {
                 QVariant oldValue = mValues[it->name];
 
-                if (aValue.isNull() && !it->defaultValue.isNull())
-                {
+                if (aValue.isNull() && !it->defaultValue.isNull()) {
                     mValues[it->name] = it->defaultValue;
-                }
-                else
-                {
-                    if (!it->possibleValues[aValue].isNull())
-                    {
+                } else {
+                    if (!it->possibleValues[aValue].isNull()) {
                         mValues[it->name] = it->possibleValues[aValue];
-                    }
-                    else
-                    {
+                    } else {
                         mValues[it->name] = aValue;
                     }
                 }
 
                 item->setData(EditorPaneListItem::ParameterValue, mValues[it->name]);
 
-                if ((it->name == "model_name") && (oldValue != mValues[it->name]))
-                {
+                if ((it->name == "model_name") && (oldValue != mValues[it->name])) {
                     QVariant oldModel = mValues["model_name"];
 
                     mValues.clear();
@@ -225,114 +191,97 @@ void EditorPane::setCurrentParameterValue(const QString &aValue)
 }
 
 //------------------------------------------------------------------------
-void EditorPane::showCurrentParameterValues()
-{
+void EditorPane::showCurrentParameterValues() {
     QListWidgetItem *item = mUi.lwParameters->currentItem();
-    if (item)
-    {
-        foreach (const SDK::Plugin::SPluginParameter &parameter, mParameters)
-        {
-            if (parameter.title == item->data(EditorPaneListItem::ParameterName))
-            {
-                switch (parameter.type)
-                {
-                    case SDK::Plugin::SPluginParameter::Set:
-                    case SDK::Plugin::SPluginParameter::MultiSet:
-                    {
-                        mUi.stackedWidget->setCurrentIndex(Enum);
-                        mUi.lwValues->clear();
+    if (item) {
+        foreach (const SDK::Plugin::SPluginParameter &parameter, mParameters) {
+            if (parameter.title == item->data(EditorPaneListItem::ParameterName)) {
+                switch (parameter.type) {
+                case SDK::Plugin::SPluginParameter::Set:
+                case SDK::Plugin::SPluginParameter::MultiSet: {
+                    mUi.stackedWidget->setCurrentIndex(Enum);
+                    mUi.lwValues->clear();
 
-                        // Отсортируем возможные значения параметра драйвера
-                        auto intOrderLessThan = [&](const QString &s1, const QString &s2) -> bool
-                        {
-                            bool ok;
-                            s1.toInt(&ok);
-                            return ok ? s1.toInt() < s2.toInt() : s1 < s2;
-                        };
+                    // Отсортируем возможные значения параметра драйвера
+                    auto intOrderLessThan = [&](const QString &s1, const QString &s2) -> bool {
+                        bool ok;
+                        s1.toInt(&ok);
+                        return ok ? s1.toInt() < s2.toInt() : s1 < s2;
+                    };
 
-                        QStringList possibleValues(parameter.possibleValues.keys());
-                        std::sort(possibleValues.begin(), possibleValues.end(), intOrderLessThan);
-                        mUi.lwValues->addItems(possibleValues);
+                    QStringList possibleValues(parameter.possibleValues.keys());
+                    std::sort(possibleValues.begin(), possibleValues.end(), intOrderLessThan);
+                    mUi.lwValues->addItems(possibleValues);
 
-                        QString title;
+                    QString title;
 
-                        if (!mValues[parameter.name].isNull())
-                        {
-                            if (parameter.possibleValues.contains(mValues[parameter.name].toString()))
-                            {
-                                title = mValues[parameter.name].toString();
-                            }
-                            else
-                            {
-                                for (QVariantMap::const_iterator it = parameter.possibleValues.begin();
-                                     it != parameter.possibleValues.end(); ++it)
-                                {
-                                    if (!it.value().isNull() && mValues[parameter.name] == it.value())
-                                    {
-                                        title = it.key();
+                    if (!mValues[parameter.name].isNull()) {
+                        if (parameter.possibleValues.contains(mValues[parameter.name].toString())) {
+                            title = mValues[parameter.name].toString();
+                        } else {
+                            for (QVariantMap::const_iterator it = parameter.possibleValues.begin();
+                                 it != parameter.possibleValues.end();
+                                 ++it) {
+                                if (!it.value().isNull() && mValues[parameter.name] == it.value()) {
+                                    title = it.key();
 
-                                        break;
-                                    }
+                                    break;
                                 }
                             }
                         }
-
-                        QList<QListWidgetItem *> items = mUi.lwValues->findItems(title, Qt::MatchCaseSensitive);
-                        if (!items.isEmpty())
-                        {
-                            mUi.lwValues->blockSignals(true);
-                            mUi.lwValues->setCurrentItem(items.first());
-                            mUi.lwValues->blockSignals(false);
-                        }
-
-                        break;
                     }
 
-                    case SDK::Plugin::SPluginParameter::Bool:
-                    {
-                        mUi.stackedWidget->setCurrentIndex(Bool);
-
-                        if (mValues[parameter.name].isNull())
-                        {
-                            mUi.rbOn->setAutoExclusive(false);
-                            mUi.rbOff->setAutoExclusive(false);
-                            mUi.rbOn->setChecked(false);
-                            mUi.rbOff->setChecked(false);
-                        }
-                        else
-                        {
-                            mUi.rbOn->setAutoExclusive(true);
-                            mUi.rbOff->setAutoExclusive(true);
-                            mUi.rbOn->setChecked(mValues[parameter.name].toBool());
-                            mUi.rbOff->setChecked(!mValues[parameter.name].toBool());
-                        }
-
-                        break;
+                    QList<QListWidgetItem *> items =
+                        mUi.lwValues->findItems(title, Qt::MatchCaseSensitive);
+                    if (!items.isEmpty()) {
+                        mUi.lwValues->blockSignals(true);
+                        mUi.lwValues->setCurrentItem(items.first());
+                        mUi.lwValues->blockSignals(false);
                     }
 
-                    case SDK::Plugin::SPluginParameter::Number:
-                    {
-                        mUi.stackedWidget->setCurrentIndex(Number);
+                    break;
+                }
 
-                        QString value = QString("%1").arg(mValues[parameter.name].toInt() % 1000, 3, 10, QChar('0'));
+                case SDK::Plugin::SPluginParameter::Bool: {
+                    mUi.stackedWidget->setCurrentIndex(Bool);
 
-                        mUi.sbDigit1->setValue(QString(value[0]).toInt());
-                        mUi.sbDigit2->setValue(QString(value[1]).toInt());
-                        mUi.sbDigit3->setValue(QString(value[2]).toInt());
+                    if (mValues[parameter.name].isNull()) {
+                        mUi.rbOn->setAutoExclusive(false);
+                        mUi.rbOff->setAutoExclusive(false);
+                        mUi.rbOn->setChecked(false);
+                        mUi.rbOff->setChecked(false);
+                    } else {
+                        mUi.rbOn->setAutoExclusive(true);
+                        mUi.rbOff->setAutoExclusive(true);
+                        mUi.rbOn->setChecked(mValues[parameter.name].toBool());
+                        mUi.rbOff->setChecked(!mValues[parameter.name].toBool());
                     }
 
-                    case SDK::Plugin::SPluginParameter::Text:
-                    {
-                        mUi.stackedWidget->setCurrentIndex(Text);
+                    break;
+                }
 
-                        mUi.leValue->setInputMask(parameter.possibleValues.value("mask").toString());
-                        mUi.leValue->setText(mValues[parameter.name].toString());
+                case SDK::Plugin::SPluginParameter::Number: {
+                    mUi.stackedWidget->setCurrentIndex(Number);
 
-                        break;
-                    }
+                    QString value = QString("%1").arg(
+                        mValues[parameter.name].toInt() % 1000, 3, 10, QChar('0'));
 
-                    default:
-                        break;
+                    mUi.sbDigit1->setValue(QString(value[0]).toInt());
+                    mUi.sbDigit2->setValue(QString(value[1]).toInt());
+                    mUi.sbDigit3->setValue(QString(value[2]).toInt());
+                }
+
+                case SDK::Plugin::SPluginParameter::Text: {
+                    mUi.stackedWidget->setCurrentIndex(Text);
+
+                    mUi.leValue->setInputMask(parameter.possibleValues.value("mask").toString());
+                    mUi.leValue->setText(mValues[parameter.name].toString());
+
+                    break;
+                }
+
+                default:
+                    break;
                 }
 
                 mUi.lbDescription->setVisible(!parameter.description.isEmpty());
@@ -344,49 +293,42 @@ void EditorPane::showCurrentParameterValues()
 }
 
 //------------------------------------------------------------------------
-void EditorPane::onParameterRowChanged(QListWidgetItem * /*aCurrent*/, QListWidgetItem * /*aPrevious*/)
-{
+void EditorPane::onParameterRowChanged(QListWidgetItem * /*aCurrent*/,
+                                       QListWidgetItem * /*aPrevious*/) {
     showCurrentParameterValues();
 }
 
 //------------------------------------------------------------------------
-void EditorPane::onEnumValueChanged(QListWidgetItem *aItem)
-{
+void EditorPane::onEnumValueChanged(QListWidgetItem *aItem) {
     setCurrentParameterValue(aItem->text());
 }
 
 //------------------------------------------------------------------------
-void EditorPane::onBoolValueChanged()
-{
+void EditorPane::onBoolValueChanged() {
     setCurrentParameterValue(sender() == mUi.rbOn ? "true" : "false");
 }
 
 //------------------------------------------------------------------------
-void EditorPane::onNumberValueChanged()
-{
-    QString value = QString::number(mUi.sbDigit1->value()) + QString::number(mUi.sbDigit2->value()) +
-                    QString::number(mUi.sbDigit3->value());
+void EditorPane::onNumberValueChanged() {
+    QString value = QString::number(mUi.sbDigit1->value()) +
+                    QString::number(mUi.sbDigit2->value()) + QString::number(mUi.sbDigit3->value());
 
     setCurrentParameterValue(QString::number(value.toInt()));
 }
 
 //------------------------------------------------------------------------
-void EditorPane::onTextValueChanged()
-{
+void EditorPane::onTextValueChanged() {
     setCurrentParameterValue(mUi.leValue->text());
 }
 
 //------------------------------------------------------------------------
-DeviceSlot *EditorPane::getSlot() const
-{
+DeviceSlot *EditorPane::getSlot() const {
     return mSlot;
 }
 
 //------------------------------------------------------------------------
-QWidget *EditorPane::getWidget()
-{
-    if (!mWidget.data())
-    {
+QWidget *EditorPane::getWidget() {
+    if (!mWidget.data()) {
         mWidget = createWidget();
     }
 
@@ -394,16 +336,18 @@ QWidget *EditorPane::getWidget()
 }
 
 //------------------------------------------------------------------------
-QWidget *EditorPane::createWidget()
-{
+QWidget *EditorPane::createWidget() {
     std::unique_ptr<QWidget> widget(new QWidget());
 
     mUi.setupUi(widget.get());
 
-    connect(mUi.lwParameters, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
+    connect(mUi.lwParameters,
+            SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
             SLOT(onParameterRowChanged(QListWidgetItem *, QListWidgetItem *)));
 
-    connect(mUi.lwValues, SIGNAL(itemClicked(QListWidgetItem *)), SLOT(onEnumValueChanged(QListWidgetItem *)));
+    connect(mUi.lwValues,
+            SIGNAL(itemClicked(QListWidgetItem *)),
+            SLOT(onEnumValueChanged(QListWidgetItem *)));
 
     connect(mUi.btnOk, SIGNAL(clicked()), SLOT(onOk()));
     connect(mUi.btnCancel, SIGNAL(clicked()), SLOT(onCancel()));
@@ -428,32 +372,27 @@ QWidget *EditorPane::createWidget()
 }
 
 //------------------------------------------------------------------------
-bool EditorPane::isChanged() const
-{
+bool EditorPane::isChanged() const {
     return (mValues != mSlot->getParameterValues());
 }
 
 //------------------------------------------------------------------------
-const QVariantMap &EditorPane::getParameterValues() const
-{
+const QVariantMap &EditorPane::getParameterValues() const {
     return mValues;
 }
 
 //------------------------------------------------------------------------
-void EditorPane::onDefault()
-{
+void EditorPane::onDefault() {
     setCurrentParameterValue(QString());
 }
 
 //------------------------------------------------------------------------
-void EditorPane::onOk()
-{
+void EditorPane::onOk() {
     emit finished();
 }
 
 //------------------------------------------------------------------------
-void EditorPane::onCancel()
-{
+void EditorPane::onCancel() {
     mValues = mSlot->getParameterValues();
 
     emit finished();

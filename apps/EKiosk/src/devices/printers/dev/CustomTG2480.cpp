@@ -1,22 +1,17 @@
 
-// Project
 #include "CustomTG2480.h"
 
-TG2480_PRINTER::TG2480_PRINTER(QObject *parent) : BasePrinterDevices(parent)
-{
+TG2480_PRINTER::TG2480_PRINTER(QObject *parent) : BasePrinterDevices(parent) {
     //    printer_name = "Custom-VKP80";
 }
 
-bool TG2480_PRINTER::OpenPrinterPort()
-{
+bool TG2480_PRINTER::OpenPrinterPort() {
     this->openPort();
     return is_open;
 }
 
-bool TG2480_PRINTER::openPort()
-{
-    if (devicesCreated)
-    {
+bool TG2480_PRINTER::openPort() {
+    if (devicesCreated) {
         // Если девайс для работы с портом обявлен
         is_open = false;
         //    return is_open;
@@ -25,8 +20,7 @@ bool TG2480_PRINTER::openPort()
         // comName;
         serialPort->setPortName(comName);
 
-        if (serialPort->open(QIODevice::ReadWrite))
-        {
+        if (serialPort->open(QIODevice::ReadWrite)) {
             // Если Девайсу удалось открыть порт
 
             // Устанавливаем параметры открытия порта
@@ -60,17 +54,13 @@ bool TG2480_PRINTER::openPort()
             // : " << devicePort->charIntervalTimeout();
 
             is_open = true;
-        }
-        else
-        {
+        } else {
             is_open = false;
             //            statusDevices = this->PortError;
             // if(Debugger) qDebug() << "Error opened serial device " <<
             // devicePort->deviceName();
         }
-    }
-    else
-    {
+    } else {
         is_open = false;
         // if(Debugger) qDebug() << "Error create serial device " <<
         // devicePort->deviceName();
@@ -80,24 +70,21 @@ bool TG2480_PRINTER::openPort()
     return is_open;
 }
 
-bool TG2480_PRINTER::isItYou()
-{
+bool TG2480_PRINTER::isItYou() {
     int status = 0;
     bool result = isEnabled(status);
     this->closePort();
     return result;
 }
 
-bool TG2480_PRINTER::isEnabled(int status)
-{
+bool TG2480_PRINTER::isEnabled(int status) {
     //        int status = 0;
     if (!getStatus(status))
         return false;
     return (status != PrinterState::PrinterNotAvailable);
 }
 
-bool TG2480_PRINTER::getStatus(int &aStatus)
-{
+bool TG2480_PRINTER::getStatus(int &aStatus) {
     aStatus = PrinterState::PrinterNotAvailable;
     // засылаем в порт команду самоидентификации
     QByteArray cmd;
@@ -107,14 +94,12 @@ bool TG2480_PRINTER::getStatus(int &aStatus)
     cmd.push_back(CMDTG2480::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDTG2480::PrinterStatusCommandSecondByte);
 
-    if (!this->sendCommand(cmd, true, 200, resp_data, answer, 0))
-    {
+    if (!this->sendCommand(cmd, true, 200, resp_data, answer, 0)) {
         // if(Debugger) qDebug() << "error in sendPacketInPort()";
         return false;
     }
 
-    if (answer.size() < 1)
-    {
+    if (answer.size() < 1) {
         // if(Debugger) qDebug() << QString("AV268::getStatus(): wrong size of
         // buffer. Buffer is: %1").arg(answer.data());
         return false;
@@ -123,18 +108,14 @@ bool TG2480_PRINTER::getStatus(int &aStatus)
     uchar status = 0;
     // В некоторых случаях присылается больше 1 байта
     // тогда наш байт - второй
-    if (answer.size() > 1)
-    {
+    if (answer.size() > 1) {
         status = answer[1];
-    }
-    else
-    {
+    } else {
         status = answer[0];
     }
 
     // Проверим, что это наш статус
-    if ((status & 0x10) || (status & 0x80))
-    {
+    if ((status & 0x10) || (status & 0x80)) {
         // Не наш принтер
         // if(Debugger) qDebug() << QString("AV268::getStatus(): wrong byte returned:
         // %1").arg(status);
@@ -143,40 +124,34 @@ bool TG2480_PRINTER::getStatus(int &aStatus)
 
     // Наш принтер
     aStatus = PrinterState::PrinterOK;
-    if (status != CMDTG2480::PrinterNormalState)
-    {
+    if (status != CMDTG2480::PrinterNormalState) {
         // Error
         int code = status & CMDTG2480::PrinterTemperatureError;
-        if (code > 0)
-        {
+        if (code > 0) {
             // Temperature error
             aStatus |= PrinterState::TemperatureError;
             // if(Debugger) qDebug() << "AV268::getStatus(): Temperature error";
         }
         code = status & CMDTG2480::PrinterNoPaperError;
-        if (code > 0)
-        {
+        if (code > 0) {
             // No paper
             aStatus |= PrinterState::PaperEnd;
             // if(Debugger) qDebug() << "AV268::getStatus(): No paper";
         }
         code = status & CMDTG2480::PrinterHeadOpenError;
-        if (code > 0)
-        {
+        if (code > 0) {
             // Printing head open
             aStatus |= PrinterState::PrintingHeadError;
             // if(Debugger) qDebug() << "AV268::getStatus(): Printing head open";
         }
         code = status & CMDTG2480::PrinterSystemError;
-        if (code > 0)
-        {
+        if (code > 0) {
             // System error
             aStatus |= PrinterState::PrinterError;
             // if(Debugger) qDebug() << "AV268::getStatus(): System error";
         }
         code = status & CMDTG2480::PrinterDataReceiveError;
-        if (code > 0)
-        {
+        if (code > 0) {
             // Data receive error
             aStatus |= PrinterState::PortError;
             // if(Debugger) qDebug() << "AV268::getStatus(): Data receive error";
@@ -185,8 +160,7 @@ bool TG2480_PRINTER::getStatus(int &aStatus)
     return true;
 }
 
-bool TG2480_PRINTER::initialize()
-{
+bool TG2480_PRINTER::initialize() {
     // засылаем в порт команду самоидентификации
     QByteArray cmd;
     cmd.push_back(CMDTG2480::PrinterStatusCommandFirstByte);
@@ -198,8 +172,7 @@ bool TG2480_PRINTER::initialize()
     return sendCommand(cmd, true, 200, resp_data, response, 290);
 }
 
-bool TG2480_PRINTER::cut()
-{
+bool TG2480_PRINTER::cut() {
     QByteArray cmd;
 
     cmd.push_back(CMDTG2480::PrinterStatusCommandFirstByte);
@@ -212,13 +185,12 @@ bool TG2480_PRINTER::cut()
     return res;
 }
 
-void TG2480_PRINTER::getSpecialCharacters(QByteArray &printText)
-{
+void TG2480_PRINTER::getSpecialCharacters(QByteArray &printText) {
     // Устанавливаем если есть жирный фонт
-    printText.replace(
-        QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeBold + CScharsetParam::CloseTagDelimiter)
-            .toUtf8(),
-        asciiNull());
+    printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeBold +
+                              CScharsetParam::CloseTagDelimiter)
+                          .toUtf8(),
+                      asciiNull());
 
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeBold + CScharsetParam::CloseTagDelimiter)
@@ -226,30 +198,34 @@ void TG2480_PRINTER::getSpecialCharacters(QByteArray &printText)
                       asciiNull());
 
     // Устанавливаем если есть двойной высоты фонт
-    printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeDoubleHeight +
+    printText.replace(QString(CScharsetParam::OpenTagDelimiter +
+                              CScharsetParam::FontTypeDoubleHeight +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
                       asciiNull());
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
-                              CScharsetParam::FontTypeDoubleHeight + CScharsetParam::CloseTagDelimiter)
+                              CScharsetParam::FontTypeDoubleHeight +
+                              CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
                       asciiNull());
 
     // Устанавливаем если есть двойной ширины фонт
-    printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeDoubleWidth +
+    printText.replace(QString(CScharsetParam::OpenTagDelimiter +
+                              CScharsetParam::FontTypeDoubleWidth +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
                       asciiNull());
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
-                              CScharsetParam::FontTypeDoubleWidth + CScharsetParam::CloseTagDelimiter)
+                              CScharsetParam::FontTypeDoubleWidth +
+                              CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
                       asciiNull());
 
     // Устанавливаем если есть курсивный фонт
-    printText.replace(
-        QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeItalic + CScharsetParam::CloseTagDelimiter)
-            .toUtf8(),
-        asciiNull());
+    printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeItalic +
+                              CScharsetParam::CloseTagDelimiter)
+                          .toUtf8(),
+                      asciiNull());
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeItalic + CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
@@ -267,32 +243,29 @@ void TG2480_PRINTER::getSpecialCharacters(QByteArray &printText)
 
     // Если надо добавить проабел
     QByteArray probel;
-    for (int i = 1; i <= leftMargin; i++)
-    {
+    for (int i = 1; i <= leftMargin; i++) {
         probel.append(ASCII::Space);
     }
-    printText.replace(
-        QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::SpaceCount + CScharsetParam::CloseTagDelimiter)
-            .toUtf8(),
-        probel);
+    printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::SpaceCount +
+                              CScharsetParam::CloseTagDelimiter)
+                          .toUtf8(),
+                      probel);
 
     // Добавляем звезды
     int col_z = (checkWidth - 11 - leftMargin) / 2;
     QByteArray star;
 
-    for (int j = 1; j <= col_z; j++)
-    {
+    for (int j = 1; j <= col_z; j++) {
         star.append("*");
     }
 
-    printText.replace(
-        QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::StarCount + CScharsetParam::CloseTagDelimiter)
-            .toUtf8(),
-        star);
+    printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::StarCount +
+                              CScharsetParam::CloseTagDelimiter)
+                          .toUtf8(),
+                      star);
 }
 
-bool TG2480_PRINTER::printCheck(const QString &aCheck)
-{
+bool TG2480_PRINTER::printCheck(const QString &aCheck) {
     // Меняем кодировку
     QByteArray printText;
     printText = this->encodingString(aCheck, CScodec::c_IBM866);
@@ -306,8 +279,7 @@ bool TG2480_PRINTER::printCheck(const QString &aCheck)
     return sendCommand(printText, false, 0, respData, answer, 0);
 }
 
-void TG2480_PRINTER::print(const QString &aCheck)
-{
+void TG2480_PRINTER::print(const QString &aCheck) {
     // установим размер шрифта
     QByteArray cmd;
     cmd.push_back(CMDTG2480::PrinterStatusCommandFirstByte);
@@ -328,18 +300,15 @@ void TG2480_PRINTER::print(const QString &aCheck)
     this->cut();
 }
 
-bool TG2480_PRINTER::feed(int aCount)
-{
+bool TG2480_PRINTER::feed(int aCount) {
     QByteArray cmd;
     bool respData = false;
     QByteArray answer;
     cmd.push_back(0x0A);
     cmd.push_back(0x0D);
 
-    for (int i = 0; i < aCount; ++i)
-    {
-        if (!this->sendCommand(cmd, true, 50, respData, answer, 0))
-        {
+    for (int i = 0; i < aCount; ++i) {
+        if (!this->sendCommand(cmd, true, 50, respData, answer, 0)) {
             return false;
         }
     }

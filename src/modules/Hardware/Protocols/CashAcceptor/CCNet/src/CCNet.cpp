@@ -1,55 +1,40 @@
 /* @file Протокол CCNet. */
 
-// STL
-#include <cmath>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/Drivers/IOPort/COMParameters.h>
 
-// System
-#include "Hardware/Common/ASCII.h"
 #include <Hardware/Protocols/CashAcceptor/CCNet.h>
+#include <cmath>
 
-// Project
 #include "CCNetConstants.h"
+#include "Hardware/Common/ASCII.h"
 
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
-CCNetProtocol::CCNetProtocol() : mAddress(0)
-{
-}
+CCNetProtocol::CCNetProtocol() : mAddress(0) {}
 
 //--------------------------------------------------------------------------------
-void CCNetProtocol::setAddress(char aAddress)
-{
+void CCNetProtocol::setAddress(char aAddress) {
     mAddress = aAddress;
 }
 
 //--------------------------------------------------------------------------------
-void CCNetProtocol::changePortParameters(TPortParameters aParameters)
-{
+void CCNetProtocol::changePortParameters(TPortParameters aParameters) {
     mPortParameters = aParameters;
 }
 
 //--------------------------------------------------------------------------------
-ushort CCNetProtocol::calcCRC16(const QByteArray &aData)
-{
+ushort CCNetProtocol::calcCRC16(const QByteArray &aData) {
     ushort CRC = 0;
 
-    for (int i = 0; i < aData.size(); ++i)
-    {
+    for (int i = 0; i < aData.size(); ++i) {
         ushort byteCRC = 0;
         ushort value = uchar(CRC ^ aData[i]);
 
-        for (int j = 0; j < 8; ++j)
-        {
+        for (int j = 0; j < 8; ++j) {
             ushort data = byteCRC >> 1;
             byteCRC = ((byteCRC ^ value) & 1) ? (data ^ CCCNet::Polynominal) : data;
             value = value >> 1;
@@ -62,22 +47,20 @@ ushort CCNetProtocol::calcCRC16(const QByteArray &aData)
 }
 
 //--------------------------------------------------------------------------------
-void CCNetProtocol::pack(QByteArray &aCommandData)
-{
+void CCNetProtocol::pack(QByteArray &aCommandData) {
     aCommandData.prepend(mAddress);
     aCommandData.prepend(CCCNet::Prefix);
 
     int length = aCommandData.size() + 3;
 
-    if (length < 256)
-    {
+    if (length < 256) {
         aCommandData.insert(2, char(length));
-    }
-    else
-    {
+    } else {
         aCommandData.insert(2, ASCII::NUL);
-        aCommandData.insert(5,
-                            QByteArray::fromHex(QString("%1").arg(length + 2, 4, 16, QChar(ASCII::Zero)).toLatin1()));
+        aCommandData.insert(
+            5,
+            QByteArray::fromHex(
+                QString("%1").arg(length + 2, 4, 16, QChar(ASCII::Zero)).toLatin1()));
     }
 
     ushort CRC = calcCRC16(aCommandData);
@@ -86,11 +69,9 @@ void CCNetProtocol::pack(QByteArray &aCommandData)
 }
 
 //--------------------------------------------------------------------------------
-QString CCNetProtocol::check(const QByteArray &aAnswer)
-{
+QString CCNetProtocol::check(const QByteArray &aAnswer) {
     // минимальный размер ответа
-    if (aAnswer.size() < CCCNet::MinAnswerSize)
-    {
+    if (aAnswer.size() < CCCNet::MinAnswerSize) {
         return QString("CCNet: Invalid answer length = %1, need %2 minimum")
             .arg(aAnswer.size())
             .arg(CCCNet::MinAnswerSize);
@@ -99,8 +80,7 @@ QString CCNetProtocol::check(const QByteArray &aAnswer)
     // первый байт
     char prefix = aAnswer[0];
 
-    if (prefix != CCCNet::Prefix)
-    {
+    if (prefix != CCCNet::Prefix) {
         return QString("CCNet: Invalid prefix = %1, need = %2")
             .arg(ProtocolUtils::toHexLog(prefix))
             .arg(ProtocolUtils::toHexLog(CCCNet::Prefix));
@@ -109,8 +89,7 @@ QString CCNetProtocol::check(const QByteArray &aAnswer)
     // адрес
     char address = aAnswer[1];
 
-    if (address != mAddress)
-    {
+    if (address != mAddress) {
         return QString("CCNet: Invalid address = %1, need = %2")
             .arg(ProtocolUtils::toHexLog(address))
             .arg(ProtocolUtils::toHexLog(mAddress));
@@ -119,8 +98,7 @@ QString CCNetProtocol::check(const QByteArray &aAnswer)
     // длина
     int length = uchar(aAnswer[2]);
 
-    if (length != aAnswer.size())
-    {
+    if (length != aAnswer.size()) {
         return QString("CCNet: Invalid length = %1, need %2").arg(aAnswer.size()).arg(length);
     }
 
@@ -128,8 +106,7 @@ QString CCNetProtocol::check(const QByteArray &aAnswer)
     ushort answerCRC = calcCRC16(aAnswer.left(length - 2));
     ushort CRC = qToBigEndian(aAnswer.right(2).toHex().toUShort(0, 16));
 
-    if (CRC != answerCRC)
-    {
+    if (CRC != answerCRC) {
         return QString("CCNet: Invalid CRC = %1, need %2")
             .arg(ProtocolUtils::toHexLog(CRC))
             .arg(ProtocolUtils::toHexLog(answerCRC));
@@ -139,9 +116,9 @@ QString CCNetProtocol::check(const QByteArray &aAnswer)
 }
 
 //--------------------------------------------------------------------------------
-TResult CCNetProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData,
-                                      const CCCNet::Commands::SData &aData)
-{
+TResult CCNetProtocol::processCommand(const QByteArray &aCommandData,
+                                      QByteArray &aAnswerData,
+                                      const CCCNet::Commands::SData &aData) {
     // Формируем пакет запроса
     QByteArray request = aCommandData;
     pack(request);
@@ -150,26 +127,22 @@ TResult CCNetProtocol::processCommand(const QByteArray &aCommandData, QByteArray
     int NAKCounter = 1;
     int checkingCounter = 1;
 
-    do
-    {
+    do {
         toLog(LogLevel::Normal, QString("CCNet: >> {%1}").arg(QString(request.toHex())));
         aAnswerData.clear();
 
-        if (!mPort->write(request))
-        {
+        if (!mPort->write(request)) {
             return CommandResult::Port;
         }
 
-        if (!mPortParameters.isEmpty())
-        {
+        if (!mPortParameters.isEmpty()) {
             SleepHelper::msleep(CCCNet::ChangingBaudRatePause);
 
             int baudrate = mPortParameters[IOPort::COM::EParameters::BaudRate];
             bool result = mPort->setParameters(mPortParameters);
             mPortParameters.clear();
 
-            if (!result)
-            {
+            if (!result) {
                 toLog(LogLevel::Error, "CCNet: Failed to set port parameters");
                 return CommandResult::Port;
             }
@@ -179,35 +152,29 @@ TResult CCNetProtocol::processCommand(const QByteArray &aCommandData, QByteArray
 
         TResult result = getAnswer(aAnswerData, aData);
 
-        if (result == CommandResult::Transport)
-        {
+        if (result == CommandResult::Transport) {
             NAKCounter++;
-        }
-        else if (result == CommandResult::Protocol)
-        {
+        } else if (result == CommandResult::Protocol) {
             checkingCounter++;
-        }
-        else
-        {
+        } else {
             return result;
         }
-    } while ((NAKCounter <= CCCNet::MaxRepeatPacket) && (checkingCounter <= CCCNet::MaxRepeatPacket));
+    } while ((NAKCounter <= CCCNet::MaxRepeatPacket) &&
+             (checkingCounter <= CCCNet::MaxRepeatPacket));
 
-    return (checkingCounter <= CCCNet::MaxRepeatPacket) ? CommandResult::Transport : CommandResult::Protocol;
+    return (checkingCounter <= CCCNet::MaxRepeatPacket) ? CommandResult::Transport
+                                                        : CommandResult::Protocol;
 }
 
 //--------------------------------------------------------------------------------
-TResult CCNetProtocol::getAnswer(QByteArray &aAnswerData, const CCCNet::Commands::SData &aData)
-{
+TResult CCNetProtocol::getAnswer(QByteArray &aAnswerData, const CCCNet::Commands::SData &aData) {
     TAnswers answers;
 
-    if (!readAnswers(answers, aData.timeout))
-    {
+    if (!readAnswers(answers, aData.timeout)) {
         return CommandResult::Port;
     }
 
-    if (answers.isEmpty())
-    {
+    if (answers.isEmpty()) {
         return CommandResult::NoAnswer;
     }
 
@@ -215,52 +182,42 @@ TResult CCNetProtocol::getAnswer(QByteArray &aAnswerData, const CCCNet::Commands
     QStringList logs;
     aAnswerData = answers[0];
 
-    for (int i = 0; i < answers.size(); ++i)
-    {
+    for (int i = 0; i < answers.size(); ++i) {
         logs << check(answers[i]);
 
-        if (logs.last().isEmpty())
-        {
+        if (logs.last().isEmpty()) {
             index = i;
         }
     }
 
-    for (int i = 0; i < answers.size(); ++i)
-    {
+    for (int i = 0; i < answers.size(); ++i) {
         QString log = QString("CCNet: << {%1}").arg(answers[i].toHex().data());
 
-        if (!logs[i].isEmpty())
-        {
+        if (!logs[i].isEmpty()) {
             toLog(LogLevel::Normal, log);
             toLog(LogLevel::Error, logs[i]);
-        }
-        else if (i != index)
-        {
+        } else if (i != index) {
             toLog(LogLevel::Normal, log + " - omitted");
-        }
-        else
-        {
+        } else {
             toLog(LogLevel::Normal, log);
         }
     }
 
-    if (index == -1)
-    {
-        toLog(LogLevel::Normal, "CCNet: Answer does not contains any logic data or it is incomplete answer");
+    if (index == -1) {
+        toLog(LogLevel::Normal,
+              "CCNet: Answer does not contains any logic data or it is incomplete answer");
         return CommandResult::Protocol;
     }
 
     int length = uchar(answers[index][2]);
     aAnswerData = answers[index].mid(3, length - 5);
 
-    if (aAnswerData[0] == CCCNet::NAK)
-    {
+    if (aAnswerData[0] == CCCNet::NAK) {
         toLog(LogLevel::Normal, "CCNet: Answer contains NAK, attemp to repeat command");
         return CommandResult::Transport;
     }
 
-    if (aData.hostACK)
-    {
+    if (aData.hostACK) {
         sendACK();
     }
 
@@ -268,8 +225,7 @@ TResult CCNetProtocol::getAnswer(QByteArray &aAnswerData, const CCCNet::Commands
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetProtocol::readAnswers(TAnswers &aAnswers, int aTimeout)
-{
+bool CCNetProtocol::readAnswers(TAnswers &aAnswers, int aTimeout) {
     QByteArray answer;
 
     int length = 0;
@@ -278,12 +234,10 @@ bool CCNetProtocol::readAnswers(TAnswers &aAnswers, int aTimeout)
     QElapsedTimer clockTimer;
     clockTimer.restart();
 
-    do
-    {
+    do {
         QByteArray answerData;
 
-        if (!mPort->read(answerData, 20))
-        {
+        if (!mPort->read(answerData, 20)) {
             return false;
         }
 
@@ -291,35 +245,29 @@ bool CCNetProtocol::readAnswers(TAnswers &aAnswers, int aTimeout)
         int begin = index;
         int lastBegin;
 
-        do
-        {
+        do {
             lastBegin = begin;
             begin = answer.indexOf(CCCNet::Prefix, begin);
 
-            if (begin == -1)
-            {
+            if (begin == -1) {
                 break;
-            }
-            else if (answer.size() > 2)
-            {
-                if (begin < answer.size())
-                {
+            } else if (answer.size() > 2) {
+                if (begin < answer.size()) {
                     index = begin;
                 }
 
                 length = uchar(answer[begin + 2]);
                 begin += length;
 
-                if (begin < answer.size())
-                {
+                if (begin < answer.size()) {
                     index = begin;
                 }
             }
         } while (lastBegin != begin);
-    } while ((clockTimer.elapsed() < aTimeout) && ((answer.mid(index).size() != length) || !length));
+    } while ((clockTimer.elapsed() < aTimeout) &&
+             ((answer.mid(index).size() != length) || !length));
 
-    if (answer.isEmpty())
-    {
+    if (answer.isEmpty()) {
         toLog(LogLevel::Normal, "CCNet: << {}");
         return true;
     }
@@ -327,23 +275,19 @@ bool CCNetProtocol::readAnswers(TAnswers &aAnswers, int aTimeout)
     int size = answer.size();
     int begin = answer.indexOf(CCCNet::Prefix);
 
-    if (begin == -1)
-    {
+    if (begin == -1) {
         begin = size;
     }
 
-    if (begin)
-    {
+    if (begin) {
         aAnswers << answer.mid(0, begin);
     }
 
-    do
-    {
+    do {
         int next = size;
         int shiftLength = -1;
 
-        if (size >= (begin + 3))
-        {
+        if (size >= (begin + 3)) {
             shiftLength = uchar(answer[begin + 2]);
             next = begin + shiftLength;
         }
@@ -358,8 +302,7 @@ bool CCNetProtocol::readAnswers(TAnswers &aAnswers, int aTimeout)
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetProtocol::sendACK()
-{
+bool CCNetProtocol::sendACK() {
     QByteArray command(1, CCCNet::ACK);
     pack(command);
     toLog(LogLevel::Normal, QString("CCNet: >> {%1} - ACK").arg(command.toHex().data()));

@@ -1,29 +1,22 @@
-// Project
 #include "KM1X.h"
 
-KM1X_PRINTER::KM1X_PRINTER(QObject *parent) : BasePrinterDevices(parent)
-{
-}
+KM1X_PRINTER::KM1X_PRINTER(QObject *parent) : BasePrinterDevices(parent) {}
 
-bool KM1X_PRINTER::OpenPrinterPort()
-{
+bool KM1X_PRINTER::OpenPrinterPort() {
     this->openPort();
 
     return is_open;
 }
 
-bool KM1X_PRINTER::openPort()
-{
-    if (devicesCreated)
-    {
+bool KM1X_PRINTER::openPort() {
+    if (devicesCreated) {
         // Если девайс для работы с портом обявлен
         is_open = false;
 
         // Даем девайсу название порта
         serialPort->setPortName(comName);
 
-        if (serialPort->open(QIODevice::ReadWrite))
-        {
+        if (serialPort->open(QIODevice::ReadWrite)) {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
@@ -38,38 +31,25 @@ bool KM1X_PRINTER::openPort()
             if (!serialPort->setBaudRate(QSerialPort::Baud19200))
                 return false;
 
-            if (port_speed.toInt() == 0)
-            {
+            if (port_speed.toInt() == 0) {
                 if (!serialPort->setBaudRate(QSerialPort::Baud115200))
                     return false;
-            }
-            else if (port_speed == "1")
-            {
+            } else if (port_speed == "1") {
                 if (!serialPort->setBaudRate(QSerialPort::Baud9600))
                     return false;
-            }
-            else if (port_speed == "2")
-            {
+            } else if (port_speed == "2") {
                 //                if (!serialPort->setBaudRate(QSerialPort::Baud14400))
                 //                return false;
-            }
-            else if (port_speed == "3")
-            {
+            } else if (port_speed == "3") {
                 if (!serialPort->setBaudRate(QSerialPort::Baud19200))
                     return false;
-            }
-            else if (port_speed == "4")
-            {
+            } else if (port_speed == "4") {
                 if (!serialPort->setBaudRate(QSerialPort::Baud38400))
                     return false;
-            }
-            else if (port_speed == "5")
-            {
+            } else if (port_speed == "5") {
                 if (!serialPort->setBaudRate(QSerialPort::Baud57600))
                     return false;
-            }
-            else if (port_speed == "6")
-            {
+            } else if (port_speed == "6") {
                 if (!serialPort->setBaudRate(QSerialPort::Baud115200))
                     return false;
             } /*else if(port_speed == "7"){
@@ -77,32 +57,25 @@ bool KM1X_PRINTER::openPort()
              }*/
 
             is_open = true;
-        }
-        else
-        {
+        } else {
             is_open = false;
         }
-    }
-    else
-    {
+    } else {
         is_open = false;
     }
 
     return is_open;
 }
 
-bool KM1X_PRINTER::isEnabled()
-{
+bool KM1X_PRINTER::isEnabled() {
     return true;
 }
 
-bool KM1X_PRINTER::isItYou()
-{
+bool KM1X_PRINTER::isItYou() {
     return true;
 }
 
-bool KM1X_PRINTER::printCheck(const QString &aCheck)
-{
+bool KM1X_PRINTER::printCheck(const QString &aCheck) {
     QByteArray cmd;
     QByteArray answer;
     bool respData = false;
@@ -127,8 +100,7 @@ bool KM1X_PRINTER::printCheck(const QString &aCheck)
     return true;
 }
 
-void KM1X_PRINTER::print(const QString &aCheck)
-{
+void KM1X_PRINTER::print(const QString &aCheck) {
     // Печатаем текст
     printCheck(aCheck);
 }

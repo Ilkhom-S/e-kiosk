@@ -2,14 +2,11 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
 
 // GUI SDK
-#include <SDK/GUI/IGraphicsItem.h>
 #include <SDK/GUI/GraphicsItemInfo.h>
+#include <SDK/GUI/IGraphicsItem.h>
 
 class QQuickItem;
 class QMLBackend;
@@ -17,9 +14,8 @@ class ILog;
 
 //---------------------------------------------------------------------------
 /// Интерфейс для созданного движком графического объекта.
-class QMLGraphicsItem : public SDK::GUI::IGraphicsItem
-{
-  public:
+class QMLGraphicsItem : public SDK::GUI::IGraphicsItem {
+public:
     QMLGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo, QQmlEngine *aEngine, ILog *aLog);
 
     /// Вызывается перед отображением виджета.
@@ -43,19 +39,16 @@ class QMLGraphicsItem : public SDK::GUI::IGraphicsItem
     /// Возвращает виджет.
     virtual QQuickItem *getWidget() const;
 
-    virtual QWidget *getNativeWidget() const
-    {
-        return nullptr;
-    }
+    virtual QWidget *getNativeWidget() const { return nullptr; }
 
     /// Возвращает контекст виджета.
     virtual QVariantMap getContext() const;
 
-  private:
+private:
     /// Конвертирует ошибку, упакованную в QVariant, в строку.
     QString translateError(const QVariant &aError) const;
 
-  private:
+private:
     ILog *mLog;
     QString mError;
     QQmlEngine *mEngine;

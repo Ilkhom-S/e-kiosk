@@ -2,20 +2,14 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include "ui_NetworkWizardPage.h"
-#include <Common/QtHeadersEnd.h>
-
-// Проект
 #include "WizardPage.h"
+#include "ui_NetworkWizardPage.h"
 
 //---------------------------------------------------------------------------
-class NetworkWizardPage : public WizardPageBase, protected Ui::NetworkWizardPage
-{
+class NetworkWizardPage : public WizardPageBase, protected Ui::NetworkWizardPage {
     Q_OBJECT
 
-  public:
+public:
     NetworkWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
     virtual bool initialize();
@@ -24,7 +18,7 @@ class NetworkWizardPage : public WizardPageBase, protected Ui::NetworkWizardPage
     virtual bool activate();
     virtual bool deactivate();
 
-  private slots:
+private slots:
     void onChooseDialup();
     void onChooseUnmanaged();
 };

@@ -2,22 +2,16 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-struct SPinCard
-{
+struct SPinCard {
     QString id;
     QString name;
     double amount;
     QStringList fields;
 
-    SPinCard() : amount(0.0)
-    {
-    }
+    SPinCard() : amount(0.0) {}
 };
 
 //---------------------------------------------------------------------------

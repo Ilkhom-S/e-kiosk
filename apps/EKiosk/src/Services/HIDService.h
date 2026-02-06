@@ -2,30 +2,26 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QList>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/ILogable.h>
 
-// SDK
-#include <SDK/PaymentProcessor/Core/IHIDService.h>
-#include <SDK/PaymentProcessor/Core/IDeviceService.h>
-#include <SDK/PaymentProcessor/Core/IService.h>
-#include <SDK/PaymentProcessor/Core/IEventService.h>
-#include <SDK/Drivers/IHID.h>
 #include <SDK/Drivers/ICardReader.h>
+#include <SDK/Drivers/IHID.h>
+#include <SDK/PaymentProcessor/Core/IDeviceService.h>
+#include <SDK/PaymentProcessor/Core/IEventService.h>
+#include <SDK/PaymentProcessor/Core/IHIDService.h>
+#include <SDK/PaymentProcessor/Core/IService.h>
 
 class IApplication;
 
 //---------------------------------------------------------------------------
-class HIDService : public SDK::PaymentProcessor::IHIDService, public SDK::PaymentProcessor::IService, private ILogable
-{
+class HIDService : public SDK::PaymentProcessor::IHIDService,
+                   public SDK::PaymentProcessor::IService,
+                   private ILogable {
     Q_OBJECT
 
-  public:
+public:
     /// Получение экземпляра FundsService.
     static HIDService *instance(IApplication *aApplication);
 
@@ -41,7 +37,8 @@ class HIDService : public SDK::PaymentProcessor::IHIDService, public SDK::Paymen
     /// Возвращает false, если сервис не может быть остановлен в текущий момент.
     virtual bool canShutdown();
 
-    /// Завершение работы сервиса. Возвращает false, если сервис не может быть остановлен в текущий момент.
+    /// Завершение работы сервиса. Возвращает false, если сервис не может быть остановлен в текущий
+    /// момент.
     virtual bool shutdown();
 
     /// Получить имя сервиса.
@@ -62,11 +59,11 @@ class HIDService : public SDK::PaymentProcessor::IHIDService, public SDK::Paymen
     /// Конвертирует данные сканера в строку
     QString valueToString(const QVariant &aData);
 
-  private slots:
+private slots:
     /// Обновить список устройств.
     void updateHardwareConfiguration();
 
-  private slots:
+private slots:
     /// Получение сигнала - карта вставлена
     void onCardInserted(SDK::Driver::ECardType::Enum aCardType, const QVariantMap &aData);
 
@@ -74,9 +71,11 @@ class HIDService : public SDK::PaymentProcessor::IHIDService, public SDK::Paymen
     void onCardEjected();
 
     /// Получение состояния картридера
-    void onStatusChanged(SDK::Driver::EWarningLevel::Enum aLevel, const QString &aTranslation, int aStatus);
+    void onStatusChanged(SDK::Driver::EWarningLevel::Enum aLevel,
+                         const QString &aTranslation,
+                         int aStatus);
 
-  private:
+private:
     IApplication *mApplication;
     SDK::PaymentProcessor::IDeviceService *mDeviceService;
     QList<SDK::Driver::IHID *> mHIDs;

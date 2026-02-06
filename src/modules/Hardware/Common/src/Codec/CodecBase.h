@@ -2,76 +2,52 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QStringConverter>
 #include <QtCore/QReadWriteLock>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QStringConverter>
 
-// Project
-#include "Hardware/Common/Specifications.h"
 #include "Hardware/Common/HardwareConstants.h"
+#include "Hardware/Common/Specifications.h"
 
 //---------------------------------------------------------------------------
-namespace CCodec
-{
-    /// Символ по умолчанию для неизвестных символов.
-    const char DefaultCharacter = '?';
+namespace CCodec {
+/// Символ по умолчанию для неизвестных символов.
+const char DefaultCharacter = '?';
 } // namespace CCodec
 
-struct SCharData
-{
+struct SCharData {
     QString character; /// UTF-8-cимвол по коду.
     bool main;         /// Признак основного символа при обратной перекодировке.
 
-    SCharData() : character(QChar(CCodec::DefaultCharacter)), main(false)
-    {
-    }
-    SCharData(const QString &aCharacter, bool aMain) : character(aCharacter), main(aMain)
-    {
-    }
-    SCharData(const char *aCharacter, bool aMain) : character(QString::fromUtf8(aCharacter)), main(aMain)
-    {
-    }
-    SCharData(const QChar &aCharacter, bool aMain) : character(aCharacter), main(aMain)
-    {
-    }
+    SCharData() : character(QChar(CCodec::DefaultCharacter)), main(false) {}
+    SCharData(const QString &aCharacter, bool aMain) : character(aCharacter), main(aMain) {}
+    SCharData(const char *aCharacter, bool aMain)
+        : character(QString::fromUtf8(aCharacter)), main(aMain) {}
+    SCharData(const QChar &aCharacter, bool aMain) : character(aCharacter), main(aMain) {}
 
-    bool operator==(const SCharData &aData) const
-    {
+    bool operator==(const SCharData &aData) const {
         return (character == aData.character) && (main == aData.main);
     }
 };
 
 //---------------------------------------------------------------------------
-class CharacterData : public CSpecification<char, SCharData>
-{
-  public:
-    CharacterData()
-    {
-        setDefault(SCharData());
-    }
+class CharacterData : public CSpecification<char, SCharData> {
+public:
+    CharacterData() { setDefault(SCharData()); }
 
-    void add(char aCode, const QString &aCharacter, bool aMain = true)
-    {
+    void add(char aCode, const QString &aCharacter, bool aMain = true) {
         append(aCode, SCharData(aCharacter, aMain));
     }
 
-    void add(char aCode, const char *aCharacter, bool aMain = true)
-    {
+    void add(char aCode, const char *aCharacter, bool aMain = true) {
         append(aCode, SCharData(aCharacter, aMain));
     }
 
-    void add(char aCode)
-    {
-        append(aCode, mDefaultValue);
-    }
+    void add(char aCode) { append(aCode, mDefaultValue); }
 };
 
 //---------------------------------------------------------------------------
-class CodecBase
-{
-  public:
+class CodecBase {
+public:
     CodecBase();
 
     /// Получить название.
@@ -89,7 +65,7 @@ class CodecBase
     /// Конвертировать юникодовую строку в массив байтов.
     virtual QByteArray convertFromUnicode(const QChar *aBuffer, int aLength) const;
 
-  protected:
+protected:
     /// Имя кодека.
     QByteArray mName;
 

@@ -6,12 +6,11 @@
 #include "Hardware/FR/PayPrinters.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class PayFRBase : public ShtrihRetractorFRLite<T>
-{
-  public:
+template <class T> class PayFRBase : public ShtrihRetractorFRLite<T> {
+public:
     PayFRBase();
 
-  protected:
+protected:
     /// Запросить и вывести в лог критичные параметры ФР.
     virtual void processDeviceData();
 

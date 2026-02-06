@@ -2,70 +2,60 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QObject>
-#include <QtCore/QStringList>
-#include <QtCore/QProcess>
-#include <QtCore/QTimer>
 #include <QtCore/QDateTime>
 #include <QtCore/QMap>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QObject>
+#include <QtCore/QProcess>
+#include <QtCore/QStringList>
+#include <QtCore/QTimer>
 
-// Modules
 #include <Common/ILogable.h>
+
 #include <MessageQueue/IMessageQueueServer.h>
 #include <SysUtils/ISysUtils.h>
 
-// Project
 #include "SplashScreen.h"
 #include "TimeChangeListener.h"
 
 //----------------------------------------------------------------------------
-namespace CStartMode
-{
-    const char Normal[] = "normal";
-    const char Exclusive[] = "exclusive";
+namespace CStartMode {
+const char Normal[] = "normal";
+const char Exclusive[] = "exclusive";
 } // namespace CStartMode
 
 //----------------------------------------------------------------------------
-namespace CWatchService
-{
-    const int CheckInterval = 3 * 1000;         // 3 sec
-    const int ScreenActivityTimeout = 5 * 1000; // 5 sec
+namespace CWatchService {
+const int CheckInterval = 3 * 1000;         // 3 sec
+const int ScreenActivityTimeout = 5 * 1000; // 5 sec
 
-    const int KillModuleTimeout = 30;       // in sec
-    const int CheckMemoryUsageTimeout = 60; // in min
+const int KillModuleTimeout = 30;       // in sec
+const int CheckMemoryUsageTimeout = 60; // in min
 
-    namespace SlowPC
-    {
-        const int Threshold = 1400; // in MHz
+namespace SlowPC {
+const int Threshold = 1400; // in MHz
 
-        const int KillModuleTimeout = 180; // in sec
-    } // namespace SlowPC
+const int KillModuleTimeout = 180; // in sec
+} // namespace SlowPC
 
-    const uint FirstPingTimeoutDefault = 60;   // in sec
-    const uint FirstPingTimeoutIncrement = 10; // in sec
-    const uint FirstPingTimeoutMax = 600;      // in sec
+const uint FirstPingTimeoutDefault = 60;   // in sec
+const uint FirstPingTimeoutIncrement = 10; // in sec
+const uint FirstPingTimeoutMax = 600;      // in sec
 } // namespace CWatchService
 
 //----------------------------------------------------------------------------
 /// Действие, которое будет выполнено после закрытия сервиса.
-namespace ECloseAction
-{
-    enum Enum
-    {
-        None = 0, /// Никаких специальных действий.
-        Restart,  /// Перезапуск модулей.
-        Exit,     /// Закрытие сервиса.
-        Reboot,   /// Перезагрузка системы.
-        Shutdown  /// Выключение системы.
-    };
+namespace ECloseAction {
+enum Enum {
+    None = 0, /// Никаких специальных действий.
+    Restart,  /// Перезапуск модулей.
+    Exit,     /// Закрытие сервиса.
+    Reboot,   /// Перезагрузка системы.
+    Shutdown  /// Выключение системы.
+};
 } // namespace ECloseAction
 
 //----------------------------------------------------------------------------
-struct SModule
-{
+struct SModule {
     QString name;
     QString file;
     QString workingDirectory;
@@ -105,11 +95,10 @@ struct SModule
 };
 
 //----------------------------------------------------------------------------
-class WatchService : public QObject, protected ILogable
-{
+class WatchService : public QObject, protected ILogable {
     Q_OBJECT
 
-  public:
+public:
     WatchService();
 
     virtual ~WatchService();
@@ -117,7 +106,7 @@ class WatchService : public QObject, protected ILogable
     /// Возвращает таймаут, в зависимости от скорости процессора
     static int defaultKillTimeout();
 
-  signals:
+signals:
     /// Сигнал срабатывает, когда не запущен ни один модуль с графическим интерфейсом.
     void screenUnprotected();
 
@@ -130,7 +119,7 @@ class WatchService : public QObject, protected ILogable
     /// Сигнал о сбросе состояния модуля aSender.
     void stateReset(QString aSender);
 
-  protected:
+protected:
     /// Чтение конфигурации о модулях.
     virtual void loadConfiguration();
 
@@ -146,14 +135,14 @@ class WatchService : public QObject, protected ILogable
     /// Событие при завершении всех модулей.
     virtual void closeAction();
 
-  public slots:
+public slots:
     /// Инициализация сервиса.
     virtual void initialize();
 
     /// Останавливаем сервисы по запросу операционной системы
     void closeBySystemRequest(QSessionManager &aSessionManager);
 
-  private slots:
+private slots:
     /// Слот закрытие всех работающих модулей.
     void closeModules();
 
@@ -181,7 +170,7 @@ class WatchService : public QObject, protected ILogable
     /// Запустить все autoStart модули
     void checkAutoStartModules();
 
-  private:
+private:
     /// Запустить модуль
     void startModule(SModule &aModule);
 
@@ -207,11 +196,11 @@ class WatchService : public QObject, protected ILogable
     /// Пересылка команды неизвестному модулю
     void sendCommandToUknownModule(const QString &aCommand, const QString &aModule);
 
-  private slots:
+private slots:
     /// Реинициализация сервиса
     void reinitialize();
 
-  private:
+private:
     typedef QMap<QString, SModule> TModules;
 
     QSharedPointer<IMessageQueueServer> mServer;
@@ -260,7 +249,7 @@ private:
 	QSharedPointer<QTimer> mCheckForbiddenTimer;
 #endif
 
-  private:
+private:
     /// Параметры при перезапуске
     QString mRestartParameters;
 

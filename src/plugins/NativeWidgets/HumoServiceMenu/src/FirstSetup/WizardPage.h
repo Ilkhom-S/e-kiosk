@@ -2,23 +2,18 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QFrame>
-#include <Common/QtHeadersEnd.h>
 
-// Project
 #include "GUI/IServiceWindow.h"
 
 //------------------------------------------------------------------------
-class WizardPageBase : public QFrame, public ServiceWindowBase
-{
+class WizardPageBase : public QFrame, public ServiceWindowBase {
     Q_OBJECT
 
-  public:
+public:
     WizardPageBase(HumoServiceBackend *aBackend, QWidget *aParent = 0);
 
-  signals:
+signals:
     void pageEvent(const QString &aContext, bool aFlag);
 };
 

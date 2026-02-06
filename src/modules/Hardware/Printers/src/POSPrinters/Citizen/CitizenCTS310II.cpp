@@ -1,10 +1,8 @@
 /* @file Принтер Citizen CT-S310II. */
 
-// Project
 #include "CitizenCTS310II.h"
 
-CitizenCTS310II::CitizenCTS310II()
-{
+CitizenCTS310II::CitizenCTS310II() {
     // статусы ошибок
     mParameters.errors.clear();
 

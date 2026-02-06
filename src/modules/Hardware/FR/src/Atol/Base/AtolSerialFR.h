@@ -5,12 +5,11 @@
 #include "Atol2FRBase.h"
 
 //--------------------------------------------------------------------------------
-class AtolSerialFR : public Atol2FRBase
-{
-  public:
+class AtolSerialFR : public Atol2FRBase {
+public:
     AtolSerialFR();
 
-  protected:
+protected:
     /// Проверить параметры налога.
     virtual bool checkTax(SDK::Driver::TVAT aVAT, CFR::Taxes::SData &aData);
 
@@ -21,7 +20,8 @@ class AtolSerialFR : public Atol2FRBase
     virtual bool getShortStatus(TStatusCodes &aStatusCodes);
 
     /// Выполнить команду.
-    virtual TResult performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout);
+    virtual TResult
+    performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout);
 
     /// Обработка ответа на предыдущей команды. Автоисправление некоторых ошибок.
     virtual bool processAnswer(const QByteArray &aCommand, char aError);

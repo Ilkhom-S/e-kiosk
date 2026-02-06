@@ -2,20 +2,14 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include "ui_SaveSettingsWizardPage.h"
-#include <Common/QtHeadersEnd.h>
-
-// Проект
 #include "WizardPage.h"
+#include "ui_SaveSettingsWizardPage.h"
 
 //---------------------------------------------------------------------------
-class SaveSettingsWizardPage : public WizardPageBase, protected Ui::SaveSettingsWizardPage
-{
+class SaveSettingsWizardPage : public WizardPageBase, protected Ui::SaveSettingsWizardPage {
     Q_OBJECT
 
-  public:
+public:
     SaveSettingsWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
     virtual bool initialize();
@@ -24,11 +18,11 @@ class SaveSettingsWizardPage : public WizardPageBase, protected Ui::SaveSettings
     virtual bool activate();
     virtual bool deactivate();
 
-  private slots:
+private slots:
     void onSave();
     void onFinish();
 
-  private:
+private:
     void showError(const QString &aContext, const QString &aError);
 };
 

@@ -2,13 +2,11 @@
 
 #pragma once
 
-// SDK
-#include <SDK/PaymentProcessor/Core/IService.h>
 #include <SDK/PaymentProcessor/Core/IDatabaseService.h>
+#include <SDK/PaymentProcessor/Core/IService.h>
 
-// Проект
-#include "DatabaseUtils/IDatabaseUtils.h"
 #include "DatabaseProxy/IDatabaseProxy.h"
+#include "DatabaseUtils/IDatabaseUtils.h"
 
 class IApplication;
 class IDatabaseProxy;
@@ -16,9 +14,8 @@ class IDatabaseProxy;
 //---------------------------------------------------------------------------
 class DatabaseService : public SDK::PaymentProcessor::IDatabaseService,
                         public SDK::PaymentProcessor::IService,
-                        public IDatabaseQueryChecker
-{
-  public:
+                        public IDatabaseQueryChecker {
+public:
     /// Получение экземпляра DatabaseService.
     static DatabaseService *instance(IApplication *aApplication);
 
@@ -76,15 +73,12 @@ class DatabaseService : public SDK::PaymentProcessor::IDatabaseService,
 #pragma endregion
 
     /// Получение нужной части интерфейса базы данных.
-    template <typename T> T *getDatabaseUtils()
-    {
-        return dynamic_cast<T *>(mDbUtils.data());
-    }
+    template <typename T> T *getDatabaseUtils() { return dynamic_cast<T *>(mDbUtils.data()); }
 
-  protected:
+protected:
     virtual ~DatabaseService();
 
-  private:
+private:
     IApplication *mApplication;
     IDatabaseProxy *mDatabase;
     QSharedPointer<IDatabaseUtils> mDbUtils;

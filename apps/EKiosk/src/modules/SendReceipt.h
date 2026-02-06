@@ -1,26 +1,24 @@
 #pragma once
 
-// Project
 #include "SendRequest.h"
 
 class SendRequest;
 
-class SendReceipt : public SendRequest
-{
+class SendReceipt : public SendRequest {
     Q_OBJECT
 
-  public:
+public:
     SendReceipt(QObject *parent = 0);
 
-  private slots:
+private slots:
     void resendRequest();
     void setDataNote(const QDomNode &domElement);
     void sendRequestRepeet();
 
-  public slots:
+public slots:
     void sendReceiptRequest(QString trn, QString notify);
 
-  private:
+private:
     void parcerNote(const QDomNode &domElement);
 
     bool getData;
@@ -32,6 +30,6 @@ class SendReceipt : public SendRequest
     QString trn;
     QString status;
 
-  signals:
+signals:
     void emitSendReceiptResult(QString resultCode, QString trn, QString status);
 };

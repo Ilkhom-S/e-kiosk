@@ -2,18 +2,16 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QMap>
 #include <QtQuick/QQuickImageProvider>
-#include <Common/QtHeadersEnd.h>
 
 /*------------------------------------------------------------------------------
  Пример использования в QML
 
  Image {
          id: code128
-         source: "image://barcode/fgcolor=black&bgcolor=white&text=01234567890&type=code128&whitespace=20&height=100"
+         source:
+ "image://barcode/fgcolor=black&bgcolor=white&text=01234567890&type=code128&whitespace=20&height=100"
          width: 500
          height: 100
  }
@@ -35,15 +33,14 @@
 */
 
 //------------------------------------------------------------------------------
-class BarcodeProvider : public QQuickImageProvider
-{
-  public:
+class BarcodeProvider : public QQuickImageProvider {
+public:
     BarcodeProvider();
     ~BarcodeProvider() {};
 
     virtual QImage requestImage(const QString &aId, QSize *aSize, const QSize &aRequestedSize);
 
-  private:
+private:
     QSize mDefaultBarcodeSize;
     QHash<QString, QImage> mBarcodeCache;
 };

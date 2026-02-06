@@ -3,41 +3,35 @@
 #pragma once
 
 // OPOS
-#include <Common/QtHeadersBegin.h>
 #pragma warning(disable : 4100) // warning C4100: 'identifier' : unreferenced formal parameter
-#include <OPOS/QtWrappers/Scanner.h>
-#include <Common/QtHeadersEnd.h>
-
-// Modules
-#include <Hardware/Common/PollingDeviceBase.h>
 #include <Hardware/Common/OPOSPollingDeviceBase.h>
-#include <Hardware/HID/ProtoOPOSScanner.h>
+#include <Hardware/Common/PollingDeviceBase.h>
 #include <Hardware/HID/HIDBase.h>
+#include <Hardware/HID/ProtoOPOSScanner.h>
+#include <OPOS/QtWrappers/Scanner.h>
 
 //--------------------------------------------------------------------------------
 /// Константы OPOS-cканеров.
-namespace COPOSScanners
-{
-    /// Величина префикса удаляемых данных.
-    const int Prefix = 4;
+namespace COPOSScanners {
+/// Величина префикса удаляемых данных.
+const int Prefix = 4;
 
-    /// Таймаут Claim-а, [мс]. Связи с реальностью почти не имеет.
-    const int ClaimTimeout = 20 * 60 * 1000;
+/// Таймаут Claim-а, [мс]. Связи с реальностью почти не имеет.
+const int ClaimTimeout = 20 * 60 * 1000;
 
-    /// Количество попыток для Claim-а при определенных ошибках.
-    const int ClaimAttempts = 10;
+/// Количество попыток для Claim-а при определенных ошибках.
+const int ClaimAttempts = 10;
 } // namespace COPOSScanners
 
 //--------------------------------------------------------------------------------
 typedef HIDBase<OPOSPollingDeviceBase<ProtoOPOSScanner, OPOS::OPOSScanner>> TPollingOPOSScanner;
 
-class OPOSMetrologicScanner : public TPollingOPOSScanner
-{
+class OPOSMetrologicScanner : public TPollingOPOSScanner {
     SET_SERIES("Honeywell")
 
     Q_OBJECT
 
-  public:
+public:
     OPOSMetrologicScanner();
 
     /// Возвращает список сконфигурированных OPOS устройств.
@@ -46,11 +40,11 @@ class OPOSMetrologicScanner : public TPollingOPOSScanner
     /// Включает/выключает устройство на чтение штрих-кодов. Пикать все равно будет.
     virtual bool enable(bool aReady);
 
-  protected slots:
+protected slots:
     /// Вызывается по приходу данных от сканера.
     void onGotData(const QString &aName, int aArgumentsCount, void *aArgumentsValues);
 
-  protected:
+protected:
     /// Инициализировать ресурсы.
     virtual void initializeResources();
 

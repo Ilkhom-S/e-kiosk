@@ -6,11 +6,10 @@
 #include <Hardware/Printers/StarMemorySwitches.h>
 
 //--------------------------------------------------------------------------------
-class StarPrinter : public TSerialPrinterBase
-{
+class StarPrinter : public TSerialPrinterBase {
     SET_SERIES("STAR")
 
-  public:
+public:
     StarPrinter();
 
     /// Задаёт лог.
@@ -19,7 +18,7 @@ class StarPrinter : public TSerialPrinterBase
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Анализирует коды статусов устройства и фильтрует лишние.
     virtual void cleanStatusCodes(TStatusCodes &aStatusCodes);
 
@@ -75,7 +74,8 @@ class StarPrinter : public TSerialPrinterBase
     bool isPaperInPresenter();
 
     /// Наложить маску на 1 байт и сдвинуть.
-    inline int shiftData(const QByteArray aAnswer, int aByteNumber, int aSource, int aShift, int aDigits) const;
+    inline int shiftData(
+        const QByteArray aAnswer, int aByteNumber, int aSource, int aShift, int aDigits) const;
 
     /// Мем-свичи.
     CSTAR::TMemorySwitches mMemorySwitches;

@@ -1,36 +1,31 @@
 /* @file Принтеры семейства Star. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "StarPrinters.h"
+
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QtEndian>
 #include <QtCore/qmath.h>
-#include <Common/QtHeadersEnd.h>
 
-// Project
 #include "ModelData.h"
 #include "StarPrinterData.h"
-#include "StarPrinters.h"
 
 using namespace SDK::Driver::IOPort::COM;
 
 //--------------------------------------------------------------------------------
 // Модели данной реализации.
-namespace CSTAR
-{
-    inline QStringList getCommonModels()
-    {
-        using namespace Models;
+namespace CSTAR {
+inline QStringList getCommonModels() {
+    using namespace Models;
 
-        return QStringList() << TUP542 << TUP942 << TSP613 << TSP643 << TSP651 << TSP654 << TSP743 << TSP743II << TSP847
-                             << TSP847II << TSP828L << TSP1043 << FVP10 << Unknown;
-    }
+    return QStringList() << TUP542 << TUP942 << TSP613 << TSP643 << TSP651 << TSP654 << TSP743
+                         << TSP743II << TSP847 << TSP847II << TSP828L << TSP1043 << FVP10
+                         << Unknown;
+}
 } // namespace CSTAR
 
 //--------------------------------------------------------------------------------
-StarPrinter::StarPrinter()
-{
+StarPrinter::StarPrinter() {
     // данные порта
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR38400); // preferable for work
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);  // default
@@ -54,8 +49,7 @@ StarPrinter::StarPrinter()
     mIOMessageLogging = ELoggingType::Write;
     mNeedPaperTakeOut = false;
 
-    for (int i = 0; i < CSTAR::MemorySwitches::Amount; ++i)
-    {
+    for (int i = 0; i < CSTAR::MemorySwitches::Amount; ++i) {
         mMemorySwitches.append(CSTAR::SMemorySwitch());
     }
 
@@ -63,33 +57,28 @@ StarPrinter::StarPrinter()
 }
 
 //--------------------------------------------------------------------------------
-QStringList StarPrinter::getModelList()
-{
+QStringList StarPrinter::getModelList() {
     return CSTAR::getCommonModels();
 }
 
 //--------------------------------------------------------------------------------
-void StarPrinter::setLog(ILog *aLog)
-{
+void StarPrinter::setLog(ILog *aLog) {
     SerialPrinterBase::setLog(aLog);
 
     mMemorySwitchUtils.setLog(aLog);
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::readIdentificationAnswer(QByteArray &aAnswer)
-{
+bool StarPrinter::readIdentificationAnswer(QByteArray &aAnswer) {
     aAnswer.clear();
 
     QElapsedTimer clockTimer;
     clockTimer.start();
 
-    do
-    {
+    do {
         QByteArray data;
 
-        if (!mIOPort->read(data, 10))
-        {
+        if (!mIOPort->read(data, 10)) {
             return false;
         }
 
@@ -102,27 +91,22 @@ bool StarPrinter::readIdentificationAnswer(QByteArray &aAnswer)
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::readMSWAnswer(QByteArray &aAnswer)
-{
+bool StarPrinter::readMSWAnswer(QByteArray &aAnswer) {
     aAnswer.clear();
 
     int attempt = 0;
     bool uniteStatus = false;
 
-    do
-    {
-        if (attempt)
-        {
+    do {
+        if (attempt) {
             QByteArray data;
             QByteArray answer;
 
-            do
-            {
+            do {
                 answer.append(data);
             } while (mIOPort->read(data, 10) && !data.isEmpty());
 
-            if (!answer.isEmpty())
-            {
+            if (!answer.isEmpty()) {
                 SleepHelper::msleep(CSTAR::Timeouts::MSWGettingASB);
 
                 TStatusCodes statusCodes;
@@ -133,12 +117,10 @@ bool StarPrinter::readMSWAnswer(QByteArray &aAnswer)
         QElapsedTimer clockTimer;
         clockTimer.start();
 
-        do
-        {
+        do {
             QByteArray data;
 
-            if (!mIOPort->read(data, 10))
-            {
+            if (!mIOPort->read(data, 10)) {
                 return false;
             }
 
@@ -146,24 +128,27 @@ bool StarPrinter::readMSWAnswer(QByteArray &aAnswer)
         } while ((clockTimer.elapsed() < CSTAR::Timeouts::Default) &&
                  (aAnswer.size() < CSTAR::MemorySwitches::AnswerSize));
 
-        toLog(LogLevel::Normal, QString("%1: << {%2}").arg(mDeviceName).arg(aAnswer.toHex().data()));
+        toLog(LogLevel::Normal,
+              QString("%1: << {%2}").arg(mDeviceName).arg(aAnswer.toHex().data()));
 
-        uniteStatus = (aAnswer.size() > CSTAR::MemorySwitches::AnswerSize) || !aAnswer.endsWith(ASCII::NUL);
+        uniteStatus =
+            (aAnswer.size() > CSTAR::MemorySwitches::AnswerSize) || !aAnswer.endsWith(ASCII::NUL);
     } while (uniteStatus && (++attempt <= CSTAR::MemorySwitches::ReadingAttempts));
 
-    if (uniteStatus && (attempt == CSTAR::MemorySwitches::ReadingAttempts))
-    {
-        toLog(LogLevel::Error,
-              QString("%1: Failed to get memory switch due to merging another messages from printer").arg(mDeviceName));
+    if (uniteStatus && (attempt == CSTAR::MemorySwitches::ReadingAttempts)) {
+        toLog(
+            LogLevel::Error,
+            QString("%1: Failed to get memory switch due to merging another messages from printer")
+                .arg(mDeviceName));
         return false;
     }
 
-    if (aAnswer.size() < CSTAR::MemorySwitches::MinAnswerSize)
-    {
-        toLog(LogLevel::Error, QString("%1: Invalid answer length = %2, need = %3 minimum")
-                                   .arg(mDeviceName)
-                                   .arg(aAnswer.size())
-                                   .arg(CSTAR::MemorySwitches::MinAnswerSize));
+    if (aAnswer.size() < CSTAR::MemorySwitches::MinAnswerSize) {
+        toLog(LogLevel::Error,
+              QString("%1: Invalid answer length = %2, need = %3 minimum")
+                  .arg(mDeviceName)
+                  .arg(aAnswer.size())
+                  .arg(CSTAR::MemorySwitches::MinAnswerSize));
         return false;
     }
 
@@ -171,18 +156,15 @@ bool StarPrinter::readMSWAnswer(QByteArray &aAnswer)
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::reset()
-{
-    if (!mIOPort->write(CSTAR::Commands::Reset))
-    {
+bool StarPrinter::reset() {
+    if (!mIOPort->write(CSTAR::Commands::Reset)) {
         toLog(LogLevel::Error, mDeviceName + ": Failed to reset printer");
         return false;
     }
 
     SleepHelper::msleep(CSTAR::Timeouts::Reset);
 
-    if (!mIOPort->write(CSTAR::Commands::SetASB))
-    {
+    if (!mIOPort->write(CSTAR::Commands::SetASB)) {
         toLog(LogLevel::Error, mDeviceName + ": Failed to set ASB");
     }
 
@@ -190,39 +172,31 @@ bool StarPrinter::reset()
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::isConnected()
-{
-    if (!initializeRegisters())
-    {
+bool StarPrinter::isConnected() {
+    if (!initializeRegisters()) {
         return false;
     }
 
     // Исправленный макрос: в Qt 6/C++11 безопаснее использовать возвращаемое значение erase()
-#define STAR_FILTER_MODELS(aCondition)                                                                                 \
-    for (auto it = models.begin(); it != models.end();)                                                                \
-    {                                                                                                                  \
-        if (aCondition)                                                                                                \
-        {                                                                                                              \
-            it = models.erase(it);                                                                                     \
-        }                                                                                                              \
-        else                                                                                                           \
-        {                                                                                                              \
-            ++it;                                                                                                      \
-        }                                                                                                              \
+#define STAR_FILTER_MODELS(aCondition)                                                             \
+    for (auto it = models.begin(); it != models.end();) {                                          \
+        if (aCondition) {                                                                          \
+            it = models.erase(it);                                                                 \
+        } else {                                                                                   \
+            ++it;                                                                                  \
+        }                                                                                          \
     }
 
     CSTAR::Models::TData models = CSTAR::Models::Data.data();
     mMemorySwitches.clear();
 
-    for (int i = 0; i < CSTAR::MemorySwitches::Amount; ++i)
-    {
+    for (int i = 0; i < CSTAR::MemorySwitches::Amount; ++i) {
         mMemorySwitches.append(CSTAR::SMemorySwitch());
     }
 
     simplePoll();
 
-    if (mStatusCollection.contains(DeviceStatusCode::Error::NotAvailable))
-    {
+    if (mStatusCollection.contains(DeviceStatusCode::Error::NotAvailable)) {
         return false;
     }
 
@@ -234,25 +208,23 @@ bool StarPrinter::isConnected()
 
     bool needPaperTakeOut = mStatusCollection.contains(PrinterStatusCode::Error::NeedPaperTakeOut);
 
-    if (!isPaperInPresenter())
-    {
+    if (!isPaperInPresenter()) {
         reset();
     }
 
-    if (isPaperInPresenter() || needPaperTakeOut)
-    {
+    if (isPaperInPresenter() || needPaperTakeOut) {
         STAR_FILTER_MODELS(!it->ejector);
         mDeviceName = CSTAR::Models::UnknownEjector;
 
-        if (!needPaperTakeOut && StarPrinter::retract())
-        {
+        if (!needPaperTakeOut && StarPrinter::retract()) {
             waitEjectorState(false);
         }
     }
 
     QByteArray answer;
     // Используем QStringLiteral для оптимизации
-    QString regExpData = QStringLiteral("([A-Z0-9]+)[V|$]e?r?(%1*\\.?%1+)?").arg(QStringLiteral("[0-9]"));
+    QString regExpData =
+        QStringLiteral("([A-Z0-9]+)[V|$]e?r?(%1*\\.?%1+)?").arg(QStringLiteral("[0-9]"));
     QRegularExpression regExp(regExpData);
 
     bool loading = !isAutoDetecting();
@@ -260,13 +232,12 @@ bool StarPrinter::isConnected()
     // Qt 6: match() возвращает QRegularExpressionMatch
     QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
 
-    if (!mIOPort->write(CSTAR::Commands::GetModelData) || !readIdentificationAnswer(answer) || !match.hasMatch())
-    {
+    if (!mIOPort->write(CSTAR::Commands::GetModelData) || !readIdentificationAnswer(answer) ||
+        !match.hasMatch()) {
         QString modelName = getConfigParameter(CHardwareSDK::ModelName).toString();
         bool result = loading && models.contains(modelName);
 
-        if (result)
-        {
+        if (result) {
             mVerified = CSTAR::Models::Data[modelName].verified;
             mDeviceName = modelName;
         }
@@ -278,8 +249,8 @@ bool StarPrinter::isConnected()
     QString id = match.captured(1).simplified();
     STAR_FILTER_MODELS(it->deviceId != id);
 
-    if (loading && (getConfigParameter(CHardwareSDK::ModelName).toString() != CSTAR::Models::Unknown))
-    {
+    if (loading &&
+        (getConfigParameter(CHardwareSDK::ModelName).toString() != CSTAR::Models::Unknown)) {
         STAR_FILTER_MODELS(!it->cutter && (models.size() > 1));
     }
 
@@ -298,24 +269,21 @@ bool StarPrinter::isConnected()
                                                   << ESTARMemorySwitchTypes::VerticalMountMode;
 
     if (!mMemorySwitchUtils.update(memorySwitchTypes, memorySwitches, configuration) ||
-        !updateMemorySwitches(memorySwitches))
-    {
+        !updateMemorySwitches(memorySwitches)) {
         mInitializationError = true;
     }
 
     QString modelName = getConfigParameter(CHardwareSDK::ModelName).toString();
 
-    if (loading && models.contains(modelName))
-    {
+    if (loading && models.contains(modelName)) {
         STAR_FILTER_MODELS(it->ejector != models[modelName].ejector);
-    }
-    else if (!models.isEmpty() && (std::find_if(models.begin(), models.end(),
-                                                [&models](const CSTAR::SModelData &aModelData) -> bool
-                                                {
-                                                    return aModelData.ejector !=
-                                                           models.begin()->ejector; // Compare with first element
-                                                }) != models.end()))
-    {
+    } else if (!models.isEmpty() &&
+               (std::find_if(models.begin(),
+                             models.end(),
+                             [&models](const CSTAR::SModelData &aModelData) -> bool {
+                                 return aModelData.ejector !=
+                                        models.begin()->ejector; // Compare with first element
+                             }) != models.end())) {
 
         CSTAR::MemorySwitches::CMainSettings mainSettings;
         QVariantMap mainInitConfiguration;
@@ -324,36 +292,33 @@ bool StarPrinter::isConnected()
         auto currentKeys = models.keys();
         CSTAR::TModels modelNames(currentKeys.begin(), currentKeys.end());
 
-        for (auto itMap = mainSettings.data().begin(); itMap != mainSettings.data().end(); ++itMap)
-        {
-            if (!(itMap->models & modelNames).isEmpty())
-            {
+        for (auto itMap = mainSettings.data().begin(); itMap != mainSettings.data().end();
+             ++itMap) {
+            if (!(itMap->models & modelNames).isEmpty()) {
                 mainMemorySwitchTypes << itMap.key();
             }
         }
 
-        for (auto itMap = mainSettings.data().begin(); itMap != mainSettings.data().end(); ++itMap)
-        {
+        for (auto itMap = mainSettings.data().begin(); itMap != mainSettings.data().end();
+             ++itMap) {
             if ((!mainMemorySwitchTypes.contains(itMap.key()) && itMap->models.isEmpty()) ||
-                !(itMap->models & modelNames).isEmpty())
-            {
+                !(itMap->models & modelNames).isEmpty()) {
                 // В Qt 6 insert() выполняет роль unite() для QMap
                 mainInitConfiguration.insert(itMap->configuration);
             }
         }
 
-        if (mMemorySwitchUtils.update(mainSettings.data().keys(), memorySwitches, mainInitConfiguration) &&
-            updateMemorySwitches(memorySwitches))
-        {
-            processReceipt(QStringList() << QString(QByteArray("test ").repeated(20)).split(ASCII::Space));
+        if (mMemorySwitchUtils.update(
+                mainSettings.data().keys(), memorySwitches, mainInitConfiguration) &&
+            updateMemorySwitches(memorySwitches)) {
+            processReceipt(QStringList()
+                           << QString(QByteArray("test ").repeated(20)).split(ASCII::Space));
 
             bool ejectorBusy = waitEjectorState(true);
             STAR_FILTER_MODELS(ejectorBusy != it->ejector);
 
             retract();
-        }
-        else
-        {
+        } else {
             STAR_FILTER_MODELS(it->ejector);
         }
     }
@@ -366,8 +331,7 @@ bool StarPrinter::isConnected()
     mVerified = CSTAR::Models::Data[mDeviceName].verified;
     mModelCompatibility = mModels.contains(mDeviceName);
 
-    if (match.lastCapturedIndex() >= 2)
-    {
+    if (match.lastCapturedIndex() >= 2) {
         setDeviceParameter(CDeviceData::Firmware, match.captured(2));
 
         double firmware = match.captured(2).toDouble();
@@ -379,10 +343,8 @@ bool StarPrinter::isConnected()
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::setMemorySwitch(int aSwitch, ushort aValue)
-{
-    if (!mIOPort->write(CSTAR::Commands::setMemorySwitch(char(aSwitch), aValue)))
-    {
+bool StarPrinter::setMemorySwitch(int aSwitch, ushort aValue) {
+    if (!mIOPort->write(CSTAR::Commands::setMemorySwitch(char(aSwitch), aValue))) {
         return false;
     }
 
@@ -392,61 +354,57 @@ bool StarPrinter::setMemorySwitch(int aSwitch, ushort aValue)
 }
 
 //--------------------------------------------------------------------------------
-void StarPrinter::getMemorySwitches()
-{
+void StarPrinter::getMemorySwitches() {
     TStatusCodes statusCodes;
 
-    if (!getStatus(statusCodes) || statusCodes.contains(PrinterStatusCode::Error::NeedPaperTakeOut) ||
-        (statusCodes.contains(PrinterStatusCode::OK::PaperInPresenter) && !retract()))
-    {
+    if (!getStatus(statusCodes) ||
+        statusCodes.contains(PrinterStatusCode::Error::NeedPaperTakeOut) ||
+        (statusCodes.contains(PrinterStatusCode::OK::PaperInPresenter) && !retract())) {
         return;
     }
 
-    for (int i = 0; i < CSTAR::MemorySwitches::Amount; ++i)
-    {
+    for (int i = 0; i < CSTAR::MemorySwitches::Amount; ++i) {
         ushort value;
         mMemorySwitches[i].valid = getMemorySwitch(i, value);
 
-        if (mMemorySwitches[i].valid)
-        {
+        if (mMemorySwitches[i].valid) {
             mMemorySwitches[i].value = value;
-        }
-        else
-        {
-            toLog(LogLevel::Error, QString("%1: Failed to get memory switch %2").arg(mDeviceName).arg(uchar(i), 1, 16));
+        } else {
+            toLog(LogLevel::Error,
+                  QString("%1: Failed to get memory switch %2")
+                      .arg(mDeviceName)
+                      .arg(uchar(i), 1, 16));
         }
     }
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::getMemorySwitch(int aSwitch, ushort &aValue)
-{
+bool StarPrinter::getMemorySwitch(int aSwitch, ushort &aValue) {
     QByteArray request = CSTAR::Commands::getMemorySwitch(char(aSwitch));
     QByteArray answer;
 
-    if (!mIOPort->write(request) || !readMSWAnswer(answer))
-    {
+    if (!mIOPort->write(request) || !readMSWAnswer(answer)) {
         return false;
     }
 
-    if (answer.size() < CSTAR::MemorySwitches::MinAnswerSize)
-    {
-        toLog(LogLevel::Error, QString("%1: Invalid answer length = %2, need = %3 minimum")
-                                   .arg(mDeviceName)
-                                   .arg(answer.size())
-                                   .arg(CSTAR::MemorySwitches::MinAnswerSize));
+    if (answer.size() < CSTAR::MemorySwitches::MinAnswerSize) {
+        toLog(LogLevel::Error,
+              QString("%1: Invalid answer length = %2, need = %3 minimum")
+                  .arg(mDeviceName)
+                  .arg(answer.size())
+                  .arg(CSTAR::MemorySwitches::MinAnswerSize));
         return false;
     }
 
     char requestNumber = request[2];
     char answerNumber = answer[2];
 
-    if (requestNumber != answerNumber)
-    {
-        toLog(LogLevel::Error, QString("%1: Invalid switch number = %2, need = %3")
-                                   .arg(mDeviceName)
-                                   .arg(ProtocolUtils::toHexLog(answerNumber))
-                                   .arg(ProtocolUtils::toHexLog(requestNumber)));
+    if (requestNumber != answerNumber) {
+        toLog(LogLevel::Error,
+              QString("%1: Invalid switch number = %2, need = %3")
+                  .arg(mDeviceName)
+                  .arg(ProtocolUtils::toHexLog(answerNumber))
+                  .arg(ProtocolUtils::toHexLog(requestNumber)));
         return false;
     }
 
@@ -454,9 +412,9 @@ bool StarPrinter::getMemorySwitch(int aSwitch, ushort &aValue)
     QByteArray value = answer.mid(4, 4);
     ushort result = value.toUShort(&ok, 16);
 
-    if (!ok)
-    {
-        toLog(LogLevel::Error, QString("%1: Invalid switch value = %2").arg(mDeviceName).arg(value.toHex().data()));
+    if (!ok) {
+        toLog(LogLevel::Error,
+              QString("%1: Invalid switch value = %2").arg(mDeviceName).arg(value.toHex().data()));
         return false;
     }
 
@@ -466,62 +424,56 @@ bool StarPrinter::getMemorySwitch(int aSwitch, ushort &aValue)
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::updateMemorySwitches(const CSTAR::TMemorySwitches &aMemorySwitches)
-{
-    if (aMemorySwitches != mMemorySwitches)
-    {
-        for (int i = 0; i < CSTAR::MemorySwitches::MaxNumber; ++i)
-        {
-            if ((aMemorySwitches[i].value != mMemorySwitches[i].value) && !setMemorySwitch(i, aMemorySwitches[i].value))
-            {
+bool StarPrinter::updateMemorySwitches(const CSTAR::TMemorySwitches &aMemorySwitches) {
+    if (aMemorySwitches != mMemorySwitches) {
+        for (int i = 0; i < CSTAR::MemorySwitches::MaxNumber; ++i) {
+            if ((aMemorySwitches[i].value != mMemorySwitches[i].value) &&
+                !setMemorySwitch(i, aMemorySwitches[i].value)) {
                 return false;
             }
 
             mMemorySwitches[i].value = aMemorySwitches[i].value;
         }
 
-        if (!mIOPort->write(CSTAR::Commands::WriteMemorySwitches))
-        {
+        if (!mIOPort->write(CSTAR::Commands::WriteMemorySwitches)) {
             return false;
         }
 
         SleepHelper::msleep(CSTAR::Timeouts::MSWWriting);
 
-        if (!initializeRegisters())
-        {
+        if (!initializeRegisters()) {
             return false;
         }
 
         getMemorySwitches();
     }
 
-    for (int i = 0; i < CSTAR::MemorySwitches::Amount; ++i)
-    {
+    for (int i = 0; i < CSTAR::MemorySwitches::Amount; ++i) {
         mMemorySwitches[i].valid = aMemorySwitches[i].value == mMemorySwitches[i].value;
 
-        if (!mMemorySwitches[i].valid)
-        {
-            toLog(LogLevel::Error, QString("%1: Failed to set memory switch %2 = %3, need %4")
-                                       .arg(mDeviceName)
-                                       .arg(uchar(i), 1, 16)
-                                       .arg(ProtocolUtils::toHexLog(mMemorySwitches[i].value))
-                                       .arg(ProtocolUtils::toHexLog(aMemorySwitches[i].value)));
+        if (!mMemorySwitches[i].valid) {
+            toLog(LogLevel::Error,
+                  QString("%1: Failed to set memory switch %2 = %3, need %4")
+                      .arg(mDeviceName)
+                      .arg(uchar(i), 1, 16)
+                      .arg(ProtocolUtils::toHexLog(mMemorySwitches[i].value))
+                      .arg(ProtocolUtils::toHexLog(aMemorySwitches[i].value)));
         }
     }
 
-    return !std::count_if(mMemorySwitches.begin(), mMemorySwitches.end(),
-                          [&](const CSTAR::SMemorySwitch &aMemorySwitch) -> bool { return !aMemorySwitch.valid; });
+    return !std::count_if(
+        mMemorySwitches.begin(),
+        mMemorySwitches.end(),
+        [&](const CSTAR::SMemorySwitch &aMemorySwitch) -> bool { return !aMemorySwitch.valid; });
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::initializeRegisters()
-{
+bool StarPrinter::initializeRegisters() {
     return mIOPort->write(QByteArray(CSTAR::Commands::Initialize) + CSTAR::Commands::SetASB);
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::updateParameters()
-{
+bool StarPrinter::updateParameters() {
     mFullPolling = false;
     simplePoll();
 
@@ -554,8 +506,8 @@ bool StarPrinter::updateParameters()
 
     mMemorySwitchUtils.setModels(CSTAR::TModels() << mDeviceName);
 
-    if (!mMemorySwitchUtils.update(updatedMemorySwitches) || !updateMemorySwitches(updatedMemorySwitches))
-    {
+    if (!mMemorySwitchUtils.update(updatedMemorySwitches) ||
+        !updateMemorySwitches(updatedMemorySwitches)) {
         return false;
     }
 
@@ -563,10 +515,8 @@ bool StarPrinter::updateParameters()
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt)
-{
-    if (!initializeRegisters())
-    {
+bool StarPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
+    if (!initializeRegisters()) {
         return false;
     }
 
@@ -580,8 +530,7 @@ bool StarPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt)
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::waitForPrintingEnd()
-{
+bool StarPrinter::waitForPrintingEnd() {
     mIOPort->write(CSTAR::Commands::WaitForPrintingEnd);
 
     QElapsedTimer clockTimer;
@@ -590,12 +539,10 @@ bool StarPrinter::waitForPrintingEnd()
     QByteArray answer;
     bool result = false;
 
-    do
-    {
+    do {
         QByteArray data;
 
-        if (!mIOPort->read(data, 10))
-        {
+        if (!mIOPort->read(data, 10)) {
             return false;
         }
 
@@ -609,41 +556,33 @@ bool StarPrinter::waitForPrintingEnd()
 }
 
 //---------------------------------------------------------------------------
-void StarPrinter::cleanStatusCodes(TStatusCodes &aStatusCodes)
-{
-    if (aStatusCodes.contains(PrinterStatusCode::OK::PaperInPresenter))
-    {
+void StarPrinter::cleanStatusCodes(TStatusCodes &aStatusCodes) {
+    if (aStatusCodes.contains(PrinterStatusCode::OK::PaperInPresenter)) {
         TStatusCollection lastStatusCollection = mStatusCollectionHistory.lastValue();
 
-        if (isPaperInPresenter() && mNeedPaperTakeOut)
-        {
+        if (isPaperInPresenter() && mNeedPaperTakeOut) {
             aStatusCodes.remove(PrinterStatusCode::OK::PaperInPresenter);
             aStatusCodes.insert(PrinterStatusCode::Error::NeedPaperTakeOut);
         }
     }
 
-    if (!CSTAR::Models::Data[mDeviceName].cutter)
-    {
+    if (!CSTAR::Models::Data[mDeviceName].cutter) {
         aStatusCodes.remove(PrinterStatusCode::Error::Cutter);
     }
 
-    if (!CSTAR::Models::Data[mDeviceName].headThermistor)
-    {
+    if (!CSTAR::Models::Data[mDeviceName].headThermistor) {
         aStatusCodes.remove(PrinterStatusCode::Error::Temperature);
     }
 
-    if (!CSTAR::Models::Data[mDeviceName].innerPaperEndSensor)
-    {
+    if (!CSTAR::Models::Data[mDeviceName].innerPaperEndSensor) {
         aStatusCodes.remove(PrinterStatusCode::Warning::PaperNearEnd);
     }
 
-    if (!CSTAR::Models::Data[mDeviceName].voltageSensor)
-    {
+    if (!CSTAR::Models::Data[mDeviceName].voltageSensor) {
         aStatusCodes.remove(DeviceStatusCode::Error::PowerSupply);
     }
 
-    if (!CSTAR::Models::Data[mDeviceName].ejector && (mDeviceName != CSTAR::Models::Unknown))
-    {
+    if (!CSTAR::Models::Data[mDeviceName].ejector && (mDeviceName != CSTAR::Models::Unknown)) {
         aStatusCodes.remove(DeviceStatusCode::Error::PowerSupply);
     }
 
@@ -651,15 +590,14 @@ void StarPrinter::cleanStatusCodes(TStatusCodes &aStatusCodes)
 }
 
 //--------------------------------------------------------------------------------
-int StarPrinter::shiftData(const QByteArray aAnswer, int aByteNumber, int aSource, int aShift, int aDigits) const
-{
+int StarPrinter::shiftData(
+    const QByteArray aAnswer, int aByteNumber, int aSource, int aShift, int aDigits) const {
     return int(aAnswer[aByteNumber] >> aShift) &
            (QByteArray::number(1).repeated(aDigits).toInt(0, 2) << (aSource - aShift));
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::readASBAnswer(QByteArray &aAnswer, int &aLength)
-{
+bool StarPrinter::readASBAnswer(QByteArray &aAnswer, int &aLength) {
     QElapsedTimer clockTimer;
     clockTimer.start();
 
@@ -667,19 +605,16 @@ bool StarPrinter::readASBAnswer(QByteArray &aAnswer, int &aLength)
     QByteArray data;
     QByteArray result;
 
-    do
-    {
+    do {
         data.clear();
 
-        if (!mIOPort->read(data, 10))
-        {
+        if (!mIOPort->read(data, 10)) {
             return false;
         }
 
         result.append(data);
 
-        if (!result.isEmpty())
-        {
+        if (!result.isEmpty()) {
             aLength = shiftData(result, 0, 1, 1, 3) | shiftData(result, 0, 5, 2, 1);
         }
     } while ((clockTimer.elapsed() < CSTAR::Timeouts::Status) &&
@@ -688,12 +623,10 @@ bool StarPrinter::readASBAnswer(QByteArray &aAnswer, int &aLength)
     aAnswer = result;
     QString log = QString("%1: << {%2}").arg(mDeviceName).arg(result.toHex().data());
 
-    if ((result.size() > aLength) && aLength)
-    {
+    if ((result.size() > aLength) && aLength) {
         int index = aAnswer.lastIndexOf(aAnswer.left(2));
 
-        if ((index + aLength) > aAnswer.size())
-        {
+        if ((index + aLength) > aAnswer.size()) {
             index -= aLength;
         }
 
@@ -707,32 +640,28 @@ bool StarPrinter::readASBAnswer(QByteArray &aAnswer, int &aLength)
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::getStatus(TStatusCodes &aStatusCodes)
-{
+bool StarPrinter::getStatus(TStatusCodes &aStatusCodes) {
     QByteArray answer;
     int length = 0;
 
-    if (mPollingActive && mFullPolling && !mStatusCollection.contains(PrinterStatusCode::Error::PaperEnd))
-    {
-        if (!readASBAnswer(answer, length))
-        {
+    if (mPollingActive && mFullPolling &&
+        !mStatusCollection.contains(PrinterStatusCode::Error::PaperEnd)) {
+        if (!readASBAnswer(answer, length)) {
             return false;
         }
 
-        if (answer.isEmpty())
-        {
-            if ((mStartPrinting.msecsTo(QDateTime::currentDateTime()) < CSTAR::Timeouts::Printing) ||
-                isPaperInPresenter())
-            {
+        if (answer.isEmpty()) {
+            if ((mStartPrinting.msecsTo(QDateTime::currentDateTime()) <
+                 CSTAR::Timeouts::Printing) ||
+                isPaperInPresenter()) {
                 aStatusCodes = getStatusCodes(mStatusCollection);
 
                 return true;
             }
 
-            if (!mIOPort->write(CSTAR::Commands::ETBMark) || !readASBAnswer(answer, length) || answer.isEmpty())
-            {
-                if (!isPaperInPresenter())
-                {
+            if (!mIOPort->write(CSTAR::Commands::ETBMark) || !readASBAnswer(answer, length) ||
+                answer.isEmpty()) {
+                if (!isPaperInPresenter()) {
                     return false;
                 }
 
@@ -741,61 +670,46 @@ bool StarPrinter::getStatus(TStatusCodes &aStatusCodes)
                 return true;
             }
         }
-    }
-    else
-    {
-        if (!mIOPort->write(CSTAR::Commands::ASBStatus))
-        {
+    } else {
+        if (!mIOPort->write(CSTAR::Commands::ASBStatus)) {
             return false;
         }
 
         mFullPolling = readASBAnswer(answer, length) && !answer.isEmpty();
 
-        if (!mFullPolling)
-        {
+        if (!mFullPolling) {
             return false;
         }
     }
 
-    if (!mOperatorPresence && !CSTAR::Models::Data[mDeviceName].cutter)
-    {
+    if (!mOperatorPresence && !CSTAR::Models::Data[mDeviceName].cutter) {
         aStatusCodes.insert(DeviceStatusCode::Error::Firmware);
     }
 
-    if (length < answer.size())
-    {
+    if (length < answer.size()) {
         aStatusCodes.insert(DeviceStatusCode::Error::Unknown);
-    }
-    else if (length > answer.size())
-    {
+    } else if (length > answer.size()) {
         aStatusCodes.insert(DeviceStatusCode::Warning::UnknownDataExchange);
     }
 
     int version = shiftData(answer, 1, 1, 1, 3) | shiftData(answer, 1, 5, 1, 1);
 
-    if (version < CSTAR::MinVersionNumber)
-    {
+    if (version < CSTAR::MinVersionNumber) {
         aStatusCodes.insert(DeviceStatusCode::Warning::Firmware);
     }
 
-    for (int i = 2; i < answer.size(); ++i)
-    {
-        for (auto it = CSTAR::ASBStatus[i - 1].begin(); it != CSTAR::ASBStatus[i - 1].end(); ++it)
-        {
-            if (answer[i] & (1 << it.key()))
-            {
+    for (int i = 2; i < answer.size(); ++i) {
+        for (auto it = CSTAR::ASBStatus[i - 1].begin(); it != CSTAR::ASBStatus[i - 1].end(); ++it) {
+            if (answer[i] & (1 << it.key())) {
                 aStatusCodes.insert(it.value());
             }
         }
     }
 
-    if ((CSTAR::Models::Data[mDeviceName].ejector || (mDeviceName == CSTAR::Models::Unknown)) && (answer.size() >= 9) &&
-        (answer[8] & CSTAR::PresenterStatusMask))
-    {
+    if ((CSTAR::Models::Data[mDeviceName].ejector || (mDeviceName == CSTAR::Models::Unknown)) &&
+        (answer.size() >= 9) && (answer[8] & CSTAR::PresenterStatusMask)) {
         aStatusCodes.insert(PrinterStatusCode::OK::PaperInPresenter);
-    }
-    else
-    {
+    } else {
         mNeedPaperTakeOut = false;
     }
 
@@ -803,30 +717,28 @@ bool StarPrinter::getStatus(TStatusCodes &aStatusCodes)
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::waitEjectorState(bool aBusy)
-{
-    if (mNeedPaperTakeOut)
-    {
+bool StarPrinter::waitEjectorState(bool aBusy) {
+    if (mNeedPaperTakeOut) {
         return false;
     }
 
     // TODO: добавить условие аварийного выхода при ошибке
     TStatusCodes statusCodes;
-    auto condition = [&statusCodes, &aBusy]() -> bool
-    {
-        return !statusCodes.isEmpty() && !statusCodes.contains(DeviceStatusCode::Error::NotAvailable) &&
+    auto condition = [&statusCodes, &aBusy]() -> bool {
+        return !statusCodes.isEmpty() &&
+               !statusCodes.contains(DeviceStatusCode::Error::NotAvailable) &&
                (aBusy == statusCodes.contains(PrinterStatusCode::OK::PaperInPresenter));
     };
-    bool result = PollingExpector().wait<void>(std::bind(&StarPrinter::doPoll, this, std::ref(statusCodes)), condition,
-                                               CSTAR::EjectorWaiting);
+    bool result =
+        PollingExpector().wait<void>(std::bind(&StarPrinter::doPoll, this, std::ref(statusCodes)),
+                                     condition,
+                                     CSTAR::EjectorWaiting);
 
-    if (!aBusy && !result)
-    {
+    if (!aBusy && !result) {
         mNeedPaperTakeOut = true;
     }
 
-    if (mInitialized != ERequestStatus::InProcess)
-    {
+    if (mInitialized != ERequestStatus::InProcess) {
         processStatusCodes(statusCodes);
     }
 
@@ -834,34 +746,28 @@ bool StarPrinter::waitEjectorState(bool aBusy)
 }
 
 //---------------------------------------------------------------------------
-bool StarPrinter::isPaperInPresenter()
-{
+bool StarPrinter::isPaperInPresenter() {
     return mStatusCollection.contains(PrinterStatusCode::OK::PaperInPresenter) ||
            mStatusCollection.contains(PrinterStatusCode::Error::NeedPaperTakeOut);
 }
 
 //--------------------------------------------------------------------------------
-bool StarPrinter::printImage(const QImage &aImage, const Tags::TTypes & /*aTags*/)
-{
+bool StarPrinter::printImage(const QImage &aImage, const Tags::TTypes & /*aTags*/) {
     int width = aImage.width();
     int height = aImage.height();
     int lines = qCeil(height / double(CSTAR::ImageHeight));
     int widthInBytes = qCeil(width / 8.0);
 
-    for (int i = 0; i < lines; ++i)
-    {
+    for (int i = 0; i < lines; ++i) {
         QList<QByteArray> lineData;
 
-        for (int j = 0; j < CSTAR::ImageHeight; ++j)
-        {
+        for (int j = 0; j < CSTAR::ImageHeight; ++j) {
             int index = i * CSTAR::ImageHeight + j;
 
-            if (index < height)
-            {
-                lineData << QByteArray::fromRawData((const char *)aImage.scanLine(index), widthInBytes);
-            }
-            else
-            {
+            if (index < height) {
+                lineData << QByteArray::fromRawData((const char *)aImage.scanLine(index),
+                                                    widthInBytes);
+            } else {
                 lineData << QByteArray(widthInBytes, ASCII::NUL);
             }
         }
@@ -870,15 +776,12 @@ bool StarPrinter::printImage(const QImage &aImage, const Tags::TTypes & /*aTags*
         request.append(ProtocolUtils::getBufferFromString(
             QString("%1").arg(qToBigEndian(ushort(width)), 4, 16, QChar(ASCII::Zero))));
 
-        for (int j = 0; j < width; ++j)
-        {
+        for (int j = 0; j < width; ++j) {
             QByteArray data(CSTAR::LineHeight, ASCII::NUL);
             char mask = 1 << (7 - (j % 8));
 
-            for (int k = 0; k < CSTAR::ImageHeight; ++k)
-            {
-                if (lineData[k][j / 8] & mask)
-                {
+            for (int k = 0; k < CSTAR::ImageHeight; ++k) {
+                if (lineData[k][j / 8] & mask) {
                     char dataMask = 1 << (7 - (k % 8));
                     data[k / 8] = data[k / 8] | dataMask;
                 }
@@ -887,13 +790,11 @@ bool StarPrinter::printImage(const QImage &aImage, const Tags::TTypes & /*aTags*
             request.append(data);
         }
 
-        if (i != (lines - 1))
-        {
+        if (i != (lines - 1)) {
             request.append(CSTAR::Commands::FeedImageLine);
         }
 
-        if (!mIOPort->write(request))
-        {
+        if (!mIOPort->write(request)) {
             return false;
         }
     }

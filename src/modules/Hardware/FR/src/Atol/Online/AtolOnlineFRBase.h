@@ -2,26 +2,22 @@
 
 #pragma once
 
-// Modules
-#include "Hardware/Common/TCPDeviceBase.h"
-#include "Hardware/Printers/PortPrintersBase.h"
-
-// Project
-#include "Hardware/FR/AtolOnlinePrinters.h"
 #include "../Base/Atol2FRBase.h"
 #include "../Base/Atol3/Atol3FRBase.h"
 #include "AtolOnlineFRConstants.h"
+#include "Hardware/Common/TCPDeviceBase.h"
+#include "Hardware/FR/AtolOnlinePrinters.h"
+#include "Hardware/Printers/PortPrintersBase.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class AtolOnlineFRBase : public T
-{
-  public:
+template <class T> class AtolOnlineFRBase : public T {
+public:
     AtolOnlineFRBase();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Инициализация устройства.
     virtual bool updateParameters();
 
@@ -44,11 +40,13 @@ template <class T> class AtolOnlineFRBase : public T
     virtual bool setFRParameters();
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData,
+    virtual bool performFiscal(const QStringList &aReceipt,
+                               const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
     /// Получить фискальные теги по номеру документа.
-    virtual bool getFiscalFields(quint32 aFDNumber, SDK::Driver::TFiscalPaymentData &aFPData,
+    virtual bool getFiscalFields(quint32 aFDNumber,
+                                 SDK::Driver::TFiscalPaymentData &aFPData,
                                  SDK::Driver::TComplexFiscalPaymentData &aPSData);
 
     /// Выполнить итерационный запрос фискальных тегов.
@@ -104,14 +102,12 @@ template <class T> class AtolOnlineFRBase : public T
 };
 
 //--------------------------------------------------------------------------------
-class Atol2OnlineFRBase : public AtolOnlineFRBase<Atol2FRBase>
-{
+class Atol2OnlineFRBase : public AtolOnlineFRBase<Atol2FRBase> {
     SET_SERIES("ATOL2Online")
 };
 
 //--------------------------------------------------------------------------------
-class Atol3OnlineFRBase : public AtolOnlineFRBase<Atol3FRBase>
-{
+class Atol3OnlineFRBase : public AtolOnlineFRBase<Atol3FRBase> {
     SET_SERIES("ATOL3Online")
 };
 

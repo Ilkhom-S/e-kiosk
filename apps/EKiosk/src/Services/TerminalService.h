@@ -3,30 +3,24 @@
 #pragma once
 
 // boost
-#include <boost/optional.hpp>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QObject>
-#include <QtCore/QString>
-#include <QtCore/QSharedPointer>
 #include <QtCore/QMultiMap>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QObject>
+#include <QtCore/QSharedPointer>
+#include <QtCore/QString>
 
-// Modules
 #include <Common/ILogable.h>
 
-#include <SDK/PaymentProcessor/Core/ICore.h>
-#include <SDK/PaymentProcessor/Core/IService.h>
-#include <SDK/PaymentProcessor/Core/IEventService.h>
-#include <SDK/PaymentProcessor/Core/ITerminalService.h>
-#include <SDK/PaymentProcessor/Core/Event.h>
-#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 #include <SDK/Drivers/WarningLevel.h>
+#include <SDK/PaymentProcessor/Core/Event.h>
+#include <SDK/PaymentProcessor/Core/ICore.h>
+#include <SDK/PaymentProcessor/Core/IEventService.h>
+#include <SDK/PaymentProcessor/Core/IService.h>
+#include <SDK/PaymentProcessor/Core/ITerminalService.h>
+#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
 #include <WatchServiceClient/IWatchServiceClient.h>
+#include <boost/optional.hpp>
 
-// Project
 #include "TerminalStatusDescriptions.h"
 
 class IHardwareDatabaseUtils;
@@ -37,14 +31,13 @@ class GUIService;
 class TerminalService : public QObject,
                         public SDK::PaymentProcessor::IService,
                         protected ILogable,
-                        public SDK::PaymentProcessor::ITerminalService
-{
+                        public SDK::PaymentProcessor::ITerminalService {
     Q_OBJECT
 
     /// Интервал между попытками восстановления конфигураций в минутах.
     static const int ConfigRestoreInterval = 30;
 
-  public:
+public:
     static TerminalService *instance(IApplication *aApplication);
 
     TerminalService(IApplication *aApplication);
@@ -85,7 +78,8 @@ class TerminalService : public QObject,
     virtual void needUpdateConfigs();
 
     /// Снять/поставить признак ошибки терминала
-    virtual void setTerminalError(SDK::PaymentProcessor::ETerminalError::Enum aErrorType, bool aError);
+    virtual void setTerminalError(SDK::PaymentProcessor::ETerminalError::Enum aErrorType,
+                                  bool aError);
 
     /// Проверка наличия ошибки терминала
     virtual bool isTerminalError(SDK::PaymentProcessor::ETerminalError::Enum aErrorType) const;
@@ -106,7 +100,7 @@ class TerminalService : public QObject,
     /// Получить имена всех устройств - валидаторов валюты.
     QStringList getAcceptorTypes() const;
 
-  private:
+private:
     /// Заблокирован ли?
     bool isDisabled() const;
 
@@ -126,21 +120,23 @@ class TerminalService : public QObject,
     /// Обновить статус терминала
     void updateTerminalStatus();
 
-  private slots:
+private slots:
     void onEvent(const SDK::PaymentProcessor::Event &aEvent);
 
     /// Обновление статуса устройства.
-    void onDeviceStatusChanged(const QString &aConfigName, SDK::Driver::EWarningLevel::Enum aLevel,
-                               const QString &aDescription, int aStatus);
+    void onDeviceStatusChanged(const QString &aConfigName,
+                               SDK::Driver::EWarningLevel::Enum aLevel,
+                               const QString &aDescription,
+                               int aStatus);
 
     /// Реакция на обновление конфигурации.
     void onHardwareConfigUpdated();
 
-    /// Проверка целостности конфигурационных файлов. Отправляет команду загрузки конфигураций на мониторинг в случае её
-    /// нарушения.
+    /// Проверка целостности конфигурационных файлов. Отправляет команду загрузки конфигураций на
+    /// мониторинг в случае её нарушения.
     void checkConfigsIntegrity();
 
-  private:
+private:
     IApplication *mApplication;
     SDK::PaymentProcessor::IEventService *mEventService;
     IHardwareDatabaseUtils *mDbUtils;
@@ -152,7 +148,8 @@ class TerminalService : public QObject,
 
     QSharedPointer<IWatchServiceClient> mClient;
 
-    /// Кэш значения блокировки терминала (т.к. флаг блокировки должен сохраняться, даже если БД сломана)
+    /// Кэш значения блокировки терминала (т.к. флаг блокировки должен сохраняться, даже если БД
+    /// сломана)
     mutable boost::optional<bool> mLocked;
 
     /// Кэш статуса терминала

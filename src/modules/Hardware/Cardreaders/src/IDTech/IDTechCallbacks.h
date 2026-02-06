@@ -1,6 +1,5 @@
 /* @file Колбеки для функционала dll кардридера IDTech. */
 
-// Project
 #include "IDTechReader.h"
 
 #ifndef __FUNCTION_NAME__
@@ -18,9 +17,11 @@ void logReadingMessageOut(unsigned char *, int);
 void getEMVDataPOut(int, int, unsigned char *, int, IDTTransactionData *, EMV_Callback *, int);
 void getMSRCardDataOut(int, IDTMSRData);
 void getMSRCardDataPOut(int, IDTMSRData *);
-void getCTLSCardDataOut(int, IDTMSRData); // MSR: void ctls_registerCallBk( pMSR_callBack  pCTLSf) - libIDT_KioskIII.h
-void getCTLSCardDataPOut(int,
-                         IDTMSRData *); // MSR: void ctls_registerCallBkp(pMSR_callBackp pCTLSf) - libIDT_KioskIII.h
+void getCTLSCardDataOut(
+    int, IDTMSRData); // MSR: void ctls_registerCallBk( pMSR_callBack  pCTLSf) - libIDT_KioskIII.h
+void getCTLSCardDataPOut(
+    int,
+    IDTMSRData *); // MSR: void ctls_registerCallBkp(pMSR_callBackp pCTLSf) - libIDT_KioskIII.h
 void getPinpadDataPOut(int, IDTPINData *);
 void getUpdatingStatusOut(int, int, int, int, int);
 

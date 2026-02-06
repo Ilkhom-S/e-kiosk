@@ -2,38 +2,32 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QTimer>
+
 #include "ui_MainServiceWindow.h"
-#include <Common/QtHeadersEnd.h>
 
 class WizardWindow;
 class IServiceWindow;
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------
-class MainServiceWindow : public QWidget, public Ui::MainServiceWindow
-{
+class MainServiceWindow : public QWidget, public Ui::MainServiceWindow {
     Q_OBJECT
 
-  public:
+public:
     MainServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
     bool initialize();
     void shutdown();
 
-    QWidget *getMainWidget()
-    {
-        return wPasswordPage;
-    }
+    QWidget *getMainWidget() { return wPasswordPage; }
 
     WizardWindow *getScreenByName(const QString &aScreenName);
 
     // Выход из сервисного меню
     bool closeServiceMenu(bool aExitByNotify, const QString &aMessage, bool aStartIdle = false);
 
-  private slots:
+private slots:
     // Активация/деактивация вкладок
     void onCurrentPageChanged(int aIndex);
 
@@ -67,14 +61,14 @@ class MainServiceWindow : public QWidget, public Ui::MainServiceWindow
 
     void onAbstractButtonClicked();
 
-  private:
+private:
     void applyConfiguration();
     bool applyAccessRights();
     void closeMenu(bool aStartIdle = false);
 
     void connectAllAbstractButtons(QWidget *aParentWidget);
 
-  private:
+private:
     int mCurrentPageIndex;
     QTimer mIdleTimer;
     QTimer mDateTimeTimer;

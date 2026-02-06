@@ -2,30 +2,28 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QHash>
 #include <QtQuick/QQuickImageProvider>
-#include <Common/QtHeadersEnd.h>
 
 class Skin;
 
 //------------------------------------------------------------------------------
-class SkinProvider : public QObject, public QQuickImageProvider
-{
+class SkinProvider : public QObject, public QQuickImageProvider {
     Q_OBJECT
 
-  public:
-    SkinProvider(const QString &aInterfacePath, const QString &aLogoPath, const QString &aUserLogoPath,
+public:
+    SkinProvider(const QString &aInterfacePath,
+                 const QString &aLogoPath,
+                 const QString &aUserLogoPath,
                  const Skin *aSkin);
     ~SkinProvider() {};
 
     virtual QImage requestImage(const QString &aId, QSize *aSize, const QSize &aRequestedSize);
 
-  private:
+private:
     QString getImagePath(const QString &aImageId) const;
 
-  private:
+private:
     QString mLogoPath;
     QString mUserLogoPath;
     const Skin *mSkin;

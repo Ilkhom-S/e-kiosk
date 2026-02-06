@@ -1,61 +1,52 @@
 /* @file Менеджер устройств. */
 
-// STL
-#include <algorithm>
+#include "DeviceManager.h"
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtConcurrent/QtConcurrent>
 #include <QtCore/QFutureSynchronizer>
 #include <QtCore/QRegularExpression>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/Drivers/Components.h>
 #include <SDK/Drivers/DetectingPriority.h>
 #include <SDK/Drivers/HardwareConstants.h>
 #include <SDK/Drivers/InteractionTypes.h>
 #include <SDK/Plugins/IPluginFactory.h>
 
-// Project
-#include "DeviceManager.h"
-#include "RenamingPluginPaths.h"
+#include <algorithm>
 #include <functional>
+
+#include "RenamingPluginPaths.h"
 
 using namespace SDK::Driver;
 using namespace SDK::Plugin;
 
 //--------------------------------------------------------------------------------
-DeviceManager::DeviceManager(IPluginLoader *aPluginLoader) : mPluginLoader(aPluginLoader), mStopFlag(1)
-{
+DeviceManager::DeviceManager(IPluginLoader *aPluginLoader)
+    : mPluginLoader(aPluginLoader), mStopFlag(1) {
     qRegisterMetaType<TNamedDevice>("TNamedDevice");
 }
 
 //--------------------------------------------------------------------------------
-DeviceManager::~DeviceManager()
-{
-}
+DeviceManager::~DeviceManager() {}
 
 //--------------------------------------------------------------------------------
-bool DeviceManager::initialize()
-{
+bool DeviceManager::initialize() {
     QString pluginPath;
 
     QStringList driverPlugins = mPluginLoader->getPluginList(QRegularExpression("\\.Driver\\."));
 
     // Составляем таблицу необходимых устройств.
-    foreach (pluginPath, driverPlugins)
-    {
+    foreach (pluginPath, driverPlugins) {
         TParameterList parameters = mPluginLoader->getPluginParametersDescription(pluginPath);
         mDriverParameters.insert(pluginPath, parameters);
 
         // Получаем необходимый ресурс.
-        SPluginParameter requiredResource = findParameter(CHardwareSDK::RequiredResource, parameters);
+        SPluginParameter requiredResource =
+            findParameter(CHardwareSDK::RequiredResource, parameters);
 
         QString required;
 
-        if (requiredResource.isValid())
-        {
+        if (requiredResource.isValid()) {
             required = requiredResource.defaultValue.toString();
         }
 
@@ -64,20 +55,15 @@ bool DeviceManager::initialize()
         // Получаем список системных имен, если он содержится в драйвере.
         SPluginParameter nameParameter = findParameter(CHardwareSDK::SystemName, parameters);
 
-        if (!nameParameter.name.isEmpty())
-        {
+        if (!nameParameter.name.isEmpty()) {
             QStringList systemNames = nameParameter.possibleValues.keys();
 
-            if (!systemNames.isEmpty())
-            {
-                foreach (auto systemName, systemNames)
-                {
+            if (!systemNames.isEmpty()) {
+                foreach (auto systemName, systemNames) {
                     mRDSystemNames.insert(pluginPath, systemName);
                     mFreeSystemNames.insert(systemName);
                 }
-            }
-            else
-            {
+            } else {
                 mRDSystemNames.insert(pluginPath, "");
             }
         }
@@ -94,26 +80,24 @@ bool DeviceManager::initialize()
 }
 
 //--------------------------------------------------------------------------------
-void DeviceManager::shutdown()
-{
+void DeviceManager::shutdown() {
     // Перенесено в DeviceService.
 }
 
 //--------------------------------------------------------------------------------
-IDevice *DeviceManager::acquireDevice(const QString &aInstancePath, const QString &aConfigInstancePath)
-{
-    QString configInstancePath = aConfigInstancePath.isEmpty() ? aInstancePath : aConfigInstancePath;
+IDevice *DeviceManager::acquireDevice(const QString &aInstancePath,
+                                      const QString &aConfigInstancePath) {
+    QString configInstancePath =
+        aConfigInstancePath.isEmpty() ? aInstancePath : aConfigInstancePath;
 
     // Создаем нужный плагин.
     IPlugin *plugin = mPluginLoader->createPlugin(aInstancePath, configInstancePath);
     IDevice *device = dynamic_cast<IDevice *>(plugin);
 
-    if (!device)
-    {
+    if (!device) {
         toLog(LogLevel::Error, QString("Failed to create device '%1'.").arg(aInstancePath));
 
-        if (plugin)
-        {
+        if (plugin) {
             mPluginLoader->destroyPlugin(plugin);
         }
 
@@ -125,22 +109,23 @@ IDevice *DeviceManager::acquireDevice(const QString &aInstancePath, const QStrin
     QString driverPath = aInstancePath.section(CPlugin::InstancePathSeparator, 0, 0);
 
     // Устройство может быть привязано к системному имени (например COM-порты).
-    if (mRDSystemNames.contains(driverPath))
-    {
+    if (mRDSystemNames.contains(driverPath)) {
         // Удаляем системное имя из списка доступных.
         QString systemName = config[CHardwareSDK::SystemName].toString();
 
-        if (!mFreeSystemNames.contains(systemName))
-        {
+        if (!mFreeSystemNames.contains(systemName)) {
             // Указанное системное имя недоступно.
-            toLog(LogLevel::Warning, QString("Required system name %1 is not available.").arg(systemName));
+            toLog(LogLevel::Warning,
+                  QString("Required system name %1 is not available.").arg(systemName));
 
             TParameterList &parameters = mDriverParameters[driverPath];
-            auto it = std::find_if(parameters.begin(), parameters.end(), [&](const SPluginParameter &aParameter) -> bool
-                                   { return aParameter.name == CHardwareSDK::SystemName; });
+            auto it = std::find_if(parameters.begin(),
+                                   parameters.end(),
+                                   [&](const SPluginParameter &aParameter) -> bool {
+                                       return aParameter.name == CHardwareSDK::SystemName;
+                                   });
 
-            if (it != parameters.end())
-            {
+            if (it != parameters.end()) {
                 it->possibleValues.insert(systemName, systemName);
             }
 
@@ -151,18 +136,18 @@ IDevice *DeviceManager::acquireDevice(const QString &aInstancePath, const QStrin
     }
 
     // Проверяем, есть ли ссылка не необходимый ресурс.
-    if (findParameter(CHardwareSDK::RequiredResource, mDriverParameters.value(driverPath)).isValid())
-    {
+    if (findParameter(CHardwareSDK::RequiredResource, mDriverParameters.value(driverPath))
+            .isValid()) {
         QString resourceName = config[CHardwareSDK::RequiredResource].toString();
         QString configResourceName = resourceName;
         checkITInstancePath(resourceName);
         IDevice *requiredDevice = acquireDevice(resourceName, configResourceName);
 
-        if (!requiredDevice)
-        {
-            toLog(LogLevel::Error, QString("Failed to create required resource %1 for device %2.")
-                                       .arg(config[CHardwareSDK::RequiredResource].toString())
-                                       .arg(aInstancePath));
+        if (!requiredDevice) {
+            toLog(LogLevel::Error,
+                  QString("Failed to create required resource %1 for device %2.")
+                      .arg(config[CHardwareSDK::RequiredResource].toString())
+                      .arg(aInstancePath));
             mPluginLoader->destroyPlugin(plugin);
 
             return nullptr;
@@ -177,8 +162,7 @@ IDevice *DeviceManager::acquireDevice(const QString &aInstancePath, const QStrin
     QString itType = driverPath.split(".").size() >= 4 ? driverPath.split(".")[3] : "";
 
     // Если устройство не системное - назначаем ему log и ставим тип поиска устройства.
-    if (!mRDSystemNames.contains(driverPath) || itType == CInteractionTypes::External)
-    {
+    if (!mRDSystemNames.contains(driverPath) || itType == CInteractionTypes::External) {
         setDeviceLog(device, false);
 
         QVariantMap localConfig;
@@ -194,16 +178,14 @@ IDevice *DeviceManager::acquireDevice(const QString &aInstancePath, const QStrin
 }
 
 //--------------------------------------------------------------------------------
-void DeviceManager::onConfigurationChanged()
-{
+void DeviceManager::onConfigurationChanged() {
     IDevice *device = dynamic_cast<IDevice *>(sender());
 
     dynamic_cast<IPlugin *>(device)->saveConfiguration();
 }
 
 //--------------------------------------------------------------------------------
-void DeviceManager::releaseDevice(IDevice *aDevice)
-{
+void DeviceManager::releaseDevice(IDevice *aDevice) {
     // Освобождаем устройство и все с ним связанные ресурсы.
     QVariantMap config = aDevice->getDeviceConfiguration();
 
@@ -216,19 +198,18 @@ void DeviceManager::releaseDevice(IDevice *aDevice)
     //          т.к. иначе не сможем откатиться на старую версию EK.
     // plugin->saveConfiguration();
 
-    QString driverPath = plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
+    QString driverPath =
+        plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
     mPluginLoader->destroyPlugin(plugin);
 
-    if (mRDSystemNames.contains(driverPath))
-    {
+    if (mRDSystemNames.contains(driverPath)) {
         QString systemName = config[CHardwareSDK::SystemName].toString();
         mFreeSystemNames.insert(systemName);
     }
 
     mDevicesLogData.remove(aDevice);
 
-    foreach (auto device, mDeviceDependencyMap.values(aDevice))
-    {
+    foreach (auto device, mDeviceDependencyMap.values(aDevice)) {
         // Освобождаем зависимый ресурс.
         releaseDevice(device);
 
@@ -238,18 +219,17 @@ void DeviceManager::releaseDevice(IDevice *aDevice)
 
 //--------------------------------------------------------------------------------
 // TODO: обобщить через acquireDevice.
-TNamedDevice DeviceManager::createDevice(const QString &aDriverPath, const QVariantMap &aConfig, bool aDetecting)
-{
+TNamedDevice DeviceManager::createDevice(const QString &aDriverPath,
+                                         const QVariantMap &aConfig,
+                                         bool aDetecting) {
     // Создаем нужный плагин.
     IPlugin *plugin = mPluginLoader->createPlugin(aDriverPath);
     IDevice *device = dynamic_cast<IDevice *>(plugin);
 
-    if (!device)
-    {
+    if (!device) {
         toLog(LogLevel::Error, QString("Failed to create device '%1'.").arg(aDriverPath));
 
-        if (plugin)
-        {
+        if (plugin) {
             mPluginLoader->destroyPlugin(plugin);
         }
 
@@ -260,16 +240,15 @@ TNamedDevice DeviceManager::createDevice(const QString &aDriverPath, const QVari
     auto config = aConfig;
 
     // Устройство может быть привязано к системному имени (например COM-порты).
-    if (mRDSystemNames.contains(aDriverPath))
-    {
+    if (mRDSystemNames.contains(aDriverPath)) {
         // Удаляем системное имя из списка доступных.
         QString systemName = config[CHardwareSDK::SystemName].toString();
 
-        if (!systemName.isEmpty() && !mFreeSystemNames.contains(systemName))
-        {
+        if (!systemName.isEmpty() && !mFreeSystemNames.contains(systemName)) {
             // Указанное системное имя недоступно.
             mPluginLoader->destroyPlugin(plugin);
-            toLog(LogLevel::Error, QString("Required system name %1 is not available.").arg(systemName));
+            toLog(LogLevel::Error,
+                  QString("Required system name %1 is not available.").arg(systemName));
 
             return TNamedDevice("", nullptr);
         }
@@ -278,16 +257,16 @@ TNamedDevice DeviceManager::createDevice(const QString &aDriverPath, const QVari
     }
 
     // Создаем необходимый ресурс.
-    QString requiredResourcePath = mRequiredResources.contains(aDriverPath) ? mRequiredResources[aDriverPath] : "";
+    QString requiredResourcePath =
+        mRequiredResources.contains(aDriverPath) ? mRequiredResources[aDriverPath] : "";
 
-    if (!requiredResourcePath.isEmpty())
-    {
+    if (!requiredResourcePath.isEmpty()) {
         TNamedDevice requiredDevice = createDevice(requiredResourcePath, config, aDetecting);
 
-        if (!requiredDevice.second)
-        {
+        if (!requiredDevice.second) {
             mPluginLoader->destroyPlugin(plugin);
-            toLog(LogLevel::Error, QString("Failed to create required resource '%1'.").arg(requiredResourcePath));
+            toLog(LogLevel::Error,
+                  QString("Failed to create required resource '%1'.").arg(requiredResourcePath));
 
             return TNamedDevice("", nullptr);
         }
@@ -299,8 +278,7 @@ TNamedDevice DeviceManager::createDevice(const QString &aDriverPath, const QVari
 
     device->setDeviceConfiguration(config);
 
-    if (!aDetecting)
-    {
+    if (!aDetecting) {
         setDeviceLog(device, aDetecting);
     }
 
@@ -310,14 +288,12 @@ TNamedDevice DeviceManager::createDevice(const QString &aDriverPath, const QVari
 }
 
 //--------------------------------------------------------------------------------
-QMap<QString, QStringList> DeviceManager::getModelList(const QString & /*aFilter*/)
-{
+QMap<QString, QStringList> DeviceManager::getModelList(const QString & /*aFilter*/) {
     return mDriverList;
 }
 
 //--------------------------------------------------------------------------------
-TNamedDevice DeviceManager::findDevice(IDevice *aRequired, const QStringList &aDevicesToFind)
-{
+TNamedDevice DeviceManager::findDevice(IDevice *aRequired, const QStringList &aDevicesToFind) {
     QMap<QString, IDevice *> targetDevices;
     QMap<QString, IDevice::IDetectingIterator *> detectingIterators;
     QStringList configNames;
@@ -329,18 +305,15 @@ TNamedDevice DeviceManager::findDevice(IDevice *aRequired, const QStringList &aD
     aRequired->setLog(log);
 
     // Создаем все устройства, которые собираемся искать.
-    foreach (const QString &targetDevice, aDevicesToFind)
-    {
+    foreach (const QString &targetDevice, aDevicesToFind) {
         // Создаем нужный плагин.
         IPlugin *plugin = mPluginLoader->createPlugin(targetDevice);
         IDevice *device = dynamic_cast<IDevice *>(plugin);
 
-        if (!device)
-        {
+        if (!device) {
             toLog(LogLevel::Error, QString("Failed to create device %1 .").arg(targetDevice));
 
-            if (plugin)
-            {
+            if (plugin) {
                 mPluginLoader->destroyPlugin(plugin);
             }
 
@@ -354,20 +327,19 @@ TNamedDevice DeviceManager::findDevice(IDevice *aRequired, const QStringList &aD
         // Сохраняем в конфигурации параметры по умолчанию
         TParameterList parameters = mDriverParameters[targetDevice];
 
-        for (auto it = parameters.begin(); it != parameters.end(); ++it)
-        {
+        for (auto it = parameters.begin(); it != parameters.end(); ++it) {
             config.insert(it->name, it->defaultValue);
         }
 
         config[CHardwareSDK::SearchingType] = CHardwareSDK::SearchingTypes::AutoDetecting;
         config[CHardwareSDK::RequiredDevice] = QVariant::fromValue(aRequired);
-        config[CHardwareSDK::RequiredResource] = dynamic_cast<IPlugin *>(aRequired)->getConfigurationName();
+        config[CHardwareSDK::RequiredResource] =
+            dynamic_cast<IPlugin *>(aRequired)->getConfigurationName();
 
         device->setDeviceConfiguration(config);
         IDevice::IDetectingIterator *detectingIterator = device->getDetectingIterator();
 
-        if (detectingIterator)
-        {
+        if (detectingIterator) {
             targetDevices.insert(plugin->getConfigurationName(), device);
             detectingIterators.insert(plugin->getConfigurationName(), detectingIterator);
             configNames.append(plugin->getConfigurationName());
@@ -377,28 +349,23 @@ TNamedDevice DeviceManager::findDevice(IDevice *aRequired, const QStringList &aD
     QStringList nonMarketDetectedDriverNames;
 
     // Делаем одну итерацию поиска для каждого устройства.
-    while (!configNames.isEmpty())
-    {
-        foreach (const QString &targetDevice, configNames)
-        {
+    while (!configNames.isEmpty()) {
+        foreach (const QString &targetDevice, configNames) {
             // Если возможности для перебора исчерпаны, то удаляем итератор.
             IDevice::IDetectingIterator *detectIterator = detectingIterators.value(targetDevice);
             IDevice *device = targetDevices[targetDevice];
 
-            if (mStopFlag)
-            {
+            if (mStopFlag) {
                 configNames.clear();
                 break;
             }
 
-            if (!detectIterator->moveNext() || isDetected(targetDevice))
-            {
+            if (!detectIterator->moveNext() || isDetected(targetDevice)) {
                 configNames.removeOne(targetDevice);
                 continue;
             }
 
-            if (detectIterator->find())
-            {
+            if (detectIterator->find()) {
                 // Устройство обнаружено.
                 {
                     QMutexLocker lock(&mAccessMutex);
@@ -412,12 +379,9 @@ TNamedDevice DeviceManager::findDevice(IDevice *aRequired, const QStringList &aD
                 emit deviceDetected(targetDevice, device);
 
                 if (device->getDeviceConfiguration()[CHardwareSDK::Existence].toString() !=
-                    CHardwareSDK::ExistenceTypes::Multiple)
-                {
+                    CHardwareSDK::ExistenceTypes::Multiple) {
                     markDetected(targetDevice);
-                }
-                else
-                {
+                } else {
                     nonMarketDetectedDriverNames << targetDevice;
                 }
 
@@ -429,16 +393,13 @@ TNamedDevice DeviceManager::findDevice(IDevice *aRequired, const QStringList &aD
         }
     }
 
-    foreach (const QString &driverName, nonMarketDetectedDriverNames)
-    {
+    foreach (const QString &driverName, nonMarketDetectedDriverNames) {
         markDetected(driverName);
     }
 
     // Уничтожаем все драйверы, устройства которых не были обнаружены.
-    foreach (IDevice *device, targetDevices.values())
-    {
-        if (device != result)
-        {
+    foreach (IDevice *device, targetDevices.values()) {
+        if (device != result) {
             mPluginLoader->destroyPlugin(dynamic_cast<IPlugin *>(device));
         }
     }
@@ -447,21 +408,24 @@ TNamedDevice DeviceManager::findDevice(IDevice *aRequired, const QStringList &aD
 }
 
 //--------------------------------------------------------------------------------
-void DeviceManager::findSimpleDevice(const QString &aDriverName, QStringList &aResult,
-                                     TFallbackDevices &aFallbackDevices, QStringList &aNonMarketDetectedDriverNames)
-{
+void DeviceManager::findSimpleDevice(const QString &aDriverName,
+                                     QStringList &aResult,
+                                     TFallbackDevices &aFallbackDevices,
+                                     QStringList &aNonMarketDetectedDriverNames) {
     bool detected = false;
 
     TNamedDevice namedDevice;
     QVariantMap emptyConfig;
     bool createSimple = true;
-    QMetaObject::invokeMethod(this, "createDevice", Qt::BlockingQueuedConnection,
+    QMetaObject::invokeMethod(this,
+                              "createDevice",
+                              Qt::BlockingQueuedConnection,
                               QGenericReturnArgument("TNamedDevice", &namedDevice),
-                              QGenericArgument("QString", &aDriverName), QGenericArgument("QVariantMap", &emptyConfig),
+                              QGenericArgument("QString", &aDriverName),
+                              QGenericArgument("QVariantMap", &emptyConfig),
                               QGenericArgument("bool", &createSimple));
 
-    if (!namedDevice.second)
-    {
+    if (!namedDevice.second) {
         return;
     }
 
@@ -472,58 +436,52 @@ void DeviceManager::findSimpleDevice(const QString &aDriverName, QStringList &aR
     IDevice::IDetectingIterator *detectingIterator = namedDevice.second->getDetectingIterator();
     int iterations = 0;
 
-    while (detectingIterator && detectingIterator->moveNext())
-    {
+    while (detectingIterator && detectingIterator->moveNext()) {
         iterations++;
         setDeviceLog(namedDevice.second, true);
 
-        if (!isDetected(aDriverName) && detectingIterator->find())
-        {
+        if (!isDetected(aDriverName) && detectingIterator->find()) {
             detected = true;
 
-            SPluginParameter parameter =
-                findParameter(CHardwareSDK::DetectingPriority, mDriverParameters.value(aDriverName));
+            SPluginParameter parameter = findParameter(CHardwareSDK::DetectingPriority,
+                                                       mDriverParameters.value(aDriverName));
 
-            if (!parameter.isValid() || parameter.defaultValue.toInt() != DSDK::EDetectingPriority::Fallback)
-            {
+            if (!parameter.isValid() ||
+                parameter.defaultValue.toInt() != DSDK::EDetectingPriority::Fallback) {
                 aResult.append(namedDevice.first);
 
-                if (namedDevice.second->getDeviceConfiguration()[CHardwareSDK::Existence].toString() !=
-                    CHardwareSDK::ExistenceTypes::Multiple)
-                {
+                if (namedDevice.second->getDeviceConfiguration()[CHardwareSDK::Existence]
+                        .toString() != CHardwareSDK::ExistenceTypes::Multiple) {
                     markDetected(aDriverName);
-                }
-                else
-                {
+                } else {
                     aNonMarketDetectedDriverNames << aDriverName;
                 }
 
                 setDeviceLog(namedDevice.second, false);
 
                 emit deviceDetected(namedDevice.first, namedDevice.second);
-            }
-            else
-            {
+            } else {
                 aFallbackDevices.append(namedDevice);
             }
 
             if (namedDevice.second->getDeviceConfiguration()[CHardwareSDK::Existence].toString() !=
-                CHardwareSDK::ExistenceTypes::Multiple)
-            {
+                CHardwareSDK::ExistenceTypes::Multiple) {
                 break;
             }
 
             QVariantMap emptyConfig2;
             bool createSimple2 = true;
-            QMetaObject::invokeMethod(
-                this, "createDevice", Qt::BlockingQueuedConnection,
-                QGenericReturnArgument("TNamedDevice", &namedDevice), QGenericArgument("QString", &aDriverName),
-                QGenericArgument("QVariantMap", &emptyConfig2), QGenericArgument("bool", &createSimple2));
+            QMetaObject::invokeMethod(this,
+                                      "createDevice",
+                                      Qt::BlockingQueuedConnection,
+                                      QGenericReturnArgument("TNamedDevice", &namedDevice),
+                                      QGenericArgument("QString", &aDriverName),
+                                      QGenericArgument("QVariantMap", &emptyConfig2),
+                                      QGenericArgument("bool", &createSimple2));
 
             detected = false;
 
-            if (!namedDevice.second)
-            {
+            if (!namedDevice.second) {
                 break;
             }
 
@@ -531,37 +489,30 @@ void DeviceManager::findSimpleDevice(const QString &aDriverName, QStringList &aR
             detectingIterator = namedDevice.second->getDetectingIterator();
             int maxIterations = iterations;
 
-            while (maxIterations--)
-            {
+            while (maxIterations--) {
                 detectingIterator->moveNext();
             }
         }
     }
 
-    if (!detected)
-    {
+    if (!detected) {
         releaseDevice(namedDevice.second);
     }
 }
 
 //--------------------------------------------------------------------------------
-void DeviceManager::logRequiredDeviceData()
-{
-    QStringList interactionTypes = QStringList()
-                                   << CInteractionTypes::COM << CInteractionTypes::USB << CInteractionTypes::LibUSB;
+void DeviceManager::logRequiredDeviceData() {
+    QStringList interactionTypes = QStringList() << CInteractionTypes::COM << CInteractionTypes::USB
+                                                 << CInteractionTypes::LibUSB;
 
     QStringList driverList = mDriverList.keys();
 
-    foreach (const QString &interactionType, interactionTypes)
-    {
-        foreach (const QString &driverName, driverList)
-        {
-            if (driverName.split('.').last() == interactionType)
-            {
+    foreach (const QString &interactionType, interactionTypes) {
+        foreach (const QString &driverName, driverList) {
+            if (driverName.split('.').last() == interactionType) {
                 IDevice *required = createDevice(driverName, QVariantMap(), true).second;
 
-                if (required)
-                {
+                if (required) {
                     QString logName = QString("autodetect/%1 ports").arg(interactionType);
                     ILog *log = ILog::getInstance(logName);
                     required->setLog(log);
@@ -574,8 +525,7 @@ void DeviceManager::logRequiredDeviceData()
 }
 
 //--------------------------------------------------------------------------------
-QStringList DeviceManager::detect(const QString & /*aDeviceType*/)
-{
+QStringList DeviceManager::detect(const QString & /*aDeviceType*/) {
     logRequiredDeviceData();
 
     QStringList result;
@@ -591,29 +541,25 @@ QStringList DeviceManager::detect(const QString & /*aDeviceType*/)
     QStringList TCPDevices = allDevices.filter(CInteractionTypes::TCP, Qt::CaseInsensitive);
     QStringList simpleDevices = mRequiredResources.keys("") + TCPDevices;
 
-    QStringSet OPOSDevices(simpleDevices.filter(CInteractionTypes::OPOS, Qt::CaseInsensitive).begin(),
-                           simpleDevices.filter(CInteractionTypes::OPOS, Qt::CaseInsensitive).end());
+    QStringSet OPOSDevices(
+        simpleDevices.filter(CInteractionTypes::OPOS, Qt::CaseInsensitive).begin(),
+        simpleDevices.filter(CInteractionTypes::OPOS, Qt::CaseInsensitive).end());
     QStringSet nonOPOSDevices(simpleDevices.begin(), simpleDevices.end());
     nonOPOSDevices -= OPOSDevices;
 
-    foreach (const QString &driverName, nonOPOSDevices)
-    {
-        if (!mRDSystemNames.contains(driverName))
-        {
+    foreach (const QString &driverName, nonOPOSDevices) {
+        if (!mRDSystemNames.contains(driverName)) {
             findSimpleDevice(driverName, result, fallbackDevices, nonMarketDetectedDriverNames);
         }
     }
 
-    foreach (const QString &driverName, OPOSDevices)
-    {
-        if (!mRDSystemNames.contains(driverName))
-        {
+    foreach (const QString &driverName, OPOSDevices) {
+        if (!mRDSystemNames.contains(driverName)) {
             findSimpleDevice(driverName, result, fallbackDevices, nonMarketDetectedDriverNames);
         }
     }
 
-    foreach (const QString &driverName, nonMarketDetectedDriverNames)
-    {
+    foreach (const QString &driverName, nonMarketDetectedDriverNames) {
         markDetected(driverName);
     }
 
@@ -621,34 +567,36 @@ QStringList DeviceManager::detect(const QString & /*aDeviceType*/)
     QVector<IDevice *> requiredList;
 
     // Для каждого ресурса берем список системных имен, связанных с ресурсом.
-    foreach (const QString &requiredDevice, QStringSet(mRDSystemNames.keys().begin(), mRDSystemNames.keys().end()))
-    {
+    foreach (const QString &requiredDevice,
+             QStringSet(mRDSystemNames.keys().begin(), mRDSystemNames.keys().end())) {
         QStringList devicesToFind = mRequiredResources.keys(requiredDevice);
 
-        if (devicesToFind.isEmpty() || requiredDevice.contains(CInteractionTypes::TCP))
-        {
+        if (devicesToFind.isEmpty() || requiredDevice.contains(CInteractionTypes::TCP)) {
             continue;
         }
 
-        std::sort(devicesToFind.begin(), devicesToFind.end(),
-                  std::bind(&DeviceManager::deviceSortPredicate, this, std::placeholders::_1, std::placeholders::_2));
+        std::sort(devicesToFind.begin(),
+                  devicesToFind.end(),
+                  std::bind(&DeviceManager::deviceSortPredicate,
+                            this,
+                            std::placeholders::_1,
+                            std::placeholders::_2));
 
         // Для каждого системного имени создаем устройство.
-        foreach (const QString &systemName, mRDSystemNames.values(requiredDevice))
-        {
+        foreach (const QString &systemName, mRDSystemNames.values(requiredDevice)) {
             QVariantMap config;
             config[CHardwareSDK::SystemName] = systemName;
 
             TNamedDevice required = createDevice(requiredDevice, config, true);
 
-            if (!required.second)
-            {
+            if (!required.second) {
                 continue;
             }
 
             // Запускаем асинхронный поиск.
-            synchronizer.addFuture(QtConcurrent::run([this, required, devicesToFind]()
-                                                     { return findDevice(required.second, devicesToFind); }));
+            synchronizer.addFuture(QtConcurrent::run([this, required, devicesToFind]() {
+                return findDevice(required.second, devicesToFind);
+            }));
             requiredList.append(required.second);
         }
     }
@@ -659,16 +607,12 @@ QStringList DeviceManager::detect(const QString & /*aDeviceType*/)
     // Формируем результат.
     int i = 0;
 
-    foreach (QFuture<TNamedDevice> future, synchronizer.futures())
-    {
+    foreach (QFuture<TNamedDevice> future, synchronizer.futures()) {
         IDevice *device = future.result().second;
 
-        if (device)
-        {
+        if (device) {
             result.append(future.result().first);
-        }
-        else
-        {
+        } else {
             // Уничтожаем ресурс, т.к. на нем ничего не найдено.
             releaseDevice(requiredList[i]);
         }
@@ -677,10 +621,8 @@ QStringList DeviceManager::detect(const QString & /*aDeviceType*/)
     }
 
     // Производим откат устройств, если требуется.
-    foreach (const TNamedDevice &device, fallbackDevices)
-    {
-        if (!isDetected(device.first))
-        {
+    foreach (const TNamedDevice &device, fallbackDevices) {
+        if (!isDetected(device.first)) {
             setDeviceLog(device.second, false);
 
             emit deviceDetected(device.first, device.second);
@@ -693,46 +635,43 @@ QStringList DeviceManager::detect(const QString & /*aDeviceType*/)
 }
 
 //------------------------------------------------------------------------------
-void DeviceManager::changeInstancePath(QString &aInstancePath, const QString &aConfigPath, const TPaths &aPaths)
-{
+void DeviceManager::changeInstancePath(QString &aInstancePath,
+                                       const QString &aConfigPath,
+                                       const TPaths &aPaths) {
     QString driverPath = aInstancePath.section(CPlugin::InstancePathSeparator, 0, 0);
 
-    for (auto it = aPaths.begin(); it != aPaths.end(); ++it)
-    {
+    for (auto it = aPaths.begin(); it != aPaths.end(); ++it) {
         QString oldPath = it.key();
 
-        if (driverPath.toLower() == oldPath.toLower())
-        {
-            for (auto jt = it->begin(); jt != it->end(); ++jt)
-            {
+        if (driverPath.toLower() == oldPath.toLower()) {
+            for (auto jt = it->begin(); jt != it->end(); ++jt) {
                 QString newPath = *jt;
-                QVariantMap config = mPluginLoader->getPluginInstanceConfiguration(newPath, aConfigPath);
-                SPluginParameter nameParameter = findParameter(CHardwareSDK::ModelName, getDriverParameters(newPath));
+                QVariantMap config =
+                    mPluginLoader->getPluginInstanceConfiguration(newPath, aConfigPath);
+                SPluginParameter nameParameter =
+                    findParameter(CHardwareSDK::ModelName, getDriverParameters(newPath));
 
-                if (nameParameter.isValid())
-                {
+                if (nameParameter.isValid()) {
                     QString configProtocolName = config[CHardwareSDK::ProtocolName].toString();
                     SPluginParameter protocolParameter =
                         findParameter(CHardwareSDK::ProtocolName, getDriverParameters(newPath));
 
                     bool protocolOK = configProtocolName.isEmpty();
 
-                    if (!protocolOK && protocolParameter.isValid())
-                    {
+                    if (!protocolOK && protocolParameter.isValid()) {
                         QStringList possibleProtocolNames = protocolParameter.possibleValues.keys();
 
-                        if (!possibleProtocolNames.isEmpty())
-                        {
-                            protocolOK = possibleProtocolNames.contains(configProtocolName, Qt::CaseInsensitive);
+                        if (!possibleProtocolNames.isEmpty()) {
+                            protocolOK = possibleProtocolNames.contains(configProtocolName,
+                                                                        Qt::CaseInsensitive);
                         }
                     }
 
                     QStringList possibleModelNames = nameParameter.possibleValues.keys();
                     QString configModelName = config[CHardwareSDK::ModelName].toString();
 
-                    if (possibleModelNames.contains(configModelName, Qt::CaseInsensitive) && protocolOK &&
-                        (driverPath != newPath))
-                    {
+                    if (possibleModelNames.contains(configModelName, Qt::CaseInsensitive) &&
+                        protocolOK && (driverPath != newPath)) {
                         aInstancePath.replace(oldPath, newPath);
 
                         return;
@@ -744,8 +683,7 @@ void DeviceManager::changeInstancePath(QString &aInstancePath, const QString &aC
 }
 
 //------------------------------------------------------------------------------
-void DeviceManager::checkITInstancePath(QString &aInstancePath)
-{
+void DeviceManager::checkITInstancePath(QString &aInstancePath) {
     QString configPath = aInstancePath;
     checkInstancePath(aInstancePath);
 
@@ -754,20 +692,22 @@ void DeviceManager::checkITInstancePath(QString &aInstancePath)
                  TNewPaths() << "Common.Driver.FiscalRegistrator.COM.ATOL"
                              << "Common.Driver.FiscalRegistrator.COM.ATOL.PayCTS2000"
                              << "Common.Driver.FiscalRegistrator.COM.ATOL.Single");
-    paths.insert("Common.Driver.DocumentPrinter.COM.ATOL", TNewPaths()
-                                                               << "Common.Driver.DocumentPrinter.COM.ATOL"
-                                                               << "Common.Driver.DocumentPrinter.COM.ATOL.Single");
-    paths.insert("Common.Driver.Printer.COM.POS.Custom", TNewPaths() << "Common.Driver.Printer.COM.POS.Custom"
-                                                                     << "Common.Driver.Printer.COM.POS.CustomTG2480H");
+    paths.insert("Common.Driver.DocumentPrinter.COM.ATOL",
+                 TNewPaths() << "Common.Driver.DocumentPrinter.COM.ATOL"
+                             << "Common.Driver.DocumentPrinter.COM.ATOL.Single");
+    paths.insert("Common.Driver.Printer.COM.POS.Custom",
+                 TNewPaths() << "Common.Driver.Printer.COM.POS.Custom"
+                             << "Common.Driver.Printer.COM.POS.CustomTG2480H");
 
-    paths.insert("Common.Driver.BillAcceptor.COM", TNewPaths() << "Common.Driver.BillAcceptor.COM.CCNet"
-                                                               << "Common.Driver.BillAcceptor.COM.CCNet.CashcodeGX"
-                                                               << "Common.Driver.BillAcceptor.COM.CCNet.Creator"
-                                                               << "Common.Driver.BillAcceptor.COM.CCNet.Recycler"
-                                                               << "Common.Driver.BillAcceptor.COM.EBDS"
-                                                               << "Common.Driver.BillAcceptor.COM.ICT"
-                                                               << "Common.Driver.BillAcceptor.COM.ID003"
-                                                               << "Common.Driver.BillAcceptor.COM.V2e");
+    paths.insert("Common.Driver.BillAcceptor.COM",
+                 TNewPaths() << "Common.Driver.BillAcceptor.COM.CCNet"
+                             << "Common.Driver.BillAcceptor.COM.CCNet.CashcodeGX"
+                             << "Common.Driver.BillAcceptor.COM.CCNet.Creator"
+                             << "Common.Driver.BillAcceptor.COM.CCNet.Recycler"
+                             << "Common.Driver.BillAcceptor.COM.EBDS"
+                             << "Common.Driver.BillAcceptor.COM.ICT"
+                             << "Common.Driver.BillAcceptor.COM.ID003"
+                             << "Common.Driver.BillAcceptor.COM.V2e");
 
     paths.insert("Common.Driver.FiscalRegistrator.TCP.ShtrihOnline.Pay",
                  TNewPaths() << "Common.Driver.FiscalRegistrator.TCP.ShtrihOnline.Ejector");
@@ -788,8 +728,7 @@ void DeviceManager::checkITInstancePath(QString &aInstancePath)
 
     QStringList pathData = aInstancePath.split(".");
 
-    if (pathData.size() > 4)
-    {
+    if (pathData.size() > 4) {
         if (!pathData[4].compare("ATOL", Qt::CaseInsensitive))
             pathData[4] = pathData[4].replace("ATOL", "ATOL2", Qt::CaseInsensitive);
         if (!pathData[4].compare("AtolOnline", Qt::CaseInsensitive))
@@ -800,35 +739,36 @@ void DeviceManager::checkITInstancePath(QString &aInstancePath)
 }
 
 //------------------------------------------------------------------------------
-void DeviceManager::checkInstancePath(QString &aInstancePath)
-{
+void DeviceManager::checkInstancePath(QString &aInstancePath) {
     QStringList pluginList = mPluginLoader->getPluginList(QRegularExpression("\\.Driver\\."));
     QString initialPath = aInstancePath.section(CPlugin::InstancePathSeparator, 0, 0);
 
-    if (pluginList.contains(initialPath))
-    {
+    if (pluginList.contains(initialPath)) {
         return;
     }
 
     RenamePluginPath renamePath;
 
     // в путях плагинов присутствует IT
-    bool ITPluginPaths = std::find_if(pluginList.begin(), pluginList.end(), [&](const QString &aPath) -> bool
-                                      { return aPath.split(".").size() > 4; }) != pluginList.end();
+    bool ITPluginPaths =
+        std::find_if(pluginList.begin(), pluginList.end(), [&](const QString &aPath) -> bool {
+            return aPath.split(".").size() > 4;
+        }) != pluginList.end();
 
-    QStringList interactionTypes = QStringList() << CInteractionTypes::COM << CInteractionTypes::USB
-                                                 << CInteractionTypes::TCP << CInteractionTypes::OPOS
-                                                 << CInteractionTypes::System << CInteractionTypes::External;
+    QStringList interactionTypes = QStringList()
+                                   << CInteractionTypes::COM << CInteractionTypes::USB
+                                   << CInteractionTypes::TCP << CInteractionTypes::OPOS
+                                   << CInteractionTypes::System << CInteractionTypes::External;
 
     QStringList initialPathParts = initialPath.split(".");
-    bool noITConfigPath = !(initialPathParts.size() > 4) &&
-                          ((initialPathParts.size() < 4) || !interactionTypes.contains(initialPathParts[3]) ||
-                           renamePath.contains(initialPath));
+    bool noITConfigPath =
+        !(initialPathParts.size() > 4) &&
+        ((initialPathParts.size() < 4) || !interactionTypes.contains(initialPathParts[3]) ||
+         renamePath.contains(initialPath));
 
     QString extension = aInstancePath.section(CPlugin::InstancePathSeparator, 1, 1);
 
-    if (ITPluginPaths && noITConfigPath && renamePath.contains(initialPath))
-    {
+    if (ITPluginPaths && noITConfigPath && renamePath.contains(initialPath)) {
         aInstancePath = renamePath[initialPath] + CPlugin::InstancePathSeparator + extension;
 
         return;
@@ -842,13 +782,17 @@ void DeviceManager::checkInstancePath(QString &aInstancePath)
     typedef QMap<QString, TDeviceDependencies> TDependencies;
 
     TPathDependencies FRDependencies;
-    FRDependencies.insert("Shtrih", TPathParts() << "CommonShtrih" << "RetractorShtrih" << "Shtrih-M Yarus-01K"
-                                                 << "Shtrih-M Shtrih Kiosk-FR-K");
-    FRDependencies.insert("ATOL", TPathParts()
-                                      << "CommonATOL" << "PayVKP-80K" << "PayPPU-700K" << "ATOL FR" << "ATOL DP");
+    FRDependencies.insert("Shtrih",
+                          TPathParts()
+                              << "CommonShtrih" << "RetractorShtrih" << "Shtrih-M Yarus-01K"
+                              << "Shtrih-M Shtrih Kiosk-FR-K");
+    FRDependencies.insert("ATOL",
+                          TPathParts() << "CommonATOL" << "PayVKP-80K" << "PayPPU-700K" << "ATOL FR"
+                                       << "ATOL DP");
     FRDependencies.insert("Pay", TPathParts() << "PayVKP-80K" << "PayPPU-700K");
     FRDependencies.insert("Sunphor", TPathParts() << "Sunphor POS58IV");
-    TPathParts printerDeviceTypes = TPathParts() << CComponents::FiscalRegistrator << CComponents::DocumentPrinter;
+    TPathParts printerDeviceTypes = TPathParts() << CComponents::FiscalRegistrator
+                                                 << CComponents::DocumentPrinter;
 
     TPathDependencies cameraDependencies;
     cameraDependencies.insert("DirectX", TPathParts() << "WebCamera");
@@ -858,45 +802,42 @@ void DeviceManager::checkInstancePath(QString &aInstancePath)
     scannerDependencies.insert("Proton", TPathParts() << "Generic serial HID");
 
     TDependencies dependencies;
-    dependencies.insert(CComponents::Printer, TDeviceDependencies(printerDeviceTypes, FRDependencies));
-    dependencies.insert(CComponents::FiscalRegistrator, TDeviceDependencies(printerDeviceTypes, FRDependencies));
-    dependencies.insert(CComponents::Camera,
-                        TDeviceDependencies(TPathParts() << CComponents::Camera, cameraDependencies));
-    dependencies.insert(CComponents::Scanner,
-                        TDeviceDependencies(TPathParts() << CComponents::Scanner, scannerDependencies));
+    dependencies.insert(CComponents::Printer,
+                        TDeviceDependencies(printerDeviceTypes, FRDependencies));
+    dependencies.insert(CComponents::FiscalRegistrator,
+                        TDeviceDependencies(printerDeviceTypes, FRDependencies));
+    dependencies.insert(
+        CComponents::Camera,
+        TDeviceDependencies(TPathParts() << CComponents::Camera, cameraDependencies));
+    dependencies.insert(
+        CComponents::Scanner,
+        TDeviceDependencies(TPathParts() << CComponents::Scanner, scannerDependencies));
     QSet<QString> paths;
 
-    if (ITPluginPaths && noITConfigPath)
-    {
+    if (ITPluginPaths && noITConfigPath) {
         pluginList = renamePath.keys();
     }
 
-    for (TDependencies::iterator typeIt = dependencies.begin(); typeIt != dependencies.end(); ++typeIt)
-    {
-        if (pathParts[2].contains(typeIt.key(), Qt::CaseInsensitive))
-        {
-            foreach (const QString aDeviceType, typeIt->first)
-            {
+    for (TDependencies::iterator typeIt = dependencies.begin(); typeIt != dependencies.end();
+         ++typeIt) {
+        if (pathParts[2].contains(typeIt.key(), Qt::CaseInsensitive)) {
+            foreach (const QString aDeviceType, typeIt->first) {
                 pathParts[2] = aDeviceType;
                 QString path = pathParts.join(".");
 
-                if (pluginList.contains(path))
-                {
+                if (pluginList.contains(path)) {
                     paths << path;
                 }
 
-                for (TPathDependencies::iterator deviceIt = typeIt->second.begin(); deviceIt != typeIt->second.end();
-                     ++deviceIt)
-                {
-                    if (pathParts[3].contains(deviceIt.key(), Qt::CaseInsensitive))
-                    {
-                        foreach (const QString aDeviceExtention, deviceIt.value())
-                        {
+                for (TPathDependencies::iterator deviceIt = typeIt->second.begin();
+                     deviceIt != typeIt->second.end();
+                     ++deviceIt) {
+                    if (pathParts[3].contains(deviceIt.key(), Qt::CaseInsensitive)) {
+                        foreach (const QString aDeviceExtention, deviceIt.value()) {
                             pathParts[3] = aDeviceExtention;
                             path = pathParts.join(".");
 
-                            if (pluginList.contains(path))
-                            {
+                            if (pluginList.contains(path)) {
                                 paths << path;
                             }
                         }
@@ -906,34 +847,29 @@ void DeviceManager::checkInstancePath(QString &aInstancePath)
         }
     }
 
-    if (paths.isEmpty())
-    {
+    if (paths.isEmpty()) {
         return;
     }
 
     QSet<QString> resultPaths;
 
-    foreach (const QString &instancePath, paths)
-    {
-        if (mAcquiredDevices.contains(instancePath))
-        {
+    foreach (const QString &instancePath, paths) {
+        if (mAcquiredDevices.contains(instancePath)) {
             resultPaths << instancePath;
-        }
-        else
-        {
+        } else {
             QString fullInstancePath = instancePath + CPlugin::InstancePathSeparator + extension;
             IDevice *device = acquireDevice(fullInstancePath, aInstancePath);
 
-            if (device)
-            {
+            if (device) {
                 // имя девайса могло измениться
                 /*
                 QString configDeviceName =
                 mDeviceManager->getDeviceConfiguration(device)[CHardwareSDK::ModelName].toString();
 
                 TParameterList parameterList = mDeviceManager->getDriverParameters(instancePath);
-                TParameterList::iterator it = std::find_if(parameterList.begin(), parameterList.end(), [] (const
-                SPluginParameter & aParameter) -> bool { return aParameter.name == CHardwareSDK::ModelName; });
+                TParameterList::iterator it = std::find_if(parameterList.begin(),
+                parameterList.end(), [] (const SPluginParameter & aParameter) -> bool { return
+                aParameter.name == CHardwareSDK::ModelName; });
 
                 if ((it != parameterList.end()) && (it->type == SPluginParameter::Set) &&
                 it->possibleValues.keys().contains(configDeviceName))
@@ -949,42 +885,32 @@ void DeviceManager::checkInstancePath(QString &aInstancePath)
 
     QString path = initialPath;
 
-    if (resultPaths.size() == 1)
-    {
+    if (resultPaths.size() == 1) {
         path = *resultPaths.begin();
-    }
-    else
-    {
+    } else {
         // ищем common-путь; если найдется - используем его, не найдется - ничего не делаем
-        if (!resultPaths.isEmpty())
-        {
+        if (!resultPaths.isEmpty()) {
             paths = resultPaths;
         }
 
         QString commonPath;
 
-        foreach (const QString aPath, paths)
-        {
-            if (aPath.split(".").last().toLower().contains("common"))
-            {
+        foreach (const QString aPath, paths) {
+            if (aPath.split(".").last().toLower().contains("common")) {
                 commonPath = aPath;
 
                 break;
             }
         }
 
-        if (!commonPath.isEmpty())
-        {
+        if (!commonPath.isEmpty()) {
             path = commonPath;
-        }
-        else if (!resultPaths.isEmpty())
-        {
+        } else if (!resultPaths.isEmpty()) {
             path = *resultPaths.begin();
         }
     }
 
-    if (ITPluginPaths && noITConfigPath && renamePath.contains(path))
-    {
+    if (ITPluginPaths && noITConfigPath && renamePath.contains(path)) {
         path = renamePath[path];
     }
 
@@ -992,16 +918,13 @@ void DeviceManager::checkInstancePath(QString &aInstancePath)
 }
 
 //--------------------------------------------------------------------------------
-void DeviceManager::stopDetection()
-{
+void DeviceManager::stopDetection() {
     mStopFlag = 1;
 }
 
 //--------------------------------------------------------------------------------
-void DeviceManager::saveConfiguration(IDevice *aDevice)
-{
-    foreach (auto device, mDeviceDependencyMap.values(aDevice))
-    {
+void DeviceManager::saveConfiguration(IDevice *aDevice) {
+    foreach (auto device, mDeviceDependencyMap.values(aDevice)) {
         saveConfiguration(device);
     }
 
@@ -1009,28 +932,26 @@ void DeviceManager::saveConfiguration(IDevice *aDevice)
 }
 
 //--------------------------------------------------------------------------------
-void DeviceManager::setDeviceConfiguration(IDevice *aDevice, const QVariantMap &aConfig)
-{
+void DeviceManager::setDeviceConfiguration(IDevice *aDevice, const QVariantMap &aConfig) {
     // Вычисляем старое и новое имя системного устройства
     QString oldSystemName;
     QString newSystemName;
 
     // Проверка свободности системного устройства
-    foreach (IDevice *systemDevice, mDeviceDependencyMap.values(aDevice))
-    {
+    foreach (IDevice *systemDevice, mDeviceDependencyMap.values(aDevice)) {
         // При изменении имени системного устройства меняем его доступность
         oldSystemName = systemDevice->getDeviceConfiguration()[CHardwareSDK::SystemName].toString();
         newSystemName = aConfig[CHardwareSDK::SystemName].toString();
 
-        if (oldSystemName != newSystemName)
-        {
+        if (oldSystemName != newSystemName) {
             IPlugin *plugin = dynamic_cast<IPlugin *>(systemDevice);
-            QString driverPath = plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
+            QString driverPath =
+                plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
 
-            if (mRDSystemNames.contains(driverPath) && !mFreeSystemNames.contains(newSystemName))
-            {
+            if (mRDSystemNames.contains(driverPath) && !mFreeSystemNames.contains(newSystemName)) {
                 // Указанное системное имя недоступно.
-                toLog(LogLevel::Error, QString("Required system name %1 is not available.").arg(newSystemName));
+                toLog(LogLevel::Error,
+                      QString("Required system name %1 is not available.").arg(newSystemName));
 
                 return;
             }
@@ -1038,16 +959,14 @@ void DeviceManager::setDeviceConfiguration(IDevice *aDevice, const QVariantMap &
     }
 
     // Применяем конфигурацию к системным устройствам
-    foreach (IDevice *systemDevice, mDeviceDependencyMap.values(aDevice))
-    {
+    foreach (IDevice *systemDevice, mDeviceDependencyMap.values(aDevice)) {
         // При изменении имени системного устройства меняем его доступность
-        if (oldSystemName != newSystemName)
-        {
+        if (oldSystemName != newSystemName) {
             IPlugin *plugin = dynamic_cast<IPlugin *>(systemDevice);
-            QString driverPath = plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
+            QString driverPath =
+                plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
 
-            if (mRDSystemNames.contains(driverPath))
-            {
+            if (mRDSystemNames.contains(driverPath)) {
                 mFreeSystemNames.insert(oldSystemName);
                 mFreeSystemNames.remove(newSystemName);
             }
@@ -1066,28 +985,23 @@ void DeviceManager::setDeviceConfiguration(IDevice *aDevice, const QVariantMap &
 }
 
 //--------------------------------------------------------------------------------
-QVariantMap DeviceManager::getDeviceConfiguration(IDevice *aDevice) const
-{
+QVariantMap DeviceManager::getDeviceConfiguration(IDevice *aDevice) const {
     QVariantMap result = aDevice->getDeviceConfiguration();
 
     // Проверяем, чтобы соответствующий параметр был в описании плагина.
-    QString driverName =
-        dynamic_cast<IPlugin *>(aDevice)->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
+    QString driverName = dynamic_cast<IPlugin *>(aDevice)->getConfigurationName().section(
+        CPlugin::InstancePathSeparator, 0, 0);
 
-    foreach (const QString &paramName, result.keys())
-    {
-        if (!findParameter(paramName, mDriverParameters[driverName]).isValid())
-        {
+    foreach (const QString &paramName, result.keys()) {
+        if (!findParameter(paramName, mDriverParameters[driverName]).isValid()) {
             result.remove(paramName);
         }
     }
 
-    foreach (auto device, mDeviceDependencyMap.values(aDevice))
-    {
+    foreach (auto device, mDeviceDependencyMap.values(aDevice)) {
         auto parameters = getDeviceConfiguration(device);
 
-        for (auto it = parameters.begin(); it != parameters.end(); ++it)
-        {
+        for (auto it = parameters.begin(); it != parameters.end(); ++it) {
             result.insert(it.key(), it.value());
         }
     }
@@ -1096,12 +1010,10 @@ QVariantMap DeviceManager::getDeviceConfiguration(IDevice *aDevice) const
 }
 
 //--------------------------------------------------------------------------------
-TParameterList DeviceManager::getDriverParameters(const QString &aDriverPath) const
-{
+TParameterList DeviceManager::getDriverParameters(const QString &aDriverPath) const {
     TParameterList parameters = mDriverParameters[aDriverPath];
 
-    if (mRequiredResources.contains(aDriverPath))
-    {
+    if (mRequiredResources.contains(aDriverPath)) {
         parameters << getDriverParameters(mRequiredResources[aDriverPath]);
     }
 
@@ -1109,24 +1021,19 @@ TParameterList DeviceManager::getDriverParameters(const QString &aDriverPath) co
 }
 
 //--------------------------------------------------------------------------------
-QStringList DeviceManager::getDriverList() const
-{
+QStringList DeviceManager::getDriverList() const {
     return mRequiredResources.keys();
 }
 
 //--------------------------------------------------------------------------------
-bool DeviceManager::isDetected(const QString &aConfigName)
-{
+bool DeviceManager::isDetected(const QString &aConfigName) {
     QMutexLocker lock(&mAccessMutex);
 
     QString deviceType = aConfigName.section('.', 2, 2);
 
-    if (CComponents::isPrinter(deviceType))
-    {
-        foreach (auto type, mDetectedDeviceTypes)
-        {
-            if (CComponents::isPrinter(type))
-            {
+    if (CComponents::isPrinter(deviceType)) {
+        foreach (auto type, mDetectedDeviceTypes) {
+            if (CComponents::isPrinter(type)) {
                 return true;
             }
         }
@@ -1136,25 +1043,24 @@ bool DeviceManager::isDetected(const QString &aConfigName)
 }
 
 //--------------------------------------------------------------------------------
-void DeviceManager::markDetected(const QString &aConfigName)
-{
+void DeviceManager::markDetected(const QString &aConfigName) {
     QMutexLocker lock(&mAccessMutex);
 
     mDetectedDeviceTypes.insert(aConfigName.section('.', 2, 2));
 }
 
 //--------------------------------------------------------------------------------
-bool DeviceManager::deviceSortPredicate(const QString &aLhs, const QString &aRhs) const
-{
+bool DeviceManager::deviceSortPredicate(const QString &aLhs, const QString &aRhs) const {
     // Берем приоритеты для конкретных моделей устройств.
 
-    SPluginParameter parameter = findParameter(CHardwareSDK::DetectingPriority, mDriverParameters.value(aLhs));
-    int lhsDevicePriority =
-        parameter.isValid() ? parameter.defaultValue.value<int>() : DSDK::EDetectingPriority::Normal;
+    SPluginParameter parameter =
+        findParameter(CHardwareSDK::DetectingPriority, mDriverParameters.value(aLhs));
+    int lhsDevicePriority = parameter.isValid() ? parameter.defaultValue.value<int>()
+                                                : DSDK::EDetectingPriority::Normal;
 
     parameter = findParameter(CHardwareSDK::DetectingPriority, mDriverParameters.value(aRhs));
-    int rhsDevicePriority =
-        parameter.isValid() ? parameter.defaultValue.value<int>() : DSDK::EDetectingPriority::Normal;
+    int rhsDevicePriority = parameter.isValid() ? parameter.defaultValue.value<int>()
+                                                : DSDK::EDetectingPriority::Normal;
 
     // Производим сравнение.
 
@@ -1162,13 +1068,11 @@ bool DeviceManager::deviceSortPredicate(const QString &aLhs, const QString &aRhs
 }
 
 //--------------------------------------------------------------------------------
-QString DeviceManager::getSimpleDeviceLogName(IDevice *aDevice, bool aDetecting)
-{
+QString DeviceManager::getSimpleDeviceLogName(IDevice *aDevice, bool aDetecting) {
     QList<int> logIndexes;
     int logIndex = 0;
 
-    auto filterIndexes = [&logIndexes]() -> int
-    {
+    auto filterIndexes = [&logIndexes]() -> int {
         std::sort(logIndexes.begin(), logIndexes.end());
         if (logIndexes.isEmpty() || logIndexes[0])
             return 0;
@@ -1183,37 +1087,29 @@ QString DeviceManager::getSimpleDeviceLogName(IDevice *aDevice, bool aDetecting)
     QString interactionType = parameters[CHardwareSDK::InteractionType].toString();
 
     IPlugin *plugin = dynamic_cast<IPlugin *>(aDevice);
-    QString configPath = plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
+    QString configPath =
+        plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
 
-    if (interactionType.contains(CInteractionTypes::USB))
-    {
-        for (auto it = mDevicesLogData.begin(); it != mDevicesLogData.end(); ++it)
-        {
+    if (interactionType.contains(CInteractionTypes::USB)) {
+        for (auto it = mDevicesLogData.begin(); it != mDevicesLogData.end(); ++it) {
             QVariantMap localParameters = it.key()->getDeviceConfiguration();
-            QString localInteractionType = localParameters[CHardwareSDK::InteractionType].toString();
+            QString localInteractionType =
+                localParameters[CHardwareSDK::InteractionType].toString();
 
-            if (localInteractionType.contains(CInteractionTypes::USB) && it->contains(aDetecting))
-            {
+            if (localInteractionType.contains(CInteractionTypes::USB) && it->contains(aDetecting)) {
                 logIndexes << it->value(aDetecting);
             }
         }
 
         logIndex = filterIndexes();
-    }
-    else if (mDevicesLogData.contains(aDevice) && mDevicesLogData[aDevice].contains(aDetecting))
-    {
+    } else if (mDevicesLogData.contains(aDevice) && mDevicesLogData[aDevice].contains(aDetecting)) {
         logIndex = mDevicesLogData[aDevice][aDetecting];
-    }
-    else
-    {
-        for (auto it = mDevicesLogData.begin(); it != mDevicesLogData.end(); ++it)
-        {
-            if (it->contains(aDetecting))
-            {
+    } else {
+        for (auto it = mDevicesLogData.begin(); it != mDevicesLogData.end(); ++it) {
+            if (it->contains(aDetecting)) {
                 IPlugin *localPlugin = dynamic_cast<IPlugin *>(it.key());
 
-                if (localPlugin->getConfigurationName().startsWith(configPath))
-                {
+                if (localPlugin->getConfigurationName().startsWith(configPath)) {
                     logIndexes << it->value(aDetecting);
                 }
             }
@@ -1224,28 +1120,21 @@ QString DeviceManager::getSimpleDeviceLogName(IDevice *aDevice, bool aDetecting)
 
     QString result = configPath.section('.', 2, 2);
 
-    if (aDetecting)
-    {
+    if (aDetecting) {
         result.prepend("autodetect/");
     }
 
-    if (interactionType.contains(CInteractionTypes::USB))
-    {
+    if (interactionType.contains(CInteractionTypes::USB)) {
         result += QString(" on USB%1").arg(logIndex);
-    }
-    else if (interactionType == CInteractionTypes::TCP)
-    {
+    } else if (interactionType == CInteractionTypes::TCP) {
         QVariantMap configuration = aDevice->getDeviceConfiguration();
         result += QString(" on %1 port %2")
                       .arg(configuration[CHardwareSDK::Port::TCP::IP].toString())
                       .arg(configuration[CHardwareSDK::Port::TCP::Number].toString());
-    }
-    else
-    {
+    } else {
         result += QString(" %1").arg(logIndex);
 
-        if (!interactionType.isEmpty())
-        {
+        if (!interactionType.isEmpty()) {
             result += QString(" on %1 driver").arg(interactionType);
         }
     }
@@ -1256,50 +1145,42 @@ QString DeviceManager::getSimpleDeviceLogName(IDevice *aDevice, bool aDetecting)
 }
 
 //--------------------------------------------------------------------------------
-QString DeviceManager::getDeviceLogName(IDevice *aDevice, bool aDetecting)
-{
+QString DeviceManager::getDeviceLogName(IDevice *aDevice, bool aDetecting) {
     IPlugin *plugin = dynamic_cast<IPlugin *>(aDevice);
-    QString configPath = plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
+    QString configPath =
+        plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
     QString result = configPath.section('.', 2, 2);
     int sections = configPath.split('.').size();
 
-    if (aDetecting)
-    {
-        if (mRDSystemNames.contains(configPath))
-        {
-            QString systemName = aDevice->getDeviceConfiguration()[CHardwareSDK::SystemName].toString();
+    if (aDetecting) {
+        if (mRDSystemNames.contains(configPath)) {
+            QString systemName =
+                aDevice->getDeviceConfiguration()[CHardwareSDK::SystemName].toString();
             result = "Port " + systemName;
-        }
-        else if (sections > 4)
-        {
+        } else if (sections > 4) {
             result = configPath.section('.', 4, 4);
         }
 
         result.prepend("autodetect/");
     }
 
-    IDevice *required = mDeviceDependencyMap.contains(aDevice) ? mDeviceDependencyMap.value(aDevice) : 0;
+    IDevice *required =
+        mDeviceDependencyMap.contains(aDevice) ? mDeviceDependencyMap.value(aDevice) : 0;
 
-    if (required)
-    {
+    if (required) {
         QString logData = required->getDeviceConfiguration()[CHardwareSDK::SystemName].toString();
 
-        if (aDevice->getDeviceConfiguration()[CHardwareSDK::InteractionType].toString() == CInteractionTypes::TCP)
-        {
-            if (aDetecting)
-            {
+        if (aDevice->getDeviceConfiguration()[CHardwareSDK::InteractionType].toString() ==
+            CInteractionTypes::TCP) {
+            if (aDetecting) {
                 result += QString(" on %1").arg(CInteractionTypes::TCP);
-            }
-            else
-            {
+            } else {
                 QVariantMap configuration = required->getDeviceConfiguration();
                 result += QString(" on %1 port %2")
                               .arg(configuration[CHardwareSDK::Port::TCP::IP].toString())
                               .arg(configuration[CHardwareSDK::Port::TCP::Number].toString());
             }
-        }
-        else if (!logData.isEmpty())
-        {
+        } else if (!logData.isEmpty()) {
             result += " on " + logData;
         }
     }
@@ -1308,19 +1189,18 @@ QString DeviceManager::getDeviceLogName(IDevice *aDevice, bool aDetecting)
 }
 
 //--------------------------------------------------------------------------------
-void DeviceManager::setDeviceLog(IDevice *aDevice, bool aDetecting)
-{
+void DeviceManager::setDeviceLog(IDevice *aDevice, bool aDetecting) {
     IPlugin *plugin = dynamic_cast<IPlugin *>(aDevice);
-    QString configPath = plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
+    QString configPath =
+        plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);
     TParameterList parameters = mPluginLoader->getPluginParametersDescription(configPath);
     bool simpleDevice = !findParameter(CHardwareSDK::RequiredResource, parameters).isValid();
 
-    QString logFileName =
-        simpleDevice ? getSimpleDeviceLogName(aDevice, aDetecting) : getDeviceLogName(aDevice, aDetecting);
+    QString logFileName = simpleDevice ? getSimpleDeviceLogName(aDevice, aDetecting)
+                                       : getDeviceLogName(aDevice, aDetecting);
     ILog *log = ILog::getInstance(logFileName);
 
-    if (mDeviceDependencyMap.contains(aDevice))
-    {
+    if (mDeviceDependencyMap.contains(aDevice)) {
         mDeviceDependencyMap.value(aDevice)->setLog(log);
     }
 

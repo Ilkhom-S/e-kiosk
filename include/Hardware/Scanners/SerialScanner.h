@@ -2,21 +2,19 @@
 
 #pragma once
 
-// Modules
-#include <Hardware/Common/SerialDeviceBase.h>
 #include <Hardware/Common/PortPollingDeviceBase.h>
+#include <Hardware/Common/SerialDeviceBase.h>
 #include <Hardware/HID/ProtoHID.h>
 #include <Hardware/Scanners/PortScanner.h>
 
 //--------------------------------------------------------------------------------
 typedef PortScanner<SerialDeviceBase<PortPollingDeviceBase<ProtoHID>>> TSerialScanner;
 
-class SerialScanner : public TSerialScanner
-{
-  public:
+class SerialScanner : public TSerialScanner {
+public:
     SerialScanner();
 
-  protected:
+protected:
     /// Получить данные
     virtual bool getData(QByteArray &aAnswer);
 };

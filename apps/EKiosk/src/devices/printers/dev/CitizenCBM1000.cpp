@@ -1,22 +1,17 @@
 
-// Project
 #include "CitizenCBM1000.h"
 
-CitizenCBM1000_PRINTER::CitizenCBM1000_PRINTER(QObject *parent) : BasePrinterDevices(parent)
-{
+CitizenCBM1000_PRINTER::CitizenCBM1000_PRINTER(QObject *parent) : BasePrinterDevices(parent) {
     //    printer_name = "Custom-VKP80";
 }
 
-bool CitizenCBM1000_PRINTER::OpenPrinterPort()
-{
+bool CitizenCBM1000_PRINTER::OpenPrinterPort() {
     this->openPort();
     return is_open;
 }
 
-bool CitizenCBM1000_PRINTER::openPort()
-{
-    if (devicesCreated)
-    {
+bool CitizenCBM1000_PRINTER::openPort() {
+    if (devicesCreated) {
         // Если девайс для работы с портом обявлен
         is_open = false;
         // Даем девайсу название порта
@@ -24,8 +19,7 @@ bool CitizenCBM1000_PRINTER::openPort()
         // comName;
         serialPort->setPortName(comName);
 
-        if (serialPort->open(QIODevice::ReadWrite))
-        {
+        if (serialPort->open(QIODevice::ReadWrite)) {
             // Если Девайсу удалось открыть порт
 
             // Устанавливаем параметры открытия порта
@@ -59,17 +53,13 @@ bool CitizenCBM1000_PRINTER::openPort()
             // : " << devicePort->charIntervalTimeout();
 
             is_open = true;
-        }
-        else
-        {
+        } else {
             is_open = false;
             //            statusDevices = this->PortError;
             // if(Debugger) qDebug() << "Error opened serial device " <<
             // devicePort->deviceName();
         }
-    }
-    else
-    {
+    } else {
         is_open = false;
         // if(Debugger) qDebug() << "Error create serial device " <<
         // devicePort->deviceName();
@@ -79,24 +69,21 @@ bool CitizenCBM1000_PRINTER::openPort()
     return is_open;
 }
 
-bool CitizenCBM1000_PRINTER::isItYou()
-{
+bool CitizenCBM1000_PRINTER::isItYou() {
     int status = 0;
     bool result = isEnabled(status);
     this->closePort();
     return result;
 }
 
-bool CitizenCBM1000_PRINTER::isEnabled(int status)
-{
+bool CitizenCBM1000_PRINTER::isEnabled(int status) {
     //        int status = 0;
     if (!getStatus(status))
         return false;
     return (status != PrinterState::PrinterNotAvailable);
 }
 
-bool CitizenCBM1000_PRINTER::getStatus(int &aStatus)
-{
+bool CitizenCBM1000_PRINTER::getStatus(int &aStatus) {
     aStatus = PrinterState::PrinterNotAvailable;
     // засылаем в порт команду самоидентификации
     QByteArray cmd;
@@ -105,15 +92,13 @@ bool CitizenCBM1000_PRINTER::getStatus(int &aStatus)
 
     cmd.push_back(CMDCitizenCBM1000::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDCitizenCBM1000::PrinterStatusCommandSecondByte);
-    if (!this->sendCommand(cmd, true, 200, resp_data, answer, 0))
-    {
+    if (!this->sendCommand(cmd, true, 200, resp_data, answer, 0)) {
         // if(Debugger) qDebug() << "AV268::getStatus(): error in
         // sendPacketInPort()";
         return false;
     }
 
-    if (answer.size() < 1)
-    {
+    if (answer.size() < 1) {
         // if(Debugger) qDebug() << QString("AV268::getStatus(): wrong size of
         // buffer. Buffer is: %1").arg(answer.data());
         return false;
@@ -127,8 +112,7 @@ bool CitizenCBM1000_PRINTER::getStatus(int &aStatus)
     else
         status = answer[0];
     // Проверим, что это наш статус
-    if ((status & 0x10) || (status & 0x80))
-    {
+    if ((status & 0x10) || (status & 0x80)) {
         // Не наш принтер
         // if(Debugger) qDebug() << QString("AV268::getStatus(): wrong byte returned:
         // %1").arg(status);
@@ -136,40 +120,34 @@ bool CitizenCBM1000_PRINTER::getStatus(int &aStatus)
     }
     // Наш принтер
     aStatus = PrinterState::PrinterOK;
-    if (status != CMDCitizenCBM1000::PrinterNormalState)
-    {
+    if (status != CMDCitizenCBM1000::PrinterNormalState) {
         // Error
         int code = status & CMDCitizenCBM1000::PrinterTemperatureError;
-        if (code > 0)
-        {
+        if (code > 0) {
             // Temperature error
             aStatus |= PrinterState::TemperatureError;
             // if(Debugger) qDebug() << "AV268::getStatus(): Temperature error";
         }
         code = status & CMDCitizenCBM1000::PrinterNoPaperError;
-        if (code > 0)
-        {
+        if (code > 0) {
             // No paper
             aStatus |= PrinterState::PaperEnd;
             // if(Debugger) qDebug() << "AV268::getStatus(): No paper";
         }
         code = status & CMDCitizenCBM1000::PrinterHeadOpenError;
-        if (code > 0)
-        {
+        if (code > 0) {
             // Printing head open
             aStatus |= PrinterState::PrintingHeadError;
             // if(Debugger) qDebug() << "AV268::getStatus(): Printing head open";
         }
         code = status & CMDCitizenCBM1000::PrinterSystemError;
-        if (code > 0)
-        {
+        if (code > 0) {
             // System error
             aStatus |= PrinterState::PrinterError;
             // if(Debugger) qDebug() << "AV268::getStatus(): System error";
         }
         code = status & CMDCitizenCBM1000::PrinterDataReceiveError;
-        if (code > 0)
-        {
+        if (code > 0) {
             // Data receive error
             aStatus |= PrinterState::PortError;
             // if(Debugger) qDebug() << "AV268::getStatus(): Data receive error";
@@ -178,8 +156,7 @@ bool CitizenCBM1000_PRINTER::getStatus(int &aStatus)
     return true;
 }
 
-bool CitizenCBM1000_PRINTER::initialize()
-{
+bool CitizenCBM1000_PRINTER::initialize() {
     // засылаем в порт команду самоидентификации
     QByteArray cmd;
     cmd.push_back(CMDCitizenCBM1000::PrinterStatusCommandFirstByte);
@@ -192,8 +169,7 @@ bool CitizenCBM1000_PRINTER::initialize()
     return res;
 }
 
-bool CitizenCBM1000_PRINTER::cut()
-{
+bool CitizenCBM1000_PRINTER::cut() {
     QByteArray cmd;
 
     cmd.push_back(CMDCitizenCBM1000::PrinterStatusCommandFirstByte);
@@ -206,13 +182,12 @@ bool CitizenCBM1000_PRINTER::cut()
     return res;
 }
 
-void CitizenCBM1000_PRINTER::getSpecialCharacters(QByteArray &printText)
-{
+void CitizenCBM1000_PRINTER::getSpecialCharacters(QByteArray &printText) {
     // Устанавливаем если есть жирный фонт
-    printText.replace(
-        QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeBold + CScharsetParam::CloseTagDelimiter)
-            .toUtf8(),
-        asciiNull());
+    printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeBold +
+                              CScharsetParam::CloseTagDelimiter)
+                          .toUtf8(),
+                      asciiNull());
 
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeBold + CScharsetParam::CloseTagDelimiter)
@@ -220,30 +195,34 @@ void CitizenCBM1000_PRINTER::getSpecialCharacters(QByteArray &printText)
                       asciiNull());
 
     // Устанавливаем если есть двойной высоты фонт
-    printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeDoubleHeight +
+    printText.replace(QString(CScharsetParam::OpenTagDelimiter +
+                              CScharsetParam::FontTypeDoubleHeight +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
                       asciiNull());
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
-                              CScharsetParam::FontTypeDoubleHeight + CScharsetParam::CloseTagDelimiter)
+                              CScharsetParam::FontTypeDoubleHeight +
+                              CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
                       asciiNull());
 
     // Устанавливаем если есть двойной ширины фонт
-    printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeDoubleWidth +
+    printText.replace(QString(CScharsetParam::OpenTagDelimiter +
+                              CScharsetParam::FontTypeDoubleWidth +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
                       asciiNull());
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
-                              CScharsetParam::FontTypeDoubleWidth + CScharsetParam::CloseTagDelimiter)
+                              CScharsetParam::FontTypeDoubleWidth +
+                              CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
                       asciiNull());
 
     // Устанавливаем если есть курсивный фонт
-    printText.replace(
-        QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeItalic + CScharsetParam::CloseTagDelimiter)
-            .toUtf8(),
-        asciiNull());
+    printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeItalic +
+                              CScharsetParam::CloseTagDelimiter)
+                          .toUtf8(),
+                      asciiNull());
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeItalic + CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
@@ -261,14 +240,13 @@ void CitizenCBM1000_PRINTER::getSpecialCharacters(QByteArray &printText)
 
     // Если надо добавить проабел
     QByteArray probel;
-    for (int i = 1; i <= leftMargin; i++)
-    {
+    for (int i = 1; i <= leftMargin; i++) {
         probel.append(ASCII::Space);
     }
-    printText.replace(
-        QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::SpaceCount + CScharsetParam::CloseTagDelimiter)
-            .toUtf8(),
-        probel);
+    printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::SpaceCount +
+                              CScharsetParam::CloseTagDelimiter)
+                          .toUtf8(),
+                      probel);
 
     // Добавляем звезды
     int col_z = (checkWidth - 11 - leftMargin) / 2;
@@ -276,14 +254,13 @@ void CitizenCBM1000_PRINTER::getSpecialCharacters(QByteArray &printText)
     for (int j = 1; j <= col_z; j++)
         star.append("*");
 
-    printText.replace(
-        QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::StarCount + CScharsetParam::CloseTagDelimiter)
-            .toUtf8(),
-        star);
+    printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::StarCount +
+                              CScharsetParam::CloseTagDelimiter)
+                          .toUtf8(),
+                      star);
 }
 
-bool CitizenCBM1000_PRINTER::printCheck(const QString &aCheck)
-{
+bool CitizenCBM1000_PRINTER::printCheck(const QString &aCheck) {
     // Меняем кодировку
     QByteArray printText;
     printText = this->encodingString(aCheck, CScodec::c_IBM866);
@@ -301,8 +278,7 @@ bool CitizenCBM1000_PRINTER::printCheck(const QString &aCheck)
     return true;
 }
 
-void CitizenCBM1000_PRINTER::print(const QString &aCheck)
-{
+void CitizenCBM1000_PRINTER::print(const QString &aCheck) {
 
     // установим размер шрифта
     QByteArray cmd;
@@ -324,15 +300,13 @@ void CitizenCBM1000_PRINTER::print(const QString &aCheck)
     this->cut();
 }
 
-bool CitizenCBM1000_PRINTER::feed(int aCount)
-{
+bool CitizenCBM1000_PRINTER::feed(int aCount) {
     QByteArray cmd;
     bool respData = false;
     QByteArray answer;
     cmd.push_back(0x0A);
     cmd.push_back(0x0D);
-    for (int i = 0; i < aCount; ++i)
-    {
+    for (int i = 0; i < aCount; ++i) {
         if (!this->sendCommand(cmd, true, 50, respData, answer, 0))
             return false;
     }

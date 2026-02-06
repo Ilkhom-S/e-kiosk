@@ -2,27 +2,21 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QSettings>
 #include <QtCore/QDir>
+#include <QtCore/QSettings>
 #include <QtGui/QImage>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Core/ICore.h>
 
 class IServiceManager;
 class ILog;
 
 //---------------------------------------------------------------------------
-class IApplication
-{
-  public:
+class IApplication {
+public:
     //---------------------------------------------------------------------------
     // Структура с информацией о приложении
-    struct AppInfo
-    {
+    struct AppInfo {
         QString version;
         QString appName;
         QString configuration;
@@ -70,10 +64,8 @@ class IApplication
 
     //---------------------------------------------------------------------------
     // Возвращает абсолютный путь из aPath
-    static QString toAbsolutePath(const QString &aPath)
-    {
-        if (QDir(aPath).isAbsolute())
-        {
+    static QString toAbsolutePath(const QString &aPath) {
+        if (QDir(aPath).isAbsolute()) {
             return QDir::cleanPath(aPath);
         }
         return QDir::cleanPath(QDir::currentPath() + QDir::separator() + aPath);
@@ -81,10 +73,7 @@ class IApplication
 
     //---------------------------------------------------------------------------
     // Возвращает текущую рабочую папку
-    static QString getWorkingDirectory()
-    {
-        return QDir::currentPath();
-    }
+    static QString getWorkingDirectory() { return QDir::currentPath(); }
 };
 
 //---------------------------------------------------------------------------

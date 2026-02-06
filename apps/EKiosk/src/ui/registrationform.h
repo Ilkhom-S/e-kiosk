@@ -1,7 +1,5 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QPointer>
 #include <QtCore/QTimer>
 #include <QtGui/QKeyEvent>
@@ -10,39 +8,28 @@
 #include <QtSql/QSqlRecord>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QMessageBox>
-#include <Common/QtHeadersEnd.h>
 
-// Project
 #include "createdialupconnection.h"
 #include "keypud.h"
 
-namespace Ui
-{
-    class RegistrationForm;
+namespace Ui {
+class RegistrationForm;
 }
 
-class RegistrationForm : public QDialog
-{
+class RegistrationForm : public QDialog {
     Q_OBJECT
 
-  public:
-    enum Page
-    {
+public:
+    enum Page {
         SelectTpl = 0,
         SearchDevice = 1,
         SelectConnection = 2,
         EnterAuthData = 3,
     };
 
-    enum Status
-    {
-        Info = 0,
-        Success = 1,
-        Error = 2
-    };
+    enum Status { Info = 0, Success = 1, Error = 2 };
 
-    enum SearchDev
-    {
+    enum SearchDev {
         search_validator = 0,
         search_printer = 1,
         search_modem = 2,
@@ -68,7 +55,8 @@ class RegistrationForm : public QDialog
 
     void setDB(QSqlDatabase db);
     void setSearchDeviceParams(QVariantMap data);
-    void deviceSearchResult(int device, int result, QString dev_name, QString dev_comment, QString dev_port);
+    void deviceSearchResult(
+        int device, int result, QString dev_name, QString dev_comment, QString dev_port);
     void deviceSearchFinished();
     void setDataListConnection(QStringList list);
     void setStatusText(int status, QString text);
@@ -80,7 +68,7 @@ class RegistrationForm : public QDialog
     void showMe();
     void closeMe();
 
-  private:
+private:
     Ui::RegistrationForm *ui;
 
     keyPud *KeyPud;
@@ -94,7 +82,11 @@ class RegistrationForm : public QDialog
 
     void addPageData();
     void hideGroupDevice();
-    bool saveDevice(int id_device, const QString &name_device, const QString &port, const QString &comment, int state);
+    bool saveDevice(int id_device,
+                    const QString &name_device,
+                    const QString &port,
+                    const QString &comment,
+                    int state);
     bool getDeviceFromDB(QVariantMap &devices);
     bool isValidConnectionType();
     bool isValidAuthInput();
@@ -103,10 +95,10 @@ class RegistrationForm : public QDialog
 
     void showKeyPud();
 
-  private:
+private:
     CreateDialupConnection *createDialupConnection;
 
-  private slots:
+private slots:
     void showValidatorData(bool show);
     void showCoinAcceptorData(bool show);
     void showPrinterData(bool show);
@@ -158,7 +150,7 @@ class RegistrationForm : public QDialog
     void btnNextClicked();
     void closeConfirm();
 
-  signals:
+signals:
     void emitStartSearchDevices(QVariantMap data);
     void emitDeviceTest(int device, QString name, QString port, QString comment);
     void emitCreateNewConnection(QVariantMap data);

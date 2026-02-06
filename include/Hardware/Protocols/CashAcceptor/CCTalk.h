@@ -2,23 +2,18 @@
 
 #pragma once
 
-// Modules
+#include <Hardware/CashDevices/CCTalkData.h>
 #include <Hardware/Common/ProtocolBase.h>
 
-// Project
-#include <Hardware/CashDevices/CCTalkData.h>
-
 //--------------------------------------------------------------------------------
-namespace CCCTalk
-{
-    /// Неизвестный тип протокола.
-    const char UnknownType[] = "unknown";
+namespace CCCTalk {
+/// Неизвестный тип протокола.
+const char UnknownType[] = "unknown";
 } // namespace CCCTalk
 
 //--------------------------------------------------------------------------------
-class CCTalkCAProtocol : public ProtocolBase
-{
-  public:
+class CCTalkCAProtocol : public ProtocolBase {
+public:
     CCTalkCAProtocol();
 
     /// Установить тип CRC.
@@ -30,7 +25,7 @@ class CCTalkCAProtocol : public ProtocolBase
     /// Выполнить команду.
     TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData);
 
-  protected:
+protected:
     /// Проверить валидность ответа.
     bool check(QByteArray &aAnswer);
 

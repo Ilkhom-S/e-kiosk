@@ -2,35 +2,22 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QMetaType>
+
 #include "ui_KeyboardWindow.h"
-#include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------
-class VirtualButton
-{
-  public:
-    VirtualButton() : mKey(Qt::Key_unknown), mShiftKey(Qt::Key_unknown)
-    {
-    }
+class VirtualButton {
+public:
+    VirtualButton() : mKey(Qt::Key_unknown), mShiftKey(Qt::Key_unknown) {}
     VirtualButton(Qt::Key aKey, const QString &aText, Qt::Key aShiftKey, const QString &aShiftText)
-        : mKey(aKey), mText(aText), mShiftKey(aShiftKey), mShiftText(aShiftText)
-    {
-    }
+        : mKey(aKey), mText(aText), mShiftKey(aShiftKey), mShiftText(aShiftText) {}
 
-  public:
-    Qt::Key getKey(bool aShifted)
-    {
-        return aShifted ? mShiftKey : mKey;
-    }
-    QString getText(bool aShifted)
-    {
-        return aShifted ? mShiftText : mText;
-    }
+public:
+    Qt::Key getKey(bool aShifted) { return aShifted ? mShiftKey : mKey; }
+    QString getText(bool aShifted) { return aShifted ? mShiftText : mText; }
 
-  private:
+private:
     Qt::Key mKey;
     QString mText;
 
@@ -42,39 +29,36 @@ class VirtualButton
 Q_DECLARE_METATYPE(VirtualButton);
 
 //------------------------------------------------------------------------
-class KeyboardWindow : public QWidget
-{
+class KeyboardWindow : public QWidget {
     Q_OBJECT
 
-  public:
+public:
     KeyboardWindow(QWidget *parent = 0);
     ~KeyboardWindow();
 
-  public:
+public:
     void initialize();
     void shutdown();
 
-  private slots:
+private slots:
     void onButtonClicked();
-    void onShiftClicked()
-    {
+    void onShiftClicked() {
         mShifted = ui.KEY_SHIFT->isChecked();
         updateKeys();
     }
-    void onLanguageClicked()
-    {
+    void onLanguageClicked() {
         mAltMode = !mAltMode;
         updateKeys();
     }
 
-  private:
+private:
     void updateKeys();
     virtual void mousePressEvent(QMouseEvent *aEvent);
 
-  private:
+private:
     Ui::KeyboardWindow ui;
 
-  private:
+private:
     typedef QMap<QString, VirtualButton> TKeyMap;
     TKeyMap mKeyMap;
     TKeyMap mAltKeyMap;

@@ -1,6 +1,5 @@
 /* @file Устройства приемников купюр. */
 
-// System
 #include <Hardware/CashAcceptors/CCNetCashAcceptorBase.h>
 #include <Hardware/CashAcceptors/CCNetCashcodeGX.h>
 #include <Hardware/CashAcceptors/CCNetCreator.h>

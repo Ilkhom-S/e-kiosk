@@ -5,17 +5,16 @@
 #include "PayFRBase.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class PayOnline : public PayFRBase<T>
-{
+template <class T> class PayOnline : public PayFRBase<T> {
     SET_SUBSERIES("PayOnline")
 
-  public:
+public:
     PayOnline();
 
     /// Устанавливает конфигурацию устройству.
     virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
-  protected:
+protected:
     /// Запросить и вывести в лог критичные параметры ФР.
     virtual void processDeviceData();
 

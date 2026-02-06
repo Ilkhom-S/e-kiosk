@@ -1,24 +1,20 @@
 /* @file Базовый класс AT-совместимого модема. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "ATModemBase.h"
+
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QRegularExpression>
-#include <Common/QtHeadersEnd.h>
-
-// Project
-#include "ATModemBase.h"
 
 using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------------
-ATModemBase::ATModemBase()
-{
+ATModemBase::ATModemBase() {
     // данные порта
     mPortParameters[EParameters::BaudRate].append(
         EBaudRate::BR115200); // preferable for work, but not works in autobauding mode
-    mPortParameters[EParameters::BaudRate].append(EBaudRate::BR57600); // default after Mobile Equipment (ME) restart
+    mPortParameters[EParameters::BaudRate].append(
+        EBaudRate::BR57600); // default after Mobile Equipment (ME) restart
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR38400);
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
@@ -32,15 +28,13 @@ ATModemBase::ATModemBase()
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::checkAT(int aTimeout)
-{
+bool ATModemBase::checkAT(int aTimeout) {
     mIOPort->clear();
 
     int index = 0;
     bool result = false;
 
-    do
-    {
+    do {
         result = processCommand(AT::Commands::AT, aTimeout);
     } while ((++index < 5) && !result);
 
@@ -48,10 +42,8 @@ bool ATModemBase::checkAT(int aTimeout)
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::isConnected()
-{
-    if (!checkAT(CATGSMModem::Timeouts::Default))
-    {
+bool ATModemBase::isConnected() {
+    if (!checkAT(CATGSMModem::Timeouts::Default)) {
         mIOPort->close();
         return false;
     }
@@ -60,8 +52,7 @@ bool ATModemBase::isConnected()
 
     QByteArray answer;
 
-    if (!processCommand(AT::Commands::ATI, answer))
-    {
+    if (!processCommand(AT::Commands::ATI, answer)) {
         mIOPort->close();
         return false;
     }
@@ -69,9 +60,9 @@ bool ATModemBase::isConnected()
     setDeviceName(answer);
 
     // Выводим конфигурацию модема в лог.
-    if (processCommand(AT::Commands::ATandV, answer, mModemConfigTimeout))
-    {
-        toLog(LogLevel::Normal, QString("Modem configuration: %1").arg(QString::fromLatin1(answer)));
+    if (processCommand(AT::Commands::ATandV, answer, mModemConfigTimeout)) {
+        toLog(LogLevel::Normal,
+              QString("Modem configuration: %1").arg(QString::fromLatin1(answer)));
     }
 
     QString modemInfo;
@@ -83,26 +74,21 @@ bool ATModemBase::isConnected()
 }
 
 //--------------------------------------------------------------------------------
-void ATModemBase::setDeviceName(const QByteArray &aFullName)
-{
-    if (!isAutoDetecting())
-    {
+void ATModemBase::setDeviceName(const QByteArray &aFullName) {
+    if (!isAutoDetecting()) {
         toLog(LogLevel::Normal, QString("Full modem info: %1").arg(QString::fromLatin1(aFullName)));
     }
 
     QString deviceName = aFullName.simplified();
 
-    if (!deviceName.isEmpty())
-    {
+    if (!deviceName.isEmpty()) {
         mDeviceName = deviceName;
     }
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::reset()
-{
-    if (!checkConnectionAbility())
-    {
+bool ATModemBase::reset() {
+    if (!checkConnectionAbility()) {
         return false;
     }
 
@@ -120,12 +106,10 @@ bool ATModemBase::reset()
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::setInitString(const QString &aInitString)
-{
+bool ATModemBase::setInitString(const QString &aInitString) {
     toLog(LogLevel::Normal, QString("Setting initialization string '%1'.").arg(aInitString));
 
-    if (!checkConnectionAbility())
-    {
+    if (!checkConnectionAbility()) {
         return false;
     }
 
@@ -142,34 +126,29 @@ bool ATModemBase::setInitString(const QString &aInitString)
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::enableLocalEcho(bool aEnable)
-{
+bool ATModemBase::enableLocalEcho(bool aEnable) {
     QByteArray command = QByteArray(AT::Commands::ATE) + (aEnable ? "1" : "0");
 
     return processCommand(command);
 }
 
 //--------------------------------------------------------------------------------
-QByteArray ATModemBase::makeCommand(const QString &aCommand)
-{
+QByteArray ATModemBase::makeCommand(const QString &aCommand) {
     return QByteArray("AT").append(aCommand.toLatin1()).append(ASCII::CR);
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::processCommand(const QByteArray &aCommand, int aTimeout)
-{
+bool ATModemBase::processCommand(const QByteArray &aCommand, int aTimeout) {
     QByteArray answer;
 
     return processCommand(aCommand, answer, aTimeout);
 }
 
 //--------------------------------------------------------------------------------
-bool ATModemBase::processCommand(const QByteArray &aCommand, QByteArray &aAnswer, int aTimeout)
-{
+bool ATModemBase::processCommand(const QByteArray &aCommand, QByteArray &aAnswer, int aTimeout) {
     aAnswer.clear();
 
-    if (!mIOPort->write(makeCommand(aCommand)))
-    {
+    if (!mIOPort->write(makeCommand(aCommand))) {
         return false;
     }
 
@@ -178,19 +157,16 @@ bool ATModemBase::processCommand(const QByteArray &aCommand, QByteArray &aAnswer
     QElapsedTimer commandTimer;
     commandTimer.start();
 
-    do
-    {
+    do {
         QByteArray data;
 
-        if (mIOPort->read(data))
-        {
+        if (mIOPort->read(data)) {
             aAnswer.append(data);
 
             // Ищем сообщения о положительном результате.
             int pos = aAnswer.indexOf("OK");
 
-            if (pos >= 0)
-            {
+            if (pos >= 0) {
                 aAnswer.chop(aAnswer.size() - pos);
                 result = true;
 
@@ -200,8 +176,7 @@ bool ATModemBase::processCommand(const QByteArray &aCommand, QByteArray &aAnswer
             // Ищем сообщения о отрицательном результате.
             pos = aAnswer.indexOf("ERROR");
 
-            if (pos >= 0)
-            {
+            if (pos >= 0) {
                 aAnswer.chop(aAnswer.size() - pos);
                 result = false;
 
@@ -215,8 +190,7 @@ bool ATModemBase::processCommand(const QByteArray &aCommand, QByteArray &aAnswer
     // Обязательный таймаут в 100 мс. после каждой операции.
     SleepHelper::msleep(CATGSMModem::Pauses::Answer);
 
-    if (!result)
-    {
+    if (!result) {
         toLog(LogLevel::Error, QString("Bad answer : %1").arg(aAnswer.data()));
     }
 

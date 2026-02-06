@@ -2,20 +2,16 @@
 
 #pragma once
 
-// Modules
+#include "CCNetCashAcceptorDataTypes.h"
+#include "CCNetModelData.h"
+#include "Hardware/CashAcceptors/SerialCashAcceptor.h"
 #include "Hardware/Protocols/CashAcceptor/CCNet.h"
 
-// Project
-#include "Hardware/CashAcceptors/SerialCashAcceptor.h"
-#include "CCNetModelData.h"
-#include "CCNetCashAcceptorDataTypes.h"
-
 //--------------------------------------------------------------------------------
-class CCNetCashAcceptorBase : public TSerialCashAcceptor
-{
+class CCNetCashAcceptorBase : public TSerialCashAcceptor {
     SET_SERIES("CCNet")
 
-  public:
+public:
     CCNetCashAcceptorBase();
 
     /// Возвращает список поддерживаемых устройств.
@@ -27,14 +23,15 @@ class CCNetCashAcceptorBase : public TSerialCashAcceptor
     /// Вернуть купюру.
     virtual bool reject();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
     /// Установка параметров по умолчанию.
     virtual bool setDefaultParameters();
 
-    /// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней логики.
+    /// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней
+    /// логики.
     virtual void cleanSpecificStatusCodes(TStatusCodes &aStatusCodes);
 
     /// Изменение режима приема денег.
@@ -56,9 +53,11 @@ class CCNetCashAcceptorBase : public TSerialCashAcceptor
     bool isNotBusyPowerUp();
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult execCommand(const QByteArray &aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
-    virtual TResult performCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult performCommand(const QByteArray &aCommand,
+                                   const QByteArray &aCommandData,
                                    QByteArray *aAnswer = nullptr);
 
     /// Обновить прошивку.

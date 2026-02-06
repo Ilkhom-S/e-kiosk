@@ -5,15 +5,14 @@
 #include "../Retractor/ShtrihRetractorFRLite.h"
 
 //--------------------------------------------------------------------------------
-class ShtrihRetractorFR : public ShtrihRetractorFRLite<ShtrihSerialFR>
-{
-  public:
+class ShtrihRetractorFR : public ShtrihRetractorFRLite<ShtrihSerialFR> {
+public:
     ShtrihRetractorFR();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Печать выплаты.
     virtual bool processPayout(double aAmount);
 

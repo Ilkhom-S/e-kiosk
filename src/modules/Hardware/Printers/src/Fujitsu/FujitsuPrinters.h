@@ -5,13 +5,12 @@
 #include "Hardware/Printers/PortPrintersBase.h"
 
 //--------------------------------------------------------------------------------
-class FujitsuPrinter : public TSerialPrinterBase
-{
-  public:
+class FujitsuPrinter : public TSerialPrinterBase {
+public:
     FujitsuPrinter();
     virtual ~FujitsuPrinter();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
@@ -21,7 +20,7 @@ class FujitsuPrinter : public TSerialPrinterBase
     /// Инициализация устройства.
     virtual bool updateParameters();
 
-  private:
+private:
     /// Выполнить команду.
     bool processCommand(const QByteArray &aCommand, QByteArray *aAnswer = 0);
 

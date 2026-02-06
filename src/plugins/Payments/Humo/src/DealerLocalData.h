@@ -1,16 +1,12 @@
 #ifndef DEALERLOCALDATA_H
 #define DEALERLOCALDATA_H
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QString>
 #include <QtCore/QMap>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QString>
 
 //------------------------------------------------------------------------------
-class DealerLocalData
-{
-  public:
+class DealerLocalData {
+public:
     DealerLocalData();
 
     bool loadInfo(const QString &aFileName);
@@ -23,7 +19,7 @@ class DealerLocalData
     /// Найти запись по значению первого столбца
     bool findNumber(const QString &aFirstColumnValue, QMap<QString, QString> &aParameters);
 
-  private:
+private:
     QString mFilePath;
 
     QList<QPair<QString, QString>> mColumns;

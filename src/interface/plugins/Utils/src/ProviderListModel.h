@@ -2,57 +2,35 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QAbstractListModel>
 #include <QtCore/QPointer>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------------
 class GroupModel;
 
 //------------------------------------------------------------------------------
-struct SProvider
-{
+struct SProvider {
     qint64 id;
     QString name;
     QString info;
 
-    SProvider()
-    {
-        id = -1;
-    }
-    explicit SProvider(quint64 aId) : id(aId)
-    {
-    }
+    SProvider() { id = -1; }
+    explicit SProvider(quint64 aId) : id(aId) {}
 
-    bool isValid() const
-    {
-        return id != -1;
-    }
+    bool isValid() const { return id != -1; }
 
-    bool operator<(const SProvider &aProvider) const
-    {
-        return info < aProvider.info;
-    }
+    bool operator<(const SProvider &aProvider) const { return info < aProvider.info; }
 };
 
 //------------------------------------------------------------------------------
-class ProviderListModel : public QAbstractListModel
-{
+class ProviderListModel : public QAbstractListModel {
     Q_OBJECT
 
-  public:
-    enum EntryRoles
-    {
-        IdRole = Qt::UserRole + 1,
-        NameRole,
-        InfoRole,
-        ImageRole
-    };
+public:
+    enum EntryRoles { IdRole = Qt::UserRole + 1, NameRole, InfoRole, ImageRole };
 
-  public:
+public:
     ProviderListModel(QObject *aParent, QSharedPointer<GroupModel> aGroupModel);
     ~ProviderListModel();
 
@@ -62,18 +40,18 @@ class ProviderListModel : public QAbstractListModel
     /// Передать модели указатель на сервис платежей
     void setPaymentService(QObject *aPaymentService);
 
-  public slots:
+public slots:
     /// Обрабатывает сигнал об загрузке списка провайдеров в модель групп
     void groupsUpdated();
 
     /// Загрузка очередного провайдера
     void getNextProviderInfo();
 
-  private:
+private:
     QHash<int, QByteArray> mRoles;
     virtual QHash<int, QByteArray> roleNames() const;
 
-  private:
+private:
     QList<qint64> mProvidersId;
     QList<SProvider> mProviderList;
     QPointer<QObject> mPaymentService;

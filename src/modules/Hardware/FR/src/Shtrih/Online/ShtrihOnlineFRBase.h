@@ -2,26 +2,22 @@
 
 #pragma once
 
-// Modules
+#include "../Base/ShtrihFRBase.h"
 #include "Hardware/Common/TCPDeviceBase.h"
 #include "Hardware/Printers/PortPrintersBase.h"
-
-// Project
-#include "../Base/ShtrihFRBase.h"
 #include "ShtrihFROnlineConstants.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class ShtrihOnlineFRBase : public ShtrihFRBase<T>
-{
+template <class T> class ShtrihOnlineFRBase : public ShtrihFRBase<T> {
     SET_SERIES("ShtrihOnline")
 
-  public:
+public:
     ShtrihOnlineFRBase();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
@@ -47,15 +43,18 @@ template <class T> class ShtrihOnlineFRBase : public ShtrihFRBase<T>
     virtual void checkSalesName(QString &aName);
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData,
+    virtual bool performFiscal(const QStringList &aReceipt,
+                               const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
     /// Получить фискальные теги по номеру документа.
-    virtual bool getFiscalFields(quint32 aFDNumber, SDK::Driver::TFiscalPaymentData &aFPData,
+    virtual bool getFiscalFields(quint32 aFDNumber,
+                                 SDK::Driver::TFiscalPaymentData &aFPData,
                                  SDK::Driver::TComplexFiscalPaymentData &aPSData);
 
     /// Продажа.
-    virtual bool sale(const SDK::Driver::SUnitData &aUnitData, SDK::Driver::EPayOffTypes::Enum aPayOffType);
+    virtual bool sale(const SDK::Driver::SUnitData &aUnitData,
+                      SDK::Driver::EPayOffTypes::Enum aPayOffType);
 
     /// Закрыть чек.
     virtual bool closeDocument(double aSum, SDK::Driver::EPayTypes::Enum aPayType);
@@ -76,7 +75,9 @@ template <class T> class ShtrihOnlineFRBase : public ShtrihFRBase<T>
     bool enableFirmwareUpdating();
 
     /// Проверить параметр автообновления прошивок.
-    bool checkFirmwareUpdatingData(const CShtrihFR::FRParameters::SData &aData, int aValue, const QString &aLogData,
+    bool checkFirmwareUpdatingData(const CShtrihFR::FRParameters::SData &aData,
+                                   int aValue,
+                                   const QString &aLogData,
                                    bool &aNeedReboot);
 
     /// Включить/выключить режим непечати документов.

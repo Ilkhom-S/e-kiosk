@@ -1,21 +1,17 @@
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtWidgets/QMessageBox>
-#include <Common/QtHeadersEnd.h>
-
-// Project
 #include "createdialupconnection.h"
+
+#include <QtWidgets/QMessageBox>
+
 #include "ui_createdialupconnection.h"
 
-CreateDialupConnection::CreateDialupConnection(QWidget *parent) : QDialog(parent), ui(new Ui::CreateDialupConnection)
-{
+CreateDialupConnection::CreateDialupConnection(QWidget *parent)
+    : QDialog(parent), ui(new Ui::CreateDialupConnection) {
     ui->setupUi(this);
 
     connect(ui->btnDialupCreateNewCon, SIGNAL(clicked()), SLOT(btnCreateNewConClc()));
 }
 
-void CreateDialupConnection::btnCreateNewConClc()
-{
+void CreateDialupConnection::btnCreateNewConClc() {
     QVariantMap data;
     data["device"] = ui->cbxDialupSelectDevice->currentText().trimmed();
     data["connection"] = ui->cbxDialupSelectConName->currentText().trimmed();
@@ -23,8 +19,7 @@ void CreateDialupConnection::btnCreateNewConClc()
     data["login"] = ui->cbxDialupSelectUserName->currentText().trimmed();
     data["password"] = ui->cbxDialupSelectUserPass->currentText().trimmed();
 
-    if (data["device"] == "")
-    {
+    if (data["device"] == "") {
         QMessageBox messageBox(this);
         messageBox.setWindowTitle("Параметры устройств.");
         messageBox.setText("В терминале нет установленных модемов\n");
@@ -37,9 +32,8 @@ void CreateDialupConnection::btnCreateNewConClc()
         return;
     }
 
-    if (data["device"] == "" || data["connection"] == "" || data["phone"] == "" || data["login"] == "" ||
-        data["password"] == "")
-    {
+    if (data["device"] == "" || data["connection"] == "" || data["phone"] == "" ||
+        data["login"] == "" || data["password"] == "") {
 
         QMessageBox messageBox(this);
         messageBox.setWindowTitle("Сохранение параметров.");
@@ -53,10 +47,8 @@ void CreateDialupConnection::btnCreateNewConClc()
         return;
     }
 
-    for (auto &con : conList)
-    {
-        if (data["connection"] == con)
-        {
+    for (auto &con : conList) {
+        if (data["connection"] == con) {
             QMessageBox messageBox(this);
             messageBox.setWindowTitle("Сохранение параметров.");
             messageBox.setText("Такое соединение уже существует\n");
@@ -79,8 +71,11 @@ void CreateDialupConnection::btnCreateNewConClc()
                                "Номер дозвона:           <b>%3</b><br/>"
                                "Имя пользователя:        <b>%4</b><br/>"
                                "Пароль пользователя:     <b>%5</b><br/>")
-                           .arg(data["device"].toString(), data["connection"].toString(), data["phone"].toString(),
-                                data["login"].toString(), data["password"].toString()));
+                           .arg(data["device"].toString(),
+                                data["connection"].toString(),
+                                data["phone"].toString(),
+                                data["login"].toString(),
+                                data["password"].toString()));
 
     messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     messageBox.setDefaultButton(QMessageBox::Yes);
@@ -91,15 +86,13 @@ void CreateDialupConnection::btnCreateNewConClc()
 
     int r = messageBox.exec();
 
-    if (r == QMessageBox::Yes)
-    {
+    if (r == QMessageBox::Yes) {
         emit emitDialupParam(data);
         this->close();
     }
 }
 
-void CreateDialupConnection::openThis()
-{
+void CreateDialupConnection::openThis() {
     // Вставляем устройства
     ui->cbxDialupSelectDevice->clear();
     ui->cbxDialupSelectDevice->addItems(this->devList);
@@ -107,7 +100,6 @@ void CreateDialupConnection::openThis()
     this->show();
 }
 
-CreateDialupConnection::~CreateDialupConnection()
-{
+CreateDialupConnection::~CreateDialupConnection() {
     delete ui;
 }

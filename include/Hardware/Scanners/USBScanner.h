@@ -2,31 +2,28 @@
 
 #pragma once
 
-// Modules
 #include <Hardware/Common/PortPollingDeviceBase.h>
 #include <Hardware/Common/USBDeviceBase.h>
 #include <Hardware/HID/ProtoHID.h>
 #include <Hardware/Scanners/PortScanner.h>
 
 //--------------------------------------------------------------------------------
-namespace CUSBScanner
-{
-    /// Количество байтов в буфере для чтения ответа (независимо от наличия ответа) из USB-канала.
-    const int USBAnswerSize = 100;
+namespace CUSBScanner {
+/// Количество байтов в буфере для чтения ответа (независимо от наличия ответа) из USB-канала.
+const int USBAnswerSize = 100;
 } // namespace CUSBScanner
 
 //--------------------------------------------------------------------------------
 typedef PortScanner<USBDeviceBase<PortPollingDeviceBase<ProtoHID>>> TUSBScanner;
 
-class USBScanner : public TUSBScanner
-{
-  public:
+class USBScanner : public TUSBScanner {
+public:
     USBScanner();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Получить данные
     virtual bool getData(QByteArray &aAnswer);
 };

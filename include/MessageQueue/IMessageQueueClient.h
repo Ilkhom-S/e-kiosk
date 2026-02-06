@@ -2,33 +2,28 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
 #include <QtCore/QString>
 #include <QtNetwork/QLocalSocket>
-#include <Common/QtHeadersEnd.h>
 
 /// Константы клиента очереди сообщений.
-namespace CIMessageQueueClient
-{
-    const QString DefaultLog = "MessageQueueClient";
-    const int ConnectionTimeout = 1000; // msecs
+namespace CIMessageQueueClient {
+const QString DefaultLog = "MessageQueueClient";
+const int ConnectionTimeout = 1000; // msecs
 
-    /// Коды ошибок.
-    enum ErrorCode
-    {
-        ConnectionRefusedError = QLocalSocket::ConnectionRefusedError,
-        PeerClosedError = QLocalSocket::PeerClosedError,
-        ServerNotFoundError = QLocalSocket::ServerNotFoundError,
-        SocketAccessError = QLocalSocket::SocketAccessError,
-        SocketResourceError = QLocalSocket::SocketResourceError,
-        SocketTimeoutError = QLocalSocket::SocketTimeoutError,
-        DatagramTooLargeError = QLocalSocket::DatagramTooLargeError,
-        ConnectionError = QLocalSocket::ConnectionError,
-        UnsupportedSocketOperationError = QLocalSocket::UnsupportedSocketOperationError,
-        UnknownSocketError = QLocalSocket::UnknownSocketError
-    };
+/// Коды ошибок.
+enum ErrorCode {
+    ConnectionRefusedError = QLocalSocket::ConnectionRefusedError,
+    PeerClosedError = QLocalSocket::PeerClosedError,
+    ServerNotFoundError = QLocalSocket::ServerNotFoundError,
+    SocketAccessError = QLocalSocket::SocketAccessError,
+    SocketResourceError = QLocalSocket::SocketResourceError,
+    SocketTimeoutError = QLocalSocket::SocketTimeoutError,
+    DatagramTooLargeError = QLocalSocket::DatagramTooLargeError,
+    ConnectionError = QLocalSocket::ConnectionError,
+    UnsupportedSocketOperationError = QLocalSocket::UnsupportedSocketOperationError,
+    UnknownSocketError = QLocalSocket::UnknownSocketError
+};
 } // namespace CIMessageQueueClient
 
 //----------------------------------------------------------------------------
@@ -36,9 +31,8 @@ class QObject;
 
 //----------------------------------------------------------------------------
 /// Интерфейс клиента очереди сообщений.
-class IMessageQueueClient
-{
-  public:
+class IMessageQueueClient {
+public:
     virtual ~IMessageQueueClient() {};
 
     /// Подключиться к очереди сообщений aQueueName.

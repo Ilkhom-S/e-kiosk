@@ -2,22 +2,18 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
 #include <QtCore/QVariant>
-#include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-namespace CIDatabaseQuery
-{
-    /// Имя лога по умолчанию.
-    const QString DefaultLog = "DatabaseProxy";
+namespace CIDatabaseQuery {
+/// Имя лога по умолчанию.
+const QString DefaultLog = "DatabaseProxy";
 } // namespace CIDatabaseQuery
 
 //--------------------------------------------------------------------------------
-class IDatabaseQuery
-{
-  public:
+class IDatabaseQuery {
+public:
     /// Деструктор.
     virtual ~IDatabaseQuery() {};
 

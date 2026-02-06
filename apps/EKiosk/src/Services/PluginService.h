@@ -2,26 +2,21 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QObject>
-#include <QtCore/QStringList>
-#include <QtCore/QMap>
-#include <QtCore/QSharedPointer>
-#include <QtCore/QPluginLoader>
 #include <QtCore/QFutureSynchronizer>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QMap>
+#include <QtCore/QObject>
+#include <QtCore/QPluginLoader>
+#include <QtCore/QSharedPointer>
+#include <QtCore/QStringList>
 
 // Plugin SDK
-#include <SDK/Plugins/IKernel.h>
-#include <SDK/Plugins/IPluginLoader.h>
-#include <SDK/PaymentProcessor/Core/IService.h>
-#include <SDK/PaymentProcessor/Core/IServiceState.h>
-
-// Модули
 #include <Common/ILogable.h>
 
-// Проект
+#include <SDK/PaymentProcessor/Core/IService.h>
+#include <SDK/PaymentProcessor/Core/IServiceState.h>
+#include <SDK/Plugins/IKernel.h>
+#include <SDK/Plugins/IPluginLoader.h>
+
 #include "System/IApplication.h"
 
 //------------------------------------------------------------------------------
@@ -29,11 +24,10 @@ class PluginService : public QObject,
                       public ILogable,
                       public SDK::PaymentProcessor::IService,
                       public SDK::PaymentProcessor::IServiceState,
-                      private SDK::Plugin::IKernel
-{
+                      private SDK::Plugin::IKernel {
     Q_OBJECT
 
-  public:
+public:
     PluginService(IApplication *aApplication);
     virtual ~PluginService();
 
@@ -104,22 +98,20 @@ class PluginService : public QObject,
 
     /// Сохраняет конфигурацию для данной пары плагин-объект.
     /// Используется для хранения конфигураций плагинов в прикладной программе.
-    virtual bool savePluginConfiguration(const QString &aInstancePath, const QVariantMap &aParamenters);
+    virtual bool savePluginConfiguration(const QString &aInstancePath,
+                                         const QVariantMap &aParamenters);
 
     virtual SDK::Plugin::IExternalInterface *getInterface(const QString &aInterface);
 
     /// Возвращает загрузчик плагинов.
     using SDK::Plugin::IKernel::getPluginLoader;
-    virtual SDK::Plugin::IPluginLoader *getPluginLoader() const
-    {
-        return mPluginLoader;
-    }
+    virtual SDK::Plugin::IPluginLoader *getPluginLoader() const { return mPluginLoader; }
 
-  private:
+private:
     /// Проверяет плагин на валидность и если необходимо запрещает его загрузку.
     void verifyPlugins();
 
-  private:
+private:
     /// Интерфейс приложения.
     IApplication *mApplication;
 

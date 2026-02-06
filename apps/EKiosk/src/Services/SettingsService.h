@@ -2,10 +2,8 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QMap>
 #include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
 
 #include <SDK/PaymentProcessor/Core/IService.h>
 #include <SDK/PaymentProcessor/Core/ISettingsService.h>
@@ -15,9 +13,9 @@ class SettingsManager;
 class IApplication;
 
 //---------------------------------------------------------------------------
-class SettingsService : public SDK::PaymentProcessor::IService, public SDK::PaymentProcessor::ISettingsService
-{
-  public:
+class SettingsService : public SDK::PaymentProcessor::IService,
+                        public SDK::PaymentProcessor::ISettingsService {
+public:
     SettingsService(IApplication *aApplication);
     virtual ~SettingsService();
 
@@ -54,10 +52,10 @@ class SettingsService : public SDK::PaymentProcessor::IService, public SDK::Paym
     SettingsManager *getSettingsManager() const;
 
     /// Получить адаптер настроек по его имени.
-    template <typename T> T *getAdapter()
-    {
+    template <typename T> T *getAdapter() {
         QString adapterName = T::getAdapterName();
-        return static_cast<T *>(mSettingsAdapters.contains(adapterName) ? mSettingsAdapters[adapterName] : 0);
+        return static_cast<T *>(
+            mSettingsAdapters.contains(adapterName) ? mSettingsAdapters[adapterName] : 0);
     }
 
     /// Возвращает список адаптеров.
@@ -66,7 +64,7 @@ class SettingsService : public SDK::PaymentProcessor::IService, public SDK::Paym
     /// Получить экземпляр сервиса.
     static SettingsService *instance(IApplication *aApplication);
 
-  private:
+private:
     SettingsManager *mSettingsManager;
     bool mRestoreConfiguration;
     QMap<QString, SDK::PaymentProcessor::ISettingsAdapter *> mSettingsAdapters;

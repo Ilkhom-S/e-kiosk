@@ -2,28 +2,26 @@
 
 #pragma once
 
-// Modules
-#include <Hardware/Printers/PortPrintersBase.h>
-#include <Hardware/FR/ProtoFR.h>
-
-// Project
 #include <Hardware/FR/FRBase.h>
+#include <Hardware/FR/ProtoFR.h>
+#include <Hardware/Printers/PortPrintersBase.h>
 
 //--------------------------------------------------------------------------------
-template <class T> class PortFRBase : public FRBase<T>
-{
-  public:
+template <class T> class PortFRBase : public FRBase<T> {
+public:
     PortFRBase();
 
     /// Устанавливает конфигурацию устройству.
     virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
     /// Печать фискального чека.
-    virtual bool printFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData,
+    virtual bool printFiscal(const QStringList &aReceipt,
+                             const SDK::Driver::SPaymentData &aPaymentData,
                              quint32 *aFDNumber = nullptr);
 
     /// Получить фискальные теги по номеру документа.
-    virtual bool checkFiscalFields(quint32 aFDNumber, SDK::Driver::TFiscalPaymentData &aFPData,
+    virtual bool checkFiscalFields(quint32 aFDNumber,
+                                   SDK::Driver::TFiscalPaymentData &aFPData,
                                    SDK::Driver::TComplexFiscalPaymentData &aPSData);
 
     /// Выполнить Z-отчет [и распечатать отложенные Z-отчеты].
@@ -32,7 +30,7 @@ template <class T> class PortFRBase : public FRBase<T>
     /// Выполнить X-отчет [и распечатать нефискальный чек - баланс].
     virtual bool printXReport(const QStringList &aReceipt);
 
-  protected:
+protected:
     /// Установить начальные параметры.
     virtual void setInitialData();
 
@@ -44,7 +42,8 @@ template <class T> class PortFRBase : public FRBase<T>
                                    const TStatusCollection &aOldStatusCollection);
 
     /// Получить статус. Возвращает Fail, Error (константы) или правильный ответ.
-    template <class T2> QByteArray performStatus(TStatusCodes &aStatusCodes, T2 aCommand, int aIndex = -1);
+    template <class T2>
+    QByteArray performStatus(TStatusCodes &aStatusCodes, T2 aCommand, int aIndex = -1);
 
     /// Сформировать массив байтов для печаит из массива строк.
     typedef QList<QByteArray> TReceiptBuffer;
@@ -53,9 +52,11 @@ template <class T> class PortFRBase : public FRBase<T>
 
     typedef std::function<TResult(QByteArray &aData)> TGetFiscalTLVData;
     typedef std::function<bool(const CFR::STLV &aTLV)> TProcessTLVAction;
-    bool processFiscalTLVData(const TGetFiscalTLVData &aGetFiscalTLVData, SDK::Driver::TFiscalPaymentData *aFPData,
+    bool processFiscalTLVData(const TGetFiscalTLVData &aGetFiscalTLVData,
+                              SDK::Driver::TFiscalPaymentData *aFPData,
                               SDK::Driver::TComplexFiscalPaymentData *aPSData);
-    bool processTLVData(const TGetFiscalTLVData &aGetFiscalTLVData, TProcessTLVAction aAction = TProcessTLVAction());
+    bool processTLVData(const TGetFiscalTLVData &aGetFiscalTLVData,
+                        TProcessTLVAction aAction = TProcessTLVAction());
 
     /// Загрузить названия отделов.
     typedef std::function<bool(int aIndex, QByteArray &aValue)> TLoadSectionName;
@@ -66,16 +67,13 @@ template <class T> class PortFRBase : public FRBase<T>
     virtual bool isErrorUnprocessed(const QByteArray &aCommand, char aError);
 
     /// Буфер обрабатываемых ошибок.
-    class ErrorBuffer : public QList<char>
-    {
-      public:
-        void removeLast()
-        {
+    class ErrorBuffer : public QList<char> {
+    public:
+        void removeLast() {
             if (!isEmpty())
                 QList::removeLast();
         }
-        void pop_back()
-        {
+        void pop_back() {
             if (!isEmpty())
                 QList::pop_back();
         }
@@ -99,31 +97,22 @@ template <class T> class PortFRBase : public FRBase<T>
     /// Данные необрабатываемых ошибок.
     typedef QSet<char> TErrors;
 
-    class UnprocessedErrorData : public CSpecification<QByteArray, TErrors>
-    {
-      public:
-        void add(char aCommand, char aError)
-        {
-            data()[QByteArray(1, aCommand)].insert(aError);
-        }
-        void add(const QByteArray &aCommand, char aError)
-        {
-            data()[aCommand].insert(aError);
-        }
-        void add(char aCommand, const TErrors &aErrors)
-        {
+    class UnprocessedErrorData : public CSpecification<QByteArray, TErrors> {
+    public:
+        void add(char aCommand, char aError) { data()[QByteArray(1, aCommand)].insert(aError); }
+        void add(const QByteArray &aCommand, char aError) { data()[aCommand].insert(aError); }
+        void add(char aCommand, const TErrors &aErrors) {
             append(QByteArray(1, aCommand), aErrors);
         }
-        void add(const QByteArray &aCommand, const TErrors &aErrors)
-        {
-            append(aCommand, aErrors);
-        }
+        void add(const QByteArray &aCommand, const TErrors &aErrors) { append(aCommand, aErrors); }
     };
 
     UnprocessedErrorData mUnprocessedErrorData;
 };
 
-typedef PortFRBase<SerialPrinterBase<PrinterBase<SerialDeviceBase<PortPollingDeviceBase<ProtoFR>>>>> TSerialFRBase;
-typedef PortFRBase<PortPrinterBase<PrinterBase<TCPDeviceBase<PortPollingDeviceBase<ProtoFR>>>>> TTCPFRBase;
+typedef PortFRBase<SerialPrinterBase<PrinterBase<SerialDeviceBase<PortPollingDeviceBase<ProtoFR>>>>>
+    TSerialFRBase;
+typedef PortFRBase<PortPrinterBase<PrinterBase<TCPDeviceBase<PortPollingDeviceBase<ProtoFR>>>>>
+    TTCPFRBase;
 
 //--------------------------------------------------------------------------------

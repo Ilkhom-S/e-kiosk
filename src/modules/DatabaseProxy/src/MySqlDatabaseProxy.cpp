@@ -1,47 +1,40 @@
-// STL
-#include <memory>
+#include "MySqlDatabaseProxy.h"
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDateTime>
 #include <QtCore/QMutexLocker>
 #include <QtCore/QVariant>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/ExceptionFilter.h>
 #include <Common/ILog.h>
 
-// Project
-#include "DatabaseQuery.h"
-#include "MySqlDatabaseProxy.h"
+#include <memory>
 
-MySqlDatabaseProxy::MySqlDatabaseProxy() : mMutex(), mDb(nullptr), mQueryChecker(nullptr)
-{
+#include "DatabaseQuery.h"
+
+MySqlDatabaseProxy::MySqlDatabaseProxy() : mMutex(), mDb(nullptr), mQueryChecker(nullptr) {
     mLog = ILog::getInstance(CMySqlDatabaseProxy::DefaultLog);
 }
 
 //---------------------------------------------------------------------------
-MySqlDatabaseProxy::~MySqlDatabaseProxy()
-{
+MySqlDatabaseProxy::~MySqlDatabaseProxy() {
     delete mDb;
     mDb = NULL;
 }
 
 //---------------------------------------------------------------------------
-void MySqlDatabaseProxy::setQueryChecker(IDatabaseQueryChecker *aQueryChecker)
-{
+void MySqlDatabaseProxy::setQueryChecker(IDatabaseQueryChecker *aQueryChecker) {
     mQueryChecker = aQueryChecker;
 }
 
 //---------------------------------------------------------------------------
-bool MySqlDatabaseProxy::open(const QString &dbName, const QString &user, const QString &password, const QString &host,
-                              const int aPort)
-{
-    try
-    {
-        mDb = new QSqlDatabase(
-            QSqlDatabase::addDatabase(CMySqlDatabaseProxy::DriverName, CMySqlDatabaseProxy::ConnectionName));
+bool MySqlDatabaseProxy::open(const QString &dbName,
+                              const QString &user,
+                              const QString &password,
+                              const QString &host,
+                              const int aPort) {
+    try {
+        mDb = new QSqlDatabase(QSqlDatabase::addDatabase(CMySqlDatabaseProxy::DriverName,
+                                                         CMySqlDatabaseProxy::ConnectionName));
 
         mCurrentBase = dbName;
 
@@ -53,18 +46,15 @@ bool MySqlDatabaseProxy::open(const QString &dbName, const QString &user, const 
 
         bool openResult = mDb->open();
 
-        if (openResult)
-        {
+        if (openResult) {
             LOG(mLog, LogLevel::Normal, QString("Database has been opened: %1.").arg(dbName));
             return true;
+        } else {
+            LOG(mLog,
+                LogLevel::Error,
+                QString("Following error occured: %1.").arg(mDb->lastError().driverText()));
         }
-        else
-        {
-            LOG(mLog, LogLevel::Error, QString("Following error occured: %1.").arg(mDb->lastError().driverText()));
-        }
-    }
-    catch (...)
-    {
+    } catch (...) {
         EXCEPTION_FILTER(mLog);
     }
 
@@ -74,15 +64,12 @@ bool MySqlDatabaseProxy::open(const QString &dbName, const QString &user, const 
 }
 
 //---------------------------------------------------------------------------
-void MySqlDatabaseProxy::close()
-{
-    if (!mDb)
-    {
+void MySqlDatabaseProxy::close() {
+    if (!mDb) {
         return;
     }
 
-    if (mDb->isOpen())
-    {
+    if (mDb->isOpen()) {
         mDb->close();
     }
 
@@ -95,34 +82,30 @@ void MySqlDatabaseProxy::close()
 }
 
 //---------------------------------------------------------------------------
-bool MySqlDatabaseProxy::isConnected() const
-{
+bool MySqlDatabaseProxy::isConnected() const {
     return mDb->isOpen();
 }
 
 //---------------------------------------------------------------------------
-const QString &MySqlDatabaseProxy::getCurrentBaseName() const
-{
+const QString &MySqlDatabaseProxy::getCurrentBaseName() const {
     return mCurrentBase;
 }
 
 //---------------------------------------------------------------------------
-bool MySqlDatabaseProxy::safeExec(QSqlQuery *query, const QString &queryMessage)
-{
+bool MySqlDatabaseProxy::safeExec(QSqlQuery *query, const QString &queryMessage) {
     QMutexLocker locker(&mMutex);
 
-    try
-    {
-        if (!mQueryChecker->isGood(query->exec(queryMessage)))
-        {
-            LOG(mLog, LogLevel::Error,
-                QString("Can't execute query: %1. Error: %2.").arg(queryMessage).arg(query->lastError().text()));
+    try {
+        if (!mQueryChecker->isGood(query->exec(queryMessage))) {
+            LOG(mLog,
+                LogLevel::Error,
+                QString("Can't execute query: %1. Error: %2.")
+                    .arg(queryMessage)
+                    .arg(query->lastError().text()));
 
             return false;
         }
-    }
-    catch (...)
-    {
+    } catch (...) {
         return false;
     }
 
@@ -130,10 +113,8 @@ bool MySqlDatabaseProxy::safeExec(QSqlQuery *query, const QString &queryMessage)
 }
 
 //---------------------------------------------------------------------------
-bool MySqlDatabaseProxy::execDML(const QString &strQuery, long &rowsAffected)
-{
-    if (!mDb)
-    {
+bool MySqlDatabaseProxy::execDML(const QString &strQuery, long &rowsAffected) {
+    if (!mDb) {
         return false;
     }
 
@@ -147,10 +128,8 @@ bool MySqlDatabaseProxy::execDML(const QString &strQuery, long &rowsAffected)
 }
 
 //---------------------------------------------------------------------------
-bool MySqlDatabaseProxy::execScalar(const QString &strQuery, long &result)
-{
-    if (!mDb)
-    {
+bool MySqlDatabaseProxy::execScalar(const QString &strQuery, long &result) {
+    if (!mDb) {
         return false;
     }
 
@@ -167,10 +146,8 @@ bool MySqlDatabaseProxy::execScalar(const QString &strQuery, long &result)
 }
 
 //---------------------------------------------------------------------------
-IDatabaseQuery *MySqlDatabaseProxy::execQuery(const QString &strQuery)
-{
-    if (!mDb)
-    {
+IDatabaseQuery *MySqlDatabaseProxy::execQuery(const QString &strQuery) {
+    if (!mDb) {
         return nullptr;
     }
 
@@ -182,10 +159,8 @@ IDatabaseQuery *MySqlDatabaseProxy::execQuery(const QString &strQuery)
 }
 
 //---------------------------------------------------------------------------
-bool MySqlDatabaseProxy::transaction()
-{
-    if (!mDb)
-    {
+bool MySqlDatabaseProxy::transaction() {
+    if (!mDb) {
         return false;
     }
 
@@ -195,10 +170,8 @@ bool MySqlDatabaseProxy::transaction()
 }
 
 //---------------------------------------------------------------------------
-bool MySqlDatabaseProxy::commit()
-{
-    if (!mDb)
-    {
+bool MySqlDatabaseProxy::commit() {
+    if (!mDb) {
         return false;
     }
 
@@ -208,10 +181,8 @@ bool MySqlDatabaseProxy::commit()
 }
 
 //---------------------------------------------------------------------------
-bool MySqlDatabaseProxy::rollback()
-{
-    if (!mDb)
-    {
+bool MySqlDatabaseProxy::rollback() {
+    if (!mDb) {
         return false;
     }
 
@@ -221,10 +192,8 @@ bool MySqlDatabaseProxy::rollback()
 }
 
 //---------------------------------------------------------------------------
-IDatabaseQuery *MySqlDatabaseProxy::createQuery()
-{
-    if (!mDb)
-    {
+IDatabaseQuery *MySqlDatabaseProxy::createQuery() {
+    if (!mDb) {
         throw std::runtime_error("cannot create query without valid database");
     }
 
@@ -232,12 +201,10 @@ IDatabaseQuery *MySqlDatabaseProxy::createQuery()
 }
 
 //---------------------------------------------------------------------------
-IDatabaseQuery *MySqlDatabaseProxy::createQuery(const QString &aQueryString)
-{
+IDatabaseQuery *MySqlDatabaseProxy::createQuery(const QString &aQueryString) {
     IDatabaseQuery *query = createQuery();
 
-    if (!mQueryChecker->isGood(query->prepare(aQueryString)))
-    {
+    if (!mQueryChecker->isGood(query->prepare(aQueryString))) {
         delete query;
         query = nullptr;
     }
@@ -246,8 +213,7 @@ IDatabaseQuery *MySqlDatabaseProxy::createQuery(const QString &aQueryString)
 }
 
 //---------------------------------------------------------------------------
-bool MySqlDatabaseProxy::checkIntegrity(QStringList &aListErrors)
-{
+bool MySqlDatabaseProxy::checkIntegrity(QStringList &aListErrors) {
     Q_UNUSED(aListErrors)
 
     return true;

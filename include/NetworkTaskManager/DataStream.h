@@ -2,17 +2,14 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QIODevice>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
 
 class QByteArray;
 
 //------------------------------------------------------------------------
-class DataStream
-{
-  public:
+class DataStream {
+public:
     DataStream(QIODevice *aDevice);
     virtual ~DataStream();
 
@@ -27,7 +24,7 @@ class DataStream
 
     virtual void close();
 
-  protected:
+protected:
     QSharedPointer<QIODevice> m_stream;
 };
 

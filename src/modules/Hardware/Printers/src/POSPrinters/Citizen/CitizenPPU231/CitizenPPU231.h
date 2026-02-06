@@ -5,14 +5,13 @@
 #include "Hardware/Printers/PortPOSPrinters.h"
 
 //--------------------------------------------------------------------------------
-class CitizenPPU231 : public TSerialPOSPrinter
-{
+class CitizenPPU231 : public TSerialPOSPrinter {
     SET_SUBSERIES("CitizenPPU231")
 
-  public:
+public:
     CitizenPPU231();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 

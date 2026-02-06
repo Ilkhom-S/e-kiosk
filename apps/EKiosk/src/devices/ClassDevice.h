@@ -1,39 +1,32 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtSql/QSqlDatabase>
-#include <Common/QtHeadersEnd.h>
 
-// System
 #include "coinacceptor/ClassAcceptor.h"
 #include "modems/ClassModem.h"
 #include "printers/ClassPrinter.h"
 #include "validators/ClassValidator.h"
 #include "watchdogs/watchdogs.h"
 
-namespace SearchDev
-{
-    enum ssTools
-    {
-        search_validator = 0,
-        search_printer = 1,
-        search_modem = 2,
-        search_watchdog = 3,
-        search_coin_acceptor = 4,
+namespace SearchDev {
+enum ssTools {
+    search_validator = 0,
+    search_printer = 1,
+    search_modem = 2,
+    search_watchdog = 3,
+    search_coin_acceptor = 4,
 
-        start_search = 0,
-        device_found = 1,
-        device_notfound = 2
-    };
+    start_search = 0,
+    device_found = 1,
+    device_notfound = 2
+};
 } // namespace SearchDev
 
-class SearchDevices : public QThread
-{
+class SearchDevices : public QThread {
 
     Q_OBJECT
 
-  public:
+public:
     SearchDevices(QObject *parent = 0);
 
     void setComListInfo(QStringList com_list);
@@ -76,7 +69,7 @@ class SearchDevices : public QThread
 
     bool testMode;
 
-  private:
+private:
     ClassModem *modem;
     ClassPrinter *printer;
     ClassValidator *validator;
@@ -89,27 +82,31 @@ class SearchDevices : public QThread
 
     bool debugger;
 
-    static void msleep(int ms)
-    {
-        QThread::msleep(ms);
-    }
+    static void msleep(int ms) { QThread::msleep(ms); }
     virtual void run();
     bool getDeviseInBase(int id_device, QString &name_device, QString &port);
-    bool setDeviseInBase(int id_device, const QString &name_device, const QString &port, const QString &comment,
+    bool setDeviseInBase(int id_device,
+                         const QString &name_device,
+                         const QString &port,
+                         const QString &comment,
                          int state);
     bool insertDeviseInBase(int id_device, QString &name_device, QString &port);
 
-  public slots:
-    bool searchDeviceMethod(int device, QString &dev_name, QString &com_str, QString &dev_coment,
+public slots:
+    bool searchDeviceMethod(int device,
+                            QString &dev_name,
+                            QString &com_str,
+                            QString &dev_coment,
                             const bool with_test = false);
     void getModemInfo();
 
-  signals:
+signals:
     void emit_getModemInfo();
 
-  public slots:
+public slots:
 
-  signals:
-    void emitDeviceSearch(int device, int result, QString dev_name, QString dev_comment, QString dev_port);
+signals:
+    void emitDeviceSearch(
+        int device, int result, QString dev_name, QString dev_comment, QString dev_port);
     void emitDeviceSearchFinished();
 };

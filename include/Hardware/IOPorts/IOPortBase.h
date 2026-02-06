@@ -2,17 +2,14 @@
 
 #pragma once
 
-// SDK
 #include <SDK/Drivers/IIOPort.h>
 
-// Modules
 #include <Hardware/Common/LoggingType.h>
 #include <Hardware/Common/MetaDevice.h>
 
 //--------------------------------------------------------------------------------
-class IOPortBase : public MetaDevice<SDK::Driver::IIOPort>
-{
-  public:
+class IOPortBase : public MetaDevice<SDK::Driver::IIOPort> {
+public:
     IOPortBase();
 
     static QString getDeviceType();
@@ -23,27 +20,25 @@ class IOPortBase : public MetaDevice<SDK::Driver::IIOPort>
     /// Устанавливает конфигурацию устройству.
     virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release();
 
     /// Очистить буферы порта.
     virtual bool clear();
 
     /// Установить параметры порта.
-    virtual bool setParameters(const SDK::Driver::TPortParameters & /*aParameters*/)
-    {
+    virtual bool setParameters(const SDK::Driver::TPortParameters & /*aParameters*/) {
         return true;
     }
 
     /// Получить параметры порта.
-    virtual void getParameters(SDK::Driver::TPortParameters & /*aParameters*/)
-    {
-    }
+    virtual void getParameters(SDK::Driver::TPortParameters & /*aParameters*/) {}
 
     /// Получить тип порта.
     virtual SDK::Driver::EPortTypes::Enum getType();
 
-  protected:
+protected:
     /// Установить таймаут открытия порта.
     void setOpeningTimeout(int aTimeout);
 

@@ -2,19 +2,16 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QSharedPointer>
-#include <QtWebKitWidgets/QGraphicsWebView>
 #include <QtWebKit/QWebElement>
-#include <Common/QtHeadersEnd.h>
+#include <QtWebKitWidgets/QGraphicsWebView>
 
 #include <Common/ILog.h>
 
 // TODO Убрать зависимость
 // PaymentProcessor SDK
-#include <SDK/PaymentProcessor/Scripting/Core.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
+#include <SDK/PaymentProcessor/Scripting/Core.h>
 
 // GUI SDK
 #include <SDK/GUI/GraphicsItemInfo.h>
@@ -22,12 +19,13 @@
 
 //---------------------------------------------------------------------------
 /// Интерфейс для созданного движком графического объекта.
-class WebGraphicsItem : public QObject, public SDK::GUI::IGraphicsItem, protected ILogable
-{
+class WebGraphicsItem : public QObject, public SDK::GUI::IGraphicsItem, protected ILogable {
     Q_OBJECT
 
-  public:
-    WebGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo, SDK::PaymentProcessor::Scripting::Core *aCore, ILog *mLog);
+public:
+    WebGraphicsItem(const SDK::GUI::GraphicsItemInfo &aInfo,
+                    SDK::PaymentProcessor::Scripting::Core *aCore,
+                    ILog *mLog);
 
     /// Вызывается перед отображением виджета.
     virtual void show();
@@ -50,27 +48,24 @@ class WebGraphicsItem : public QObject, public SDK::GUI::IGraphicsItem, protecte
     /// Возвращает виджет.
     virtual QQuickItem *getWidget() const;
 
-    virtual QWidget *getNativeWidget() const
-    {
-        return nullptr;
-    }
+    virtual QWidget *getNativeWidget() const { return nullptr; }
 
     /// Возвращает контекст виджета.
     virtual QVariantMap getContext() const;
 
-  signals:
+signals:
     /// Сигналы для проброса в JavaScript.
     void onShow();
     void onReset(const QVariantMap &aParameters);
     void onHide();
     void onNotify(const QString &aReason, const QVariantMap &aParameters);
 
-  private slots:
+private slots:
     void onJavaScriptWindowObjectCleared();
     void onFrameLoaded(bool aOk);
     void onRefresh();
 
-  private:
+private:
     ILog *mLog;
     QString mUrl;
     QString mError;

@@ -2,36 +2,30 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QFutureWatcher>
 #include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <Common/ObjectPointer.h>
+
 #include <SDK/Drivers/IDispenser.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK
-{
-    namespace Driver
-    {
-        class IDevice;
-    } // namespace Driver
-    namespace PaymentProcessor
-    {
-        class ICore;
-    } // namespace PaymentProcessor
+namespace SDK {
+namespace Driver {
+class IDevice;
+} // namespace Driver
+namespace PaymentProcessor {
+class ICore;
+} // namespace PaymentProcessor
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class DispenserTest : public SDK::PaymentProcessor::IDeviceTest
-{
+class DispenserTest : public SDK::PaymentProcessor::IDeviceTest {
     Q_OBJECT
 
-  public:
-    DispenserTest(SDK::Driver::IDevice *aDevice, const QString &aConfigurationName,
+public:
+    DispenserTest(SDK::Driver::IDevice *aDevice,
+                  const QString &aConfigurationName,
                   SDK::PaymentProcessor::ICore *aCore);
 
     /// Возвращает имена и описания тестов.
@@ -49,11 +43,11 @@ class DispenserTest : public SDK::PaymentProcessor::IDeviceTest
     /// Возвращает true, если тест устройства возвращает результат теста
     virtual bool hasResult();
 
-  private slots:
+private slots:
     void onDispensed(int aCashUnit, int aCount);
     void onRejected(int aCashUnit, int aCount);
 
-  private:
+private:
     ObjectPointer<SDK::Driver::IDispenser> mDispenser;
     QString mConfigurationName;
     SDK::PaymentProcessor::ICore *mCore;

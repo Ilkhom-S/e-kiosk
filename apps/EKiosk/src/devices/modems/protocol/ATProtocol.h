@@ -1,338 +1,318 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
 #include <QtCore/QObject>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QString>
 #include <QtCore/QThread>
 #include <QtSerialPort/QSerialPort>
-#include <Common/QtHeadersEnd.h>
 
-namespace CModemConstants
-{
-    const auto regExpBalance = "([0-9]{1,5}[.][0-9]{1,2}|[0-9]{1,5}[,][0-9]{1,2}|[-][0-9]{1,5}[.][0-9]{1,"
-                               "2}|[-][0-9]{1,5}[,][0-9]{1,2})";
-    const auto regExpNumberSim = "[0-9]{9,12}";
+namespace CModemConstants {
+const auto regExpBalance =
+    "([0-9]{1,5}[.][0-9]{1,2}|[0-9]{1,5}[,][0-9]{1,2}|[-][0-9]{1,5}[.][0-9]{1,"
+    "2}|[-][0-9]{1,5}[,][0-9]{1,2})";
+const auto regExpNumberSim = "[0-9]{9,12}";
 } // namespace CModemConstants
 
 //--------------------------------------------------------------------------------
 /// Константы ATProtocol протокола.
-namespace CATProtocolConstants
-{
-    /// Тип протокола
-    const auto ProtocolType = "AT";
+namespace CATProtocolConstants {
+/// Тип протокола
+const auto ProtocolType = "AT";
 
-    /// Пустой байт
-    const uchar EmptyByte = 0x00;
+/// Пустой байт
+const uchar EmptyByte = 0x00;
 
-    /// Минимальный размер ответного пакета
-    const int MinAnswerSize = 4;
+/// Минимальный размер ответного пакета
+const int MinAnswerSize = 4;
 
-    /// Число дополнительных чтений для getBalance
-    const int GetBalanceAddRepeatCount = 10;
+/// Число дополнительных чтений для getBalance
+const int GetBalanceAddRepeatCount = 10;
 
-    /// Число дополнительных чтений для GetAllSMS
-    const int GetAllSMSRepeatCount = 12;
+/// Число дополнительных чтений для GetAllSMS
+const int GetAllSMSRepeatCount = 12;
 
-    /// Число дополнительных чтений для sendSMS
-    const int SendSMSAddRepeatCount = 5;
+/// Число дополнительных чтений для sendSMS
+const int SendSMSAddRepeatCount = 5;
 
-    /// Число дополнительных чтений для getSimNumber
-    const int GetSimNumberAddRepeatCount = 4;
+/// Число дополнительных чтений для getSimNumber
+const int GetSimNumberAddRepeatCount = 4;
 
-    /// Пауза между чтениями для getBalance (ms)
-    const int GetBalancePauseTime = 300;
+/// Пауза между чтениями для getBalance (ms)
+const int GetBalancePauseTime = 300;
 
-    /// Пауза между чтениями для getSimNumber (ms)
-    const int GetSimNumberPauseTime = 300;
+/// Пауза между чтениями для getSimNumber (ms)
+const int GetSimNumberPauseTime = 300;
 }; // namespace CATProtocolConstants
 
 //--------------------------------------------------------------------------------
 /// Команды ATProtocol протокола.
-namespace CATProtocolCommands
-{
-    /// "Получить оператора"
-    const QString GetOperator = "AT+COPS?";
+namespace CATProtocolCommands {
+/// "Получить оператора"
+const QString GetOperator = "AT+COPS?";
 
-    /// "Сбросить настройки по умолчанию"
-    const QString ResetSettings = "ATZ";
+/// "Сбросить настройки по умолчанию"
+const QString ResetSettings = "ATZ";
 
-    /// "Отключить эхо-вывод"
-    const QString OffEcho = "ATE0";
+/// "Отключить эхо-вывод"
+const QString OffEcho = "ATE0";
 
-    /// "Получить PIN симки"
-    const QString IsPin = "AT+CPIN?";
+/// "Получить PIN симки"
+const QString IsPin = "AT+CPIN?";
 
-    /// "Качество сигнала" (Signal quality)
-    const QString SignalQuality = "AT+CSQ";
+/// "Качество сигнала" (Signal quality)
+const QString SignalQuality = "AT+CSQ";
 
-    /// "Идентификация" (Display product identification information)
-    const QString Identification = "ATI";
+/// "Идентификация" (Display product identification information)
+const QString Identification = "ATI";
 
-    /// Получение баланса
-    const QString GetBalance = "ATD";
+/// Получение баланса
+const QString GetBalance = "ATD";
 
-    /// Получение комента
-    const QString Comment = "AT+GMM";
+/// Получение комента
+const QString Comment = "AT+GMM";
 
-    /// Отправка запросов
-    const QString UssdRequest = "AT+CUSD=1, \"%1\",15";
+/// Отправка запросов
+const QString UssdRequest = "AT+CUSD=1, \"%1\",15";
 
-    /// Неявная команда, вызываемая при получении баланса
-    const QString CUSD = "+CUSD";
+/// Неявная команда, вызываемая при получении баланса
+const QString CUSD = "+CUSD";
 
-    /// Команда на перезапуск модема
-    const QString Restart = "AT+CFUN=0,1";
+/// Команда на перезапуск модема
+const QString Restart = "AT+CFUN=0,1";
 
-    /// Команда на переход в режим смс
-    const QString SmsState = "AT+CMGF=0";
+/// Команда на переход в режим смс
+const QString SmsState = "AT+CMGF=0";
 
-    /// Команда на отправку смс
-    const QString SmsSend = "AT+CMGS=%1";
+/// Команда на отправку смс
+const QString SmsSend = "AT+CMGS=%1";
 
-    /// Команда на просмотр всех входящих SMS
-    const QString GetAllInputSms = "AT+CMGL=\"all\"";
+/// Команда на просмотр всех входящих SMS
+const QString GetAllInputSms = "AT+CMGL=\"all\"";
 
-    // AT+CMGDA=«DEL ALL»
-    /// Команда на удаление всех SMS
-    const QString DellAllSms = "AT+CMGD=\"%1\"";
+// AT+CMGDA=«DEL ALL»
+/// Команда на удаление всех SMS
+const QString DellAllSms = "AT+CMGD=\"%1\"";
 
-    /// Точка с запятой
-    const QString Semicolon = ";";
+/// Точка с запятой
+const QString Semicolon = ";";
 
-    /// Окончание строки
-    const uchar CR = 0x0D;
+/// Окончание строки
+const uchar CR = 0x0D;
 
-    /// Окончание строки
-    const uchar LF = 0x0A;
+/// Окончание строки
+const uchar LF = 0x0A;
 }; // namespace CATProtocolCommands
 
 //--------------------------------------------------------------------------------
 /// Возможные ошибки
-namespace ATErrors
-{
-    namespace Strings
-    {
-        const QString OK = "OK";
-        const QString Connect = "CONNECT";
-        const QString Ring = "RING";
-        const QString NoCarrier = "NO CARRIER";
-        const QString Error = "ERROR";
-        const QString Connect600 = "CONNECT 600";
-        const QString Connect1200 = "CONNECT 1200";
-        const QString Connect2400 = "CONNECT 2400";
-        const QString NoDialtone = "NO DIALTONE";
-        const QString Busy = "BUSY";
-        const QString NoAnswer = "NO ANSWER";
-    }; // namespace Strings
+namespace ATErrors {
+namespace Strings {
+const QString OK = "OK";
+const QString Connect = "CONNECT";
+const QString Ring = "RING";
+const QString NoCarrier = "NO CARRIER";
+const QString Error = "ERROR";
+const QString Connect600 = "CONNECT 600";
+const QString Connect1200 = "CONNECT 1200";
+const QString Connect2400 = "CONNECT 2400";
+const QString NoDialtone = "NO DIALTONE";
+const QString Busy = "BUSY";
+const QString NoAnswer = "NO ANSWER";
+}; // namespace Strings
 
-    enum Enum
-    {
-        /// Модем выполнил команду без ошибок
-        OK,
+enum Enum {
+    /// Модем выполнил команду без ошибок
+    OK,
 
-        /// Модем установил связь
-        Connect,
+    /// Модем установил связь
+    Connect,
 
-        /// Модем обнаружил сигнал звонка на телефонной линии.
-        /// Это сообщение модем передает компьютеру каждый раз, когда по телефонной
-        /// линии поступает сигнал вызова (звонок)
-        Ring,
+    /// Модем обнаружил сигнал звонка на телефонной линии.
+    /// Это сообщение модем передает компьютеру каждый раз, когда по телефонной
+    /// линии поступает сигнал вызова (звонок)
+    Ring,
 
-        /// Модем потерял несущую или не получил ответ от удаленного модема
-        NoCarrier,
+    /// Модем потерял несущую или не получил ответ от удаленного модема
+    NoCarrier,
 
-        /// Ошибка в командной строке, командный буфер переполнен или ошибка в
-        /// контрольной сумме (команда I2)
-        Error,
+    /// Ошибка в командной строке, командный буфер переполнен или ошибка в
+    /// контрольной сумме (команда I2)
+    Error,
 
-        /// Отсутствие сигнала станции при снятии трубки
-        NoDialtone,
+    /// Отсутствие сигнала станции при снятии трубки
+    NoDialtone,
 
-        /// Модем обнаружил сигнал "занято" после набора номера
-        Busy,
+    /// Модем обнаружил сигнал "занято" после набора номера
+    Busy,
 
-        /// Ответ получается в случае использования в командной пятисекундной тишины
-        NoAnswer,
+    /// Ответ получается в случае использования в командной пятисекундной тишины
+    NoAnswer,
 
-        /// Неизвестен
-        Unknown
-    };
+    /// Неизвестен
+    Unknown
+};
 }; // namespace ATErrors
 
 /// Команды протокола модемов.
 //--------------------------------------------------------------------------------
-namespace ModemProtocolCommands
-{
-    enum Enum
-    {
-        /// Получить качество сигнала (в dBm)
-        GetSignalQuality,
-
-        /// Получить оператора
-        GetOperator,
-
-        /// Отключить эховывод команд
-        OffEcho,
-
-        /// Идентификация.
-        Identification,
-
-        /// Сброс модема.
-        Reset,
-
-        /// Получить PIN симки.
-        IsPin,
-
-        /// Получение баланса.
-        GetBalance,
-
-        /// Comment
-        GetComment,
-
-        /// GetSimNumber
-        GetSimNumber,
-
-        /// Restart
-        CmdRestart,
-
-        /// State SMS
-        CmdStateSMS,
-
-        /// Send SMS
-        CmdSendSMS,
-
-        /// Set Number phone SMS
-        CmdSetNumberSMS,
-
-        /// Text SMS
-        CmdTextIntersetSMS,
-
-        /// Get All SMS
-        CmdGetAllSms,
-
-        /// Dell All SMS
-        CmdDellAllSms,
-
-        /// Неизвестна
-        Uknown
-    };
-}; // namespace ModemProtocolCommands
-
-namespace ModemCmd
-{
-
+namespace ModemProtocolCommands {
+enum Enum {
     /// Получить качество сигнала (в dBm)
-    const QString GetSignalQuality = "GetSignalQuality";
+    GetSignalQuality,
 
     /// Получить оператора
-    const QString GetOperator = "GetOperator";
+    GetOperator,
 
     /// Отключить эховывод команд
-    const QString OffEcho = "OffEcho";
+    OffEcho,
 
     /// Идентификация.
-    const QString Identification = "Identification";
+    Identification,
 
     /// Сброс модема.
-    const QString Reset = "Reset";
+    Reset,
 
     /// Получить PIN симки.
-    const QString IsPin = "IsPin";
+    IsPin,
 
     /// Получение баланса.
-    const QString GetBalance = "GetBalance";
+    GetBalance,
 
-    /// Получение баланса.
-    const QString GetComment = "GetComment";
+    /// Comment
+    GetComment,
 
-    /// Получить номер симки
-    const QString GetSimNumber = "GetSimNumber";
+    /// GetSimNumber
+    GetSimNumber,
 
-    const QString CmdRestart = "CmdRestart";
+    /// Restart
+    CmdRestart,
 
-    /// Отправка SMS
-    const QString CmdSendSms = "CmdSendSms";
+    /// State SMS
+    CmdStateSMS,
+
+    /// Send SMS
+    CmdSendSMS,
+
+    /// Set Number phone SMS
+    CmdSetNumberSMS,
+
+    /// Text SMS
+    CmdTextIntersetSMS,
+
+    /// Get All SMS
+    CmdGetAllSms,
+
+    /// Dell All SMS
+    CmdDellAllSms,
 
     /// Неизвестна
-    const QString Uknown = "Uknown";
+    Uknown
+};
+}; // namespace ModemProtocolCommands
+
+namespace ModemCmd {
+
+/// Получить качество сигнала (в dBm)
+const QString GetSignalQuality = "GetSignalQuality";
+
+/// Получить оператора
+const QString GetOperator = "GetOperator";
+
+/// Отключить эховывод команд
+const QString OffEcho = "OffEcho";
+
+/// Идентификация.
+const QString Identification = "Identification";
+
+/// Сброс модема.
+const QString Reset = "Reset";
+
+/// Получить PIN симки.
+const QString IsPin = "IsPin";
+
+/// Получение баланса.
+const QString GetBalance = "GetBalance";
+
+/// Получение баланса.
+const QString GetComment = "GetComment";
+
+/// Получить номер симки
+const QString GetSimNumber = "GetSimNumber";
+
+const QString CmdRestart = "CmdRestart";
+
+/// Отправка SMS
+const QString CmdSendSms = "CmdSendSms";
+
+/// Неизвестна
+const QString Uknown = "Uknown";
 } // namespace ModemCmd
 
 /// Коды ошибок абстрактного валидатора
-namespace ModemErrors
-{
-    enum Enum
-    {
-        /// Всё окей, ошибок нет
-        OK,
+namespace ModemErrors {
+enum Enum {
+    /// Всё окей, ошибок нет
+    OK,
 
-        /// Нет коннекта, модем не подключен
-        NotAvailable,
+    /// Нет коннекта, модем не подключен
+    NotAvailable,
 
-        /// Ошибка симки
-        SIMError,
+    /// Ошибка симки
+    SIMError,
 
-        /// Неизвестен
-        Unknown
-    };
+    /// Неизвестен
+    Unknown
+};
 }; // namespace ModemErrors
 
 /// Состояния абстрактного валидатора.
-namespace ModemStates
-{
-    enum Enum
-    {
-        /// Модем проиницилизирован, готов к работе.
-        Initialize,
+namespace ModemStates {
+enum Enum {
+    /// Модем проиницилизирован, готов к работе.
+    Initialize,
 
-        /// Возникла ошибка. Код ошибки ModemErrors::Enum
-        Error,
+    /// Возникла ошибка. Код ошибки ModemErrors::Enum
+    Error,
 
-        /// Неизвестен
-        Unknown
-    };
+    /// Неизвестен
+    Unknown
+};
 }; // namespace ModemStates
 
 /// Структура о полном статусе абстрактного модема
-struct SModemStatusInfo
-{
+struct SModemStatusInfo {
     /// Состояние модема.
     ModemStates::Enum state;
 
     /// Ошибка модема (в случае возникновения).
     ModemErrors::Enum error;
 
-    bool operator==(const SModemStatusInfo &aModemStatusInfo)
-    {
+    bool operator==(const SModemStatusInfo &aModemStatusInfo) {
         return (state == aModemStatusInfo.state) && (error == aModemStatusInfo.error);
     }
 
-    bool operator!=(const SModemStatusInfo &aModemStatusInfo)
-    {
+    bool operator!=(const SModemStatusInfo &aModemStatusInfo) {
         return (state != aModemStatusInfo.state) || (error != aModemStatusInfo.error);
     }
 };
 
-namespace SmsTextIndex
-{
-    enum sms
-    {
-        smsErrorValidator = 0,
-        smsErrorPrinter = 1,
-        smsErrorBalanceAgent = 2,
-        smsErrorSimBalance = 3,
-        smsErrorLockTerminal = 4,
-        smsErrorConnection = 5,
-    };
+namespace SmsTextIndex {
+enum sms {
+    smsErrorValidator = 0,
+    smsErrorPrinter = 1,
+    smsErrorBalanceAgent = 2,
+    smsErrorSimBalance = 3,
+    smsErrorLockTerminal = 4,
+    smsErrorConnection = 5,
+};
 
-    const QString txtErrorValidator = "Error validator";
-    const QString txtErrorPrinter = "Error printer";
-    const QString txtErrorBalanceAgent = "Few balance agent";
-    const QString txtErrorSimBalance = "Few balance SIM";
-    const QString txtErrorLockTerminal = "Error lock terminal";
-    const QString txtErrorConnection = "Error connection";
+const QString txtErrorValidator = "Error validator";
+const QString txtErrorPrinter = "Error printer";
+const QString txtErrorBalanceAgent = "Few balance agent";
+const QString txtErrorSimBalance = "Few balance SIM";
+const QString txtErrorLockTerminal = "Error lock terminal";
+const QString txtErrorConnection = "Error connection";
 } // namespace SmsTextIndex
 
 #include <QtCore/QDebug>
@@ -340,12 +320,11 @@ namespace SmsTextIndex
 
 //--------------------------------------------------------------------------------
 /// Класс протокола ATProtocol.
-class ATProtocol : public QThread
-{
+class ATProtocol : public QThread {
 
     //    Q_OBJECT
 
-  public:
+public:
     ATProtocol(QObject *parent = 0);
     bool createDevicePort();
     bool closePort();
@@ -388,7 +367,8 @@ class ATProtocol : public QThread
     ///
     /// Возвращает:
     /// - успешность выполнения.
-    virtual bool processCommand(ModemProtocolCommands::Enum aCommand, const QByteArray &aCommandData,
+    virtual bool processCommand(ModemProtocolCommands::Enum aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray &aAnswerData);
 
     /// Получить текущий статус
@@ -396,7 +376,7 @@ class ATProtocol : public QThread
 
     // signals:
     //         void emit_statusSmsSend(bool sts);
-  private:
+private:
     int GetLengthSMS;
     // QString numberPhoneSms;
     QString textToSendSms;
@@ -404,10 +384,7 @@ class ATProtocol : public QThread
     QString getCommandString(ModemProtocolCommands::Enum aCommand);
     bool readPort(QByteArray &tempAnswer);
     void printDataToHex(const QByteArray &data);
-    static void msleep(int ms)
-    {
-        QThread::msleep(ms);
-    }
+    static void msleep(int ms) { QThread::msleep(ms); }
     /// Получение пакета с сформированной командой и её данными.
     ///
     /// Параметры:
@@ -417,7 +394,8 @@ class ATProtocol : public QThread
     ///
     /// Возвращает:
     /// - успешность выполнения.
-    bool getCommandPacket(ModemProtocolCommands::Enum aCommand, const QByteArray &aCommandData,
+    bool getCommandPacket(ModemProtocolCommands::Enum aCommand,
+                          const QByteArray &aCommandData,
                           QByteArray &aPacketCommand);
 
     /// Исполнить команду (отослать команду в порт)
@@ -430,7 +408,10 @@ class ATProtocol : public QThread
     /// - успешность выполнения.
     bool execCommand(QByteArray &aPacket);
 
-    bool sendCommand(QByteArray dataRequest, bool getResponse, int timeResponse, QByteArray &dataResponse,
+    bool sendCommand(QByteArray dataRequest,
+                     bool getResponse,
+                     int timeResponse,
+                     QByteArray &dataResponse,
                      int timeSleep);
     bool isOpened();
 
@@ -444,7 +425,8 @@ class ATProtocol : public QThread
     ///
     /// Возвращает:
     /// - успешность выполнения.
-    bool getAnswer(QByteArray &aData, bool &codecError, int aAddRepeatCount = 0, int aPauseTime = 0);
+    bool
+    getAnswer(QByteArray &aData, bool &codecError, int aAddRepeatCount = 0, int aPauseTime = 0);
 
     /// Упаковка команды и данных в пакет.
     ///

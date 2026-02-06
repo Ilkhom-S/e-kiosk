@@ -1,9 +1,6 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QWidget>
-#include <Common/QtHeadersEnd.h>
 
 class QWebEngineView;
 #include <QtCore/QFile>
@@ -13,87 +10,77 @@ class QWebEngineView;
 #include <QtCore/QTimer>
 #include <QtCore/QVariant>
 #include <QtCore/QVariantList>
-
 #include <QtMultimedia/QSoundEffect>
 #include <QtSql/QSqlDatabase>
 
-namespace Lang
-{
-    const QString RU = "ru";
-    const QString TJ = "tj";
-    const QString UZ = "uz";
-    const QString EN = "en";
+namespace Lang {
+const QString RU = "ru";
+const QString TJ = "tj";
+const QString UZ = "uz";
+const QString EN = "en";
 } // namespace Lang
 
-namespace PageIn
-{
-    enum page
-    {
-        Main = 0,
-        SelectGroup = 1,
-        CheckPay = 2,
-        SelectServices = 3,
-        InputNumber = 4,
-        InputSum = 5,
-        PrintDialog = 6,
-        AfterPrint = 7,
-        LockTerminal = 8,
-        Information = 9,
-    };
+namespace PageIn {
+enum page {
+    Main = 0,
+    SelectGroup = 1,
+    CheckPay = 2,
+    SelectServices = 3,
+    InputNumber = 4,
+    InputSum = 5,
+    PrintDialog = 6,
+    AfterPrint = 7,
+    LockTerminal = 8,
+    Information = 9,
+};
 
-    enum sec
-    {
-        sMain = 0,
-        sSelectGroup = 60000,
-        sCheckPay = 150000,
-        sSelectServices = 60000,
-        sInputNumber = 90000,
-        sInputSum = 120000,
-        sPrintDialog_1 = 15000,
-        sPrintDialog_2 = 8000,
-        sAfterPrint = 8000,
-        sWebPage = 180000
-    };
+enum sec {
+    sMain = 0,
+    sSelectGroup = 60000,
+    sCheckPay = 150000,
+    sSelectServices = 60000,
+    sInputNumber = 90000,
+    sInputSum = 120000,
+    sPrintDialog_1 = 15000,
+    sPrintDialog_2 = 8000,
+    sAfterPrint = 8000,
+    sWebPage = 180000
+};
 } // namespace PageIn
 
-namespace ConstData
-{
+namespace ConstData {
 
-    const QString companyName = "Humo";
-    const QString version = "3.2.3";
+const QString companyName = "Humo";
+const QString version = "3.2.3";
 
-    namespace Path
-    {
-        const QString Config = "assets/config/";
-        const QString Font = "assets/fonts/";
-        const QString Sound = "assets/sound/";
-        const QString Styles = "assets/styles/";
-        const QString Nominals = "assets/nominals/";
-    } // namespace Path
+namespace Path {
+const QString Config = "assets/config/";
+const QString Font = "assets/fonts/";
+const QString Sound = "assets/sound/";
+const QString Styles = "assets/styles/";
+const QString Nominals = "assets/nominals/";
+} // namespace Path
 
-    namespace FileName
-    {
-        const QString StyleQSS = "style.qss";
-        const QString Settings = "settings.ini";
-        const QString DBName = "database.db";
-        const QString DBFile = "updater.db";
-    } // namespace FileName
+namespace FileName {
+const QString StyleQSS = "style.qss";
+const QString Settings = "settings.ini";
+const QString DBName = "database.db";
+const QString DBFile = "updater.db";
+} // namespace FileName
 } // namespace ConstData
 
-namespace Sound
-{
-    const QString sGetOperator = "01.wav";
-    const QString sInputNumber = "02.wav";
-    const QString sInputMoney = "03.wav";
-    const QString sThanksFull = "04.wav";
-    const QString sThanks = "05.wav";
-    const QString sPrintChek = "06.wav";
-    const QString sGetCategory = "07.wav";
+namespace Sound {
+const QString sGetOperator = "01.wav";
+const QString sInputNumber = "02.wav";
+const QString sInputMoney = "03.wav";
+const QString sThanksFull = "04.wav";
+const QString sThanks = "05.wav";
+const QString sPrintChek = "06.wav";
+const QString sGetCategory = "07.wav";
 } // namespace Sound
 
-namespace Ui
-{
-    class MainPageLoader;
+namespace Ui {
+class MainPageLoader;
 } // namespace Ui
 
 // enum HttpMethod {
@@ -101,11 +88,10 @@ namespace Ui
 //     POST  = 2,
 // };
 
-class MainPageLoader : public QWidget
-{
+class MainPageLoader : public QWidget {
     Q_OBJECT
 
-  public:
+public:
     explicit MainPageLoader(QWidget *parent = 0);
     ~MainPageLoader();
 
@@ -144,11 +130,11 @@ class MainPageLoader : public QWidget
     QString originalNumber;
     QString afterMaskNumber;
 
-  private:
+private:
     // Web
     QWebEngineView *webView;
 
-  private:
+private:
     Ui::MainPageLoader *ui;
 
     QSqlDatabase db;
@@ -209,10 +195,10 @@ class MainPageLoader : public QWidget
 
     void orzuTranshCreate();
 
-  private slots:
+private slots:
     void btnGotoInputSumClc();
 
-  public slots:
+public slots:
     void populateJavaScriptWindowObject();
 
     void adminOpen();
@@ -231,7 +217,8 @@ class MainPageLoader : public QWidget
     void receiptSend(QString phone);
     void otpSend(QString account);
     void otpConfirm(QString otp);
-    void setCheckOnlineResult(QString resultCode, QString status, QString message, QVariantList items);
+    void
+    setCheckOnlineResult(QString resultCode, QString status, QString message, QVariantList items);
     void sendReceiptResult(QString resultCode, QString trn, QString status);
     void sendOtpResult(QString resultCode, QString otpId);
     void confirmOtpResult(QString resultCode);
@@ -276,19 +263,26 @@ class MainPageLoader : public QWidget
     void inputNominal(int nominal, bool coin = false);
     void showHideReturnNominal(bool status);
 
-  signals:
+signals:
     void validator_activate(bool status);
     void emit_pay_new(QVariantMap payment);
     void emit_update_pay(QVariantMap payment);
     void emit_confirm_pay(QString tranz_id, bool print);
     void emit_print_pay(QString tranz_id);
     void emit_getUserInfo(QString account, QString prvId);
-    void emit_checkOnline(QString trn, QString prvId, QString account, double amount,
+    void emit_checkOnline(QString trn,
+                          QString prvId,
+                          QString account,
+                          double amount,
                           QVariantMap extraInfo = QVariantMap());
     void emit_sendReceipt(QString trn, QString notify);
     void emit_otpSend(QString account);
     void emit_otpConfirm(QString otpId, QString otpValue);
-    void emit_sendJsonRequest(QJsonObject json, QString url, QString requestName, int method, int timeout,
+    void emit_sendJsonRequest(QJsonObject json,
+                              QString url,
+                              QString requestName,
+                              int method,
+                              int timeout,
                               QVariantMap header = QVariantMap());
     void emit_toLoging(int sts, QString name, QString text);
     void emit_openAvtorizationDialog();

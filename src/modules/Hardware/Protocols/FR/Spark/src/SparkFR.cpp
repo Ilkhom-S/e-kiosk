@@ -1,20 +1,14 @@
 /* @file Протокол ФР SPARK. */
 
-// STL
+#include <Hardware/Protocols/FR/SparkFR.h>
 #include <cmath>
 
-// System
-#include <Hardware/Protocols/FR/SparkFR.h>
-
-// Project
 #include "SparkFRConstants.h"
 
-char SparkFRProtocol::calcCRC(const QByteArray &aData)
-{
+char SparkFRProtocol::calcCRC(const QByteArray &aData) {
     char sum = aData[0];
 
-    for (int i = 1; i < aData.size(); ++i)
-    {
+    for (int i = 1; i < aData.size(); ++i) {
         sum ^= aData[i];
     }
 
@@ -22,24 +16,23 @@ char SparkFRProtocol::calcCRC(const QByteArray &aData)
 }
 
 //--------------------------------------------------------------------------------
-bool SparkFRProtocol::check(const QByteArray &aAnswerData)
-{
+bool SparkFRProtocol::check(const QByteArray &aAnswerData) {
     // размер
-    if (aAnswerData.size() < CSparkFR::MinPacketAnswerSize)
-    {
+    if (aAnswerData.size() < CSparkFR::MinPacketAnswerSize) {
         toLog(LogLevel::Error,
-              QString("SPARK: The length of the packet is less than %1 byte").arg(CSparkFR::MinPacketAnswerSize));
+              QString("SPARK: The length of the packet is less than %1 byte")
+                  .arg(CSparkFR::MinPacketAnswerSize));
         return false;
     }
 
     // префикс
     char prefix = aAnswerData[0];
 
-    if (prefix != CSparkFR::Prefix)
-    {
-        toLog(LogLevel::Error, QString("SPARK: Invalid prefix = %1, need = %2")
-                                   .arg(ProtocolUtils::toHexLog(prefix))
-                                   .arg(ProtocolUtils::toHexLog(CSparkFR::Prefix)));
+    if (prefix != CSparkFR::Prefix) {
+        toLog(LogLevel::Error,
+              QString("SPARK: Invalid prefix = %1, need = %2")
+                  .arg(ProtocolUtils::toHexLog(prefix))
+                  .arg(ProtocolUtils::toHexLog(CSparkFR::Prefix)));
         return false;
     }
 
@@ -47,11 +40,11 @@ bool SparkFRProtocol::check(const QByteArray &aAnswerData)
     int size = aAnswerData.size();
     char postfix = aAnswerData[size - 2];
 
-    if (postfix != CSparkFR::Postfix)
-    {
-        toLog(LogLevel::Error, QString("SPARK: Invalid postfix = %1, need = %2")
-                                   .arg(ProtocolUtils::toHexLog(postfix))
-                                   .arg(ProtocolUtils::toHexLog(CSparkFR::Postfix)));
+    if (postfix != CSparkFR::Postfix) {
+        toLog(LogLevel::Error,
+              QString("SPARK: Invalid postfix = %1, need = %2")
+                  .arg(ProtocolUtils::toHexLog(postfix))
+                  .arg(ProtocolUtils::toHexLog(CSparkFR::Postfix)));
         return false;
     }
 
@@ -59,11 +52,11 @@ bool SparkFRProtocol::check(const QByteArray &aAnswerData)
     char answerCRC = calcCRC(aAnswerData.mid(1, size - 2));
     char CRC = aAnswerData[size - 1];
 
-    if (CRC != answerCRC)
-    {
-        toLog(LogLevel::Error, QString("SPARK: Invalid CRC = %1, need %2")
-                                   .arg(ProtocolUtils::toHexLog(CRC))
-                                   .arg(ProtocolUtils::toHexLog(answerCRC)));
+    if (CRC != answerCRC) {
+        toLog(LogLevel::Error,
+              QString("SPARK: Invalid CRC = %1, need %2")
+                  .arg(ProtocolUtils::toHexLog(CRC))
+                  .arg(ProtocolUtils::toHexLog(answerCRC)));
         return false;
     }
 
@@ -71,43 +64,33 @@ bool SparkFRProtocol::check(const QByteArray &aAnswerData)
 }
 
 //--------------------------------------------------------------------------------
-TResult SparkFRProtocol::performCommand(const QByteArray &aCommandData, QByteArray &aAnswerData, int aTimeout)
-{
+TResult SparkFRProtocol::performCommand(const QByteArray &aCommandData,
+                                        QByteArray &aAnswerData,
+                                        int aTimeout) {
     int index = 1;
 
-    do
-    {
+    do {
         aAnswerData.clear();
         QString log = QString("SPARK: >> {%1}").arg(aCommandData.toHex().data());
 
-        if (index > 1)
-        {
+        if (index > 1) {
             log += ", iteration #" + QString::number(index);
         }
 
         toLog(LogLevel::Normal, log);
 
-        if (!mPort->write(aCommandData))
-        {
+        if (!mPort->write(aCommandData)) {
             return CommandResult::Port;
         }
 
-        if (!readData(aAnswerData, aTimeout))
-        {
+        if (!readData(aAnswerData, aTimeout)) {
             return CommandResult::Port;
-        }
-        else if (aAnswerData.isEmpty())
-        {
+        } else if (aAnswerData.isEmpty()) {
             return CommandResult::NoAnswer;
-        }
-        else if (aAnswerData.startsWith(ASCII::ACK) || aAnswerData.startsWith(ASCII::ENQ))
-        {
+        } else if (aAnswerData.startsWith(ASCII::ACK) || aAnswerData.startsWith(ASCII::ENQ)) {
             return CommandResult::OK;
-        }
-        else if (!aAnswerData.startsWith(ASCII::NAK))
-        {
-            if (!check(aAnswerData))
-            {
+        } else if (!aAnswerData.startsWith(ASCII::NAK)) {
+            if (!check(aAnswerData)) {
                 return CommandResult::Protocol;
             }
 
@@ -125,8 +108,9 @@ TResult SparkFRProtocol::performCommand(const QByteArray &aCommandData, QByteArr
 }
 
 //--------------------------------------------------------------------------------
-TResult SparkFRProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData, int aTimeout)
-{
+TResult SparkFRProtocol::processCommand(const QByteArray &aCommandData,
+                                        QByteArray &aAnswerData,
+                                        int aTimeout) {
     QByteArray packet = aCommandData + CSparkFR::Postfix;
     packet.append(calcCRC(packet));
     packet.prepend(CSparkFR::Prefix);
@@ -135,25 +119,21 @@ TResult SparkFRProtocol::processCommand(const QByteArray &aCommandData, QByteArr
 }
 
 //--------------------------------------------------------------------------------
-TResult SparkFRProtocol::processCommand(char aCommand, QByteArray &aAnswerData, int aTimeout)
-{
+TResult SparkFRProtocol::processCommand(char aCommand, QByteArray &aAnswerData, int aTimeout) {
     return performCommand(QByteArray(1, aCommand), aAnswerData, aTimeout);
 }
 
 //--------------------------------------------------------------------------------
-bool SparkFRProtocol::readData(QByteArray &aAnswerData, int aTimeout)
-{
+bool SparkFRProtocol::readData(QByteArray &aAnswerData, int aTimeout) {
     aAnswerData.clear();
 
     QTime clockTimer;
     clockTimer.start();
 
-    do
-    {
+    do {
         QByteArray data;
 
-        if (!mPort->read(data, 50))
-        {
+        if (!mPort->read(data, 50)) {
             return false;
         }
 
@@ -162,8 +142,8 @@ bool SparkFRProtocol::readData(QByteArray &aAnswerData, int aTimeout)
         int size = aAnswerData.size();
 
         if (aAnswerData.startsWith(ASCII::ENQ) || aAnswerData.startsWith(ASCII::ACK) ||
-            aAnswerData.startsWith(ASCII::NAK) || ((size > 1) && (aAnswerData[size - 2] == ASCII::ETX)))
-        {
+            aAnswerData.startsWith(ASCII::NAK) ||
+            ((size > 1) && (aAnswerData[size - 2] == ASCII::ETX))) {
             break;
         }
     } while (clockTimer.elapsed() < aTimeout);

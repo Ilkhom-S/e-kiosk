@@ -2,27 +2,23 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QTextCodec>
 #include <QtCore/QMap>
-#include <QtCore/QStringList>
-#include <QtCore/QTranslator>
 #include <QtCore/QSharedPointer>
+#include <QtCore/QStringList>
+#include <QtCore/QTextCodec>
+#include <QtCore/QTranslator>
 #include <QtGui/QFont>
-#include <Common/QtHeadersEnd.h>
 
+#include "GroupModel.h"
+#include "ProviderListFilter.h"
+#include "ProviderListModel.h"
 #include "Skin.h"
 #include "Translator.h"
-#include "GroupModel.h"
-#include "ProviderListModel.h"
-#include "ProviderListFilter.h"
 
 class QQmlEngine;
 
 //------------------------------------------------------------------------------
-class Utils : public QObject
-{
+class Utils : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QObject *locale READ getTranslator NOTIFY updateTranslator);
@@ -31,10 +27,10 @@ class Utils : public QObject
     Q_PROPERTY(QObject *ProviderList READ getProviderList NOTIFY updateProviderList);
     Q_PROPERTY(QObject *ui READ getSkin CONSTANT);
 
-  public:
+public:
     Utils(QQmlEngine *aEngine, const QString &aInterfacePath, const QString &aUserPath);
 
-  public slots:
+public slots:
     /// Генерирует системное событие нажатия клавиши.
     void generateKeyEvent(int aKey, int aModifiers, const QString &aText = "") const;
 
@@ -42,9 +38,11 @@ class Utils : public QObject
     QString stripMask(const QString &aSource, const QString &aMask) const;
 
     /// Возвращает позицию курсора после применения маски к строке.
-    int getCursorPosition(const QString &aMask, const QString &aBefore, const QString &aAfter) const;
+    int
+    getCursorPosition(const QString &aMask, const QString &aBefore, const QString &aAfter) const;
 
-    /// Формирует строку с помощью маски вида [x][y][z]..., где x, y, z - индекс символа во входной строке.
+    /// Формирует строку с помощью маски вида [x][y][z]..., где x, y, z - индекс символа во входной
+    /// строке.
     QString format(const QString &aSource, const QString &aFormat) const;
 
     /// Загружает содержимое файла.
@@ -73,16 +71,15 @@ class Utils : public QObject
 
     QVariantMap str2json(const QString &aString) const;
 
-    QString json2str(const QObject *aJSON) const
-    {
+    QString json2str(const QObject *aJSON) const {
         Q_UNUSED(aJSON);
         return QString();
     }
 
-  private slots:
+private slots:
     void onReloadSkin(const QVariantMap &aParams);
 
-  public:
+public:
     /// Возвращает транслятор.
     QObject *getTranslator();
 
@@ -98,7 +95,7 @@ class Utils : public QObject
     /// Возвращает конструктор объектов для поддержки скинов.
     QObject *getSkin();
 
-  signals:
+signals:
     void updateTranslator();
     void updateGroupModel();
     void updateRootGroupModel();
@@ -106,25 +103,25 @@ class Utils : public QObject
 
     void clicked();
 
-  private slots:
+private slots:
     void onClicked();
 
-  private:
+private:
     /// Загрузка конфигурации
     void loadConfiguration();
 
     /// Загрузить статистику из ядра
     QMap<qint64, quint32> getStatistic();
 
-  private:
+private:
     QQmlEngine *mEngine;
     mutable QMap<QString, QTextCodec *> mCodecCache;
 
     QSharedPointer<Skin> mSkin;
     QSharedPointer<Translator> mTranslator;
-    QSharedPointer<GroupModel> mGroupModel;                 /// Модель иконок внутри корневых групп
-    QSharedPointer<GroupModel> mRootGroupModel;             /// Модель иконок корневых групп
-    QSharedPointer<ProviderListModel> mProviderListModel;   /// Сквозной список провайдеров для поиска
+    QSharedPointer<GroupModel> mGroupModel;               /// Модель иконок внутри корневых групп
+    QSharedPointer<GroupModel> mRootGroupModel;           /// Модель иконок корневых групп
+    QSharedPointer<ProviderListModel> mProviderListModel; /// Сквозной список провайдеров для поиска
     QSharedPointer<ProviderListFilter> mProviderListFilter; /// Фильтр для поиска провайдеров
 
     QString mInterfacePath;

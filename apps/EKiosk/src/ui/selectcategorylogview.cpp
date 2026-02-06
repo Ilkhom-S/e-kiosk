@@ -1,9 +1,9 @@
-// Project
 #include "selectcategorylogview.h"
+
 #include "ui_selectcategorylogview.h"
 
-SelectCategoryLogView::SelectCategoryLogView(QWidget *parent) : QDialog(parent), ui(new Ui::SelectCategoryLogView)
-{
+SelectCategoryLogView::SelectCategoryLogView(QWidget *parent)
+    : QDialog(parent), ui(new Ui::SelectCategoryLogView) {
     ui->setupUi(this);
 
     connect(ui->btnSelectDataAllS, SIGNAL(clicked()), SLOT(selectAll()));
@@ -13,8 +13,7 @@ SelectCategoryLogView::SelectCategoryLogView(QWidget *parent) : QDialog(parent),
     connect(ui->btnDeSelectDataAllS, SIGNAL(clicked()), SLOT(deSelectAll()));
 }
 
-void SelectCategoryLogView::deSelectAll()
-{
+void SelectCategoryLogView::deSelectAll() {
     ui->chbxSelectValidatorJam->setChecked(false);
     ui->chbxSelectMoneyOut->setChecked(false);
     ui->chbxSelectERROR->setChecked(false);
@@ -26,8 +25,7 @@ void SelectCategoryLogView::deSelectAll()
     ui->chbxSelectUpdater->setChecked(false);
 }
 
-void SelectCategoryLogView::showLikeThis()
-{
+void SelectCategoryLogView::showLikeThis() {
     bool SelectValidatorJam = ui->chbxSelectValidatorJam->checkState();
     bool SelectMoneyOut = ui->chbxSelectMoneyOut->checkState();
     bool SelectERROR = ui->chbxSelectERROR->checkState();
@@ -38,14 +36,20 @@ void SelectCategoryLogView::showLikeThis()
     bool SelectConnectionState = ui->chbxSelectConnectionState->checkState();
     bool SelectUpdater = ui->chbxSelectUpdater->checkState();
 
-    emit this->emit_SelectOptions(SelectValidatorJam, SelectMoneyOut, SelectERROR, SelectPayDaemon, SelectStatusAso,
-                                  SelectStatusPrinter, SelectStatusValidator, SelectConnectionState, SelectUpdater);
+    emit this->emit_SelectOptions(SelectValidatorJam,
+                                  SelectMoneyOut,
+                                  SelectERROR,
+                                  SelectPayDaemon,
+                                  SelectStatusAso,
+                                  SelectStatusPrinter,
+                                  SelectStatusValidator,
+                                  SelectConnectionState,
+                                  SelectUpdater);
 
     this->close();
 }
 
-void SelectCategoryLogView::selectAll()
-{
+void SelectCategoryLogView::selectAll() {
     ui->chbxSelectValidatorJam->setChecked(true);
     ui->chbxSelectMoneyOut->setChecked(true);
     ui->chbxSelectERROR->setChecked(true);
@@ -57,7 +61,6 @@ void SelectCategoryLogView::selectAll()
     ui->chbxSelectUpdater->setChecked(true);
 }
 
-SelectCategoryLogView::~SelectCategoryLogView()
-{
+SelectCategoryLogView::~SelectCategoryLogView() {
     delete ui;
 }

@@ -1,49 +1,36 @@
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QDebug>
 #include <QSignalSpy>
 #include <QtTest/QtTest>
-#include <Common/QtHeadersEnd.h>
 
-// System
 #include <WatchServiceClient/Constants.h>
 
-// Project
 #include "WatchServiceClient.h"
 
-static int __test_watch_service_client_startup = []()
-{
+static int __test_watch_service_client_startup = []() {
     qDebug() << "TestWatchServiceClient: startup";
     return 0;
 }();
 
-class TestableWatchServiceClient : public WatchServiceClient
-{
-  public:
-    TestableWatchServiceClient(const QString &name) : WatchServiceClient(name, IWatchServiceClient::MainThread)
-    {
-    }
+class TestableWatchServiceClient : public WatchServiceClient {
+public:
+    TestableWatchServiceClient(const QString &name)
+        : WatchServiceClient(name, IWatchServiceClient::MainThread) {}
 
     // Expose protected slot for direct testing
-    void callOnMessage(const QByteArray &msg)
-    {
-        onMessageReceived(msg);
-    }
+    void callOnMessage(const QByteArray &msg) { onMessageReceived(msg); }
 };
 
-class TestWatchServiceClient : public QObject
-{
+class TestWatchServiceClient : public QObject {
     Q_OBJECT
 
-  private slots:
+private slots:
     void testCloseCommandEmitted();
     void testModuleClosedEmitted();
     void testGenericCommandEmitted();
     void testTargetFiltering();
 };
 
-void TestWatchServiceClient::testCloseCommandEmitted()
-{
+void TestWatchServiceClient::testCloseCommandEmitted() {
     TestableWatchServiceClient client("client1");
 
     QSignalSpy spy(&client, SIGNAL(onCloseCommandReceived()));
@@ -60,8 +47,7 @@ void TestWatchServiceClient::testCloseCommandEmitted()
     QCOMPARE(spy.count(), 1);
 }
 
-void TestWatchServiceClient::testModuleClosedEmitted()
-{
+void TestWatchServiceClient::testModuleClosedEmitted() {
     TestableWatchServiceClient client("client1");
 
     QSignalSpy spy(&client, SIGNAL(onModuleClosed(const QString &)));
@@ -80,12 +66,12 @@ void TestWatchServiceClient::testModuleClosedEmitted()
     QCOMPARE(args.at(0).toString(), QString("some_module"));
 }
 
-void TestWatchServiceClient::testGenericCommandEmitted()
-{
+void TestWatchServiceClient::testGenericCommandEmitted() {
     TestableWatchServiceClient client("client1");
 
     QSignalSpy spy(&client,
-                   SIGNAL(onCommandReceived(const QString &, const QString &, const QString &, const QStringList &)));
+                   SIGNAL(onCommandReceived(
+                       const QString &, const QString &, const QString &, const QStringList &)));
 
     QByteArray msg = QString("%1=%2;%3=%4;%5=%6;extra;")
                          .arg(CWatchService::Fields::Sender)
@@ -107,12 +93,12 @@ void TestWatchServiceClient::testGenericCommandEmitted()
     QVERIFY(tail.contains(QString("extra")));
 }
 
-void TestWatchServiceClient::testTargetFiltering()
-{
+void TestWatchServiceClient::testTargetFiltering() {
     TestableWatchServiceClient client("client1");
 
     QSignalSpy spy(&client,
-                   SIGNAL(onCommandReceived(const QString &, const QString &, const QString &, const QStringList &)));
+                   SIGNAL(onCommandReceived(
+                       const QString &, const QString &, const QString &, const QStringList &)));
 
     QByteArray msg = QString("%1=%2;%3=%4;%5=%6;")
                          .arg(CWatchService::Fields::Sender)

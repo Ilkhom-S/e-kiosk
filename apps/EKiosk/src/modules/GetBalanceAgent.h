@@ -1,18 +1,16 @@
 #pragma once
 
-// Project
 #include "SendRequest.h"
 
 class SendRequest;
 
-class GetBalanceAgent : public SendRequest
-{
+class GetBalanceAgent : public SendRequest {
     Q_OBJECT
 
-  public:
+public:
     GetBalanceAgent(QObject *parent = 0);
 
-  private:
+private:
     void parcerNote(const QDomNode &domElement);
 
     bool resultCode;
@@ -21,13 +19,13 @@ class GetBalanceAgent : public SendRequest
     QString balance;
     QString overdraft;
 
-  private slots:
+private slots:
     void resendRequest();
     void setDataNote(const QDomNode &domElement);
 
-  public slots:
+public slots:
     void sendDataRequest();
 
-  signals:
+signals:
     void emit_BalanceAgent(QString dataBalance, QString dataOverdraft);
 };

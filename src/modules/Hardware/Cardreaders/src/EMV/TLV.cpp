@@ -3,24 +3,20 @@
                  Based on code from https://github.com/lumag/emv-tools/ (c) lumag
 */
 
-// Project
 #include "TLV.h"
 
 //------------------------------------------------------------------------------
-bool EMV::TLV::TLVs::parse(const QByteArray &aBuffer)
-{
+bool EMV::TLV::TLVs::parse(const QByteArray &aBuffer) {
     QByteArray copy = aBuffer;
 
     return !parseItem(copy).isEmpty();
 }
 
 //------------------------------------------------------------------------------
-quint16 EMV::TLV::TLVs::takeByte(QByteArray &aBuffer)
-{
+quint16 EMV::TLV::TLVs::takeByte(QByteArray &aBuffer) {
     quint16 result = 0;
 
-    if (aBuffer.size() > 0)
-    {
+    if (aBuffer.size() > 0) {
         result = *((quint8 *)aBuffer.data());
         aBuffer.remove(0, 1);
     }
@@ -29,13 +25,11 @@ quint16 EMV::TLV::TLVs::takeByte(QByteArray &aBuffer)
 }
 
 //------------------------------------------------------------------------------
-EMV::TLV::SItem EMV::TLV::TLVs::parseItem(QByteArray &aBuffer)
-{
+EMV::TLV::SItem EMV::TLV::TLVs::parseItem(QByteArray &aBuffer) {
     quint16 tag = parseTag(aBuffer);
     quint16 len = parseLen(aBuffer);
 
-    if (len > aBuffer.size() || len == Len::Invalid || tag == Tag::Invalid)
-    {
+    if (len > aBuffer.size() || len == Len::Invalid || tag == Tag::Invalid) {
         return SItem();
     }
 
@@ -46,16 +40,13 @@ EMV::TLV::SItem EMV::TLV::TLVs::parseItem(QByteArray &aBuffer)
 
     mItems << it;
 
-    if (it.isComplex())
-    {
+    if (it.isComplex()) {
         QByteArray copy = it.body;
 
-        while (copy.size() > 0)
-        {
+        while (copy.size() > 0) {
             SItem it2 = parseItem(copy);
 
-            if (it2.isEmpty())
-            {
+            if (it2.isEmpty()) {
                 break;
             }
         }
@@ -65,12 +56,9 @@ EMV::TLV::SItem EMV::TLV::TLVs::parseItem(QByteArray &aBuffer)
 }
 
 //------------------------------------------------------------------------------
-EMV::TLV::SItem EMV::TLV::TLVs::getTag(quint16 aTag)
-{
-    foreach (auto i, mItems)
-    {
-        if (i.tag == aTag)
-        {
+EMV::TLV::SItem EMV::TLV::TLVs::getTag(quint16 aTag) {
+    foreach (auto i, mItems) {
+        if (i.tag == aTag) {
             return i;
         }
     }
@@ -79,30 +67,25 @@ EMV::TLV::SItem EMV::TLV::TLVs::getTag(quint16 aTag)
 }
 
 //------------------------------------------------------------------------------
-quint16 EMV::TLV::TLVs::parseLen(QByteArray &aBuffer)
-{
-    if (aBuffer.isEmpty())
-    {
+quint16 EMV::TLV::TLVs::parseLen(QByteArray &aBuffer) {
+    if (aBuffer.isEmpty()) {
         return Len::Invalid;
     }
 
     quint16 l = takeByte(aBuffer);
 
-    if (!(l & Len::Long))
-    {
+    if (!(l & Len::Long)) {
         return l;
     }
 
     quint16 ll = l & ~Len::Long;
 
-    if (aBuffer.size() < ll)
-    {
+    if (aBuffer.size() < ll) {
         return Len::Invalid;
     }
 
     /* FIXME - WTF? */
-    if (ll != 1)
-    {
+    if (ll != 1) {
         return Len::Invalid;
     }
 
@@ -110,22 +93,18 @@ quint16 EMV::TLV::TLVs::parseLen(QByteArray &aBuffer)
 }
 
 //------------------------------------------------------------------------------
-quint16 EMV::TLV::TLVs::parseTag(QByteArray &aBuffer)
-{
-    if (aBuffer.isEmpty())
-    {
+quint16 EMV::TLV::TLVs::parseTag(QByteArray &aBuffer) {
+    if (aBuffer.isEmpty()) {
         return Tag::Invalid;
     }
 
     quint16 tag = takeByte(aBuffer);
 
-    if ((tag & Tag::ValueMask) != Tag::ValueCont)
-    {
+    if ((tag & Tag::ValueMask) != Tag::ValueCont) {
         return tag;
     }
 
-    if (aBuffer.isEmpty())
-    {
+    if (aBuffer.isEmpty()) {
         return Tag::Invalid;
     }
 
@@ -135,8 +114,7 @@ quint16 EMV::TLV::TLVs::parseTag(QByteArray &aBuffer)
 }
 
 //------------------------------------------------------------------------------
-EMV::TLV::TLVs::TLVs(const QByteArray &aBuffer)
-{
+EMV::TLV::TLVs::TLVs(const QByteArray &aBuffer) {
     parse(aBuffer);
 }
 

@@ -2,23 +2,18 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QObject>
 #include <QtCore/QList>
+#include <QtCore/QObject>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
+#include <Common/ILogable.h>
+
+#include <SDK/Drivers/ICashAcceptor.h>
+#include <SDK/PaymentProcessor/Core/Event.h>
 #include <SDK/PaymentProcessor/Core/ICashAcceptorManager.h>
 #include <SDK/PaymentProcessor/Core/IDeviceService.h>
 #include <SDK/PaymentProcessor/Core/IService.h>
-#include <SDK/PaymentProcessor/Core/Event.h>
 #include <SDK/Plugins/IPlugin.h>
-#include <SDK/Drivers/ICashAcceptor.h>
-
-// Modules
-#include <Common/ILogable.h>
 
 // PP
 #include "DatabaseUtils/IPaymentDatabaseUtils.h"
@@ -26,21 +21,18 @@
 class IApplication;
 class IHardwareDatabaseUtils;
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        class IDeviceService;
-        class IChargeProvider;
-    } // namespace PaymentProcessor
+namespace SDK {
+namespace PaymentProcessor {
+class IDeviceService;
+class IChargeProvider;
+} // namespace PaymentProcessor
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class CashAcceptorManager : public SDK::PaymentProcessor::ICashAcceptorManager, public ILogable
-{
+class CashAcceptorManager : public SDK::PaymentProcessor::ICashAcceptorManager, public ILogable {
     Q_OBJECT
 
-  public:
+public:
     CashAcceptorManager(IApplication *aApplication);
     virtual ~CashAcceptorManager();
 
@@ -54,7 +46,9 @@ class CashAcceptorManager : public SDK::PaymentProcessor::ICashAcceptorManager, 
     virtual QStringList getPaymentMethods();
 
     /// Начать приём денег для указанного платежа.
-    virtual bool enable(qint64 aPayment, const QString &aPaymentType, SDK::PaymentProcessor::TPaymentAmount aMaxAmount);
+    virtual bool enable(qint64 aPayment,
+                        const QString &aPaymentType,
+                        SDK::PaymentProcessor::TPaymentAmount aMaxAmount);
 
     /// Завершить приём денег для указанного платежа.
     virtual bool disable(qint64 aPayment);
@@ -62,7 +56,7 @@ class CashAcceptorManager : public SDK::PaymentProcessor::ICashAcceptorManager, 
     /// Значение счетчика непринятых купюр.
     int getRejectCount() const;
 
-  private:
+private:
     /// Увеличить значение счетчика непринятых купюр.
     void incrementRejectCount();
 
@@ -75,7 +69,7 @@ class CashAcceptorManager : public SDK::PaymentProcessor::ICashAcceptorManager, 
     /// Определяет, имеет ли платеж фиксированную сумму
     bool isFixedAmountPayment(qint64 aPayment);
 
-  private slots:
+private slots:
     /// Валидатор распознал купюру.
     void onEscrow(SDK::Driver::SPar aPar);
 
@@ -83,7 +77,9 @@ class CashAcceptorManager : public SDK::PaymentProcessor::ICashAcceptorManager, 
     void onEscrowChangeControl(SDK::Driver::SPar aPar);
 
     /// Изменение статуса валидатора.
-    void onStatusChanged(SDK::Driver::EWarningLevel::Enum aWarningLevel, const QString &aTranslation, int aStatus);
+    void onStatusChanged(SDK::Driver::EWarningLevel::Enum aWarningLevel,
+                         const QString &aTranslation,
+                         int aStatus);
 
     /// Валидатор успешно уложил купюру.
     void onStacked(SDK::Driver::TParList aPar);
@@ -94,23 +90,21 @@ class CashAcceptorManager : public SDK::PaymentProcessor::ICashAcceptorManager, 
     /// Провайдер денег получил указанную сумму.
     void onChargeProviderStacked(SDK::PaymentProcessor::SNote aNote);
 
-  private:
+private:
     IApplication *mApplication;
     IPaymentDatabaseUtils *mDatabase;
     SDK::PaymentProcessor::IDeviceService *mDeviceService;
     bool mDisableAmountOverflow;
 
-    struct SPaymentData
-    {
+    struct SPaymentData {
         qint64 paymentId;
         SDK::PaymentProcessor::TPaymentAmount currentAmount;
         SDK::PaymentProcessor::TPaymentAmount maxAmount;
         QSet<SDK::Driver::ICashAcceptor *> validators;
         QSet<SDK::PaymentProcessor::IChargeProvider *> chargeProviders;
 
-        explicit SPaymentData(qint64 aPaymentId) : paymentId(aPaymentId), currentAmount(0.0), maxAmount(0.0)
-        {
-        }
+        explicit SPaymentData(qint64 aPaymentId)
+            : paymentId(aPaymentId), currentAmount(0.0), maxAmount(0.0) {}
 
         bool maxAmountReached() const;
         bool chargeSourceEmpty() const;

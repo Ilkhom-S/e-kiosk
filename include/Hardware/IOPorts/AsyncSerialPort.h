@@ -2,17 +2,12 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QVector>
 #include <QtCore/QSet>
 #include <QtCore/QUuid>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QVector>
 
-// SDK
 #include <SDK/Drivers/IOPort/COMParameters.h>
 
-// Project
 #include <Hardware/IOPorts/IOPortBase.h>
 #include <Hardware/IOPorts/IOPortGUIDs.h>
 
@@ -27,61 +22,57 @@ typedef QMap<QString, QString> TIOPortDeviceData;
 
 //--------------------------------------------------------------------------------
 /// Константы для работы с асинхронным COM-портом.
-namespace CAsyncSerialPort
-{
-    /// Коэффициент надежности.
-    const double KSafety = 1.8;
+namespace CAsyncSerialPort {
+/// Коэффициент надежности.
+const double KSafety = 1.8;
 
-    /// Коэффициент надежности таймаута фактического времени открытия порта.
-    const double KOpeningTimeout = 1.5;
+/// Коэффициент надежности таймаута фактического времени открытия порта.
+const double KOpeningTimeout = 1.5;
 
-    /// Id для идентификации COM-портов.
-    namespace Tags
-    {
-        /// Виртуальные COM-порты (через USB).
-        inline QStringList Virtual()
-        {
-            return QStringList() << "USB"      /// Драйвер cp210x и совместимые.
-                                 << "FTDI"     /// Чип FTDI.
-                                 << "Virtual"; /// Что-то виртуальное.
-        }
+/// Id для идентификации COM-портов.
+namespace Tags {
+/// Виртуальные COM-порты (через USB).
+inline QStringList Virtual() {
+    return QStringList() << "USB"      /// Драйвер cp210x и совместимые.
+                         << "FTDI"     /// Чип FTDI.
+                         << "Virtual"; /// Что-то виртуальное.
+}
 
-        /// Эмуляторы (программные) COM-порты.
-        inline QStringList Emulator()
-        {
-            return QStringList() << "COM0COM"
-                                 << "Emulator";
-        }
-    } // namespace Tags
+/// Эмуляторы (программные) COM-порты.
+inline QStringList Emulator() {
+    return QStringList() << "COM0COM"
+                         << "Emulator";
+}
+} // namespace Tags
 
-    /// ACPI-устройства, такие как обычные COM-порты (не устройство расширения или виртуальный порт).
-    const char GeneralRS232[] = "ACPI";
+/// ACPI-устройства, такие как обычные COM-порты (не устройство расширения или виртуальный порт).
+const char GeneralRS232[] = "ACPI";
 
-    /// Признаки невозможности ожидания результата GetOverlappedResult.
-    const QStringList CannotWaitResult = QStringList() << "FTDI" << "LPC USB VCom Port" << "ATOL" << "MSTAR" << "CP210"
-                                                       << "STMicroelectronics" << "Honeywell";
+/// Признаки невозможности ожидания результата GetOverlappedResult.
+const QStringList CannotWaitResult = QStringList() << "FTDI" << "LPC USB VCom Port" << "ATOL"
+                                                   << "MSTAR" << "CP210"
+                                                   << "STMicroelectronics" << "Honeywell";
 
-    /// Таймаут единичного чтения из порта, [мс].
-    const int ReadingTimeout = 50;
+/// Таймаут единичного чтения из порта, [мс].
+const int ReadingTimeout = 50;
 
-    /// Таймаут открытия порта, [мс].
-    const int OpeningTimeout = 1500;
+/// Таймаут открытия порта, [мс].
+const int OpeningTimeout = 1500;
 
-    /// Таймаут открытия порта в процессе подключения, [мс].
-    const int OnlineOpeningTimeout = 5 * 1000;
+/// Таймаут открытия порта в процессе подключения, [мс].
+const int OnlineOpeningTimeout = 5 * 1000;
 
-    /// Пауза для VCOM-портов между ожиданием и чтением данных, [мс].
-    const int VCOMReadingPause = 3;
+/// Пауза для VCOM-портов между ожиданием и чтением данных, [мс].
+const int VCOMReadingPause = 3;
 } // namespace CAsyncSerialPort
 
 //--------------------------------------------------------------------------------
 /// Платформо-независимый асинхронный последовательный порт.
 /// Использует композицию для выбора правильной платформенной реализации.
-class AsyncSerialPort : public IOPortBase
-{
+class AsyncSerialPort : public IOPortBase {
     SET_SERIES("COM")
 
-  public:
+public:
     AsyncSerialPort();
     virtual ~AsyncSerialPort();
 
@@ -95,7 +86,8 @@ class AsyncSerialPort : public IOPortBase
     /// Устанавливает конфигурацию устройству.
     virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release();
 #pragma endregion
 
@@ -134,11 +126,10 @@ class AsyncSerialPort : public IOPortBase
     /// Изменить таймаут выполнения зависоноопасной операции
     void changePerformingTimeout(const QString &aContext, int aTimeout, int aPerformingTime);
 
-  public:
+public:
     /// Интерфейс платформенной реализации
-    class ISerialPortImpl
-    {
-      public:
+    class ISerialPortImpl {
+    public:
         virtual ~ISerialPortImpl() = default;
 
         virtual QStringList enumerateSystemNames() = 0;
@@ -155,10 +146,11 @@ class AsyncSerialPort : public IOPortBase
         virtual bool deviceConnected() = 0;
         virtual bool opened() = 0;
         virtual bool isExist() = 0;
-        virtual void changePerformingTimeout(const QString &aContext, int aTimeout, int aPerformingTime) = 0;
+        virtual void
+        changePerformingTimeout(const QString &aContext, int aTimeout, int aPerformingTime) = 0;
     };
 
-  protected:
+protected:
     /// Платформенная реализация (композиция вместо наследования)
     ISerialPortImpl *m_impl;
 };

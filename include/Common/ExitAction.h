@@ -3,31 +3,25 @@
 
 #pragma once
 
-// STL
 #include <functional>
 
 typedef std::function<void()> TVoidMethod;
 
 //---------------------------------------------------------------------------
-class ExitAction
-{
-  public:
-    ExitAction(const TVoidMethod &aAction) : mAction(aAction)
-    {
-    }
-    ~ExitAction()
-    {
+class ExitAction {
+public:
+    ExitAction(const TVoidMethod &aAction) : mAction(aAction) {}
+    ~ExitAction() {
         if (mAction)
             mAction();
     }
 
-    bool reset(const TVoidMethod &aAction = TVoidMethod())
-    {
+    bool reset(const TVoidMethod &aAction = TVoidMethod()) {
         mAction = aAction;
         return true;
     }
 
-  private:
+private:
     TVoidMethod mAction;
 };
 

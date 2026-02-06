@@ -2,15 +2,11 @@
 
 #pragma once
 
-// SDK
 #include <SDK/Drivers/FR/FiscalDataTypes.h>
 
-// Modules
 #include <Hardware/Common/DeviceLogicManager.h>
-
-// Project
-#include <Hardware/FR/FiscalFieldDescriptions.h>
 #include <Hardware/FR/FRBaseConstants.h>
+#include <Hardware/FR/FiscalFieldDescriptions.h>
 
 /// Системы налогообложения (СНО).
 typedef QList<char> TTaxSystems;
@@ -22,9 +18,8 @@ typedef QList<char> TAgentFlags;
 typedef QList<char> TOperationModes;
 
 //--------------------------------------------------------------------------------
-class FFEngine : public DeviceConfigManager, public DeviceLogManager
-{
-  public:
+class FFEngine : public DeviceConfigManager, public DeviceLogManager {
+public:
     FFEngine(ILog *aLog);
 
     /// Установка параметра.
@@ -57,7 +52,9 @@ class FFEngine : public DeviceConfigManager, public DeviceLogManager
     QByteArray getDigitTLVData(qulonglong aValue);
 
     /// Установить данные платежа.
-    void setFPData(SDK::Driver::TFiscalPaymentData &aFPData, int aField, const QVariant &aValue = QVariant());
+    void setFPData(SDK::Driver::TFiscalPaymentData &aFPData,
+                   int aField,
+                   const QVariant &aValue = QVariant());
 
     /// Проверить данные платежа.
     void checkFPData(SDK::Driver::TFiscalPaymentData &aFPData, int aField, const QVariant &aValue);
@@ -97,10 +94,12 @@ class FFEngine : public DeviceConfigManager, public DeviceLogManager
     bool checkAgentFlagOnPayment(SDK::Driver::SPaymentData &aPaymentData);
 
     /// Добавить/удалить/скорректировать фискальные теги, полученные после платежа.
-    void filterAfterPayment(SDK::Driver::TFiscalPaymentData &aFPData, SDK::Driver::TComplexFiscalPaymentData &aPSData);
+    void filterAfterPayment(SDK::Driver::TFiscalPaymentData &aFPData,
+                            SDK::Driver::TComplexFiscalPaymentData &aPSData);
 
     /// Логгировать удаленные фискальные теги.
-    void logRemovedFields(const QStringList &aOldTextKeys, SDK::Driver::TFiscalPaymentData &aFPData) const;
+    void logRemovedFields(const QStringList &aOldTextKeys,
+                          SDK::Driver::TFiscalPaymentData &aFPData) const;
 
     /// Проверить ИНН.
     bool checkINN(const QString &aINN, int aType = CFR::INN::Person::Unknown) const;
@@ -114,7 +113,7 @@ class FFEngine : public DeviceConfigManager, public DeviceLogManager
     /// Установить имя устройства.
     void setDeviceName(const QString &aDeviceName);
 
-  protected:
+protected:
     /// Данные фискальных реквизитов.
     CFR::FiscalFields::Data mFFData;
 

@@ -2,24 +2,19 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
 #include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
 
 /// Константы сервера очереди сообщений.
-namespace CIMessageQueueServer
-{
-    const QString DefaultLog = "MessageQueue";
-    const QString DefaultName = "HumoMessageQueue";
+namespace CIMessageQueueServer {
+const QString DefaultLog = "MessageQueue";
+const QString DefaultName = "HumoMessageQueue";
 } // namespace CIMessageQueueServer
 
 //----------------------------------------------------------------------------
 /// Интерфейс сервера очереди сообщений.
-class IMessageQueueServer
-{
-  public:
+class IMessageQueueServer {
+public:
     virtual ~IMessageQueueServer() {};
 
     /// Активировать очередь сообщений.

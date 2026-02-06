@@ -1,17 +1,11 @@
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtGui/QMovie>
-#include <Common/QtHeadersEnd.h>
-
-// Project
 #include "MessageWindow.h"
 
-MessageWindow::MessageWindow(QWidget *parent) : QDialog(parent, Qt::SplashScreen)
-{
+#include <QtGui/QMovie>
+
+MessageWindow::MessageWindow(QWidget *parent) : QDialog(parent, Qt::SplashScreen) {
     ui.setupUi(this);
 
-    auto setPixmap = [](QPushButton *aButton, const QString &aPath)
-    {
+    auto setPixmap = [](QPushButton *aButton, const QString &aPath) {
         QPixmap pixmap(aPath);
         QIcon ButtonIcon(pixmap);
         aButton->setIcon(ButtonIcon);
@@ -27,72 +21,56 @@ MessageWindow::MessageWindow(QWidget *parent) : QDialog(parent, Qt::SplashScreen
 }
 
 //------------------------------------------------------------------------
-MessageWindow::~MessageWindow()
-{
-}
+MessageWindow::~MessageWindow() {}
 
 //------------------------------------------------------------------------
-void MessageWindow::setup(const QString &aText, SDK::GUI::MessageBoxParams::Enum aIcon,
-                          SDK::GUI::MessageBoxParams::Enum aButton)
-{
+void MessageWindow::setup(const QString &aText,
+                          SDK::GUI::MessageBoxParams::Enum aIcon,
+                          SDK::GUI::MessageBoxParams::Enum aButton) {
     ui.lbText->setVisible(true);
     ui.lbText->setText(aText);
 
     ui.btnOK->setVisible(aButton == SDK::GUI::MessageBoxParams::OK);
     ui.btnCancel->setVisible(aButton == SDK::GUI::MessageBoxParams::Cancel);
 
-    if (aIcon == SDK::GUI::MessageBoxParams::Question)
-    {
+    if (aIcon == SDK::GUI::MessageBoxParams::Question) {
         ui.btnOK->setVisible(true);
         ui.btnCancel->setVisible(true);
 
         ui.lbIcon->setPixmap(QPixmap(":/Images/MessageBox/question.png"));
-    }
-    else if (aIcon == SDK::GUI::MessageBoxParams::Wait)
-    {
-        if (!ui.lbIcon->movie())
-        {
+    } else if (aIcon == SDK::GUI::MessageBoxParams::Wait) {
+        if (!ui.lbIcon->movie()) {
             QPointer<QMovie> gif = QPointer<QMovie>(new QMovie(":/Images/MessageBox/wait.gif"));
             ui.lbIcon->setMovie(gif);
             gif->start();
         }
-    }
-    else if (aIcon == SDK::GUI::MessageBoxParams::Info)
-    {
+    } else if (aIcon == SDK::GUI::MessageBoxParams::Info) {
         ui.lbIcon->setPixmap(QPixmap(":/Images/MessageBox/info.png"));
-    }
-    else if (aIcon == SDK::GUI::MessageBoxParams::Warning)
-    {
+    } else if (aIcon == SDK::GUI::MessageBoxParams::Warning) {
         ui.lbIcon->setPixmap(QPixmap(":/Images/MessageBox/warning.png"));
-    }
-    else if (aIcon == SDK::GUI::MessageBoxParams::Critical)
-    {
+    } else if (aIcon == SDK::GUI::MessageBoxParams::Critical) {
         ui.lbIcon->setPixmap(QPixmap(":/Images/MessageBox/critical.png"));
     }
 }
 
 //------------------------------------------------------------------------
-void MessageWindow::onClickedOk()
-{
+void MessageWindow::onClickedOk() {
     QDialog::accept();
 }
 
 //------------------------------------------------------------------------
-void MessageWindow::onClickedReject()
-{
+void MessageWindow::onClickedReject() {
     QDialog::reject();
 }
 
 //------------------------------------------------------------------------
-void MessageWindow::showEvent(QShowEvent *aEvent)
-{
+void MessageWindow::showEvent(QShowEvent *aEvent) {
     qobject_cast<QWidget *>(parent())->setAttribute(Qt::WA_TransparentForMouseEvents);
     QDialog::showEvent(aEvent);
 }
 
 //------------------------------------------------------------------------
-void MessageWindow::hideEvent(QHideEvent *aEvent)
-{
+void MessageWindow::hideEvent(QHideEvent *aEvent) {
     qobject_cast<QWidget *>(parent())->setAttribute(Qt::WA_TransparentForMouseEvents, false);
     QDialog::hideEvent(aEvent);
 }

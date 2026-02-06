@@ -6,13 +6,12 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола KKM.
-class OSMPWDProtocol : public ProtocolBase
-{
-  public:
+class OSMPWDProtocol : public ProtocolBase {
+public:
     /// Выполнить команду протокола.
     TResult processCommand(const QByteArray &aCommandData, QByteArray *aUnpackedData = nullptr);
 
-  private:
+private:
     /// Подсчет контрольной суммы пакета данных.
     const uchar calcCRC(const QByteArray &aData);
 

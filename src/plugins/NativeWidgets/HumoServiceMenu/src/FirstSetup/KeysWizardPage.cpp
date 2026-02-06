@@ -1,35 +1,27 @@
 /* @file Окно настройки keys. */
 
-// Проект
-
-// Project
 #include "KeysWizardPage.h"
 
-KeysWizardPage::KeysWizardPage(HumoServiceBackend *aBackend, QWidget *aParent) : WizardPageBase(aBackend, aParent)
-{
-}
+KeysWizardPage::KeysWizardPage(HumoServiceBackend *aBackend, QWidget *aParent)
+    : WizardPageBase(aBackend, aParent) {}
 
 //----------------------------------------------------------------------------
-bool KeysWizardPage::initialize()
-{
+bool KeysWizardPage::initialize() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool KeysWizardPage::shutdown()
-{
+bool KeysWizardPage::shutdown() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool KeysWizardPage::activate()
-{
+bool KeysWizardPage::activate() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool KeysWizardPage::deactivate()
-{
+bool KeysWizardPage::deactivate() {
     return true;
 }
 

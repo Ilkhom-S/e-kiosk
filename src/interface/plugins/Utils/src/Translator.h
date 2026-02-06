@@ -2,25 +2,22 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QObject>
 #include <QtCore/QMap>
+#include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include <QtCore/QTranslator>
-#include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------------
-class Translator : public QObject
-{
+class Translator : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QString language READ getLanguage NOTIFY languageChanged);
     Q_PROPERTY(QString defaultLanguage READ getDefaultLanguage CONSTANT FINAL);
 
-  public:
+public:
     Translator(const QString &aInterfacePath);
 
-  public slots:
+public slots:
     /// Перевести строку
     QString tr(const QString &aString);
 
@@ -36,10 +33,10 @@ class Translator : public QObject
     /// Получить список доступных языков.
     QStringList getLanguageList() const;
 
-  signals:
+signals:
     void languageChanged();
 
-  private:
+private:
     QString mInterfacePath;
 
     // Список всех поддерживаемых языков <наименование, локализованное название языка>.

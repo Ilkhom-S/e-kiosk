@@ -1,24 +1,21 @@
 /* @file Принтеры семейства Epson EU-T400. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QElapsedTimer>
-#include <Common/QtHeadersEnd.h>
-
-// Project
-#include "EpsonConstants.h"
 #include "EpsonEUT400.h"
 
-EpsonEUT400::EpsonEUT400()
-{
+#include <QtCore/QElapsedTimer>
+
+#include "EpsonConstants.h"
+
+EpsonEUT400::EpsonEUT400() {
     using namespace SDK::Driver::IOPort::COM;
 
     mParameters = POSPrinters::CommonParameters;
 
     // параметры порта
-    mPortParameters.insert(EParameters::BaudRate, POSPrinters::TSerialDevicePortParameter()
-                                                      << EBaudRate::BR38400 << EBaudRate::BR19200 << EBaudRate::BR4800
-                                                      << EBaudRate::BR9600);
+    mPortParameters.insert(EParameters::BaudRate,
+                           POSPrinters::TSerialDevicePortParameter()
+                               << EBaudRate::BR38400 << EBaudRate::BR19200 << EBaudRate::BR4800
+                               << EBaudRate::BR9600);
 
     // статусы ошибок
     mParameters.errors.clear();
@@ -53,17 +50,15 @@ EpsonEUT400::EpsonEUT400()
 }
 
 //--------------------------------------------------------------------------------
-void EpsonEUT400::setDeviceConfiguration(const QVariantMap &aConfiguration)
-{
+void EpsonEUT400::setDeviceConfiguration(const QVariantMap &aConfiguration) {
     POSPrinter::setDeviceConfiguration(aConfiguration);
 
-    if (getConfigParameter(CHardware::Printer::Settings::BackFeed).toString() != CHardwareSDK::Values::NotUse)
-    {
+    if (getConfigParameter(CHardware::Printer::Settings::BackFeed).toString() !=
+        CHardwareSDK::Values::NotUse) {
         setConfigParameter(CHardware::Printer::FeedingAmount, 0);
-        setConfigParameter(CHardware::Printer::Commands::Cutting, CEpsonEUT400::Command::CutBackFeed);
-    }
-    else
-    {
+        setConfigParameter(CHardware::Printer::Commands::Cutting,
+                           CEpsonEUT400::Command::CutBackFeed);
+    } else {
         int lineSpacing = getConfigParameter(CHardware::Printer::Settings::LineSpacing, 0).toInt();
 
         int feeding = 6;
@@ -82,27 +77,23 @@ void EpsonEUT400::setDeviceConfiguration(const QVariantMap &aConfiguration)
 }
 
 //--------------------------------------------------------------------------------
-bool EpsonEUT400::updateParametersOut()
-{
-    if (!POSPrinter::updateParameters())
-    {
+bool EpsonEUT400::updateParametersOut() {
+    if (!POSPrinter::updateParameters()) {
         return false;
     }
 
-    if (!mIOPort->write(CEpsonEUT400::Command::ASBDisable))
-    {
+    if (!mIOPort->write(CEpsonEUT400::Command::ASBDisable)) {
         return false;
     }
 
     QString loop = getConfigParameter(CHardware::Printer::Settings::Loop).toString();
 
-    if (loop != CHardwareSDK::Values::Auto)
-    {
-        QByteArray loopCommand = (loop == CHardwareSDK::Values::Use) ? CEpsonEUT400::Command::LoopEnable
-                                                                     : CEpsonEUT400::Command::LoopDisable;
+    if (loop != CHardwareSDK::Values::Auto) {
+        QByteArray loopCommand = (loop == CHardwareSDK::Values::Use)
+                                     ? CEpsonEUT400::Command::LoopEnable
+                                     : CEpsonEUT400::Command::LoopDisable;
 
-        if (!mIOPort->write(loopCommand))
-        {
+        if (!mIOPort->write(loopCommand)) {
             return false;
         }
     }
@@ -111,30 +102,28 @@ bool EpsonEUT400::updateParametersOut()
 }
 
 //--------------------------------------------------------------------------------
-bool EpsonEUT400::updateParameters()
-{
+bool EpsonEUT400::updateParameters() {
     char receiptProcessing2;
 
-    if (!getMemorySwitch(CEpsonEUT400::MemorySwitch::ReceiptProcessing2, receiptProcessing2))
-    {
+    if (!getMemorySwitch(CEpsonEUT400::MemorySwitch::ReceiptProcessing2, receiptProcessing2)) {
         return false;
     }
 
     QString configBackFeed = getConfigParameter(CHardware::Printer::Settings::BackFeed).toString();
     bool mswBackFeed =
-        receiptProcessing2 == ProtocolUtils::mask(receiptProcessing2, CEpsonEUT400::MemorySwitch::BackFeedMask);
+        receiptProcessing2 ==
+        ProtocolUtils::mask(receiptProcessing2, CEpsonEUT400::MemorySwitch::BackFeedMask);
 
     if (((configBackFeed == CHardwareSDK::Values::NotUse) && mswBackFeed) ||
-        (configBackFeed == CHardwareSDK::Values::Use) || mswBackFeed)
-    {
+        (configBackFeed == CHardwareSDK::Values::Use) || mswBackFeed) {
         QString backFeedMask = (configBackFeed == CHardwareSDK::Values::NotUse)
                                    ? CEpsonEUT400::MemorySwitch::NoBackFeedMask
                                    : CEpsonEUT400::MemorySwitch::ReceiptProcessing2Mask;
         char newReceiptProcessing2 = ProtocolUtils::mask(receiptProcessing2, backFeedMask);
 
         if ((receiptProcessing2 != newReceiptProcessing2) &&
-            !setMemorySwitch(CEpsonEUT400::MemorySwitch::ReceiptProcessing2, newReceiptProcessing2))
-        {
+            !setMemorySwitch(CEpsonEUT400::MemorySwitch::ReceiptProcessing2,
+                             newReceiptProcessing2)) {
             return false;
         }
     }
@@ -143,10 +132,9 @@ bool EpsonEUT400::updateParameters()
 }
 
 //--------------------------------------------------------------------------------
-bool EpsonEUT400::reset()
-{
-    if (!mIOPort->write(CPOSPrinter::Command::Initialize) || !mIOPort->write(CPOSPrinter::Command::SetEnabled))
-    {
+bool EpsonEUT400::reset() {
+    if (!mIOPort->write(CPOSPrinter::Command::Initialize) ||
+        !mIOPort->write(CPOSPrinter::Command::SetEnabled)) {
         toLog(LogLevel::Error, mDeviceName + ": Failed to reset printer");
         return false;
     }
@@ -157,10 +145,8 @@ bool EpsonEUT400::reset()
 }
 
 //--------------------------------------------------------------------------------
-bool EpsonEUT400::getMemorySwitch(char aNumber, char &aValue)
-{
-    if (!reset() || !mIOPort->write(CEpsonEUT400::Command::GetMemorySwitch + aNumber))
-    {
+bool EpsonEUT400::getMemorySwitch(char aNumber, char &aValue) {
+    if (!reset() || !mIOPort->write(CEpsonEUT400::Command::GetMemorySwitch + aNumber)) {
         return false;
     }
 
@@ -169,35 +155,37 @@ bool EpsonEUT400::getMemorySwitch(char aNumber, char &aValue)
     QElapsedTimer clockTimer;
     clockTimer.start();
 
-    do
-    {
+    do {
         QByteArray data;
 
-        if (!mIOPort->read(data, 20))
-        {
+        if (!mIOPort->read(data, 20)) {
             return false;
         }
 
         answer.append(data);
-    } while ((clockTimer.elapsed() < CEpsonEUT400::MemorySwitch::TimeoutReading) && !answer.endsWith(ASCII::NUL));
+    } while ((clockTimer.elapsed() < CEpsonEUT400::MemorySwitch::TimeoutReading) &&
+             !answer.endsWith(ASCII::NUL));
 
     toLog(LogLevel::Normal, QString("%1: << {%2}").arg(mDeviceName).arg(answer.toHex().data()));
 
     if ((answer.size() != CEpsonEUT400::MemorySwitch::AnswerSize) ||
-        !answer.startsWith(CEpsonEUT400::MemorySwitch::Prefix) || !answer.endsWith(CEpsonEUT400::MemorySwitch::Postfix))
-    {
+        !answer.startsWith(CEpsonEUT400::MemorySwitch::Prefix) ||
+        !answer.endsWith(CEpsonEUT400::MemorySwitch::Postfix)) {
         toLog(LogLevel::Error,
-              QString("%1: Failed to get memory switch %2 due to wrong answer").arg(mDeviceName).arg(int(aNumber)));
+              QString("%1: Failed to get memory switch %2 due to wrong answer")
+                  .arg(mDeviceName)
+                  .arg(int(aNumber)));
         return false;
     }
 
     bool OK;
     aValue = char(answer.mid(2, 8).toInt(&OK, 2));
 
-    if (!OK)
-    {
+    if (!OK) {
         toLog(LogLevel::Error,
-              QString("%1: Failed to parse answer for memory switch %2").arg(mDeviceName).arg(int(aNumber)));
+              QString("%1: Failed to parse answer for memory switch %2")
+                  .arg(mDeviceName)
+                  .arg(int(aNumber)));
         return false;
     }
 
@@ -205,10 +193,8 @@ bool EpsonEUT400::getMemorySwitch(char aNumber, char &aValue)
 }
 
 //--------------------------------------------------------------------------------
-bool EpsonEUT400::setMemorySwitch(char aNumber, char aValue)
-{
-    if (!reset())
-    {
+bool EpsonEUT400::setMemorySwitch(char aNumber, char aValue) {
+    if (!reset()) {
         return false;
     }
 
@@ -217,8 +203,7 @@ bool EpsonEUT400::setMemorySwitch(char aNumber, char aValue)
                   (answer == CEpsonEUT400::MemorySwitch::AnswerForEnter);
     SleepHelper::msleep(CEpsonEUT400::MemorySwitch::Pause);
 
-    if (!result)
-    {
+    if (!result) {
         mIOPort->write(CEpsonEUT400::Command::ExitUserMode);
         SleepHelper::msleep(CEpsonEUT400::MemorySwitch::Pause);
         toLog(LogLevel::Error, mDeviceName + ": Failed to enter user mode");
@@ -226,18 +211,18 @@ bool EpsonEUT400::setMemorySwitch(char aNumber, char aValue)
         return false;
     }
 
-    QByteArray command = CEpsonEUT400::Command::SetMemorySwitch + aNumber + QByteArray::number(aValue, 2).right(8);
+    QByteArray command =
+        CEpsonEUT400::Command::SetMemorySwitch + aNumber + QByteArray::number(aValue, 2).right(8);
 
-    if (!mIOPort->write(command))
-    {
-        toLog(LogLevel::Error, QString("%1: Failed to set memory switch %2").arg(mDeviceName).arg(int(aNumber)));
+    if (!mIOPort->write(command)) {
+        toLog(LogLevel::Error,
+              QString("%1: Failed to set memory switch %2").arg(mDeviceName).arg(int(aNumber)));
         return false;
     }
 
     SleepHelper::msleep(CEpsonEUT400::MemorySwitch::Pause);
 
-    if (!mIOPort->write(CEpsonEUT400::Command::ExitUserMode))
-    {
+    if (!mIOPort->write(CEpsonEUT400::Command::ExitUserMode)) {
         toLog(LogLevel::Error, mDeviceName + ": Failed to exit user mode");
         return false;
     }
@@ -248,47 +233,41 @@ bool EpsonEUT400::setMemorySwitch(char aNumber, char aValue)
 }
 
 //--------------------------------------------------------------------------------
-void EpsonEUT400::processDeviceData()
-{
+void EpsonEUT400::processDeviceData() {
     QByteArray answer;
 
-    if (mIOPort->write(CPOSPrinter::Command::GetTypeId) && getAnswer(answer, CPOSPrinter::Timeouts::Info) &&
-        (answer.size() == 1))
-    {
+    if (mIOPort->write(CPOSPrinter::Command::GetTypeId) &&
+        getAnswer(answer, CPOSPrinter::Timeouts::Info) && (answer.size() == 1)) {
         setDeviceParameter(CDeviceData::Printers::Unicode, ProtocolUtils::getBit(answer, 0));
         setDeviceParameter(CDeviceData::Printers::Cutter, ProtocolUtils::getBit(answer, 1));
         setDeviceParameter(CDeviceData::Printers::BMSensor, ProtocolUtils::getBit(answer, 2));
     }
 
-    auto processCommand = [&](const QByteArray &aCommand) -> bool
-    {
+    auto processCommand = [&](const QByteArray &aCommand) -> bool {
         if (!mIOPort->write(aCommand) || !getAnswer(answer, CPOSPrinter::Timeouts::Info))
             return false;
         answer.replace('\x00', "").replace('\x5f', "");
         return !answer.isEmpty();
     };
 
-    if (!processCommand(CEpsonEUT400::Command::GetVersion))
-    {
+    if (!processCommand(CEpsonEUT400::Command::GetVersion)) {
         setDeviceParameter(CDeviceData::Firmware, answer);
     }
 
     CEpsonEUT400::CFontType fontType;
 
-    if (processCommand(CEpsonEUT400::Command::GetFont) && fontType.data().contains(answer))
-    {
+    if (processCommand(CEpsonEUT400::Command::GetFont) && fontType.data().contains(answer)) {
         setDeviceParameter(CDeviceData::Printers::Font, fontType[answer]);
     }
 
     CEpsonEUT400::CMemorySize memorySize;
 
-    if (processCommand(CEpsonEUT400::Command::GetMemorySize) && memorySize.data().contains(answer[0]))
-    {
+    if (processCommand(CEpsonEUT400::Command::GetMemorySize) &&
+        memorySize.data().contains(answer[0])) {
         setDeviceParameter(CDeviceData::Memory, QString("%1 Mbits").arg(memorySize[answer[0]]));
     }
 
-    if (processCommand(CEpsonEUT400::Command::GetOptions) && (answer.size() == 1))
-    {
+    if (processCommand(CEpsonEUT400::Command::GetOptions) && (answer.size() == 1)) {
         setDeviceParameter(CDeviceData::Printers::Presenter, ProtocolUtils::getBit(answer, 0));
         setDeviceParameter(CDeviceData::Printers::PaperSupply, ProtocolUtils::getBit(answer, 4));
     }

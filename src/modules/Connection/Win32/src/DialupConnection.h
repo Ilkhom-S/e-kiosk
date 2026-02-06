@@ -2,15 +2,13 @@
 
 #pragma once
 
-// Project headers
 #include "Common/ConnectionBase.h"
 
 //--------------------------------------------------------------------------------
-class DialupConnection : public ConnectionBase
-{
+class DialupConnection : public ConnectionBase {
     Q_OBJECT
 
-  public:
+public:
     /// Конструктор.
     DialupConnection(const QString &aName, NetworkTaskManager *aNetwork, ILog *aLog);
 
@@ -20,7 +18,7 @@ class DialupConnection : public ConnectionBase
     /// Возвращает тип соединения.
     virtual EConnectionTypes::Enum getType() const;
 
-  private:
+private:
     /// Устанавливает соединение используя RAS API.
     virtual void doConnect() throw(...);
 

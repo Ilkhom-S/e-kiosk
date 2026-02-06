@@ -2,36 +2,31 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtWebkit/QWebElement>
+#include <QtCore/QString>
+#include <QtCore/QVariantMap>
 #include <QtWebKitWidgets/QWebFrame>
 #include <QtWebKitWidgets/QWebPage>
-#include <QtCore/QVariantMap>
-#include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
+#include <QtWebkit/QWebElement>
 
-// SDK
 #include <Common/ILog.h>
+
 #include <SDK/PaymentProcessor/Scripting/Core.h>
 
-class WebPageLogger : public QWebPage
-{
+class WebPageLogger : public QWebPage {
     Q_OBJECT
-  public:
-    WebPageLogger::WebPageLogger(QObject *aParent, SDK::PaymentProcessor::Scripting::Core *aCoreProxy, ILog *aLog)
-        : QWebPage(aParent), mCoreProxy(aCoreProxy), mLog(aLog)
-    {
-    }
-    ~WebPageLogger()
-    {
-    }
+public:
+    WebPageLogger::WebPageLogger(QObject *aParent,
+                                 SDK::PaymentProcessor::Scripting::Core *aCoreProxy,
+                                 ILog *aLog)
+        : QWebPage(aParent), mCoreProxy(aCoreProxy), mLog(aLog) {}
+    ~WebPageLogger() {}
 
-  protected:
-    virtual void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
+protected:
+    virtual void
+    javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
     virtual void javaScriptAlert(QWebFrame *frame, const QString &msg);
 
-  private:
+private:
     SDK::PaymentProcessor::Scripting::Core *mCoreProxy;
     ILog *mLog;
 };

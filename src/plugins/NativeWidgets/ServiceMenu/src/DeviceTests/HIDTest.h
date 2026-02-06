@@ -2,30 +2,24 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QFutureWatcher>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <Common/ObjectPointer.h>
+
 #include <SDK/Drivers/IHID.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK
-{
-    namespace Driver
-    {
-        class IDevice;
-    } // namespace Driver
+namespace SDK {
+namespace Driver {
+class IDevice;
+} // namespace Driver
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class HIDTest : public SDK::PaymentProcessor::IDeviceTest
-{
+class HIDTest : public SDK::PaymentProcessor::IDeviceTest {
     Q_OBJECT
 
-  public:
+public:
     HIDTest(SDK::Driver::IDevice *aDevice, const QString &aInstancePath);
 
     /// Возвращает имена и описания тестов.
@@ -43,10 +37,10 @@ class HIDTest : public SDK::PaymentProcessor::IDeviceTest
     /// Возвращает true, если тест устройства возвращает результат теста
     virtual bool hasResult();
 
-  private slots:
+private slots:
     void onData(const QVariantMap &aData);
 
-  private:
+private:
     ObjectPointer<SDK::Driver::IHID> mHID;
     QList<QPair<QString, QString>> mTestNames;
 };

@@ -4,97 +4,84 @@
 
 // boost
 #ifndef Q_MOC_RUN
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/ordered_index.hpp>
-#include <boost/multi_index/member.hpp>
 #include <boost/multi_index/composite_key.hpp>
+#include <boost/multi_index/member.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index_container.hpp>
 #endif
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QSharedPointer>
 #include <QtCore/QFutureWatcher>
+#include <QtCore/QSharedPointer>
 #include <QtWidgets/QWidget>
-#include "ui_HardwareWindow.h"
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/Drivers/WarningLevel.h>
 
-// Project
 #include "EditorPane.h"
 #include "IDeviceBackend.h"
+#include "ui_HardwareWindow.h"
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        class IDeviceService;
-    } // namespace PaymentProcessor
-    namespace Driver
-    {
-        class IDevice;
-    } // namespace Driver
+namespace SDK {
+namespace PaymentProcessor {
+class IDeviceService;
+} // namespace PaymentProcessor
+namespace Driver {
+class IDevice;
+} // namespace Driver
 } // namespace SDK
 
 class DeviceSlot;
 class HumoServiceBackend;
 
 //---------------------------------------------------------------------------
-class HardwareWindow : public QWidget, public IDeviceBackend
-{
+class HardwareWindow : public QWidget, public IDeviceBackend {
     Q_OBJECT
 
-  public:
+public:
     HardwareWindow(HumoServiceBackend *aBackend, QWidget *aParent = 0);
     virtual ~HardwareWindow();
 
-  public:
-    enum SlotCreationMode
-    {
+public:
+    enum SlotCreationMode {
         /// В этом режиме ничего дополнительно не происходит.
         Default = 0,
         /// Для пользовательских слотов после создания сразу будет открыт редактор.
         OpenEditorAfterCreation
     };
 
-    struct SDeviceItem
-    {
+    struct SDeviceItem {
         QString model;
         QString type;
         QString driver;
     };
 
-    struct TypeTag
-    {
-    };
-    struct ModelTag
-    {
-    };
-    struct TypeModelTag
-    {
-    };
+    struct TypeTag {};
+    struct ModelTag {};
+    struct TypeModelTag {};
 
     struct TypeModelKey
-        : boost::multi_index::composite_key<SDeviceItem, BOOST_MULTI_INDEX_MEMBER(SDeviceItem, QString, type),
-                                            BOOST_MULTI_INDEX_MEMBER(SDeviceItem, QString, model)>
-    {
+        : boost::multi_index::composite_key<SDeviceItem,
+                                            BOOST_MULTI_INDEX_MEMBER(SDeviceItem, QString, type),
+                                            BOOST_MULTI_INDEX_MEMBER(SDeviceItem, QString, model)> {
     };
 
     typedef boost::multi_index::multi_index_container<
-        SDeviceItem, boost::multi_index::indexed_by<
-                         boost::multi_index::ordered_non_unique<boost::multi_index::tag<TypeTag>,
-                                                                BOOST_MULTI_INDEX_MEMBER(SDeviceItem, QString, type)>,
-                         boost::multi_index::ordered_unique<boost::multi_index::tag<ModelTag>,
-                                                            BOOST_MULTI_INDEX_MEMBER(SDeviceItem, QString, model)>,
-                         boost::multi_index::ordered_unique<boost::multi_index::tag<TypeModelTag>, TypeModelKey>>>
+        SDeviceItem,
+        boost::multi_index::indexed_by<
+            boost::multi_index::ordered_non_unique<boost::multi_index::tag<TypeTag>,
+                                                   BOOST_MULTI_INDEX_MEMBER(
+                                                       SDeviceItem, QString, type)>,
+            boost::multi_index::ordered_unique<boost::multi_index::tag<ModelTag>,
+                                               BOOST_MULTI_INDEX_MEMBER(
+                                                   SDeviceItem, QString, model)>,
+            boost::multi_index::ordered_unique<boost::multi_index::tag<TypeModelTag>,
+                                               TypeModelKey>>>
         TDeviceList;
 
     typedef TDeviceList::index<TypeTag>::type TDeviceByType;
     typedef TDeviceList::index<ModelTag>::type TDeviceByModel;
     typedef TDeviceList::index<TypeModelTag>::type TDeviceByTypeModel;
 
-  public:
+public:
     /// Инициализация окна, загрузка начальной конфигурации.
     virtual bool initialize();
 
@@ -102,7 +89,8 @@ class HardwareWindow : public QWidget, public IDeviceBackend
     virtual void shutdown();
 
     /// Создаёт новый слот устройства и возвращает на него указатель.
-    virtual DeviceSlot *addDeviceSlot(const QString &aConfigurationName, bool aUserSlot = false,
+    virtual DeviceSlot *addDeviceSlot(const QString &aConfigurationName,
+                                      bool aUserSlot = false,
                                       const QString &aType = QString());
 
     /// Удаляет слот устройства.
@@ -123,10 +111,10 @@ class HardwareWindow : public QWidget, public IDeviceBackend
     /// Проверка на подключения устройства, описанного в слоте aSlot.
     virtual void checkDeviceSlot(DeviceSlot *aSlot);
 
-  private:
+private:
     void checkDeviceSlotConcurrent(DeviceSlot *aSlot);
 
-  signals:
+signals:
     /// Сигнал срабатывает, когда производится попытка редактирования aSlot. aPane -
     /// найденный подходящий редактор для слота.
     void editSlot(DeviceSlot *aSlot, EditorPane *aPane);
@@ -149,7 +137,7 @@ class HardwareWindow : public QWidget, public IDeviceBackend
     /// Срабатывает при смене текущей формы (список устройств/выбор типа устройства).
     void currentFormChanged(int aIndex);
 
-  public slots:
+public slots:
     /// Поиск устройств.
     void detectDevices();
 
@@ -159,11 +147,13 @@ class HardwareWindow : public QWidget, public IDeviceBackend
     /// Поиск устройст закончен
     void onDetectionFinished();
 
-  private slots:
-    void onDeviceStatusChanged(const QString &aConfigurationName, const QString &aNewStatus,
-                               const QString &aStatusColor, SDK::Driver::EWarningLevel::Enum aLevel);
+private slots:
+    void onDeviceStatusChanged(const QString &aConfigurationName,
+                               const QString &aNewStatus,
+                               const QString &aStatusColor,
+                               SDK::Driver::EWarningLevel::Enum aLevel);
 
-  protected:
+protected:
     /// Возвращает редактор для указанного слота.
     virtual EditorPane *getEditor(DeviceSlot *aSlot);
 
@@ -171,7 +161,8 @@ class HardwareWindow : public QWidget, public IDeviceBackend
     virtual QStringList getModels(const QString &aType);
 
     /// IDeviceBackend: Возвращает список параметров, указанной модели.
-    virtual SDK::Plugin::TParameterList getModelParameters(const QString &aType, const QString &aModel);
+    virtual SDK::Plugin::TParameterList getModelParameters(const QString &aType,
+                                                           const QString &aModel);
 
     /// IDeviceBackend: Возвращает менеджер устройств
     virtual HardwareManager *getHardwareManager() const;
@@ -181,7 +172,7 @@ class HardwareWindow : public QWidget, public IDeviceBackend
 
     virtual void toLog(const QString &aMessage);
 
-  private slots:
+private slots:
     /// Срабатывает при необходимости показа диалога добавления слота.
     void onShowAddSlotDialog();
 
@@ -203,7 +194,7 @@ class HardwareWindow : public QWidget, public IDeviceBackend
     /// Обработка события "найдено новое устройство".
     void onDeviceFound(const QString &aConfigName);
 
-  private:
+private:
     typedef QList<QSharedPointer<DeviceSlot>> TDeviceSlotList;
 
     Ui::frmHardwareWindow ui;

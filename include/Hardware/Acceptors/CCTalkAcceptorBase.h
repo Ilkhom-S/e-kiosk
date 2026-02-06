@@ -2,20 +2,17 @@
 
 #pragma once
 
-// Modules
 #include <Hardware/CashDevices/CCTalkDeviceBase.h>
 
-// Project
 #include "CCTalkCurrencyData.h"
 #include "Hardware/Acceptors/CCTalkAcceptorConstants.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class CCTalkAcceptorBase : public CCTalkDeviceBase<T>
-{
-  public:
+template <class T> class CCTalkAcceptorBase : public CCTalkDeviceBase<T> {
+public:
     CCTalkAcceptorBase();
 
-  protected:
+protected:
     /// Завершение инициализации.
     virtual void finalizeInitialization();
 
@@ -23,18 +20,14 @@ template <class T> class CCTalkAcceptorBase : public CCTalkDeviceBase<T>
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
     /// Получить буферизованные статусы.
-    virtual bool getBufferedStatuses(QByteArray & /*aAnswer*/)
-    {
-        return false;
-    }
+    virtual bool getBufferedStatuses(QByteArray & /*aAnswer*/) { return false; }
 
     /// Распарсить буферизованные статусы.
     virtual void parseBufferedStatuses(const QByteArray &aAnswer, TStatusCodes &aStatusCodes);
 
     /// Распарсить данные о купюре.
-    virtual void parseCreditData(uchar /*aCredit*/, uchar /*aError*/, TStatusCodes & /*aStatusCodes*/)
-    {
-    }
+    virtual void
+    parseCreditData(uchar /*aCredit*/, uchar /*aError*/, TStatusCodes & /*aStatusCodes*/) {}
 
     /// Применить таблицу номиналов.
     virtual bool applyParTable();

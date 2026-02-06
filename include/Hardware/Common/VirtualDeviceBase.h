@@ -2,30 +2,26 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QEvent>
 #include <QtGui/QKeyEvent>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include "Hardware/Common/DeviceBase.h"
 
 //---------------------------------------------------------------------------------------------
-template <class T> class VirtualDeviceBase : public T
-{
+template <class T> class VirtualDeviceBase : public T {
     SET_SERIES("Virtual")
 
-  public:
+public:
     VirtualDeviceBase();
 
     /// Подключает и инициализует устройство. Обертка для вызова функционала в рабочем потоке.
     virtual void initialize();
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова updateParameters().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// updateParameters().
     virtual bool release();
 
-  protected:
+protected:
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 

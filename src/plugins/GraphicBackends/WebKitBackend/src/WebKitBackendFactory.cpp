@@ -1,16 +1,12 @@
 /* @file Реализация фабрики плагина WebKitBackend. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QCoreApplication>
-#include <Common/QtHeadersEnd.h>
+#include "WebKitBackendFactory.h"
 
-// SDK
+#include <QtCore/QCoreApplication>
+
 #include <SDK/Plugins/IPlugin.h>
 
-// Project
 #include "WebKitBackend.h"
-#include "WebKitBackendFactory.h"
 
 QString SDK::Plugin::PluginFactory::mName = "Webkit graphics backend";
 QString SDK::Plugin::PluginFactory::mDescription =

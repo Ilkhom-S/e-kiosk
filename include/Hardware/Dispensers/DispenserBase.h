@@ -6,23 +6,19 @@
 
 #pragma once
 
-// SDK
 #include <SDK/Drivers/Dispenser/DispenserStatus.h>
 
-// Modules
-#include <Hardware/Dispensers/ProtoDispenser.h>
 #include <Hardware/Dispensers/DispenserData.h>
+#include <Hardware/Dispensers/ProtoDispenser.h>
 
-namespace CDispensers
-{
-    /// Интервал поллинга в режиме простоя.
-    const int IdlingPollingInterval = 2000;
+namespace CDispensers {
+/// Интервал поллинга в режиме простоя.
+const int IdlingPollingInterval = 2000;
 } // namespace CDispensers
 
 //--------------------------------------------------------------------------------
-template <class T> class DispenserBase : public T
-{
-  public:
+template <class T> class DispenserBase : public T {
+public:
     DispenserBase();
 
     /// Готов ли к работе (инициализировался успешно, ошибок нет).
@@ -34,11 +30,9 @@ template <class T> class DispenserBase : public T
     /// Получить кол-во кассет.
     virtual int units();
 
-  protected:
+protected:
     /// Запросить и сохранить параметры устройства.
-    virtual void processDeviceData()
-    {
-    }
+    virtual void processDeviceData() {}
 
     /// Применить конфигурацию кассет.
     virtual void applyUnitList();

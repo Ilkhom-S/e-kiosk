@@ -2,13 +2,11 @@
 
 #pragma once
 
-// Проект
 #include "PaymentCheckRequest.h"
 
 //---------------------------------------------------------------------------
-class PinPaymentCheckRequest : public PaymentCheckRequest
-{
-  public:
+class PinPaymentCheckRequest : public PaymentCheckRequest {
+public:
     PinPaymentCheckRequest(Payment *aPayment, bool aFake);
 };
 

@@ -2,30 +2,29 @@
 
 #pragma once
 
+#include <Hardware/Dispensers/DispenserBase.h>
+
 #include "Hardware/Common/DeviceBase.h"
 #include "Hardware/Common/VirtualDeviceBase.h"
 #include "Hardware/Dispensers/ProtoDispenser.h"
-#include <Hardware/Dispensers/DispenserBase.h>
 
 //---------------------------------------------------------------------------------------------
-namespace CVirtualDispenser
-{
-    /// Задержка выдачи 1 предмета.
-    const int ItemDispenseDelay = 300;
+namespace CVirtualDispenser {
+/// Задержка выдачи 1 предмета.
+const int ItemDispenseDelay = 300;
 } // namespace CVirtualDispenser
 
 //--------------------------------------------------------------------------------
 typedef VirtualDeviceBase<DispenserBase<DeviceBase<ProtoDispenser>>> TVirtualDispenser;
 
-class VirtualDispenser : public TVirtualDispenser
-{
-  public:
+class VirtualDispenser : public TVirtualDispenser {
+public:
     VirtualDispenser();
 
     /// Устанавливает конфигурацию устройству.
     virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
-  protected:
+protected:
     /// Фильтровать нажатие кнопки(ок).
     virtual void filterKeyEvent(int aKey, const Qt::KeyboardModifiers &aModifiers);
 

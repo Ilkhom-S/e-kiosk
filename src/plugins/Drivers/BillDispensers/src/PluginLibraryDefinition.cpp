@@ -2,14 +2,11 @@
 
 // Plugin SDK
 
-// SDK
-#include <SDK/Plugins/PluginFactory.h>
-
-// Project
 #include "PluginLibraryDefinition.h"
 
-BillDispenserPluginFactory::BillDispenserPluginFactory()
-{
+#include <SDK/Plugins/PluginFactory.h>
+
+BillDispenserPluginFactory::BillDispenserPluginFactory() {
     mName = "BillDispenser";
     mDescription = "BillDispenser driver library";
     mAuthor = "Humo";

@@ -2,28 +2,19 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
 #include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
 
-// System
 #include "MessageQueue/IMessageQueueClient.h"
 
 class QObject;
 
 //---------------------------------------------------------------------------
-class IWatchServiceClient
-{
-  public:
-    typedef enum
-    {
-        DedicateThread,
-        MainThread
-    } PingThread;
+class IWatchServiceClient {
+public:
+    typedef enum { DedicateThread, MainThread } PingThread;
 
-  public:
+public:
     virtual ~IWatchServiceClient() {};
 
     /// Подключение к сторожевому сервису.
@@ -36,7 +27,8 @@ class IWatchServiceClient
     virtual bool isConnected() const = 0;
 
     /// Выполнение команды aCommand на модуле aModule c параметрами aParams.
-    virtual void execute(QString aCommand, QString aModule = QString(), QString aParams = QString()) = 0;
+    virtual void
+    execute(QString aCommand, QString aModule = QString(), QString aParams = QString()) = 0;
 
     /// Завершение работы всех модулей и сторожевого сервиса.
     virtual void stopService() = 0;
@@ -94,8 +86,8 @@ class IWatchServiceClient
 };
 
 //---------------------------------------------------------------------------
-IWatchServiceClient *
-createWatchServiceClient(const QString &aClientName,
-                         IWatchServiceClient::PingThread aThread = IWatchServiceClient::DedicateThread);
+IWatchServiceClient *createWatchServiceClient(
+    const QString &aClientName,
+    IWatchServiceClient::PingThread aThread = IWatchServiceClient::DedicateThread);
 
 //---------------------------------------------------------------------------

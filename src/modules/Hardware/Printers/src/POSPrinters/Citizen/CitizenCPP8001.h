@@ -5,11 +5,10 @@
 #include "CitizenBase.h"
 
 //--------------------------------------------------------------------------------
-class CitizenCPP8001 : public CitizenBase<TSerialPOSPrinter>
-{
+class CitizenCPP8001 : public CitizenBase<TSerialPOSPrinter> {
     SET_SUBSERIES("CitizenCPP8001")
 
-  public:
+public:
     CitizenCPP8001();
 
     /// Устанавливает конфигурацию устройству.

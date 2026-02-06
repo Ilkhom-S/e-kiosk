@@ -2,47 +2,39 @@
 
 #pragma once
 
-// Qt
-#include "Common/QtHeadersBegin.h"
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include <QtCore/QVariantMap>
-#include "Common/QtHeadersEnd.h"
 
-// SDK
 #include <SDK/PaymentProcessor/Connection/Connection.h>
 
-// Project
 #include "IConfigManager.h"
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        class ICore;
-        class INetworkService;
-        class TerminalSettings;
-        class Directory;
-    } // namespace PaymentProcessor
+namespace SDK {
+namespace PaymentProcessor {
+class ICore;
+class INetworkService;
+class TerminalSettings;
+class Directory;
+} // namespace PaymentProcessor
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class NetworkManager : public QObject, public IConfigManager
-{
+class NetworkManager : public QObject, public IConfigManager {
     Q_OBJECT
 
-  public:
+public:
     NetworkManager(SDK::PaymentProcessor::ICore *aCore);
     ~NetworkManager();
 
-  public:
+public:
     /// Настройки соединения изменились?
     virtual bool isConfigurationChanged() const;
 
     /// Делаем текущую конфигурацию начальной
     virtual void resetConfiguration();
 
-  public:
+public:
     /// Устанавливает соединение.
     bool openConnection(bool aWait = false);
 
@@ -77,14 +69,15 @@ class NetworkManager : public QObject, public IConfigManager
     QStringList getConnectionTemplates() const;
 
     /// Создать dialup соединение
-    bool createDialupConnection(const SDK::PaymentProcessor::SConnection &aConnection, const QString &aNetworkDevice);
+    bool createDialupConnection(const SDK::PaymentProcessor::SConnection &aConnection,
+                                const QString &aNetworkDevice);
 
     /// Удалить dialup соединение
     bool removeDialupConnection(const SDK::PaymentProcessor::SConnection &aConnection);
 
     void getNetworkInfo(QVariantMap &aResult) const;
 
-  private:
+private:
     SDK::PaymentProcessor::ICore *mCore;
     SDK::PaymentProcessor::INetworkService *mNetworkService;
     SDK::PaymentProcessor::TerminalSettings *mTerminalSettings;

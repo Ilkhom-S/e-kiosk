@@ -2,32 +2,26 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QCoreApplication>
-#include <QtCore/QString>
-#include <QtCore/QMap>
+#include <QtCore/QDateTime>
+#include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
-#include <QtCore/QDir>
-#include <QtCore/QDateTime>
+#include <QtCore/QMap>
 #include <QtCore/QMutex>
 #include <QtCore/QSharedPointer>
+#include <QtCore/QString>
 #include <QtCore/QTextStream>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/ILog.h>
 
-// Проект
 #include "LogManager.h"
 
 //---------------------------------------------------------------------------
 class SimpleLog;
 
 //---------------------------------------------------------------------------
-class DestinationFile
-{
+class DestinationFile {
     QFile mFile;
     FILE *mStdFile;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -38,7 +32,7 @@ class DestinationFile
     QTextStream mLogStream;
     QString mFileName;
 
-  protected:
+protected:
     DestinationFile()
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         : mStdFile(nullptr), mMutex(QMutex::Recursive), mLogStream(&mFile)
@@ -53,13 +47,11 @@ class DestinationFile
 
     friend class SimpleLog;
 
-  public:
-    bool open(const QString &aLogPath)
-    {
+public:
+    bool open(const QString &aLogPath) {
         mFile.close();
 
-        if (mStdFile)
-        {
+        if (mStdFile) {
             fflush(mStdFile);
             fclose(mStdFile);
         }
@@ -78,18 +70,11 @@ class DestinationFile
         return isOK;
     }
 
-    bool isOpen() const
-    {
-        return mFile.isOpen();
-    }
+    bool isOpen() const { return mFile.isOpen(); }
 
-    QString fileName() const
-    {
-        return mFileName;
-    }
+    QString fileName() const { return mFileName; }
 
-    void write(const QString &aMessage)
-    {
+    void write(const QString &aMessage) {
         QMutexLocker locker(&mMutex);
 
         mLogStream << aMessage;
@@ -101,10 +86,10 @@ class DestinationFile
 typedef QSharedPointer<DestinationFile> DestinationFilePtr;
 
 //---------------------------------------------------------------------------
-class SimpleLog : public ILog
-{
-  public:
-    explicit SimpleLog(const QString &aName = "Default", LogType::Enum aType = LogType::File,
+class SimpleLog : public ILog {
+public:
+    explicit SimpleLog(const QString &aName = "Default",
+                       LogType::Enum aType = LogType::File,
                        LogLevel::Enum aMaxLogLevel = LogLevel::Normal);
     virtual ~SimpleLog();
 
@@ -137,15 +122,15 @@ class SimpleLog : public ILog
     /// Принудительно закрыть журнал. Функция write заново его откроет.
     virtual void logRotate();
 
-  protected:
+protected:
     virtual bool init();
     virtual bool isInitiated();
     virtual void safeWrite(LogLevel::Enum aLevel, const QString &aMessage);
 
-  private:
+private:
     virtual void writeHeader();
 
-  private:
+private:
     bool mInitOk;
     LogLevel::Enum mMaxLogLevel;
 

@@ -2,14 +2,11 @@
 
 // Plugin SDK
 
-// SDK
-#include <SDK/Plugins/PluginFactory.h>
-
-// Project
 #include "PluginLibraryDefinition.h"
 
-ModemsPluginFactory::ModemsPluginFactory()
-{
+#include <SDK/Plugins/PluginFactory.h>
+
+ModemsPluginFactory::ModemsPluginFactory() {
     mName = "Modems";
     mDescription = "Modem driver library.";
     mAuthor = "Humo";

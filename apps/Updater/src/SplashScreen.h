@@ -2,19 +2,17 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
-#include <QtWidgets/QWidget>
 #include <QtGui/QCloseEvent>
+#include <QtWidgets/QWidget>
+
 #include "ui_SplashScreen.h"
-#include <Common/QtHeadersEnd.h>
 
 //----------------------------------------------------------------------------
 /// Вспомогательный экран, закрывающий рабочий стол. Предоставляет доступ к сервисному меню.
-class SplashScreen : public QWidget
-{
+class SplashScreen : public QWidget {
     Q_OBJECT
 
-  public:
+public:
     /// Конструктор.
     SplashScreen(QWidget *aParent = 0);
 
@@ -24,7 +22,7 @@ class SplashScreen : public QWidget
     /// Сворачивает окно вместо его закрытия.
     virtual void closeEvent(QCloseEvent *aEvent);
 
-  private:
+private:
     Ui::SplashScreenClass ui;
 };
 

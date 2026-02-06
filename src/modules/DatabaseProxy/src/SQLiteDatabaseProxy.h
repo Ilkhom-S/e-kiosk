@@ -1,35 +1,28 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QMutex>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 #include <QtSql/QtSql>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/ILogable.h>
 
-// System
 #include <DatabaseProxy/IDatabaseProxy.h>
 #include <DatabaseProxy/IDatabaseQuery.h>
 
 class QSqlDatabase;
 
 //---------------------------------------------------------------------------
-namespace CSQLiteDatabaseProxy
-{
-    const QString DriverName = "QSQLITE";
-    const int BusyTimeout = 5000; // ms
+namespace CSQLiteDatabaseProxy {
+const QString DriverName = "QSQLITE";
+const int BusyTimeout = 5000; // ms
 } // namespace CSQLiteDatabaseProxy
 
 //---------------------------------------------------------------------------
-class SQLiteDatabaseProxy : public IDatabaseProxy, protected ILogable
-{
+class SQLiteDatabaseProxy : public IDatabaseProxy, protected ILogable {
     friend class IDatabaseProxy;
 
-  public:
+public:
     SQLiteDatabaseProxy();
 
     virtual ~SQLiteDatabaseProxy();
@@ -62,11 +55,12 @@ class SQLiteDatabaseProxy : public IDatabaseProxy, protected ILogable
     /// IDatabaseProxy: Выполнение DML запроса. Помещает в rowsAffected количество затронутых строк.
     virtual bool execDML(const QString &aQuery, long &aRowsAffected) override;
 
-    /// IDatabaseProxy: Выполнение запроса, содержащего, к примеру, COUNT(*). В result записывает значение ячейки (1,1).
+    /// IDatabaseProxy: Выполнение запроса, содержащего, к примеру, COUNT(*). В result записывает
+    /// значение ячейки (1,1).
     virtual bool execScalar(const QString &aQuery, long &aResult) override;
 
-    /// IDatabaseProxy: Выполнение произвольного запроса. Если запрос успешно выполнен, то результат функции будет не
-    /// нулевым.
+    /// IDatabaseProxy: Выполнение произвольного запроса. Если запрос успешно выполнен, то результат
+    /// функции будет не нулевым.
     virtual IDatabaseQuery *execQuery(const QString &aQuery) override;
 
     /// IDatabaseProxy: Пытается создать новую транзакцию.
@@ -78,14 +72,14 @@ class SQLiteDatabaseProxy : public IDatabaseProxy, protected ILogable
     /// IDatabaseProxy: Сбрасывает изменения, внесённые во время последней транзакции.
     virtual bool rollback() override;
 
-  public:
+public:
     /// Проверка целостности базы
     virtual bool checkIntegrity(QStringList &aListErrors) override;
 
-  protected:
+protected:
     virtual bool safeExec(QSqlQuery *aQuery, const QString &aQueryMessage);
 
-  private:
+private:
     QSharedPointer<QSqlDatabase> mDb;
     QRecursiveMutex mMutex;
     QString mCurrentBase;

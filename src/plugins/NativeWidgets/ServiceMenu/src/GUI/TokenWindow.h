@@ -2,30 +2,25 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QFutureWatcher>
-#include "ui_tokenWindow.h"
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Crypt/ICryptEngine.h>
+
+#include "ui_tokenWindow.h"
 
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------
-namespace CTokenWindow
-{
-    const QString WarningStyleSheet = "background-color: rgb(255, 192, 192);";
-    const QString DefaultStyleSheet = "";
+namespace CTokenWindow {
+const QString WarningStyleSheet = "background-color: rgb(255, 192, 192);";
+const QString DefaultStyleSheet = "";
 } // namespace CTokenWindow
 
 //------------------------------------------------------------------------
-class TokenWindow : public QFrame, protected Ui_TokenWindow
-{
+class TokenWindow : public QFrame, protected Ui_TokenWindow {
     Q_OBJECT
 
-  public:
+public:
     TokenWindow(ServiceMenuBackend *aBackend, QWidget *aParent);
 
     virtual ~TokenWindow();
@@ -36,7 +31,7 @@ class TokenWindow : public QFrame, protected Ui_TokenWindow
     // Отформатировать токен
     void doFormat();
 
-  signals:
+signals:
     /// Начало и конец процедуры создания ключей.
     void beginFormat();
     void endFormat();
@@ -44,14 +39,14 @@ class TokenWindow : public QFrame, protected Ui_TokenWindow
     /// Сигнал об ошибке во время создания или регистрации ключей.
     void error(QString aError);
 
-  protected slots:
+protected slots:
     void onFormatButtonClicked();
     void onFormatTaskFinished();
 
-  private:
+private:
     void updateUI(const CCrypt::TokenStatus &aStatus);
 
-  protected:
+protected:
     QVariantMap mTaskParameters;
 
     QFutureWatcher<bool> mFormatTaskWatcher;

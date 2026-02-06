@@ -6,13 +6,13 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола KKM.
-class Atol2FRProtocol : public ProtocolBase
-{
-  public:
+class Atol2FRProtocol : public ProtocolBase {
+public:
     /// Выполнить команду протокола.
-    TResult processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, int aTimeout);
+    TResult
+    processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, int aTimeout);
 
-  private:
+private:
     /// Вычислить CRC.
     char calcCRC(const QByteArray &aData);
 

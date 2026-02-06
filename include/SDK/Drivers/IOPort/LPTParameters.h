@@ -2,31 +2,26 @@
 
 #pragma once
 
-namespace SDK
-{
-    namespace Driver
-    {
+namespace SDK {
+namespace Driver {
 
-        //--------------------------------------------------------------------------------
-        /// Адреса регистров.
-        namespace CLPTPortAddress
-        {
-            const int DataRegister = 0x378;
-            const int StatusRegister = 0x379;
-            const int ControlRegister = 0x37A;
-        } // namespace CLPTPortAddress
+//--------------------------------------------------------------------------------
+/// Адреса регистров.
+namespace CLPTPortAddress {
+const int DataRegister = 0x378;
+const int StatusRegister = 0x379;
+const int ControlRegister = 0x37A;
+} // namespace CLPTPortAddress
 
-        //--------------------------------------------------------------------------------
-        /// Параметры LPT-порта.
-        namespace ELPTPortParameters
-        {
-            enum Enum
-            {
-                int portNumber; /// Номер порта.
-            };
-        } // namespace ELPTPortParameters
+//--------------------------------------------------------------------------------
+/// Параметры LPT-порта.
+namespace ELPTPortParameters {
+enum Enum {
+    int portNumber; /// Номер порта.
+};
+} // namespace ELPTPortParameters
 
-    } // namespace Driver
+} // namespace Driver
 } // namespace SDK
 
 //--------------------------------------------------------------------------------

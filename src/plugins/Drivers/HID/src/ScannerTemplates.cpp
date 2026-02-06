@@ -1,6 +1,5 @@
 /* @file Инстанцирование шаблонов OPOS-сканеров. */
 
-// System
 #include "../../../../modules/Hardware/Common/src/Base/DeviceBase.cpp"
 #include "../../../../modules/Hardware/Common/src/OPOS/OPOSPollingDeviceBase.cpp"
 #include "../../../../modules/Hardware/Common/src/Polling/PollingDeviceBase.cpp"

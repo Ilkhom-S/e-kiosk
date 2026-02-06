@@ -6,13 +6,13 @@
 #include <Hardware/Protocols/CashAcceptor/CCNetDataTypes.h>
 
 //--------------------------------------------------------------------------------
-class CCNetProtocol : public ProtocolBase
-{
-  public:
+class CCNetProtocol : public ProtocolBase {
+public:
     CCNetProtocol();
 
     /// Выполнить команду протокола.
-    TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData,
+    TResult processCommand(const QByteArray &aCommandData,
+                           QByteArray &aAnswerData,
                            const CCCNet::Commands::SData &aData);
 
     /// Установить адрес устройства.
@@ -24,7 +24,7 @@ class CCNetProtocol : public ProtocolBase
     /// Получить ответ.
     TResult getAnswer(QByteArray &aAnswerData, const CCCNet::Commands::SData &aData);
 
-  protected:
+protected:
     /// Подсчет контрольной суммы пакета данных.
     ushort calcCRC16(const QByteArray &aData);
 

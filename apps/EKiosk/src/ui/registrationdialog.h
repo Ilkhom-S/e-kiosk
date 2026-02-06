@@ -1,28 +1,22 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QPointer>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QMovie>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QMessageBox>
-#include <Common/QtHeadersEnd.h>
 
-// Project
 #include "createdialupconnection.h"
 #include "keypud.h"
 
-namespace Ui
-{
-    class RegistrationDialog;
+namespace Ui {
+class RegistrationDialog;
 }
 
-class RegistrationDialog : public QDialog
-{
+class RegistrationDialog : public QDialog {
     Q_OBJECT
 
-  public:
+public:
     explicit RegistrationDialog(QWidget *parent = 0);
     void showMsgDialog(QString title, QString text);
     void setDataListConnection(QStringList list);
@@ -36,7 +30,7 @@ class RegistrationDialog : public QDialog
 
     QStringList dialupDevice;
 
-  private:
+private:
     Ui::RegistrationDialog *ui;
 
     keyPud *KeyPud;
@@ -54,7 +48,7 @@ class RegistrationDialog : public QDialog
 
     QMovie *movie;
 
-  private slots:
+private slots:
     void on_btnNumTrmRegClear_clicked();
     void tabToRegistration1();
     void tabToRegistration2();
@@ -73,10 +67,17 @@ class RegistrationDialog : public QDialog
     void starttest();
     void tabChanged(int page);
 
-  signals:
+signals:
     void emitRegistrationData(QVariantMap data);
-    void emitStartTest(QString numTrm, QString pLogin, QString pPass, QString secretLogin, QString secretPass,
-                       QString conName, QString balanceReq, QString positionReq, QString numberReq);
+    void emitStartTest(QString numTrm,
+                       QString pLogin,
+                       QString pPass,
+                       QString secretLogin,
+                       QString secretPass,
+                       QString conName,
+                       QString balanceReq,
+                       QString positionReq,
+                       QString numberReq);
     void emitCloseForm();
     void emitCreateNewConnection(QVariantMap data);
 };

@@ -2,35 +2,28 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFuture>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <Common/ObjectPointer.h>
+
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        class ICore;
-    } // namespace PaymentProcessor
-    namespace Driver
-    {
-        class IDevice;
-        class IPrinter;
-    } // namespace Driver
+namespace SDK {
+namespace PaymentProcessor {
+class ICore;
+} // namespace PaymentProcessor
+namespace Driver {
+class IDevice;
+class IPrinter;
+} // namespace Driver
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class PrinterTest : public SDK::PaymentProcessor::IDeviceTest
-{
+class PrinterTest : public SDK::PaymentProcessor::IDeviceTest {
     Q_OBJECT
 
-  public:
+public:
     PrinterTest(SDK::Driver::IDevice *mDevice, SDK::PaymentProcessor::ICore *aCore);
 
     /// Возвращает имена и описания тестов.
@@ -48,10 +41,10 @@ class PrinterTest : public SDK::PaymentProcessor::IDeviceTest
     /// Возвращает true, если тест устройства возвращает результат теста
     virtual bool hasResult();
 
-  private slots:
+private slots:
     void onPrinted(bool aError);
 
-  private:
+private:
     ObjectPointer<SDK::Driver::IPrinter> mPrinter;
     SDK::PaymentProcessor::ICore *mCore;
     QFuture<bool> mTestResult;

@@ -7,93 +7,75 @@
 #include "libusb.h"
 #pragma warning(pop)
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QVariantMap>
-#include <Common/QtHeadersEnd.h>
 
-namespace USB
-{
-    /// Объект использования дескриптора.
-    namespace DescriptorUsage
-    {
-        const char Device[] = "device";
-        const char Interface[] = "interface";
-        const char Both[] = "device and interface";
-    } // namespace DescriptorUsage
+namespace USB {
+/// Объект использования дескриптора.
+namespace DescriptorUsage {
+const char Device[] = "device";
+const char Interface[] = "interface";
+const char Both[] = "device and interface";
+} // namespace DescriptorUsage
 
-    typedef QMap<uint8_t, QString> TProtocolData;
-    typedef QMap<uint8_t, TProtocolData> TSubClassData;
+typedef QMap<uint8_t, QString> TProtocolData;
+typedef QMap<uint8_t, TProtocolData> TSubClassData;
 
-    //--------------------------------------------------------------------------------
-    struct SClassData
-    {
-        QString usage;
-        QString description;
-        TSubClassData subData;
+//--------------------------------------------------------------------------------
+struct SClassData {
+    QString usage;
+    QString description;
+    TSubClassData subData;
 
-        SClassData()
-        {
-        }
-        SClassData(const QString &aUsage, const QString &aDescription) : usage(aUsage), description(aDescription)
-        {
-        }
-    };
+    SClassData() {}
+    SClassData(const QString &aUsage, const QString &aDescription)
+        : usage(aUsage), description(aDescription) {}
+};
 
-    typedef QMap<uint8_t, SClassData> TClassData;
-    typedef TClassData::iterator TClassDataIt;
+typedef QMap<uint8_t, SClassData> TClassData;
+typedef TClassData::iterator TClassDataIt;
 
-    //--------------------------------------------------------------------------------
-    class CClassDataIt : public TClassDataIt
-    {
-      public:
-        CClassDataIt(const TClassDataIt &aOther)
-        {
-            operator=(aOther);
-        }
+//--------------------------------------------------------------------------------
+class CClassDataIt : public TClassDataIt {
+public:
+    CClassDataIt(const TClassDataIt &aOther) { operator=(aOther); }
 
-        CClassDataIt &operator=(const TClassDataIt &aOther)
-        {
-            TClassDataIt *pSelf = dynamic_cast<TClassDataIt *>(this);
-            *pSelf = aOther;
+    CClassDataIt &operator=(const TClassDataIt &aOther) {
+        TClassDataIt *pSelf = dynamic_cast<TClassDataIt *>(this);
+        *pSelf = aOther;
 
-            return *this;
-        }
+        return *this;
+    }
 
-        CClassDataIt addData(uint8_t aSubCode, uint8_t aProtocolCode, QString aDescription)
-        {
-            this->value().subData[aSubCode][aProtocolCode] = aDescription.replace('\t', "");
+    CClassDataIt addData(uint8_t aSubCode, uint8_t aProtocolCode, QString aDescription) {
+        this->value().subData[aSubCode][aProtocolCode] = aDescription.replace('\t', "");
 
-            return *this;
-        }
-    };
+        return *this;
+    }
+};
 
-    //--------------------------------------------------------------------------------
-    class CClassData
-    {
-      public:
-        CClassData();
+//--------------------------------------------------------------------------------
+class CClassData {
+public:
+    CClassData();
 
-        QString getData(uint8_t aClass, uint8_t aSubClass, uint8_t aProtocol)
-        {
-            QString result = mData[aClass].description + ", descriptor usage - " + mData[aClass].usage;
-            // TODO: доделать локализацию данных девайса
+    QString getData(uint8_t aClass, uint8_t aSubClass, uint8_t aProtocol) {
+        QString result = mData[aClass].description + ", descriptor usage - " + mData[aClass].usage;
+        // TODO: доделать локализацию данных девайса
 
-            return result;
-        }
+        return result;
+    }
 
-      private:
-        CClassDataIt add(uint8_t aCode, const QString &aUsage, const QString &aDescription)
-        {
-            auto it = mData.insert(aCode, SClassData(aUsage, aDescription));
+private:
+    CClassDataIt add(uint8_t aCode, const QString &aUsage, const QString &aDescription) {
+        auto it = mData.insert(aCode, SClassData(aUsage, aDescription));
 
-            return it;
-        }
+        return it;
+    }
 
-        TClassData mData;
-    };
+    TClassData mData;
+};
 
-    static CClassData ClassData;
+static CClassData ClassData;
 } // namespace USB
 
 //--------------------------------------------------------------------------------

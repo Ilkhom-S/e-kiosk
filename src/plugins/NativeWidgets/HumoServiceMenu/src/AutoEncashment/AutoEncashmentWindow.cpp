@@ -1,17 +1,14 @@
 /* @file Виджет авто инкассации */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "AutoEncashmentWindow.h"
+
 #include <QtCore/QDateTime>
 #include <QtWidgets/QInputDialog>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Core/IService.h>
 #include <SDK/PaymentProcessor/Core/ReceiptTypes.h>
 
-// System
 #include "Backend/HardwareManager.h"
 #include "Backend/HumoServiceBackend.h"
 #include "Backend/PaymentManager.h"
@@ -20,25 +17,20 @@
 #include "GUI/MessageBox/MessageBox.h"
 #include "GUI/ServiceTags.h"
 
-// Project
-#include "AutoEncashmentWindow.h"
-
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-namespace CAutoEncashmentWindow
-{
-    // Максимальное время бездействия в окне авто инкассации.
-    const int AutoEncashmentIdleTimeout = 2 * 60 * 1000; // 2 минуты.
+namespace CAutoEncashmentWindow {
+// Максимальное время бездействия в окне авто инкассации.
+const int AutoEncashmentIdleTimeout = 2 * 60 * 1000; // 2 минуты.
 
-    // Интервал обновления текущей даты/времени на экране.
-    const int DateTimeRefreshInterval = 60 * 1000; // 1 минута
+// Интервал обновления текущей даты/времени на экране.
+const int DateTimeRefreshInterval = 60 * 1000; // 1 минута
 } // namespace CAutoEncashmentWindow
 
 //---------------------------------------------------------------------------
 AutoEncashmentWindow::AutoEncashmentWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : EncashmentWindow(aBackend, aParent)
-{
+    : EncashmentWindow(aBackend, aParent) {
     ui.setupUi(this);
 
     ui.lbCurrentDate->setText(QDateTime::currentDateTime().toString("dd/MM/yyyy, hh:mm"));
@@ -60,24 +52,24 @@ AutoEncashmentWindow::AutoEncashmentWindow(HumoServiceBackend *aBackend, QWidget
     connect(&mDateTimeTimer, SIGNAL(timeout()), SLOT(onDateTimeRefresh()));
 
     PaymentManager *paymentManager = mBackend->getPaymentManager();
-    connect(paymentManager, SIGNAL(receiptPrinted(qint64, bool)), SLOT(onReceiptPrinted(qint64, bool)));
+    connect(
+        paymentManager, SIGNAL(receiptPrinted(qint64, bool)), SLOT(onReceiptPrinted(qint64, bool)));
 
     mHistoryWindow = new EncashmentHistoryWindow(aBackend, this);
     ui.verticalLayoutHistory->insertWidget(0, mHistoryWindow, 1);
 }
 
 //---------------------------------------------------------------------------
-AutoEncashmentWindow::~AutoEncashmentWindow()
-{
-}
+AutoEncashmentWindow::~AutoEncashmentWindow() {}
 
 //---------------------------------------------------------------------------
-bool AutoEncashmentWindow::initialize()
-{
+bool AutoEncashmentWindow::initialize() {
     mBackend->getTerminalInfo(mTerminalInfo);
 
-    ui.lbTerminalNumber->setText(tr("#terminal_number") + mTerminalInfo[CServiceTags::TerminalNumber].toString());
-    ui.lbVersion->setText(tr("#software_version") + mTerminalInfo[CServiceTags::SoftwareVersion].toString());
+    ui.lbTerminalNumber->setText(tr("#terminal_number") +
+                                 mTerminalInfo[CServiceTags::TerminalNumber].toString());
+    ui.lbVersion->setText(tr("#software_version") +
+                          mTerminalInfo[CServiceTags::SoftwareVersion].toString());
     ui.stackedWidget->setCurrentIndex(0);
 
     mIdleTimer.start();
@@ -89,22 +81,21 @@ bool AutoEncashmentWindow::initialize()
 }
 
 //---------------------------------------------------------------------------
-bool AutoEncashmentWindow::shutdown()
-{
+bool AutoEncashmentWindow::shutdown() {
     deactivate();
 
     return true;
 }
 
 //---------------------------------------------------------------------------
-bool AutoEncashmentWindow::activate()
-{
-    connect(mBackend->getHardwareManager(),
-            SIGNAL(deviceStatusChanged(const QString &, const QString &, const QString &,
-                                       SDK::Driver::EWarningLevel::Enum)),
-            this,
-            SLOT(onDeviceStatusChanged(const QString &, const QString &, const QString &,
-                                       SDK::Driver::EWarningLevel::Enum)));
+bool AutoEncashmentWindow::activate() {
+    connect(
+        mBackend->getHardwareManager(),
+        SIGNAL(deviceStatusChanged(
+            const QString &, const QString &, const QString &, SDK::Driver::EWarningLevel::Enum)),
+        this,
+        SLOT(onDeviceStatusChanged(
+            const QString &, const QString &, const QString &, SDK::Driver::EWarningLevel::Enum)));
 
     updateUI();
 
@@ -112,22 +103,23 @@ bool AutoEncashmentWindow::activate()
 }
 
 //---------------------------------------------------------------------------
-bool AutoEncashmentWindow::deactivate()
-{
-    disconnect(mBackend->getHardwareManager(),
-               SIGNAL(deviceStatusChanged(const QString &, const QString &, const QString &,
-                                          SDK::Driver::EWarningLevel::Enum)),
-               this,
-               SLOT(onDeviceStatusChanged(const QString &, const QString &, const QString &,
-                                          SDK::Driver::EWarningLevel::Enum)));
+bool AutoEncashmentWindow::deactivate() {
+    disconnect(
+        mBackend->getHardwareManager(),
+        SIGNAL(deviceStatusChanged(
+            const QString &, const QString &, const QString &, SDK::Driver::EWarningLevel::Enum)),
+        this,
+        SLOT(onDeviceStatusChanged(
+            const QString &, const QString &, const QString &, SDK::Driver::EWarningLevel::Enum)));
 
     return EncashmentWindow::deactivate();
 }
 
 //------------------------------------------------------------------------
-void AutoEncashmentWindow::onDeviceStatusChanged(const QString &aConfigName, const QString &aStatusString,
-                                                 const QString &aStatusColor, SDK::Driver::EWarningLevel::Enum aLevel)
-{
+void AutoEncashmentWindow::onDeviceStatusChanged(const QString &aConfigName,
+                                                 const QString &aStatusString,
+                                                 const QString &aStatusColor,
+                                                 SDK::Driver::EWarningLevel::Enum aLevel) {
     Q_UNUSED(aConfigName);
     Q_UNUSED(aStatusString);
     Q_UNUSED(aStatusColor);
@@ -137,32 +129,29 @@ void AutoEncashmentWindow::onDeviceStatusChanged(const QString &aConfigName, con
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::updateUI()
-{
+void AutoEncashmentWindow::updateUI() {
     ui.btnEncashment->setEnabled(true);
 
-    ui.btnEncashmentAndZReport->setEnabled(mBackend->getHardwareManager()->isFiscalPrinterPresent(true));
+    ui.btnEncashmentAndZReport->setEnabled(
+        mBackend->getHardwareManager()->isFiscalPrinterPresent(true));
 
     mBackend->getPaymentManager()->useHardwareFiscalPrinter(
         mBackend->getHardwareManager()->isFiscalPrinterPresent(false));
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onEncashment()
-{
+void AutoEncashmentWindow::onEncashment() {
     mEncashmentWithZReport = false;
 
     doEncashment();
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onTestPrinter()
-{
+void AutoEncashmentWindow::onTestPrinter() {
     auto paymentManager = mBackend->getPaymentManager();
     bool isPrinterOK = paymentManager->canPrint(PPSDK::CReceiptType::Encashment);
 
-    if (!isPrinterOK)
-    {
+    if (!isPrinterOK) {
         GUI::MessageBox::warning(tr("#printer_failed"));
 
         return;
@@ -172,16 +161,14 @@ void AutoEncashmentWindow::onTestPrinter()
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onEncashmentAndZReport()
-{
+void AutoEncashmentWindow::onEncashmentAndZReport() {
     mEncashmentWithZReport = true;
 
     doEncashment();
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onEnterServiceMenu()
-{
+void AutoEncashmentWindow::onEnterServiceMenu() {
     mIdleTimer.stop();
 
     QVariantMap params;
@@ -192,20 +179,17 @@ void AutoEncashmentWindow::onEnterServiceMenu()
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onShowHistory()
-{
+void AutoEncashmentWindow::onShowHistory() {
     ui.stackedWidget->setCurrentIndex(1);
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onBack()
-{
+void AutoEncashmentWindow::onBack() {
     ui.stackedWidget->setCurrentIndex(0);
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onExit()
-{
+void AutoEncashmentWindow::onExit() {
     mIdleTimer.stop();
 
     QVariantMap params;
@@ -216,16 +200,13 @@ void AutoEncashmentWindow::onExit()
 }
 
 //------------------------------------------------------------------------
-void AutoEncashmentWindow::onDateTimeRefresh()
-{
+void AutoEncashmentWindow::onDateTimeRefresh() {
     ui.lbCurrentDate->setText(QDateTime::currentDateTime().toString("dd/MM/yyyy, hh:mm"));
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onIdleTimeout()
-{
-    if (mInputBox)
-    {
+void AutoEncashmentWindow::onIdleTimeout() {
+    if (mInputBox) {
         mInputBox->deleteLater();
         mInputBox = nullptr;
     }
@@ -238,10 +219,8 @@ void AutoEncashmentWindow::onIdleTimeout()
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashmentWindow::onPanelChanged(int aIndex)
-{
-    if (aIndex != 1)
-    {
+void AutoEncashmentWindow::onPanelChanged(int aIndex) {
+    if (aIndex != 1) {
         return;
     }
 

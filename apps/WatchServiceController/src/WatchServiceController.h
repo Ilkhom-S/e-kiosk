@@ -2,36 +2,27 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QSystemTrayIcon>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
-#include <WatchServiceClient/IWatchServiceClient.h>
 #include <Common/ILog.h>
 
+#include <WatchServiceClient/IWatchServiceClient.h>
+
 //----------------------------------------------------------------------------
-class WatchServiceController : public QObject
-{
+class WatchServiceController : public QObject {
     Q_OBJECT
 
     // Последняя команда выполненная пользователем
-    enum LastCommand
-    {
-        Unknown,
-        Start,
-        Stop
-    };
+    enum LastCommand { Unknown, Start, Stop };
 
-  public:
+public:
     WatchServiceController();
     ~WatchServiceController();
 
-  private:
+private:
     ILog *getLog();
 
     // Helper to create template icons for macOS
@@ -43,7 +34,7 @@ class WatchServiceController : public QObject
     // Helper to get platform-specific executable path
     QString getExecutablePath(const QString &baseName) const;
 
-  private slots:
+private slots:
     // Попытка соединения со сторожевым сервисом.
     void onCheck();
 
@@ -67,11 +58,12 @@ class WatchServiceController : public QObject
     void onStartFirstSetupClicked();
     void onStartServiceClickedDirect();
 
-  private:
+private:
     QSharedPointer<IWatchServiceClient> mClient;
 
     LastCommand mLastCommand;
-    bool mPreviousConnectionState; // Track previous connection state to avoid unnecessary UI updates
+    bool
+        mPreviousConnectionState; // Track previous connection state to avoid unnecessary UI updates
 
     QTimer mTimer;
 

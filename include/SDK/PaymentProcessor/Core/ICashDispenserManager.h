@@ -3,91 +3,74 @@
 #pragma once
 
 // Stl
-#include <tuple>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QtGlobal>
 #include <QtCore/QObject>
 #include <QtCore/QVector>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QtGlobal>
 
-// SDK
 #include <SDK/PaymentProcessor/Payment/Amount.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
+#include <tuple>
 
-        //---------------------------------------------------------------------------
-        struct SCashUnit
-        {
-            QString currencyName;
-            int nominal;
-            int count;
+namespace SDK {
+namespace PaymentProcessor {
 
-            SCashUnit() : nominal(0), count(0)
-            {
-            }
-            SCashUnit(const QString &aCurrencyName, int aNominal = 0, int aCount = 0)
-                : currencyName(aCurrencyName), nominal(aNominal), count(aCount)
-            {
-            }
+//---------------------------------------------------------------------------
+struct SCashUnit {
+    QString currencyName;
+    int nominal;
+    int count;
 
-            bool operator==(const SCashUnit &aUnit) const
-            {
-                return currencyName == aUnit.currencyName && nominal == aUnit.nominal && count == aUnit.count;
-            }
+    SCashUnit() : nominal(0), count(0) {}
+    SCashUnit(const QString &aCurrencyName, int aNominal = 0, int aCount = 0)
+        : currencyName(aCurrencyName), nominal(aNominal), count(aCount) {}
 
-            int amount() const
-            {
-                return nominal * count;
-            }
-        };
+    bool operator==(const SCashUnit &aUnit) const {
+        return currencyName == aUnit.currencyName && nominal == aUnit.nominal &&
+               count == aUnit.count;
+    }
 
-        //------------------------------------------------------------------------------
-        typedef QVector<SCashUnit> TCashUnitList;
-        typedef TCashUnitList::iterator TCashUnitListIt;
-        typedef QMap<QString, TCashUnitList> TCashUnitsState;
+    int amount() const { return nominal * count; }
+};
 
-        //------------------------------------------------------------------------------
-        class ICashDispenserManager : public QObject
-        {
-            Q_OBJECT
+//------------------------------------------------------------------------------
+typedef QVector<SCashUnit> TCashUnitList;
+typedef TCashUnitList::iterator TCashUnitListIt;
+typedef QMap<QString, TCashUnitList> TCashUnitsState;
 
-          public:
-            /// Проверка, возможна ли выдача наличных средств
-            virtual SDK::PaymentProcessor::TPaymentAmount canDispense(TPaymentAmount aRequiredAmount) = 0;
+//------------------------------------------------------------------------------
+class ICashDispenserManager : public QObject {
+    Q_OBJECT
 
-            /// Выдать указанную сумму (асинхронная операция)
-            virtual void dispense(TPaymentAmount aAmount) = 0;
+public:
+    /// Проверка, возможна ли выдача наличных средств
+    virtual SDK::PaymentProcessor::TPaymentAmount canDispense(TPaymentAmount aRequiredAmount) = 0;
 
-            /// Получить список номиналов для всех кассетниц всех устройств и захватить мир
-            virtual TCashUnitsState getCashUnitsState() = 0;
+    /// Выдать указанную сумму (асинхронная операция)
+    virtual void dispense(TPaymentAmount aAmount) = 0;
 
-            /// Установить список номиналов для всех кассетниц
-            virtual bool setCashUnitsState(const QString &aDeviceConfigurationName,
-                                           const TCashUnitList &aCashUnitList) = 0;
+    /// Получить список номиналов для всех кассетниц всех устройств и захватить мир
+    virtual TCashUnitsState getCashUnitsState() = 0;
 
-          signals:
-            /// Выдана указанная сумма
-            void dispensed(double aAmount);
+    /// Установить список номиналов для всех кассетниц
+    virtual bool setCashUnitsState(const QString &aDeviceConfigurationName,
+                                   const TCashUnitList &aCashUnitList) = 0;
 
-            /// Сигнал об активности. Пример: купюра втянута в ящик сброса.
-            void activity();
+signals:
+    /// Выдана указанная сумма
+    void dispensed(double aAmount);
 
-            /// Сигнал срабатывает при ошибке выдачи средств. В aError находится нелокализованная ошибка.
-            void error(QString aError);
+    /// Сигнал об активности. Пример: купюра втянута в ящик сброса.
+    void activity();
 
-          protected:
-            virtual ~ICashDispenserManager()
-            {
-            }
-        };
+    /// Сигнал срабатывает при ошибке выдачи средств. В aError находится нелокализованная ошибка.
+    void error(QString aError);
 
-        //------------------------------------------------------------------------------
-    } // namespace PaymentProcessor
+protected:
+    virtual ~ICashDispenserManager() {}
+};
+
+//------------------------------------------------------------------------------
+} // namespace PaymentProcessor
 } // namespace SDK
 
 Q_DECLARE_METATYPE(SDK::PaymentProcessor::SCashUnit);

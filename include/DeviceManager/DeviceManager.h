@@ -2,33 +2,29 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QObject>
 #include <QtCore/QList>
-#include <QtCore/QSet>
-#include <QtCore/QStringList>
 #include <QtCore/QMap>
 #include <QtCore/QMutex>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QObject>
+#include <QtCore/QSet>
+#include <QtCore/QStringList>
 
 // Plugin SDK
 #include <SDK/Plugins/IPluginLoader.h>
 
 // Driver SDK
-#include <SDK/Drivers/IDevice.h>
-
 #include <Common/ILogable.h>
+
+#include <SDK/Drivers/IDevice.h>
 
 typedef QMultiMap<SDK::Driver::IDevice *, SDK::Driver::IDevice *> TDeviceDependencyMap;
 typedef QPair<QString, SDK::Driver::IDevice *> TNamedDevice;
 
 //--------------------------------------------------------------------------------
-class DeviceManager : public QObject, public ILogable
-{
+class DeviceManager : public QObject, public ILogable {
     Q_OBJECT
 
-  public:
+public:
     DeviceManager(SDK::Plugin::IPluginLoader *aPluginLoader);
     ~DeviceManager();
 
@@ -41,15 +37,18 @@ class DeviceManager : public QObject, public ILogable
     /// Ищет все подключенные устройства без сохранения конфигурации.
     QStringList detect(const QString &aDeviceType);
 
-    /// Подключение/захват устройства, c заданной конфигурацией. По умолчанию конфигурация грузится из конфига плагина.
-    SDK::Driver::IDevice *acquireDevice(const QString &aInstancePath, const QString &aConfigPath = "");
+    /// Подключение/захват устройства, c заданной конфигурацией. По умолчанию конфигурация грузится
+    /// из конфига плагина.
+    SDK::Driver::IDevice *acquireDevice(const QString &aInstancePath,
+                                        const QString &aConfigPath = "");
 
     /// Отключение/освобождение указанного устройства.
     void releaseDevice(SDK::Driver::IDevice *aDevice);
 
     /// Создание устройства. Возвращает имя новой конфигурации.
     Q_INVOKABLE
-    TNamedDevice createDevice(const QString &aDriverPath, const QVariantMap &aConfig, bool aDetecting = false);
+    TNamedDevice
+    createDevice(const QString &aDriverPath, const QVariantMap &aConfig, bool aDetecting = false);
 
     /// Сохранить конфигурацию устройства.
     void saveConfiguration(SDK::Driver::IDevice *aDevice);
@@ -75,25 +74,28 @@ class DeviceManager : public QObject, public ILogable
     /// Получить список возможных значений для параметров устройств.
     SDK::Plugin::TParameterList getDriverParameters(const QString &aDriverPath) const;
 
-    /// Проверить правильность путей плагинов драйверов. Workaround для обратной совместимости при накате обновления без
-    /// авто поиска драйверов, при изменении путей.
+    /// Проверить правильность путей плагинов драйверов. Workaround для обратной совместимости при
+    /// накате обновления без авто поиска драйверов, при изменении путей.
     // TODO: убрать после реализации авто поиска через мониторинг.
     void checkInstancePath(QString &aInstancePath);
     void checkITInstancePath(QString &aInstancePath);
 
-    /// Попробовать изменить путь плагина драйвера. Workaround для обратной совместимости при накате обновления без
-    /// авто поиска драйверов, при изменении путей.
+    /// Попробовать изменить путь плагина драйвера. Workaround для обратной совместимости при накате
+    /// обновления без авто поиска драйверов, при изменении путей.
     typedef QSet<QString> TNewPaths;
     typedef QMap<QString, TNewPaths> TPaths;
-    void changeInstancePath(QString &aInstancePath, const QString &aConfigPath, const TPaths &aPaths);
+    void
+    changeInstancePath(QString &aInstancePath, const QString &aConfigPath, const TPaths &aPaths);
 
-  private:
+private:
     /// Пробует найти устройство aDevicePath.
     TNamedDevice findDevice(SDK::Driver::IDevice *aRequired, const QStringList &aDevicesToFind);
 
     /// Пробует найти устройство aDriverName, не имеющее зависимых устройств
     typedef QList<TNamedDevice> TFallbackDevices;
-    void findSimpleDevice(const QString &aDriverName, QStringList &aResult, TFallbackDevices &aFallbackDevices,
+    void findSimpleDevice(const QString &aDriverName,
+                          QStringList &aResult,
+                          TFallbackDevices &aFallbackDevices,
                           QStringList &aNonMarketDetectedDriverNames);
 
     /// Было ли устройство данного типа уже найдено.
@@ -117,18 +119,18 @@ class DeviceManager : public QObject, public ILogable
     /// Логировать данные зависимых устройств.
     void logRequiredDeviceData();
 
-  signals:
+signals:
     /// Сигнал об обнаружении нового устройства.
     void deviceDetected(const QString &aConfigName, SDK::Driver::IDevice *device);
 
     /// Сигнал прогресса.
     void progress(int aCurrent, int aMax);
 
-  private slots:
+private slots:
     /// Обновить конфигурацию устройства (без зависимых устройств).
     void onConfigurationChanged();
 
-  private:
+private:
     SDK::Plugin::IPluginLoader *mPluginLoader;
 
     /// Список свободных системных зависимых устройств

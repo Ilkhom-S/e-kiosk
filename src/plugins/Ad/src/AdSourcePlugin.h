@@ -2,25 +2,19 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
-#include <SDK/Plugins/IPlugin.h>
-#include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/GUI/IAdSource.h>
+#include <SDK/PaymentProcessor/Core/ICore.h>
+#include <SDK/Plugins/IPlugin.h>
 
-// Modules
 #include <AdBackend/Client.h>
 
 //------------------------------------------------------------------------------
-class AdSourcePlugin : public QObject, public SDK::GUI::IAdSource, public SDK::Plugin::IPlugin
-{
+class AdSourcePlugin : public QObject, public SDK::GUI::IAdSource, public SDK::Plugin::IPlugin {
     Q_OBJECT
 
-  public:
+public:
     //---------------------------------------------------------------------------
     // Конструктор плагина источника рекламы
     AdSourcePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
@@ -45,7 +39,8 @@ class AdSourcePlugin : public QObject, public SDK::GUI::IAdSource, public SDK::P
     virtual QString getConfigurationName() const;
 
     //---------------------------------------------------------------------------
-    // Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы)
+    // Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
+    // программы)
     virtual bool saveConfiguration();
 
     //---------------------------------------------------------------------------
@@ -56,7 +51,7 @@ class AdSourcePlugin : public QObject, public SDK::GUI::IAdSource, public SDK::P
 
 #pragma region SDK::GUI::IAdSource interface
 
-  public:
+public:
     //---------------------------------------------------------------------------
     // Получить содержимое рекламного контента
     virtual QString getContent(const QString &aType) const;
@@ -67,7 +62,7 @@ class AdSourcePlugin : public QObject, public SDK::GUI::IAdSource, public SDK::P
 
 #pragma endregion
 
-  protected:
+protected:
     QSharedPointer<Ad::Client> mClient;
 
     SDK::Plugin::IEnvironment *mFactory;

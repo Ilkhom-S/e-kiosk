@@ -1,39 +1,32 @@
-// System
-#include "MessageQueue/MessageQueueConstants.h"
-
-// Project
 #include "MessageQueueServer.h"
 
-MessageQueueServer::MessageQueueServer(const QString &aQueueName)
-{
+#include "MessageQueue/MessageQueueConstants.h"
+
+MessageQueueServer::MessageQueueServer(const QString &aQueueName) {
     mLog = ILog::getInstance(CIMessageQueueServer::DefaultLog);
 
     mQueueName = aQueueName;
 }
 
 //----------------------------------------------------------------------------
-MessageQueueServer::MessageQueueServer(const QString &aQueueName, ILog *aLog)
-{
+MessageQueueServer::MessageQueueServer(const QString &aQueueName, ILog *aLog) {
     mLog = aLog;
 
     mQueueName = aQueueName;
 }
 
 //----------------------------------------------------------------------------
-MessageQueueServer::~MessageQueueServer()
-{
-}
+MessageQueueServer::~MessageQueueServer() {}
 
 //----------------------------------------------------------------------------
-bool MessageQueueServer::init()
-{
+bool MessageQueueServer::init() {
     // No initialization needed for signal mappers in Qt6 - using lambda connections
-    if (!isListening())
-    {
+    if (!isListening()) {
         bool result = listen(QHostAddress::LocalHost, static_cast<qint16>(mQueueName.toInt()));
-        if (!result)
-        {
-            LOG(mLog, LogLevel::Error, QString("Failed to listen on port %1: %2").arg(mQueueName).arg(errorString()));
+        if (!result) {
+            LOG(mLog,
+                LogLevel::Error,
+                QString("Failed to listen on port %1: %2").arg(mQueueName).arg(errorString()));
         }
         return result;
     }
@@ -42,30 +35,25 @@ bool MessageQueueServer::init()
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::stop()
-{
+void MessageQueueServer::stop() {
     QTcpServer::close();
 }
 
 //----------------------------------------------------------------------------
-bool MessageQueueServer::subscribeOnMessageReceived(QObject *aObject)
-{
-    return connect(this, SIGNAL(onMessageReceived(QByteArray)), aObject, SLOT(onMessageReceived(QByteArray)));
+bool MessageQueueServer::subscribeOnMessageReceived(QObject *aObject) {
+    return connect(
+        this, SIGNAL(onMessageReceived(QByteArray)), aObject, SLOT(onMessageReceived(QByteArray)));
 }
 
 //----------------------------------------------------------------------------
-bool MessageQueueServer::subscribeOnDisconnected(QObject *aObject)
-{
+bool MessageQueueServer::subscribeOnDisconnected(QObject *aObject) {
     return connect(this, SIGNAL(onDisconnected()), aObject, SLOT(onDisconnected()));
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::sendMessage(const QByteArray &aMessage)
-{
-    foreach (QTcpSocket *socket, mSockets.keys())
-    {
-        if (socket->state() == QTcpSocket::ConnectedState)
-        {
+void MessageQueueServer::sendMessage(const QByteArray &aMessage) {
+    foreach (QTcpSocket *socket, mSockets.keys()) {
+        if (socket->state() == QTcpSocket::ConnectedState) {
             socket->write(aMessage + '\0');
             socket->flush();
         }
@@ -73,44 +61,46 @@ void MessageQueueServer::sendMessage(const QByteArray &aMessage)
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::incomingConnection(int aSocketDescriptor)
-{
-    LOG(mLog, LogLevel::Normal,
-        QString("New incoming connection... Socket with descriptor %1 has been connected.").arg(aSocketDescriptor));
+void MessageQueueServer::incomingConnection(int aSocketDescriptor) {
+    LOG(mLog,
+        LogLevel::Normal,
+        QString("New incoming connection... Socket with descriptor %1 has been connected.")
+            .arg(aSocketDescriptor));
 
     QTcpSocket *newSocket = new QTcpSocket(this);
     newSocket->setSocketDescriptor(aSocketDescriptor);
 
     // Use lambda connections instead of QSignalMapper for Qt6 compatibility
-    connect(newSocket, &QTcpSocket::disconnected, this, [this, newSocket]() { onSocketDisconnected(newSocket); });
+    connect(newSocket, &QTcpSocket::disconnected, this, [this, newSocket]() {
+        onSocketDisconnected(newSocket);
+    });
 
-    connect(newSocket, &QTcpSocket::readyRead, this, [this, newSocket]() { onSocketReadyRead(newSocket); });
+    connect(newSocket, &QTcpSocket::readyRead, this, [this, newSocket]() {
+        onSocketReadyRead(newSocket);
+    });
 
     mSockets[newSocket] = aSocketDescriptor;
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::onSocketDisconnected()
-{
+void MessageQueueServer::onSocketDisconnected() {
     // This method is no longer used with lambda connections
     // Kept for compatibility but should not be called
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::onSocketReadyRead()
-{
+void MessageQueueServer::onSocketReadyRead() {
     // This method is no longer used with lambda connections
     // Kept for compatibility but should not be called
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::onSocketDisconnected(QTcpSocket *socket)
-{
+void MessageQueueServer::onSocketDisconnected(QTcpSocket *socket) {
     emit onDisconnected();
 
-    if (socket)
-    {
-        LOG(mLog, LogLevel::Normal,
+    if (socket) {
+        LOG(mLog,
+            LogLevel::Normal,
             QString("Socket with descriptor %1 has been disconnected.").arg(mSockets[socket]));
 
         mBuffers.remove(mSockets[socket]);
@@ -121,16 +111,13 @@ void MessageQueueServer::onSocketDisconnected(QTcpSocket *socket)
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::onSocketReadyRead(QTcpSocket *socket)
-{
-    if (!socket)
-    {
+void MessageQueueServer::onSocketReadyRead(QTcpSocket *socket) {
+    if (!socket) {
         LOG(mLog, LogLevel::Error, "Wrong socket passed to onSocketReadyRead slot...");
         return;
     }
 
-    while (socket->bytesAvailable() > 0)
-    {
+    while (socket->bytesAvailable() > 0) {
         QByteArray newData = socket->readAll();
 
         quintptr socketDescriptor = socket->socketDescriptor();
@@ -140,11 +127,9 @@ void MessageQueueServer::onSocketReadyRead(QTcpSocket *socket)
 }
 
 //----------------------------------------------------------------------------
-QByteArray MessageQueueServer::parseInputBuffer(QByteArray aBuffer)
-{
+QByteArray MessageQueueServer::parseInputBuffer(QByteArray aBuffer) {
     int messageEnd = aBuffer.indexOf('\0');
-    while (messageEnd != -1)
-    {
+    while (messageEnd != -1) {
         QByteArray newMessageData = aBuffer.left(messageEnd);
 
         aBuffer = aBuffer.right(aBuffer.size() - messageEnd - 1);

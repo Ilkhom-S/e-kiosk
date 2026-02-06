@@ -1,19 +1,18 @@
 /* @file Реализация интерфейса SysUtils для принтеров (Linux/macOS).
  */
 
-#include <SysUtils/ISysUtils.h>
-#include "SystemPrinterStatusCodes.h"
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QProcess>
-#include <QtCore/QVariantMap>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
+#include <QtCore/QProcess>
 #include <QtCore/QTextStream>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QVariantMap>
+
+#include <SysUtils/ISysUtils.h>
+
+#include "SystemPrinterStatusCodes.h"
 
 //---------------------------------------------------------------------------
-QVariantMap ISysUtils::getPrinterData(const QString &aPrinterName)
-{
+QVariantMap ISysUtils::getPrinterData(const QString &aPrinterName) {
 #if defined(__linux__) || defined(__APPLE__)
     QVariantMap result;
     QString cmd = QString("lpstat -l -p %1").arg(aPrinterName);
@@ -22,8 +21,7 @@ QVariantMap ISysUtils::getPrinterData(const QString &aPrinterName)
         return result;
     char buffer[512];
     QString output;
-    while (fgets(buffer, sizeof(buffer), fp))
-    {
+    while (fgets(buffer, sizeof(buffer), fp)) {
         output += QString::fromLocal8Bit(buffer);
     }
     pclose(fp);
@@ -46,9 +44,9 @@ QVariantMap ISysUtils::getPrinterData(const QString &aPrinterName)
 }
 
 //---------------------------------------------------------------------------
-void ISysUtils::getPrinterStatus(const QString &aPrinterName, TStatusCodes &aStatusCodes,
-                                 TStatusGroupNames &aGroupNames)
-{
+void ISysUtils::getPrinterStatus(const QString &aPrinterName,
+                                 TStatusCodes &aStatusCodes,
+                                 TStatusGroupNames &aGroupNames) {
 #if defined(__linux__) || defined(__APPLE__)
     aStatusCodes.clear();
     aGroupNames.clear();
@@ -58,8 +56,7 @@ void ISysUtils::getPrinterStatus(const QString &aPrinterName, TStatusCodes &aSta
         return;
     char buffer[512];
     QString output;
-    while (fgets(buffer, sizeof(buffer), fp))
-    {
+    while (fgets(buffer, sizeof(buffer), fp)) {
         output += QString::fromLocal8Bit(buffer);
     }
     pclose(fp);
@@ -81,13 +78,11 @@ void ISysUtils::getPrinterStatus(const QString &aPrinterName, TStatusCodes &aSta
 }
 
 //---------------------------------------------------------------------------
-bool ISysUtils::setPrintingQueuedMode(const QString &aPrinterName, QString &aErrorMessage)
-{
+bool ISysUtils::setPrintingQueuedMode(const QString &aPrinterName, QString &aErrorMessage) {
 #if defined(__linux__) || defined(__APPLE__)
     QString cmd = QString("lpadmin -p %1 -E").arg(aPrinterName);
     int ret = system(cmd.toUtf8().constData());
-    if (ret != 0)
-    {
+    if (ret != 0) {
         aErrorMessage = QString("lpadmin failed: %1").arg(ret);
         return false;
     }

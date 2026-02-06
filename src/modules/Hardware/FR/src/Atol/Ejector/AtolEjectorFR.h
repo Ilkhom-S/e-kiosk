@@ -7,12 +7,11 @@
 #include "AtolEjectorDataTypes.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class AtolEjectorFR : public T
-{
-  public:
+template <class T> class AtolEjectorFR : public T {
+public:
     AtolEjectorFR();
 
-  protected:
+protected:
     /// Напечатать картинку.
     virtual bool printImage(const QImage &aImage, const Tags::TTypes &aTags);
 

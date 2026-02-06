@@ -5,16 +5,15 @@
 #include <Hardware/Common/ProtocolBase.h>
 
 //--------------------------------------------------------------------------------
-class ID003Protocol : public ProtocolBase
-{
-  public:
+class ID003Protocol : public ProtocolBase {
+public:
     /// Выполнить команду протокола.
     TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData);
 
     /// Отсылка ACK.
     bool sendACK();
 
-  protected:
+protected:
     /// Упаковка команды с данными.
     void pack(QByteArray &aCommandData);
 

@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
 
 #ifdef Q_OS_WIN
 #define NOMINMAX

@@ -2,37 +2,30 @@
 
 #pragma once
 
-// Modules
+#include "../AtolFRConstants.h"
+#include "../AtolModelData.h"
 #include "Hardware/FR/PortFRBase.h"
 
-// Project
-#include "../AtolModelData.h"
-#include "../AtolFRConstants.h"
-
-class AtolSeriesType
-{
-};
+class AtolSeriesType {};
 
 //--------------------------------------------------------------------------------
-class AtolFRBase : public TSerialFRBase
-{
-  public:
+class AtolFRBase : public TSerialFRBase {
+public:
     typedef AtolSeriesType TSeriesType;
 
     AtolFRBase();
 
     /// Готов ли к обработке данной фискальной команды.
-    virtual bool
-    isFiscalReady(bool aOnline,
-                  SDK::Driver::EFiscalPrinterCommand::Enum aCommand = SDK::Driver::EFiscalPrinterCommand::Sale);
+    virtual bool isFiscalReady(bool aOnline,
+                               SDK::Driver::EFiscalPrinterCommand::Enum aCommand =
+                                   SDK::Driver::EFiscalPrinterCommand::Sale);
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
     /// Получить ключ модели для идентификации.
-    virtual CAtolFR::TModelKey getModelKey(const QByteArray & /*aAnswer*/)
-    {
+    virtual CAtolFR::TModelKey getModelKey(const QByteArray & /*aAnswer*/) {
         return CAtolFR::TModelKey();
     }
 
@@ -61,7 +54,8 @@ class AtolFRBase : public TSerialFRBase
     virtual bool printLine(const QByteArray &aString);
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData,
+    virtual bool performFiscal(const QStringList &aReceipt,
+                               const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
     /// Печать Z отчета.
@@ -92,20 +86,19 @@ class AtolFRBase : public TSerialFRBase
     virtual bool getCommonStatus(TStatusCodes &aStatusCodes);
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult execCommand(const QByteArray &aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
 
     /// Выполнить команду.
-    virtual TResult performCommand(const QByteArray & /*aCommandData*/, QByteArray & /*aAnswer*/, int /*aTimeout*/)
-    {
+    virtual TResult performCommand(const QByteArray & /*aCommandData*/,
+                                   QByteArray & /*aAnswer*/,
+                                   int /*aTimeout*/) {
         return CommandResult::NoAnswer;
     }
 
     /// Войти в расширенный режим снятия Z-отчетов.
-    virtual bool enterExtendedMode()
-    {
-        return true;
-    }
+    virtual bool enterExtendedMode() { return true; }
 
     /// Открыть чек.
     virtual bool openDocument(SDK::Driver::EPayOffTypes::Enum aPayOffType);
@@ -126,8 +119,10 @@ class AtolFRBase : public TSerialFRBase
     virtual void processDeviceData();
 
     /// Проверить налоговую ставку.
-    bool checkTaxValue(SDK::Driver::TVAT aVAT, CFR::Taxes::SData &aData,
-                       const CAtolFR::FRParameters::TData &aFRParameterData, bool aCanCorrectTaxValue);
+    bool checkTaxValue(SDK::Driver::TVAT aVAT,
+                       CFR::Taxes::SData &aData,
+                       const CAtolFR::FRParameters::TData &aFRParameterData,
+                       bool aCanCorrectTaxValue);
 
     /// Получить данные о текущей смене.
     bool getLastSessionDT(QDateTime &aLastSessionDT);
@@ -163,7 +158,9 @@ class AtolFRBase : public TSerialFRBase
     bool setFRParameter(const CAtolFR::FRParameters::SData &aData, const QVariant &aValue);
 
     /// Вернуть регистр ФР.
-    TResult getRegister(const QString &aRegister, QByteArray &aData, char aParameter1 = ASCII::NUL,
+    TResult getRegister(const QString &aRegister,
+                        QByteArray &aData,
+                        char aParameter1 = ASCII::NUL,
                         char aParameter2 = ASCII::NUL);
 
     /// После подачи команды X-отчета ждем смены режима.

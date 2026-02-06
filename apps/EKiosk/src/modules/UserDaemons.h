@@ -1,25 +1,23 @@
 #pragma once
 
-// Project
 #include "SendRequest.h"
 
 class SendRequest;
 
-class UserDaemons : public SendRequest
-{
+class UserDaemons : public SendRequest {
     Q_OBJECT
 
-  public:
+public:
     UserDaemons(QObject *parent = 0);
 
-  private slots:
+private slots:
     void resendRequest();
     void setDataNote(const QDomNode &domElement);
 
-  public slots:
+public slots:
     void sendUserDataRequest(QString account, QString prvId);
 
-  private:
+private:
     void parcerNote(const QDomNode &domElement);
 
     bool resultCode;
@@ -31,6 +29,6 @@ class UserDaemons : public SendRequest
     QString login;
     QString pass;
 
-  signals:
+signals:
     void emit_UserData(QString data);
 };

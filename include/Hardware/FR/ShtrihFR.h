@@ -6,18 +6,18 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола ShtrihFR.
-class ShtrihFRProtocol : public ProtocolBase
-{
-  public:
+class ShtrihFRProtocol : public ProtocolBase {
+public:
     ShtrihFRProtocol();
 
     /// Выполнить команду.
-    TResult processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, int aTimeout);
+    TResult
+    processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, int aTimeout);
 
     /// Установить таймаут технологических посылок.
     void setTransportTimeout(int aTimeout);
 
-  private:
+private:
     /// Подсчет CRC.
     uchar calcCRC(const QByteArray &aData);
 

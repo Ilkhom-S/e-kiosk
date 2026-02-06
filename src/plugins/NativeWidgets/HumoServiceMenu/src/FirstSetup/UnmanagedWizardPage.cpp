@@ -1,36 +1,27 @@
 /* @file Окно настройки unmanaged. */
 
-// Проект
-
-// Project
 #include "UnmanagedWizardPage.h"
 
 UnmanagedWizardPage::UnmanagedWizardPage(HumoServiceBackend *aBackend, QWidget *aParent)
-    : WizardPageBase(aBackend, aParent)
-{
-}
+    : WizardPageBase(aBackend, aParent) {}
 
 //----------------------------------------------------------------------------
-bool UnmanagedWizardPage::initialize()
-{
+bool UnmanagedWizardPage::initialize() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool UnmanagedWizardPage::shutdown()
-{
+bool UnmanagedWizardPage::shutdown() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool UnmanagedWizardPage::activate()
-{
+bool UnmanagedWizardPage::activate() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool UnmanagedWizardPage::deactivate()
-{
+bool UnmanagedWizardPage::deactivate() {
     return true;
 }
 

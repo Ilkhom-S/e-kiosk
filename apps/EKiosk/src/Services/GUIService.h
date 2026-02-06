@@ -2,21 +2,18 @@
 
 #pragma once
 
-// Modules
 #include <Common/ILogable.h>
 
-// SDK
-#include <SDK/Plugins/IPlugin.h>
-#include <SDK/Plugins/IFactory.h>
-#include <SDK/GUI/IGraphicsHost.h>
-#include <SDK/PaymentProcessor/Scripting/Core.h>
-#include <SDK/PaymentProcessor/Core/Event.h>
-#include <SDK/PaymentProcessor/Core/IService.h>
-#include <SDK/PaymentProcessor/Core/IGUIService.h>
-#include <SDK/PaymentProcessor/Scripting/IBackendScenarioObject.h>
 #include <SDK/GUI/IAdSource.h>
+#include <SDK/GUI/IGraphicsHost.h>
+#include <SDK/PaymentProcessor/Core/Event.h>
+#include <SDK/PaymentProcessor/Core/IGUIService.h>
+#include <SDK/PaymentProcessor/Core/IService.h>
+#include <SDK/PaymentProcessor/Scripting/Core.h>
+#include <SDK/PaymentProcessor/Scripting/IBackendScenarioObject.h>
+#include <SDK/Plugins/IFactory.h>
+#include <SDK/Plugins/IPlugin.h>
 
-// Modules
 #include <GraphicsEngine/GraphicsEngine.h>
 #include <ScenarioEngine/ScenarioEngine.h>
 
@@ -24,13 +21,12 @@ class IApplication;
 class PluginService;
 class GuardService;
 
-namespace CGUIService
-{
-    const char LogName[] = "Interface";
-    const char IntruderLogName[] = "Penetration";
-    const char BackedObjectPrefix[] = "Backend$";
-    const char IdleScenarioName[] = "idle";
-    const int CheckTopmostWindowTimeout = 5 * 1000;
+namespace CGUIService {
+const char LogName[] = "Interface";
+const char IntruderLogName[] = "Penetration";
+const char BackedObjectPrefix[] = "Backend$";
+const char IdleScenarioName[] = "idle";
+const int CheckTopmostWindowTimeout = 5 * 1000;
 } // namespace CGUIService
 
 //---------------------------------------------------------------------------
@@ -38,11 +34,10 @@ class GUIService : public QObject,
                    public SDK::PaymentProcessor::IGUIService,
                    public SDK::PaymentProcessor::IService,
                    public SDK::GUI::IGraphicsHost,
-                   private ILogable
-{
+                   private ILogable {
     Q_OBJECT
 
-  public:
+public:
     GUIService(IApplication *aApplication);
 
     virtual ~GUIService();
@@ -113,17 +108,14 @@ class GUIService : public QObject,
     /// Возвращает список имеющихся интерфейсов
     virtual QStringList getInterfacesName() const;
 
-  protected:
+protected:
     /// Возвращает указатель на сервис с именем aInterface.
     virtual void *getInterface(const QString &aInterface);
 #pragma endregion
 
-  public:
+public:
     /// Проверка возможность остановки графического интерфейса
-    bool canDisable() const
-    {
-        return mScenarioEngine.canStop();
-    }
+    bool canDisable() const { return mScenarioEngine.canStop(); }
 
     /// Остановка интерфейса.
     void disable(bool aDisable);
@@ -131,10 +123,10 @@ class GUIService : public QObject,
     /// Получить экземпляр.
     static GUIService *instance(IApplication *aApplication);
 
-  signals:
+signals:
     void idling();
 
-  private slots:
+private slots:
     /// Обработка событий.
     void onEvent(const SDK::PaymentProcessor::Event &aEvent);
 
@@ -152,7 +144,7 @@ class GUIService : public QObject,
     /// Переместить главное окно поверх всех окон
     void bringToFront();
 
-  private:
+private:
     /// Загрузка графических бэкендов.
     void loadBackends();
 
@@ -165,7 +157,7 @@ class GUIService : public QObject,
     /// Загрузка отдельных объектов для интерфейса
     void loadScriptObjects();
 
-  private:
+private:
     IApplication *mApplication;
     PluginService *mPluginService;
     SDK::PaymentProcessor::IEventService *mEventManager;

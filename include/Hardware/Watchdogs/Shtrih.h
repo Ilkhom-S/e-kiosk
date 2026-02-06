@@ -2,24 +2,20 @@
 
 #pragma once
 
-// Modules
+#include <Hardware/Watchdogs/ShtrihConstants.h>
 #include <Hardware/Watchdogs/WatchdogBase.h>
 
-// Project
-#include <Hardware/Watchdogs/ShtrihConstants.h>
-
 //--------------------------------------------------------------------------------
-class Shtrih : public WatchdogBase
-{
+class Shtrih : public WatchdogBase {
     SET_SERIES("Shtrih")
 
-  public:
+public:
     Shtrih();
 
     /// Перезагрузка линии питания.
     virtual bool reset(const QString &aLine);
 
-  protected:
+protected:
     /// Обработчик сигнала пинга.
     virtual void onPing();
 
@@ -28,17 +24,21 @@ class Shtrih : public WatchdogBase
 
     bool processCommand(int aCommandID);
 
-    bool localProcessCommand(int aCommand, CShtrih::SUnpackedData &aUnpackedData, const QByteArray &aCommandData = "");
+    bool localProcessCommand(int aCommand,
+                             CShtrih::SUnpackedData &aUnpackedData,
+                             const QByteArray &aCommandData = "");
 
     bool getCommandPacket(int aCommand, QByteArray &aCommandPacket, const QByteArray &aCommandData);
 
-    bool parseAnswer(const CShtrih::TAnswersBuffer &aAnswersBuffer, CShtrih::SUnpackedData *aUnpackedData);
+    bool parseAnswer(const CShtrih::TAnswersBuffer &aAnswersBuffer,
+                     CShtrih::SUnpackedData *aUnpackedData);
 
     bool performCommand(const QByteArray &aPacket, QByteArray &aAnswer);
 
     void packedData(const QByteArray &aCommandPacket, QByteArray &aPacket);
 
-    bool unpackData(const QByteArray &aPacket, const QByteArray &aAnswer,
+    bool unpackData(const QByteArray &aPacket,
+                    const QByteArray &aAnswer,
                     CShtrih::TAnswersBuffer &aUnpackedBuffer) const;
 
     /// Подсчет контрольной суммы пакета данных.
@@ -53,7 +53,7 @@ class Shtrih : public WatchdogBase
     /// Получить строку с параметрами устройства по его типу.
     void setDeviceDataByType(CShtrih::Devices::Type::Enum aType);
 
-  private:
+private:
     /// Данные устройств на шине RS-485.
     CShtrih::SDevicesData mDeviceData;
 

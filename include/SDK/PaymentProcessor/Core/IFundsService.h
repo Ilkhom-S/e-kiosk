@@ -3,39 +3,30 @@
 #pragma once
 
 // Stl
-#include <tuple>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QtGlobal>
 #include <QtCore/QObject>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QtGlobal>
 
-// SDK
 #include <SDK/PaymentProcessor/Core/ICashAcceptorManager.h>
 #include <SDK/PaymentProcessor/Core/ICashDispenserManager.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
+#include <tuple>
 
-        //------------------------------------------------------------------------------
-        class IFundsService
-        {
-          public:
-            /// Получить интерфейс для работы с источниками денег.
-            virtual ICashAcceptorManager *getAcceptor() const = 0;
+namespace SDK {
+namespace PaymentProcessor {
 
-            /// Получить интерфейс для работы с устройствами выдачи денег.
-            virtual ICashDispenserManager *getDispenser() const = 0;
+//------------------------------------------------------------------------------
+class IFundsService {
+public:
+    /// Получить интерфейс для работы с источниками денег.
+    virtual ICashAcceptorManager *getAcceptor() const = 0;
 
-          protected:
-            virtual ~IFundsService()
-            {
-            }
-        };
+    /// Получить интерфейс для работы с устройствами выдачи денег.
+    virtual ICashDispenserManager *getDispenser() const = 0;
 
-        //------------------------------------------------------------------------------
-    } // namespace PaymentProcessor
+protected:
+    virtual ~IFundsService() {}
+};
+
+//------------------------------------------------------------------------------
+} // namespace PaymentProcessor
 } // namespace SDK

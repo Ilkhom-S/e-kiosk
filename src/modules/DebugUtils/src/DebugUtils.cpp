@@ -1,8 +1,6 @@
 //---------------------------------------------------------------------------
 // Modern DebugUtils implementation using Boost.Stacktrace
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
@@ -10,9 +8,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QTextStream>
 #include <QtCore/QtGlobal>
-#include <Common/QtHeadersEnd.h>
 
-// System
 #include <DebugUtils/DebugUtils.h>
 
 #ifdef Q_OS_WIN
@@ -32,17 +28,14 @@
 
 //---------------------------------------------------------------------------
 // Modern implementation using Boost.Stacktrace
-void DumpCallstack(QStringList &aStack, void *aContext)
-{
-    try
-    {
+void DumpCallstack(QStringList &aStack, void *aContext) {
+    try {
         // Get stack trace, skip first frame (this function)
         auto st = boost::stacktrace::stacktrace(1, 32);
 
         aStack.clear();
 
-        for (size_t i = 0; i < st.size(); ++i)
-        {
+        for (size_t i = 0; i < st.size(); ++i) {
             const auto &frame = st[i];
 
             QString frameStr;
@@ -51,29 +44,25 @@ void DumpCallstack(QStringList &aStack, void *aContext)
             frameStr += QString("0x%1").arg((quintptr)frame.address(), 0, 16);
 
             // Function name (demangled)
-            if (!frame.name().empty())
-            {
+            if (!frame.name().empty()) {
                 frameStr += QString(" (%1)").arg(QString::fromStdString(frame.name()));
             }
 
             // Source location if available
-            if (!frame.source_file().empty())
-            {
-                frameStr +=
-                    QString(" at %1:%2").arg(QString::fromStdString(frame.source_file())).arg(frame.source_line());
+            if (!frame.source_file().empty()) {
+                frameStr += QString(" at %1:%2")
+                                .arg(QString::fromStdString(frame.source_file()))
+                                .arg(frame.source_line());
             }
 
             aStack.append(frameStr);
         }
 
         // If no frames captured, provide fallback
-        if (aStack.isEmpty())
-        {
+        if (aStack.isEmpty()) {
             aStack.append("No stack trace available (Boost.Stacktrace)");
         }
-    }
-    catch (const std::exception &e)
-    {
+    } catch (const std::exception &e) {
         aStack.clear();
         aStack.append(QString("Failed to get stack trace: %1").arg(e.what()));
     }
@@ -81,8 +70,7 @@ void DumpCallstack(QStringList &aStack, void *aContext)
 
 //---------------------------------------------------------------------------
 // Enhanced exception handler with crash logging
-void SetUnhandledExceptionsHandler(TExceptionHandler aHandler)
-{
+void SetUnhandledExceptionsHandler(TExceptionHandler aHandler) {
 #ifdef Q_OS_WIN
     _set_abort_behavior(0, _WRITE_ABORT_MSG);
     _set_abort_behavior(0, _CALL_REPORTFAULT);
@@ -91,70 +79,28 @@ void SetUnhandledExceptionsHandler(TExceptionHandler aHandler)
     SetUnhandledExceptionFilter(aHandler);
 
     // Also set C++ terminate handler for better crash reporting
-    std::set_terminate(
-        []()
-        {
-            QStringList stack;
-            DumpCallstack(stack);
-
-            // Create crash log
-            QString crashDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/EKiosk";
-            QDir().mkpath(crashDir);
-
-            QString crashFile =
-                crashDir + QString("/crash_%1.log").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss"));
-
-            QFile file(crashFile);
-            if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-            {
-                QTextStream stream(&file);
-                stream << "EKiosk Crash Report\n";
-                stream << "Time: " << QDateTime::currentDateTime().toString() << "\n";
-                stream << "Using Boost.Stacktrace\n\n";
-                stream << "Stack Trace:\n";
-
-                for (const QString &frame : stack)
-                {
-                    stream << frame << "\n";
-                }
-
-                stream << "\nEnd of crash report.\n";
-            }
-
-            // Call original handler if provided
-            // Note: In terminate handler, we can't call the original Windows handler directly
-            // This would need more sophisticated implementation
-
-            std::abort();
-        });
-#elif defined(Q_OS_MAC) || defined(Q_OS_LINUX)
-    // For macOS and Linux, set up signal handlers for common crash signals
-    static TExceptionHandler s_originalHandler = aHandler;
-
-    auto signalHandler = [](int sig)
-    {
+    std::set_terminate([]() {
         QStringList stack;
         DumpCallstack(stack);
 
         // Create crash log
-        QString crashDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/EKiosk";
+        QString crashDir =
+            QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/EKiosk";
         QDir().mkpath(crashDir);
 
         QString crashFile =
-            crashDir + QString("/crash_%1.log").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss"));
+            crashDir + QString("/crash_%1.log")
+                           .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss"));
 
         QFile file(crashFile);
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-        {
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
             QTextStream stream(&file);
             stream << "EKiosk Crash Report\n";
             stream << "Time: " << QDateTime::currentDateTime().toString() << "\n";
-            stream << "Signal: " << sig << "\n";
             stream << "Using Boost.Stacktrace\n\n";
             stream << "Stack Trace:\n";
 
-            for (const QString &frame : stack)
-            {
+            for (const QString &frame : stack) {
                 stream << frame << "\n";
             }
 
@@ -162,8 +108,46 @@ void SetUnhandledExceptionsHandler(TExceptionHandler aHandler)
         }
 
         // Call original handler if provided
-        if (s_originalHandler)
-        {
+        // Note: In terminate handler, we can't call the original Windows handler directly
+        // This would need more sophisticated implementation
+
+        std::abort();
+    });
+#elif defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+    // For macOS and Linux, set up signal handlers for common crash signals
+    static TExceptionHandler s_originalHandler = aHandler;
+
+    auto signalHandler = [](int sig) {
+        QStringList stack;
+        DumpCallstack(stack);
+
+        // Create crash log
+        QString crashDir =
+            QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/EKiosk";
+        QDir().mkpath(crashDir);
+
+        QString crashFile =
+            crashDir + QString("/crash_%1.log")
+                           .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss"));
+
+        QFile file(crashFile);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream stream(&file);
+            stream << "EKiosk Crash Report\n";
+            stream << "Time: " << QDateTime::currentDateTime().toString() << "\n";
+            stream << "Signal: " << sig << "\n";
+            stream << "Using Boost.Stacktrace\n\n";
+            stream << "Stack Trace:\n";
+
+            for (const QString &frame : stack) {
+                stream << frame << "\n";
+            }
+
+            stream << "\nEnd of crash report.\n";
+        }
+
+        // Call original handler if provided
+        if (s_originalHandler) {
             s_originalHandler(sig);
         }
 
@@ -181,38 +165,36 @@ void SetUnhandledExceptionsHandler(TExceptionHandler aHandler)
     signal(SIGTERM, signalHandler); // Termination request
 
     // Also set C++ terminate handler
-    std::set_terminate(
-        []()
-        {
-            QStringList stack;
-            DumpCallstack(stack);
+    std::set_terminate([]() {
+        QStringList stack;
+        DumpCallstack(stack);
 
-            // Create crash log
-            QString crashDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/EKiosk";
-            QDir().mkpath(crashDir);
+        // Create crash log
+        QString crashDir =
+            QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/EKiosk";
+        QDir().mkpath(crashDir);
 
-            QString crashFile =
-                crashDir + QString("/crash_%1.log").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss"));
+        QString crashFile =
+            crashDir + QString("/crash_%1.log")
+                           .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss"));
 
-            QFile file(crashFile);
-            if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-            {
-                QTextStream stream(&file);
-                stream << "EKiosk Crash Report (std::terminate)\n";
-                stream << "Time: " << QDateTime::currentDateTime().toString() << "\n";
-                stream << "Using Boost.Stacktrace\n\n";
-                stream << "Stack Trace:\n";
+        QFile file(crashFile);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream stream(&file);
+            stream << "EKiosk Crash Report (std::terminate)\n";
+            stream << "Time: " << QDateTime::currentDateTime().toString() << "\n";
+            stream << "Using Boost.Stacktrace\n\n";
+            stream << "Stack Trace:\n";
 
-                for (const QString &frame : stack)
-                {
-                    stream << frame << "\n";
-                }
-
-                stream << "\nEnd of crash report.\n";
+            for (const QString &frame : stack) {
+                stream << frame << "\n";
             }
 
-            std::abort();
-        });
+            stream << "\nEnd of crash report.\n";
+        }
+
+        std::abort();
+    });
 #else
 #error The method SetUnhandledExceptionsHandler is not implemented for the current platform.
 #endif // Q_OS_WIN

@@ -1,33 +1,33 @@
 /* @file Купюроприемник Cashcode GX на протоколе CCNet. */
 
 #include "CCNetCashcodeGX.h"
+
 #include "CCNetCashAcceptorConstants.h"
 
 using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------
-CCNetCashcodeGX::CCNetCashcodeGX()
-{
+CCNetCashcodeGX::CCNetCashcodeGX() {
     // данные устройства
     mDeviceName = CCCNet::Models::CashcodeGX;
     mSupportedModels = QStringList() << mDeviceName;
     mNeedChangeBaudrate = true;
 
-    setConfigParameter(CHardware::CashAcceptor::InitializeTimeout, CCCNetCashcodeGX::ExitInitializeTimeout);
+    setConfigParameter(CHardware::CashAcceptor::InitializeTimeout,
+                       CCCNetCashcodeGX::ExitInitializeTimeout);
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetCashcodeGX::checkConnectionAbility()
-{
-    if (!CCNetCashAcceptorBase::checkConnectionAbility())
-    {
+bool CCNetCashcodeGX::checkConnectionAbility() {
+    if (!CCNetCashAcceptorBase::checkConnectionAbility()) {
         return false;
     }
 
     TPortParameters portParameters;
     mIOPort->getParameters(portParameters);
-    ERTSControl::Enum RTS = (mIOPort->getType() == EPortTypes::COM) ? ERTSControl::Disable : ERTSControl::Enable;
+    ERTSControl::Enum RTS =
+        (mIOPort->getType() == EPortTypes::COM) ? ERTSControl::Disable : ERTSControl::Enable;
 
     portParameters[EParameters::RTS] = RTS;
 
@@ -38,10 +38,10 @@ bool CCNetCashcodeGX::checkConnectionAbility()
 }
 
 //---------------------------------------------------------------------------------
-TResult CCNetCashcodeGX::performCommand(const QByteArray &aCommand, const QByteArray &aCommandData, QByteArray *aAnswer)
-{
-    if (mIOPort->getType() == SDK::Driver::EPortTypes::VirtualCOM)
-    {
+TResult CCNetCashcodeGX::performCommand(const QByteArray &aCommand,
+                                        const QByteArray &aCommandData,
+                                        QByteArray *aAnswer) {
+    if (mIOPort->getType() == SDK::Driver::EPortTypes::VirtualCOM) {
         QVariantMap configuration;
         configuration.insert(CHardware::Port::COM::WaitResult, true);
         // mIOPort->setDeviceConfiguration(configuration);
@@ -51,8 +51,7 @@ TResult CCNetCashcodeGX::performCommand(const QByteArray &aCommand, const QByteA
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetCashcodeGX::processReset()
-{
+bool CCNetCashcodeGX::processReset() {
     bool result = processCommand(CCCNet::Commands::Reset);
 
     mIOPort->close();
@@ -65,27 +64,24 @@ bool CCNetCashcodeGX::processReset()
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetCashcodeGX::processUpdating(const QByteArray &aBuffer, int aSectionSize)
-{
+bool CCNetCashcodeGX::processUpdating(const QByteArray &aBuffer, int aSectionSize) {
     int sections = int(std::ceil(double(aBuffer.size()) / aSectionSize));
     toLog(LogLevel::Normal,
-          mDeviceName +
-              QString(": section size for updating the firmware = %1, buffer size = %2, amount of sections = %3")
-                  .arg(aSectionSize)
-                  .arg(aBuffer.size())
-                  .arg(sections));
+          mDeviceName + QString(": section size for updating the firmware = %1, buffer size = %2, "
+                                "amount of sections = %3")
+                            .arg(aSectionSize)
+                            .arg(aBuffer.size())
+                            .arg(sections));
 
     int repeat = 0;
     bool result = true;
 
-    for (int i = 0; i < sections; ++i)
-    {
+    for (int i = 0; i < sections; ++i) {
         uint address = i * aSectionSize;
         QByteArray buffer = aBuffer.mid(address, aSectionSize);
         buffer += QByteArray(aSectionSize - buffer.size(), ASCII::NUL);
 
-        if (!processBlockUpdating(qToBigEndian(address) >> 8, buffer, repeat, i))
-        {
+        if (!processBlockUpdating(qToBigEndian(address) >> 8, buffer, repeat, i)) {
             result = false;
 
             break;
@@ -98,10 +94,10 @@ bool CCNetCashcodeGX::processUpdating(const QByteArray &aBuffer, int aSectionSiz
 }
 
 //--------------------------------------------------------------------------------
-bool CCNetCashcodeGX::performBaudRateChanging(const TPortParameters &aPortParameters)
-{
+bool CCNetCashcodeGX::performBaudRateChanging(const TPortParameters &aPortParameters) {
     int baudRate = aPortParameters[EParameters::BaudRate];
-    QString hexBaudRate = QString("%1").arg(qToBigEndian(uint(baudRate)) >> 8, 6, 16, QChar(ASCII::Zero));
+    QString hexBaudRate =
+        QString("%1").arg(qToBigEndian(uint(baudRate)) >> 8, 6, 16, QChar(ASCII::Zero));
 
     return processCommand(CCCNet::Commands::UpdatingFirmware::SetBaudRate,
                           ProtocolUtils::getBufferFromString(hexBaudRate)) &&

@@ -1,27 +1,19 @@
 /* @file Окно настроек. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QTime>
-#include <Common/QtHeadersEnd.h>
+#include "TokenServiceWindow.h"
 
-// Modules
+#include <QtCore/QTime>
+
 #include <Common/BasicApplication.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Core/ICore.h>
 
-// System
 #include "Backend/HumoServiceBackend.h"
 #include "Backend/KeysManager.h"
 #include "MessageBox/MessageBox.h"
 
-// Project
-#include "TokenServiceWindow.h"
-
 TokenServiceWindow::TokenServiceWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), ServiceWindowBase(aBackend)
-{
+    : QFrame(aParent), ServiceWindowBase(aBackend) {
     setupUi(this);
 
     mWindow = new TokenWindow(aBackend, this);
@@ -38,8 +30,7 @@ TokenServiceWindow::TokenServiceWindow(HumoServiceBackend *aBackend, QWidget *aP
 }
 
 //------------------------------------------------------------------------
-bool TokenServiceWindow::activate()
-{
+bool TokenServiceWindow::activate() {
     mWindow->initialize(mBackend->getKeysManager()->tokenStatus());
 
     mUIUpdateTimer = startTimer(1000);
@@ -48,33 +39,28 @@ bool TokenServiceWindow::activate()
 }
 
 //------------------------------------------------------------------------
-bool TokenServiceWindow::deactivate()
-{
+bool TokenServiceWindow::deactivate() {
     killTimer(mUIUpdateTimer);
 
     return true;
 }
 
 //------------------------------------------------------------------------
-bool TokenServiceWindow::initialize()
-{
+bool TokenServiceWindow::initialize() {
     mWindow->initialize(mBackend->getKeysManager()->tokenStatus());
 
     return true;
 }
 
 //------------------------------------------------------------------------
-bool TokenServiceWindow::shutdown()
-{
+bool TokenServiceWindow::shutdown() {
     killTimer(mUIUpdateTimer);
     return true;
 }
 
 //------------------------------------------------------------------------
-void TokenServiceWindow::onBeginFormat()
-{
-    if (GUI::MessageBox::question(tr("#question_format_token_warning")))
-    {
+void TokenServiceWindow::onBeginFormat() {
+    if (GUI::MessageBox::question(tr("#question_format_token_warning"))) {
         GUI::MessageBox::hide();
         GUI::MessageBox::wait(tr("#format_token"));
 
@@ -85,16 +71,14 @@ void TokenServiceWindow::onBeginFormat()
 }
 
 //------------------------------------------------------------------------
-void TokenServiceWindow::onEndFormat()
-{
+void TokenServiceWindow::onEndFormat() {
     GUI::MessageBox::hide();
 
     mUIUpdateTimer = startTimer(1000);
 }
 
 //------------------------------------------------------------------------
-void TokenServiceWindow::onError(QString aError)
-{
+void TokenServiceWindow::onError(QString aError) {
     GUI::MessageBox::hide();
     GUI::MessageBox::critical(aError);
 
@@ -102,8 +86,7 @@ void TokenServiceWindow::onError(QString aError)
 }
 
 //------------------------------------------------------------------------
-void TokenServiceWindow::timerEvent(QTimerEvent *)
-{
+void TokenServiceWindow::timerEvent(QTimerEvent *) {
     mWindow->initialize(mBackend->getKeysManager()->tokenStatus());
 }
 

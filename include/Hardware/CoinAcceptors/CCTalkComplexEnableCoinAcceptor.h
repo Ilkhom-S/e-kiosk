@@ -2,26 +2,18 @@
 
 #pragma once
 
-// Modules
 #include <Hardware/Acceptors/CCTalkComplexEnableAcceptor.h>
-
-// Project
 #include <Hardware/CoinAcceptors/CCTalkCoinAcceptorBase.h>
 
 //--------------------------------------------------------------------------------
 typedef CCTalkComplexEnableAcceptor<CCTalkCoinAcceptorBase> TCCTalkComplexEnableAcceptor;
 
-class CCTalkComplexEnableCoinAcceptor : public TCCTalkComplexEnableAcceptor
-{
-  public:
-    CCTalkComplexEnableCoinAcceptor()
-    {
-        mModels = getModelList();
-    }
+class CCTalkComplexEnableCoinAcceptor : public TCCTalkComplexEnableAcceptor {
+public:
+    CCTalkComplexEnableCoinAcceptor() { mModels = getModelList(); }
 
     /// Возвращает список поддерживаемых устройств.
-    static QStringList getModelList()
-    {
+    static QStringList getModelList() {
         return CCCTalk::CoinAcceptor::CModelData().getModels(true);
     }
 };

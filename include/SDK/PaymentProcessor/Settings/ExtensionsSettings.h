@@ -2,55 +2,48 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QStringList>
-#include <QtCore/QList>
-#include <QtCore/QVector>
 #include <QtCore/QDateTime>
-#include <Common/QtHeadersEnd.h>
-
-// SDK
-#include <SDK/PaymentProcessor/Settings/Range.h>
-#include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>
-#include <SDK/PaymentProcessor/Connection/Connection.h>
+#include <QtCore/QList>
+#include <QtCore/QStringList>
+#include <QtCore/QVector>
 
 #include <Common/ILogable.h>
 #include <Common/PropertyTree.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
+#include <SDK/PaymentProcessor/Connection/Connection.h>
+#include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>
+#include <SDK/PaymentProcessor/Settings/Range.h>
 
-        //----------------------------------------------------------------------------
-        typedef QMap<QString, QString> TStringMap;
+namespace SDK {
+namespace PaymentProcessor {
 
-        //----------------------------------------------------------------------------
-        class ExtensionsSettings : public ISettingsAdapter, public ILogable
-        {
-          public:
-            ExtensionsSettings(TPtree &aProperties);
-            virtual ~ExtensionsSettings();
+//----------------------------------------------------------------------------
+typedef QMap<QString, QString> TStringMap;
 
-            /// Валидация данных.
-            virtual bool isValid() const;
+//----------------------------------------------------------------------------
+class ExtensionsSettings : public ISettingsAdapter, public ILogable {
+public:
+    ExtensionsSettings(TPtree &aProperties);
+    virtual ~ExtensionsSettings();
 
-            /// Получить имя адаптера.
-            static QString getAdapterName();
+    /// Валидация данных.
+    virtual bool isValid() const;
 
-            /// Получить настройки расширения, в случае отсутствия настроек вернет пустой QStringMap
-            TStringMap getSettings(const QString &aExtensionName) const;
+    /// Получить имя адаптера.
+    static QString getAdapterName();
 
-          private:
-            TPtree &mProperties;
-            QMap<QString, TStringMap> mExtensionSettings;
+    /// Получить настройки расширения, в случае отсутствия настроек вернет пустой QStringMap
+    TStringMap getSettings(const QString &aExtensionName) const;
 
-          private:
-            Q_DISABLE_COPY(ExtensionsSettings);
-        };
+private:
+    TPtree &mProperties;
+    QMap<QString, TStringMap> mExtensionSettings;
 
-    } // namespace PaymentProcessor
+private:
+    Q_DISABLE_COPY(ExtensionsSettings);
+};
+
+} // namespace PaymentProcessor
 } // namespace SDK
 
 //---------------------------------------------------------------------------

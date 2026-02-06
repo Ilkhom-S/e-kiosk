@@ -1,20 +1,15 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QWidget>
-#include <Common/QtHeadersEnd.h>
 
-namespace Ui
-{
-    class LoadingGprsForm;
+namespace Ui {
+class LoadingGprsForm;
 }
 
-class LoadingGprsForm : public QWidget
-{
+class LoadingGprsForm : public QWidget {
     Q_OBJECT
 
-  public:
+public:
     explicit LoadingGprsForm(QWidget *parent = 0);
     ~LoadingGprsForm();
 
@@ -25,6 +20,6 @@ class LoadingGprsForm : public QWidget
     void setSimInfo(QString text);
     void setLogo(QString path);
 
-  private:
+private:
     Ui::LoadingGprsForm *ui;
 };

@@ -1,22 +1,17 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QTimer>
 #include <QtNetwork/QLocalSocket>
-#include <Common/QtHeadersEnd.h>
 
-// System
 #include "MessageQueue/IMessageQueueClient.h"
 
-class MessageQueueClient : public QObject, public IMessageQueueClient
-{
+class MessageQueueClient : public QObject, public IMessageQueueClient {
     Q_OBJECT
 
-  public:
+public:
     MessageQueueClient();
     virtual ~MessageQueueClient();
 
@@ -43,21 +38,21 @@ class MessageQueueClient : public QObject, public IMessageQueueClient
     /// onError(CIMessageQueueClient::ErrorCode aErrorCode, const QString & aErrorMessage).
     virtual bool subscribeOnEvents(QObject *aObject) override;
 
-  private:
+private:
     void parseInputBuffer(QByteArray &aBuffer);
 
-  private slots:
+private slots:
     void onSocketReadyRead();
     void onSocketError(QLocalSocket::LocalSocketError aErrorCode);
     void onSocketDisconnected();
     void pingServer();
 
-  signals:
+signals:
     void onMessageReceived(QByteArray aMessage);
     void onError(CIMessageQueueClient::ErrorCode aErrorCode, const QString &aErrorMessage);
     void onDisconnected();
 
-  private:
+private:
     QLocalSocket mSocket;
     QByteArray mBuffer;
 

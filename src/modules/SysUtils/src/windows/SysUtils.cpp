@@ -2,33 +2,24 @@
 
 // windows
 #define NOMINMAX // HACK for QDateTime Qt 5.1.0
-#include <windows.h>
-#include <psapi.h>
-#include <TlHelp32.h>
-
-// STL
-#include <algorithm>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QFile>
-#include <Common/QtHeadersEnd.h>
 
-// Модули
 #include <SysUtils/ISysUtils.h>
 #include <SysUtils/windows/PrivilegeElevator.h>
+#include <TlHelp32.h>
+#include <algorithm>
+#include <psapi.h>
+#include <windows.h>
 
 #pragma comment(lib, "User32")
 #pragma comment(lib, "Psapi")
 
 //--------------------------------------------------------------------------------
-int ISysUtils::systemReboot()
-{
+int ISysUtils::systemReboot() {
     PrivilegeElevator privilege(SE_SHUTDOWN_NAME);
 
     // Shut down the system and force all applications to close.
-    if (!::ExitWindowsEx(EWX_REBOOT | EWX_FORCE, 0))
-    {
+    if (!::ExitWindowsEx(EWX_REBOOT | EWX_FORCE, 0)) {
         return (int)::GetLastError();
     }
 
@@ -36,13 +27,11 @@ int ISysUtils::systemReboot()
 }
 
 //--------------------------------------------------------------------------------
-int ISysUtils::systemShutdown()
-{
+int ISysUtils::systemShutdown() {
     PrivilegeElevator privilege(SE_SHUTDOWN_NAME);
 
     // Shut down the system and force all applications to close.
-    if (!::ExitWindowsEx(EWX_SHUTDOWN | EWX_FORCE, 0))
-    {
+    if (!::ExitWindowsEx(EWX_SHUTDOWN | EWX_FORCE, 0)) {
         return (int)::GetLastError();
     }
 
@@ -50,74 +39,69 @@ int ISysUtils::systemShutdown()
 }
 
 //--------------------------------------------------------------------------------
-QString ISysUtils::getOSVersionInfo()
-{
+QString ISysUtils::getOSVersionInfo() {
     QString version = ("Unknown");
 
     // Если используется Windows
-    switch (QSysInfo::WindowsVersion)
-    {
-        case QSysInfo::WV_32s:
-            version = "Windows 3.1";
-            break;
-        case QSysInfo::WV_95:
-            version = "Windows 95";
-            break;
-        case QSysInfo::WV_98:
-            version = "Windows 98";
-            break;
-        case QSysInfo::WV_Me:
-            version = "Windows Me";
-            break;
-        case QSysInfo::WV_NT:
-            version = "Windows NT";
-            break;
-        case QSysInfo::WV_2000:
-            version = "Windows 2000";
-            break;
-        case QSysInfo::WV_XP:
-            version = "Windows XP";
-            break;
-        case QSysInfo::WV_2003:
-            version = "Windows 2003";
-            break;
-        case QSysInfo::WV_VISTA:
-            version = "Windows Vista";
-            break;
-        case QSysInfo::WV_WINDOWS7:
-            version = "Windows 7";
-            break;
-        case QSysInfo::WV_WINDOWS8:
-            version = "Windows 8";
-            break;
-        case QSysInfo::WV_WINDOWS8_1:
-            version = "Windows 8.1";
-            break;
-        case QSysInfo::WV_WINDOWS10:
-            version = "Windows 10";
-            break;
+    switch (QSysInfo::WindowsVersion) {
+    case QSysInfo::WV_32s:
+        version = "Windows 3.1";
+        break;
+    case QSysInfo::WV_95:
+        version = "Windows 95";
+        break;
+    case QSysInfo::WV_98:
+        version = "Windows 98";
+        break;
+    case QSysInfo::WV_Me:
+        version = "Windows Me";
+        break;
+    case QSysInfo::WV_NT:
+        version = "Windows NT";
+        break;
+    case QSysInfo::WV_2000:
+        version = "Windows 2000";
+        break;
+    case QSysInfo::WV_XP:
+        version = "Windows XP";
+        break;
+    case QSysInfo::WV_2003:
+        version = "Windows 2003";
+        break;
+    case QSysInfo::WV_VISTA:
+        version = "Windows Vista";
+        break;
+    case QSysInfo::WV_WINDOWS7:
+        version = "Windows 7";
+        break;
+    case QSysInfo::WV_WINDOWS8:
+        version = "Windows 8";
+        break;
+    case QSysInfo::WV_WINDOWS8_1:
+        version = "Windows 8.1";
+        break;
+    case QSysInfo::WV_WINDOWS10:
+        version = "Windows 10";
+        break;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-        case QSysInfo::WV_WINDOWS11:
-            version = "Windows 11";
-            break;
+    case QSysInfo::WV_WINDOWS11:
+        version = "Windows 11";
+        break;
 #endif
-        default:
-        {
-            // Windows 11 detection for Qt versions before 6.5
-            OSVERSIONINFOEXW info11;
-            ZeroMemory(&info11, sizeof(info11));
-            info11.dwOSVersionInfoSize = sizeof(info11);
-            ::GetVersionExW((LPOSVERSIONINFOW)&info11);
-            if (info11.dwMajorVersion == 10 && info11.dwMinorVersion == 0 && info11.dwBuildNumber >= 22000)
-            {
-                version = "Windows 11";
-            }
-            else if (QSysInfo::WV_NT_based & QSysInfo::WindowsVersion)
-            {
-                version = "Windows NT based";
-                break;
-            }
+    default: {
+        // Windows 11 detection for Qt versions before 6.5
+        OSVERSIONINFOEXW info11;
+        ZeroMemory(&info11, sizeof(info11));
+        info11.dwOSVersionInfoSize = sizeof(info11);
+        ::GetVersionExW((LPOSVERSIONINFOW)&info11);
+        if (info11.dwMajorVersion == 10 && info11.dwMinorVersion == 0 &&
+            info11.dwBuildNumber >= 22000) {
+            version = "Windows 11";
+        } else if (QSysInfo::WV_NT_based & QSysInfo::WindowsVersion) {
+            version = "Windows NT based";
+            break;
         }
+    }
     }
 
     OSVERSIONINFOEXW info;
@@ -137,22 +121,15 @@ QString ISysUtils::getOSVersionInfo()
 }
 
 //--------------------------------------------------------------------------------
-void ISysUtils::disableScreenSaver()
-{
+void ISysUtils::disableScreenSaver() {
     ::SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, nullptr, 0);
 }
 
 //--------------------------------------------------------------------------------
-void ISysUtils::displayOn(bool aOn)
-{
-    enum
-    {
-        DISPLAY_ON = -1,
-        DISPLAY_OFF = 2
-    };
+void ISysUtils::displayOn(bool aOn) {
+    enum { DISPLAY_ON = -1, DISPLAY_OFF = 2 };
 
-    if (aOn)
-    {
+    if (aOn) {
         PostMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, DISPLAY_ON);
 
         // имитируем дёргание мышки для включения монитора в Windows 8
@@ -167,40 +144,39 @@ void ISysUtils::displayOn(bool aOn)
 
         input.mi.dy = -1;
         SendInput(1, &input, sizeof(input));
-    }
-    else
-    {
+    } else {
         PostMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, DISPLAY_OFF);
     }
 }
 
 //--------------------------------------------------------------------------------
-QString ISysUtils::getLastErrorMessage()
-{
+QString ISysUtils::getLastErrorMessage() {
     return getErrorMessage(GetLastError());
 }
 
 //--------------------------------------------------------------------------------
-QString ISysUtils::getErrorMessage(ulong aError, bool aNativeLanguage)
-{
+QString ISysUtils::getErrorMessage(ulong aError, bool aNativeLanguage) {
     LPVOID data = nullptr;
-    DWORD languageId =
-        aNativeLanguage ? MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT) : MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US);
+    DWORD languageId = aNativeLanguage ? MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT)
+                                       : MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US);
 
-    FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, aError, languageId,
-                   (LPWSTR)&data, 0, nullptr);
+    FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                   nullptr,
+                   aError,
+                   languageId,
+                   (LPWSTR)&data,
+                   0,
+                   nullptr);
 
     QString result = "error: " + QString::number(aError);
 
-    if (data)
-    {
+    if (data) {
         // fromWCharArray is compatible with both Qt 5 and Qt 6 and handles wchar_t*
         // naturally.
         const wchar_t *msgPtr = reinterpret_cast<const wchar_t *>(data);
         QString description = QString::fromWCharArray(msgPtr).simplified();
 
-        if (!description.isEmpty())
-        {
+        if (!description.isEmpty()) {
             result += QString(" (%1)").arg(description); // Changed to %1 as standard
         }
 
@@ -211,8 +187,7 @@ QString ISysUtils::getErrorMessage(ulong aError, bool aNativeLanguage)
 }
 
 //--------------------------------------------------------------------------------
-void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false)
-{
+void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false) {
     PrivilegeElevator privilege(SE_SYSTEMTIME_NAME);
 
     // Синхронизируем
@@ -228,44 +203,40 @@ void ISysUtils::setSystemTime(QDateTime aDateTime) noexcept(false)
 
     BOOL result = FALSE;
 
-    switch (aDateTime.timeSpec())
-    {
-        case Qt::UTC:
-        {
-            result = ::SetSystemTime(&localTime);
-            break;
-        }
-        default:
-        {
-            result = ::SetLocalTime(&localTime);
-            break;
-        }
+    switch (aDateTime.timeSpec()) {
+    case Qt::UTC: {
+        result = ::SetSystemTime(&localTime);
+        break;
+    }
+    default: {
+        result = ::SetLocalTime(&localTime);
+        break;
+    }
     }
 
-    if (!result)
-    {
-        throw Exception(ECategory::System, ESeverity::Major, GetLastError(),
+    if (!result) {
+        throw Exception(ECategory::System,
+                        ESeverity::Major,
+                        GetLastError(),
                         QString("Windows %1.").arg(getLastErrorMessage()));
     }
 }
 
 //---------------------------------------------------------------------------
-void ISysUtils::sleep(int aMs)
-{
+void ISysUtils::sleep(int aMs) {
     Q_ASSERT(aMs > 0);
 
     ::SleepEx(uint(aMs), FALSE);
 }
 
 //--------------------------------------------------------------------------------
-bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *aProcess /*= nullptr*/)
-{
+bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo,
+                                      const QProcess *aProcess /*= nullptr*/) {
     ZeroMemory(&aMemoryInfo, sizeof(MemoryInfo));
 
     DWORD processId = GetCurrentProcessId();
 
-    if (aProcess)
-    {
+    if (aProcess) {
         processId = aProcess->pid()->dwProcessId;
     }
 
@@ -280,10 +251,9 @@ bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *a
     PROCESS_MEMORY_COUNTERS_EX pmc;
     HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId);
 
-    if (hProcess)
-    {
-        if (GetProcessMemoryInfo(hProcess, reinterpret_cast<PROCESS_MEMORY_COUNTERS *>(&pmc), sizeof(pmc)))
-        {
+    if (hProcess) {
+        if (GetProcessMemoryInfo(
+                hProcess, reinterpret_cast<PROCESS_MEMORY_COUNTERS *>(&pmc), sizeof(pmc))) {
             CloseHandle(hProcess);
             aMemoryInfo.processUsed = pmc.WorkingSetSize;
             return true;
@@ -296,16 +266,13 @@ bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *a
 }
 
 //---------------------------------------------------------------------------------
-bool ISysUtils::bringWindowToFront(WId aWindow)
-{
-    if (!::IsWindow((HWND)aWindow))
-    {
+bool ISysUtils::bringWindowToFront(WId aWindow) {
+    if (!::IsWindow((HWND)aWindow)) {
         return false;
     }
 
     DWORD dwThreadID = GetWindowThreadProcessId((HWND)aWindow, NULL);
-    if (dwThreadID)
-    {
+    if (dwThreadID) {
         AttachThreadInput(dwThreadID, GetCurrentThreadId(), true);
     }
 
@@ -316,8 +283,7 @@ bool ISysUtils::bringWindowToFront(WId aWindow)
     SetActiveWindow((HWND)aWindow);
     SetFocus((HWND)aWindow);
 
-    if (dwThreadID)
-    {
+    if (dwThreadID) {
         AttachThreadInput(dwThreadID, GetCurrentThreadId(), false);
     }
 
@@ -325,8 +291,7 @@ bool ISysUtils::bringWindowToFront(WId aWindow)
 }
 
 //---------------------------------------------------------------------------------
-bool ISysUtils::bringWindowToFront(const QString &aWindowTitle)
-{
+bool ISysUtils::bringWindowToFront(const QString &aWindowTitle) {
     wchar_t *array = new wchar_t[aWindowTitle.size() + 1];
     ZeroMemory(array, (aWindowTitle.size() + 1) * sizeof(wchar_t));
     aWindowTitle.toWCharArray(array);
@@ -337,19 +302,16 @@ bool ISysUtils::bringWindowToFront(const QString &aWindowTitle)
 }
 
 //---------------------------------------------------------------------------------
-bool ISysUtils::getAllProcessHandleCount(quint64 &aCountOfHandles)
-{
+bool ISysUtils::getAllProcessHandleCount(quint64 &aCountOfHandles) {
     QList<SProcessInfo> processes = getAllProcessInfo();
 
-    if (processes.isEmpty())
-    {
+    if (processes.isEmpty()) {
         return false;
     }
 
     aCountOfHandles = 0;
 
-    foreach (auto pInfo, processes)
-    {
+    foreach (auto pInfo, processes) {
         aCountOfHandles += pInfo.handlers;
     }
 
@@ -357,47 +319,41 @@ bool ISysUtils::getAllProcessHandleCount(quint64 &aCountOfHandles)
 }
 
 //--------------------------------------------------------------------------------
-void ISysUtils::runScreenSaver()
-{
+void ISysUtils::runScreenSaver() {
     SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_SCREENSAVE, 0);
 }
 
 //--------------------------------------------------------------------------------
-ISysUtils::TProcessInfo ISysUtils::getAllProcessInfo()
-{
+ISysUtils::TProcessInfo ISysUtils::getAllProcessInfo() {
     TProcessInfo processInfos;
 
     PROCESSENTRY32 pe32;
     HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     pe32.dwSize = sizeof(PROCESSENTRY32);
 
-    if (!Process32First(hProcessSnap, &pe32))
-    {
+    if (!Process32First(hProcessSnap, &pe32)) {
         CloseHandle(hProcessSnap);
         return processInfos;
     }
 
-    do
-    {
+    do {
         SProcessInfo pInfo;
         pInfo.id = pe32.th32ProcessID;
         pInfo.path = QString::fromWCharArray((const wchar_t *)pe32.szExeFile);
 
         HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pe32.th32ProcessID);
 
-        if (hProcess != INVALID_HANDLE_VALUE && hProcess != nullptr)
-        {
+        if (hProcess != INVALID_HANDLE_VALUE && hProcess != nullptr) {
             DWORD handleCount = 0;
 
-            if (GetProcessHandleCount(hProcess, &handleCount))
-            {
+            if (GetProcessHandleCount(hProcess, &handleCount)) {
                 pInfo.handlers = handleCount;
             }
 
             PROCESS_MEMORY_COUNTERS_EX pmc;
 
-            if (GetProcessMemoryInfo(hProcess, reinterpret_cast<PROCESS_MEMORY_COUNTERS *>(&pmc), sizeof(pmc)))
-            {
+            if (GetProcessMemoryInfo(
+                    hProcess, reinterpret_cast<PROCESS_MEMORY_COUNTERS *>(&pmc), sizeof(pmc))) {
                 pInfo.memoryUsage = pmc.WorkingSetSize;
             }
 
@@ -412,19 +368,16 @@ ISysUtils::TProcessInfo ISysUtils::getAllProcessInfo()
 }
 
 //--------------------------------------------------------------------------------
-QString ISysUtils::rmBOM(const QString &aFile)
-{
+QString ISysUtils::rmBOM(const QString &aFile) {
     QFile file(aFile);
 
-    if (file.open(QIODevice::ReadWrite))
-    {
+    if (file.open(QIODevice::ReadWrite)) {
         QByteArray data = file.readAll();
 
         // detect utf8 BOM
         // https://codereview.qt-project.org/#/c/93658/5/src/corelib/io/qsettings.cpp
         const uchar *dd = (const uchar *)data.constData();
-        if (data.size() >= 3 && dd[0] == 0xef && dd[1] == 0xbb && dd[2] == 0xbf)
-        {
+        if (data.size() >= 3 && dd[0] == 0xef && dd[1] == 0xbb && dd[2] == 0xbf) {
             file.resize(0);
             file.write(QString::fromUtf8(data.remove(0, 3)).toUtf8());
         }

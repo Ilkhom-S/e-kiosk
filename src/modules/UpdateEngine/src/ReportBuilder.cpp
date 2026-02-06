@@ -1,27 +1,19 @@
 /* @file Генератор отчётов обновления. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QDateTime>
-#include <QtCore/QFileInfo>
-#include <Common/QtHeadersEnd.h>
-
-// Modules
-#include <Common/BasicApplication.h>
-
-// Project
 #include "ReportBuilder.h"
 
+#include <QtCore/QDateTime>
+#include <QtCore/QFileInfo>
+
+#include <Common/BasicApplication.h>
+
 ReportBuilder::ReportBuilder(QString aWorkDirectory /*= ""*/)
-    : ILogable(CReportBuilder::LogName), mWorkDirectory(aWorkDirectory)
-{
-}
+    : ILogable(CReportBuilder::LogName), mWorkDirectory(aWorkDirectory) {}
 
 //------------------------------------------------------------------------
-void ReportBuilder::open(const QString &aCommand, const QString &aUrl, const QString &aMd5)
-{
-    QString fileName = (mWorkDirectory.isEmpty() ? QDir::currentPath() : mWorkDirectory) + "/update/" +
-                       QString("update_%1.rpt").arg(aCommand);
+void ReportBuilder::open(const QString &aCommand, const QString &aUrl, const QString &aMd5) {
+    QString fileName = (mWorkDirectory.isEmpty() ? QDir::currentPath() : mWorkDirectory) +
+                       "/update/" + QString("update_%1.rpt").arg(aCommand);
 
     bool writeCreateDate = QFile::exists(fileName) ? false : true;
 
@@ -38,56 +30,48 @@ void ReportBuilder::open(const QString &aCommand, const QString &aUrl, const QSt
     mReport->setValue("url", aUrl);
     mReport->setValue("md5", aMd5);
 
-    if (writeCreateDate)
-    {
-        mReport->setValue("create_date", QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss"));
+    if (writeCreateDate) {
+        mReport->setValue("create_date",
+                          QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss"));
     }
 
     updateTimestamp();
 }
 
 //------------------------------------------------------------------------
-void ReportBuilder::close()
-{
+void ReportBuilder::close() {
     mReport.clear();
 }
 
 //------------------------------------------------------------------------
-void ReportBuilder::setStatus(SDK::PaymentProcessor::IRemoteService::EStatus aStatus)
-{
-    if (mReport)
-    {
+void ReportBuilder::setStatus(SDK::PaymentProcessor::IRemoteService::EStatus aStatus) {
+    if (mReport) {
         mReport->setValue("status", aStatus);
         updateTimestamp();
     }
 }
 
 //------------------------------------------------------------------------
-void ReportBuilder::setStatusDescription(const QString &aStatusMessage)
-{
-    if (mReport)
-    {
+void ReportBuilder::setStatusDescription(const QString &aStatusMessage) {
+    if (mReport) {
         mReport->setValue("status_desc", aStatusMessage);
         updateTimestamp();
     }
 }
 
 //------------------------------------------------------------------------
-void ReportBuilder::setProgress(int aProgress)
-{
-    if (mReport)
-    {
+void ReportBuilder::setProgress(int aProgress) {
+    if (mReport) {
         mReport->setValue("progress", aProgress);
         updateTimestamp();
     }
 }
 
 //------------------------------------------------------------------------
-void ReportBuilder::updateTimestamp()
-{
-    if (mReport)
-    {
-        mReport->setValue("last_update", QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss"));
+void ReportBuilder::updateTimestamp() {
+    if (mReport) {
+        mReport->setValue("last_update",
+                          QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss"));
         mReport->sync();
     }
 }

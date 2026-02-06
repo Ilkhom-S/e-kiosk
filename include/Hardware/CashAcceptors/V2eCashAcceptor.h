@@ -2,18 +2,14 @@
 
 #pragma once
 
-// Modules
+#include <Hardware/CashAcceptors/SerialCashAcceptor.h>
 #include <Hardware/Protocols/CashAcceptor/V2e.h>
 
-// Project
-#include <Hardware/CashAcceptors/SerialCashAcceptor.h>
-
 //--------------------------------------------------------------------------------
-class V2eCashAcceptor : public TSerialCashAcceptor
-{
+class V2eCashAcceptor : public TSerialCashAcceptor {
     SET_SERIES("V2e")
 
-  public:
+public:
     V2eCashAcceptor();
 
     /// Возвращает список поддерживаемых устройств.
@@ -25,14 +21,15 @@ class V2eCashAcceptor : public TSerialCashAcceptor
     /// Вернуть купюру.
     virtual bool reject();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
     /// Установка параметров по умолчанию.
     virtual bool setDefaultParameters();
 
-    /// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней логики.
+    /// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней
+    /// логики.
     virtual void cleanSpecificStatusCodes(TStatusCodes &aStatusCodes);
 
     /// Изменение режима приема денег.
@@ -48,7 +45,8 @@ class V2eCashAcceptor : public TSerialCashAcceptor
     virtual bool processReset();
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult execCommand(const QByteArray &aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
 
     /// Подождать смены BUSY-состояния.

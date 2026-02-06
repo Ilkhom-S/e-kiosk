@@ -2,13 +2,11 @@
 
 #pragma once
 
-// Project
 #include "PaymentStatusRequest.h"
 
 //---------------------------------------------------------------------------
-class PinPaymentStatusRequest : public PaymentStatusRequest
-{
-  public:
+class PinPaymentStatusRequest : public PaymentStatusRequest {
+public:
     PinPaymentStatusRequest(Payment *aPayment);
 };
 

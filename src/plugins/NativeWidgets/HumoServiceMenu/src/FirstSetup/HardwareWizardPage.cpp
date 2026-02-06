@@ -1,15 +1,12 @@
 /* @file Окно настройки железа. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "HardwareWizardPage.h"
+
 #include <QtCore/QTimer>
 #include <QtWidgets/QStackedLayout>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/Drivers/Components.h>
 
-// System
 #include "Backend/HardwareManager.h"
 #include "Backend/HumoServiceBackend.h"
 #include "Backend/NetworkManager.h"
@@ -17,12 +14,8 @@
 #include "GUI/HardwareWindow.h"
 #include "GUI/MessageBox/MessageBox.h"
 
-// Project
-#include "HardwareWizardPage.h"
-
 HardwareWizardPage::HardwareWizardPage(HumoServiceBackend *aBackend, QWidget *aParent)
-    : WizardPageBase(aBackend, aParent)
-{
+    : WizardPageBase(aBackend, aParent) {
     QStackedLayout *layout = new QStackedLayout(this);
 
     setLayout(layout);
@@ -53,17 +46,16 @@ HardwareWizardPage::HardwareWizardPage(HumoServiceBackend *aBackend, QWidget *aP
     connect(mHardwareWindow, SIGNAL(detectionFinished()), SLOT(onDetectionFinished()));
     connect(mHardwareWindow, SIGNAL(applyingStarted()), SLOT(onApplyingStarted()));
     connect(mHardwareWindow, SIGNAL(applyingFinished()), SLOT(onApplyingFinished()));
-    connect(mHardwareWindow, SIGNAL(editSlot(DeviceSlot *, EditorPane *)),
+    connect(mHardwareWindow,
+            SIGNAL(editSlot(DeviceSlot *, EditorPane *)),
             SLOT(onEditSlot(DeviceSlot *, EditorPane *)));
     connect(mHardwareWindow, SIGNAL(removeSlot(DeviceSlot *)), SLOT(onRemoveSlot(DeviceSlot *)));
     connect(mHardwareWindow, SIGNAL(currentFormChanged(int)), SLOT(onCurrentFormChanged(int)));
 }
 
 //------------------------------------------------------------------------
-bool HardwareWizardPage::initialize()
-{
-    if (!mHardwareWindow->initialize())
-    {
+bool HardwareWizardPage::initialize() {
+    if (!mHardwareWindow->initialize()) {
         return false;
     }
 
@@ -71,27 +63,23 @@ bool HardwareWizardPage::initialize()
 }
 
 //------------------------------------------------------------------------
-bool HardwareWizardPage::shutdown()
-{
+bool HardwareWizardPage::shutdown() {
     mHardwareWindow->shutdown();
 
     return true;
 }
 
 //------------------------------------------------------------------------
-bool HardwareWizardPage::activate()
-{
+bool HardwareWizardPage::activate() {
     mHardwareWindow->setConfiguration(mBackend->getHardwareManager()->getConfiguration());
 
     return true;
 }
 
 //------------------------------------------------------------------------
-bool HardwareWizardPage::deactivate()
-{
+bool HardwareWizardPage::deactivate() {
     QStackedLayout *layout = qobject_cast<QStackedLayout *>(this->layout());
-    if (layout)
-    {
+    if (layout) {
         layout->setCurrentWidget(mHardwareWindow);
     }
 
@@ -101,38 +89,31 @@ bool HardwareWizardPage::deactivate()
 }
 
 //------------------------------------------------------------------------
-void HardwareWizardPage::onDetectionStarted()
-{
+void HardwareWizardPage::onDetectionStarted() {
     // TODO: Show waiting dialog
 }
 
 //------------------------------------------------------------------------
-void HardwareWizardPage::onDetectionFinished()
-{
+void HardwareWizardPage::onDetectionFinished() {
     // TODO: Hide waiting dialog
 }
 
 //------------------------------------------------------------------------
-void HardwareWizardPage::onApplyingStarted()
-{
+void HardwareWizardPage::onApplyingStarted() {
     // TODO: Show waiting dialog
 }
 
 //------------------------------------------------------------------------
-void HardwareWizardPage::onApplyingFinished()
-{
+void HardwareWizardPage::onApplyingFinished() {
     // TODO: Hide waiting dialog
 }
 
 //------------------------------------------------------------------------
-void HardwareWizardPage::onEditSlot(DeviceSlot *aSlot, EditorPane *aPane)
-{
+void HardwareWizardPage::onEditSlot(DeviceSlot *aSlot, EditorPane *aPane) {
     QStackedLayout *layout = qobject_cast<QStackedLayout *>(this->layout());
-    if (layout)
-    {
+    if (layout) {
         QHBoxLayout *editorLayout = qobject_cast<QHBoxLayout *>(mEditorWindow->layout());
-        if (editorLayout)
-        {
+        if (editorLayout) {
             editorLayout->addWidget(aPane->getWidget());
         }
 
@@ -141,30 +122,25 @@ void HardwareWizardPage::onEditSlot(DeviceSlot *aSlot, EditorPane *aPane)
 }
 
 //------------------------------------------------------------------------
-void HardwareWizardPage::onRemoveSlot(DeviceSlot *aSlot)
-{
+void HardwareWizardPage::onRemoveSlot(DeviceSlot *aSlot) {
     // TODO: Handle slot removal
 }
 
 //------------------------------------------------------------------------
-void HardwareWizardPage::onEditFinished()
-{
+void HardwareWizardPage::onEditFinished() {
     QStackedLayout *layout = qobject_cast<QStackedLayout *>(this->layout());
-    if (layout)
-    {
+    if (layout) {
         layout->setCurrentWidget(mHardwareWindow);
     }
 }
 
 //------------------------------------------------------------------------
-void HardwareWizardPage::onCurrentFormChanged(int aIndex)
-{
+void HardwareWizardPage::onCurrentFormChanged(int aIndex) {
     // TODO: Handle form changes
 }
 
 //------------------------------------------------------------------------
-void HardwareWizardPage::onClicked(const QVariantMap &aParameters)
-{
+void HardwareWizardPage::onClicked(const QVariantMap &aParameters) {
     // TODO: Handle clicks
 }
 

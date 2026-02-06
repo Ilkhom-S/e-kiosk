@@ -2,44 +2,40 @@
 
 #pragma once
 
-// SDK
-#include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>
-
 #include <Common/ILogable.h>
 #include <Common/PropertyTree.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
+#include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>
 
-        //----------------------------------------------------------------------------
-        class UserSettings : public ISettingsAdapter, public ILogable
-        {
-          public:
-            UserSettings(TPtree &aProperties);
-            virtual ~UserSettings();
+namespace SDK {
+namespace PaymentProcessor {
 
-            /// Валидация данных.
-            virtual bool isValid() const;
+//----------------------------------------------------------------------------
+class UserSettings : public ISettingsAdapter, public ILogable {
+public:
+    UserSettings(TPtree &aProperties);
+    virtual ~UserSettings();
 
-            /// Получить имя адаптера.
-            static QString getAdapterName();
+    /// Валидация данных.
+    virtual bool isValid() const;
 
-            /// Настройка для мониторинга: выгружать все платежи, игнорируя статус
-            bool reportAllPayments() const;
+    /// Получить имя адаптера.
+    static QString getAdapterName();
 
-            /// Требовать ввода номера стекера в момент инкассации
-            bool useStackerID() const;
+    /// Настройка для мониторинга: выгружать все платежи, игнорируя статус
+    bool reportAllPayments() const;
 
-          private:
-            TPtree &mProperties;
+    /// Требовать ввода номера стекера в момент инкассации
+    bool useStackerID() const;
 
-          private:
-            Q_DISABLE_COPY(UserSettings);
-        };
+private:
+    TPtree &mProperties;
 
-    } // namespace PaymentProcessor
+private:
+    Q_DISABLE_COPY(UserSettings);
+};
+
+} // namespace PaymentProcessor
 } // namespace SDK
 
 //---------------------------------------------------------------------------

@@ -1,66 +1,59 @@
 /* @file Компонент дистрибутива. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "Component.h"
+
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QRegularExpression>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/Exception.h>
 
-// Project
-#include "Component.h"
 #include "Misc.h"
 
-Component::Component(const QString &aId, const QString &aVersion, const TFileList &aFiles, const QStringList &aActions,
+Component::Component(const QString &aId,
+                     const QString &aVersion,
+                     const TFileList &aFiles,
+                     const QStringList &aActions,
                      const QString &aURL)
-    : mPostActions(aActions), mURL(aURL), mId(aId), mVersion(aVersion), mSkipExisting(false), mOptional(false)
-{
+    : mPostActions(aActions), mURL(aURL), mId(aId), mVersion(aVersion), mSkipExisting(false),
+      mOptional(false) {
     QRegularExpression removeFirstSlash("^/+");
 
     // Удяляем слэши в начали пути.
-    foreach (auto file, aFiles)
-    {
-        mFiles.insert(File(QString(file.name()).remove(removeFirstSlash), file.hash(), file.url(), file.size()));
+    foreach (auto file, aFiles) {
+        mFiles.insert(File(
+            QString(file.name()).remove(removeFirstSlash), file.hash(), file.url(), file.size()));
     }
 }
 
 //---------------------------------------------------------------------------
-Component::~Component()
-{
-}
+Component::~Component() {}
 
 //---------------------------------------------------------------------------
-TFileList Component::getFiles() const
-{
+TFileList Component::getFiles() const {
     return mFiles;
 }
 
 //---------------------------------------------------------------------------
-QString Component::getId() const
-{
+QString Component::getId() const {
     return mId;
 }
 
 //---------------------------------------------------------------------------
-QString Component::getVersion() const
-{
+QString Component::getVersion() const {
     return mVersion;
 }
 
 //---------------------------------------------------------------------------
-QString Component::getTemporaryFolder() const
-{
+QString Component::getTemporaryFolder() const {
     QDir dir(QDir::tempPath() + QDir::separator() + "Humo." + mId + "." + mVersion + ".temp");
 
-    if (!dir.exists())
-    {
-        if (!dir.mkpath(dir.path()))
-        {
-            throw Exception(ECategory::Application, ESeverity::Major, 0,
+    if (!dir.exists()) {
+        if (!dir.mkpath(dir.path())) {
+            throw Exception(ECategory::Application,
+                            ESeverity::Major,
+                            0,
                             QString("Failed to create path %1.").arg(dir.path()));
         }
     }
@@ -69,10 +62,8 @@ QString Component::getTemporaryFolder() const
 }
 
 //---------------------------------------------------------------------------
-QString Component::getURL(const File &aFile, const QString &aDefaultUrl) const
-{
-    if (!aFile.url().isEmpty())
-    {
+QString Component::getURL(const File &aFile, const QString &aDefaultUrl) const {
+    if (!aFile.url().isEmpty()) {
         return aFile.url();
     }
 
@@ -80,10 +71,8 @@ QString Component::getURL(const File &aFile, const QString &aDefaultUrl) const
 }
 
 //---------------------------------------------------------------------------
-QString Component::getURL(const QString &aFileName, const QString &aDefaultUrl) const
-{
-    if (!mURL.isEmpty())
-    {
+QString Component::getURL(const QString &aFileName, const QString &aDefaultUrl) const {
+    if (!mURL.isEmpty()) {
         return mURL + "/" + aFileName;
     }
 
@@ -91,32 +80,27 @@ QString Component::getURL(const QString &aFileName, const QString &aDefaultUrl) 
 }
 
 //---------------------------------------------------------------------------
-QStringList Component::getPostActions() const
-{
+QStringList Component::getPostActions() const {
     return mPostActions;
 }
 
 //---------------------------------------------------------------------------
-void Component::setSkipExisting(bool aSkipExisting)
-{
+void Component::setSkipExisting(bool aSkipExisting) {
     mSkipExisting = aSkipExisting;
 }
 
 //---------------------------------------------------------------------------
-bool Component::skipExisting() const
-{
+bool Component::skipExisting() const {
     return mSkipExisting;
 }
 
 //---------------------------------------------------------------------------
-void Component::setOptional(bool aOptional)
-{
+void Component::setOptional(bool aOptional) {
     mOptional = aOptional;
 }
 
 //---------------------------------------------------------------------------
-bool Component::optional() const
-{
+bool Component::optional() const {
     return mOptional;
 }
 

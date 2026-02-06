@@ -2,34 +2,27 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include <QtCore/QMap>
 #include <QtCore/QMutex>
+#include <QtCore/QPair>
 #include <QtCore/QRecursiveMutex>
 #include <QtCore/QThread>
-#include <QtCore/QMap>
-#include <QtCore/QPair>
-#include <Common/QtHeadersEnd.h>
 
 //--------------------------------------------------------------------------------
-class MutexLocker
-{
+class MutexLocker {
     typedef QMap<QThread *, QThread *> TMatchedThreads;
     typedef QPair<QThread *, int> TLocksCounter;
 
     // Union to store either mutex type
-    union MutexUnion
-    {
+    union MutexUnion {
         QMutex *mutex;
         QRecursiveMutex *recursiveMutex;
-        MutexUnion() : mutex(nullptr)
-        {
-        }
+        MutexUnion() : mutex(nullptr) {}
     };
 
     typedef QMap<void *, TLocksCounter> TThreadsLocked;
 
-  public:
+public:
     MutexLocker(QMutex *aMutex);
     MutexLocker(QRecursiveMutex *aMutex);
     ~MutexLocker();
@@ -40,14 +33,15 @@ class MutexLocker
     /// Удалить данные потоке с ограниченной синхронизацией.
     static void clearMatchedThread(QThread *aOwner);
 
-  private:
+private:
     /// Рабочий мьютекс (union for both types).
     MutexUnion mMutexUnion;
 
     /// Тип мьютекса (true = recursive, false = regular).
     bool mIsRecursive;
 
-    /// Таблица соответствия потока, вызвавшего локер, и замещающего его потока с ограниченной синхронизацией.
+    /// Таблица соответствия потока, вызвавшего локер, и замещающего его потока с ограниченной
+    /// синхронизацией.
     static TMatchedThreads mMatchedThreads;
 
     /// Потоки, залочившие мьютексы + количество локов (для рекурсивных мьютексов).

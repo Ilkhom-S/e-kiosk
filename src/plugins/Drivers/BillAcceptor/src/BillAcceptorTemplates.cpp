@@ -1,6 +1,5 @@
 /* @file Инстанцирование шаблонов купюроприемников. */
 
-// System
 #include "../../../../modules/Hardware/Acceptors/src/CCTalk/CCTalkAcceptorBase.cpp"
 #include "../../../../modules/Hardware/CashAcceptors/src/CashAcceptorBase.cpp"
 #include "../../../../modules/Hardware/CashAcceptors/src/PortCashAcceptor.cpp"

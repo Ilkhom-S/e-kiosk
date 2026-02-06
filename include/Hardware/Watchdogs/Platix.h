@@ -5,39 +5,36 @@
 #include <Hardware/Watchdogs/WatchdogBase.h>
 
 //--------------------------------------------------------------------------------
-namespace CPlatix
-{
-    /// Начальный байт пакета.
-    const char Sync = '\xC0';
+namespace CPlatix {
+/// Начальный байт пакета.
+const char Sync = '\xC0';
 
-    /// Размер команды.
-    const char CommandSize = 4;
+/// Размер команды.
+const char CommandSize = 4;
 
-    /// Минимальный размер ответного пакета.
-    const int MinAnswerSize = 4;
+/// Минимальный размер ответного пакета.
+const int MinAnswerSize = 4;
 
-    /// Команды.
-    namespace Commands
-    {
-        const char RebootPC = '\x00';   /// Ребут компа.
-        const char ResetModem = '\x01'; /// Сброс модема.
-        const char GetID = '\x10';      /// Запрос ID.
-        const char Poll = '\x26';       /// Запрос активности компа.
-    } // namespace Commands
+/// Команды.
+namespace Commands {
+const char RebootPC = '\x00';   /// Ребут компа.
+const char ResetModem = '\x01'; /// Сброс модема.
+const char GetID = '\x10';      /// Запрос ID.
+const char Poll = '\x26';       /// Запрос активности компа.
+} // namespace Commands
 } // namespace CPlatix
 
 //--------------------------------------------------------------------------------
-class Platix : public WatchdogBase
-{
+class Platix : public WatchdogBase {
     SET_SERIES("Platix")
 
-  public:
+public:
     Platix();
 
     /// Перезагрузка линии питания.
     virtual bool reset(const QString &aLine);
 
-  protected:
+protected:
     /// Обработчик сигнала пинга.
     virtual void onPing();
 

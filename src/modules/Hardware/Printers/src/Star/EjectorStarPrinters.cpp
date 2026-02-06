@@ -1,25 +1,23 @@
 /* @file Принтеры семейства Star c эжектором. */
 
 #include "EjectorStarPrinters.h"
-#include "StarPrinterData.h"
+
 #include "ModelData.h"
+#include "StarPrinterData.h"
 
 using namespace SDK::Driver::IOPort::COM;
 using namespace PrinterStatusCode;
 
 //--------------------------------------------------------------------------------
 // Модели данной реализации.
-namespace CSTAR
-{
-    inline QStringList getEjectorModels()
-    {
-        return QStringList() << Models::TUP592 << Models::TUP992 << Models::UnknownEjector;
-    }
+namespace CSTAR {
+inline QStringList getEjectorModels() {
+    return QStringList() << Models::TUP592 << Models::TUP992 << Models::UnknownEjector;
+}
 } // namespace CSTAR
 
 //--------------------------------------------------------------------------------
-EjectorStarPrinter::EjectorStarPrinter()
-{
+EjectorStarPrinter::EjectorStarPrinter() {
     using namespace CHardware::Printer;
 
     setConfigParameter(RetractorEnable, true);
@@ -30,14 +28,12 @@ EjectorStarPrinter::EjectorStarPrinter()
 }
 
 //--------------------------------------------------------------------------------
-QStringList EjectorStarPrinter::getModelList()
-{
+QStringList EjectorStarPrinter::getModelList() {
     return CSTAR::getEjectorModels();
 }
 
 //--------------------------------------------------------------------------------
-bool EjectorStarPrinter::retract()
-{
+bool EjectorStarPrinter::retract() {
     return StarPrinter::retract() && waitEjectorState(false);
 }
 

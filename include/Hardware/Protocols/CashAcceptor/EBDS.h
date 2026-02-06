@@ -5,15 +5,15 @@
 #include <Hardware/Common/ProtocolBase.h>
 
 //--------------------------------------------------------------------------------
-class EBDSProtocol : public ProtocolBase
-{
-  public:
+class EBDSProtocol : public ProtocolBase {
+public:
     EBDSProtocol();
 
     /// Выполнить команду протокола.
-    TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData, bool aNeedAnswer);
+    TResult
+    processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData, bool aNeedAnswer);
 
-  private:
+private:
     /// Подсчет контрольной суммы пакета данных.
     const uchar calcCRC(const QByteArray &aData);
 

@@ -12,9 +12,8 @@
 #include <QtCore/QString>
 #include <QtCore5Compat/QTextCodec>
 
-class QGsmCodec : public QTextCodec
-{
-  public:
+class QGsmCodec : public QTextCodec {
+public:
     explicit QGsmCodec(bool noLoss = false);
     ~QGsmCodec();
 
@@ -27,10 +26,10 @@ class QGsmCodec : public QTextCodec
     static unsigned short twoByteFromUnicode(QChar ch);
     static QChar twoByteToUnicode(unsigned short ch);
 
-  protected:
+protected:
     QString convertToUnicode(const char *in, int length, ConverterState *state) const;
     QByteArray convertFromUnicode(const QChar *in, int length, ConverterState *state) const;
 
-  private:
+private:
     bool noLoss;
 };

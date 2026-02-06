@@ -2,29 +2,22 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QMetaType>
-#include <Common/QtHeadersEnd.h>
 
-namespace SDK
-{
-    namespace Driver
-    {
+namespace SDK {
+namespace Driver {
 
-        //--------------------------------------------------------------------------------
-        /// Общие состояния устройств - уровень тревожности.
-        namespace EWarningLevel
-        {
-            enum Enum
-            {
-                OK,      /// Нет ошибок.
-                Warning, /// Предупреждение.
-                Error    /// Ошибка.
-            };
-        } // namespace EWarningLevel
+//--------------------------------------------------------------------------------
+/// Общие состояния устройств - уровень тревожности.
+namespace EWarningLevel {
+enum Enum {
+    OK,      /// Нет ошибок.
+    Warning, /// Предупреждение.
+    Error    /// Ошибка.
+};
+} // namespace EWarningLevel
 
-    } // namespace Driver
+} // namespace Driver
 } // namespace SDK
 
 //--------------------------------------------------------------------------------

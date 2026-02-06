@@ -3,70 +3,58 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-// STL
+#include <QtCore/QString>
+
 #include <iostream>
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
-
-// Project
 #include "ILog.h"
 
 //--------------------------------------------------------------------------------
-namespace
-{
-    void ExceptionFilter(const QString &file, const QString &function, int line, ILog *log, bool aThrow)
-    {
-        try
-        {
+namespace {
+void ExceptionFilter(
+    const QString &file, const QString &function, int line, ILog *log, bool aThrow) {
+    try {
+        throw;
+    } catch (std::exception &ex) {
+        LOG(log,
+            LogLevel::Error,
+            QString("std::exception in file: %1 ,from function: %2, catch line: "
+                    "%3, message: %4.")
+                .arg(file)
+                .arg(function)
+                .arg(line)
+                .arg(ex.what()));
+    } catch (...) {
+        LOG(log,
+            LogLevel::Error,
+            QString("Unknown Exception in file: %1 ,from function: %2, catch line: %3.")
+                .arg(file)
+                .arg(function)
+                .arg(line));
+
+        if (aThrow) {
             throw;
         }
-        catch (std::exception &ex)
-        {
-            LOG(log, LogLevel::Error,
-                QString("std::exception in file: %1 ,from function: %2, catch line: "
-                        "%3, message: %4.")
-                    .arg(file)
-                    .arg(function)
-                    .arg(line)
-                    .arg(ex.what()));
-        }
-        catch (...)
-        {
-            LOG(log, LogLevel::Error,
-                QString("Unknown Exception in file: %1 ,from function: %2, catch line: %3.")
-                    .arg(file)
-                    .arg(function)
-                    .arg(line));
-
-            if (aThrow)
-            {
-                throw;
-            }
-        }
     }
+}
 
-    void ExceptionFilterCout(const QString &file, const QString &function, int line, const std::string &message)
-    {
-        try
-        {
-            std::cout << "message: " << message << std::endl;
-            throw;
-        }
-        catch (std::exception &ex)
-        {
-            std::cout << "std::exception in file: " << file.toStdString()
-                      << ", from function: " << function.toStdString() << ", catch line: " << line
-                      << ", message: " << ex.what() << std::endl;
-        }
-        catch (...)
-        {
-            std::cout << "Unknown Exception in file: " << file.toStdString()
-                      << ", from function: " << function.toStdString() << ", catch line: " << line << std::endl;
-        }
+void ExceptionFilterCout(const QString &file,
+                         const QString &function,
+                         int line,
+                         const std::string &message) {
+    try {
+        std::cout << "message: " << message << std::endl;
+        throw;
+    } catch (std::exception &ex) {
+        std::cout << "std::exception in file: " << file.toStdString()
+                  << ", from function: " << function.toStdString() << ", catch line: " << line
+                  << ", message: " << ex.what() << std::endl;
+    } catch (...) {
+        std::cout << "Unknown Exception in file: " << file.toStdString()
+                  << ", from function: " << function.toStdString() << ", catch line: " << line
+                  << std::endl;
     }
+}
 } // namespace
 
 //---------------------------------------------------------------------------

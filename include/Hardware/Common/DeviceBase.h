@@ -2,67 +2,57 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QSet>
-#include <Common/QtHeadersEnd.h>
 
-// Common
 #include "Common/ExitAction.h"
-
-// Project
-#include "Hardware/Common/PollingExpector.h"
 #include "Hardware/Common/BaseStatusDescriptions.h"
 #include "Hardware/Common/BaseStatusTypes.h"
 #include "Hardware/Common/HystoryList.h"
 #include "Hardware/Common/MetaDevice.h"
+#include "Hardware/Common/PollingExpector.h"
 
 //--------------------------------------------------------------------------------
 typedef QList<int> TStatusCodesBuffer;
 
 //--------------------------------------------------------------------------------
 /// Общие константы устройств.
-namespace CDevice
-{
-    /// Размер истории статусов.
-    const int StatusCollectionHistoryCount = 10;
+namespace CDevice {
+/// Размер истории статусов.
+const int StatusCollectionHistoryCount = 10;
 
-    /// Имя устройства по умолчанию.
-    const char DefaultName[] = "Unknown device";
+/// Имя устройства по умолчанию.
+const char DefaultName[] = "Unknown device";
 
-    /// Разделитель статусов.
-    const char StatusSeparator[] = "; ";
+/// Разделитель статусов.
+const char StatusSeparator[] = "; ";
 } // namespace CDevice
 
 //--------------------------------------------------------------------------------
-#define START_IN_WORKING_THREAD(aFunction)                                                                             \
-    if ((!this->mOperatorPresence ||                                                                                   \
-         (this->getConfigParameter(CHardware::CallingType) != CHardware::CallingTypes::Internal)) &&                   \
-        !this->isWorkingThread())                                                                                      \
-    {                                                                                                                  \
-        if (this->mThread.isRunning())                                                                                 \
-        {                                                                                                              \
-            QMetaObject::invokeMethod(this, #aFunction, Qt::QueuedConnection);                                         \
-        }                                                                                                              \
-        else                                                                                                           \
-        {                                                                                                              \
-            this->connect(&this->mThread, SIGNAL(started()), this, SLOT(aFunction()), Qt::UniqueConnection);           \
-            this->mThread.start();                                                                                     \
-        }                                                                                                              \
-        return;                                                                                                        \
+#define START_IN_WORKING_THREAD(aFunction)                                                         \
+    if ((!this->mOperatorPresence || (this->getConfigParameter(CHardware::CallingType) !=          \
+                                      CHardware::CallingTypes::Internal)) &&                       \
+        !this->isWorkingThread()) {                                                                \
+        if (this->mThread.isRunning()) {                                                           \
+            QMetaObject::invokeMethod(this, #aFunction, Qt::QueuedConnection);                     \
+        } else {                                                                                   \
+            this->connect(                                                                         \
+                &this->mThread, SIGNAL(started()), this, SLOT(aFunction()), Qt::UniqueConnection); \
+            this->mThread.start();                                                                 \
+        }                                                                                          \
+        return;                                                                                    \
     }
 
 //--------------------------------------------------------------------------------
-template <class T> class DeviceBase : public T
-{
-  public:
+template <class T> class DeviceBase : public T {
+public:
     DeviceBase();
 
 #pragma region SDK::Driver::IDevice interface
     /// Подключает и инициализирует устройство. Обертка для вызова функционала в рабочем потоке.
     virtual void initialize();
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release();
 
     /// Соединяет сигнал данного интерфейса со слотом приёмника.
@@ -80,7 +70,7 @@ template <class T> class DeviceBase : public T
     /// Полл без пост-действий.
     void simplePoll();
 
-  protected:
+protected:
     /// Идентификация.
     virtual bool checkExistence();
 
@@ -160,8 +150,9 @@ template <class T> class DeviceBase : public T
     TStatusCodes getStatusCodes(const TStatusCollection &aStatusCollection);
 
     /// Получить коллекцию статусов.
-    TStatusCollection getStatusCollection(const TStatusCodes &aStatusCodes,
-                                          TStatusCodeSpecification *aStatusCodeSpecification = nullptr);
+    TStatusCollection
+    getStatusCollection(const TStatusCodes &aStatusCodes,
+                        TStatusCodeSpecification *aStatusCodeSpecification = nullptr);
 
     /// Получить уровень лога.
     LogLevel::Enum getLogLevel(SDK::Driver::EWarningLevel::Enum aLevel);
@@ -181,7 +172,8 @@ template <class T> class DeviceBase : public T
     bool waitReady(const SWaitingData &aWaitingData, bool aReady = true);
 
     /// Получить уровень тревожности по буферу статус-кодов.
-    virtual SDK::Driver::EWarningLevel::Enum getWarningLevel(const TStatusCollection &aStatusCollection);
+    virtual SDK::Driver::EWarningLevel::Enum
+    getWarningLevel(const TStatusCollection &aStatusCollection);
 
     /// Счетчик отсутствия ответа на полловые посылки.
     int mBadAnswerCounter;
@@ -201,7 +193,8 @@ template <class T> class DeviceBase : public T
     /// Теоретически исправимые после пере инициализации ошибки.
     TStatusCodes mRecoverableErrors;
 
-    /// Неустойчивые пограничные состояния (не-ошибки), в которых нельзя исправлять исправимые ошибки.
+    /// Неустойчивые пограничные состояния (не-ошибки), в которых нельзя исправлять исправимые
+    /// ошибки.
     TStatusCodes mUnsafeStatusCodes;
 
     /// Устройство протестировано на совместимость.
@@ -219,8 +212,8 @@ template <class T> class DeviceBase : public T
     /// Экземпляр класса-описателя статусов устройства.
     DeviceStatusCode::PSpecifications mStatusCodesSpecification;
 
-    /// Кэш состояний устройства. Фильтрованы только несуществующие, но не несущественные статусы, применен буфер
-    /// статусов.
+    /// Кэш состояний устройства. Фильтрованы только несуществующие, но не несущественные статусы,
+    /// применен буфер статусов.
     TStatusCollection mStatusCollection;
 
     /// История состояний устройства. Фильтрованы несуществующие статусы, применен буфер статусов.

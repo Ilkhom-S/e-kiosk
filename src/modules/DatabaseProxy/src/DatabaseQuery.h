@@ -1,24 +1,18 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
 #include <QtCore/QVariant>
 #include <QtSql/QtSql>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/ILog.h>
 
-// System
 #include <DatabaseProxy/IDatabaseQuery.h>
 
 class IDatabaseQueryChecker;
 
 //---------------------------------------------------------------------------
-class DatabaseQuery : public IDatabaseQuery, public QSqlQuery
-{
-  public:
+class DatabaseQuery : public IDatabaseQuery, public QSqlQuery {
+public:
     DatabaseQuery(QSqlDatabase db, IDatabaseQueryChecker *aQueryChecker);
     virtual ~DatabaseQuery();
 
@@ -37,7 +31,7 @@ class DatabaseQuery : public IDatabaseQuery, public QSqlQuery
 
     virtual QVariant value(int i) const override;
 
-  private:
+private:
     ILog *mLog;
     IDatabaseQueryChecker *mQueryChecker;
 };

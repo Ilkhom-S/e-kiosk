@@ -1,34 +1,28 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QPointer>
 #include <QtGui/QKeyEvent>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QMessageBox>
-#include <Common/QtHeadersEnd.h>
 
-// Project
 #include "keypud.h"
 
-namespace Ui
-{
-    class AvtorizationToAdminIn;
+namespace Ui {
+class AvtorizationToAdminIn;
 }
 
-class AvtorizationToAdminIn : public QDialog
-{
+class AvtorizationToAdminIn : public QDialog {
     Q_OBJECT
 
-  public:
+public:
     explicit AvtorizationToAdminIn(QWidget *parent = 0);
     ~AvtorizationToAdminIn();
 
     void setAuthParam(QString login, QString pass);
-  signals:
+signals:
     void emit_openAdminDialog();
 
-  private:
+private:
     Ui::AvtorizationToAdminIn *ui;
 
     keyPud *KeyPud;
@@ -37,7 +31,7 @@ class AvtorizationToAdminIn : public QDialog
     QString passIn;
     int countCheckIn;
 
-  private slots:
+private slots:
     void sendCharacter(QChar character);
     void checkInputData();
 };

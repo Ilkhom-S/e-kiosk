@@ -2,34 +2,28 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QSharedPointer>
 #include <QtCore/QDateTime>
+#include <QtCore/QSharedPointer>
 #include <QtCore/QUrl>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
-#include <System/IApplication.h>
 #include <Common/ILogable.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Core/IService.h>
 
+#include <System/IApplication.h>
+
 //---------------------------------------------------------------------------
-namespace Ad
-{
-    struct Campaign;
-    class DatabaseUtils;
-    class Client;
+namespace Ad {
+struct Campaign;
+class DatabaseUtils;
+class Client;
 } // namespace Ad
 
 //---------------------------------------------------------------------------
-class AdService : public QObject, public SDK::PaymentProcessor::IService, private ILogable
-{
+class AdService : public QObject, public SDK::PaymentProcessor::IService, private ILogable {
     Q_OBJECT
 
-  public:
+public:
     //---------------------------------------------------------------------------
     // Получение AdService'а
     static AdService *instance(IApplication *aApplication);
@@ -81,7 +75,7 @@ class AdService : public QObject, public SDK::PaymentProcessor::IService, privat
 
 #pragma endregion
 
-  private:
+private:
     IApplication *mApplication;
     QSettings *mSettings;
     QMap<int, QString> mChannelsMap;

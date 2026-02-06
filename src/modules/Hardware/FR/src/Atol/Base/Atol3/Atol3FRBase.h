@@ -2,25 +2,23 @@
 
 #pragma once
 
-// Modules
 #include <Hardware/FR/Atol3FR.h>
 
-// Project
 #include "../AtolFRBase.h"
 
 //--------------------------------------------------------------------------------
-class Atol3FRBase : public AtolFRBase
-{
+class Atol3FRBase : public AtolFRBase {
     SET_SERIES("ATOL3")
 
     Atol3FRBase();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
     /// Выполнить команду.
-    virtual TResult performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout);
+    virtual TResult
+    performCommand(const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout);
 
     /// Протокол.
     Atol3FRProtocol mProtocol;

@@ -2,14 +2,11 @@
 
 // Plugin SDK
 
-// SDK
 #include <SDK/Plugins/PluginFactory.h>
 
-// Project
 #include "PluginLibraryDefinition.h"
 
-UnitellerPluginFactory::UnitellerPluginFactory()
-{
+UnitellerPluginFactory::UnitellerPluginFactory() {
     mName = "uniteller";
     mDescription = "Native scenario for Uniteller";
     mAuthor = "Humo";

@@ -1,41 +1,36 @@
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
-
-// Project
 #include "UpdaterSplashScreen.h"
 
+#include <QtCore/QStringList>
+
 UpdaterSplashScreen::UpdaterSplashScreen(QWidget *parent, Qt::WFlags flags)
-    : QWidget(parent, flags), m_progressFile(QCoreApplication::applicationDirPath() + "/progress.txt"), m_step(0),
-      m_stepCount(0), m_status("Preparing for update...")
-{
+    : QWidget(parent, flags),
+      m_progressFile(QCoreApplication::applicationDirPath() + "/progress.txt"), m_step(0),
+      m_stepCount(0), m_status("Preparing for update...") {
     ui.setupUi(this);
 
     updateScreen();
 
-    connect(&m_watcher, SIGNAL(fileChanged(const QString &)), this, SLOT(onFileUpdated(const QString &)));
+    connect(&m_watcher,
+            SIGNAL(fileChanged(const QString &)),
+            this,
+            SLOT(onFileUpdated(const QString &)));
     m_watcher.addPath(m_progressFile);
 }
 
 //---------------------------------------------------------------------------
-UpdaterSplashScreen::~UpdaterSplashScreen()
-{
-}
+UpdaterSplashScreen::~UpdaterSplashScreen() {}
 
 //---------------------------------------------------------------------------
-void UpdaterSplashScreen::onFileUpdated(const QString &aPath)
-{
+void UpdaterSplashScreen::onFileUpdated(const QString &aPath) {
     QFile file(aPath);
-    if (!file.open(QIODevice::ReadOnly))
-    {
+    if (!file.open(QIODevice::ReadOnly)) {
         return;
     }
 
     QString line;
-    while (true)
-    {
-        QString buf = QString::fromLatin1(file.readLine().data()).replace("\n", "").replace("\r", "");
+    while (true) {
+        QString buf =
+            QString::fromLatin1(file.readLine().data()).replace("\n", "").replace("\r", "");
         if (buf.isEmpty())
             break;
 
@@ -46,21 +41,17 @@ void UpdaterSplashScreen::onFileUpdated(const QString &aPath)
         return;
 
     QStringList params = line.split(";");
-    if (params.count() > 2)
-    {
+    if (params.count() > 2) {
         m_stepCount = params.takeFirst().toInt();
         m_step = params.takeFirst().toInt();
         m_status = params.takeFirst();
-    }
-    else
-    {
+    } else {
         m_stepCount = 0;
         m_step = 0;
         m_status = "Waiting...";
     }
 
-    if (m_status.toLower() == "close")
-    {
+    if (m_status.toLower() == "close") {
         QCoreApplication::quit();
         return;
     }
@@ -69,8 +60,7 @@ void UpdaterSplashScreen::onFileUpdated(const QString &aPath)
 }
 
 //---------------------------------------------------------------------------
-void UpdaterSplashScreen::updateScreen()
-{
+void UpdaterSplashScreen::updateScreen() {
     ui.progressBar->setMaximum(m_stepCount);
     ui.progressBar->setValue(m_step);
     ui.infoLabel->setText(m_status);

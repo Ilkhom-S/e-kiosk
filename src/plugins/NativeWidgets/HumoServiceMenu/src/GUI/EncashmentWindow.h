@@ -1,49 +1,44 @@
 /* @file Базовый виджет для инкассации */
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtWidgets/QWidget>
 #include <QtCore/QTimer>
-#include <Common/QtHeadersEnd.h>
+#include <QtWidgets/QWidget>
 
-// Project
-#include "InputBox.h"
 #include "EncashmentHistoryWindow.h"
 #include "IServiceWindow.h"
+#include "InputBox.h"
 
 //---------------------------------------------------------------------------
 class HumoServiceBackend;
 
 //---------------------------------------------------------------------------
-class EncashmentWindow : public QWidget, public ServiceWindowBase
-{
+class EncashmentWindow : public QWidget, public ServiceWindowBase {
     Q_OBJECT
 
-  public:
+public:
     EncashmentWindow(HumoServiceBackend *aBackend, QWidget *aParent = 0);
     virtual ~EncashmentWindow();
 
-  public:
+public:
     virtual bool activate();
     virtual bool deactivate();
 
-  protected slots:
+protected slots:
     void doEncashment();
     virtual bool doEncashmentProcess();
     void onPrintZReport();
     void onReceiptPrinted(qint64 aJobIndex, bool aErrorHappened);
 
-  protected:
+protected:
     virtual void updateUI() = 0;
 
-  protected:
+protected:
     QString mMessageSuccess;
     QString mMessageError;
     bool mEncashmentWithZReport;
     qint64 mLastPrintJob;
 
-  protected:
+protected:
     QTimer mIdleTimer;
     InputBox *mInputBox;
     EncashmentHistoryWindow *mHistoryWindow;

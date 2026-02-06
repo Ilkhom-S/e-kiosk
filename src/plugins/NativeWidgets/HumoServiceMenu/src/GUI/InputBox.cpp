@@ -1,12 +1,12 @@
 /* @file Виджет отображения диалога ввода данных */
 
-// Project
-#include "SIPStyle.h"
 #include "InputBox.h"
 
+#include "SIPStyle.h"
+
 //---------------------------------------------------------------------------
-InputBox::InputBox(QWidget *parent, ValidatorFunction aValidator) : QWidget(parent), mValidator(aValidator)
-{
+InputBox::InputBox(QWidget *parent, ValidatorFunction aValidator)
+    : QWidget(parent), mValidator(aValidator) {
     ui.setupUi(this);
 
     connect(ui.btnOK, SIGNAL(clicked()), this, SLOT(onOK()));
@@ -19,60 +19,50 @@ InputBox::InputBox(QWidget *parent, ValidatorFunction aValidator) : QWidget(pare
 }
 
 //---------------------------------------------------------------------------
-InputBox::~InputBox()
-{
-}
+InputBox::~InputBox() {}
 
 //---------------------------------------------------------------------------
-void InputBox::setLabelText(const QString &aText)
-{
+void InputBox::setLabelText(const QString &aText) {
     ui.label->setText(aText);
 }
 
 //---------------------------------------------------------------------------
-void InputBox::setTextValue(const QString &aValue)
-{
+void InputBox::setTextValue(const QString &aValue) {
     ui.lineEdit->setText(aValue);
 }
 
 //---------------------------------------------------------------------------
-void InputBox::onOK()
-{
+void InputBox::onOK() {
     close();
 
     emit accepted();
 }
 
 //---------------------------------------------------------------------------
-void InputBox::onCancel()
-{
+void InputBox::onCancel() {
     close();
 }
 
 //---------------------------------------------------------------------------
-QString InputBox::textValue() const
-{
+QString InputBox::textValue() const {
     return ui.lineEdit->text();
 }
 
 //---------------------------------------------------------------------------
-void InputBox::mySetFocus()
-{
+void InputBox::mySetFocus() {
     ui.lineEdit->setFocus();
     qApp->sendEvent(ui.lineEdit, new QEvent(QEvent::RequestSoftwareInputPanel));
 }
 
 //---------------------------------------------------------------------------
-void InputBox::showEvent(QShowEvent *aEvent)
-{
+void InputBox::showEvent(QShowEvent *aEvent) {
     QWidget::showEvent(aEvent);
 
     QTimer::singleShot(100, this, SLOT(mySetFocus()));
 }
 
 //---------------------------------------------------------------------------
-void InputBox::onTextChanged()
-{
+void InputBox::onTextChanged() {
     ui.btnOK->setEnabled(mValidator(ui.lineEdit->text()));
 }
 

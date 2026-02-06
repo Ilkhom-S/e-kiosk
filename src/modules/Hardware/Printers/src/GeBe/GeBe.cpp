@@ -1,15 +1,14 @@
 /* @file Принтер Gebe. */
 
-// Project
-#include "GeBEData.h"
 #include "GeBe.h"
+
+#include "GeBEData.h"
 
 using namespace SDK::Driver::IOPort::COM;
 using namespace PrinterStatusCode;
 
 //--------------------------------------------------------------------------------
-GeBe::GeBe()
-{
+GeBe::GeBe() {
     // данные устройства
     mDeviceName = "GeBE Compact";
 
@@ -43,23 +42,19 @@ GeBe::GeBe()
 }
 
 //--------------------------------------------------------------------------------
-bool GeBe::updateParameters()
-{
+bool GeBe::updateParameters() {
     return mIOPort->write(QByteArray(CGeBE::Commands::Initialize) + CGeBE::Commands::SetFont);
 }
 
 //--------------------------------------------------------------------------------
-bool GeBe::getStatus(TStatusCodes &aStatusCodes)
-{
+bool GeBe::getStatus(TStatusCodes &aStatusCodes) {
     QByteArray answer;
 
-    if (!mIOPort->write(CGeBE::Commands::GetStatus) || !mIOPort->read(answer) || answer.isEmpty())
-    {
+    if (!mIOPort->write(CGeBE::Commands::GetStatus) || !mIOPort->read(answer) || answer.isEmpty()) {
         return false;
     }
 
-    for (int i = 0; i < answer.size(); ++i)
-    {
+    for (int i = 0; i < answer.size(); ++i) {
         aStatusCodes.insert(CGeBE::Statuses[answer[i]]);
     }
 

@@ -2,106 +2,52 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include <QtCore/QDateTime>
 #include <QtCore/QMetaType>
 #include <QtCore/QString>
-#include <QtCore/QDateTime>
-#include <Common/QtHeadersEnd.h>
 
 #include "SDK/PaymentProcessor/Payment/Step.h"
 
 //---------------------------------------------------------------------------
-class PaymentInfo
-{
-  public:
+class PaymentInfo {
+public:
     PaymentInfo()
-        : id(0), amount(0.0), amountAll(0.0), status(SDK::PaymentProcessor::EPaymentStatus::Init), printed(false)
-    {
-    }
+        : id(0), amount(0.0), amountAll(0.0), status(SDK::PaymentProcessor::EPaymentStatus::Init),
+          printed(false) {}
 
-    void setId(qint64 aId)
-    {
-        id = aId;
-    }
+    void setId(qint64 aId) { id = aId; }
 
-    qint64 getId() const
-    {
-        return id;
-    }
+    qint64 getId() const { return id; }
 
-    void setProvider(const QString &aProvider)
-    {
-        provider = aProvider;
-    }
+    void setProvider(const QString &aProvider) { provider = aProvider; }
 
-    QString getProvider() const
-    {
-        return provider;
-    }
+    QString getProvider() const { return provider; }
 
-    void setCreationDate(const QDateTime &aDate)
-    {
-        creationDate = aDate;
-    }
+    void setCreationDate(const QDateTime &aDate) { creationDate = aDate; }
 
-    QDateTime getCreationDate() const
-    {
-        return creationDate;
-    }
+    QDateTime getCreationDate() const { return creationDate; }
 
-    void setLastUpdate(const QDateTime &aDate)
-    {
-        lastUpdate = aDate;
-    }
+    void setLastUpdate(const QDateTime &aDate) { lastUpdate = aDate; }
 
-    QDateTime getLastUpdate() const
-    {
-        return lastUpdate;
-    }
+    QDateTime getLastUpdate() const { return lastUpdate; }
 
-    void setStatus(SDK::PaymentProcessor::EPaymentStatus::Enum aStatus)
-    {
-        status = aStatus;
-    }
+    void setStatus(SDK::PaymentProcessor::EPaymentStatus::Enum aStatus) { status = aStatus; }
 
-    SDK::PaymentProcessor::EPaymentStatus::Enum getStatus() const
-    {
-        return status;
-    }
+    SDK::PaymentProcessor::EPaymentStatus::Enum getStatus() const { return status; }
 
-    void setAmount(float aAmount)
-    {
-        amount = aAmount;
-    }
+    void setAmount(float aAmount) { amount = aAmount; }
 
-    float getAmount() const
-    {
-        return amount;
-    }
+    float getAmount() const { return amount; }
 
-    void setAmountAll(float aAmount)
-    {
-        amountAll = aAmount;
-    }
+    void setAmountAll(float aAmount) { amountAll = aAmount; }
 
-    float getAmountAll() const
-    {
-        return amountAll;
-    }
+    float getAmountAll() const { return amountAll; }
 
-    void setPrinted(bool isPrinted)
-    {
-        printed = isPrinted;
-    }
+    void setPrinted(bool isPrinted) { printed = isPrinted; }
 
-    bool getPrinted() const
-    {
-        return printed;
-    }
+    bool getPrinted() const { return printed; }
 
-    bool isProcessed() const
-    {
+    bool isProcessed() const {
         return !(status == SDK::PaymentProcessor::EPaymentStatus::Cheated ||
                  status == SDK::PaymentProcessor::EPaymentStatus::ReadyForCheck ||
                  status == SDK::PaymentProcessor::EPaymentStatus::ProcessError ||
@@ -110,100 +56,72 @@ class PaymentInfo
     }
 
     /// Возвращает true, если платеж можно распечатать
-    bool canPrint() const
-    {
+    bool canPrint() const {
         return status != SDK::PaymentProcessor::EPaymentStatus::LostChange &&
                status != SDK::PaymentProcessor::EPaymentStatus::Init;
     }
 
     /// Возвращает true, если платеж можно провести
-    bool canProcess() const
-    {
+    bool canProcess() const {
         return status == SDK::PaymentProcessor::EPaymentStatus::ProcessError ||
                status == SDK::PaymentProcessor::EPaymentStatus::ReadyForCheck;
     }
 
-    QString getStatusString() const
-    {
+    QString getStatusString() const {
         QString statusString;
-        switch (status)
-        {
-            case SDK::PaymentProcessor::EPaymentStatus::LostChange:
-                statusString = QObject::tr("#lost_change");
-                break;
-            case SDK::PaymentProcessor::EPaymentStatus::Cheated:
-                statusString = QObject::tr("#cheated");
-                break;
-            case SDK::PaymentProcessor::EPaymentStatus::Deleted:
-                statusString = QObject::tr("#deleted");
-                break;
-            case SDK::PaymentProcessor::EPaymentStatus::Init:
-                statusString = QObject::tr("#init");
-                break;
-            case SDK::PaymentProcessor::EPaymentStatus::ReadyForCheck:
-                statusString = QObject::tr("#ready_for_check");
-                break;
-            case SDK::PaymentProcessor::EPaymentStatus::ProcessError:
-                statusString = QObject::tr("#process_error");
-                break;
-            case SDK::PaymentProcessor::EPaymentStatus::Completed:
-                statusString = QObject::tr("#complete");
-                break;
-            case SDK::PaymentProcessor::EPaymentStatus::Canceled:
-                statusString = QObject::tr("#canceled");
-                break;
-            case SDK::PaymentProcessor::EPaymentStatus::BadPayment:
-                statusString = QObject::tr("#bad_payment");
-                break;
+        switch (status) {
+        case SDK::PaymentProcessor::EPaymentStatus::LostChange:
+            statusString = QObject::tr("#lost_change");
+            break;
+        case SDK::PaymentProcessor::EPaymentStatus::Cheated:
+            statusString = QObject::tr("#cheated");
+            break;
+        case SDK::PaymentProcessor::EPaymentStatus::Deleted:
+            statusString = QObject::tr("#deleted");
+            break;
+        case SDK::PaymentProcessor::EPaymentStatus::Init:
+            statusString = QObject::tr("#init");
+            break;
+        case SDK::PaymentProcessor::EPaymentStatus::ReadyForCheck:
+            statusString = QObject::tr("#ready_for_check");
+            break;
+        case SDK::PaymentProcessor::EPaymentStatus::ProcessError:
+            statusString = QObject::tr("#process_error");
+            break;
+        case SDK::PaymentProcessor::EPaymentStatus::Completed:
+            statusString = QObject::tr("#complete");
+            break;
+        case SDK::PaymentProcessor::EPaymentStatus::Canceled:
+            statusString = QObject::tr("#canceled");
+            break;
+        case SDK::PaymentProcessor::EPaymentStatus::BadPayment:
+            statusString = QObject::tr("#bad_payment");
+            break;
 
-            default:
-                statusString = QObject::tr("#processing");
+        default:
+            statusString = QObject::tr("#processing");
         }
 
         return QString("%1 (%2)").arg(statusString).arg(status);
     }
 
-    void setProviderFields(const QString &aProviderFields)
-    {
-        providerFields = aProviderFields;
-    }
+    void setProviderFields(const QString &aProviderFields) { providerFields = aProviderFields; }
 
-    QString getProviderFields() const
-    {
-        return providerFields;
-    }
+    QString getProviderFields() const { return providerFields; }
 
-    void setInitialSession(const QString &aInitialSession)
-    {
-        initialSession = aInitialSession;
-    }
+    void setInitialSession(const QString &aInitialSession) { initialSession = aInitialSession; }
 
-    QString getInitialSession() const
-    {
-        return initialSession;
-    }
+    QString getInitialSession() const { return initialSession; }
 
-    void setSession(const QString &aSession)
-    {
-        session = aSession;
-    }
+    void setSession(const QString &aSession) { session = aSession; }
 
-    QString getSession() const
-    {
-        return session;
-    }
+    QString getSession() const { return session; }
 
-    void setTransId(const QString &aTransId)
-    {
-        transId = aTransId;
-    }
+    void setTransId(const QString &aTransId) { transId = aTransId; }
 
-    QString getTransId() const
-    {
-        return transId;
-    }
+    QString getTransId() const { return transId; }
 
-  private:
+private:
     qint64 id;
     QString provider;
     QDateTime creationDate;

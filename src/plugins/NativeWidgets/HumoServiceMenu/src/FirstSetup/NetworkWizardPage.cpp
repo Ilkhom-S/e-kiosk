@@ -1,35 +1,27 @@
 /* @file Окно настройки сети. */
 
-// Проект
-
-// Project
 #include "NetworkWizardPage.h"
 
-NetworkWizardPage::NetworkWizardPage(HumoServiceBackend *aBackend, QWidget *aParent) : WizardPageBase(aBackend, aParent)
-{
-}
+NetworkWizardPage::NetworkWizardPage(HumoServiceBackend *aBackend, QWidget *aParent)
+    : WizardPageBase(aBackend, aParent) {}
 
 //----------------------------------------------------------------------------
-bool NetworkWizardPage::initialize()
-{
+bool NetworkWizardPage::initialize() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool NetworkWizardPage::shutdown()
-{
+bool NetworkWizardPage::shutdown() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool NetworkWizardPage::activate()
-{
+bool NetworkWizardPage::activate() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool NetworkWizardPage::deactivate()
-{
+bool NetworkWizardPage::deactivate() {
     return true;
 }
 

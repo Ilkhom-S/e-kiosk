@@ -6,13 +6,13 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола KKM.
-class KasbiFRProtocol : public ProtocolBase
-{
-  public:
+class KasbiFRProtocol : public ProtocolBase {
+public:
     /// Выполнить команду протокола.
-    TResult processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, int aTimeout);
+    TResult
+    processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, int aTimeout);
 
-  private:
+private:
     /// Подсчет контрольной суммы пакета данных.
     ushort calcCRC(const QByteArray &aData);
 

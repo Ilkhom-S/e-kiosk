@@ -2,24 +2,19 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QVariantMap>
 #include <QtCore/QFutureWatcher>
+#include <QtCore/QVariantMap>
 #include <QtNetwork/QNetworkProxy>
-#include <Common/QtHeadersEnd.h>
 
-// Проект
 #include "WizardPage.h"
 
 class UnmanagedConnectionWindow;
 
 //---------------------------------------------------------------------------
-class UnmanagedWizardPage : public WizardPageBase
-{
+class UnmanagedWizardPage : public WizardPageBase {
     Q_OBJECT
 
-  public:
+public:
     UnmanagedWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
     virtual bool initialize();
@@ -28,12 +23,12 @@ class UnmanagedWizardPage : public WizardPageBase
     virtual bool activate();
     virtual bool deactivate();
 
-  private slots:
+private slots:
     void onUserSelectionChanged();
     void onTestConnection(QNetworkProxy aProxy);
     void onTestFinished();
 
-  private:
+private:
     QVariantMap mConnectionSettings;
     UnmanagedConnectionWindow *mConnectionWindow;
     QFutureWatcher<bool> mTaskWatcher;

@@ -1,25 +1,23 @@
 #pragma once
 
-// Project
 #include "SendRequest.h"
 
 class SendRequest;
 
-class GetServices : public SendRequest
-{
+class GetServices : public SendRequest {
     Q_OBJECT
 
-  public:
+public:
     GetServices(QObject *parent = 0);
 
-  public slots:
+public slots:
     void parcerHash(const QDomNode &domElement);
     void parcerNote(const QDomNode &domElement);
     void setDataNote(const QDomNode &domElement);
     void sendGetServicesQuery();
     //        void errorResponse();
 
-  private:
+private:
     QString toLogData;
     int count_providers;
     int index_prv;
@@ -35,8 +33,13 @@ class GetServices : public SendRequest
 
     bool saveServicesDB();
     bool saveCategoriesDB(const QVariantMap category);
-    bool saveCommissionDB(const int id, const double sumFrom, const double sumTo, const int type, const double value,
-                          const int serviceId, const int index);
+    bool saveCommissionDB(const int id,
+                          const double sumFrom,
+                          const double sumTo,
+                          const int type,
+                          const double value,
+                          const int serviceId,
+                          const int index);
     bool saveInputsDB(const QVariantMap input);
     bool saveServicesInputsDB();
     bool deleteOldData();
@@ -48,7 +51,7 @@ class GetServices : public SendRequest
     int getProviderCount();
     bool getReqStatus;
 
-  signals:
+signals:
     void emit_responseBalance(const double balance, const double overdraft, const double threshold);
     void emit_responseIsActive(const bool active);
     void emit_getServices(bool status);

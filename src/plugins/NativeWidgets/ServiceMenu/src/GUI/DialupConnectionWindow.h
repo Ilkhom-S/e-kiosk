@@ -2,17 +2,13 @@
 
 #pragma once
 
-// Qt headers
-#include <Common/QtHeadersBegin.h>
 #include "ui_DialupConnectionWindow.h"
-#include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-class DialupConnectionWindow : public QWidget, protected Ui::DialupConnectionWindow
-{
+class DialupConnectionWindow : public QWidget, protected Ui::DialupConnectionWindow {
     Q_OBJECT
 
-  public:
+public:
     DialupConnectionWindow(QWidget *aParent = 0);
     ~DialupConnectionWindow();
 
@@ -22,7 +18,7 @@ class DialupConnectionWindow : public QWidget, protected Ui::DialupConnectionWin
     void fillConnectionList(const QStringList &aConnections, const QString &aCurrent);
     void fillTemplateList(const QStringList &aConnections);
 
-  signals:
+signals:
     /// Пользователь выбрал создание соединения с заданными параметрами.
     void createConnection(const QString &aConnection, const QString &aNetworkDevice);
 
@@ -38,11 +34,11 @@ class DialupConnectionWindow : public QWidget, protected Ui::DialupConnectionWin
     /// Внутренний сигнал, изменилась отображаемая информация.
     void updated();
 
-  public slots:
+public slots:
     void switchToCreatePage();
     void switchToListPage();
 
-  private slots:
+private slots:
     void onUpdated();
     void onCreateConnection();
     void onTestConnection();

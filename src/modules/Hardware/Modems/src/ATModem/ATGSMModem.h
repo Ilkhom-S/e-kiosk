@@ -2,33 +2,26 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QCoreApplication>
-#include <Common/QtHeadersEnd.h>
 
-// Project
-#include "ATModemBase.h"
 #include "ATData.h"
+#include "ATModemBase.h"
 
 //--------------------------------------------------------------------------------
-namespace ENetworkAccessability
-{
-    enum Enum
-    {
-        NotRegistered,
-        RegisteredHomeNetwork,
-        SearchingOperator,
-        RegistrationDenied,
-        Unknown,
-        RegisteredRoaming
-    };
+namespace ENetworkAccessability {
+enum Enum {
+    NotRegistered,
+    RegisteredHomeNetwork,
+    SearchingOperator,
+    RegistrationDenied,
+    Unknown,
+    RegisteredRoaming
+};
 } // namespace ENetworkAccessability
 
 //--------------------------------------------------------------------------------
-class ATGSMModem : public ATModemBase
-{
-  public:
+class ATGSMModem : public ATModemBase {
+public:
     ATGSMModem();
 
 #pragma region IDevice interface
@@ -59,7 +52,7 @@ class ATGSMModem : public ATModemBase
     virtual bool takeMessages(TMessages &aMessages);
 #pragma endregion
 
-  protected:
+protected:
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 

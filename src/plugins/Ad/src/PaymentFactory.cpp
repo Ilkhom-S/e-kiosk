@@ -1,14 +1,10 @@
 /* @file Фабрика платежей. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QByteArray>
 #include <QtCore/QFile>
 #include <QtCore/QMutexLocker>
 #include <QtCore/QStringDecoder>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Components.h>
 #include <SDK/PaymentProcessor/Core/ISettingsService.h>
 #include <SDK/PaymentProcessor/Humo/RequestSender.h>
@@ -17,75 +13,63 @@
 #include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>
 #include <SDK/Plugins/PluginInitializer.h>
 
-// System
 #include "AdBackend/Campaign.h"
-
-// Project
 #include "AdPayment.h"
 #include "AdRemotePlugin.h"
 
-namespace CPaymentFactory
-{
-    const char PluginName[] = "AdPayments";
-    const char ContentName[] = "banner";
+namespace CPaymentFactory {
+const char PluginName[] = "AdPayments";
+const char ContentName[] = "banner";
 } // namespace CPaymentFactory
 
-namespace CProcessorType
-{
-    const QString Ad = "ad";
+namespace CProcessorType {
+const QString Ad = "ad";
 } // namespace CProcessorType
 
 //------------------------------------------------------------------------------
-namespace
-{
+namespace {
 
-    /// Конструктор экземпляра плагина.
-    SDK::Plugin::IPlugin *CreatePaymentFactory(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    {
-        return new PaymentFactory(aFactory, aInstancePath);
-    }
+/// Конструктор экземпляра плагина.
+SDK::Plugin::IPlugin *CreatePaymentFactory(SDK::Plugin::IEnvironment *aFactory,
+                                           const QString &aInstancePath) {
+    return new PaymentFactory(aFactory, aInstancePath);
+}
 
-    /// Регистрация плагина в фабрике.
-    REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application, SDK::PaymentProcessor::CComponents::PaymentFactory,
-                             CPaymentFactory::PluginName),
-                    &CreatePaymentFactory, &SDK::Plugin::PluginInitializer::emptyParameterList, PaymentFactory);
+/// Регистрация плагина в фабрике.
+REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
+                         SDK::PaymentProcessor::CComponents::PaymentFactory,
+                         CPaymentFactory::PluginName),
+                &CreatePaymentFactory,
+                &SDK::Plugin::PluginInitializer::emptyParameterList,
+                PaymentFactory);
 } // namespace
 
 //---------------------------------------------------------------------------
 // Конструктор фабрики платежей
 PaymentFactory::PaymentFactory(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : PaymentFactoryBase(aFactory, aInstancePath)
-{
-}
+    : PaymentFactoryBase(aFactory, aInstancePath) {}
 
 //------------------------------------------------------------------------------
-QString PaymentFactory::getPluginName() const
-{
+QString PaymentFactory::getPluginName() const {
     return CPaymentFactory::PluginName;
 }
 
 //------------------------------------------------------------------------------
-bool PaymentFactory::initialize()
-{
+bool PaymentFactory::initialize() {
     return true;
 }
 
 //------------------------------------------------------------------------------
-void PaymentFactory::shutdown()
-{
-}
+void PaymentFactory::shutdown() {}
 
 //------------------------------------------------------------------------------
-QStringList PaymentFactory::getSupportedPaymentTypes() const
-{
+QStringList PaymentFactory::getSupportedPaymentTypes() const {
     return QStringList() << CProcessorType::Ad;
 }
 
 //------------------------------------------------------------------------------
-SDK::PaymentProcessor::IPayment *PaymentFactory::createPayment(const QString &aType)
-{
-    if (aType.toLower() == CProcessorType::Ad)
-    {
+SDK::PaymentProcessor::IPayment *PaymentFactory::createPayment(const QString &aType) {
+    if (aType.toLower() == CProcessorType::Ad) {
         AdPayment *adPayment = new AdPayment(this);
 
         adPayment->setParameter(SDK::PaymentProcessor::IPayment::SParameter(
@@ -98,16 +82,13 @@ SDK::PaymentProcessor::IPayment *PaymentFactory::createPayment(const QString &aT
 }
 
 //------------------------------------------------------------------------------
-void PaymentFactory::releasePayment(SDK::PaymentProcessor::IPayment *aPayment)
-{
+void PaymentFactory::releasePayment(SDK::PaymentProcessor::IPayment *aPayment) {
     delete dynamic_cast<AdPayment *>(aPayment);
 }
 
 //------------------------------------------------------------------------------
-PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider &aProvider)
-{
-    if (aProvider.processor.type == CProcessorType::Ad)
-    {
+PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider &aProvider) {
+    if (aProvider.processor.type == CProcessorType::Ad) {
         QMutexLocker lock(&mMutex);
 
         PPSDK::SProvider provider = aProvider;
@@ -115,21 +96,16 @@ PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider
         QFile json(QString("%1/%2.json")
                        .arg(getAdClientInstance(mFactory)->getContent(CPaymentFactory::ContentName))
                        .arg(CPaymentFactory::ContentName));
-        if (json.open(QIODevice::ReadOnly))
-        {
+        if (json.open(QIODevice::ReadOnly)) {
             QStringDecoder decoder("UTF-8");
             provider.fields += PPSDK::SProvider::json2Fields(decoder(json.readAll()));
-        }
-        else
-        {
+        } else {
             // TODO
             //  Поля не прочитали, провайдера не обновили
         }
 
         return provider;
-    }
-    else
-    {
+    } else {
         return PPSDK::SProvider();
     }
 }

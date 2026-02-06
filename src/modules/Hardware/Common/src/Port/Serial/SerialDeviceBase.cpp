@@ -1,6 +1,7 @@
 /* @file Базовый класс устройств на COM-порту. */
 
-// System
+#include "SerialDeviceBase.h"
+
 #include "Hardware/CashAcceptors/ProtoCashAcceptor.h"
 #include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/Common/ProtoDevices.h"
@@ -9,9 +10,6 @@
 #include "Hardware/HID/ProtoHID.h"
 #include "Hardware/IOPorts/IOPortStatusCodes.h"
 #include "Hardware/Watchdogs/ProtoWatchdog.h"
-
-// Project
-#include "SerialDeviceBase.h"
 
 using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
@@ -28,8 +26,7 @@ template class SerialDeviceBase<PortPollingDeviceBase<ProtoHID>>;
 //--------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------
-double getFrameSize(const TPortParameters &aPortParameters)
-{
+double getFrameSize(const TPortParameters &aPortParameters) {
     int parity = aPortParameters[EParameters::Parity];
     int bytesize = aPortParameters[EParameters::ByteSize];
     int stop = aPortParameters[EParameters::StopBits];

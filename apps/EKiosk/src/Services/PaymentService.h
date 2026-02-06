@@ -2,27 +2,21 @@
 
 #pragma once
 
-// C++
-#include <functional>
-#include <memory>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include <QtCore/QAtomicInt>
+#include <QtCore/QFutureSynchronizer>
 #include <QtCore/QList>
 #include <QtCore/QMutex>
 #include <QtCore/QThread>
 #include <QtCore/QTimer>
-#include <QtCore/QFutureSynchronizer>
-#include <QtCore/QAtomicInt>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/ILogable.h>
 
-// SDK
-#include <SDK/PaymentProcessor/Payment/IPaymentFactory.h>
-#include <SDK/PaymentProcessor/Core/IService.h>
 #include <SDK/PaymentProcessor/Core/IPaymentService.h>
+#include <SDK/PaymentProcessor/Core/IService.h>
+#include <SDK/PaymentProcessor/Payment/IPaymentFactory.h>
+
+#include <functional>
+#include <memory>
 
 #include "DatabaseUtils/IPaymentDatabaseUtils.h"
 
@@ -32,24 +26,17 @@ class IApplication;
 class IPaymentDatabaseUtils;
 
 //---------------------------------------------------------------------------
-namespace EPaymentCommandResult
-{
-    enum Enum
-    {
-        OK,
-        Error,
-        NotFound
-    };
+namespace EPaymentCommandResult {
+enum Enum { OK, Error, NotFound };
 } // namespace EPaymentCommandResult
 
 Q_DECLARE_METATYPE(EPaymentCommandResult::Enum)
 
 //---------------------------------------------------------------------------
-class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, protected ILogable
-{
+class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, protected ILogable {
     Q_OBJECT
 
-  public:
+public:
     static PaymentService *instance(IApplication *aApplication);
 
     PaymentService(IApplication *aApplication);
@@ -84,7 +71,8 @@ class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, pr
 
 #pragma region PPSDK::IPaymentService interface
 
-    /// Создание платежа по номеру оператора aOperator. Возвращает номер платежа или код ошибки (меньше 0).
+    /// Создание платежа по номеру оператора aOperator. Возвращает номер платежа или код ошибки
+    /// (меньше 0).
     virtual qint64 createPayment(qint64 aProvider);
 
     /// Возвращает номер активного платежа.
@@ -114,17 +102,21 @@ class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, pr
     getPaymentsFields(const QList<qint64> &aIds);
 
     /// Обновление поля платежа.
-    virtual bool updatePaymentField(qint64 aPayment, const PPSDK::IPayment::SParameter &aField, bool aForce = false);
+    virtual bool updatePaymentField(qint64 aPayment,
+                                    const PPSDK::IPayment::SParameter &aField,
+                                    bool aForce = false);
 
     /// Обновление полей платежа.
-    virtual bool updatePaymentFields(qint64 aPayment, const QList<PPSDK::IPayment::SParameter> &aFields,
+    virtual bool updatePaymentFields(qint64 aPayment,
+                                     const QList<PPSDK::IPayment::SParameter> &aFields,
                                      bool aForce = false);
 
     /// Выполенение шага платежа в онлайне.
-    virtual void processPaymentStep(qint64 aPayment, PPSDK::EPaymentStep::Enum aStep, bool aBlocking = false);
+    virtual void
+    processPaymentStep(qint64 aPayment, PPSDK::EPaymentStep::Enum aStep, bool aBlocking = false);
 
-    /// Конвертация переданного платежа к типу aTargetType, поддерживаему этой фабрикой. В случае ошибки возвращает
-    /// false.
+    /// Конвертация переданного платежа к типу aTargetType, поддерживаему этой фабрикой. В случае
+    /// ошибки возвращает false.
     virtual bool convertPayment(qint64 aPayment, const QString &aTargetType);
 
     /// Проведение платежа. Если aOnline - false, то платёж будет обработан в порядке общей очереди,
@@ -165,7 +157,8 @@ class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, pr
     /// Возвращает краткую информацию о суммах и платежах с момента последней инкассации.
     virtual PPSDK::SBalance getBalance();
 
-    /// Получить список платежей определенного статуса. В случае пустого списка статусов - получим все платежи из базы
+    /// Получить список платежей определенного статуса. В случае пустого списка статусов - получим
+    /// все платежи из базы
     virtual QList<qint64> getPayments(const QSet<PPSDK::EPaymentStatus::Enum> &aStates);
 
     /// Проведение инкассации.
@@ -190,17 +183,18 @@ class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, pr
 
 #pragma endregion
 
-    /// Добавляет команду на изменение параметров платежа в очередь. Если возвращает 0, то команда не может
-    /// быть выполнена. После завершения обработки, срабатывает сигнал paymentCommandComplete.
-    /// Поиск платежа осуществляется по начальной сессии.
-    virtual int registerForcePaymentCommand(const QString &aInitialSession, const QVariantMap &aParameters);
+    /// Добавляет команду на изменение параметров платежа в очередь. Если возвращает 0, то команда
+    /// не может быть выполнена. После завершения обработки, срабатывает сигнал
+    /// paymentCommandComplete. Поиск платежа осуществляется по начальной сессии.
+    virtual int registerForcePaymentCommand(const QString &aInitialSession,
+                                            const QVariantMap &aParameters);
 
-    /// Добавляет команду на пометку как удаленного платежа в очередь. Если возвращает 0, то команда не может
-    /// быть выполнена. После завершения обработки, срабатывает сигнал paymentCommandComplete.
-    /// Поиск платежа осуществляется по начальной сессии.
+    /// Добавляет команду на пометку как удаленного платежа в очередь. Если возвращает 0, то команда
+    /// не может быть выполнена. После завершения обработки, срабатывает сигнал
+    /// paymentCommandComplete. Поиск платежа осуществляется по начальной сессии.
     virtual int registerRemovePaymentCommand(const QString &aInitialSession);
 
-  protected:
+protected:
     /// Формирование подписи платежа.
     QString createSignature(PPSDK::IPayment *aPayment, bool aWithCRC = true);
 
@@ -216,7 +210,7 @@ class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, pr
     /// Функция сохранения платежа.
     bool savePayment(PPSDK::IPayment *aPayment);
 
-  private:
+private:
     /// Добавляет платёж в список активных.
     void setPaymentActive(std::shared_ptr<PPSDK::IPayment> aPayment);
 
@@ -227,17 +221,19 @@ class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, pr
     bool setChangeAmount(double aChange, std::shared_ptr<PPSDK::IPayment> aPaymentSource);
 
     /// Обновляет параметры платежа.
-    void doUpdatePaymentFields(qint64 aID, std::shared_ptr<PPSDK::IPayment> aPayment,
-                               const QList<SDK::PaymentProcessor::IPayment::SParameter> &aFields, bool aForce = false);
+    void doUpdatePaymentFields(qint64 aID,
+                               std::shared_ptr<PPSDK::IPayment> aPayment,
+                               const QList<SDK::PaymentProcessor::IPayment::SParameter> &aFields,
+                               bool aForce = false);
 
-  signals:
+signals:
     /// Сигнал о завершении обработки платёжной команды, добавленной методом registerPaymentCommand.
     void paymentCommandComplete(int aID, EPaymentCommandResult::Enum aError);
 
     /// Обновление суммы сдачи
     void changeUpdated(double aAmount);
 
-  private slots:
+private slots:
     /// Поток для обработки оффлайн платежей запущен.
     void onPaymentThreadStarted();
 
@@ -250,11 +246,11 @@ class PaymentService : public PPSDK::IPaymentService, public PPSDK::IService, pr
     /// Обработка сигнала о выдаче денежных средств.
     void onAmountDispensed(double aAmount);
 
-  private:
+private:
     /// Проведение платежа
     bool processPaymentInternal(std::shared_ptr<PPSDK::IPayment> aPayment);
 
-  private:
+private:
     IApplication *mApplication;
     volatile bool mEnabled;
     IPaymentDatabaseUtils *mDBUtils;

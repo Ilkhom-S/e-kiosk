@@ -2,16 +2,12 @@
 
 #pragma once
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
+namespace SDK {
+namespace PaymentProcessor {
 
-        /// Список методов, доступных для перехвата
-        namespace HookMethod
-        {
-        }
+/// Список методов, доступных для перехвата
+namespace HookMethod {}
 
-        //------------------------------------------------------------------------------
-    } // namespace PaymentProcessor
+//------------------------------------------------------------------------------
+} // namespace PaymentProcessor
 } // namespace SDK

@@ -1,12 +1,9 @@
-// Project
 #include "receipt.h"
 
-QString receiptGet(QString tpl)
-{
+QString receiptGet(QString tpl) {
     QString receipt = QString();
 
-    if (tpl == "tjk")
-    {
+    if (tpl == "tjk") {
         receipt = QString("[p]*************** [b]Хумо[/b] ***************\n\n"
                           "[p]Раками расид:    %1\n"
                           "[p]Раками терминал: %2\n"
@@ -26,8 +23,7 @@ QString receiptGet(QString tpl)
                           "[p] [b]Тамос: %11[/b]\n\n");
     }
 
-    if (tpl == "uzb")
-    {
+    if (tpl == "uzb") {
         receipt = QString("[p]*************** [b]Орзу[/b] ***************\n\n"
                           "[p]Номер чека:    %1\n"
                           "[p]Номер терминала: %2\n"

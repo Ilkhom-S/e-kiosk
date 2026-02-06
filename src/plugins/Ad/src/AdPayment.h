@@ -2,18 +2,15 @@
 
 #pragma once
 
-// Modules
 #include <Payment/PaymentBase.h>
 
-// Project
 #include "PaymentFactory.h"
 
 //------------------------------------------------------------------------------
-class AdPayment : public PaymentBase
-{
+class AdPayment : public PaymentBase {
     friend class PaymentFactory;
 
-  public:
+public:
     AdPayment(PaymentFactory *aFactory);
 
 #pragma region SDK::PaymentProcessor::IPayment interface
@@ -48,7 +45,7 @@ class AdPayment : public PaymentBase
     // Возвращает связанную фабрику платежей
     PaymentFactory *getPaymentFactory() const;
 
-  protected:
+protected:
     //---------------------------------------------------------------------------
     // Возвращает true, если ограничения на сумму платежа зависят от переданного параметра
     virtual bool limitsDependOnParameter(const SParameter &aParameter);
@@ -89,7 +86,7 @@ class AdPayment : public PaymentBase
     // При ошибке проведения устанавливает таймауты для следующей попытки
     virtual void setProcessError();
 
-  protected:
+protected:
     RequestSender mRequestSender;
 };
 

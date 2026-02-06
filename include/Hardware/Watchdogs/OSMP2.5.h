@@ -2,22 +2,20 @@
 
 #pragma once
 
-// Modules
-#include <Hardware/Watchdogs/WatchdogBase.h>
 #include <Hardware/Protocols/Wachdogs/OSMPWD.h>
+#include <Hardware/Watchdogs/WatchdogBase.h>
 
 //--------------------------------------------------------------------------------
-class OSMP25 : public WatchdogBase
-{
+class OSMP25 : public WatchdogBase {
     SET_SERIES("OSMP2,5")
 
-  public:
+public:
     OSMP25();
 
     /// Перезагрузка линии питания.
     virtual bool reset(const QString &aLine);
 
-  protected:
+protected:
     /// Инициализация устройства.
     virtual bool updateParameters();
 
@@ -37,7 +35,8 @@ class OSMP25 : public WatchdogBase
     virtual void registerKey();
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult execCommand(const QByteArray &aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
 
     /// Потокол

@@ -5,28 +5,23 @@
 #include "Hardware/CashDevices/CCTalkModelData.h"
 
 //--------------------------------------------------------------------------------
-namespace CCCTalk
-{
-    namespace CashAcceptor
-    {
-        namespace Models
-        {
-            const char NV200Spectral[] = "NV200 Spectral";
-        } // namespace Models
+namespace CCCTalk {
+namespace CashAcceptor {
+namespace Models {
+const char NV200Spectral[] = "NV200 Spectral";
+} // namespace Models
 
-        class CModelData : public CModelDataBase
-        {
-          public:
-            CModelData()
-            {
-                add("ITL", "NVS200", Models::NV200Spectral);
-                data()["ITL"]["NVS200"].minVersions.insert(Currency::RUB, 0.00);
-                data()["ITL"]["NVS200"].unsupported = CCCTalk::TUnsupported()
-                                                      << CCCTalk::Command::DBVersion << CCCTalk::Command::CreationDate
-                                                      << CCCTalk::Command::SoftLastDate;
-            }
-        };
-    } // namespace CashAcceptor
+class CModelData : public CModelDataBase {
+public:
+    CModelData() {
+        add("ITL", "NVS200", Models::NV200Spectral);
+        data()["ITL"]["NVS200"].minVersions.insert(Currency::RUB, 0.00);
+        data()["ITL"]["NVS200"].unsupported =
+            CCCTalk::TUnsupported() << CCCTalk::Command::DBVersion << CCCTalk::Command::CreationDate
+                                    << CCCTalk::Command::SoftLastDate;
+    }
+};
+} // namespace CashAcceptor
 } // namespace CCCTalk
 
 //--------------------------------------------------------------------------------

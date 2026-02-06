@@ -2,27 +2,24 @@
 
 #pragma once
 
-// Modules
-#include <Hardware/Protocols/CashAcceptor/EBDS.h>
-
-// Project
 #include <Hardware/CashAcceptors/SerialCashAcceptor.h>
+#include <Hardware/Protocols/CashAcceptor/EBDS.h>
 
 /*
 софт MEI структурно состоит из 3 программ:
 
 1. в интерфейсной плате находится Boot loader (загрузчик), он умеет общаться с программатором и
 загружать прошивку себя, головы и биллсета.
-2. В голове находится 2 программы - Application programm (распознает купюры) и BillSet (по европейски, по американски -
-Variant) - образы купюр, уникальные для каждого набора купюр. Может быть загружено сразу несколько билл-сетов
+2. В голове находится 2 программы - Application programm (распознает купюры) и BillSet (по
+европейски, по американски - Variant) - образы купюр, уникальные для каждого набора купюр. Может
+быть загружено сразу несколько билл-сетов
 */
 
 //--------------------------------------------------------------------------------
-class EBDSCashAcceptor : public TSerialCashAcceptor
-{
+class EBDSCashAcceptor : public TSerialCashAcceptor {
     SET_SERIES("EBDS")
 
-  public:
+public:
     EBDSCashAcceptor();
 
     /// Возвращает список поддерживаемых устройств.
@@ -34,14 +31,15 @@ class EBDSCashAcceptor : public TSerialCashAcceptor
     /// Вернуть купюру.
     virtual bool reject();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
     /// Запросить и сохранить параметры устройства.
     virtual void processDeviceData();
 
-    /// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней логики.
+    /// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней
+    /// логики.
     virtual void cleanSpecificStatusCodes(TStatusCodes &aStatusCodes);
 
     /// Применить таблицу номиналов.
@@ -63,7 +61,8 @@ class EBDSCashAcceptor : public TSerialCashAcceptor
     virtual bool processReset();
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult execCommand(const QByteArray &aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
 
     /// Получить статус.

@@ -2,33 +2,25 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
 #include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
+namespace SDK {
+namespace PaymentProcessor {
 
-        //------------------------------------------------------------------------------
-        class IAudioService
-        {
-          public:
-            /// Воспроизвести звуковой файл.
-            virtual void play(const QString &aFileName) = 0;
+//------------------------------------------------------------------------------
+class IAudioService {
+public:
+    /// Воспроизвести звуковой файл.
+    virtual void play(const QString &aFileName) = 0;
 
-            /// Остановить воспроизведение.
-            virtual void stop() = 0;
+    /// Остановить воспроизведение.
+    virtual void stop() = 0;
 
-          protected:
-            virtual ~IAudioService()
-            {
-            }
-        };
+protected:
+    virtual ~IAudioService() {}
+};
 
-        //------------------------------------------------------------------------------
-    } // namespace PaymentProcessor
+//------------------------------------------------------------------------------
+} // namespace PaymentProcessor
 } // namespace SDK

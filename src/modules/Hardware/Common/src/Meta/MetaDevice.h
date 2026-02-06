@@ -2,42 +2,34 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDateTime>
-#include <QtCore/QThread>
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QThread>
 
-// SDK
+#include <Common/SleepHelper.h>
+
 #include <SDK/Drivers/IDevice.h>
 #include <SDK/Drivers/InteractionTypes.h>
 
-// Common
-#include <Common/SleepHelper.h>
-
-// Project
-#include "Hardware/Common/HardwareConstants.h"
+#include "Hardware/Common/ASCII.h"
 #include "Hardware/Common/DeviceDataConstants.h"
 #include "Hardware/Common/DeviceLogicManager.h"
-#include "Hardware/Common/MutexLocker.h"
-#include "Hardware/Common/FunctionTypes.h"
-#include "Hardware/Common/ASCII.h"
-#include "Hardware/Protocols/Common/ProtocolUtils.h"
 #include "Hardware/Common/DeviceUtils.h"
+#include "Hardware/Common/FunctionTypes.h"
+#include "Hardware/Common/HardwareConstants.h"
+#include "Hardware/Common/MutexLocker.h"
+#include "Hardware/Protocols/Common/ProtocolUtils.h"
 
 //--------------------------------------------------------------------------------
 /// Общие константы мета-устройств.
-namespace CMetaDevice
-{
-    /// Имя устройства по умолчанию.
-    const char DefaultName[] = "Meta device";
+namespace CMetaDevice {
+/// Имя устройства по умолчанию.
+const char DefaultName[] = "Meta device";
 } // namespace CMetaDevice
 
 /// Данные устройства для логирования и мониторинга.
-struct SLogData
-{
+struct SLogData {
     QString plugin; /// ini плагина устройства.
     QString device; /// данные устройства.
     QString config; /// данные config.xml, относящиеся к работе устройства.
@@ -49,59 +41,57 @@ struct SLogData
 /// Параметры путей плагинов.
 
 /// Тип взаимодействия с устройством.
-#define SET_INTERACTION_TYPE(aType)                                                                                    \
-  public:                                                                                                              \
-    typedef SDK::Driver::CInteractionTypes::It##aType TIType;                                                          \
-    static QString getInteractionType()                                                                                \
-    {                                                                                                                  \
-        return SDK::Driver::CInteractionTypes::aType;                                                                  \
+#define SET_INTERACTION_TYPE(aType)                                                                \
+public:                                                                                            \
+    typedef SDK::Driver::CInteractionTypes::It##aType TIType;                                      \
+    static QString getInteractionType() {                                                          \
+        return SDK::Driver::CInteractionTypes::aType;                                              \
     }
 
 /// Семейство (протокол etc).
-#define SET_SERIES(aSeries)                                                                                            \
-  public:                                                                                                              \
-    static QString getSeries()                                                                                         \
-    {                                                                                                                  \
-        return aSeries;                                                                                                \
+#define SET_SERIES(aSeries)                                                                        \
+public:                                                                                            \
+    static QString getSeries() {                                                                   \
+        return aSeries;                                                                            \
     }
 
-/// Подсемейство (устройство/группа устройств в составе семейства, имеющие уникальную реализацию и/или настройки
-/// плагина).
-#define SET_SUBSERIES(aSubSeries)                                                                                      \
-  public:                                                                                                              \
-    static QString getSubSeries()                                                                                      \
-    {                                                                                                                  \
-        return aSubSeries;                                                                                             \
+/// Подсемейство (устройство/группа устройств в составе семейства, имеющие уникальную реализацию
+/// и/или настройки плагина).
+#define SET_SUBSERIES(aSubSeries)                                                                  \
+public:                                                                                            \
+    static QString getSubSeries() {                                                                \
+        return aSubSeries;                                                                         \
     }
 
-class DefaultSeriesType
-{
-};
+class DefaultSeriesType {};
 
 //--------------------------------------------------------------------------------
 template <class T>
-class MetaDevice : public T, public SDK::Driver::IDevice::IDetectingIterator, public DeviceLogicManager
-{
+class MetaDevice : public T,
+                   public SDK::Driver::IDevice::IDetectingIterator,
+                   public DeviceLogicManager {
     SET_INTERACTION_TYPE(System)
     SET_SERIES("")
     SET_SUBSERIES("")
 
     typedef DefaultSeriesType TSeriesType;
 
-  public:
+public:
     MetaDevice();
 
 #pragma region SDK::Driver::IDevice interface
     /// Возвращает название устройства.
     virtual QString getName() const override;
 
-    /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из этого списка.
+    /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из
+    /// этого списка.
     virtual SDK::Driver::IDevice::IDetectingIterator *getDetectingIterator() override;
 
     /// Подключает и инициализирует устройство. Обертка для вызова функционала в рабочем потоке.
     virtual void initialize() override;
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release() override;
 
     /// Соединяет сигнал данного интерфейса со слотом приёмника.
@@ -134,7 +124,7 @@ class MetaDevice : public T, public SDK::Driver::IDevice::IDetectingIterator, pu
     virtual bool find() override;
 #pragma endregion
 
-  protected:
+protected:
     /// Авто поиск?
     bool isAutoDetecting() const;
 
@@ -142,7 +132,9 @@ class MetaDevice : public T, public SDK::Driver::IDevice::IDetectingIterator, pu
     SLogData getDeviceData() const;
 
     /// Установка параметра устройства.
-    void setDeviceParameter(const QString &aName, const QVariant &aValue, const QString &aExtensibleName = "",
+    void setDeviceParameter(const QString &aName,
+                            const QVariant &aValue,
+                            const QString &aExtensibleName = "",
                             bool aUpdateExtensible = false);
 
     /// Получение параметра устройства.

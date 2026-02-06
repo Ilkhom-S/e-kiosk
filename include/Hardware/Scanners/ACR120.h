@@ -8,15 +8,15 @@
 //--------------------------------------------------------------------------------
 typedef PollingDeviceBase<ProtoHID> TPollingHID;
 
-class ACR120 : public TPollingHID
-{
-  public:
+class ACR120 : public TPollingHID {
+public:
     ACR120();
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release();
 
-  private:
+private:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 

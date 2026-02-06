@@ -3,49 +3,44 @@
 #pragma once
 
 //--------------------------------------------------------------------------------
-namespace CCCNetCreator
-{
-    /// Формат представления даты в ответе на запросы идентификации.
-    const QString DateFormat = "yyyyMM";
+namespace CCCNetCreator {
+/// Формат представления даты в ответе на запросы идентификации.
+const QString DateFormat = "yyyyMM";
 
-    /// Формат представления даты для формирования данных устройства.
-    const QString DateLogFormat = "MM.yyyy";
+/// Формат представления даты для формирования данных устройства.
+const QString DateLogFormat = "MM.yyyy";
 
-    /// Выход из initilaize-а.
-    const int ExitInitializeTimeout = 5 * 1000;
+/// Выход из initilaize-а.
+const int ExitInitializeTimeout = 5 * 1000;
 
-    /// Команды
-    namespace Commands
-    {
-        /// Обновление прошивки. A1..A3 - это вроде как команды купюроприёмника
-        namespace UpdatingFirmware
-        {
-            const char SetBaudRate[] = "\xA0";
-            const char WriteHead[] = "\xA1";
-            const char WriteBlock[] = "\xA2";
-            const char Exit[] = "\xA3";
-        } // namespace UpdatingFirmware
+/// Команды
+namespace Commands {
+/// Обновление прошивки. A1..A3 - это вроде как команды купюроприёмника
+namespace UpdatingFirmware {
+const char SetBaudRate[] = "\xA0";
+const char WriteHead[] = "\xA1";
+const char WriteBlock[] = "\xA2";
+const char Exit[] = "\xA3";
+} // namespace UpdatingFirmware
 
-        const char GetInternalVersion[] = "\x70";
-        const char GetSerial[] = "\x72";
-    } // namespace Commands
+const char GetInternalVersion[] = "\x70";
+const char GetSerial[] = "\x72";
+} // namespace Commands
 
-    /// Обновление прошивки.
-    namespace UpdatingFirmware
-    {
-        /// Размер заголовка прошивки.
-        const int HeadSize = 39;
+/// Обновление прошивки.
+namespace UpdatingFirmware {
+/// Размер заголовка прошивки.
+const int HeadSize = 39;
 
-        /// Размер блока прошивки.
-        const int BlockSize = 128;
+/// Размер блока прошивки.
+const int BlockSize = 128;
 
-        /// Ответы на команды обновления прошивки.
-        namespace Answers
-        {
-            const char WritingBlockOK = '\xA4';
-            const char WritingBlockError = '\xA5';
-        } // namespace Answers
-    } // namespace UpdatingFirmware
+/// Ответы на команды обновления прошивки.
+namespace Answers {
+const char WritingBlockOK = '\xA4';
+const char WritingBlockError = '\xA5';
+} // namespace Answers
+} // namespace UpdatingFirmware
 } // namespace CCCNetCreator
 
 //--------------------------------------------------------------------------------

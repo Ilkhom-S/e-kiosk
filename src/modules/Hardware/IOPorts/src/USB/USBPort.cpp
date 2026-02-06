@@ -1,13 +1,9 @@
 /* @file Кроссплатформенная реализация USB-порта на базе QtSerialPort. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "USBPort.h"
+
 #include <QtCore/QMutexLocker>
 #include <QtSerialPort/QSerialPortInfo>
-#include <Common/QtHeadersEnd.h>
-
-// Project
-#include "USBPort.h"
 
 using namespace SDK::Driver;
 
@@ -19,18 +15,15 @@ QMutex USBPort::mSystemPropertyMutex(QMutex::Recursive);
 #endif
 
 //--------------------------------------------------------------------------------
-USBPort::USBPort()
-{
+USBPort::USBPort() {
     mType = EPortTypes::USB;
     // Удалены привязки к Windows GUID и DWORD свойствам
     setOpeningTimeout(CAsyncSerialPort::OpeningTimeout + CUSBPort::OpeningPause);
 }
 
 //--------------------------------------------------------------------------------
-bool USBPort::performOpen()
-{
-    if (!checkReady())
-    {
+bool USBPort::performOpen() {
+    if (!checkReady()) {
         return false;
     }
 
@@ -48,8 +41,7 @@ bool USBPort::performOpen()
     this->mSerialPort.setStopBits(QSerialPort::OneStop);
     this->mSerialPort.setFlowControl(QSerialPort::NoFlowControl);
 
-    if (this->mSerialPort.open(QIODevice::ReadWrite))
-    {
+    if (this->mSerialPort.open(QIODevice::ReadWrite)) {
         return true;
     }
 
@@ -58,14 +50,12 @@ bool USBPort::performOpen()
 }
 
 //--------------------------------------------------------------------------------
-bool USBPort::checkReady()
-{
+bool USBPort::checkReady() {
     // Обновляем список доступных имен в системе кроссплатформенно
     TWinDeviceProperties props = getDevicesProperties(true);
     mExist = props.contains(mSystemName);
 
-    if (!mExist)
-    {
+    if (!mExist) {
         setOpeningTimeout(CAsyncSerialPort::OnlineOpeningTimeout);
         toLog(LogLevel::Error, QStringLiteral("Port %1 does not exist.").arg(mSystemName));
         return false;
@@ -75,29 +65,24 @@ bool USBPort::checkReady()
 }
 
 //--------------------------------------------------------------------------------
-bool USBPort::clear()
-{
-    if (this->mSerialPort.isOpen())
-    {
+bool USBPort::clear() {
+    if (this->mSerialPort.isOpen()) {
         return this->mSerialPort.clear();
     }
     return true;
 }
 
 //--------------------------------------------------------------------------------
-bool USBPort::processReading(QByteArray &aData, int aTimeout)
-{
+bool USBPort::processReading(QByteArray &aData, int aTimeout) {
     aData.clear();
     QMutexLocker locker(&mReadMutex);
 
-    if (!this->mSerialPort.isOpen())
-    {
+    if (!this->mSerialPort.isOpen()) {
         return false;
     }
 
     // Ожидание поступления данных (кроссплатформенная замена Overlapped ожидания)
-    if (this->mSerialPort.waitForReadyRead(aTimeout))
-    {
+    if (this->mSerialPort.waitForReadyRead(aTimeout)) {
         aData = this->mSerialPort.readAll();
         return true;
     }
@@ -106,13 +91,11 @@ bool USBPort::processReading(QByteArray &aData, int aTimeout)
 }
 
 //--------------------------------------------------------------------------------
-TDeviceProperties USBPort::getDevicesProperties(bool aForce, bool aPDODetecting)
-{
+TDeviceProperties USBPort::getDevicesProperties(bool aForce, bool aPDODetecting) {
     QMutexLocker locker(&mSystemPropertyMutex);
     static TDeviceProperties properties;
 
-    if (!properties.isEmpty() && !aForce)
-    {
+    if (!properties.isEmpty() && !aForce) {
         return properties;
     }
 
@@ -122,8 +105,7 @@ TDeviceProperties USBPort::getDevicesProperties(bool aForce, bool aPDODetecting)
     DeviceProperties dp;
 
     const auto availablePorts = QSerialPortInfo::availablePorts();
-    for (const QSerialPortInfo &info : availablePorts)
-    {
+    for (const QSerialPortInfo &info : availablePorts) {
         SDeviceProperties props;
         props.path = info.portName();
         props.VID = info.hasVendorIdentifier() ? info.vendorIdentifier() : 0;
@@ -133,8 +115,8 @@ TDeviceProperties USBPort::getDevicesProperties(bool aForce, bool aPDODetecting)
         QString description = info.description().toUpper();
         QString manufacturer = info.manufacturer().toUpper();
 
-        if (description.contains(QStringLiteral("MOUSE")) || manufacturer.contains(QStringLiteral("ACPI")))
-        {
+        if (description.contains(QStringLiteral("MOUSE")) ||
+            manufacturer.contains(QStringLiteral("ACPI"))) {
             continue;
         }
 

@@ -5,11 +5,10 @@
 #include <Hardware/CashAcceptors/SerialCashAcceptor.h>
 
 //--------------------------------------------------------------------------------
-class ICTCashAcceptor : public TSerialCashAcceptor
-{
+class ICTCashAcceptor : public TSerialCashAcceptor {
     SET_SERIES("ICT")
 
-  public:
+public:
     ICTCashAcceptor();
 
     /// Возвращает список поддерживаемых устройств.
@@ -21,7 +20,7 @@ class ICTCashAcceptor : public TSerialCashAcceptor
     /// Вернуть купюру.
     virtual bool reject();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 

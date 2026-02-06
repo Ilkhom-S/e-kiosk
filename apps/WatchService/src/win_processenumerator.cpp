@@ -1,50 +1,38 @@
 /* @file Реализация перечислителя процессов в системе. */
 
-// Platform
-#include <windows.h>
-
-// STL
-#include <algorithm>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QMap>
 #include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
 
-// Project
-#include "processenumerator.h"
+#include <algorithm>
 #include <psapi.h>
+#include <windows.h>
+
+#include "processenumerator.h"
 
 #pragma comment(lib, "Psapi.lib")
 
 //----------------------------------------------------------------------------
-namespace CProcessEnumerator
-{
-    const DWORD WM_EXITEXPLORER = 0x5B4;
-    const int WaitExplorerExit = 3000;
+namespace CProcessEnumerator {
+const DWORD WM_EXITEXPLORER = 0x5B4;
+const int WaitExplorerExit = 3000;
 
-    static QMap<QString, QString> dosDriveMap;
+static QMap<QString, QString> dosDriveMap;
 } // namespace CProcessEnumerator
 
 //----------------------------------------------------------------------------
-void loadDosDriveMap(QMap<QString, QString> &aResult)
-{
+void loadDosDriveMap(QMap<QString, QString> &aResult) {
     DWORD size = MAX_PATH;
     char logicalDrives[MAX_PATH] = {0};
     DWORD result = GetLogicalDriveStringsA(size, logicalDrives);
 
-    if (result > 0 && result <= MAX_PATH)
-    {
+    if (result > 0 && result <= MAX_PATH) {
         char *szSingleDrive = logicalDrives;
-        while (*szSingleDrive)
-        {
+        while (*szSingleDrive) {
             char str[3] = {0};
             strncpy(str, szSingleDrive, 2);
 
             char path[MAX_PATH] = {0};
-            if (QueryDosDeviceA(str, path, MAX_PATH))
-            {
+            if (QueryDosDeviceA(str, path, MAX_PATH)) {
                 aResult.insert(QString::fromLatin1(path), QString::fromLatin1(str));
             }
 
@@ -55,18 +43,14 @@ void loadDosDriveMap(QMap<QString, QString> &aResult)
 }
 
 //----------------------------------------------------------------------------
-bool waitForClose(ProcessEnumerator::PID aPid, int aTimeout)
-{
+bool waitForClose(ProcessEnumerator::PID aPid, int aTimeout) {
     bool result = false;
     HANDLE process = OpenProcess(SYNCHRONIZE | PROCESS_TERMINATE, FALSE, aPid);
 
-    if (process)
-    {
+    if (process) {
         result = WaitForSingleObject(process, aTimeout) == WAIT_OBJECT_0;
         CloseHandle(process);
-    }
-    else
-    {
+    } else {
         // Проверка на наличие процесса, возможно слишком быстро умер
         result = GetLastError() == ERROR_INVALID_PARAMETER;
     }
@@ -75,10 +59,8 @@ bool waitForClose(ProcessEnumerator::PID aPid, int aTimeout)
 }
 
 //----------------------------------------------------------------------------
-ProcessEnumerator::ProcessEnumerator()
-{
-    if (CProcessEnumerator::dosDriveMap.isEmpty())
-    {
+ProcessEnumerator::ProcessEnumerator() {
+    if (CProcessEnumerator::dosDriveMap.isEmpty()) {
         loadDosDriveMap(CProcessEnumerator::dosDriveMap);
     }
 
@@ -86,33 +68,28 @@ ProcessEnumerator::ProcessEnumerator()
 }
 
 //----------------------------------------------------------------------------
-ProcessEnumerator::const_iterator ProcessEnumerator::begin() const
-{
+ProcessEnumerator::const_iterator ProcessEnumerator::begin() const {
     return mProcesses.begin();
 }
 
 //----------------------------------------------------------------------------
-ProcessEnumerator::const_iterator ProcessEnumerator::end() const
-{
+ProcessEnumerator::const_iterator ProcessEnumerator::end() const {
     return mProcesses.end();
 }
 
 //----------------------------------------------------------------------------
-struct handle_data
-{
+struct handle_data {
     ProcessEnumerator::PID process_id;
     HWND best_handle;
 };
 
 //----------------------------------------------------------------------------
-BOOL CALLBACK enum_windows_callback(HWND handle, LPARAM lParam)
-{
+BOOL CALLBACK enum_windows_callback(HWND handle, LPARAM lParam) {
     handle_data &data = *(handle_data *)lParam;
     unsigned long process_id = 0;
 
     GetWindowThreadProcessId(handle, &process_id);
-    if (data.process_id == process_id)
-    {
+    if (data.process_id == process_id) {
         data.best_handle = handle;
         PostMessage(handle, WM_CLOSE, 0, 0);
     }
@@ -121,51 +98,39 @@ BOOL CALLBACK enum_windows_callback(HWND handle, LPARAM lParam)
 }
 
 //----------------------------------------------------------------------------
-bool ProcessEnumerator::kill(PID aPid, quint32 &aErrorCode) const
-{
+bool ProcessEnumerator::kill(PID aPid, quint32 &aErrorCode) const {
     bool result = false;
 
-    if (mProcesses.contains(aPid))
-    {
-        if (mProcesses.value(aPid).path.contains("explorer.exe", Qt::CaseInsensitive))
-        {
+    if (mProcesses.contains(aPid)) {
+        if (mProcesses.value(aPid).path.contains("explorer.exe", Qt::CaseInsensitive)) {
             OSVERSIONINFOEX osVersion = {sizeof(OSVERSIONINFOEX), 0};
             GetVersionEx((OSVERSIONINFO *)&osVersion);
 
             // http://stackoverflow.com/a/6246182/1073032
-            if (osVersion.dwMajorVersion < 6)
-            {
+            if (osVersion.dwMajorVersion < 6) {
                 // Windows XP
-                result = PostMessage(FindWindow(L"Progman", NULL), WM_QUIT, 0, FALSE); // <=  lParam == FALSE !
+                result = PostMessage(
+                    FindWindow(L"Progman", NULL), WM_QUIT, 0, FALSE); // <=  lParam == FALSE !
                 aErrorCode = GetLastError();
 
-                if (!waitForClose(aPid, CProcessEnumerator::WaitExplorerExit))
-                {
+                if (!waitForClose(aPid, CProcessEnumerator::WaitExplorerExit)) {
                     return killInternal(aPid, aErrorCode);
                 }
-            }
-            else
-            {
+            } else {
                 // Windows 7
                 HWND trayWnd = FindWindow(L"Shell_TrayWnd", NULL);
-                if (trayWnd)
-                {
+                if (trayWnd) {
                     result = PostMessage(trayWnd, CProcessEnumerator::WM_EXITEXPLORER, 0, 0);
                     aErrorCode = GetLastError();
 
-                    if (!waitForClose(aPid, CProcessEnumerator::WaitExplorerExit))
-                    {
+                    if (!waitForClose(aPid, CProcessEnumerator::WaitExplorerExit)) {
                         return killInternal(aPid, aErrorCode);
                     }
-                }
-                else
-                {
+                } else {
                     return killInternal(aPid, aErrorCode);
                 }
             }
-        }
-        else
-        {
+        } else {
             return killInternal(aPid, aErrorCode);
         }
     }
@@ -174,8 +139,7 @@ bool ProcessEnumerator::kill(PID aPid, quint32 &aErrorCode) const
 }
 
 //----------------------------------------------------------------------------
-bool ProcessEnumerator::killInternal(PID aPid, quint32 &aErrorCode) const
-{
+bool ProcessEnumerator::killInternal(PID aPid, quint32 &aErrorCode) const {
     bool result = false;
 
     // http://support.microsoft.com/kb/178893
@@ -185,18 +149,15 @@ bool ProcessEnumerator::killInternal(PID aPid, quint32 &aErrorCode) const
     HANDLE process = OpenProcess(SYNCHRONIZE | PROCESS_TERMINATE, FALSE, aPid);
 
     // Ждем немного что бы приложение закрылось
-    if (data.best_handle && process)
-    {
-        if (WaitForSingleObject(process, 1000) == WAIT_OBJECT_0)
-        {
+    if (data.best_handle && process) {
+        if (WaitForSingleObject(process, 1000) == WAIT_OBJECT_0) {
             CloseHandle(process);
             process = NULL;
             return true;
         }
     }
 
-    if (process)
-    {
+    if (process) {
         result = TerminateProcess(process, 0);
         aErrorCode = GetLastError();
         CloseHandle(process);
@@ -206,16 +167,13 @@ bool ProcessEnumerator::killInternal(PID aPid, quint32 &aErrorCode) const
 }
 
 //----------------------------------------------------------------------------
-bool getModuleName(HANDLE aProcess, QString &aPath)
-{
+bool getModuleName(HANDLE aProcess, QString &aPath) {
     wchar_t path[MAX_PATH] = {0};
-    if (GetProcessImageFileName(aProcess, path, MAX_PATH))
-    {
+    if (GetProcessImageFileName(aProcess, path, MAX_PATH)) {
         aPath = QString::fromWCharArray(path);
 
         QMapIterator<QString, QString> i(CProcessEnumerator::dosDriveMap);
-        while (i.hasNext())
-        {
+        while (i.hasNext()) {
             i.next();
             aPath.replace(i.key(), i.value());
         }
@@ -227,28 +185,24 @@ bool getModuleName(HANDLE aProcess, QString &aPath)
 }
 
 //----------------------------------------------------------------------------
-void ProcessEnumerator::enumerate()
-{
+void ProcessEnumerator::enumerate() {
     DWORD processes[1024] = {0}, cbNeeded = 0, cProcesses = 0;
 
-    if (EnumProcesses(processes, sizeof(processes), &cbNeeded))
-    {
+    if (EnumProcesses(processes, sizeof(processes), &cbNeeded)) {
         // Calculate how many process identifiers were returned.
         cProcesses = cbNeeded / sizeof(DWORD);
 
         // Print the name and process identifier for each process.
-        for (unsigned int i = 1; i < cProcesses && processes[i] != 0; i++)
-        {
+        for (unsigned int i = 1; i < cProcesses && processes[i] != 0; i++) {
             // Get a handle to the process.
-            HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processes[i]);
+            HANDLE hProcess =
+                OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processes[i]);
 
             // Get the process name.
-            if (NULL != hProcess)
-            {
+            if (NULL != hProcess) {
                 QString path;
 
-                if (getModuleName(hProcess, path))
-                {
+                if (getModuleName(hProcess, path)) {
                     ProcessInfo pInfo = {processes[i], path};
 
                     mProcesses.insert(processes[i], pInfo);

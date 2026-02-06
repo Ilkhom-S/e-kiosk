@@ -1,52 +1,48 @@
 /* @file Базовый класс устройства приема денег на протоколе ccTalk. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegularExpression>
-#include <Common/QtHeadersEnd.h>
-
-// Project
 #include "CCTalkDeviceBase.h"
+
+#include <QtCore/QRegularExpression>
 
 using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------
 template <class T>
-CCTalkDeviceBase<T>::CCTalkDeviceBase() : mEventIndex(0), mFWVersion(0), mAddress(CCCTalk::Address::Unknown)
-{
+CCTalkDeviceBase<T>::CCTalkDeviceBase()
+    : mEventIndex(0), mFWVersion(0), mAddress(CCCTalk::Address::Unknown) {
     // данные устройства
     this->mDeviceName = CCCTalk::DefaultDeviceName;
     this->mProtocolTypes = getProtocolTypes();
 }
 
 //---------------------------------------------------------------------------
-template <class T> QStringList CCTalkDeviceBase<T>::getProtocolTypes()
-{
+template <class T> QStringList CCTalkDeviceBase<T>::getProtocolTypes() {
     return CCCTalk::ProtocolTypes;
 }
 
 //--------------------------------------------------------------------------------
-template <class T> QDate CCTalkDeviceBase<T>::parseDate(const QByteArray &aData)
-{
+template <class T> QDate CCTalkDeviceBase<T>::parseDate(const QByteArray &aData) {
     ushort data = qToBigEndian(aData.toHex().toUShort(0, 16));
 
-    return QDate(int((data >> 9) & 0x3F) + this->mBaseYear, int((data >> 5) & 0x0F), int((data >> 0) & 0x1F));
+    return QDate(int((data >> 9) & 0x3F) + this->mBaseYear,
+                 int((data >> 5) & 0x0F),
+                 int((data >> 0) & 0x1F));
 }
 
 //--------------------------------------------------------------------------------
 template <class T>
-TResult CCTalkDeviceBase<T>::execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
-                                         QByteArray *aAnswer)
-{
+TResult CCTalkDeviceBase<T>::execCommand(const QByteArray &aCommand,
+                                         const QByteArray &aCommandData,
+                                         QByteArray *aAnswer) {
     MutexLocker locker(&(this->mExternalMutex));
 
     char command = aCommand[0];
     CCCTalk::Command::SData commandData = CCCTalk::Command::Description[command];
 
-    if (mModelData.unsupported.contains(command))
-    {
-        this->toLog(LogLevel::Warning, this->mDeviceName + ": does not support command " + commandData.description);
+    if (mModelData.unsupported.contains(command)) {
+        this->toLog(LogLevel::Warning,
+                    this->mDeviceName + ": does not support command " + commandData.description);
         return CommandResult::Driver;
     }
 
@@ -54,8 +50,7 @@ TResult CCTalkDeviceBase<T>::execCommand(const QByteArray &aCommand, const QByte
     this->mProtocol.setPort(this->mIOPort);
     this->mProtocol.setAddress(this->mAddress);
 
-    if (!this->isAutoDetecting())
-    {
+    if (!this->isAutoDetecting()) {
         QString protocolType = this->getConfigParameter(CHardware::ProtocolType).toString();
         this->mProtocol.setType(protocolType);
     }
@@ -63,35 +58,33 @@ TResult CCTalkDeviceBase<T>::execCommand(const QByteArray &aCommand, const QByte
     QByteArray answer;
     TResult result = this->mProtocol.processCommand(aCommand + aCommandData, answer);
 
-    if (!result)
-    {
+    if (!result) {
         this->toLog(LogLevel::Error, this->mDeviceName + ": Failed to " + commandData.description);
         return result;
     }
 
     bool ack = (answer.size() >= 1) && (answer == QByteArray(answer.size(), CCCTalk::ACK));
 
-    if ((commandData.type == CCCTalk::Command::EAnswerType::ACK) && !ack)
-    {
+    if ((commandData.type == CCCTalk::Command::EAnswerType::ACK) && !ack) {
         this->toLog(LogLevel::Error,
-                    this->mDeviceName + QString(": Failed to check answer = {%1}, need ack").arg(commandData.size));
+                    this->mDeviceName +
+                        QString(": Failed to check answer = {%1}, need ack").arg(commandData.size));
 
         return CommandResult::Answer;
     }
 
     if (((commandData.type == CCCTalk::Command::EAnswerType::Data) ||
          (commandData.type == CCCTalk::Command::EAnswerType::Date)) &&
-        (commandData.size >= answer.size()))
-    {
+        (commandData.size >= answer.size())) {
         this->toLog(LogLevel::Error,
-                    this->mDeviceName + QString(": Failed to check answer size = %1, need minimum = %2")
-                                            .arg(answer.size())
-                                            .arg(commandData.size));
+                    this->mDeviceName +
+                        QString(": Failed to check answer size = %1, need minimum = %2")
+                            .arg(answer.size())
+                            .arg(commandData.size));
         return CommandResult::Answer;
     }
 
-    if (aAnswer)
-    {
+    if (aAnswer) {
         *aAnswer = answer.mid(1);
     }
 
@@ -99,20 +92,16 @@ TResult CCTalkDeviceBase<T>::execCommand(const QByteArray &aCommand, const QByte
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool CCTalkDeviceBase<T>::isConnected()
-{
-    if (!this->isAutoDetecting())
-    {
+template <class T> bool CCTalkDeviceBase<T>::isConnected() {
+    if (!this->isAutoDetecting()) {
         return checkConnection();
     }
 
-    foreach (auto protocolType, this->mProtocolTypes)
-    {
+    foreach (auto protocolType, this->mProtocolTypes) {
         this->mProtocol.setType(protocolType);
         this->setConfigParameter(CHardware::ProtocolType, protocolType);
 
-        if (checkConnection())
-        {
+        if (checkConnection()) {
             return true;
         }
     }
@@ -121,55 +110,46 @@ template <class T> bool CCTalkDeviceBase<T>::isConnected()
 }
 
 //--------------------------------------------------------------------------------
-template <class T> bool CCTalkDeviceBase<T>::checkConnection()
-{
+template <class T> bool CCTalkDeviceBase<T>::checkConnection() {
     SleepHelper::msleep(CCCTalk::IdentificationPause);
 
     QByteArray answer;
 
-    if (!this->processCommand(CCCTalk::Command::DeviceTypeID, &answer))
-    {
+    if (!this->processCommand(CCCTalk::Command::DeviceTypeID, &answer)) {
         return false;
-    }
-    else
-    {
+    } else {
         QString answerData = ProtocolUtils::clean(answer).replace(ASCII::Space, "").toLower();
         QString data = CCCTalk::DeviceTypeIds[this->mAddress];
-        if (!answerData.contains(data))
-        {
-            this->toLog(LogLevel::Error,
-                        this->mDeviceName +
-                            QString(": wrong device type = %1, need like %2").arg(answer.data()).arg(data));
+        if (!answerData.contains(data)) {
+            this->toLog(
+                LogLevel::Error,
+                this->mDeviceName +
+                    QString(": wrong device type = %1, need like %2").arg(answer.data()).arg(data));
             return false;
         }
     }
 
     QByteArray vendorID;
 
-    if (!this->processCommand(CCCTalk::Command::VendorID, &vendorID))
-    {
+    if (!this->processCommand(CCCTalk::Command::VendorID, &vendorID)) {
         return false;
     }
 
-    if (CCCTalk::VendorData.data().contains(vendorID.toUpper()))
-    {
+    if (CCCTalk::VendorData.data().contains(vendorID.toUpper())) {
         this->setDeviceParameter(CDeviceData::Vendor, CCCTalk::VendorData.getName(vendorID));
     }
 
     QByteArray productCode;
 
-    if (!this->processCommand(CCCTalk::Command::ProductCode, &productCode))
-    {
+    if (!this->processCommand(CCCTalk::Command::ProductCode, &productCode)) {
         return false;
     }
 
-    if (!productCode.isEmpty())
-    {
+    if (!productCode.isEmpty()) {
         this->setDeviceParameter(CDeviceData::ProductCode, productCode.simplified());
     }
 
-    if (!mAllModelData)
-    {
+    if (!mAllModelData) {
         this->toLog(LogLevel::Error, this->mDeviceName + ": No model data");
         return false;
     }
@@ -182,71 +162,64 @@ template <class T> bool CCTalkDeviceBase<T>::checkConnection()
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void CCTalkDeviceBase<T>::processDeviceData()
-{
+template <class T> void CCTalkDeviceBase<T>::processDeviceData() {
     QByteArray answer;
 
-    if (this->processCommand(CCCTalk::Command::BuildCode, &answer))
-    {
+    if (this->processCommand(CCCTalk::Command::BuildCode, &answer)) {
         this->setDeviceParameter(CDeviceData::Build, answer);
     }
 
-    if (this->processCommand(CCCTalk::Command::ProtocolID, &answer))
-    {
-        this->setDeviceParameter(CDeviceData::ProtocolVersion,
-                                 QString("%1.%2.%3").arg(uchar(answer[0])).arg(uchar(answer[1])).arg(uchar(answer[2])));
+    if (this->processCommand(CCCTalk::Command::ProtocolID, &answer)) {
+        this->setDeviceParameter(
+            CDeviceData::ProtocolVersion,
+            QString("%1.%2.%3").arg(uchar(answer[0])).arg(uchar(answer[1])).arg(uchar(answer[2])));
     }
 
-    if (this->processCommand(CCCTalk::Command::Serial, &answer))
-    {
+    if (this->processCommand(CCCTalk::Command::Serial, &answer)) {
         this->setDeviceParameter(CDeviceData::SerialNumber,
-                                 0x10000 * uchar(answer[2]) + 0x100 * uchar(answer[1]) + uchar(answer[0]));
+                                 0x10000 * uchar(answer[2]) + 0x100 * uchar(answer[1]) +
+                                     uchar(answer[0]));
     }
 
-    if (this->processCommand(CCCTalk::Command::DBVersion, &answer))
-    {
+    if (this->processCommand(CCCTalk::Command::DBVersion, &answer)) {
         this->setDeviceParameter(CDeviceData::CashAcceptors::Database, uchar(answer[0]));
     }
 
     this->removeDeviceParameter(CDeviceData::Firmware);
 
-    if (this->processCommand(CCCTalk::Command::SoftVersion, &answer))
-    {
+    if (this->processCommand(CCCTalk::Command::SoftVersion, &answer)) {
         this->setDeviceParameter(CDeviceData::Firmware, answer);
         double FWVersion = this->parseFWVersion(answer);
 
-        if (FWVersion)
-        {
+        if (FWVersion) {
             this->mFWVersion = FWVersion;
 
-            if (answer.simplified().toDouble() != FWVersion)
-            {
-                this->setDeviceParameter(CDeviceData::Version, this->mFWVersion, CDeviceData::Firmware);
+            if (answer.simplified().toDouble() != FWVersion) {
+                this->setDeviceParameter(
+                    CDeviceData::Version, this->mFWVersion, CDeviceData::Firmware);
             }
         }
     }
 
-    if (this->processCommand(CCCTalk::Command::BaseYear, &answer))
-    {
+    if (this->processCommand(CCCTalk::Command::BaseYear, &answer)) {
         this->mBaseYear = answer.toInt();
     }
 
-    if (this->processCommand(CCCTalk::Command::CreationDate, &answer))
-    {
-        this->setDeviceParameter(CDeviceData::Date, this->parseDate(answer).toString("dd.MM.yyyy"),
+    if (this->processCommand(CCCTalk::Command::CreationDate, &answer)) {
+        this->setDeviceParameter(CDeviceData::Date,
+                                 this->parseDate(answer).toString("dd.MM.yyyy"),
                                  CDeviceData::Firmware);
     }
 
-    if (this->processCommand(CCCTalk::Command::SoftLastDate, &answer))
-    {
-        this->setDeviceParameter(CDeviceData::CashAcceptors::LastUpdate, this->parseDate(answer).toString("dd.MM.yyyy"),
+    if (this->processCommand(CCCTalk::Command::SoftLastDate, &answer)) {
+        this->setDeviceParameter(CDeviceData::CashAcceptors::LastUpdate,
+                                 this->parseDate(answer).toString("dd.MM.yyyy"),
                                  CDeviceData::Firmware);
     }
 }
 
 //--------------------------------------------------------------------------------
-template <class T> double CCTalkDeviceBase<T>::parseFWVersion(const QByteArray &aAnswer)
-{
+template <class T> double CCTalkDeviceBase<T>::parseFWVersion(const QByteArray &aAnswer) {
     double result = 0.0;
 
     // 1. Используем QStringLiteral для оптимизации создания регулярного выражения.
@@ -258,8 +231,7 @@ template <class T> double CCTalkDeviceBase<T>::parseFWVersion(const QByteArray &
     QRegularExpressionMatch match = regex.match(QString::fromUtf8(aAnswer));
 
     // 3. Проверяем наличие совпадения через hasMatch() (стандарт Qt 6)
-    if (match.hasMatch())
-    {
+    if (match.hasMatch()) {
         // 4. Извлекаем группу 0 (все совпадение целиком) через captured(0).
         // Это быстрее, чем формирование QStringList через capturedTexts().
         result = match.captured(0).toDouble();

@@ -14,11 +14,9 @@
 
 class QAtResultPrivate;
 
-class QAtResult
-{
-  public:
-    enum ResultCode
-    {
+class QAtResult {
+public:
+    enum ResultCode {
         OK = -1,
         Connect = -2,
         NoCarrier = -3,
@@ -122,12 +120,9 @@ class QAtResult
         UnknownError = 500
     };
 
-    class UserData
-    {
-      public:
-        virtual ~UserData()
-        {
-        }
+    class UserData {
+    public:
+        virtual ~UserData() {}
     };
 
     QAtResult();
@@ -153,7 +148,7 @@ class QAtResult
     QAtResult::UserData *userData() const;
     void setUserData(QAtResult::UserData *value);
 
-  private:
+private:
     QAtResultPrivate *d;
 
     void resultToCode(const QString &value);

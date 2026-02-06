@@ -2,36 +2,29 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QTimer>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <Common/ObjectPointer.h>
+
 #include <SDK/Drivers/ICashAcceptor.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK
-{
-    namespace Driver
-    {
-        class IDevice;
-    } // namespace Driver
+namespace SDK {
+namespace Driver {
+class IDevice;
+} // namespace Driver
 } // namespace SDK
 
-namespace CBillAcceptorTest
-{
-    /// Таймаут сообщения о номинале купюры в эскроу, [мс].
-    const int EscrowMessageTimeout = 5 * 1000;
+namespace CBillAcceptorTest {
+/// Таймаут сообщения о номинале купюры в эскроу, [мс].
+const int EscrowMessageTimeout = 5 * 1000;
 } // namespace CBillAcceptorTest
 
 //------------------------------------------------------------------------------
-class BillAcceptorTest : public SDK::PaymentProcessor::IDeviceTest
-{
+class BillAcceptorTest : public SDK::PaymentProcessor::IDeviceTest {
     Q_OBJECT
 
-  public:
+public:
     BillAcceptorTest(SDK::Driver::IDevice *aDevice);
 
     /// Возвращает имена и описания тестов.
@@ -49,7 +42,7 @@ class BillAcceptorTest : public SDK::PaymentProcessor::IDeviceTest
     /// Возвращает true, если тест устройства возвращает результат теста
     virtual bool hasResult();
 
-  private slots:
+private slots:
     /// Показать номинал.
     void onEscrow(SDK::Driver::SPar aPar);
 
@@ -59,7 +52,7 @@ class BillAcceptorTest : public SDK::PaymentProcessor::IDeviceTest
     /// Удалить сообщение.
     void onEraseMessage();
 
-  private:
+private:
     /// Экземпляр класса купюроприемника.
     ObjectPointer<SDK::Driver::ICashAcceptor> mBillAcceptor;
 

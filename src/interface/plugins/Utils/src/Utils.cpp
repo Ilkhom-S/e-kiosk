@@ -1,7 +1,7 @@
 /* @file Набор вспомогательных функций для qml. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "Utils.h"
+
 #include <QtCore/QByteArray>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
@@ -19,30 +19,25 @@
 #include <QtQml/QQmlEngine>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QWidget>
-#include <Common/QtHeadersEnd.h>
 
-// Project
 #include "Log.h"
-#include "Utils.h"
 
-namespace CUtils
-{
-    const QString MaskPlaceholders = "AaNnXxDdHhBb09#";
-    const QString MaskModifiers = "<!>";
+namespace CUtils {
+const QString MaskPlaceholders = "AaNnXxDdHhBb09#";
+const QString MaskModifiers = "<!>";
 
-    const QString DefaultConf = "interface.ini";
-    const QString UserConf = "user.ini";
+const QString DefaultConf = "interface.ini";
+const QString UserConf = "user.ini";
 
-    const QString UseCommonSounds = "sound/use_common";
-    const QString UseNarratorSounds = "sound/use_narrator";
-    const QString UseAutoOrderProviders = "ui/auto_order_operator";
+const QString UseCommonSounds = "sound/use_common";
+const QString UseNarratorSounds = "sound/use_narrator";
+const QString UseAutoOrderProviders = "ui/auto_order_operator";
 } // namespace CUtils
 
 //------------------------------------------------------------------------------
 Utils::Utils(QQmlEngine *aEngine, const QString &aInterfacePath, const QString &aUserPath)
-    : mEngine(aEngine), mInterfacePath(aInterfacePath), mUserPath(aUserPath), mUseCommonSounds(true),
-      mUseNarratorSounds(false), mUseAutoOrderProviders(false)
-{
+    : mEngine(aEngine), mInterfacePath(aInterfacePath), mUserPath(aUserPath),
+      mUseCommonSounds(true), mUseNarratorSounds(false), mUseAutoOrderProviders(false) {
     // Получаем директорию с файлами интерфейса.
     QObject *application = mEngine->rootContext()->contextProperty("Core").value<QObject *>();
 
@@ -61,9 +56,12 @@ Utils::Utils(QQmlEngine *aEngine, const QString &aInterfacePath, const QString &
     mRootGroupModel->setElementFilter(QStringList() << "group");
 
     // Модели и фильтры для поиска
-    mProviderListModel = QSharedPointer<ProviderListModel>(new ProviderListModel(this, mGroupModel));
-    connect(mGroupModel.data(), SIGNAL(modelReset()), mProviderListModel.data(), SLOT(groupsUpdated()));
-    mProviderListModel->setPaymentService(application ? application->property("payment").value<QObject *>() : nullptr);
+    mProviderListModel =
+        QSharedPointer<ProviderListModel>(new ProviderListModel(this, mGroupModel));
+    connect(
+        mGroupModel.data(), SIGNAL(modelReset()), mProviderListModel.data(), SLOT(groupsUpdated()));
+    mProviderListModel->setPaymentService(
+        application ? application->property("payment").value<QObject *>() : nullptr);
     mProviderListFilter = QSharedPointer<ProviderListFilter>(new ProviderListFilter(this));
     mProviderListFilter->setSourceModel(mProviderListModel.data());
     mProviderListFilter->setDynamicSortFilter(true);
@@ -71,37 +69,34 @@ Utils::Utils(QQmlEngine *aEngine, const QString &aInterfacePath, const QString &
     mSkin = QSharedPointer<Skin>(new Skin(application, mInterfacePath, mUserPath));
 
     mGuiService = application->property("graphics").value<QObject *>();
-    connect(mGuiService, SIGNAL(skinReload(const QVariantMap &)), this, SLOT(onReloadSkin(const QVariantMap &)));
+    connect(mGuiService,
+            SIGNAL(skinReload(const QVariantMap &)),
+            this,
+            SLOT(onReloadSkin(const QVariantMap &)));
 }
 
 //------------------------------------------------------------------------------
-void Utils::generateKeyEvent(int aKey, int aModifiers, const QString &aText) const
-{
+void Utils::generateKeyEvent(int aKey, int aModifiers, const QString &aText) const {
     const QGuiApplication *app = qApp;
     QWindow *focusWindow = app ? app->focusWindow() : 0;
-    if (focusWindow)
-    {
-        QGuiApplication::sendEvent(focusWindow,
-                                   new QKeyEvent(QEvent::KeyPress, aKey, Qt::KeyboardModifiers(aModifiers), aText));
+    if (focusWindow) {
+        QGuiApplication::sendEvent(
+            focusWindow,
+            new QKeyEvent(QEvent::KeyPress, aKey, Qt::KeyboardModifiers(aModifiers), aText));
     }
 }
 
 //------------------------------------------------------------------------------
 // подсчет количества позиций в маске ввода
-int maskLength(QString mask)
-{
+int maskLength(QString mask) {
     int len = 0;
 
     mask.remove(QRegExp("(;.)$"));
 
-    for (int i = 0; i < mask.size(); ++i)
-    {
-        if (mask[i] == '\\')
-        {
+    for (int i = 0; i < mask.size(); ++i) {
+        if (mask[i] == '\\') {
             ++i;
-        }
-        else if (mask[i] == '>' || mask[i] == '<' || mask[i] == '!')
-        {
+        } else if (mask[i] == '>' || mask[i] == '<' || mask[i] == '!') {
             continue;
         }
         ++len;
@@ -111,43 +106,32 @@ int maskLength(QString mask)
 }
 
 //------------------------------------------------------------------------------
-QString Utils::stripMask(const QString &aSource, const QString &aMask) const
-{
+QString Utils::stripMask(const QString &aSource, const QString &aMask) const {
     int pos = 0;
     bool escaped = false;
     QString result;
 
-    if (!aSource.length() || !aMask.length())
-    {
+    if (!aSource.length() || !aMask.length()) {
         return aSource;
     }
 
     QChar userPlaceholder = aMask[aMask.length() - 1];
 
-    foreach (QChar c, aMask)
-    {
-        if (!escaped)
-        {
-            if (c == ';')
-            {
+    foreach (QChar c, aMask) {
+        if (!escaped) {
+            if (c == ';') {
                 break;
-            }
-            else if (CUtils::MaskPlaceholders.contains(c) && pos < aSource.length() && aSource[pos] != userPlaceholder)
-            {
+            } else if (CUtils::MaskPlaceholders.contains(c) && pos < aSource.length() &&
+                       aSource[pos] != userPlaceholder) {
                 result += aSource[pos];
-            }
-            else if (c == '\\')
-            {
+            } else if (c == '\\') {
                 escaped = true;
             }
-        }
-        else
-        {
+        } else {
             escaped = false;
         }
 
-        if (!escaped && !CUtils::MaskModifiers.contains(c))
-        {
+        if (!escaped && !CUtils::MaskModifiers.contains(c)) {
             ++pos;
         }
     }
@@ -162,14 +146,12 @@ QString Utils::stripMask(const QString &aSource, const QString &aMask) const
 // Позиция первого различия справа       :       ^
 // Нужная позиция курсора                :          ^  (1-й placeholder справа от различия)
 
-int Utils::getCursorPosition(const QString &aMask, const QString &aBefore, const QString &aAfter) const
-{
-    if (aMask.isEmpty())
-    {
+int Utils::getCursorPosition(const QString &aMask,
+                             const QString &aBefore,
+                             const QString &aAfter) const {
+    if (aMask.isEmpty()) {
         return aAfter.length();
-    }
-    else if (aBefore.length() != aAfter.length())
-    {
+    } else if (aBefore.length() != aAfter.length()) {
         Log(Log::Error) << "Utils::getCursorPosition(): string lengths differ.";
 
         return 0;
@@ -178,10 +160,8 @@ int Utils::getCursorPosition(const QString &aMask, const QString &aBefore, const
     // Находим первое справа отличие пустого displayValue от заполненного
     int mismatchIndex;
 
-    for (mismatchIndex = aBefore.length() - 1; mismatchIndex >= 0; --mismatchIndex)
-    {
-        if (aBefore[mismatchIndex] != aAfter[mismatchIndex])
-        {
+    for (mismatchIndex = aBefore.length() - 1; mismatchIndex >= 0; --mismatchIndex) {
+        if (aBefore[mismatchIndex] != aAfter[mismatchIndex]) {
             break;
         }
     }
@@ -192,31 +172,21 @@ int Utils::getCursorPosition(const QString &aMask, const QString &aBefore, const
     int placeholderIndex = 0;
     bool escaped = false;
 
-    foreach (QChar c, aMask)
-    {
-        if (!escaped)
-        {
-            if (c == ';')
-            {
+    foreach (QChar c, aMask) {
+        if (!escaped) {
+            if (c == ';') {
                 mismatchIndex = aAfter.length();
                 break;
-            }
-            else if (placeholderIndex >= mismatchIndex && CUtils::MaskPlaceholders.contains(c))
-            {
+            } else if (placeholderIndex >= mismatchIndex && CUtils::MaskPlaceholders.contains(c)) {
                 break;
-            }
-            else if (c == '\\')
-            {
+            } else if (c == '\\') {
                 escaped = true;
             }
-        }
-        else
-        {
+        } else {
             escaped = false;
         }
 
-        if (!escaped && !CUtils::MaskModifiers.contains(c))
-        {
+        if (!escaped && !CUtils::MaskModifiers.contains(c)) {
             ++placeholderIndex;
         }
     }
@@ -225,27 +195,21 @@ int Utils::getCursorPosition(const QString &aMask, const QString &aBefore, const
 }
 
 //------------------------------------------------------------------------------
-QString Utils::format(const QString &aSource, const QString &aFormat) const
-{
+QString Utils::format(const QString &aSource, const QString &aFormat) const {
     QString result;
 
-    if (!aFormat.isEmpty())
-    {
+    if (!aFormat.isEmpty()) {
         QRegExp rx("\\[(\\d+)\\]");
 
         QString outFormat = aFormat;
         int pos;
 
-        while ((pos = rx.indexIn(outFormat, 0)) >= 0)
-        {
+        while ((pos = rx.indexIn(outFormat, 0)) >= 0) {
             int srcIndex = rx.cap(1).toInt() - 1;
 
-            if (srcIndex < aSource.size())
-            {
+            if (srcIndex < aSource.size()) {
                 outFormat.replace(pos, rx.matchedLength(), aSource.at(srcIndex));
-            }
-            else
-            {
+            } else {
                 outFormat.remove(pos, rx.matchedLength());
             }
         }
@@ -257,26 +221,21 @@ QString Utils::format(const QString &aSource, const QString &aFormat) const
 }
 
 //------------------------------------------------------------------------------
-QString Utils::readFile(const QString &aPath) const
-{
+QString Utils::readFile(const QString &aPath) const {
     // TODO если путь отнсительный, то считать от каталога скина
     QFile file(aPath);
     QString result;
 
-    if (file.open(QIODevice::ReadOnly))
-    {
+    if (file.open(QIODevice::ReadOnly)) {
         QByteArray contents = file.readAll();
         QMap<QString, QTextCodec *>::iterator codec = mCodecCache.find(aPath);
 
-        if (codec == mCodecCache.end())
-        {
+        if (codec == mCodecCache.end()) {
             codec = mCodecCache.insert(aPath, QTextCodec::codecForHtml(contents));
         }
 
         result = (*codec)->toUnicode(contents);
-    }
-    else
-    {
+    } else {
         Log(Log::Error) << "Failed to read file " << aPath << ": " << file.errorString();
     }
 
@@ -284,14 +243,12 @@ QString Utils::readFile(const QString &aPath) const
 }
 
 //------------------------------------------------------------------------------
-bool Utils::fileExist(const QString &aPath) const
-{
+bool Utils::fileExist(const QString &aPath) const {
     return QFileInfo(aPath).exists();
 }
 
 //------------------------------------------------------------------------------
-QString Utils::toHtml(const QString &aSource) const
-{
+QString Utils::toHtml(const QString &aSource) const {
     return QString(aSource)
         .replace("[br]", " ")
         .replace(QRegExp("\\s+"), " ")
@@ -299,8 +256,7 @@ QString Utils::toHtml(const QString &aSource) const
 }
 
 //------------------------------------------------------------------------------
-QString Utils::toPlain(const QString &aSource) const
-{
+QString Utils::toPlain(const QString &aSource) const {
     return QString(aSource)
         .replace("[br]", "")
         .replace(QRegExp("\\s+"), " ")
@@ -309,63 +265,51 @@ QString Utils::toPlain(const QString &aSource) const
 }
 
 //------------------------------------------------------------------------------
-QObject *Utils::getTranslator()
-{
+QObject *Utils::getTranslator() {
     return mTranslator.data();
 }
 
 //------------------------------------------------------------------------------
-QObject *Utils::getGroupModel()
-{
+QObject *Utils::getGroupModel() {
     return mGroupModel.data();
 }
 
 //------------------------------------------------------------------------------
-QObject *Utils::getRootGroupModel()
-{
+QObject *Utils::getRootGroupModel() {
     return mRootGroupModel.data();
 }
 
 //------------------------------------------------------------------------------
-QObject *Utils::getProviderList()
-{
+QObject *Utils::getProviderList() {
     return mProviderListFilter.data();
 }
 
 //------------------------------------------------------------------------------
-QObject *Utils::getSkin()
-{
+QObject *Utils::getSkin() {
     return mSkin.data();
 }
 
 // Файлы для воспроизведения должны лежать в соответствующих папках: common, narrator, etc
 // Файл из произвольного места воспроизведен не будет
 //------------------------------------------------------------------------------
-void Utils::playSound(const QString &aFileName) const
-{
+void Utils::playSound(const QString &aFileName) const {
     QStringList path = aFileName.split("/");
     path.removeLast();
 
     QString key = QString("sound/use_%1").arg(path.last());
     QString filePath;
 
-    if (key == CUtils::UseCommonSounds && mUseCommonSounds)
-    {
+    if (key == CUtils::UseCommonSounds && mUseCommonSounds) {
         filePath = mInterfacePath + QDir::separator() + "sounds" + QDir::separator() + aFileName;
-    }
-    else if (key == CUtils::UseNarratorSounds && mUseNarratorSounds)
-    {
-        filePath = mInterfacePath + QDir::separator() + "sounds" + QDir::separator() + mTranslator->getLanguage() +
-                   QDir::separator() + aFileName;
-    }
-    else
-    {
+    } else if (key == CUtils::UseNarratorSounds && mUseNarratorSounds) {
+        filePath = mInterfacePath + QDir::separator() + "sounds" + QDir::separator() +
+                   mTranslator->getLanguage() + QDir::separator() + aFileName;
+    } else {
         // Звук отключен
         return;
     }
 
-    if (filePath.isEmpty() || !QFile::exists(filePath))
-    {
+    if (filePath.isEmpty() || !QFile::exists(filePath)) {
         Log(Log::Warning) << QString("Audio file %1 not found.").arg(filePath);
         return;
     }
@@ -374,34 +318,29 @@ void Utils::playSound(const QString &aFileName) const
 }
 
 //------------------------------------------------------------------------------
-QString Utils::fromBase64(const QString &aSource) const
-{
+QString Utils::fromBase64(const QString &aSource) const {
     return QTextCodec::codecForName("UTF-8")->toUnicode(QByteArray::fromBase64(aSource.toLatin1()));
 }
 
 //------------------------------------------------------------------------------
-QString Utils::fromUrlEncoding(const QString &aSource) const
-{
-    return QTextCodec::codecForName("windows-1251")->toUnicode(QByteArray::fromPercentEncoding(aSource.toLatin1()));
+QString Utils::fromUrlEncoding(const QString &aSource) const {
+    return QTextCodec::codecForName("windows-1251")
+        ->toUnicode(QByteArray::fromPercentEncoding(aSource.toLatin1()));
 }
 
 //------------------------------------------------------------------------------
-void Utils::click()
-{
+void Utils::click() {
     QMetaObject::invokeMethod(this, "onClicked", Qt::QueuedConnection);
 }
 
 //------------------------------------------------------------------------------
-void Utils::onClicked()
-{
+void Utils::onClicked() {
     emit clicked();
 }
 
 //------------------------------------------------------------------------------
-QVariantMap Utils::str2json(const QString &aString) const
-{
-    if (aString.isEmpty())
-    {
+QVariantMap Utils::str2json(const QString &aString) const {
+    if (aString.isEmpty()) {
         return QVariantMap();
     }
 
@@ -409,8 +348,7 @@ QVariantMap Utils::str2json(const QString &aString) const
     QString str = aString;
     QJsonDocument result = QJsonDocument::fromJson(str.replace("'", "\"").toUtf8(), &ok);
 
-    if (ok.error == QJsonParseError::NoError)
-    {
+    if (ok.error == QJsonParseError::NoError) {
         return result.object().toVariantMap();
     }
 
@@ -420,34 +358,30 @@ QVariantMap Utils::str2json(const QString &aString) const
 }
 
 //------------------------------------------------------------------------------
-void Utils::onReloadSkin(const QVariantMap &aParams)
-{
-    if (mSkin->needReload(aParams))
-    {
+void Utils::onReloadSkin(const QVariantMap &aParams) {
+    if (mSkin->needReload(aParams)) {
         QMetaObject::invokeMethod(mGuiService, "reset", Qt::DirectConnection);
         mSkin->reload(aParams);
     }
 }
 
 //------------------------------------------------------------------------------
-QMap<qint64, quint32> Utils::getStatistic()
-{
+QMap<qint64, quint32> Utils::getStatistic() {
     QMap<qint64, quint32> result;
 
-    if (mUseAutoOrderProviders)
-    {
+    if (mUseAutoOrderProviders) {
         QObject *application = mEngine->rootContext()->contextProperty("Core").value<QObject *>();
-        QObject *paymentService = application ? application->property("payment").value<QObject *>() : nullptr;
+        QObject *paymentService =
+            application ? application->property("payment").value<QObject *>() : nullptr;
 
         QVariantMap statistic;
 
-        if (paymentService &&
-            QMetaObject::invokeMethod(paymentService, "getStatistic", Q_RETURN_ARG(QVariantMap, statistic)))
-        {
+        if (paymentService && QMetaObject::invokeMethod(paymentService,
+                                                        "getStatistic",
+                                                        Q_RETURN_ARG(QVariantMap, statistic))) {
             QMapIterator<QString, QVariant> i(statistic);
 
-            while (i.hasNext())
-            {
+            while (i.hasNext()) {
                 i.next();
 
                 result.insert(i.key().toLongLong(), i.value().toUInt());
@@ -459,36 +393,37 @@ QMap<qint64, quint32> Utils::getStatistic()
 }
 
 //------------------------------------------------------------------------------
-void Utils::loadConfiguration()
-{
+void Utils::loadConfiguration() {
     // Настройки
     QVariantMap configuration;
 
     // Загружаем значения по умолчанию
     {
-        QSettings defaultSettings(mInterfacePath + QDir::separator() + CUtils::DefaultConf, QSettings::IniFormat);
+        QSettings defaultSettings(mInterfacePath + QDir::separator() + CUtils::DefaultConf,
+                                  QSettings::IniFormat);
         defaultSettings.setIniCodec("UTF-8");
 
-        foreach (QString key, defaultSettings.allKeys())
-        {
+        foreach (QString key, defaultSettings.allKeys()) {
             configuration.insert(key, defaultSettings.value(key));
         }
     }
 
     // Загружаем пользовательские настройки
     {
-        QSettings userSettings(mUserPath + QDir::separator() + CUtils::UserConf, QSettings::IniFormat);
+        QSettings userSettings(mUserPath + QDir::separator() + CUtils::UserConf,
+                               QSettings::IniFormat);
         userSettings.setIniCodec("UTF-8");
 
-        foreach (QString key, userSettings.allKeys())
-        {
+        foreach (QString key, userSettings.allKeys()) {
             configuration.insert(key, userSettings.value(key));
         }
     }
 
     mUseCommonSounds = configuration.value(CUtils::UseCommonSounds, mUseCommonSounds).toBool();
-    mUseNarratorSounds = configuration.value(CUtils::UseNarratorSounds, mUseNarratorSounds).toBool();
-    mUseAutoOrderProviders = configuration.value(CUtils::UseAutoOrderProviders, mUseAutoOrderProviders).toBool();
+    mUseNarratorSounds =
+        configuration.value(CUtils::UseNarratorSounds, mUseNarratorSounds).toBool();
+    mUseAutoOrderProviders =
+        configuration.value(CUtils::UseAutoOrderProviders, mUseAutoOrderProviders).toBool();
 }
 
 //------------------------------------------------------------------------------

@@ -1,25 +1,18 @@
 /* @file Окно логов. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "LogsServiceWindow.h"
+
 #include <QtCore/QDir>
 #include <QtGui/QKeyEvent>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Core/ISettingsService.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
-// System
 #include "Backend/HumoServiceBackend.h"
 
-// Project
-#include "LogsServiceWindow.h"
-
 LogsServiceWindow::LogsServiceWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : QFrame(aParent), ServiceWindowBase(aBackend)
-{
+    : QFrame(aParent), ServiceWindowBase(aBackend) {
     setupUi(this);
 
     connect(btnShowLog, SIGNAL(clicked()), this, SLOT(onShowLogButtonClicked()));
@@ -47,8 +40,7 @@ LogsServiceWindow::LogsServiceWindow(HumoServiceBackend *aBackend, QWidget *aPar
                                  .userDataPath));
 
     QDir logDir(logPath, "*.log", QDir::Name, QDir::Files);
-    foreach (QFileInfo fileInfo, logDir.entryInfoList())
-    {
+    foreach (QFileInfo fileInfo, logDir.entryInfoList()) {
         mLogs.insert(fileInfo.fileName(), fileInfo.filePath());
     }
 
@@ -56,40 +48,33 @@ LogsServiceWindow::LogsServiceWindow(HumoServiceBackend *aBackend, QWidget *aPar
 }
 
 //------------------------------------------------------------------------
-bool LogsServiceWindow::activate()
-{
+bool LogsServiceWindow::activate() {
     lvLogsList->clear();
     lvLogsList->insertItems(0, mLogs.keys());
     return true;
 }
 
 //------------------------------------------------------------------------
-bool LogsServiceWindow::deactivate()
-{
+bool LogsServiceWindow::deactivate() {
     return true;
 }
 
 //------------------------------------------------------------------------
-bool LogsServiceWindow::initialize()
-{
+bool LogsServiceWindow::initialize() {
     return true;
 }
 
 //------------------------------------------------------------------------
-bool LogsServiceWindow::shutdown()
-{
+bool LogsServiceWindow::shutdown() {
     return true;
 }
 
 //------------------------------------------------------------------------
-void LogsServiceWindow::onShowLogButtonClicked()
-{
-    if (lvLogsList->selectedItems().size() > 0)
-    {
+void LogsServiceWindow::onShowLogButtonClicked() {
+    if (lvLogsList->selectedItems().size() > 0) {
         QFile logFile(mLogs.value(lvLogsList->selectedItems().first()->text()));
 
-        if (logFile.open(QIODevice::ReadOnly))
-        {
+        if (logFile.open(QIODevice::ReadOnly)) {
             QTextStream stream(&logFile);
 
             QStringList splitted = stream.readAll().split("\r\n", Qt::SkipEmptyParts);
@@ -105,38 +90,32 @@ void LogsServiceWindow::onShowLogButtonClicked()
 }
 
 //------------------------------------------------------------------------
-void LogsServiceWindow::onCloseLogClicked()
-{
+void LogsServiceWindow::onCloseLogClicked() {
     stackedWidget->setCurrentIndex(0);
 }
 
 //------------------------------------------------------------------------
-void LogsServiceWindow::onScrollDownClicked()
-{
+void LogsServiceWindow::onScrollDownClicked() {
     scrollPgDown(lvLog);
 }
 
 //------------------------------------------------------------------------
-void LogsServiceWindow::onScrollUpClicked()
-{
+void LogsServiceWindow::onScrollUpClicked() {
     scrollPgUp(lvLog);
 }
 
 //------------------------------------------------------------------------
-void LogsServiceWindow::logsSelectionChanged()
-{
+void LogsServiceWindow::logsSelectionChanged() {
     btnShowLog->setEnabled(lvLogsList->selectedItems().size() > 0);
 }
 
 //------------------------------------------------------------------------
-void LogsServiceWindow::onScrollUpLogListClicked()
-{
+void LogsServiceWindow::onScrollUpLogListClicked() {
     scrollPgUp(lvLogsList);
 }
 
 //------------------------------------------------------------------------
-void LogsServiceWindow::onScrollDownLogListClicked()
-{
+void LogsServiceWindow::onScrollDownLogListClicked() {
     scrollPgDown(lvLogsList);
 }
 

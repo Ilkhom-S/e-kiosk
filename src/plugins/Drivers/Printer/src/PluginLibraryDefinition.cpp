@@ -2,14 +2,11 @@
 
 // Plugin SDK
 
-// SDK
-#include <SDK/Plugins/PluginFactory.h>
-
-// Project
 #include "PluginLibraryDefinition.h"
 
-PrintersPluginFactory::PrintersPluginFactory()
-{
+#include <SDK/Plugins/PluginFactory.h>
+
+PrintersPluginFactory::PrintersPluginFactory() {
     mName = "Printers";
     mDescription = "Printer driver library.";
     mAuthor = "Humo";

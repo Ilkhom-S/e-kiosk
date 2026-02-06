@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QtGlobal>
-#include <Common/QtHeadersEnd.h>
 
 //------------------------------------------------------------------------
 

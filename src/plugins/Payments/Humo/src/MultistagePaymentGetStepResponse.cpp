@@ -1,13 +1,10 @@
 /* @file Ответ сервера на получения полей для следующего шага multistage шлюза. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtXml/QDomDocument>
-#include <Common/QtHeadersEnd.h>
-
-// Project
-#include "MultistagePaymentGetStepRequest.h"
 #include "MultistagePaymentGetStepResponse.h"
+
+#include <QtXml/QDomDocument>
+
+#include "MultistagePaymentGetStepRequest.h"
 #include "PaymentRequest.h"
 
 using namespace SDK::PaymentProcessor::Humo;
@@ -15,43 +12,37 @@ using namespace SDK::PaymentProcessor::Humo;
 //---------------------------------------------------------------------------
 MultistagePaymentGetStepResponse::MultistagePaymentGetStepResponse(const Request &aRequest,
                                                                    const QString &aResponseString)
-    : PaymentResponse(aRequest, aResponseString)
-{
+    : PaymentResponse(aRequest, aResponseString) {
     mIsOk = false;
 
     const PaymentRequest *paymentRequest = dynamic_cast<const PaymentRequest *>(&aRequest);
-    if (!paymentRequest)
-    {
+    if (!paymentRequest) {
         return;
     }
 
-    if (getError() != EServerError::Ok)
-    {
+    if (getError() != EServerError::Ok) {
         return;
     }
 
     QVariant step = getParameter(CMultistage::Protocol::Step);
-    if (step.isNull())
-    {
+    if (step.isNull()) {
         return;
     }
 
     mStep = step.toString();
 
     QVariant fields = getParameter(CMultistage::Protocol::Fields);
-    if (fields.isNull() && mStep != CMultistage::Protocol::FinalStepValue)
-    {
+    if (fields.isNull() && mStep != CMultistage::Protocol::FinalStepValue) {
         return;
     }
 
-    if (fields.isNull())
-    {
+    if (fields.isNull()) {
         mFields = "";
         mIsOk = true;
-    }
-    else
-    {
-        mFields = QString::fromLocal8Bit(QByteArray::fromPercentEncoding(fields.toString().toLatin1())).trimmed();
+    } else {
+        mFields =
+            QString::fromLocal8Bit(QByteArray::fromPercentEncoding(fields.toString().toLatin1()))
+                .trimmed();
 
         QDomDocument doc("mydocument");
         auto result = doc.setContent(mFields);
@@ -60,20 +51,17 @@ MultistagePaymentGetStepResponse::MultistagePaymentGetStepResponse(const Request
 }
 
 //---------------------------------------------------------------------------
-bool MultistagePaymentGetStepResponse::isOk()
-{
+bool MultistagePaymentGetStepResponse::isOk() {
     return ((getError() == EServerError::Ok) && mIsOk) ? true : false;
 }
 
 //---------------------------------------------------------------------------
-QString MultistagePaymentGetStepResponse::getMultistageStep() const
-{
+QString MultistagePaymentGetStepResponse::getMultistageStep() const {
     return mStep;
 }
 
 //---------------------------------------------------------------------------
-QString MultistagePaymentGetStepResponse::getStepFields() const
-{
+QString MultistagePaymentGetStepResponse::getStepFields() const {
     return mFields;
 }
 

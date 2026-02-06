@@ -2,16 +2,12 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QVariantMap>
 #include <QtCore/QReadWriteLock>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QVariantMap>
 
 //--------------------------------------------------------------------------------
-class DeviceConfigManager
-{
-  public:
+class DeviceConfigManager {
+public:
     DeviceConfigManager();
 
     /// Возвращает конфигурацию.
@@ -36,7 +32,7 @@ class DeviceConfigManager
     /// Есть ли параметр?
     virtual bool containsConfigParameter(const QString &aName) const;
 
-  protected:
+protected:
     /// Параметры.
     QVariantMap mConfiguration;
 

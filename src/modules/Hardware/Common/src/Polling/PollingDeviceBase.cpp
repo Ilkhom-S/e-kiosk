@@ -1,6 +1,7 @@
 /* @file Базовый класс устройств с поллингом. */
 
-// System
+#include "PollingDeviceBase.h"
+
 #include "Hardware/CardReaders/ProtoMifareReader.h"
 #include "Hardware/CashAcceptors/ProtoCashAcceptor.h"
 #include "Hardware/Common/ProtoDevices.h"
@@ -8,9 +9,6 @@
 #include "Hardware/FR/ProtoFR.h"
 #include "Hardware/HID/ProtoHID.h"
 #include "Hardware/Watchdogs/ProtoWatchdog.h"
-
-// Project
-#include "PollingDeviceBase.h"
 
 template class PollingDeviceBase<ProtoPrinter>;
 template class PollingDeviceBase<ProtoDispenser>;

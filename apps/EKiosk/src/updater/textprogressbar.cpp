@@ -1,18 +1,12 @@
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QByteArray>
-#include <Common/QtHeadersEnd.h>
-
-// Project
-#include <stdio.h>
 #include "textprogressbar.h"
 
-TextProgressBar::TextProgressBar() : value(0), maximum(-1), iteration(0)
-{
-}
+#include <QtCore/QByteArray>
 
-void TextProgressBar::clear()
-{
+#include <stdio.h>
+
+TextProgressBar::TextProgressBar() : value(0), maximum(-1), iteration(0) {}
+
+void TextProgressBar::clear() {
     printf("\n");
     fflush(stdout);
 
@@ -21,12 +15,10 @@ void TextProgressBar::clear()
     maximum = -1;
 }
 
-void TextProgressBar::update()
-{
+void TextProgressBar::update() {
     ++iteration;
 
-    if (maximum > 0)
-    {
+    if (maximum > 0) {
         // we know the maximum
         // draw a progress bar
         int percent = value * 100 / maximum;
@@ -37,25 +29,24 @@ void TextProgressBar::update()
             progressbar += '>';
 
         printf("\r[%-50s] %3d%% %s     ", progressbar.constData(), percent, qPrintable(message));
-    }
-    else
-    {
+    } else {
         // we don't know the maximum, so we can't draw a progress bar
         int center = (iteration % 48) + 1; // 50 spaces, minus 2
         QByteArray before(qMax(center - 2, 0), ' ');
         QByteArray after(qMin(center + 2, 50), ' ');
 
-        printf("\r[%s###%s]      %s      ", before.constData(), after.constData(), qPrintable(message));
+        printf("\r[%s###%s]      %s      ",
+               before.constData(),
+               after.constData(),
+               qPrintable(message));
     }
 }
 
-void TextProgressBar::setMessage(const QString &m)
-{
+void TextProgressBar::setMessage(const QString &m) {
     message = m;
 }
 
-void TextProgressBar::setStatus(qint64 val, qint64 max)
-{
+void TextProgressBar::setStatus(qint64 val, qint64 max) {
     value = val;
     maximum = max;
 }

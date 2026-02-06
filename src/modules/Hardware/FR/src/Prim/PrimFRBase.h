@@ -2,31 +2,26 @@
 
 #pragma once
 
-// Modules
-#include "Hardware/FR/PortFRBase.h"
 #include <Hardware/FR/PrimFR.h>
 
-// Project
-#include "PrimModelData.h"
+#include "Hardware/FR/PortFRBase.h"
 #include "PrimFRConstants.h"
+#include "PrimModelData.h"
 
-class PrimSeriesType
-{
-};
+class PrimSeriesType {};
 
 //--------------------------------------------------------------------------------
-class PrimFRBase : public TSerialFRBase
-{
+class PrimFRBase : public TSerialFRBase {
     SET_SERIES("PRIM")
     typedef PrimSeriesType TSeriesType;
 
-  public:
+public:
     PrimFRBase();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
@@ -49,15 +44,18 @@ class PrimFRBase : public TSerialFRBase
     virtual bool printLine(const QByteArray &aString);
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData,
+    virtual bool performFiscal(const QStringList &aReceipt,
+                               const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
     /// Преобразование нефискальной квитанции для ПФД.
     void makeAFDReceipt(QStringList &aReceipt);
 
     /// Заполнить фискальные данные для ПФД.
-    virtual void setFiscalData(CPrimFR::TData &aCommandData, CPrimFR::TDataList &aAdditionalAFDData,
-                               const SDK::Driver::SPaymentData &aPaymentData, int aReceiptSize);
+    virtual void setFiscalData(CPrimFR::TData &aCommandData,
+                               CPrimFR::TDataList &aAdditionalAFDData,
+                               const SDK::Driver::SPaymentData &aPaymentData,
+                               int aReceiptSize);
 
     /// Печать Z отчета.
     virtual bool performZReport(bool aPrintDeferredReports);
@@ -112,19 +110,29 @@ class PrimFRBase : public TSerialFRBase
 
     /// Выполнить команду.
     TResult processCommand(char aCommand, CPrimFR::TData *aAnswer = nullptr);
-    TResult processCommand(char aCommand, const CPrimFR::TData &aCommandData, CPrimFR::TData *aAnswer = nullptr);
+    TResult processCommand(char aCommand,
+                           const CPrimFR::TData &aCommandData,
+                           CPrimFR::TData *aAnswer = nullptr);
 
-    template <class T> TResult processCommand(char aCommand, int aIndex, const QString &aLog, T &aResult);
     template <class T>
-    TResult processCommand(char aCommand, const CPrimFR::TData &aCommandData, int aIndex, const QString &aLog,
+    TResult processCommand(char aCommand, int aIndex, const QString &aLog, T &aResult);
+    template <class T>
+    TResult processCommand(char aCommand,
+                           const CPrimFR::TData &aCommandData,
+                           int aIndex,
+                           const QString &aLog,
                            T &aResult);
 
     /// Распарсить данные ответа.
-    template <class T> bool parseAnswerData(const CPrimFR::TData &aData, int aIndex, const QString &aLog, T &aResult);
+    template <class T>
+    bool parseAnswerData(const CPrimFR::TData &aData, int aIndex, const QString &aLog, T &aResult);
 
     /// Загрузить данные устройства.
     template <class T>
-    void loadDeviceData(const CPrimFR::TData &aData, const QString &aName, const QString &aLog, int aIndex,
+    void loadDeviceData(const CPrimFR::TData &aData,
+                        const QString &aName,
+                        const QString &aLog,
+                        int aIndex,
                         const QString &aExtensibleName = "");
 
     /// Проверить ответ.
@@ -134,7 +142,9 @@ class PrimFRBase : public TSerialFRBase
     CPrimFR::TData addGFieldToBuffer(int aX, int aY, int aFont = CPrimFR::FiscalFont::Default);
 
     /// Сформировать необязательное G-поле ПФД
-    CPrimFR::TData addArbitraryFieldToBuffer(int aX, int aY, const QString &aData,
+    CPrimFR::TData addArbitraryFieldToBuffer(int aX,
+                                             int aY,
+                                             const QString &aData,
                                              int aFont = CPrimFR::FiscalFont::Default);
 
     /// Обработка ответа предыдущей команды. Автоисправление некоторых ошибок.
@@ -177,7 +187,8 @@ class PrimFRBase : public TSerialFRBase
     /// Id модели.
     CPrimFR::Models::Enum mModel;
 
-    /// Признак нахождения ФР в оффлайне из-за ошибки принтера, фискальная подсистема не отвечает на запросы.
+    /// Признак нахождения ФР в оффлайне из-за ошибки принтера, фискальная подсистема не отвечает на
+    /// запросы.
     bool mOffline;
 
     /// Протокол реал-тайм запросов.

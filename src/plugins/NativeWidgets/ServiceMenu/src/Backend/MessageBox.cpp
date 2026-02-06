@@ -1,110 +1,96 @@
 /* @file Всплывающие окна (модальные и не модальные) */
 
-// Project
 #include "MessageBox.h"
 
 MessageBox *MessageBox::mInstance = 0;
 
 //------------------------------------------------------------------------
-MessageBox::MessageBox(SDK::PaymentProcessor::IGUIService *aGUIService) : mGUIService(aGUIService), mSignalReceiver(0)
-{
+MessageBox::MessageBox(SDK::PaymentProcessor::IGUIService *aGUIService)
+    : mGUIService(aGUIService), mSignalReceiver(0) {
     connect(&mWaitTimer, SIGNAL(timeout()), this, SLOT(hideWindow()));
 }
 
 //------------------------------------------------------------------------
-void MessageBox::initialize(SDK::PaymentProcessor::IGUIService *aGUIService)
-{
+void MessageBox::initialize(SDK::PaymentProcessor::IGUIService *aGUIService) {
     delete mInstance;
     mInstance = new MessageBox(aGUIService);
 }
 
 //------------------------------------------------------------------------
-void MessageBox::shutdown()
-{
+void MessageBox::shutdown() {
     mInstance->hideWindow();
     delete mInstance;
     mInstance = 0;
 }
 
 //------------------------------------------------------------------------
-void MessageBox::info(const QString &aText)
-{
-    getInstance()->showPopup(aText, SDK::GUI::MessageBoxParams::Info, SDK::GUI::MessageBoxParams::OK);
+void MessageBox::info(const QString &aText) {
+    getInstance()->showPopup(
+        aText, SDK::GUI::MessageBoxParams::Info, SDK::GUI::MessageBoxParams::OK);
 }
 
 //------------------------------------------------------------------------
-void MessageBox::critical(const QString &aText)
-{
-    getInstance()->showPopup(aText, SDK::GUI::MessageBoxParams::Critical, SDK::GUI::MessageBoxParams::OK);
+void MessageBox::critical(const QString &aText) {
+    getInstance()->showPopup(
+        aText, SDK::GUI::MessageBoxParams::Critical, SDK::GUI::MessageBoxParams::OK);
 }
 
 //------------------------------------------------------------------------
-void MessageBox::warning(const QString &aText)
-{
-    getInstance()->showPopup(aText, SDK::GUI::MessageBoxParams::Warning, SDK::GUI::MessageBoxParams::OK);
+void MessageBox::warning(const QString &aText) {
+    getInstance()->showPopup(
+        aText, SDK::GUI::MessageBoxParams::Warning, SDK::GUI::MessageBoxParams::OK);
 }
 
 //------------------------------------------------------------------------
-void MessageBox::wait(const QString &aText, bool aCancelable)
-{
+void MessageBox::wait(const QString &aText, bool aCancelable) {
     SDK::GUI::MessageBoxParams::Enum button;
     button = aCancelable ? SDK::GUI::MessageBoxParams::Cancel : SDK::GUI::MessageBoxParams::OK;
     getInstance()->showPopup(aText, SDK::GUI::MessageBoxParams::Wait, button);
 }
 
 //------------------------------------------------------------------------
-void MessageBox::modal(const QString &aText, SDK::GUI::MessageBoxParams::Enum aIcon)
-{
+void MessageBox::modal(const QString &aText, SDK::GUI::MessageBoxParams::Enum aIcon) {
     getInstance()->showModal(aText, aIcon);
 }
 
 //------------------------------------------------------------------------
-void MessageBox::notify(const QString &aText, int aTimeout)
-{
+void MessageBox::notify(const QString &aText, int aTimeout) {
     getInstance()->showNotify(aText, aTimeout);
 }
 
 //------------------------------------------------------------------------
-bool MessageBox::question(const QString &aText)
-{
+bool MessageBox::question(const QString &aText) {
     return getInstance()->showModal(aText, SDK::GUI::MessageBoxParams::Question);
 }
 
 //------------------------------------------------------------------------
-void MessageBox::update(const QVariantMap &aParameters)
-{
+void MessageBox::update(const QVariantMap &aParameters) {
     return getInstance()->updatePopup(aParameters);
 }
 
 //------------------------------------------------------------------------
-void MessageBox::hide(bool aWaiting)
-{
-    if (aWaiting)
-    {
+void MessageBox::hide(bool aWaiting) {
+    if (aWaiting) {
         getInstance()->startWaitTimer();
-    }
-    else
-    {
+    } else {
         getInstance()->hideWindow();
     }
 }
 
 //------------------------------------------------------------------------
-void MessageBox::subscribe(QObject *aReceiver)
-{
+void MessageBox::subscribe(QObject *aReceiver) {
     getInstance()->setReceiver(aReceiver);
 }
 
 //------------------------------------------------------------------------
-void MessageBox::emitSignal(const QVariantMap &aParameters)
-{
+void MessageBox::emitSignal(const QVariantMap &aParameters) {
     getInstance()->emitPopupSignal(aParameters);
 }
 
 //------------------------------------------------------------------------
-void MessageBox::showPopup(const QString &aText, SDK::GUI::MessageBoxParams::Enum aIcon,
-                           SDK::GUI::MessageBoxParams::Enum aButton)
-{
+void MessageBox::showPopup(const QString &aText,
+                           SDK::GUI::MessageBoxParams::Enum aIcon,
+                           SDK::GUI::MessageBoxParams::Enum aButton) {
     hideWindow();
 
     QVariantMap params;
@@ -117,8 +103,7 @@ void MessageBox::showPopup(const QString &aText, SDK::GUI::MessageBoxParams::Enu
 }
 
 //------------------------------------------------------------------------
-bool MessageBox::showModal(const QString &aText, SDK::GUI::MessageBoxParams::Enum aIcon)
-{
+bool MessageBox::showModal(const QString &aText, SDK::GUI::MessageBoxParams::Enum aIcon) {
     hideWindow();
 
     QVariantMap params;
@@ -129,55 +114,53 @@ bool MessageBox::showModal(const QString &aText, SDK::GUI::MessageBoxParams::Enu
 
     QVariantMap returnParams = mGUIService->showModal(SDK::GUI::CMessageBox::SceneName, params);
 
-    bool result = returnParams[SDK::GUI::CMessageBox::Button].toInt() == SDK::GUI::MessageBoxParams::OK;
+    bool result =
+        returnParams[SDK::GUI::CMessageBox::Button].toInt() == SDK::GUI::MessageBoxParams::OK;
 
     return result;
 }
 
 //------------------------------------------------------------------------
-void MessageBox::showNotify(const QString &aText, int aTimeout)
-{
+void MessageBox::showNotify(const QString &aText, int aTimeout) {
     showPopup(aText, SDK::GUI::MessageBoxParams::NoIcon, SDK::GUI::MessageBoxParams::NoButton);
     QTimer::singleShot(aTimeout, this, SLOT(hideWindow()));
 }
 
 //------------------------------------------------------------------------
-void MessageBox::updatePopup(const QVariantMap &aParameters)
-{
+void MessageBox::updatePopup(const QVariantMap &aParameters) {
     mGUIService->notify("", aParameters);
 }
 
 //------------------------------------------------------------------------
-void MessageBox::setReceiver(QObject *aReceiver)
-{
+void MessageBox::setReceiver(QObject *aReceiver) {
     mSignalReceiver = aReceiver;
 }
 
 //------------------------------------------------------------------------
-void MessageBox::emitPopupSignal(const QVariantMap &aParameters)
-{
-    if (mSignalReceiver)
-    {
-        QObject::connect(this, SIGNAL(clicked(const QVariantMap &)), mSignalReceiver,
-                         SLOT(onClicked(const QVariantMap &)), Qt::UniqueConnection);
+void MessageBox::emitPopupSignal(const QVariantMap &aParameters) {
+    if (mSignalReceiver) {
+        QObject::connect(this,
+                         SIGNAL(clicked(const QVariantMap &)),
+                         mSignalReceiver,
+                         SLOT(onClicked(const QVariantMap &)),
+                         Qt::UniqueConnection);
         emit clicked(aParameters);
     }
 }
 
 //------------------------------------------------------------------------
-void MessageBox::hideWindow()
-{
+void MessageBox::hideWindow() {
     mWaitTimer.stop();
 
-    if (mSignalReceiver)
-    {
-        QObject::disconnect(this, SIGNAL(clicked(const QVariantMap &)), mSignalReceiver,
+    if (mSignalReceiver) {
+        QObject::disconnect(this,
+                            SIGNAL(clicked(const QVariantMap &)),
+                            mSignalReceiver,
                             SLOT(onClicked(const QVariantMap &)));
         mSignalReceiver = 0;
     }
 
-    if (!mWaitTimer.isActive())
-    {
+    if (!mWaitTimer.isActive()) {
         mGUIService->hidePopup();
     }
 }

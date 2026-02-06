@@ -6,18 +6,19 @@
 #include <Hardware/Protocols/CashAcceptor/SSPDataTypes.h>
 
 //--------------------------------------------------------------------------------
-class SSPProtocol : public ProtocolBase
-{
-  public:
+class SSPProtocol : public ProtocolBase {
+public:
     SSPProtocol();
 
     /// Выполнить команду протокола.
-    TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData, const CSSP::Commands::SData &aData);
+    TResult processCommand(const QByteArray &aCommandData,
+                           QByteArray &aAnswerData,
+                           const CSSP::Commands::SData &aData);
 
     /// Установить ID адреса устройства.
     void setAddress(char aAddressID);
 
-  protected:
+protected:
     /// Подсчет контрольной суммы пакета данных.
     ushort calcCRC(const QByteArray &aData);
 

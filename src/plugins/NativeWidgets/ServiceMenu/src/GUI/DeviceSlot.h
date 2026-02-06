@@ -2,28 +2,23 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QVariant>
-#include <QtCore/QSharedPointer>
 #include <QtCore/QPointer>
-#include "ui_DeviceSlot.h"
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QSharedPointer>
+#include <QtCore/QVariant>
 
-// SDK
 #include <Common/ObjectPointer.h>
+
 #include <SDK/Drivers/WarningLevel.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        class IDeviceTest;
-    } // namespace PaymentProcessor
-    namespace Driver
-    {
-        class IDevice;
-    } // namespace Driver
+#include "ui_DeviceSlot.h"
+
+namespace SDK {
+namespace PaymentProcessor {
+class IDeviceTest;
+} // namespace PaymentProcessor
+namespace Driver {
+class IDevice;
+} // namespace Driver
 } // namespace SDK
 
 class IDeviceBackend;
@@ -33,21 +28,21 @@ class ServiceMenuBackend;
 /// Слот подключённого устройства. Хранит информацию о настройках устройства,
 /// текущем состоянии и умеет её визуализировать.
 
-class DeviceSlot : public QObject
-{
+class DeviceSlot : public QObject {
     Q_OBJECT
 
-  public:
+public:
     /// Состояние связанного со слотом устройства.
-    enum State
-    {
+    enum State {
         Unknown = 0,  /// Статус устройства неизвестен
         Connected,    /// Устройство подключено
         Disconnected, /// Устройство не подключено
         Ambiguous     /// Недостоверный статус
     };
 
-    DeviceSlot(ServiceMenuBackend *aBackend, const QString &aConfigurationName, bool aUserSlot = false,
+    DeviceSlot(ServiceMenuBackend *aBackend,
+               const QString &aConfigurationName,
+               bool aUserSlot = false,
                const QString &aType = QString());
 
     virtual ~DeviceSlot();
@@ -70,8 +65,9 @@ class DeviceSlot : public QObject
     /// Возвращает бэкенд, хранящий информацию о моделях устройств.
     ServiceMenuBackend *getBackend() const;
 
-  public:
-    virtual void updateDeviceStatus(const QString &aNewStatus, const QString &aStatusColor,
+public:
+    virtual void updateDeviceStatus(const QString &aNewStatus,
+                                    const QString &aStatusColor,
                                     SDK::Driver::EWarningLevel::Enum aLevel);
 
     // Название конфигурации
@@ -79,23 +75,23 @@ class DeviceSlot : public QObject
 
     void updateConfigurationName(const QString &aConfigurationName);
 
-  signals:
+signals:
     /// Сигнал срабатывает, когда делается запрос на редактирование настроек.
     void edit();
 
     /// Сигнал срабатывается, когда делается запрос на удаление слота.
     void remove();
 
-  public slots:
+public slots:
     /// Обновление параметров связанного устройства.
     virtual void setParameterValues(QVariantMap aValues);
 
-  protected:
+protected:
     /// Создание виджета, который будет использоваться для визуализации.
     /// Используется в getWidget().
     virtual QWidget *createWidget();
 
-  private slots:
+private slots:
     /// Перерисовка виджета, связанного со слотом.
     virtual void onRepaint();
 
@@ -114,7 +110,7 @@ class DeviceSlot : public QObject
     /// обработчик остановки теста устройства
     void onClicked(const QVariantMap &aParameters);
 
-  protected:
+protected:
     QString mType;
     bool mIsUserSlot;
     QVariantMap mParameterValues;

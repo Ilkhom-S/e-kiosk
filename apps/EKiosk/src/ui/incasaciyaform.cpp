@@ -1,9 +1,9 @@
-// Project
 #include "incasaciyaform.h"
+
 #include "ui_incasaciyaform.h"
 
-IncasaciyaForm::IncasaciyaForm(QWidget *parent) : QDialog(parent, Qt::WindowTitleHint), ui(new Ui::IncasaciyaForm)
-{
+IncasaciyaForm::IncasaciyaForm(QWidget *parent)
+    : QDialog(parent, Qt::WindowTitleHint), ui(new Ui::IncasaciyaForm) {
     ui->setupUi(this);
 
     connect(ui->btnGetIncasaciya, SIGNAL(clicked()), SLOT(btnIncashClc()));
@@ -18,44 +18,36 @@ IncasaciyaForm::IncasaciyaForm(QWidget *parent) : QDialog(parent, Qt::WindowTitl
     ui->btnPrinterTest->setVisible(false);
 }
 
-IncasaciyaForm::~IncasaciyaForm()
-{
+IncasaciyaForm::~IncasaciyaForm() {
     delete ui;
 }
 
-void IncasaciyaForm::btnIncashClc()
-{
+void IncasaciyaForm::btnIncashClc() {
     emit execCommand(IncashCmd::doIncash);
 
     QCoreApplication::processEvents();
 }
 
-void IncasaciyaForm::btnInterAdminClc()
-{
+void IncasaciyaForm::btnInterAdminClc() {
     emit execCommand(IncashCmd::interAdmin);
 }
 
-void IncasaciyaForm::btnTestPrintClc()
-{
+void IncasaciyaForm::btnTestPrintClc() {
     emit execCommand(IncashCmd::testPrint);
 }
 
-void IncasaciyaForm::btnDoNullingClc()
-{
+void IncasaciyaForm::btnDoNullingClc() {
     emit execCommand(IncashCmd::doNullingCheck);
 }
 
-void IncasaciyaForm::btnCloseClc()
-{
+void IncasaciyaForm::btnCloseClc() {
     emit execCommand(IncashCmd::closeThis);
 }
 
-void IncasaciyaForm::setHtmlInfoBox(QString text)
-{
+void IncasaciyaForm::setHtmlInfoBox(QString text) {
     ui->graphicsViewI->setHtml(text);
 }
 
-void IncasaciyaForm::btnChangePassClc()
-{
+void IncasaciyaForm::btnChangePassClc() {
     emit openDialog();
 }

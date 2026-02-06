@@ -1,9 +1,8 @@
 /* @file Инстанцирование шаблонов диспенсеров. */
 
-#include "Hardware/Dispensers/PortDispenser.h"
-
-#include "../../../../modules/Hardware/CashDispensers/src/DispenserBase.cpp"
 #include "../../../../modules/Hardware/CashDevices/src/CCTalk/CCTalkDeviceBase.cpp"
+#include "../../../../modules/Hardware/CashDispensers/src/DispenserBase.cpp"
+#include "Hardware/Dispensers/PortDispenser.h"
 
 //------------------------------------------------------------------------------
 template class DispenserBase<SerialDeviceBase<PortPollingDeviceBase<ProtoDispenser>>>;

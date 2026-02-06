@@ -2,24 +2,20 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include "ui_HardwareServiceWindow.h"
-#include <Common/QtHeadersEnd.h>
-
-// Проект
 #include "IServiceWindow.h"
+#include "ui_HardwareServiceWindow.h"
 
 class HardwareWindow;
 class DeviceSlot;
 class EditorPane;
 
 //------------------------------------------------------------------------
-class HardwareServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::HardwareServiceWindow
-{
+class HardwareServiceWindow : public QFrame,
+                              public ServiceWindowBase,
+                              protected Ui::HardwareServiceWindow {
     Q_OBJECT
 
-  public:
+public:
     HardwareServiceWindow(HumoServiceBackend *aBackend, QWidget *aParent = 0);
 
     virtual bool initialize();
@@ -27,7 +23,7 @@ class HardwareServiceWindow : public QFrame, public ServiceWindowBase, protected
     virtual bool activate();
     virtual bool deactivate();
 
-  private slots:
+private slots:
     /// Показываем диалог ожидания поиска устройств.
     void onDetectionStarted();
 
@@ -52,7 +48,7 @@ class HardwareServiceWindow : public QFrame, public ServiceWindowBase, protected
     /// Отменяем поиск устройств
     void onClicked(const QVariantMap &aParameters);
 
-  private:
+private:
     HardwareWindow *mWindow;
     bool mShown;
     bool mFinish;

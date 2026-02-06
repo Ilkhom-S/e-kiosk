@@ -2,27 +2,24 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QMap>
-#include <QtCore/QString>
 #include <QtCore/QMutex>
+#include <QtCore/QString>
 // В Qt 6 QRecursiveMutex выделен в отдельный класс, в Qt 5 его нет
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QtCore/QRecursiveMutex>
 #endif
-#include <Common/QtHeadersEnd.h>
 
 #include "Hardware/Common/BaseStatusTypes.h"
-#include "Hardware/Common/USBDeviceModelData.h"
 #include "Hardware/Common/MetaDevice.h"
+#include "Hardware/Common/USBDeviceModelData.h"
 #include "Hardware/IOPorts/USBPort.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class USBDeviceBase : public T
-{
+template <class T> class USBDeviceBase : public T {
     SET_INTERACTION_TYPE(USB)
 
-  public:
+public:
     USBDeviceBase();
     virtual ~USBDeviceBase();
 
@@ -30,10 +27,12 @@ template <class T> class USBDeviceBase : public T
     /// Подключает и инициализует устройство. Обертка для вызова функционала в рабочем потоке.
     virtual void initialize() override;
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release() override;
 
-    /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из этого списка.
+    /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из
+    /// этого списка.
     virtual SDK::Driver::IDevice::IDetectingIterator *getDetectingIterator() override;
 #pragma endregion
 
@@ -45,7 +44,7 @@ template <class T> class USBDeviceBase : public T
     virtual bool find() override;
 #pragma endregion
 
-  protected:
+protected:
     /// Проверка возможности выполнения функционала, предполагающего связь с устройством.
     virtual bool checkConnectionAbility() override;
 

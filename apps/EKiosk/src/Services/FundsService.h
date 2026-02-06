@@ -2,30 +2,24 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QList>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
-#include <SDK/PaymentProcessor/Core/IFundsService.h>
+#include <Common/ILogable.h>
+
+#include <SDK/PaymentProcessor/Core/Event.h>
 #include <SDK/PaymentProcessor/Core/IDeviceService.h>
+#include <SDK/PaymentProcessor/Core/IFundsService.h>
 #include <SDK/PaymentProcessor/Core/IService.h>
 #include <SDK/PaymentProcessor/Core/IServiceState.h>
-#include <SDK/PaymentProcessor/Core/Event.h>
 #include <SDK/Plugins/IPlugin.h>
-
-// Modules
-#include <Common/ILogable.h>
 
 class IApplication;
 class CashDispenserManager;
 class CashAcceptorManager;
 
-namespace CFundsService
-{
-    const char LogName[] = "Funds";
+namespace CFundsService {
+const char LogName[] = "Funds";
 } // namespace CFundsService
 
 //---------------------------------------------------------------------------
@@ -33,11 +27,10 @@ class FundsService : public QObject,
                      public SDK::PaymentProcessor::IFundsService,
                      public SDK::PaymentProcessor::IService,
                      public SDK::PaymentProcessor::IServiceState,
-                     private ILogable
-{
+                     private ILogable {
     Q_OBJECT
 
-  public:
+public:
     /// Получение экземпляра FundsService.
     static FundsService *instance(IApplication *aApplication);
 
@@ -71,14 +64,14 @@ class FundsService : public QObject,
     /// Возвращает уникальный набор параметров для устройств с денежными средствами
     virtual QString getState() const;
 
-  public:
+public:
     /// Получить интерфейс для работы с источниками денег.
     virtual SDK::PaymentProcessor::ICashAcceptorManager *getAcceptor() const;
 
     /// Получить интерфейс для работы с устройствами выдачи денег.
     virtual SDK::PaymentProcessor::ICashDispenserManager *getDispenser() const;
 
-  private:
+private:
     IApplication *mApplication;
     CashDispenserManager *mCashDispenserManager;
     CashAcceptorManager *mCashAcceptorManager;

@@ -1,29 +1,24 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDebug>
 #include <QtCore/QMap>
 #include <QtCore/QSignalMapper>
 #include <QtWidgets/QWidget>
-#include <Common/QtHeadersEnd.h>
 
-namespace Ui
-{
-    class keyPud;
+namespace Ui {
+class keyPud;
 }
 
-class keyPud : public QWidget
-{
+class keyPud : public QWidget {
     Q_OBJECT
 
-  public:
+public:
     explicit keyPud(QWidget *parent = 0);
     ~keyPud();
 
     void clickBackspace();
 
-  private:
+private:
     Ui::keyPud *ui;
 
     //    QWidget *lastFocusedWidget;
@@ -38,16 +33,16 @@ class keyPud : public QWidget
 
     QString gblLang;
 
-  private slots:
+private slots:
 
     void buttonClicked(QWidget *w);
 
-  public slots:
+public slots:
     void shiftClicked();
     void fordouble(QString lang);
     void changeToRU();
     void changeToEN();
 
-  signals:
+signals:
     void characterGenerated(QChar character);
 };

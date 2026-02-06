@@ -6,30 +6,27 @@
 
 //--------------------------------------------------------------------------------
 /// Константы и команды Custom VKP-80 III.
-namespace CCustomVKP80III
-{
-    /// Команды.
-    namespace Command
-    {
-        const char GetModelId[] = "\x1D\x49\xFF";    /// Получение идентификатора модели.
-        const char EjectorActivation[] = "\x1C\x50"; /// Неизменяемая часть команды активации эжектора.
-    } // namespace Command
+namespace CCustomVKP80III {
+/// Команды.
+namespace Command {
+const char GetModelId[] = "\x1D\x49\xFF";    /// Получение идентификатора модели.
+const char EjectorActivation[] = "\x1C\x50"; /// Неизменяемая часть команды активации эжектора.
+} // namespace Command
 
-    const char ModelId[] = "\x02\x05"; /// Идентификатор модели.
-    const char Blinking = '\x01';      /// Мигать светодиодами при презентации.
-    const char Pushing = 'E';          /// Выталкивание чека.
-    const char Retraction = 'R';       /// Ретракция чека.
+const char ModelId[] = "\x02\x05"; /// Идентификатор модели.
+const char Blinking = '\x01';      /// Мигать светодиодами при презентации.
+const char Pushing = 'E';          /// Выталкивание чека.
+const char Retraction = 'R';       /// Ретракция чека.
 } // namespace CCustomVKP80III
 
 //--------------------------------------------------------------------------------
-template <class T> class CustomVKP80III : public CustomVKP80<T>
-{
+template <class T> class CustomVKP80III : public CustomVKP80<T> {
     SET_SUBSERIES("CustomVKP80III")
 
-  public:
+public:
     CustomVKP80III();
 
-  protected:
+protected:
     /// Инициализация устройства.
     virtual bool updateParameters();
 

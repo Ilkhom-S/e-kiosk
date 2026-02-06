@@ -2,21 +2,17 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include "ui_TokenServiceWindow.h"
-#include <Common/QtHeadersEnd.h>
-
-// Проект
-#include "TokenWindow.h"
 #include "IServiceWindow.h"
+#include "TokenWindow.h"
+#include "ui_TokenServiceWindow.h"
 
 //------------------------------------------------------------------------
-class TokenServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::TokenServiceWindow
-{
+class TokenServiceWindow : public QFrame,
+                           public ServiceWindowBase,
+                           protected Ui::TokenServiceWindow {
     Q_OBJECT
 
-  public:
+public:
     TokenServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
     virtual bool initialize();
@@ -24,17 +20,17 @@ class TokenServiceWindow : public QFrame, public ServiceWindowBase, protected Ui
     virtual bool activate();
     virtual bool deactivate();
 
-  private slots:
+private slots:
     void onBeginFormat();
     void onEndFormat();
 
     void onError(QString aError);
 
-  protected:
+protected:
     int mUIUpdateTimer;
     void timerEvent(QTimerEvent *);
 
-  private:
+private:
     TokenWindow *mWindow;
 };
 

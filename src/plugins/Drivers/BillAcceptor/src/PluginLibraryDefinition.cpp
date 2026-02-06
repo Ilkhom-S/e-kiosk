@@ -2,14 +2,11 @@
 
 // Plugin SDK
 
-// SDK
-#include <SDK/Plugins/PluginFactory.h>
-
-// Project
 #include "PluginLibraryDefinition.h"
 
-BillAcceptorPluginFactory::BillAcceptorPluginFactory()
-{
+#include <SDK/Plugins/PluginFactory.h>
+
+BillAcceptorPluginFactory::BillAcceptorPluginFactory() {
     mName = "BillAcceptor";
     mDescription = "BillAcceptor driver library, CCNet protocol";
     mAuthor = "Humo";

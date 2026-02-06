@@ -1,6 +1,5 @@
 /* @file Плагин с драйверами сканеров. */
 
-// System
 #include "Hardware/Plugins/CommonParameters.h"
 #include "Hardware/Scanners/ScannerDevices.h"
 
@@ -9,30 +8,31 @@ using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
 /// Конструктор плагина.
-template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstanceName)
-{
+template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstanceName) {
     return new DevicePluginBase<T>("Scanners", aEnvironment, aInstanceName);
 }
 
 //--------------------------------------------------------------------------------
-TParameterList OPOSParameters(const QString &aModel)
-{
-    return modifyPriority(createNamedList<OPOSMetrologicScanner>(aModel, QString("OPOS ") + CComponents::Scanner),
+TParameterList OPOSParameters(const QString &aModel) {
+    return modifyPriority(createNamedList<OPOSMetrologicScanner>(
+                              aModel, QString("OPOS ") + CComponents::Scanner),
                           EDetectingPriority::Fallback)
            // Удалять префикс полученных данных.
-           << SPluginParameter(CHardware::Scanner::Prefix, SPluginParameter::Bool, true,
-                               QT_TRANSLATE_NOOP("ScannerParameters", "ScannerParameters#prefix"), QString(), false);
+           << SPluginParameter(CHardware::Scanner::Prefix,
+                               SPluginParameter::Bool,
+                               true,
+                               QT_TRANSLATE_NOOP("ScannerParameters", "ScannerParameters#prefix"),
+                               QString(),
+                               false);
 }
 
 //--------------------------------------------------------------------------------------
-TParameterList SerialParameters(const QString &aModel)
-{
+TParameterList SerialParameters(const QString &aModel) {
     return createNamedList<SerialScanner>(aModel, QString("Serial ") + CComponents::Scanner);
 }
 
 //--------------------------------------------------------------------------------------
-TParameterList USBParameters(const QStringList &aModels)
-{
+TParameterList USBParameters(const QStringList &aModels) {
     return createNamedList<USBScanner>(aModels, QString("USB ") + CComponents::Scanner);
 }
 

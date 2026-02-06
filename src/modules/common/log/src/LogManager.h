@@ -2,22 +2,16 @@
 
 #pragma once
 
-// STL
-#include <memory>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QMap>
 #include <QtCore/QMutex>
-#include <Common/QtHeadersEnd.h>
 
-// Проект
 #include <Common/ILog.h>
 
+#include <memory>
+
 //---------------------------------------------------------------------------
-class LogManager
-{
-  public:
+class LogManager {
+public:
     LogManager();
     virtual ~LogManager();
 
@@ -31,7 +25,7 @@ class LogManager
     /// Установить уровень логирования для всех логов
     virtual void setGlobalLevel(LogLevel::Enum aMaxLogLevel);
 
-  protected:
+protected:
     QMap<QString, std::shared_ptr<ILog>> mLogs;
     QMutex mMutex;
     LogLevel::Enum mMaxLogLevel;

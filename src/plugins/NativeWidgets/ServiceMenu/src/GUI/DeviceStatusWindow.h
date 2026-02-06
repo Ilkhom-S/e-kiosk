@@ -2,39 +2,36 @@
 
 #pragma once
 
-// Qt
-#include "Common/QtHeadersBegin.h"
-#include "ui_DeviceStatusWindow.h"
-#include "Common/QtHeadersEnd.h"
-
-// Проект
 #include "DeviceSlot.h"
+#include "ui_DeviceStatusWindow.h"
 
 class ServiceMenuBackend;
 
 //------------------------------------------------------------------------------
-class DeviceStatusWindow : public DeviceSlot
-{
+class DeviceStatusWindow : public DeviceSlot {
     Q_OBJECT
 
-  public:
-    DeviceStatusWindow(ServiceMenuBackend *aBackend, const QString &aConfigurationName, QWidget *aParent = 0);
+public:
+    DeviceStatusWindow(ServiceMenuBackend *aBackend,
+                       const QString &aConfigurationName,
+                       QWidget *aParent = 0);
     ~DeviceStatusWindow();
 
-  public:
-    void updateDeviceStatus(const QString &aNewStatus, const QString &aStatusColor,
+public:
+    void updateDeviceStatus(const QString &aNewStatus,
+                            const QString &aStatusColor,
                             SDK::Driver::EWarningLevel::Enum aLevel);
 
-  private slots:
+private slots:
     /// Перерисовка виджета, связанного со слотом.
     virtual void onRepaint();
 
-  protected:
+protected:
     /// Создание виджета, который будет использоваться для визуализации.
     /// Используется в getWidget().
     virtual QWidget *createWidget();
 
-  private:
+private:
     Ui::DeviceStatusWindow ui;
 };
 

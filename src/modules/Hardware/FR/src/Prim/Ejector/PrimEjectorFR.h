@@ -5,14 +5,13 @@
 #include "../Presenter/PrimPresenterFR.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class PrimEjectorFR : public PrimPresenterFR<T>
-{
+template <class T> class PrimEjectorFR : public PrimPresenterFR<T> {
     SET_SUBSERIES("Ejector")
 
-  public:
+public:
     PrimEjectorFR();
 
-  protected:
+protected:
     /// Инициализация устройства.
     virtual bool updateParameters();
 

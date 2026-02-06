@@ -2,10 +2,8 @@
 
 #pragma once
 
-// SDK
 #include <SDK/Drivers/WarningLevel.h>
 
-// Project
 #include "Hardware/Common/StatusCache.h"
 
 // TStatusCodes в StatusCache.h;

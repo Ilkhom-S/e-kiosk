@@ -1,22 +1,17 @@
 /* @file Класс для выполнения функционала без зависаний. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QElapsedTimer>
-#include <Common/QtHeadersEnd.h>
-
-// System
-#include "Hardware/Common/MutexLocker.h"
 #include "Hardware/Common/SafePerformer.h"
 
-SafePerformerThread::SafePerformerThread(ILog *aLog) : mLog(aLog)
-{
+#include <QtCore/QElapsedTimer>
+
+#include "Hardware/Common/MutexLocker.h"
+
+SafePerformerThread::SafePerformerThread(ILog *aLog) : mLog(aLog) {
     moveToThread(this);
 }
 
 //--------------------------------------------------------------------------------
-void SafePerformerThread::onTask(const STaskData &aData)
-{
+void SafePerformerThread::onTask(const STaskData &aData) {
     LOG(mLog, LogLevel::Debug, "Task started");
 
     QElapsedTimer timer;
@@ -25,19 +20,15 @@ void SafePerformerThread::onTask(const STaskData &aData)
     bool result = aData.task();
     qint64 performingTime = timer.elapsed();
 
-    if (performingTime < aData.timeout)
-    {
+    if (performingTime < aData.timeout) {
         LOG(mLog, LogLevel::Debug, QString("Task was performed for %1 ms").arg(performingTime));
 
         emit finished(result);
-    }
-    else
-    {
+    } else {
         LOG(mLog, LogLevel::Error, QString("Task was performed for %1 ms").arg(performingTime));
         aData.changePerformingTimeout(aData.context, aData.timeout, performingTime);
 
-        if (aData.forwardingTask)
-        {
+        if (aData.forwardingTask) {
             LOG(mLog, LogLevel::Normal, "Going to forwarding task");
 
             aData.forwardingTask();
@@ -46,16 +37,13 @@ void SafePerformerThread::onTask(const STaskData &aData)
 }
 
 //--------------------------------------------------------------------------------
-SafePerformer::SafePerformer(ILog *aLog) : mLog(aLog), mResult(false)
-{
+SafePerformer::SafePerformer(ILog *aLog) : mLog(aLog), mResult(false) {
     qRegisterMetaType<STaskData>("STaskData");
 }
 
 //--------------------------------------------------------------------------------
-ETaskResult::Enum SafePerformer::process(const STaskData &aData)
-{
-    if (!aData.task)
-    {
+ETaskResult::Enum SafePerformer::process(const STaskData &aData) {
+    if (!aData.task) {
         return ETaskResult::Invalid;
     }
 
@@ -70,11 +58,13 @@ ETaskResult::Enum SafePerformer::process(const STaskData &aData)
     {
         QMutexLocker locker(&mGuard);
 
-        QMetaObject::invokeMethod(workingThread, "onTask", Qt::QueuedConnection, Q_ARG(const STaskData &, aData));
+        QMetaObject::invokeMethod(
+            workingThread, "onTask", Qt::QueuedConnection, Q_ARG(const STaskData &, aData));
 
-        if (!mWaitCondition.wait(&mGuard, aData.timeout))
-        {
-            LOG(mLog, LogLevel::Error, "Cannot perform task during " + QString::number(aData.timeout));
+        if (!mWaitCondition.wait(&mGuard, aData.timeout)) {
+            LOG(mLog,
+                LogLevel::Error,
+                "Cannot perform task during " + QString::number(aData.timeout));
             return ETaskResult::Suspended;
         }
 
@@ -88,8 +78,7 @@ ETaskResult::Enum SafePerformer::process(const STaskData &aData)
 }
 
 //--------------------------------------------------------------------------------
-void SafePerformer::onFinished(bool aSuccess)
-{
+void SafePerformer::onFinished(bool aSuccess) {
     mResult = aSuccess;
 
     mWaitCondition.wakeAll();

@@ -1,25 +1,19 @@
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QDir>
 #include <QFile>
 #include <QTemporaryDir>
 #include <QtTest/QtTest>
-#include <Common/QtHeadersEnd.h>
 
-// Project
 #include "SettingsManager.h"
 
-class TestSettingsManager : public QObject
-{
+class TestSettingsManager : public QObject {
     Q_OBJECT
 
-  private slots:
+private slots:
     void testLoadXML();
     void testSaveXML();
 };
 
-void TestSettingsManager::testLoadXML()
-{
+void TestSettingsManager::testLoadXML() {
     QTemporaryDir tmp;
     QVERIFY(tmp.isValid());
 
@@ -53,8 +47,7 @@ void TestSettingsManager::testLoadXML()
     QCOMPARE(val, QString("value1"));
 }
 
-void TestSettingsManager::testSaveXML()
-{
+void TestSettingsManager::testSaveXML() {
     QTemporaryDir tmp;
     QVERIFY(tmp.isValid());
 
@@ -95,7 +88,8 @@ void TestSettingsManager::testSaveXML()
 
     // verify backup exists (has suffix "_backup")
     QDir d = QFileInfo(path).dir();
-    QStringList list = d.entryList(QStringList() << (QFileInfo(path).baseName() + ".*_backup"), QDir::Files);
+    QStringList list =
+        d.entryList(QStringList() << (QFileInfo(path).baseName() + ".*_backup"), QDir::Files);
     QVERIFY(!list.isEmpty());
 }
 

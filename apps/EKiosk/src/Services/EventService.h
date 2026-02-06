@@ -2,25 +2,22 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
-#include <SDK/PaymentProcessor/Core/IEventService.h>
 #include <SDK/PaymentProcessor/Core/Event.h>
+#include <SDK/PaymentProcessor/Core/IEventService.h>
 #include <SDK/PaymentProcessor/Core/IService.h>
 
 class Event;
 class IApplication;
 
 //---------------------------------------------------------------------------
-class EventService : public QObject, public SDK::PaymentProcessor::IEventService, public SDK::PaymentProcessor::IService
-{
+class EventService : public QObject,
+                     public SDK::PaymentProcessor::IEventService,
+                     public SDK::PaymentProcessor::IService {
     Q_OBJECT
 
-  public:
+public:
     /// Получение EventService'а.
     static EventService *instance(IApplication *aApplication);
 
@@ -64,7 +61,7 @@ class EventService : public QObject, public SDK::PaymentProcessor::IEventService
     /// IService: Сброс служебной информации.
     virtual void resetParameters(const QSet<QString> &aParameters);
 
-  signals:
+signals:
     void event(const SDK::PaymentProcessor::Event &aEvent);
 };
 

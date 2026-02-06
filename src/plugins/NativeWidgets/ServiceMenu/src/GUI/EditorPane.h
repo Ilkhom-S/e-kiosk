@@ -2,14 +2,12 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QPointer>
-#include <QtCore/QObject>
-#include <QtWidgets/QWidget>
-#include "ui_EditorPane.h"
 #include <QtCore/QDebug>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QObject>
+#include <QtCore/QPointer>
+#include <QtWidgets/QWidget>
+
+#include "ui_EditorPane.h"
 
 // Plugin SDK
 #include <SDK/Plugins/PluginParameters.h>
@@ -23,18 +21,11 @@ class IDeviceBackend;
 /// завершения редактирования параметров оно отошлёт слоту сигнал об
 /// изменении состояния.
 
-class EditorPane : public QObject
-{
+class EditorPane : public QObject {
     Q_OBJECT
 
-  public:
-    enum EditorType
-    {
-        Enum = 0,
-        Bool,
-        Number,
-        Text
-    };
+public:
+    enum EditorType { Enum = 0, Bool, Number, Text };
 
     EditorPane();
 
@@ -55,7 +46,7 @@ class EditorPane : public QObject
     /// Возвращает список параметров устройства после редактирования.
     virtual const QVariantMap &getParameterValues() const;
 
-  protected:
+protected:
     /// Создание виджета для размещения редактора настроек. Используется в getWidget().
     virtual QWidget *createWidget();
 
@@ -71,11 +62,11 @@ class EditorPane : public QObject
     /// Показывает значения для активного параметра.
     virtual void showCurrentParameterValues();
 
-  signals:
+signals:
     /// Сигнал срабатывает, когда работа с редактором завершена.
     void finished();
 
-  protected slots:
+protected slots:
     void onParameterRowChanged(QListWidgetItem *aCurrent, QListWidgetItem *aPrevious);
 
     /// Срабатывает, когда изменяется значение списка.
@@ -99,7 +90,7 @@ class EditorPane : public QObject
     /// Срабатывает по нажатию кнопки "Отмена".
     void onCancel();
 
-  private:
+private:
     Ui::frmEditorPane mUi;
     DeviceSlot *mSlot;
     QPointer<QWidget> mWidget;

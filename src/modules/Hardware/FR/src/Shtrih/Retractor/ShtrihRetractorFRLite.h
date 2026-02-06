@@ -2,16 +2,15 @@
 
 #pragma once
 
-#include "../Online/ShtrihOnlineFRBase.h"
 #include "../Base/ShtrihFRBase.h"
 #include "../Base/ShtrihSerialFR.h"
+#include "../Online/ShtrihOnlineFRBase.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class ShtrihRetractorFRLite : public T
-{
+template <class T> class ShtrihRetractorFRLite : public T {
     SET_SUBSERIES("Ejector")
 
-  protected:
+protected:
     /// Инициализация устройства.
     virtual bool updateParameters();
 

@@ -2,33 +2,31 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
+#include <QtCore/QMap>
 #include <QtCore/QObject>
 #include <QtCore/QSet>
-#include <QtCore/QMap>
 #include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
 
 #include "File.h"
 
 class NetworkTask;
 
 //---------------------------------------------------------------------------
-namespace CComponent
-{
-    inline const char *OptionalTask()
-    {
-        return "OptionalTaskProperty";
-    }
+namespace CComponent {
+inline const char *OptionalTask() {
+    return "OptionalTaskProperty";
+}
 } // namespace CComponent
 
 //---------------------------------------------------------------------------
-class Component : public QObject
-{
+class Component : public QObject {
     Q_OBJECT
 
-  public:
-    Component(const QString &aName, const QString &aVersion, const TFileList &aFiles, const QStringList &aPostActions,
+public:
+    Component(const QString &aName,
+              const QString &aVersion,
+              const TFileList &aFiles,
+              const QStringList &aPostActions,
               const QString &aURL);
     virtual ~Component();
 
@@ -42,7 +40,8 @@ class Component : public QObject
     virtual void deploy(const TFileList &aFiles, const QString &aDestination) noexcept(false) = 0;
 
     /// Производит закачку компонента, находящего по aBaseURL во временную папку.
-    virtual QList<NetworkTask *> download(const QString &aBaseURL, const TFileList &aExceptions) = 0;
+    virtual QList<NetworkTask *> download(const QString &aBaseURL,
+                                          const TFileList &aExceptions) = 0;
 
     /// Имя компонента.
     QString getId() const;
@@ -72,7 +71,7 @@ class Component : public QObject
     void setOptional(bool aOptional);
     bool optional() const;
 
-  private:
+private:
     QString mId;
     TFileList mFiles;
     QStringList mPostActions;
@@ -80,7 +79,7 @@ class Component : public QObject
     QString mVersion;
     bool mOptional;
 
-  protected:
+protected:
     bool mSkipExisting;
 };
 

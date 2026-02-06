@@ -2,25 +2,21 @@
 
 #pragma once
 
-// Modules
 #include <Hardware/Acceptors/CCTalkAcceptorBase.h>
-
-// Project
-#include <Hardware/CoinAcceptors/CoinAcceptorBase.h>
 #include <Hardware/CoinAcceptors/CCTalkCoinAcceptorModelData.h>
+#include <Hardware/CoinAcceptors/CoinAcceptorBase.h>
 
 //--------------------------------------------------------------------------------
 typedef CCTalkAcceptorBase<CoinAcceptorBase> TCCTalkCoinAcceptorBase;
 
-class CCTalkCoinAcceptorBase : public TCCTalkCoinAcceptorBase
-{
-  public:
+class CCTalkCoinAcceptorBase : public TCCTalkCoinAcceptorBase {
+public:
     CCTalkCoinAcceptorBase();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Получить буферизованные статусы.
     virtual bool getBufferedStatuses(QByteArray &aAnswer);
 

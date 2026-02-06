@@ -2,14 +2,11 @@
 
 // Plugin SDK
 
-// SDK
 #include <SDK/Plugins/PluginFactory.h>
 
-// Project
 #include "PluginLibraryDefinition.h"
 
-UcsPluginFactory::UcsPluginFactory()
-{
+UcsPluginFactory::UcsPluginFactory() {
     mName = "ucs";
     mDescription = "Scenario backend for UCS Pay System";
     mAuthor = "Humo";

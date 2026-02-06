@@ -8,6 +8,7 @@
 /* Add C++ includes here */
 
 #include <QFile>
+#include <QFuture>
 #include <QMap>
 #include <QReadWriteLock>
 #include <QTimer>
@@ -18,14 +19,14 @@
 #include <QtCore/QBuffer>
 #include <QtCore/QByteArray>
 #include <QtCore/QCache>
-#include <QtCore/QCoreApplication>
 #include <QtCore/QCoreApplication.h>
+#include <QtCore/QCoreApplication>
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QDate>
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
-#include <QtCore/QDir>
 #include <QtCore/QDir.h>
+#include <QtCore/QDir>
 #include <QtCore/QDirIterator>
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QEvent>
@@ -66,11 +67,11 @@
 #include <QtCore/QResource>
 #include <QtCore/QScopedPointer>
 #include <QtCore/QSet>
-#include <QtCore/QSettings>
 #include <QtCore/QSettings.h>
+#include <QtCore/QSettings>
 #include <QtCore/QSharedMemory>
-#include <QtCore/QSharedPointer>
 #include <QtCore/QSharedPointer.h>
+#include <QtCore/QSharedPointer>
 #include <QtCore/QSignalMapper>
 #include <QtCore/QSize>
 #include <QtCore/QStack>
@@ -95,7 +96,6 @@
 #include <QtCore/QWeakPointer>
 #include <QtCore/QWriteLocker>
 #include <QtCore/QtAlgorithms>
-#include <QFuture>
 #include <QtCore/QtEndian>
 #include <QtCore/QtGlobal>
 #include <QtCore/QtPlugin>
@@ -110,26 +110,26 @@
 #include <QtDeclarative/QDeclarativeItem>
 #include <QtDeclarative/QtDeclarative>
 */
-#include <QtWidgets/QAbstractButton>
-#include <QtWidgets/QAction>
-#include <QtWidgets/QApplication>
 #include <QtGui/QBitmap>
-#include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QCheckBox>
 #include <QtGui/QClipboard>
 #include <QtGui/QCloseEvent>
 #include <QtGui/QColor>
-#include <QtWidgets/QDialog>
-#include <QtWidgets/QFileDialog>
 #include <QtGui/QFont>
 #include <QtGui/QFontDatabase>
+#include <QtGui/QIcon>
+#include <QtGui/QImage>
+#include <QtGui/QInputEvent>
+#include <QtWidgets/QAbstractButton>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QFileDialog>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
-#include <QtGui/QIcon>
-#include <QtGui/QImage>
 #include <QtWidgets/QInputDialog>
-#include <QtGui/QInputEvent>
 #include <QtWidgets/QItemDelegate>
 /*
 #include <QtGui/QKeyEvent>

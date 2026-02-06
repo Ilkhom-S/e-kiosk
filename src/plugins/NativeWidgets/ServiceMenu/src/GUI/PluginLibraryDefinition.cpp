@@ -2,14 +2,11 @@
 
 // Plugin SDK
 
-// SDK
-#include <SDK/Plugins/PluginFactory.h>
-
-// Project
 #include "PluginLibraryDefinition.h"
 
-ServiceMenuPluginFactory::ServiceMenuPluginFactory()
-{
+#include <SDK/Plugins/PluginFactory.h>
+
+ServiceMenuPluginFactory::ServiceMenuPluginFactory() {
     mName = "Service menu native widget";
     mDescription = "Service menu.";
     mAuthor = "Humo";

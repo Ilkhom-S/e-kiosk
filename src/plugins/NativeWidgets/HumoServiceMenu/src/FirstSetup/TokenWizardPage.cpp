@@ -1,35 +1,27 @@
 /* @file Окно настройки token. */
 
-// Проект
-
-// Project
 #include "TokenWizardPage.h"
 
-TokenWizardPage::TokenWizardPage(HumoServiceBackend *aBackend, QWidget *aParent) : WizardPageBase(aBackend, aParent)
-{
-}
+TokenWizardPage::TokenWizardPage(HumoServiceBackend *aBackend, QWidget *aParent)
+    : WizardPageBase(aBackend, aParent) {}
 
 //----------------------------------------------------------------------------
-bool TokenWizardPage::initialize()
-{
+bool TokenWizardPage::initialize() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool TokenWizardPage::shutdown()
-{
+bool TokenWizardPage::shutdown() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool TokenWizardPage::activate()
-{
+bool TokenWizardPage::activate() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool TokenWizardPage::deactivate()
-{
+bool TokenWizardPage::deactivate() {
     return true;
 }
 

@@ -2,38 +2,31 @@
 
 #pragma once
 
-// Qt headers
-#include "Common/QtHeadersBegin.h"
 #include <QtCore/QObject>
-#include <QtCore/QString>
 #include <QtCore/QSet>
+#include <QtCore/QString>
 #include <QtCore/QTimer>
-#include "Common/QtHeadersEnd.h"
 
-// Common
-#include <Common/ILogable.h>
 #include <Common/ExceptionFilter.h>
+#include <Common/ILogable.h>
 
-// Project
 #include "Connection/IConnection.h"
 
 //--------------------------------------------------------------------------------
 /// Константы
-namespace CConnection
-{
-    /// Имя лога.
-    const QString LogName = "Connection";
+namespace CConnection {
+/// Имя лога.
+const QString LogName = "Connection";
 } // namespace CConnection
 
 //--------------------------------------------------------------------------------
 /// Базовый класс соединения.
 /// Управляет таймерами проверки соединения и реализует метод проверки
 /// соединения по HTTP.
-class ConnectionBase : public IConnection
-{
+class ConnectionBase : public IConnection {
     Q_OBJECT
 
-  public:
+public:
     /// Конструктор.
     ConnectionBase(const QString &aName, NetworkTaskManager *aNetwork, ILog *aLog);
 
@@ -58,10 +51,10 @@ class ConnectionBase : public IConnection
     /// Устанавливает список хостов для проверки соединения.
     virtual void setCheckHosts(const QList<IConnection::CheckUrl> &aHosts);
 
-  protected slots:
+protected slots:
     void onCheckTimeout();
 
-  protected:
+protected:
     virtual void doConnect() noexcept(false) = 0;
     virtual void doDisconnect() noexcept(false) = 0;
     virtual bool doIsConnected() noexcept(false) = 0;

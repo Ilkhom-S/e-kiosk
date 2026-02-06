@@ -2,12 +2,10 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QMap>
-#include <Common/QtHeadersEnd.h>
 
-#include <SDK/PaymentProcessor/Core/IService.h>
 #include <SDK/PaymentProcessor/Core/ICryptService.h>
+#include <SDK/PaymentProcessor/Core/IService.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
 #include <KeysUtils/KeysUtils.h>
@@ -16,9 +14,9 @@ class ICryptEngine;
 class IApplication;
 
 //---------------------------------------------------------------------------
-class CryptService : public SDK::PaymentProcessor::IService, public SDK::PaymentProcessor::ICryptService
-{
-  public:
+class CryptService : public SDK::PaymentProcessor::IService,
+                     public SDK::PaymentProcessor::ICryptService {
+public:
     static CryptService *instance(IApplication *aApplication);
 
     CryptService(IApplication *aApplication);
@@ -51,8 +49,14 @@ class CryptService : public SDK::PaymentProcessor::IService, public SDK::Payment
 #pragma region SDK::PaymentProcessor::ICryptService interface
 
     /// Сгенерировать и зарегистрировать ключ на сервере. Возвращает EKeysUtilsError::Enum.
-    virtual int generateKey(int aKeyId, const QString &aLogin, const QString &aPassword, const QString &aURL,
-                            QString &aSD, QString &aAP, QString &aOP, const QString &aDescription = QString());
+    virtual int generateKey(int aKeyId,
+                            const QString &aLogin,
+                            const QString &aPassword,
+                            const QString &aURL,
+                            QString &aSD,
+                            QString &aAP,
+                            QString &aOP,
+                            const QString &aDescription = QString());
 
     /// Сохранить сгенерированный ключ.
     virtual bool saveKey();
@@ -77,11 +81,11 @@ class CryptService : public SDK::PaymentProcessor::IService, public SDK::Payment
     /// Добавить ключ.
     bool addKey(const SDK::PaymentProcessor::SKeySettings &aKey);
 
-  private:
+private:
     /// Загружаем ключ в криптодвижок
     void loadKey(SDK::PaymentProcessor::SKeySettings &aKey);
 
-  private:
+private:
     IApplication *mApplication;
     ILog *mLog;
     QMap<int, SDK::PaymentProcessor::SKeySettings> mKeys;

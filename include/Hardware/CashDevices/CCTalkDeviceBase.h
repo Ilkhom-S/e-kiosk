@@ -2,32 +2,25 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
-#include "Hardware/Common/SerialDeviceBase.h"
-#include "Hardware/Common/PortPollingDeviceBase.h"
-#include "Hardware/Protocols/CashAcceptor/CCTalk.h"
-
-// Project
 #include "CCTalkModelData.h"
 #include "Hardware/CashDevices/CCTalkDeviceConstants.h"
+#include "Hardware/Common/PortPollingDeviceBase.h"
+#include "Hardware/Common/SerialDeviceBase.h"
+#include "Hardware/Protocols/CashAcceptor/CCTalk.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class CCTalkDeviceBase : public T
-{
+template <class T> class CCTalkDeviceBase : public T {
     SET_SERIES("ccTalk")
 
-  public:
+public:
     CCTalkDeviceBase();
 
     /// Получить поддерживаемые тпы протоколов.
     static QStringList getProtocolTypes();
 
-  protected:
+protected:
     /// Запросить и сохранить параметры устройства.
     virtual void processDeviceData();
 
@@ -41,7 +34,8 @@ template <class T> class CCTalkDeviceBase : public T
     virtual double parseFWVersion(const QByteArray &aAnswer);
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult execCommand(const QByteArray &aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
 
     /// Распарсить дату.

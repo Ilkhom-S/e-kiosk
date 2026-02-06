@@ -6,13 +6,11 @@
 #include "ShtrihFRBaseConstants.h"
 
 //--------------------------------------------------------------------------------
-class VirtualShtrihFR : public ProtoShtrihFR<ShtrihSerialFRBase>
-{
+class VirtualShtrihFR : public ProtoShtrihFR<ShtrihSerialFRBase> {
     SET_SERIES("ShtrihVirtual")
 
-  public:
-    VirtualShtrihFR()
-    {
+public:
+    VirtualShtrihFR() {
         using namespace SDK::Driver::IOPort::COM;
 
         // данные устройства
@@ -34,22 +32,19 @@ class VirtualShtrihFR : public ProtoShtrihFR<ShtrihSerialFRBase>
         mTaxData.add(0, 2);
     }
 
-  protected:
+protected:
     /// Попытка самоидентификации.
-    virtual bool isConnected()
-    {
+    virtual bool isConnected() {
         SDK::Driver::EPortTypes::Enum portType = mIOPort->getType();
 
-        if (portType != SDK::Driver::EPortTypes::COMEmulator)
-        {
+        if (portType != SDK::Driver::EPortTypes::COMEmulator) {
             toLog(LogLevel::Error, mDeviceName + ": Port type is not COM-emulator");
             return false;
         }
 
         QByteArray answer;
 
-        if (!processCommand(CShtrihFR::Commands::IdentifyVirtual, &answer))
-        {
+        if (!processCommand(CShtrihFR::Commands::IdentifyVirtual, &answer)) {
             return false;
         }
 
@@ -67,8 +62,7 @@ class VirtualShtrihFR : public ProtoShtrihFR<ShtrihSerialFRBase>
     }
 
     /// Получить параметры печати.
-    virtual bool getPrintingSettings()
-    {
+    virtual bool getPrintingSettings() {
         mLineSize = 42;
 
         return true;

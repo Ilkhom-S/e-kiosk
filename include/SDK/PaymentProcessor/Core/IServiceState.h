@@ -2,28 +2,21 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
+namespace SDK {
+namespace PaymentProcessor {
 
-        //---------------------------------------------------------------------------
-        class IServiceState
-        {
-          public:
-            virtual ~IServiceState()
-            {
-            }
+//---------------------------------------------------------------------------
+class IServiceState {
+public:
+    virtual ~IServiceState() {}
 
-          public:
-            virtual QString getState() const = 0;
-        };
+public:
+    virtual QString getState() const = 0;
+};
 
-        //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
-    } // namespace PaymentProcessor
+} // namespace PaymentProcessor
 } // namespace SDK

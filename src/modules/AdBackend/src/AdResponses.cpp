@@ -1,61 +1,52 @@
 /* @file Запросы к серверу рекламы Хумо. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QStringDecoder>
-#include <Common/QtHeadersEnd.h>
+#include "AdResponses.h"
 
-// SDK
+#include <QtCore/QStringDecoder>
+
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Core/ISettingsService.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
-// Project
 #include "AdRequests.h"
-#include "AdResponses.h"
 #include "Client.h"
 
 namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------------
 AdResponse::AdResponse(const PPSDK::Humo::Request &aRequest, const QString &aResponseString)
-    : PPSDK::Humo::Response(aRequest, aResponseString)
-{
-}
+    : PPSDK::Humo::Response(aRequest, aResponseString) {}
 
 //------------------------------------------------------------------------------
-AdGetChannelsResponse::AdGetChannelsResponse(const PPSDK::Humo::Request &aRequest, const QString &aResponseString)
-    : AdResponse(aRequest, aResponseString)
-{
-}
+AdGetChannelsResponse::AdGetChannelsResponse(const PPSDK::Humo::Request &aRequest,
+                                             const QString &aResponseString)
+    : AdResponse(aRequest, aResponseString) {}
 
 //------------------------------------------------------------------------------
-QStringList AdGetChannelsResponse::channels() const
-{
+QStringList AdGetChannelsResponse::channels() const {
     return getParameter(Ad::Parameters::Channels).toString().split(",", Qt::SkipEmptyParts);
 }
 
 //------------------------------------------------------------------------------
 AdGetChannelResponse::AdGetChannelResponse(const SDK::PaymentProcessor::Humo::Request &aRequest,
                                            const QString &aResponseString)
-    : AdGetChannelsResponse(aRequest, aResponseString)
-{
-}
+    : AdGetChannelsResponse(aRequest, aResponseString) {}
 
 //------------------------------------------------------------------------------
-QList<Ad::Campaign> AdGetChannelResponse::getCampaigns() const
-{
+QList<Ad::Campaign> AdGetChannelResponse::getCampaigns() const {
     QList<Ad::Campaign> result;
 
     Ad::Campaign c;
     c.type = getParameter(Ad::Parameters::Channel).toString();
     c.id = getParameter(Ad::Parameters::ID).toLongLong();
     c.md5 = getParameter(Ad::Parameters::MD5).toString();
-    c.expired = QDateTime::fromString(getParameter(Ad::Parameters::Expired).toString(), Ad::Parameters::DateTimeFormat);
+    c.expired = QDateTime::fromString(getParameter(Ad::Parameters::Expired).toString(),
+                                      Ad::Parameters::DateTimeFormat);
     c.url = QUrl::fromEncoded(getParameter(Ad::Parameters::Url).toByteArray());
     {
         QStringDecoder decoder("windows-1251");
-        c.text = decoder.decode(QByteArray::fromBase64(getParameter(Ad::Parameters::Text).toByteArray()));
+        c.text = decoder.decode(
+            QByteArray::fromBase64(getParameter(Ad::Parameters::Text).toByteArray()));
     }
 
     result << c;
@@ -67,7 +58,8 @@ QList<Ad::Campaign> AdGetChannelResponse::getCampaigns() const
     c.url = QUrl::fromEncoded(getParameter(Ad::Parameters::DefaultUrl).toByteArray());
     {
         QStringDecoder decoder("windows-1251");
-        c.text = decoder.decode(QByteArray::fromBase64(getParameter(Ad::Parameters::DefaultText).toByteArray()));
+        c.text = decoder.decode(
+            QByteArray::fromBase64(getParameter(Ad::Parameters::DefaultText).toByteArray()));
     }
 
     result << c;

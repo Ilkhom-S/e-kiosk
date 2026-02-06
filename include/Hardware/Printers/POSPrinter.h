@@ -2,19 +2,18 @@
 
 #pragma once
 
-#include <Hardware/Printers/PortPrintersBase.h>
-#include <Hardware/Printers/POSPrinterData.h>
 #include <Hardware/Printers/POSParameters.h>
+#include <Hardware/Printers/POSPrinterData.h>
+#include <Hardware/Printers/PortPrintersBase.h>
 
 //--------------------------------------------------------------------------------
-template <class T> class POSPrinter : public T
-{
+template <class T> class POSPrinter : public T {
     SET_SERIES("POS")
 
-  public:
+public:
     POSPrinter();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 

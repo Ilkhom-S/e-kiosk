@@ -3,14 +3,11 @@
 #pragma once
 
 //------------------------------------------------------------------------
-class IConfigManager
-{
-  public:
-    virtual ~IConfigManager()
-    {
-    }
+class IConfigManager {
+public:
+    virtual ~IConfigManager() {}
 
-  public:
+public:
     /// Конфигурация изменилась?
     virtual bool isConfigurationChanged() const = 0;
 

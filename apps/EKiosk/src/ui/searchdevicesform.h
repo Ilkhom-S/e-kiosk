@@ -1,20 +1,15 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QWidget>
-#include <Common/QtHeadersEnd.h>
 
-namespace Ui
-{
-    class SearchDevicesForm;
+namespace Ui {
+class SearchDevicesForm;
 }
 
-class SearchDevicesForm : public QWidget
-{
+class SearchDevicesForm : public QWidget {
     Q_OBJECT
 
-  public:
+public:
     explicit SearchDevicesForm(QWidget *parent = 0);
     ~SearchDevicesForm();
 
@@ -27,7 +22,7 @@ class SearchDevicesForm : public QWidget
     void setCopirightText(QString text, QString version);
     void setLogo(QString path);
 
-  private:
+private:
     Ui::SearchDevicesForm *ui;
 
     QMovie *movie;

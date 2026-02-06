@@ -2,21 +2,20 @@
 
 #pragma once
 
-#include "../PrimFRBase.h"
 #include "../Online/PrimOnlineFRBase.h"
+#include "../PrimFRBase.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class PrimPresenterFR : public T
-{
+template <class T> class PrimPresenterFR : public T {
     SET_SUBSERIES("Presenter")
 
-  public:
+public:
     PrimPresenterFR();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Напечатать [и выдать] чек.
     virtual bool performReceipt(const QStringList &aReceipt, bool aProcessing = true);
 

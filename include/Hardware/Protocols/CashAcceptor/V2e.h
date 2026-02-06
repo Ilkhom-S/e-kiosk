@@ -5,13 +5,12 @@
 #include <Hardware/Common/ProtocolBase.h>
 
 //--------------------------------------------------------------------------------
-class V2eProtocol : public ProtocolBase
-{
-  public:
+class V2eProtocol : public ProtocolBase {
+public:
     /// Выполнить команду протокола.
     TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData);
 
-  protected:
+protected:
     /// Подсчет контрольной суммы пакета данных.
     ushort calcCRC(const QByteArray &aData);
 

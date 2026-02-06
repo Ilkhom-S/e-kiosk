@@ -2,35 +2,27 @@
 
 #pragma once
 
-// Qt
-#include "Common/QtHeadersBegin.h"
-#include <QtCore/QSet>
 #include <QtCore/QObject>
-#include <QtCore/QVariantMap>
+#include <QtCore/QSet>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QTimer>
-#include "Common/QtHeadersEnd.h"
+#include <QtCore/QVariantMap>
 
-// SDK
+#include <Common/ILog.h>
+
 #include <SDK/PaymentProcessor/Core/EventTypes.h>
 #include <SDK/PaymentProcessor/Core/ICashDispenserManager.h>
 
-// Modules
-#include <Common/ILog.h>
-
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        class ICore;
-        class INetworkService;
-        class TerminalSettings;
-    } // namespace PaymentProcessor
-    namespace Plugin
-    {
-        class IEnvironment;
-        class IPlugin;
-    } // namespace Plugin
+namespace SDK {
+namespace PaymentProcessor {
+class ICore;
+class INetworkService;
+class TerminalSettings;
+} // namespace PaymentProcessor
+namespace Plugin {
+class IEnvironment;
+class IPlugin;
+} // namespace Plugin
 } // namespace SDK
 
 class IConfigManager;
@@ -40,24 +32,21 @@ class NetworkManager;
 class PaymentManager;
 
 //------------------------------------------------------------------------
-namespace CServiceMenuBackend
-{
-    const QString LogName = "ServiceMenu";
-    const int HeartbeatTimeout = 60 * 1000;
+namespace CServiceMenuBackend {
+const QString LogName = "ServiceMenu";
+const int HeartbeatTimeout = 60 * 1000;
 } // namespace CServiceMenuBackend
 
 //------------------------------------------------------------------------
-class ServiceMenuBackend : public QObject
-{
+class ServiceMenuBackend : public QObject {
     Q_OBJECT
 
-  public:
+public:
     ServiceMenuBackend(SDK::Plugin::IEnvironment *aFactory, ILog *aLog);
     ~ServiceMenuBackend();
 
-  public:
-    enum AccessRights
-    {
+public:
+    enum AccessRights {
         Diagnostic,
         ViewLogs,
 
@@ -79,17 +68,9 @@ class ServiceMenuBackend : public QObject
 
     typedef QSet<AccessRights> TAccessRights;
 
-    enum HandlerType
-    {
-        Info = 0,
-        Hardware,
-        Encashment,
-        Payment,
-        System,
-        Keys
-    };
+    enum HandlerType { Info = 0, Hardware, Encashment, Payment, System, Keys };
 
-  public:
+public:
     /// Авторизация и получение прав доступа.
     virtual bool authorize(const QString &aPassword);
 
@@ -102,22 +83,23 @@ class ServiceMenuBackend : public QObject
     // Изменились ли настройки
     bool isConfigurationChanged();
 
-  public:
+public:
     HardwareManager *getHardwareManager();
     KeysManager *getKeysManager();
     NetworkManager *getNetworkManager();
     PaymentManager *getPaymentManager();
 
-  public:
+public:
     void toLog(const QString &aMessage);
     void toLog(LogLevel::Enum aLevel, const QString &aMessage);
     SDK::PaymentProcessor::ICore *getCore() const;
 
-  public:
+public:
     void getTerminalInfo(QVariantMap &aTerminalInfo);
 
     void sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType);
-    void sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType, const QVariantMap &aParameters);
+    void sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType,
+                   const QVariantMap &aParameters);
 
     /// Сохранить полную конфигурацию
     bool saveConfiguration();
@@ -136,20 +118,17 @@ class ServiceMenuBackend : public QObject
     bool hasAnyPassword() const;
 
     /// С какими правами зашли в сервисное меню
-    QString getUserRole() const
-    {
-        return mUserRole;
-    }
+    QString getUserRole() const { return mUserRole; }
 
     QList<QWidget *> getExternalWidgets(bool aReset = true);
 
     void startHeartbeat();
     void stopHeartbeat();
 
-  private slots:
+private slots:
     void sendHeartbeat();
 
-  private:
+private:
     SDK::PaymentProcessor::ICore *mCore;
     SDK::Plugin::IEnvironment *mFactory;
     QSharedPointer<HardwareManager> mHardwareManager;

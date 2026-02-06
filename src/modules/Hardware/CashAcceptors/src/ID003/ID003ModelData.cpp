@@ -5,19 +5,23 @@
 using namespace CID003::ProtocolData;
 
 //--------------------------------------------------------------------------------
-CIdentification::CIdentification()
-{
-    append(Alias::ID003, QString("^%1\\(%1\\)\\-?%1\\-?%1? *(()ID003\\-%1) *[vV](%1\\-%1) *%1 *%1 *$").arg(IdLexeme));
+CIdentification::CIdentification() {
+    append(Alias::ID003,
+           QString("^%1\\(%1\\)\\-?%1\\-?%1? *(()ID003\\-%1) *[vV](%1\\-%1) *%1 *%1 *$")
+               .arg(IdLexeme));
     append(Alias::ID003Ext,
-           QString("^%1\\(%1\\)\\-?%1\\-?%1? *(((ID003)))%1(((\\d{2}\\w{3}\\d{2}))) *%1 *$").arg(IdLexeme));
+           QString("^%1\\(%1\\)\\-?%1\\-?%1? *(((ID003)))%1(((\\d{2}\\w{3}\\d{2}))) *%1 *$")
+               .arg(IdLexeme));
     append(Alias::BDP,
-           QString("^%1\\(%1\\)\\-(%2){2}\\-?%1 *(%1?\\-?BDP%1)[vV](%1\\-?%1) *%1 *%1 *$").arg(IdLexeme).arg(Lexeme));
-    append(Alias::OP003, QString("^(%1) *%1 *%1 *((OP003\\-%1)) *[vV](%1\\-?%1?) *%1? *%1? *$").arg(IdLexeme));
+           QString("^%1\\(%1\\)\\-(%2){2}\\-?%1 *(%1?\\-?BDP%1)[vV](%1\\-?%1) *%1 *%1 *$")
+               .arg(IdLexeme)
+               .arg(Lexeme));
+    append(Alias::OP003,
+           QString("^(%1) *%1 *%1 *((OP003\\-%1)) *[vV](%1\\-?%1?) *%1? *%1? *$").arg(IdLexeme));
 }
 
 //--------------------------------------------------------------------------------
-CID003::ModelData::ModelData()
-{
+CID003::ModelData::ModelData() {
     QString type = "model_number";
     SModelData ardaks("MoneyControls Unknown", type);
     ardaks.models.add("AE", "MoneyControls Ardac Elite", true);
@@ -47,17 +51,15 @@ CID003::ModelData::ModelData()
 }
 
 //--------------------------------------------------------------------------------
-SBaseModelData CID003::ModelData::getData(char aCode, const QString &aNumber, const QString &aStackerType)
-{
+SBaseModelData
+CID003::ModelData::getData(char aCode, const QString &aNumber, const QString &aStackerType) {
     SModelData modelData = data()[aCode];
 
-    if (modelData.type == "model_number")
-    {
+    if (modelData.type == "model_number") {
         return modelData.models[aNumber];
     }
 
-    if (modelData.type == "stacker_type")
-    {
+    if (modelData.type == "stacker_type") {
         return modelData.models[aStackerType];
     }
 
@@ -65,14 +67,12 @@ SBaseModelData CID003::ModelData::getData(char aCode, const QString &aNumber, co
 }
 
 //--------------------------------------------------------------------------------
-void CID003::ModelData::add(char aId, const QString &aName, bool aVerified)
-{
+void CID003::ModelData::add(char aId, const QString &aName, bool aVerified) {
     append(aId, SModelData(aName, aVerified));
 }
 
 //--------------------------------------------------------------------------------
-CID003::SModelData::SModelData(const QString &aDefaultName, const QString &aType) : type(aType)
-{
+CID003::SModelData::SModelData(const QString &aDefaultName, const QString &aType) : type(aType) {
     name = aDefaultName;
     models.setDefault(SBaseModelData(aDefaultName, false));
 }

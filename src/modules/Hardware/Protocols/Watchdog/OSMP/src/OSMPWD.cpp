@@ -1,46 +1,42 @@
 /* @file Протокол сторожевого таймера OSMP 2.5. */
 
-// STL
+#include "OSMPWD.h"
+
+#include <QtCore/QElapsedTimer>
+
 #include <numeric>
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QElapsedTimer>
-#include <Common/QtHeadersEnd.h>
-
-// Project
-#include "OSMPWD.h"
 #include "OSMPWDConstants.h"
 
 using namespace ProtocolUtils;
 
 //--------------------------------------------------------------------------------
-const uchar OSMPWDProtocol::calcCRC(const QByteArray &aData)
-{
-    int sum = std::accumulate(aData.begin(), aData.end(), 0,
-                              [](uchar arg1, uchar arg2) -> uchar { return arg1 + uchar(arg2); });
+const uchar OSMPWDProtocol::calcCRC(const QByteArray &aData) {
+    int sum = std::accumulate(aData.begin(), aData.end(), 0, [](uchar arg1, uchar arg2) -> uchar {
+        return arg1 + uchar(arg2);
+    });
 
     return uchar(256 - sum);
 }
 
 //--------------------------------------------------------------------------------
-bool OSMPWDProtocol::checkAnswer(const QByteArray &aAnswerData)
-{
+bool OSMPWDProtocol::checkAnswer(const QByteArray &aAnswerData) {
     // размер
-    if (aAnswerData.size() < COSMPWD::MinPacketAnswerSize)
-    {
+    if (aAnswerData.size() < COSMPWD::MinPacketAnswerSize) {
         toLog(LogLevel::Error,
-              QString("OSMPWD: The length of the packet is less than %1 byte").arg(COSMPWD::MinPacketAnswerSize));
+              QString("OSMPWD: The length of the packet is less than %1 byte")
+                  .arg(COSMPWD::MinPacketAnswerSize));
         return false;
     }
 
     // префикс
     char prefix = aAnswerData[0];
 
-    if (prefix != COSMPWD::Prefix)
-    {
+    if (prefix != COSMPWD::Prefix) {
         toLog(LogLevel::Error,
-              QString("OSMPWD: Invalid prefix = %1, need = %2").arg(toHexLog(prefix)).arg(toHexLog(COSMPWD::Prefix)));
+              QString("OSMPWD: Invalid prefix = %1, need = %2")
+                  .arg(toHexLog(prefix))
+                  .arg(toHexLog(COSMPWD::Prefix)));
         return false;
     }
 
@@ -48,9 +44,9 @@ bool OSMPWDProtocol::checkAnswer(const QByteArray &aAnswerData)
     int answerLength = aAnswerData.mid(3, aAnswerData.size() - 4).size();
     int length = aAnswerData[2];
 
-    if (length != answerLength)
-    {
-        toLog(LogLevel::Error, QString("OSMPWD: Invalid length = %1, need = %2").arg(length).arg(answerLength));
+    if (length != answerLength) {
+        toLog(LogLevel::Error,
+              QString("OSMPWD: Invalid length = %1, need = %2").arg(length).arg(answerLength));
         return false;
     }
 
@@ -59,10 +55,11 @@ bool OSMPWDProtocol::checkAnswer(const QByteArray &aAnswerData)
     char answerCRC = calcCRC(aAnswerData.left(index));
     char CRC = aAnswerData[index];
 
-    if (CRC != answerCRC)
-    {
+    if (CRC != answerCRC) {
         toLog(LogLevel::Error,
-              QString("OSMPWD: Invalid CRC = %1, need %2").arg(toHexLog(CRC)).arg(toHexLog(answerCRC)));
+              QString("OSMPWD: Invalid CRC = %1, need %2")
+                  .arg(toHexLog(CRC))
+                  .arg(toHexLog(answerCRC)));
         return false;
     }
 
@@ -70,8 +67,7 @@ bool OSMPWDProtocol::checkAnswer(const QByteArray &aAnswerData)
 }
 
 //--------------------------------------------------------------------------------
-TResult OSMPWDProtocol::processCommand(const QByteArray &aCommandData, QByteArray *aUnpackedData)
-{
+TResult OSMPWDProtocol::processCommand(const QByteArray &aCommandData, QByteArray *aUnpackedData) {
     QByteArray packet;
     packet.append(COSMPWD::Prefix);
     packet.append(aCommandData[0]);
@@ -83,26 +79,22 @@ TResult OSMPWDProtocol::processCommand(const QByteArray &aCommandData, QByteArra
     toLog(LogLevel::Normal, QString("OSMPWD: >> {%1}").arg(packet.toHex().data()));
     QByteArray answerData;
 
-    if (!mPort->write(packet) || !read(answerData))
-    {
+    if (!mPort->write(packet) || !read(answerData)) {
         return CommandResult::Port;
     }
 
     toLog(LogLevel::Normal, QString("OSMPWD: << {%1}").arg(answerData.toHex().data()));
 
-    if (answerData.isEmpty())
-    {
+    if (answerData.isEmpty()) {
         return CommandResult::NoAnswer;
     }
 
-    if (!checkAnswer(answerData))
-    {
+    if (!checkAnswer(answerData)) {
         toLog(LogLevel::Error, "OSMPWD: Failed to unpack data");
         return CommandResult::Protocol;
     }
 
-    if (aUnpackedData)
-    {
+    if (aUnpackedData) {
         *aUnpackedData = answerData.mid(3, answerData.size() - 4);
     }
 
@@ -110,27 +102,23 @@ TResult OSMPWDProtocol::processCommand(const QByteArray &aCommandData, QByteArra
 }
 
 //--------------------------------------------------------------------------------
-bool OSMPWDProtocol::read(QByteArray &aData)
-{
+bool OSMPWDProtocol::read(QByteArray &aData) {
     aData.clear();
 
     QElapsedTimer clockTimer;
     clockTimer.start();
 
-    do
-    {
+    do {
         QByteArray answerData;
 
-        if (!mPort->read(answerData))
-        {
+        if (!mPort->read(answerData)) {
             return false;
         }
 
         aData.append(answerData);
 
         if ((aData.size() >= COSMPWD::MinPacketAnswerSize) &&
-            (aData.mid(3, aData.size() - 4).size() >= int(answerData[2])))
-        {
+            (aData.mid(3, aData.size() - 4).size() >= int(answerData[2]))) {
             break;
         }
     } while (clockTimer.elapsed() < COSMPWD::DefaultTimeout);

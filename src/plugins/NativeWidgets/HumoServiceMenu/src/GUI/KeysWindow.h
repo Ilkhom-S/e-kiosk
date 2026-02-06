@@ -2,28 +2,24 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QFutureWatcher>
+
 #include "ui_KeysWindow.h"
-#include <Common/QtHeadersEnd.h>
 
 class HumoServiceBackend;
 
 //------------------------------------------------------------------------
-namespace CKeysWindow
-{
-    const QString WarningStyleSheet = "background-color: rgb(255, 192, 192);";
-    const QString DefaultStyleSheet = "";
-    const int ReservedKeyNumber = 100;
+namespace CKeysWindow {
+const QString WarningStyleSheet = "background-color: rgb(255, 192, 192);";
+const QString DefaultStyleSheet = "";
+const int ReservedKeyNumber = 100;
 } // namespace CKeysWindow
 
 //------------------------------------------------------------------------
-class KeysWindow : public QFrame, protected Ui_KeysWindow
-{
+class KeysWindow : public QFrame, protected Ui_KeysWindow {
     Q_OBJECT
 
-  public:
+public:
     KeysWindow(HumoServiceBackend *aBackend, QWidget *aParent);
 
     virtual ~KeysWindow();
@@ -37,7 +33,7 @@ class KeysWindow : public QFrame, protected Ui_KeysWindow
     /// Сохраняет сгенерированные ключи.
     bool save();
 
-  signals:
+signals:
     /// Начало и конец процедуры создания ключей.
     void beginGenerating();
     void endGenerating();
@@ -45,7 +41,7 @@ class KeysWindow : public QFrame, protected Ui_KeysWindow
     /// Сигнал об ошибке во время создания или регистрации ключей.
     void error(QString aError);
 
-  protected slots:
+protected slots:
     void onCreateButtonClicked();
     void onRepeatButtonClicked();
 
@@ -53,13 +49,12 @@ class KeysWindow : public QFrame, protected Ui_KeysWindow
 
     void onGenerateTaskFinished();
 
-  private:
-    void SetStyleSheet(QWidget *widget, const QString &styleSheet)
-    {
+private:
+    void SetStyleSheet(QWidget *widget, const QString &styleSheet) {
         widget->setStyleSheet(QString(widget->metaObject()->className()) + "{" + styleSheet + "}");
     }
 
-  protected:
+protected:
     QVariantMap mTaskParameters;
 
     QFutureWatcher<bool> mGenerateTaskWatcher;

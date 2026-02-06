@@ -2,28 +2,24 @@
 
 #pragma once
 
-#include <memory.h>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
-#include <SDK/Plugins/IPlugin.h>
+#include <SDK/GUI/IGraphicsBackend.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Scripting/Core.h>
-#include <SDK/GUI/IGraphicsBackend.h>
+#include <SDK/Plugins/IPlugin.h>
 
-// Проект
+#include <memory.h>
+
 #include "WebGraphicsItem.h"
 
 //------------------------------------------------------------------------------
-class WebEngineBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsBackend
-{
+class WebEngineBackend : public QObject,
+                         public SDK::Plugin::IPlugin,
+                         public SDK::GUI::IGraphicsBackend {
     Q_OBJECT
 
-  public:
+public:
     WebEngineBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
     ~WebEngineBackend();
 
@@ -41,7 +37,8 @@ class WebEngineBackend : public QObject, public SDK::Plugin::IPlugin, public SDK
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
     virtual QString getConfigurationName() const;
 
-    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
+    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
+    /// программы).
     virtual bool saveConfiguration();
 
     /// Проверяет успешно ли инициализировался плагин при создании.
@@ -71,7 +68,7 @@ class WebEngineBackend : public QObject, public SDK::Plugin::IPlugin, public SDK
 
 #pragma endregion
 
-  private:
+private:
     QString mInstancePath;
     QMultiMap<QString, std::shared_ptr<WebGraphicsItem>> mItems;
 

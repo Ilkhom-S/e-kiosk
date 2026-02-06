@@ -1,17 +1,16 @@
 /* @file Принтер Citizen CPP-8001. */
 
-// Project
 #include "CitizenCPP8001.h"
 
 using namespace SDK::Driver::IOPort::COM;
 
 //--------------------------------------------------------------------------------
-CitizenCPP8001::CitizenCPP8001()
-{
+CitizenCPP8001::CitizenCPP8001() {
     // параметры порта
-    mPortParameters.insert(EParameters::BaudRate, POSPrinters::TSerialDevicePortParameter()
-                                                      << EBaudRate::BR38400 << EBaudRate::BR19200 << EBaudRate::BR4800
-                                                      << EBaudRate::BR9600);
+    mPortParameters.insert(EParameters::BaudRate,
+                           POSPrinters::TSerialDevicePortParameter()
+                               << EBaudRate::BR38400 << EBaudRate::BR19200 << EBaudRate::BR4800
+                               << EBaudRate::BR9600);
 
     // статусы ошибок
     mParameters.errors.clear();
@@ -40,8 +39,7 @@ CitizenCPP8001::CitizenCPP8001()
 }
 
 //--------------------------------------------------------------------------------
-void CitizenCPP8001::setDeviceConfiguration(const QVariantMap &aConfiguration)
-{
+void CitizenCPP8001::setDeviceConfiguration(const QVariantMap &aConfiguration) {
     POSPrinter::setDeviceConfiguration(aConfiguration);
 
     int lineSpacing = getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();

@@ -2,31 +2,25 @@
 
 #pragma once
 
-#include <memory>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
 #include <QtCore/QSharedPointer>
 #include <QtQml/QQmlEngine>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
-#include <SDK/Plugins/IPlugin.h>
-#include <SDK/Plugins/IPluginFactory.h>
+#include <SDK/GUI/IGraphicsBackend.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Scripting/Core.h>
-#include <SDK/GUI/IGraphicsBackend.h>
+#include <SDK/Plugins/IPlugin.h>
+#include <SDK/Plugins/IPluginFactory.h>
 
-// Проект
+#include <memory>
+
 #include "QMLGraphicsItem.h"
 
 //------------------------------------------------------------------------------
-class QMLBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsBackend
-{
+class QMLBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsBackend {
     Q_OBJECT
 
-  public:
+public:
     QMLBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
 
 #pragma region SDK::Plugin::IPlugin interface
@@ -43,7 +37,8 @@ class QMLBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::GUI:
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
     virtual QString getConfigurationName() const;
 
-    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
+    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
+    /// программы).
     virtual bool saveConfiguration();
 
     /// Проверяет успешно ли инициализировался плагин при создании.
@@ -73,10 +68,10 @@ class QMLBackend : public QObject, public SDK::Plugin::IPlugin, public SDK::GUI:
 
 #pragma endregion
 
-  private slots:
+private slots:
     void onWarnings(const QList<QQmlError> &aWarnings);
 
-  private:
+private:
     typedef QMultiMap<QString, std::shared_ptr<QMLGraphicsItem>> TGraphicItemsCache;
 
     QString mInstancePath;

@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
-#include <Common/QtHeadersEnd.h>
 
 #include <Common/BasicApplication.h>
 
@@ -18,15 +16,14 @@ const QString TestFile = "test.bin";
 
 //------------------------------------------------------------------------
 /// Класс для тестирования менеджера сетевых запросов.
-class NetworkTaskManagerTestClass : public QObject
-{
+class NetworkTaskManagerTestClass : public QObject {
     Q_OBJECT
 
-  public:
+public:
     NetworkTaskManagerTestClass();
     virtual ~NetworkTaskManagerTestClass();
 
-  private slots:
+private slots:
     /// Тест выполнения запроса GET.
     void httpGetTest();
 
@@ -42,7 +39,7 @@ class NetworkTaskManagerTestClass : public QObject
     /// Тест скачивания файла и работоспособности сигналов класса NetworkTask.
     void httpDownloadFileAndSignalsTest();
 
-  private:
+private:
     BasicApplication m_application;
     NetworkTaskManager m_manager;
 };

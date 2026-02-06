@@ -2,24 +2,19 @@
 
 // ACR120 SDK
 
-// System
 #include <ACR120U/include/ACR120U.h>
 #include <Hardware/Scanners/ACR120.h>
 
-ACR120::ACR120() : mHandle(0), mCardPresent(false)
-{
+ACR120::ACR120() : mHandle(0), mCardPresent(false) {
     mPollingInterval = 500;
 }
 
 //--------------------------------------------------------------------------------
-bool ACR120::isConnected()
-{
-    for (qint16 i = ACR120_USB1; i <= ACR120_USB8; ++i)
-    {
+bool ACR120::isConnected() {
+    for (qint16 i = ACR120_USB1; i <= ACR120_USB8; ++i) {
         mHandle = ACR120_Open(i);
 
-        if (mHandle > 0)
-        {
+        if (mHandle > 0) {
             return true;
         }
     }
@@ -28,12 +23,10 @@ bool ACR120::isConnected()
 }
 
 //--------------------------------------------------------------------------------
-bool ACR120::release()
-{
+bool ACR120::release() {
     bool result = TPollingHID::release();
 
-    if (mHandle)
-    {
+    if (mHandle) {
         ACR120_Close(mHandle);
 
         mHandle = 0;
@@ -43,10 +36,8 @@ bool ACR120::release()
 }
 
 //--------------------------------------------------------------------------------
-bool ACR120::getStatus(TStatusCodes & /*aStatusCodes*/)
-{
-    if (mHandle <= 0)
-    {
+bool ACR120::getStatus(TStatusCodes & /*aStatusCodes*/) {
+    if (mHandle <= 0) {
         return false;
     }
 
@@ -57,26 +48,24 @@ bool ACR120::getStatus(TStatusCodes & /*aStatusCodes*/)
 
     qint16 status = ACR120_ListTags(mHandle, &tagFound, tagType, tagLength, tagSerialNumber);
 
-    if (status == SUCCESS_READER_OP && tagFound && !mCardPresent)
-    {
+    if (status == SUCCESS_READER_OP && tagFound && !mCardPresent) {
         mCardPresent = true;
         QByteArray rawData((const char *)(&tagSerialNumber[0][0]), tagLength[0]);
 
         QString receivedData = rawData.toHex().toUpper();
 
-        if (!rawData.isEmpty())
-        {
+        if (!rawData.isEmpty()) {
             toLog(LogLevel::Normal,
-                  QString("Scanner ACR120: data received: %1 (%2)").arg(QString(rawData)).arg(receivedData));
+                  QString("Scanner ACR120: data received: %1 (%2)")
+                      .arg(QString(rawData))
+                      .arg(receivedData));
 
             QVariantMap result;
             result[CHardwareSDK::HID::Text] = receivedData;
 
             emit data(result);
         }
-    }
-    else if (!tagFound && mCardPresent)
-    {
+    } else if (!tagFound && mCardPresent) {
         mCardPresent = false;
     }
 

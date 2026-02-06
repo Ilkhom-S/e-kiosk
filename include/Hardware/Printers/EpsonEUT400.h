@@ -5,11 +5,10 @@
 #include <Hardware/Printers/PortPOSPrinters.h>
 
 //--------------------------------------------------------------------------------
-class EpsonEUT400 : public TSerialPOSPrinter
-{
+class EpsonEUT400 : public TSerialPOSPrinter {
     SET_SUBSERIES("EpsonEUT400")
 
-  public:
+public:
     EpsonEUT400();
 
     /// Инициализация устройства.
@@ -18,7 +17,7 @@ class EpsonEUT400 : public TSerialPOSPrinter
     /// Устанавливает конфигурацию устройству.
     virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
-  protected:
+protected:
     /// Инициализация устройства.
     virtual bool updateParameters();
 

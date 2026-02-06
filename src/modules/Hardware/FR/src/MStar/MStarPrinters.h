@@ -2,21 +2,21 @@
 
 #pragma once
 
-#include "Hardware/FR/SerialFRBase.h"
 #include <Hardware/FR/IncotexFR.h>
 
+#include "Hardware/FR/SerialFRBase.h"
+
 //--------------------------------------------------------------------------------
-class MStarPrinters : public SerialFRBase
-{
+class MStarPrinters : public SerialFRBase {
     SET_SERIES(ProtocolNames::FR::Incotex)
 
-  public:
+public:
     MStarPrinters();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 

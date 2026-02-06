@@ -1,28 +1,22 @@
 /* @file Главное окно HumoService */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "MainHumoServiceMenuWindow.h"
+
 #include <QtWidgets/QAbstractButton>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QMessageBox>
-#include <Common/QtHeadersEnd.h>
 
-// System
 #include "Backend/HumoServiceBackend.h"
-
-// Project
 #include "DiagnosticsServiceWindow.h"
 #include "EncashmentServiceWindow.h"
 #include "LogsServiceWindow.h"
-#include "MainHumoServiceMenuWindow.h"
 #include "PaymentServiceWindow.h"
 #include "SetupServiceWindow.h"
 
 MainHumoServiceMenuWindow::MainHumoServiceMenuWindow(HumoServiceBackend *aBackend, QWidget *aParent)
-    : QWidget(aParent), mBackend(aBackend), mCurrentPageIndex(0)
-{
+    : QWidget(aParent), mBackend(aBackend), mCurrentPageIndex(0) {
     setupUi(this);
 
     // Setup timers
@@ -30,21 +24,41 @@ MainHumoServiceMenuWindow::MainHumoServiceMenuWindow(HumoServiceBackend *aBacken
     connect(&mDateTimeTimer, &QTimer::timeout, this, &MainHumoServiceMenuWindow::onDateTimeRefresh);
 
     // Setup connections
-    connect(btnCloseServiceMenu, &QPushButton::clicked, this, &MainHumoServiceMenuWindow::onCloseHumoServiceMenu);
-    connect(btnRebootApplication, &QPushButton::clicked, this, &MainHumoServiceMenuWindow::onRebootApplication);
-    connect(btnStopApplication, &QPushButton::clicked, this, &MainHumoServiceMenuWindow::onStopApplication);
-    connect(btnRebootTerminal, &QPushButton::clicked, this, &MainHumoServiceMenuWindow::onRebootTerminal);
+    connect(btnCloseServiceMenu,
+            &QPushButton::clicked,
+            this,
+            &MainHumoServiceMenuWindow::onCloseHumoServiceMenu);
+    connect(btnRebootApplication,
+            &QPushButton::clicked,
+            this,
+            &MainHumoServiceMenuWindow::onRebootApplication);
+    connect(btnStopApplication,
+            &QPushButton::clicked,
+            this,
+            &MainHumoServiceMenuWindow::onStopApplication);
+    connect(btnRebootTerminal,
+            &QPushButton::clicked,
+            this,
+            &MainHumoServiceMenuWindow::onRebootTerminal);
     connect(btnToggleLock, &QPushButton::clicked, this, &MainHumoServiceMenuWindow::onToggleLock);
 
     // Connect tab widget
-    connect(twServiceScreens, &QTabWidget::currentChanged, this, &MainHumoServiceMenuWindow::onCurrentPageChanged);
+    connect(twServiceScreens,
+            &QTabWidget::currentChanged,
+            this,
+            &MainHumoServiceMenuWindow::onCurrentPageChanged);
 
     // Connect password page
-    connect(btnProceedAuth, &QPushButton::clicked, this, &MainHumoServiceMenuWindow::onProceedLogin);
-    connect(btnCancelAuth, &QPushButton::clicked, this, &MainHumoServiceMenuWindow::onCancelAuthorization);
+    connect(
+        btnProceedAuth, &QPushButton::clicked, this, &MainHumoServiceMenuWindow::onProceedLogin);
+    connect(btnCancelAuth,
+            &QPushButton::clicked,
+            this,
+            &MainHumoServiceMenuWindow::onCancelAuthorization);
 
     // Connect digital keyboard
-    connect(btnBackspace, &QPushButton::clicked, this, &MainHumoServiceMenuWindow::onBackspaceClicked);
+    connect(
+        btnBackspace, &QPushButton::clicked, this, &MainHumoServiceMenuWindow::onBackspaceClicked);
     connect(btnClear, &QPushButton::clicked, this, &MainHumoServiceMenuWindow::onClearClicked);
 
     // Connect digit buttons
@@ -59,12 +73,12 @@ MainHumoServiceMenuWindow::MainHumoServiceMenuWindow(HumoServiceBackend *aBacken
     digitGroup->addButton(btnDigit7, 7);
     digitGroup->addButton(btnDigit8, 8);
     digitGroup->addButton(btnDigit9, 9);
-    connect(digitGroup, &QButtonGroup::buttonClicked, this, &MainHumoServiceMenuWindow::onDigitClicked);
+    connect(
+        digitGroup, &QButtonGroup::buttonClicked, this, &MainHumoServiceMenuWindow::onDigitClicked);
 }
 
 //--------------------------------------------------------------------------
-bool MainHumoServiceMenuWindow::initialize()
-{
+bool MainHumoServiceMenuWindow::initialize() {
     // Get terminal info
     mBackend->getTerminalInfo(mTerminalInfo);
 
@@ -79,24 +93,22 @@ bool MainHumoServiceMenuWindow::initialize()
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::shutdown()
-{
+void MainHumoServiceMenuWindow::shutdown() {
     mIdleTimer.stop();
     mDateTimeTimer.stop();
 }
 
 //--------------------------------------------------------------------------
-WizardWindow *MainHumoServiceMenuWindow::getScreenByName(const QString &aScreenName)
-{
+WizardWindow *MainHumoServiceMenuWindow::getScreenByName(const QString &aScreenName) {
     // TODO: Implement screen retrieval
     return nullptr;
 }
 
 //--------------------------------------------------------------------------
-bool MainHumoServiceMenuWindow::closeHumoServiceMenu(bool aExitByNotify, const QString &aMessage, bool aStartIdle)
-{
-    if (!aExitByNotify && !aMessage.isEmpty())
-    {
+bool MainHumoServiceMenuWindow::closeHumoServiceMenu(bool aExitByNotify,
+                                                     const QString &aMessage,
+                                                     bool aStartIdle) {
+    if (!aExitByNotify && !aMessage.isEmpty()) {
         QMessageBox::information(this, tr("HumoService"), aMessage);
     }
 
@@ -105,122 +117,103 @@ bool MainHumoServiceMenuWindow::closeHumoServiceMenu(bool aExitByNotify, const Q
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onCurrentPageChanged(int aIndex)
-{
+void MainHumoServiceMenuWindow::onCurrentPageChanged(int aIndex) {
     mCurrentPageIndex = aIndex;
     applyAccessRights();
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onProceedLogin()
-{
+void MainHumoServiceMenuWindow::onProceedLogin() {
     QString password = lePassword->text();
-    if (mBackend->authorize(password))
-    {
+    if (mBackend->authorize(password)) {
         // Switch to main page
         twServiceScreens->setCurrentIndex(1);
         lePassword->clear();
-    }
-    else
-    {
+    } else {
         QMessageBox::warning(this, tr("Authorization Failed"), tr("Invalid password"));
     }
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onCancelAuthorization()
-{
+void MainHumoServiceMenuWindow::onCancelAuthorization() {
     lePassword->clear();
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onCloseHumoServiceMenu()
-{
+void MainHumoServiceMenuWindow::onCloseHumoServiceMenu() {
     closeHumoServiceMenu(false, QString(), true);
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onRebootApplication()
-{
-    if (QMessageBox::question(this, tr("Reboot Application"), tr("Are you sure you want to reboot the application?")) ==
-        QMessageBox::Yes)
-    {
+void MainHumoServiceMenuWindow::onRebootApplication() {
+    if (QMessageBox::question(this,
+                              tr("Reboot Application"),
+                              tr("Are you sure you want to reboot the application?")) ==
+        QMessageBox::Yes) {
         mBackend->sendEvent(SDK::PaymentProcessor::EEventType::Restart);
     }
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onStopApplication()
-{
-    if (QMessageBox::question(this, tr("Stop Application"), tr("Are you sure you want to stop the application?")) ==
-        QMessageBox::Yes)
-    {
+void MainHumoServiceMenuWindow::onStopApplication() {
+    if (QMessageBox::question(
+            this, tr("Stop Application"), tr("Are you sure you want to stop the application?")) ==
+        QMessageBox::Yes) {
         mBackend->sendEvent(SDK::PaymentProcessor::EEventType::CloseApplication);
     }
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onRebootTerminal()
-{
-    if (QMessageBox::question(this, tr("Reboot Terminal"), tr("Are you sure you want to reboot the terminal?")) ==
-        QMessageBox::Yes)
-    {
+void MainHumoServiceMenuWindow::onRebootTerminal() {
+    if (QMessageBox::question(
+            this, tr("Reboot Terminal"), tr("Are you sure you want to reboot the terminal?")) ==
+        QMessageBox::Yes) {
         mBackend->sendEvent(SDK::PaymentProcessor::EEventType::Reboot);
     }
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onToggleLock()
-{
+void MainHumoServiceMenuWindow::onToggleLock() {
     // TODO: Implement terminal lock/unlock
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onBackspaceClicked()
-{
+void MainHumoServiceMenuWindow::onBackspaceClicked() {
     QString text = lePassword->text();
-    if (!text.isEmpty())
-    {
+    if (!text.isEmpty()) {
         text.chop(1);
         lePassword->setText(text);
     }
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onClearClicked()
-{
+void MainHumoServiceMenuWindow::onClearClicked() {
     lePassword->clear();
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onDigitClicked(QAbstractButton *aButton)
-{
+void MainHumoServiceMenuWindow::onDigitClicked(QAbstractButton *aButton) {
     QPushButton *button = qobject_cast<QPushButton *>(aButton);
-    if (button)
-    {
+    if (button) {
         QString digit = button->text();
         lePassword->setText(lePassword->text() + digit);
     }
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onIdleTimeout()
-{
+void MainHumoServiceMenuWindow::onIdleTimeout() {
     closeHumoServiceMenu(false, tr("Session timeout"), true);
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onDateTimeRefresh()
-{
+void MainHumoServiceMenuWindow::onDateTimeRefresh() {
     // TODO: Update date/time display
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::applyConfiguration()
-{
+void MainHumoServiceMenuWindow::applyConfiguration() {
     // Clear existing tabs
-    while (twServiceScreens->count() > 1)
-    {
+    while (twServiceScreens->count() > 1) {
         twServiceScreens->removeTab(1);
     }
 
@@ -232,9 +225,9 @@ void MainHumoServiceMenuWindow::applyConfiguration()
     HumoServiceBackend::TAccessRights rights = mBackend->getAccessRights();
 
     // Setup tab
-    if (rights.contains(HumoServiceBackend::SetupHardware) || rights.contains(HumoServiceBackend::SetupNetwork) ||
-        rights.contains(HumoServiceBackend::SetupKeys) || !mBackend->hasAnyPassword())
-    {
+    if (rights.contains(HumoServiceBackend::SetupHardware) ||
+        rights.contains(HumoServiceBackend::SetupNetwork) ||
+        rights.contains(HumoServiceBackend::SetupKeys) || !mBackend->hasAnyPassword()) {
         SetupServiceWindow *setupWindow = new SetupServiceWindow(mBackend, this);
         setupWindow->initialize();
         twServiceScreens->addTab(setupWindow, tr("#setup"));
@@ -242,8 +235,7 @@ void MainHumoServiceMenuWindow::applyConfiguration()
     }
 
     // Diagnostics tab
-    if (rights.contains(HumoServiceBackend::Diagnostic) || !mBackend->hasAnyPassword())
-    {
+    if (rights.contains(HumoServiceBackend::Diagnostic) || !mBackend->hasAnyPassword()) {
         DiagnosticsServiceWindow *diagnosticsWindow = new DiagnosticsServiceWindow(mBackend, this);
         diagnosticsWindow->initialize();
         twServiceScreens->addTab(diagnosticsWindow, tr("#diagnostics"));
@@ -251,8 +243,7 @@ void MainHumoServiceMenuWindow::applyConfiguration()
     }
 
     // Payments tab
-    if (rights.contains(HumoServiceBackend::ViewPayments) || !mBackend->hasAnyPassword())
-    {
+    if (rights.contains(HumoServiceBackend::ViewPayments) || !mBackend->hasAnyPassword()) {
         PaymentServiceWindow *paymentWindow = new PaymentServiceWindow(mBackend, this);
         paymentWindow->initialize();
         twServiceScreens->addTab(paymentWindow, tr("#payments"));
@@ -260,8 +251,7 @@ void MainHumoServiceMenuWindow::applyConfiguration()
     }
 
     // Logs tab
-    if (rights.contains(HumoServiceBackend::ViewLogs) || !mBackend->hasAnyPassword())
-    {
+    if (rights.contains(HumoServiceBackend::ViewLogs) || !mBackend->hasAnyPassword()) {
         LogsServiceWindow *logsWindow = new LogsServiceWindow(mBackend, this);
         logsWindow->initialize();
         twServiceScreens->addTab(logsWindow, tr("#logs"));
@@ -269,8 +259,7 @@ void MainHumoServiceMenuWindow::applyConfiguration()
     }
 
     // Encashment tab
-    if (rights.contains(HumoServiceBackend::Encash) || !mBackend->hasAnyPassword())
-    {
+    if (rights.contains(HumoServiceBackend::Encash) || !mBackend->hasAnyPassword()) {
         EncashmentServiceWindow *encashmentWindow = new EncashmentServiceWindow(mBackend, this);
         encashmentWindow->initialize();
         twServiceScreens->addTab(encashmentWindow, tr("#encashment"));
@@ -278,32 +267,27 @@ void MainHumoServiceMenuWindow::applyConfiguration()
     }
 
     // Add external widgets from plugins
-    foreach (QWidget *widget, mBackend->getExternalWidgets())
-    {
+    foreach (QWidget *widget, mBackend->getExternalWidgets()) {
         twServiceScreens->addTab(widget, widget->property("widget_name").toString());
     }
 }
 
 //--------------------------------------------------------------------------
-bool MainHumoServiceMenuWindow::applyAccessRights()
-{
+bool MainHumoServiceMenuWindow::applyAccessRights() {
     // TODO: Apply access rights based on user permissions
     return true;
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::closeMenu(bool aStartIdle)
-{
+void MainHumoServiceMenuWindow::closeMenu(bool aStartIdle) {
     hide();
-    if (aStartIdle)
-    {
+    if (aStartIdle) {
         // TODO: Start idle scenario
     }
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::onAbstractButtonClicked()
-{
+void MainHumoServiceMenuWindow::onAbstractButtonClicked() {
     QAbstractButton *button = qobject_cast<QAbstractButton *>(sender());
     if (!button)
         return;
@@ -311,8 +295,7 @@ void MainHumoServiceMenuWindow::onAbstractButtonClicked()
     QString message(QString("Button clicked: %1").arg(button->text()));
 
     QCheckBox *checkBox = qobject_cast<QCheckBox *>(sender());
-    if (checkBox)
-    {
+    if (checkBox) {
         checkBox->isChecked() ? message += " (checked)" : message += " (unchecked)";
     }
 
@@ -323,8 +306,7 @@ void MainHumoServiceMenuWindow::onAbstractButtonClicked()
 }
 
 //--------------------------------------------------------------------------
-void MainHumoServiceMenuWindow::connectAllAbstractButtons(QWidget *aParentWidget)
-{
+void MainHumoServiceMenuWindow::connectAllAbstractButtons(QWidget *aParentWidget) {
     // TODO: Connect abstract buttons
 }
 

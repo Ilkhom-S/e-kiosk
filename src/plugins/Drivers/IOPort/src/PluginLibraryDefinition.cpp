@@ -2,14 +2,11 @@
 
 // Plugin SDK
 
-// SDK
-#include <SDK/Plugins/PluginFactory.h>
-
-// Project
 #include "PluginLibraryDefinition.h"
 
-IOPortsPluginFactory::IOPortsPluginFactory()
-{
+#include <SDK/Plugins/PluginFactory.h>
+
+IOPortsPluginFactory::IOPortsPluginFactory() {
     mName = "IO ports";
     mDescription = "IO ports driver library (serial, parallel and other).";
     mAuthor = "Humo";

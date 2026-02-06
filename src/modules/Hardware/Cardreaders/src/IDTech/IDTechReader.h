@@ -6,23 +6,20 @@
 #include "libIDT_Device.h"
 #pragma warning(pop)
 
-// Modules
 #include "Hardware/Common/PollingDeviceBase.h"
 #include "Hardware/HID/ProtoHID.h"
 
-namespace CIDTechReader
-{
-    // Имя dll SDK.
-    const char DLLSDKName[] = "libIDTechSDK.dll.1.0.16";
+namespace CIDTechReader {
+// Имя dll SDK.
+const char DLLSDKName[] = "libIDTechSDK.dll.1.0.16";
 } // namespace CIDTechReader
 
 //------------------------------------------------------------------------------
-class IDTechReader : public PollingDeviceBase<ProtoHID>
-{
+class IDTechReader : public PollingDeviceBase<ProtoHID> {
     SET_INTERACTION_TYPE(External)
     SET_SERIES("IDTech")
 
-  public:
+public:
     IDTechReader();
     virtual ~IDTechReader();
 
@@ -40,7 +37,7 @@ class IDTechReader : public PollingDeviceBase<ProtoHID>
     /// Получить результат чтения и данные MSR-карты.
     void getMSRCardData(int aType, IDTMSRData *aCardData1);
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
@@ -49,10 +46,12 @@ class IDTechReader : public PollingDeviceBase<ProtoHID>
 
     /// Проверить наличие и функциональность библиотеки - получить её версию.
     template <class T>
-    bool checkLibrary(const char *aName, const char *aFunctionName, std::function<QString(T)> aFunction);
+    bool
+    checkLibrary(const char *aName, const char *aFunctionName, std::function<QString(T)> aFunction);
 
     /// Зарегистрировать callback.
-    template <class T> bool registerCallback(HMODULE aHandle, const char *aFunctionName, T aFunction);
+    template <class T>
+    bool registerCallback(HMODULE aHandle, const char *aFunctionName, T aFunction);
 
     /// Установить callback.
     template <class T> bool setCallback(HMODULE aHandle, const char *aFunctionName, T aFunction);
@@ -66,7 +65,7 @@ class IDTechReader : public PollingDeviceBase<ProtoHID>
     /// Id устройства.
     int mId;
 
-  private:
+private:
     /// Статический экземпляр класса.
     static IDTechReader *mInstance;
 

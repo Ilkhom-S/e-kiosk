@@ -2,13 +2,11 @@
 
 #pragma once
 
-// Project headers
 #include "Common/ConnectionBase.h"
 
 //--------------------------------------------------------------------------------
-class LocalConnection : public ConnectionBase
-{
-  public:
+class LocalConnection : public ConnectionBase {
+public:
     /// Конструктор.
     LocalConnection(const QString &aName, NetworkTaskManager *aNetwork, ILog *aLog);
 
@@ -18,7 +16,7 @@ class LocalConnection : public ConnectionBase
     /// Возвращает тип соединения.
     virtual EConnectionTypes::Enum getType() const;
 
-  private:
+private:
     /// Устанавливает соединение используя IP Helper API.
     virtual void doConnect() throw(...);
 

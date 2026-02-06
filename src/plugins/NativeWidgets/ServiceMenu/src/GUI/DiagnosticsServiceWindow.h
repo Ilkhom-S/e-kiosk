@@ -2,27 +2,23 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QTimer>
 #include <QtCore/QFutureWatcher>
-#include "ui_DiagnosticsServiceWindow.h"
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QTimer>
 
-// SDK
 #include <SDK/Drivers/WarningLevel.h>
 
-// Проект
 #include "IServiceWindow.h"
+#include "ui_DiagnosticsServiceWindow.h"
 
 class DeviceStatusWindow;
 
 //------------------------------------------------------------------------
-class DiagnosticsServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::DiagnosticsServiceWindow
-{
+class DiagnosticsServiceWindow : public QFrame,
+                                 public ServiceWindowBase,
+                                 protected Ui::DiagnosticsServiceWindow {
     Q_OBJECT
 
-  public:
+public:
     DiagnosticsServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
     virtual bool initialize();
@@ -30,20 +26,22 @@ class DiagnosticsServiceWindow : public QFrame, public ServiceWindowBase, protec
     virtual bool activate();
     virtual bool deactivate();
 
-  private:
+private:
     void updateInfoPanel();
     void resetParameter(const QString &aParameterName);
 
-  private slots:
+private slots:
     void onClickedEncashmentInfo();
-    void onDeviceStatusChanged(const QString &aConfigurationName, const QString &aNewStatus,
-                               const QString &aStatusColor, SDK::Driver::EWarningLevel::Enum aLevel);
+    void onDeviceStatusChanged(const QString &aConfigurationName,
+                               const QString &aNewStatus,
+                               const QString &aStatusColor,
+                               SDK::Driver::EWarningLevel::Enum aLevel);
     void onClickedTestServer();
     void onTestServerFinished();
     void onClickedResetReject();
     void onClickedResetReceipts();
 
-  private:
+private:
     QSpacerItem *mSpacerItem;
     typedef QMap<QString, DeviceStatusWindow *> TDeviceStatusWidget;
     TDeviceStatusWidget mDeviceStatusWidget;

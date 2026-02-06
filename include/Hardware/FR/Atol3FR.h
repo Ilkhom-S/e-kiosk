@@ -6,9 +6,8 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола KKM.
-class Atol3FRProtocol : public ProtocolBase
-{
-  public:
+class Atol3FRProtocol : public ProtocolBase {
+public:
     Atol3FRProtocol();
 
     /// Выполнить команду протокола.
@@ -26,9 +25,10 @@ class Atol3FRProtocol : public ProtocolBase
     /// Отмена всех заданий и очистка буфера.
     TResult cancel();
 
-  private:
+private:
     /// Выполнить задание.
-    TResult execCommand(char aCommand, const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout);
+    TResult
+    execCommand(char aCommand, const QByteArray &aCommandData, QByteArray &aAnswer, int aTimeout);
 
     /// Подсчет CRC.
     char calcCRC(const QByteArray &aData);

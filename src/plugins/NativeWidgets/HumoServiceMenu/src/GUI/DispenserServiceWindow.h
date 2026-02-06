@@ -2,29 +2,25 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QFutureWatcher>
-#include "ui_DispenserServiceWindow.h"
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Core/ICashDispenserManager.h>
 
-// Проект
 #include "IServiceWindow.h"
+#include "ui_DispenserServiceWindow.h"
 
 namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------
-class DispenserServiceWindow : public QFrame, public ServiceWindowBase, protected Ui::DispenserServiceWindow
-{
+class DispenserServiceWindow : public QFrame,
+                               public ServiceWindowBase,
+                               protected Ui::DispenserServiceWindow {
     Q_OBJECT
 
-  public:
+public:
     DispenserServiceWindow(HumoServiceBackend *aBackend, QWidget *aParent = 0);
 
-  public:
+public:
     virtual bool initialize();
     virtual bool shutdown();
     virtual bool activate();

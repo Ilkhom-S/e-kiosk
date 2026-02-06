@@ -1,33 +1,25 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QMap>
 #include <QtCore/QThread>
-#include <Common/QtHeadersEnd.h>
 
-class CopyFileQs : public QThread
-{
+class CopyFileQs : public QThread {
     Q_OBJECT
 
-  public:
-    CopyFileQs()
-    {
-    }
+public:
+    CopyFileQs() {}
 
     bool debugger = false;
     QString senderName = "UPDATER";
     QMap<int, QMap<QString, QString>> copyXmlMap;
     QStringList allFilesList;
 
-    void startToCopy()
-    {
-        try
-        {
+    void startToCopy() {
+        try {
             QString startDir = "tmp";
             allFilesList.clear();
             allFilesList = getDirFiles(startDir);
@@ -36,8 +28,8 @@ class CopyFileQs : public QThread
             QVariantMap filesUpdated;
             int idx = 0;
 
-            for (QStringList::Iterator iter = allFilesList.begin(); iter != allFilesList.end(); ++iter)
-            {
+            for (QStringList::Iterator iter = allFilesList.begin(); iter != allFilesList.end();
+                 ++iter) {
 
                 QString vrmPath = *iter;
                 int compex = vrmPath.indexOf("assets/");
@@ -48,38 +40,36 @@ class CopyFileQs : public QThread
                 QString fileNameIn = infoIn.fileName();
 
                 // Проверяем есть ли файлы команд
-                if (fileNameIn == "Services.xml" || fileNameIn == "Groups.xml" || fileNameIn == "style.qss")
-                {
+                if (fileNameIn == "Services.xml" || fileNameIn == "Groups.xml" ||
+                    fileNameIn == "style.qss") {
                     filesUpdated[fileNameIn] = true;
                 }
 
-                if (fileNameIn == "EKiosk.exe")
-                {
+                if (fileNameIn == "EKiosk.exe") {
                     continue;
                 }
 
-                if (fileNameIn == "h-sheller.exe")
-                {
-                    if (fileCopy.exists(QDir::currentPath() + "/h-sheller.exe"))
-                    {
+                if (fileNameIn == "h-sheller.exe") {
+                    if (fileCopy.exists(QDir::currentPath() + "/h-sheller.exe")) {
                         fileCopy.remove(QDir::currentPath() + "/h-sheller.exe");
                     }
 
-                    if (fileCopy.copy("tmp/h-sheller.exe", QDir::currentPath() + "/h-sheller.exe"))
-                    {
+                    if (fileCopy.copy("tmp/h-sheller.exe",
+                                      QDir::currentPath() + "/h-sheller.exe")) {
                         if (debugger)
                             qDebug() << "--- COPY FILE OK --- sheler";
-                        emit emit_Loging(
-                            0, senderName,
-                            QString("Файл %1 успешно перемещен в директорию root...").arg(infoIn.fileName()));
-                    }
-                    else
-                    {
+                        emit emit_Loging(0,
+                                         senderName,
+                                         QString("Файл %1 успешно перемещен в директорию root...")
+                                             .arg(infoIn.fileName()));
+                    } else {
                         if (debugger)
                             qDebug() << "--- COPY FILE ERROR ---sheler";
                         emit emit_Loging(
-                            1, senderName,
-                            QString("Файл %1 не удалось переместить в директорию root...").arg(infoIn.fileName()));
+                            1,
+                            senderName,
+                            QString("Файл %1 не удалось переместить в директорию root...")
+                                .arg(infoIn.fileName()));
                     }
                     continue;
                 }
@@ -87,13 +77,10 @@ class CopyFileQs : public QThread
                 copyXmlMap[idx]["pathFrom"] = "tmp/" + fileFrom;
                 copyXmlMap[idx]["pathTo"] = fileFrom;
 
-                if (fileCopy.exists(copyXmlMap[idx]["pathFrom"]))
-                {
+                if (fileCopy.exists(copyXmlMap[idx]["pathFrom"])) {
                     if (debugger)
                         qDebug() << "PRESENT";
-                }
-                else
-                {
+                } else {
                     if (debugger)
                         qDebug() << "NOT PRESENT";
                 }
@@ -101,37 +88,33 @@ class CopyFileQs : public QThread
                 if (debugger)
                     qDebug() << "--- FILE-PATH TO --- " << copyXmlMap[idx]["pathTo"];
 
-                if (fileCopy.exists(copyXmlMap[idx]["pathTo"]))
-                {
+                if (fileCopy.exists(copyXmlMap[idx]["pathTo"])) {
                     if (debugger)
                         qDebug() << "PRESENT";
-                }
-                else
-                {
+                } else {
                     if (debugger)
                         qDebug() << "NOT PRESENT";
                 }
 
-                if (fileCopy.exists(copyXmlMap[idx]["pathTo"]))
-                {
+                if (fileCopy.exists(copyXmlMap[idx]["pathTo"])) {
                     fileCopy.remove(copyXmlMap[idx]["pathTo"]);
                 }
 
-                if (fileCopy.copy(copyXmlMap[idx]["pathFrom"], copyXmlMap[idx]["pathTo"]))
-                {
+                if (fileCopy.copy(copyXmlMap[idx]["pathFrom"], copyXmlMap[idx]["pathTo"])) {
                     if (debugger)
                         qDebug() << "--- COPY FILE OK --- " << infoIn.fileName();
-                    emit emit_Loging(
-                        0, senderName,
-                        QString("Файл %1 успешно перемещен в директорию assets...").arg(infoIn.fileName()));
-                }
-                else
-                {
+                    emit emit_Loging(0,
+                                     senderName,
+                                     QString("Файл %1 успешно перемещен в директорию assets...")
+                                         .arg(infoIn.fileName()));
+                } else {
                     if (debugger)
                         qDebug() << "--- COPY FILE ERROR --- " << infoIn.fileName();
                     emit emit_Loging(
-                        1, senderName,
-                        QString("Файл %1 не удалось переместить в директорию assets...").arg(infoIn.fileName()));
+                        1,
+                        senderName,
+                        QString("Файл %1 не удалось переместить в директорию assets...")
+                            .arg(infoIn.fileName()));
                 }
 
                 idx++;
@@ -139,21 +122,17 @@ class CopyFileQs : public QThread
 
             emit emit_FilesUpdated(filesUpdated);
             return;
-        }
-        catch (std::exception &e)
-        {
+        } catch (std::exception &e) {
             if (debugger)
                 qDebug() << "Error recucrciyo " << QString(e.what());
             return;
         }
     }
 
-    QStringList getDirFiles(const QString &dirName)
-    {
+    QStringList getDirFiles(const QString &dirName) {
         QDir dir(dirName);
         // Проверяем есть ли папка вообще
-        if (!dir.exists())
-        {
+        if (!dir.exists()) {
             if (debugger)
                 qDebug() << "No such directory : " << dir.dirName();
             return QStringList();
@@ -165,8 +144,7 @@ class CopyFileQs : public QThread
         QStringList fileList = dir.entryList(QDir::Files);
 
         // Пробегаемся по файлам
-        for (QStringList::Iterator fit = fileList.begin(); fit != fileList.end(); ++fit)
-        {
+        for (QStringList::Iterator fit = fileList.begin(); fit != fileList.end(); ++fit) {
             fileNames.append(dir.absolutePath() + "/" + *fit);
         }
 
@@ -178,8 +156,7 @@ class CopyFileQs : public QThread
         dirList.removeAll("..");
 
         // Пробегаемся по каталогам
-        for (QStringList::Iterator dit = dirList.begin(); dit != dirList.end(); ++dit)
-        {
+        for (QStringList::Iterator dit = dirList.begin(); dit != dirList.end(); ++dit) {
             // Обявляем новый каталог от текущего
             QDir curDir = dir;
 
@@ -187,8 +164,7 @@ class CopyFileQs : public QThread
             curDir.cd(*dit);
             QStringList curList = getDirFiles(curDir.absolutePath());
 
-            for (QStringList::Iterator it = curList.begin(); it != curList.end(); ++it)
-            {
+            for (QStringList::Iterator it = curList.begin(); it != curList.end(); ++it) {
                 fileNames.append(QFileInfo(*it).absoluteFilePath());
             }
         }
@@ -196,21 +172,17 @@ class CopyFileQs : public QThread
         return fileNames;
     }
 
-    static void msleep(int ms)
-    {
-        QThread::msleep(ms);
-    }
+    static void msleep(int ms) { QThread::msleep(ms); }
 
-  protected:
-    void run()
-    {
+protected:
+    void run() {
         startToCopy();
         msleep(1000);
         emit copyComplite();
         return;
     }
 
-  signals:
+signals:
     void emit_FilesUpdated(QVariantMap data);
     void copyComplite();
     void emit_Loging(int sts, QString name, QString content);

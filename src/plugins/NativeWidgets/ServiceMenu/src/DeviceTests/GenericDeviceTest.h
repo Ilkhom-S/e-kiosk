@@ -2,30 +2,24 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFutureWatcher>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <Common/ObjectPointer.h>
+
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK
-{
-    namespace Driver
-    {
-        class IDevice;
-    } // namespace Driver
+namespace SDK {
+namespace Driver {
+class IDevice;
+} // namespace Driver
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class GenericDeviceTest : public SDK::PaymentProcessor::IDeviceTest
-{
+class GenericDeviceTest : public SDK::PaymentProcessor::IDeviceTest {
     Q_OBJECT
 
-  public:
+public:
     GenericDeviceTest(SDK::Driver::IDevice *aDevice);
     virtual ~GenericDeviceTest();
 
@@ -40,10 +34,10 @@ class GenericDeviceTest : public SDK::PaymentProcessor::IDeviceTest
 
     virtual bool hasResult();
 
-  private slots:
+private slots:
     void onTestFinished();
 
-  private:
+private:
     QFutureWatcher<void> mResult;
     ObjectPointer<SDK::Driver::IDevice> mDevice;
 

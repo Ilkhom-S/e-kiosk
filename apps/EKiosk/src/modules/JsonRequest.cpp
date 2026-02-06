@@ -1,26 +1,26 @@
-// Project
 #include "JsonRequest.h"
+
 #include "qjsonarray.h"
 
-JsonRequest::JsonRequest(QObject *parent) : QObject(parent)
-{
+JsonRequest::JsonRequest(QObject *parent) : QObject(parent) {
     mgr = new QNetworkAccessManager(this);
 }
 
-void JsonRequest::setAuthData(const QString token, const QString uuid)
-{
+void JsonRequest::setAuthData(const QString token, const QString uuid) {
     this->token = token;
     this->uuid = uuid;
 }
 
-void JsonRequest::setBaseUrl(QString url)
-{
+void JsonRequest::setBaseUrl(QString url) {
     baseUrl = url.replace("aso/api/", "").replace("aso/v3/", "") /*.replace("https", "http")*/;
 }
 
-void JsonRequest::sendRequest(QJsonObject json, QString url_, QString requestName, int method_, const int timeout,
-                              QVariantMap header)
-{
+void JsonRequest::sendRequest(QJsonObject json,
+                              QString url_,
+                              QString requestName,
+                              int method_,
+                              const int timeout,
+                              QVariantMap header) {
     QUrl url = QUrl(baseUrl + url_);
     qDebug() << url;
 
@@ -29,13 +29,11 @@ void JsonRequest::sendRequest(QJsonObject json, QString url_, QString requestNam
 
     QNetworkRequest request(url);
 
-    if (!token.isEmpty())
-    {
+    if (!token.isEmpty()) {
         request.setRawHeader("Authorization", token.toUtf8());
     }
 
-    if (!header.value("token").toString().isEmpty())
-    {
+    if (!header.value("token").toString().isEmpty()) {
         auto t = "Bearer " + header.value("token").toString();
         request.setRawHeader("token", t.toUtf8());
     }
@@ -44,14 +42,11 @@ void JsonRequest::sendRequest(QJsonObject json, QString url_, QString requestNam
 
     QNetworkReply *reply;
 
-    if (method_ == Method::GET)
-    {
+    if (method_ == Method::GET) {
         request.setRawHeader("Content-Type", "application/x-www-form-urlencoded");
 
         reply = mgr->get(request);
-    }
-    else
-    {
+    } else {
         request.setRawHeader("Content-Type", "application/json");
 
         reply = mgr->post(request, jsonData);
@@ -66,8 +61,7 @@ void JsonRequest::sendRequest(QJsonObject json, QString url_, QString requestNam
     timer.start(timeout * 1000);
     loop.exec();
 
-    if (timer.isActive())
-    {
+    if (timer.isActive()) {
         timer.stop();
 
         QJsonParseError e;
@@ -76,8 +70,7 @@ void JsonRequest::sendRequest(QJsonObject json, QString url_, QString requestNam
         //        int code =
         //        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (reply->error() == QNetworkReply::NoError)
-        {
+        if (reply->error() == QNetworkReply::NoError) {
             QString resp = reply->readAll();
 
             //            qDebug() << "readAll" << resp.toUtf8();
@@ -85,28 +78,20 @@ void JsonRequest::sendRequest(QJsonObject json, QString url_, QString requestNam
             // Success
             doc = QJsonDocument::fromJson(resp.toUtf8(), &e);
 
-            if (!doc.isNull() && e.error == QJsonParseError::NoError)
-            {
+            if (!doc.isNull() && e.error == QJsonParseError::NoError) {
                 QVariantMap data;
 
-                if (doc.isArray())
-                {
+                if (doc.isArray()) {
                     data["data"] = doc.array().toVariantList();
-                }
-                else
-                {
+                } else {
                     data = doc.object().toVariantMap();
                 }
 
                 emit emitResponseSuccess(data, requestName);
-            }
-            else
-            {
+            } else {
                 emit emitResponseError(e.errorString(), requestName);
             }
-        }
-        else
-        {
+        } else {
             // handle error
             QString resp = reply->readAll();
 
@@ -122,9 +107,7 @@ void JsonRequest::sendRequest(QJsonObject json, QString url_, QString requestNam
         }
 
         //        qDebug() << "code " << code;
-    }
-    else
-    {
+    } else {
         disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
         reply->abort();
 

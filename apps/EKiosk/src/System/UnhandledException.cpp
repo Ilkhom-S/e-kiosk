@@ -1,14 +1,9 @@
 /* @file Обработчик исключений, которые не ловятся связкой try ... catch. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QtGlobal>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/ILog.h>
 
-// System
 #include <DebugUtils/DebugUtils.h>
 
 #ifdef Q_OS_WIN
@@ -17,13 +12,13 @@
 
 //---------------------------------------------------------------------------
 // Обработчик для Windows-реализации
-LONG WINAPI MyUnhandledExceptionFilter(_EXCEPTION_POINTERS *aExceptionInfo)
-{
+LONG WINAPI MyUnhandledExceptionFilter(_EXCEPTION_POINTERS *aExceptionInfo) {
     QStringList stack;
     DumpCallstack(stack, aExceptionInfo->ContextRecord);
 
     ILog::getInstance("Exceptions")
-        ->write(LogLevel::Fatal, QString("Unhandled exception caught. Callstack:\n%1").arg(stack.join("\n")));
+        ->write(LogLevel::Fatal,
+                QString("Unhandled exception caught. Callstack:\n%1").arg(stack.join("\n")));
 
     abort();
 
@@ -31,13 +26,13 @@ LONG WINAPI MyUnhandledExceptionFilter(_EXCEPTION_POINTERS *aExceptionInfo)
 }
 
 //---------------------------------------------------------------------------
-void PurecallHandler(void)
-{
+void PurecallHandler(void) {
     QStringList stack;
     DumpCallstack(stack, nullptr);
 
     ILog::getInstance("Exceptions")
-        ->write(LogLevel::Fatal, QString("Pure virtual call. Callstack:\n%1").arg(stack.join("\n")));
+        ->write(LogLevel::Fatal,
+                QString("Pure virtual call. Callstack:\n%1").arg(stack.join("\n")));
 
     throw std::exception("Pure virtual call");
 }
@@ -48,8 +43,7 @@ void PurecallHandler(void)
 
 //---------------------------------------------------------------------------
 // Инициализация фильтра необработанных исключений
-void CatchUnhandledExceptions()
-{
+void CatchUnhandledExceptions() {
 #ifdef Q_OS_WIN32
     SetUnhandledExceptionsHandler(MyUnhandledExceptionFilter);
 #endif

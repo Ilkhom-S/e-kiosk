@@ -2,38 +2,32 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QTimer>
+
 #include "ui_MainHumoServiceMenuWindow.h"
-#include <Common/QtHeadersEnd.h>
 
 class WizardWindow;
 class IServiceWindow;
 class HumoServiceBackend;
 
 //------------------------------------------------------------------------
-class MainHumoServiceMenuWindow : public QWidget, public Ui::MainHumoServiceMenuWindow
-{
+class MainHumoServiceMenuWindow : public QWidget, public Ui::MainHumoServiceMenuWindow {
     Q_OBJECT
 
-  public:
+public:
     MainHumoServiceMenuWindow(HumoServiceBackend *aBackend, QWidget *aParent = 0);
 
     bool initialize();
     void shutdown();
 
-    QWidget *getMainWidget()
-    {
-        return wPasswordPage;
-    }
+    QWidget *getMainWidget() { return wPasswordPage; }
 
     WizardWindow *getScreenByName(const QString &aScreenName);
 
     // Выход из HumoService меню
     bool closeHumoServiceMenu(bool aExitByNotify, const QString &aMessage, bool aStartIdle = false);
 
-  private slots:
+private slots:
     // Активация/деактивация вкладок
     void onCurrentPageChanged(int aIndex);
 
@@ -67,14 +61,14 @@ class MainHumoServiceMenuWindow : public QWidget, public Ui::MainHumoServiceMenu
 
     void onAbstractButtonClicked();
 
-  private:
+private:
     void applyConfiguration();
     bool applyAccessRights();
     void closeMenu(bool aStartIdle = false);
 
     void connectAllAbstractButtons(QWidget *aParentWidget);
 
-  private:
+private:
     int mCurrentPageIndex;
     QTimer mIdleTimer;
     QTimer mDateTimeTimer;

@@ -6,13 +6,12 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола KKM.
-class LDogWDProtocol : public ProtocolBase
-{
-  public:
+class LDogWDProtocol : public ProtocolBase {
+public:
     /// Выполнить команду протокола.
     TResult processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedData);
 
-  private:
+private:
     /// Подсчет контрольной суммы пакета данных.
     uchar calcCRC(const QByteArray &aData);
 

@@ -16,13 +16,12 @@
 #include "Hardware/IOPorts/LibUSBPort.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class LibUSBDeviceBase : public T
-{
+template <class T> class LibUSBDeviceBase : public T {
     // Макрос должен быть совместим с иерархией шаблонов.
     // Если он использует мета-данные, класс должен быть известен moc-компилятору.
     SET_INTERACTION_TYPE(LibUSB)
 
-  public:
+public:
     LibUSBDeviceBase();
     virtual ~LibUSBDeviceBase();
 
@@ -30,10 +29,12 @@ template <class T> class LibUSBDeviceBase : public T
     /// Подключает и инициализует устройство. Обертка для вызова функционала в рабочем потоке.
     virtual void initialize() override;
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release() override;
 
-    /// Переформировывает список параметров для автопоиска и устанавливает 1-й набор параметров из этого списка.
+    /// Переформировывает список параметров для автопоиска и устанавливает 1-й набор параметров из
+    /// этого списка.
     virtual SDK::Driver::IDevice::IDetectingIterator *getDetectingIterator() override;
 #pragma endregion
 
@@ -45,7 +46,7 @@ template <class T> class LibUSBDeviceBase : public T
     virtual bool find() override;
 #pragma endregion
 
-  protected:
+protected:
     /// Проверка возможности выполнения функционала, предполагающего связь с устройством.
     virtual bool checkConnectionAbility() override;
 

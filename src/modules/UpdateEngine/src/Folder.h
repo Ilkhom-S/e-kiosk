@@ -2,22 +2,22 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QIODevice>
 #include <QtCore/QList>
 #include <QtCore/QPair>
-#include <Common/QtHeadersEnd.h>
 
 #include "Component.h"
 
 //---------------------------------------------------------------------------
 /// Компонент для загрузки - индексный файл.
-class Folder : public Component
-{
+class Folder : public Component {
     Q_OBJECT
 
-  public:
-    Folder(const QString &aName, const QString &aVersion, const TFileList &aFiles, const QStringList &aPostActions,
+public:
+    Folder(const QString &aName,
+           const QString &aVersion,
+           const TFileList &aFiles,
+           const QStringList &aPostActions,
            const QString &aURL);
 
     /// Выполнить действие.

@@ -2,35 +2,30 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QString>
+#include <QtCore/QDir>
 #include <QtCore/QSettings>
 #include <QtCore/QSharedPointer>
-#include <QtCore/QDir>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QString>
 
 #include <Common/ILogable.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Core/IRemoteService.h>
 
 //------------------------------------------------------------------------
-namespace CReportBuilder
-{
-    const QString LogName = "ReportBuilder";
+namespace CReportBuilder {
+const QString LogName = "ReportBuilder";
 } // namespace CReportBuilder
 
 //------------------------------------------------------------------------
-class ReportBuilder : public QObject, protected ILogable
-{
+class ReportBuilder : public QObject, protected ILogable {
     Q_OBJECT
 
-  public:
+public:
     ReportBuilder(QString aWorkDirectory = "");
 
     /// Создаёт или открывает уже созданный отчёт для команды обновления aCommand.
-    void open(const QString &aCommand, const QString &aUrl = QString(), const QString &aMd5 = QString());
+    void
+    open(const QString &aCommand, const QString &aUrl = QString(), const QString &aMd5 = QString());
 
     /// Закрыть отчёт
     void close();
@@ -41,14 +36,14 @@ class ReportBuilder : public QObject, protected ILogable
     /// Устанавливает команде описание статуса aStatusMessage.
     void setStatusDescription(const QString &aStatusMessage);
 
-  public slots:
+public slots:
     /// Устанавливает прогресс выполнения команды.
     void setProgress(int aProgress);
 
-  private:
+private:
     void updateTimestamp();
 
-  private:
+private:
     QString mWorkDirectory;
     QSharedPointer<QSettings> mReport;
 };

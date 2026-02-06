@@ -1,12 +1,12 @@
 /* @file Реализация запроса статуса для пинового платежа. */
 
-// Project
-#include "Payment.h"
 #include "PaymentStatusRequest.h"
 
+#include "Payment.h"
+
 //---------------------------------------------------------------------------
-PaymentStatusRequest::PaymentStatusRequest(Payment *aPayment) : PaymentRequest(aPayment, CPayment::Requests::Status)
-{
+PaymentStatusRequest::PaymentStatusRequest(Payment *aPayment)
+    : PaymentRequest(aPayment, CPayment::Requests::Status) {
     clear();
 
     addParameter("SD", aPayment->getKeySettings().sd);

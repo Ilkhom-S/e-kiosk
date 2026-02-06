@@ -1,12 +1,10 @@
 /* @file Инстанцирование PrinterBase. */
 
-// System
+#include "PrinterBase.h"
+
 #include "Hardware/Common/PortPollingDeviceBase.h"
 #include "Hardware/Common/ProtoDevices.h"
 #include "Hardware/Common/SerialDeviceBase.h"
-
-// Project
-#include "PrinterBase.h"
 
 using namespace SDK::Driver;
 

@@ -2,12 +2,8 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <Common/ILogable.h>
 
 // Plugin SDK
@@ -16,15 +12,14 @@
 
 //------------------------------------------------------------------------------
 /// Пример реализации плагина с функциональностью "Hello World".
-class Plugin : public QObject, public SDK::Plugin::IPlugin, public ILogable
-{
+class Plugin : public QObject, public SDK::Plugin::IPlugin, public ILogable {
     Q_OBJECT
 
-  public:
+public:
     Plugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
     ~Plugin();
 
-  public:
+public:
 #pragma region SDK::Plugin::IPlugin interface
 
     /// IPlugin: Возвращает название плагина.
@@ -39,7 +34,8 @@ class Plugin : public QObject, public SDK::Plugin::IPlugin, public ILogable
     /// IPlugin: Настраивает плагин.
     virtual void setConfiguration(const QVariantMap &aConfiguration) override;
 
-    /// IPlugin: Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
+    /// IPlugin: Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище
+    /// прикладной программы).
     virtual bool saveConfiguration() override;
 
     /// Проверяет успешно ли инициализировался плагин при создании.
@@ -50,7 +46,7 @@ class Plugin : public QObject, public SDK::Plugin::IPlugin, public ILogable
     /// Пример функциональности плагина - возвращает приветственное сообщение.
     QString getHelloMessage() const;
 
-  private:
+private:
     SDK::Plugin::IEnvironment *mEnvironment;
     QString mInstancePath;
     QVariantMap mParameters;

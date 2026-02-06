@@ -1,18 +1,16 @@
 /* @file Класс для перехвата сообщений javascript */
 
-// SDK
-#include <SDK/PaymentProcessor/Core/IGUIService.h>
-
-// Project
 #include "WebPageLogger.h"
 
-void WebPageLogger::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
-{
+#include <SDK/PaymentProcessor/Core/IGUIService.h>
+
+void WebPageLogger::javaScriptConsoleMessage(const QString &message,
+                                             int lineNumber,
+                                             const QString &sourceID) {
     LOG(mLog, LogLevel::Normal, QString("%1, [%2]: %3").arg(sourceID).arg(lineNumber).arg(message));
 }
 
-void WebPageLogger::javaScriptAlert(QWebFrame *frame, const QString &msg)
-{
+void WebPageLogger::javaScriptAlert(QWebFrame *frame, const QString &msg) {
     Q_UNUSED(frame);
     QVariantMap popupParameters;
     popupParameters.insert("type", "popup");

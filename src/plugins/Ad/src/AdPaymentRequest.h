@@ -2,12 +2,8 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Humo/Request.h>
 
 using namespace SDK::PaymentProcessor::Humo;
@@ -15,9 +11,8 @@ using namespace SDK::PaymentProcessor::Humo;
 class AdPayment;
 
 //---------------------------------------------------------------------------
-class AdPaymentRequest : public Request
-{
-  public:
+class AdPaymentRequest : public Request {
+public:
     //---------------------------------------------------------------------------
     // Конструктор запроса оплаты
     AdPaymentRequest(AdPayment *aPayment, const QString &aName);
@@ -42,14 +37,14 @@ class AdPaymentRequest : public Request
 
 #pragma endregion
 
-  protected:
+protected:
     /// Платёж, ассоциированный с запросом.
     AdPayment *mPayment;
 
     /// Название запроса.
     QString mName;
 
-  private:
+private:
     /// Список полей, которые нельзя логировать.
     QStringList mCryptedFields;
 };

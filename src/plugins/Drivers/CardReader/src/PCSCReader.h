@@ -10,23 +10,17 @@
 #pragma comment(lib, "Winscard.lib")
 #endif
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
-#include <QtCore/QStringList>
 #include <QtCore/QSet>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QStringList>
 
-// Common
 #include <Common/ILogable.h>
 
-// Modules
 #include "Hardware/Common/BaseStatusTypes.h"
 
 //--------------------------------------------------------------------------------
-class PCSCReader : public QObject, public ILogable
-{
-  public:
+class PCSCReader : public QObject, public ILogable {
+public:
     PCSCReader();
     ~PCSCReader();
 
@@ -51,7 +45,7 @@ class PCSCReader : public QObject, public ILogable
     /// Получить последние статус-коды
     TStatusCodes getStatusCodes();
 
-  private:
+private:
     /// Обработка результата выполнения функции работы с ридером/картой/SAM-модулем
     bool handleResult(const QString &aFunctionName, HRESULT aResultCode);
 

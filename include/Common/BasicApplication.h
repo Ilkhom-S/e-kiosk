@@ -5,10 +5,6 @@
 #include <type_traits>
 
 //--------------------------------------------------------------------------------
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <singleapplication.h>
-#include <Common/ILog.h>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QProcess>
@@ -18,7 +14,10 @@
 #include <QtCore/QStringList>
 #include <QtCore/QTranslator>
 #include <QtWidgets/QApplication>
-#include <Common/QtHeadersEnd.h>
+
+#include <Common/ILog.h>
+
+#include <singleapplication.h>
 
 class ILog;              // forward declaration for logging interface (project-specific)
 class SingleApplication; // forward declaration
@@ -26,13 +25,14 @@ class SingleApplication; // forward declaration
 //--------------------------------------------------------------------------------
 /// Класс абстрактного приложения. Реализует полезные функции (загрузка
 /// конфигурации).
-class BasicApplication
-{
-  public:
+class BasicApplication {
+public:
     /// Конструктор инициализирует имя и версию приложения и принимает
     /// аргументы командной строки (для распознавания `test` режимов и пр.)
-    explicit BasicApplication(const QString &aName = QString(), const QString &aVersion = QString(),
-                              int aArgumentCount = 0, char **aArguments = nullptr);
+    explicit BasicApplication(const QString &aName = QString(),
+                              const QString &aVersion = QString(),
+                              int aArgumentCount = 0,
+                              char **aArguments = nullptr);
     virtual ~BasicApplication();
 
     /// Возвращает имя приложения.
@@ -68,13 +68,13 @@ class BasicApplication
 
     bool startDetachedProcess(const QString &program, const QStringList &args = QStringList());
 
-  protected:
+protected:
     void setInstance();
 
     // Singleton instance pointer
     static BasicApplication *mInstance;
 
-  private:
+private:
     // Internal helpers
     void detectTestMode();
 
@@ -91,36 +91,29 @@ class BasicApplication
 };
 
 //---------------------------------------------------------------------------
-/// Класс приложения, основанного на QCoreApplication/QApplication/QSingleApplication. Вдобавок к базе загружает
-/// локализацию.
-template <class T> class BasicQtApplication : public BasicApplication
-{
-  public:
+/// Класс приложения, основанного на QCoreApplication/QApplication/QSingleApplication. Вдобавок к
+/// базе загружает локализацию.
+template <class T> class BasicQtApplication : public BasicApplication {
+public:
     /// Тип Qt приложения. Может быть QCoreApplication/QApplication/QSingleApplication.
     typedef T TApplication;
 
-    BasicQtApplication(const QString &aName, const QString &aVersion, int &aArgumentCount, char **aArguments);
+    BasicQtApplication(const QString &aName,
+                       const QString &aVersion,
+                       int &aArgumentCount,
+                       char **aArguments);
     virtual ~BasicQtApplication() override = default;
 
     /// Запускает цикл обработки событий.
-    int exec()
-    {
-        return mQtApplication.exec();
-    }
+    int exec() { return mQtApplication.exec(); }
 
     /// Возвращает аргументы командной строки.
-    QStringList getArguments() const
-    {
-        return mQtApplication.arguments();
-    }
+    QStringList getArguments() const { return mQtApplication.arguments(); }
 
     /// Возвращает экземпляр Qt приложения.
-    TApplication &getQtApplication()
-    {
-        return mQtApplication;
-    }
+    TApplication &getQtApplication() { return mQtApplication; }
 
-  private:
+private:
     TApplication mQtApplication;
     QSharedPointer<QTranslator> mTranslator;
 };

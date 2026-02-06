@@ -2,21 +2,16 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/Plugins/IPlugin.h>
 
 /// Реализация плагина TemplatePlugin.
 /// Демонстрирует базовую структуру плагина EKiosk.
-class Q_DECL_EXPORT TemplatePlugin : public QObject, public SDK::Plugin::IPlugin
-{
+class Q_DECL_EXPORT TemplatePlugin : public QObject, public SDK::Plugin::IPlugin {
     Q_OBJECT
 
-  public:
+public:
     /// Конструктор плагина.
     /// @param aEnvironment Указатель на окружение плагина
     /// @param aInstancePath Путь к экземпляру плагина
@@ -65,7 +60,7 @@ class Q_DECL_EXPORT TemplatePlugin : public QObject, public SDK::Plugin::IPlugin
     /// @param errorMessage Сообщение об ошибке
     void handleError(const QString &errorMessage);
 
-  private:
+private:
     /// Указатель на окружение плагина.
     SDK::Plugin::IEnvironment *mEnvironment;
 

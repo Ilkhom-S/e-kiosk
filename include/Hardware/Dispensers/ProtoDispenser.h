@@ -2,20 +2,17 @@
 
 #pragma once
 
-// SDK
 #include <SDK/Drivers/IDispenser.h>
 
-// Modules
 #include "Hardware/Common/ProtoDevice.h"
 
 //--------------------------------------------------------------------------------
-class ProtoDispenser : public ProtoDevice, public MetaDevice<SDK::Driver::IDispenser>
-{
+class ProtoDispenser : public ProtoDevice, public MetaDevice<SDK::Driver::IDispenser> {
     Q_OBJECT
 
     SET_DEVICE_TYPE(Dispenser)
 
-  signals:
+signals:
     /// Были отданы предметы.
     void dispensed(int aUnit, int aItems);
 
@@ -28,7 +25,7 @@ class ProtoDispenser : public ProtoDevice, public MetaDevice<SDK::Driver::IDispe
     /// Количество кассет определено.
     void unitsDefined();
 
-  protected slots:
+protected slots:
     /// Применить конфигурацию кассет.
     virtual void applyUnitList() {};
 

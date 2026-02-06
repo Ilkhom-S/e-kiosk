@@ -2,25 +2,19 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Payment/IPaymentFactory.h>
 
-// Project
-#include "Payment.h"
 #include "DealerLocalData.h"
+#include "Payment.h"
 
 //------------------------------------------------------------------------------
-class DealerPayment : public Payment
-{
-  public:
+class DealerPayment : public Payment {
+public:
     DealerPayment(PaymentFactory *aFactory);
 
-  protected:
+protected:
     /// Запрос на проведение платежа.
     virtual bool check(bool aFakeCheck);
 
@@ -30,7 +24,7 @@ class DealerPayment : public Payment
     /// Запрос статуса платежа.
     virtual bool status();
 
-  protected:
+protected:
     /// Выставляет коды ошибок сервера в OK
     void setStateOk();
 
@@ -40,7 +34,7 @@ class DealerPayment : public Payment
 
     QString getAddFields();
 
-  protected:
+protected:
     PaymentFactory *mFactory;
     DealerLocalData mLocalData;
 };

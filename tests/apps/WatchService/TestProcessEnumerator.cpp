@@ -1,31 +1,23 @@
 /* @file Test for ProcessEnumerator class. */
 
-// STL
-#include <iostream>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtDebug>
 #include <QtTest/QtTest>
-#include <Common/QtHeadersEnd.h>
 
-// Project
+#include <iostream>
+
 #include "processenumerator.h"
 
-class TestProcessEnumerator : public QObject
-{
+class TestProcessEnumerator : public QObject {
     Q_OBJECT
 
-  private slots:
-    void testProcessEnumeratorCanBeCreated()
-    {
+private slots:
+    void testProcessEnumeratorCanBeCreated() {
         // Test that ProcessEnumerator can be instantiated
         ProcessEnumerator enumerator;
         QVERIFY(&enumerator != nullptr);
     }
 
-    void testProcessEnumeratorEnumeratesProcesses()
-    {
+    void testProcessEnumeratorEnumeratesProcesses() {
         // Test that ProcessEnumerator can enumerate processes
         ProcessEnumerator enumerator;
 
@@ -34,8 +26,7 @@ class TestProcessEnumerator : public QObject
 
         // Count processes
         int processCount = 0;
-        for (auto it = enumerator.begin(); it != enumerator.end(); ++it)
-        {
+        for (auto it = enumerator.begin(); it != enumerator.end(); ++it) {
             ++processCount;
             // Each process should have a valid PID (> 0)
             QVERIFY(it.value().pid > 0);
@@ -43,15 +34,15 @@ class TestProcessEnumerator : public QObject
             QVERIFY(!it.value().path.isEmpty());
         }
 
-        std::cout << "Process enumeration test: found " << processCount << " processes" << std::endl;
+        std::cout << "Process enumeration test: found " << processCount << " processes"
+                  << std::endl;
         qDebug() << "Process enumeration test: found" << processCount << "processes";
 
         // Should have at least 5 processes (very basic system)
         QVERIFY(processCount >= 5);
     }
 
-    void testProcessEnumeratorContainsCurrentProcess()
-    {
+    void testProcessEnumeratorContainsCurrentProcess() {
         // Test that the current process is in the enumeration
         ProcessEnumerator enumerator;
 
@@ -60,10 +51,8 @@ class TestProcessEnumerator : public QObject
 
         // Check if current process is in the enumeration
         bool foundCurrentProcess = false;
-        for (auto it = enumerator.begin(); it != enumerator.end(); ++it)
-        {
-            if (static_cast<qint64>(it.value().pid) == currentPid)
-            {
+        for (auto it = enumerator.begin(); it != enumerator.end(); ++it) {
+            if (static_cast<qint64>(it.value().pid) == currentPid) {
                 foundCurrentProcess = true;
                 // Current process should have a valid path
                 QVERIFY(!it.value().path.isEmpty());
@@ -71,15 +60,15 @@ class TestProcessEnumerator : public QObject
             }
         }
 
-        std::cout << "Current process test: PID " << currentPid << " found: " << (foundCurrentProcess ? "yes" : "no")
-                  << std::endl;
-        qDebug() << "Current process test: PID" << currentPid << "found:" << (foundCurrentProcess ? "yes" : "no");
+        std::cout << "Current process test: PID " << currentPid
+                  << " found: " << (foundCurrentProcess ? "yes" : "no") << std::endl;
+        qDebug() << "Current process test: PID" << currentPid
+                 << "found:" << (foundCurrentProcess ? "yes" : "no");
 
         QVERIFY(foundCurrentProcess);
     }
 
-    void testProcessEnumeratorKillInvalidProcess()
-    {
+    void testProcessEnumeratorKillInvalidProcess() {
         // Test that killing an invalid process returns false
         ProcessEnumerator enumerator;
 
@@ -89,8 +78,8 @@ class TestProcessEnumerator : public QObject
 
         bool result = enumerator.kill(invalidPid, errorCode);
 
-        std::cout << "Invalid process kill test: result=" << (result ? "true" : "false") << ", error=" << errorCode
-                  << std::endl;
+        std::cout << "Invalid process kill test: result=" << (result ? "true" : "false")
+                  << ", error=" << errorCode << std::endl;
         qDebug() << "Invalid process kill test: result=" << result << ", error=" << errorCode;
 
         // Should return false for invalid PID
@@ -99,8 +88,7 @@ class TestProcessEnumerator : public QObject
         QVERIFY(errorCode != 0);
     }
 
-    void testProcessEnumeratorIteration()
-    {
+    void testProcessEnumeratorIteration() {
         // Test that iterator works correctly
         ProcessEnumerator enumerator;
 
@@ -108,16 +96,14 @@ class TestProcessEnumerator : public QObject
         auto it = enumerator.begin();
         auto end = enumerator.end();
 
-        if (it != end)
-        {
+        if (it != end) {
             // First process should be valid
             QVERIFY(it.value().pid > 0);
             QVERIFY(!it.value().path.isEmpty());
 
             // Test increment
             ++it;
-            if (it != end)
-            {
+            if (it != end) {
                 QVERIFY(it.value().pid > 0);
                 QVERIFY(!it.value().path.isEmpty());
             }

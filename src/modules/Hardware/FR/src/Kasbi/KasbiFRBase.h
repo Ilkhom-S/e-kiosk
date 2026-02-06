@@ -2,30 +2,25 @@
 
 #pragma once
 
-// Modules
-#include "Hardware/FR/PortFRBase.h"
 #include <Hardware/FR/KasbiFR.h>
 
-// Project
-#include "KasbiFRConstants.h"
 #include "Hardware/FR/KasbiPrinters.h"
+#include "Hardware/FR/PortFRBase.h"
+#include "KasbiFRConstants.h"
 
-class KasbiSeriesType
-{
-};
+class KasbiSeriesType {};
 
 //--------------------------------------------------------------------------------
-class KasbiFRBase : public TSerialFRBase
-{
+class KasbiFRBase : public TSerialFRBase {
     SET_SERIES("KasbiOnline")
 
-  public:
+public:
     KasbiFRBase();
 
     /// Устанавливает конфигурацию устройству.
     virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
@@ -39,7 +34,8 @@ class KasbiFRBase : public TSerialFRBase
     virtual QDateTime getDateTime();
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult execCommand(const QByteArray &aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
 
     /// Обработка ответа на предыдущей команды. Автоисправление некоторых ошибок.
@@ -52,11 +48,13 @@ class KasbiFRBase : public TSerialFRBase
     virtual bool cut();
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData,
+    virtual bool performFiscal(const QStringList &aReceipt,
+                               const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
     /// Получить фискальные теги по номеру документа.
-    virtual bool getFiscalFields(quint32 aFDNumber, SDK::Driver::TFiscalPaymentData &aFPData,
+    virtual bool getFiscalFields(quint32 aFDNumber,
+                                 SDK::Driver::TFiscalPaymentData &aFPData,
                                  SDK::Driver::TComplexFiscalPaymentData &aPSData);
 
     /// Печать Z отчета.

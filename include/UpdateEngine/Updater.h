@@ -2,14 +2,12 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QString>
 #include <QtCore/QList>
 #include <QtCore/QSet>
-#include <QtCore/QTimer>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QSignalMapper>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QString>
+#include <QtCore/QTimer>
 
 #include <NetworkTaskManager/NetworkTaskManager.h>
 
@@ -23,38 +21,38 @@
 class QDomElement;
 
 //---------------------------------------------------------------------------
-namespace CUpdater
-{
-    const char Name[] = "Updater";
+namespace CUpdater {
+const char Name[] = "Updater";
 } // namespace CUpdater
 
 //---------------------------------------------------------------------------
-namespace CUpdaterErrors
-{
-    enum Enum
-    {
-        OK,
-        UnknownError,
-        NetworkError,
-        ParseError,
-        DeployError,
-        UpdateBlocked,
-        BitsInProgress,
-    };
+namespace CUpdaterErrors {
+enum Enum {
+    OK,
+    UnknownError,
+    NetworkError,
+    ParseError,
+    DeployError,
+    UpdateBlocked,
+    BitsInProgress,
+};
 } // namespace CUpdaterErrors
 
 //---------------------------------------------------------------------------
-class Updater : public QObject
-{
+class Updater : public QObject {
     Q_OBJECT
 
-  public:
+public:
     bool bitsIsError();
     typedef QList<QSharedPointer<Component>> TComponentList;
 
     explicit Updater(QObject *aParent);
-    explicit Updater(const QString &aConfigURL, const QString &aUpdateURL, const QString &aVersion,
-                     const QString &aAppId, const QString &aConfiguration, const QString &aPointId);
+    explicit Updater(const QString &aConfigURL,
+                     const QString &aUpdateURL,
+                     const QString &aVersion,
+                     const QString &aAppId,
+                     const QString &aConfiguration,
+                     const QString &aPointId);
 
     bool bitsLoadState(QStringList *aParameters = nullptr);
 
@@ -71,10 +69,7 @@ class Updater : public QObject
     /// Установить рабочую папку.
     void setWorkingDir(const QString &aDir);
 
-    QString getWorkingDir() const
-    {
-        return mWorkingDir;
-    }
+    QString getWorkingDir() const { return mWorkingDir; }
 
     /// Добавить папку в список исключений. Файлы из этих папок не будут удалены после обновления,
     /// а также в случае обновления для них не будут созданы бекапы.
@@ -100,19 +95,20 @@ class Updater : public QObject
     void useBITS(bool aUseBITS, int aJobPriority = CBITS::HIGH);
 #endif
 
-  public slots:
+public slots:
     /// Запуск процедуры обновления.
     void runUpdate();
 
     /// Запрос на скачивание архива по адресу mURL и его распаковка в папку mWorkingDir.
     void downloadPackage();
 
-  private:
+private:
     /// Скачивает описание пакета обновлений и преобразует его в набор компонент.
     CUpdaterErrors::Enum getComponents(TComponentList &aComponents);
 
     /// Загрузка содержимого описания компонентов
-    CUpdaterErrors::Enum loadComponents(const QByteArray &aContent, Updater::TComponentList &aComponents,
+    CUpdaterErrors::Enum loadComponents(const QByteArray &aContent,
+                                        Updater::TComponentList &aComponents,
                                         QString &aRevision);
 
     /// Скачивает и устанавливает обновление.
@@ -133,7 +129,7 @@ class Updater : public QObject
     /// Удаляет из первого списка файлов, второй поиском только по имени
     void substractByName(TFileList &aList1, const TFileList &aList2);
 
-  public:
+public:
     /// Возвращает список файлов в каталоге aPath.
     TFileList getWorkingDirStructure(const QString &aPath) const noexcept(false);
 
@@ -141,10 +137,12 @@ class Updater : public QObject
     void deleteFiles(const TFileList &aFiles, bool aIgnoreError = false) noexcept(false);
 
     /// Делает копирование файловой структуры (папки + каталоги).
-    void copyFiles(const QString &aSrcDir, const QString &aDstDir, const TFileList &aFiles,
+    void copyFiles(const QString &aSrcDir,
+                   const QString &aDstDir,
+                   const TFileList &aFiles,
                    bool aIgnoreError = false) noexcept(false);
 
-  signals:
+signals:
     /// Сигнал прогресса загрузки.
     void progress(int aAction);
 
@@ -160,7 +158,7 @@ class Updater : public QObject
     /// Система обновлений формирует описание - ждем 5 минут
     void updateSystemIsWaiting();
 
-  private slots:
+private slots:
     void download();
     void deploy();
     void packageDownloaded(QObject *aPackage);
@@ -169,7 +167,7 @@ class Updater : public QObject
 
     void showProgress();
 
-  private:
+private:
     /// Обработка результатов проверки контрольной суммы
     void checkTaskVerifierResult(NetworkTask *task);
 
@@ -182,7 +180,7 @@ class Updater : public QObject
     QByteArray loadUpdateConfiguration(const QString &aRevision);
     bool validateConfiguration(const TComponentList &aComponents);
 
-  private:
+private:
 #ifdef Q_OS_WIN32
     CBITS::CopyManager mBitsManager;
 #endif
@@ -201,7 +199,7 @@ class Updater : public QObject
 
     void bitsSaveState();
 
-  private:
+private:
     QString mConfigURL;
     QString mUpdateURL;
     QString mVersion;
@@ -244,7 +242,7 @@ class Updater : public QObject
 
     QSignalMapper mMapper;
 
-  private:
+private:
     QTimer mProgressTimer;
     int mAllTasksCount;
     int mProgressPercent;

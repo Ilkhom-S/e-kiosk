@@ -2,29 +2,23 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QFutureWatcher>
-#include <Common/QtHeadersEnd.h>
 
-// Проект
 #include "WizardPage.h"
 
 class DialupConnectionWindow;
 
 //------------------------------------------------------------------------
-namespace CDialupWizardPage
-{
-    /// Минимальное время, когда будет показан экран ожидания при тесте соединения
-    const int MinimumPingTime = 1000;
+namespace CDialupWizardPage {
+/// Минимальное время, когда будет показан экран ожидания при тесте соединения
+const int MinimumPingTime = 1000;
 } // namespace CDialupWizardPage
 
 //------------------------------------------------------------------------
-class DialupWizardPage : public WizardPageBase
-{
+class DialupWizardPage : public WizardPageBase {
     Q_OBJECT
 
-  public:
+public:
     DialupWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
     virtual bool initialize();
@@ -33,14 +27,14 @@ class DialupWizardPage : public WizardPageBase
     virtual bool activate();
     virtual bool deactivate();
 
-  private slots:
+private slots:
     void onSelectionChanged(const QString &aSelectedConnection);
     void onCreateConnection(const QString &aConnection, const QString &aNetworkDevice);
     void onTestConnection(const QString &aConnection);
     void onRemoveConnection(const QString &aConnection);
     void onTestFinished();
 
-  private:
+private:
     QFutureWatcher<bool> mTaskWatcher;
     QString mConnectionError;
     DialupConnectionWindow *mConnectionWindow;

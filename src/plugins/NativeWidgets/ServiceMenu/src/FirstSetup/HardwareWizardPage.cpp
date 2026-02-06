@@ -1,15 +1,12 @@
 /* @file Окно настройки железа. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "HardwareWizardPage.h"
+
 #include <QtCore/QTimer>
 #include <QtWidgets/QStackedLayout>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/Drivers/Components.h>
 
-// System
 #include "Backend/HardwareManager.h"
 #include "Backend/NetworkManager.h"
 #include "Backend/ServiceMenuBackend.h"
@@ -17,12 +14,8 @@
 #include "GUI/HardwareWindow.h"
 #include "GUI/MessageBox/MessageBox.h"
 
-// Project
-#include "HardwareWizardPage.h"
-
 HardwareWizardPage::HardwareWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent)
-    : WizardPageBase(aBackend, aParent)
-{
+    : WizardPageBase(aBackend, aParent) {
     QStackedLayout *layout = new QStackedLayout(this);
 
     setLayout(layout);
@@ -53,17 +46,16 @@ HardwareWizardPage::HardwareWizardPage(ServiceMenuBackend *aBackend, QWidget *aP
     connect(mHardwareWindow, SIGNAL(detectionFinished()), SLOT(onDetectionFinished()));
     connect(mHardwareWindow, SIGNAL(applyingStarted()), SLOT(onApplyingStarted()));
     connect(mHardwareWindow, SIGNAL(applyingFinished()), SLOT(onApplyingFinished()));
-    connect(mHardwareWindow, SIGNAL(editSlot(DeviceSlot *, EditorPane *)),
+    connect(mHardwareWindow,
+            SIGNAL(editSlot(DeviceSlot *, EditorPane *)),
             SLOT(onEditSlot(DeviceSlot *, EditorPane *)));
     connect(mHardwareWindow, SIGNAL(removeSlot(DeviceSlot *)), SLOT(onRemoveSlot(DeviceSlot *)));
     connect(mHardwareWindow, SIGNAL(currentFormChanged(int)), SLOT(onCurrentFormChanged(int)));
 }
 
 //------------------------------------------------------------------------
-bool HardwareWizardPage::initialize()
-{
-    if (!mHardwareWindow->initialize())
-    {
+bool HardwareWizardPage::initialize() {
+    if (!mHardwareWindow->initialize()) {
         return false;
     }
 
@@ -71,27 +63,23 @@ bool HardwareWizardPage::initialize()
 }
 
 //------------------------------------------------------------------------
-bool HardwareWizardPage::shutdown()
-{
+bool HardwareWizardPage::shutdown() {
     mHardwareWindow->shutdown();
 
     return true;
 }
 
 //------------------------------------------------------------------------
-bool HardwareWizardPage::activate()
-{
+bool HardwareWizardPage::activate() {
     mHardwareWindow->setConfiguration(mBackend->getHardwareManager()->getConfiguration());
 
     return true;
 }
 
 //------------------------------------------------------------------------
-bool HardwareWizardPage::deactivate()
-{
+bool HardwareWizardPage::deactivate() {
     QStackedLayout *layout = qobject_cast<QStackedLayout *>(this->layout());
-    if (layout)
-    {
+    if (layout) {
         layout->setCurrentWidget(mHardwareWindow);
     }
 
@@ -101,8 +89,7 @@ bool HardwareWizardPage::deactivate()
 }
 
 //----------------------------------------------------------------------------
-void HardwareWizardPage::onDetectionStarted()
-{
+void HardwareWizardPage::onDetectionStarted() {
     GUI::MessageBox::wait(tr("#detecting_devices"), true);
     GUI::MessageBox::subscribe(this);
 
@@ -114,8 +101,7 @@ void HardwareWizardPage::onDetectionStarted()
 }
 
 //----------------------------------------------------------------------------
-void HardwareWizardPage::onDetectionFinished()
-{
+void HardwareWizardPage::onDetectionFinished() {
     mBackend->getHardwareManager()->setConfigurations(mHardwareWindow->getConfiguration().keys());
 
     // Обновляем статусы найденных железок
@@ -125,58 +111,47 @@ void HardwareWizardPage::onDetectionFinished()
 }
 
 //----------------------------------------------------------------------------
-void HardwareWizardPage::onEditSlot(DeviceSlot *aSlot, EditorPane *aPane)
-{
+void HardwareWizardPage::onEditSlot(DeviceSlot *aSlot, EditorPane *aPane) {
     connect(aPane, SIGNAL(finished()), SLOT(onEditFinished()));
 
     QStackedLayout *layout = qobject_cast<QStackedLayout *>(this->layout());
-    if (layout)
-    {
+    if (layout) {
         layout->setCurrentWidget(mEditorWindow);
         mEditorWindow->layout()->addWidget(aPane->getWidget());
 
         emit pageEvent("#main_form", false);
     }
 
-    if (aSlot->getType() == SDK::Driver::CComponents::Modem)
-    {
+    if (aSlot->getType() == SDK::Driver::CComponents::Modem) {
         mBackend->getNetworkManager()->closeConnection();
     }
 }
 
 //----------------------------------------------------------------------------
-void HardwareWizardPage::onRemoveSlot(DeviceSlot *aSlot)
-{
+void HardwareWizardPage::onRemoveSlot(DeviceSlot *aSlot) {
     mHardwareWindow->removeDeviceSlot(aSlot, true);
 }
 
 //----------------------------------------------------------------------------
-void HardwareWizardPage::onEditFinished()
-{
+void HardwareWizardPage::onEditFinished() {
     QStackedLayout *layout = qobject_cast<QStackedLayout *>(this->layout());
-    if (layout)
-    {
+    if (layout) {
         layout->setCurrentWidget(mHardwareWindow);
 
         EditorPane *editor = qobject_cast<EditorPane *>(sender());
-        if (editor)
-        {
+        if (editor) {
             mEditorWindow->layout()->removeWidget(editor->getWidget());
             QString deviceType(editor->getSlot()->getType());
 
-            if (editor->isChanged())
-            {
+            if (editor->isChanged()) {
                 editor->getSlot()->setParameterValues(editor->getParameterValues());
                 mHardwareWindow->checkDeviceSlot(editor->getSlot());
                 mBackend->getHardwareManager()->updateStatuses();
-            }
-            else if (editor->getSlot()->getModel().isEmpty())
-            {
+            } else if (editor->getSlot()->getModel().isEmpty()) {
                 mHardwareWindow->removeDeviceSlot(editor->getSlot());
             }
 
-            if (deviceType == SDK::Driver::CComponents::Modem)
-            {
+            if (deviceType == SDK::Driver::CComponents::Modem) {
                 mBackend->getNetworkManager()->openConnection();
             }
 
@@ -188,29 +163,26 @@ void HardwareWizardPage::onEditFinished()
 }
 
 //----------------------------------------------------------------------------
-void HardwareWizardPage::onApplyingStarted()
-{
+void HardwareWizardPage::onApplyingStarted() {
     GUI::MessageBox::wait(tr("#applying_configuration"));
 }
 
 //----------------------------------------------------------------------------
-void HardwareWizardPage::onApplyingFinished()
-{
+void HardwareWizardPage::onApplyingFinished() {
     GUI::MessageBox::hide();
 
-    // Для переинициализации свежедобавленного устройства. В противном случае не работает тест купюроприемника.
+    // Для переинициализации свежедобавленного устройства. В противном случае не работает тест
+    // купюроприемника.
     mHardwareWindow->setConfiguration(mBackend->getHardwareManager()->getConfiguration());
 }
 
 //------------------------------------------------------------------------
-void HardwareWizardPage::onCurrentFormChanged(int aIndex)
-{
+void HardwareWizardPage::onCurrentFormChanged(int aIndex) {
     emit pageEvent("#main_form", !aIndex);
 }
 
 //------------------------------------------------------------------------
-void HardwareWizardPage::onClicked(const QVariantMap & /*aParameters*/)
-{
+void HardwareWizardPage::onClicked(const QVariantMap & /*aParameters*/) {
     GUI::MessageBox::hide();
     GUI::MessageBox::wait(tr("#waiting_stop_search"));
 

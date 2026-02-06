@@ -1,41 +1,33 @@
 /* @file Базовый кодек для создания кастомных кодеков. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QDebug>
-#include <Common/QtHeadersEnd.h>
-
-// Project
-#include "Hardware/Common/ASCII.h"
-#include "Hardware/Protocols/Common/ProtocolUtils.h"
 #include "CodecBase.h"
 
-//---------------------------------------------------------------------------
-CodecBase::CodecBase() : mMIB(3000), mMinValueActive(0x0080), mName("Base"), mDataGuard(QReadWriteLock::Recursive)
-{
-}
+#include <QtCore/QDebug>
+
+#include "Hardware/Common/ASCII.h"
+#include "Hardware/Protocols/Common/ProtocolUtils.h"
 
 //---------------------------------------------------------------------------
-QByteArray CodecBase::name() const
-{
+CodecBase::CodecBase()
+    : mMIB(3000), mMinValueActive(0x0080), mName("Base"), mDataGuard(QReadWriteLock::Recursive) {}
+
+//---------------------------------------------------------------------------
+QByteArray CodecBase::name() const {
     return mName;
 }
 
 //---------------------------------------------------------------------------
-QList<QByteArray> CodecBase::aliases() const
-{
+QList<QByteArray> CodecBase::aliases() const {
     return QList<QByteArray>() << mName;
 }
 
 //---------------------------------------------------------------------------
-int CodecBase::mibEnum() const
-{
+int CodecBase::mibEnum() const {
     return mMIB;
 }
 
 //---------------------------------------------------------------------------
-QString CodecBase::convertToUnicode(const char *aBuffer, int aLength) const
-{
+QString CodecBase::convertToUnicode(const char *aBuffer, int aLength) const {
     QReadLocker lock(&mDataGuard);
 
     QByteArray buffer = QByteArray::fromRawData(aBuffer, aLength);
@@ -43,16 +35,13 @@ QString CodecBase::convertToUnicode(const char *aBuffer, int aLength) const
     QByteArray defaultBuffer = characterData.getDefault().character.toLatin1();
     bool dataEmpty = characterData.data().isEmpty();
 
-    auto replace = [&](char ch)
-    {
-        if (uchar(ch) < uchar(mMinValueActive))
-        {
+    auto replace = [&](char ch) {
+        if (uchar(ch) < uchar(mMinValueActive)) {
             dataEmpty ? buffer.replace(ch, defaultBuffer[0]) : buffer.replace(ch, "");
         }
     };
 
-    for (char ch = 0x00; ch < ASCII::Space; ++ch)
-    {
+    for (char ch = 0x00; ch < ASCII::Space; ++ch) {
         replace(ch);
     }
 
@@ -60,19 +49,14 @@ QString CodecBase::convertToUnicode(const char *aBuffer, int aLength) const
 
     QString result;
 
-    for (int i = 0; i < buffer.size(); ++i)
-    {
-        if (!buffer[i] && mMinValueActive)
-        {
+    for (int i = 0; i < buffer.size(); ++i) {
+        if (!buffer[i] && mMinValueActive) {
             break;
         }
 
-        if (uchar(buffer[i]) < uchar(mMinValueActive))
-        {
+        if (uchar(buffer[i]) < uchar(mMinValueActive)) {
             result += buffer[i];
-        }
-        else
-        {
+        } else {
             result += mData[buffer[i]].character;
         }
     }
@@ -81,25 +65,21 @@ QString CodecBase::convertToUnicode(const char *aBuffer, int aLength) const
 }
 
 //---------------------------------------------------------------------------
-QByteArray CodecBase::convertFromUnicode(const QChar *aBuffer, int aLength) const
-{
+QByteArray CodecBase::convertFromUnicode(const QChar *aBuffer, int aLength) const {
     QReadLocker lock(&mDataGuard);
 
     QByteArray result;
     CharacterData &characterData = const_cast<CharacterData &>(mData);
     QString data(aBuffer, aLength);
 
-    for (int i = 0; i < aLength; ++i)
-    {
+    for (int i = 0; i < aLength; ++i) {
         ushort unicode = aBuffer[i].unicode();
         char character = char(unicode);
 
-        if (unicode > mMinValueActive)
-        {
+        if (unicode > mMinValueActive) {
             QList<char> characters = characterData.data().keys(SCharData(data[i], true));
 
-            if (characters.isEmpty())
-            {
+            if (characters.isEmpty()) {
                 characters = characterData.data().keys(SCharData(data[i], false));
             }
 
@@ -108,19 +88,14 @@ QByteArray CodecBase::convertFromUnicode(const QChar *aBuffer, int aLength) cons
                               .arg(unicode)
                               .arg(ProtocolUtils::toHexLog(unicode));
 
-            if (characters.isEmpty())
-            {
+            if (characters.isEmpty()) {
                 character = CCodec::DefaultCharacter;
                 qDebug() << "No data" + log;
-            }
-            else
-            {
-                if (characters.size() > 1)
-                {
+            } else {
+                if (characters.size() > 1) {
                     QStringList logData;
 
-                    foreach (char ch, characters)
-                    {
+                    foreach (char ch, characters) {
                         logData << ProtocolUtils::toHexLog(ch);
                     }
 

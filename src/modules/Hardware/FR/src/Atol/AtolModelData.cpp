@@ -5,8 +5,7 @@
 using namespace CAtolFR;
 
 //--------------------------------------------------------------------------------
-CModelData::CModelData()
-{ // Cutter LineSpacing
+CModelData::CModelData() { // Cutter LineSpacing
     addOldTrade(13, 40, Models::TriumF, true, false);
     addOldTrade(14, 20, Models::FelixRF, false, true);
     addOldTrade(15, 20, Models::Felix02K, false, true);
@@ -56,18 +55,17 @@ CModelData::CModelData()
     addOnlineTerminal(76, 67, Models::Paymaster, true, 0, 32);
     addOnlineTerminal(77, 32, Models::Atol42FC, true, 0, 32, CAtolFR::OnlineTerminalBuild, false);
 
-    setDefault(SModelData(0, 32, "ATOL device", false, false, false, EFRType::FS, 0, false, true, 0, 0, true));
+    setDefault(SModelData(
+        0, 32, "ATOL device", false, false, false, EFRType::FS, 0, false, true, 0, 0, true));
 }
 
 //--------------------------------------------------------------------------------
-QStringList CModelData::getModelList(EFRType::Enum aFRType, bool aCanBeDP)
-{
+QStringList CModelData::getModelList(EFRType::Enum aFRType, bool aCanBeDP) {
     QSet<QString> models;
 
-    foreach (const SModelData &modelData, data())
-    {
-        if (!modelData.terminal && (modelData.FRType == aFRType) && (modelData.canBeDP == aCanBeDP))
-        {
+    foreach (const SModelData &modelData, data()) {
+        if (!modelData.terminal && (modelData.FRType == aFRType) &&
+            (modelData.canBeDP == aCanBeDP)) {
             models.insert(modelData.name);
         }
     }
@@ -76,55 +74,143 @@ QStringList CModelData::getModelList(EFRType::Enum aFRType, bool aCanBeDP)
 }
 
 //--------------------------------------------------------------------------------
-void CModelData::addOldTrade(int aModelId, int aMaxStringSize, QString aName, bool aCutter, bool aLineSpacing,
-                             bool aVerified, int aFeedingAmount)
-{
+void CModelData::addOldTrade(int aModelId,
+                             int aMaxStringSize,
+                             QString aName,
+                             bool aCutter,
+                             bool aLineSpacing,
+                             bool aVerified,
+                             int aFeedingAmount) {
     EFRType::Enum type = aName.endsWith(EKLZPostfix) ? EFRType::EKLZ : EFRType::NoEKLZ;
-    append(TModelKey(aModelId, EFRType::EKLZ), SModelData(aModelId, aMaxStringSize, aName, false, false, aVerified,
-                                                          type, 0, false, aCutter, aFeedingAmount, 0, aLineSpacing));
+    append(TModelKey(aModelId, EFRType::EKLZ),
+           SModelData(aModelId,
+                      aMaxStringSize,
+                      aName,
+                      false,
+                      false,
+                      aVerified,
+                      type,
+                      0,
+                      false,
+                      aCutter,
+                      aFeedingAmount,
+                      0,
+                      aLineSpacing));
 }
 
 //--------------------------------------------------------------------------------
-void CModelData::addTrade(int aModelId, int aMaxStringSize, QString aName, bool aCutter, bool aVerified,
-                          int aFeedingAmount)
-{
+void CModelData::addTrade(int aModelId,
+                          int aMaxStringSize,
+                          QString aName,
+                          bool aCutter,
+                          bool aVerified,
+                          int aFeedingAmount) {
     EFRType::Enum type = aName.endsWith(EKLZPostfix) ? EFRType::EKLZ : EFRType::NoEKLZ;
-    append(TModelKey(aModelId, EFRType::EKLZ), SModelData(aModelId, aMaxStringSize, aName, true, false, aVerified, type,
-                                                          0, false, aCutter, aFeedingAmount, 0, true));
+    append(TModelKey(aModelId, EFRType::EKLZ),
+           SModelData(aModelId,
+                      aMaxStringSize,
+                      aName,
+                      true,
+                      false,
+                      aVerified,
+                      type,
+                      0,
+                      false,
+                      aCutter,
+                      aFeedingAmount,
+                      0,
+                      true));
 
-    if (type == EFRType::EKLZ)
-    {
+    if (type == EFRType::EKLZ) {
         aName.chop(1);
         append(TModelKey(aModelId, EFRType::NoEKLZ),
-               SModelData(aModelId, aMaxStringSize, aName, true, false, aVerified, EFRType::NoEKLZ, 0, false, aCutter,
-                          aFeedingAmount, 0, true));
+               SModelData(aModelId,
+                          aMaxStringSize,
+                          aName,
+                          true,
+                          false,
+                          aVerified,
+                          EFRType::NoEKLZ,
+                          0,
+                          false,
+                          aCutter,
+                          aFeedingAmount,
+                          0,
+                          true));
     }
 }
 
 //--------------------------------------------------------------------------------
-void CModelData::addTerminal(int aModelId, int aMaxStringSize, const QString &aName, int aBuild, bool aEjector,
-                             int aFeedingAmount, int aZBufferSize)
-{
+void CModelData::addTerminal(int aModelId,
+                             int aMaxStringSize,
+                             const QString &aName,
+                             int aBuild,
+                             bool aEjector,
+                             int aFeedingAmount,
+                             int aZBufferSize) {
     append(TModelKey(aModelId, EFRType::EKLZ),
-           SModelData(aModelId, aMaxStringSize, aName, false, true, true, EFRType::EKLZ, aBuild, aEjector, true,
-                      aFeedingAmount, aZBufferSize, true));
+           SModelData(aModelId,
+                      aMaxStringSize,
+                      aName,
+                      false,
+                      true,
+                      true,
+                      EFRType::EKLZ,
+                      aBuild,
+                      aEjector,
+                      true,
+                      aFeedingAmount,
+                      aZBufferSize,
+                      true));
 }
 
 //--------------------------------------------------------------------------------
-void CModelData::addOnlineTrade(int aModelId, int aMaxStringSize, QString aName, bool aCutter, int aFeedingAmount,
-                                int aBuild, bool aVerified)
-{
-    append(TModelKey(aModelId, EFRType::FS), SModelData(aModelId, aMaxStringSize, aName, false, false, aVerified,
-                                                        EFRType::FS, aBuild, false, aCutter, aFeedingAmount, 0, true));
-}
-
-//--------------------------------------------------------------------------------
-void CModelData::addOnlineTerminal(int aModelId, int aMaxStringSize, const QString &aName, bool aEjector,
-                                   int aFeedingAmount, int aZBufferSize, int aBuild, bool aVerified)
-{
+void CModelData::addOnlineTrade(int aModelId,
+                                int aMaxStringSize,
+                                QString aName,
+                                bool aCutter,
+                                int aFeedingAmount,
+                                int aBuild,
+                                bool aVerified) {
     append(TModelKey(aModelId, EFRType::FS),
-           SModelData(aModelId, aMaxStringSize, aName, false, true, aVerified, EFRType::FS, aBuild, aEjector, true,
-                      aFeedingAmount, aZBufferSize, true));
+           SModelData(aModelId,
+                      aMaxStringSize,
+                      aName,
+                      false,
+                      false,
+                      aVerified,
+                      EFRType::FS,
+                      aBuild,
+                      false,
+                      aCutter,
+                      aFeedingAmount,
+                      0,
+                      true));
+}
+
+//--------------------------------------------------------------------------------
+void CModelData::addOnlineTerminal(int aModelId,
+                                   int aMaxStringSize,
+                                   const QString &aName,
+                                   bool aEjector,
+                                   int aFeedingAmount,
+                                   int aZBufferSize,
+                                   int aBuild,
+                                   bool aVerified) {
+    append(TModelKey(aModelId, EFRType::FS),
+           SModelData(aModelId,
+                      aMaxStringSize,
+                      aName,
+                      false,
+                      true,
+                      aVerified,
+                      EFRType::FS,
+                      aBuild,
+                      aEjector,
+                      true,
+                      aFeedingAmount,
+                      aZBufferSize,
+                      true));
 }
 
 //--------------------------------------------------------------------------------

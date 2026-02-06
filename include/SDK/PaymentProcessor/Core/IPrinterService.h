@@ -2,72 +2,65 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QtGlobal>
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QVariantMap>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QtGlobal>
 
-// SDK
-#include <SDK/Drivers/WarningLevel.h>
 #include <SDK/Drivers/PrintingModes.h>
+#include <SDK/Drivers/WarningLevel.h>
 
-namespace SDK
-{
-    namespace Driver
-    {
-        class IPrinter;
-    } // namespace Driver
-    namespace PaymentProcessor
-    {
+namespace SDK {
+namespace Driver {
+class IPrinter;
+} // namespace Driver
+namespace PaymentProcessor {
 
-        //------------------------------------------------------------------------------
-        class IPrinterService : public QObject
-        {
-            Q_OBJECT
+//------------------------------------------------------------------------------
+class IPrinterService : public QObject {
+    Q_OBJECT
 
-          public:
-            /// Результат фискального отчета для следующей версии.
-            typedef QPair<Driver::EWarningLevel::Enum, QString> TReportResult;
+public:
+    /// Результат фискального отчета для следующей версии.
+    typedef QPair<Driver::EWarningLevel::Enum, QString> TReportResult;
 
-            /// Проверка принтера на возможность печати чека.
-            virtual bool canPrintReceipt(const QString &aReceiptType, bool aRealCheck) = 0;
+    /// Проверка принтера на возможность печати чека.
+    virtual bool canPrintReceipt(const QString &aReceiptType, bool aRealCheck) = 0;
 
-            /// Печать типизированного чека с параметрами aParameters. Возвращает индекс задания, поставленного в
-            /// очередь. Результат придёт в сигнале receiptPrinted.
-            virtual int printReceipt(const QString &aReceiptType, const QVariantMap &aParameters,
-                                     const QString &aReceiptTemplate, DSDK::EPrintingModes::Enum aPrintingMode,
-                                     bool aServiceOperation = false) = 0;
+    /// Печать типизированного чека с параметрами aParameters. Возвращает индекс задания,
+    /// поставленного в очередь. Результат придёт в сигнале receiptPrinted.
+    virtual int printReceipt(const QString &aReceiptType,
+                             const QVariantMap &aParameters,
+                             const QString &aReceiptTemplate,
+                             DSDK::EPrintingModes::Enum aPrintingMode,
+                             bool aServiceOperation = false) = 0;
 
-            /// Сохранение электронной версии типизированного чека с параметрами aParameters.
-            virtual void saveReceipt(const QVariantMap &aParameters, const QString &aReceiptTemplate) = 0;
+    /// Сохранение электронной версии типизированного чека с параметрами aParameters.
+    virtual void saveReceipt(const QVariantMap &aParameters, const QString &aReceiptTemplate) = 0;
 
-            /// Загрузить и вернуть содержимое чека по номеру платежа
-            virtual QString loadReceipt(qint64 aPaymentId) = 0;
+    /// Загрузить и вернуть содержимое чека по номеру платежа
+    virtual QString loadReceipt(qint64 aPaymentId) = 0;
 
-            /// Печать тестового чека.
-            virtual bool printReceiptDirected(SDK::Driver::IPrinter *aPrinter, const QString &aReceiptTemplate,
-                                              const QVariantMap &aParameters) = 0;
+    /// Печать тестового чека.
+    virtual bool printReceiptDirected(SDK::Driver::IPrinter *aPrinter,
+                                      const QString &aReceiptTemplate,
+                                      const QVariantMap &aParameters) = 0;
 
-            /// Печать отчета.
-            virtual int printReport(const QString &aReceiptType, const QVariantMap &aParameters) = 0;
+    /// Печать отчета.
+    virtual int printReport(const QString &aReceiptType, const QVariantMap &aParameters) = 0;
 
-            /// Может ли работать с фискальным сервером?
-            virtual bool hasFiscalRegister() = 0;
+    /// Может ли работать с фискальным сервером?
+    virtual bool hasFiscalRegister() = 0;
 
-          signals:
-            /// Срабатывает после печати произвольного чека. Успешность операции передаётся в поле aError.
-            void receiptPrinted(int aJobIndex, bool aErrorHappened);
+signals:
+    /// Срабатывает после печати произвольного чека. Успешность операции передаётся в поле aError.
+    void receiptPrinted(int aJobIndex, bool aErrorHappened);
 
-          protected:
-            virtual ~IPrinterService()
-            {
-            }
-        };
+protected:
+    virtual ~IPrinterService() {}
+};
 
-        //------------------------------------------------------------------------------
-    } // namespace PaymentProcessor
+//------------------------------------------------------------------------------
+} // namespace PaymentProcessor
 } // namespace SDK

@@ -2,32 +2,22 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QSignalMapper>
 #include <QtWidgets/QWidget>
-#include "ui_WizardFrame.h"
-#include <Common/QtHeadersEnd.h>
 
-// Проект
 #include "WizardPage.h"
+#include "ui_WizardFrame.h"
 
 class ServiceMenuBackend;
 
 //----------------------------------------------------------------------------
-class WizardFrame : public QWidget, protected Ui::WizardFrame
-{
+class WizardFrame : public QWidget, protected Ui::WizardFrame {
     Q_OBJECT
 
-  public:
-    enum Control
-    {
-        BackButton,
-        ForwardButton,
-        ExitButton
-    };
+public:
+    enum Control { BackButton, ForwardButton, ExitButton };
 
-  public:
+public:
     WizardFrame(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
     ~WizardFrame();
 
@@ -35,16 +25,20 @@ class WizardFrame : public QWidget, protected Ui::WizardFrame
     void shutdown();
 
     void setPage(const QString &aContext, WizardPageBase *aPage, bool aCanCache = true);
-    void setupDecoration(const QString &aStage, const QString &aStageName, const QString &aStageHowto);
-    void setupControl(Control aControl, bool aEnabled, const QString &aTitle = "", const QString &aContext = "",
+    void
+    setupDecoration(const QString &aStage, const QString &aStageName, const QString &aStageHowto);
+    void setupControl(Control aControl,
+                      bool aEnabled,
+                      const QString &aTitle = "",
+                      const QString &aContext = "",
                       bool aCanCache = true);
     void commitPageChanges();
     void setStatus(const QString &aStatus);
 
-  signals:
+signals:
     void changePage(const QString &aContext);
 
-  private slots:
+private slots:
     void onChangePage(const QString &aContext);
     void onPageEvent(const QString &aContext, bool aFlag);
     void onControlEvent(const QString &aContext);
@@ -52,20 +46,18 @@ class WizardFrame : public QWidget, protected Ui::WizardFrame
 
     void onAbstractButtonClicked();
 
-  private:
+private:
     void showPage(const QString &aContext, WizardPageBase *aPage);
     void hidePage(const QString &aContext, WizardPageBase *aPage);
 
     void connectAllAbstractButtons(QWidget *aParentWidget);
     QString stageIndex(const QString &aContext);
 
-  private:
-    struct CacheItem
-    {
+private:
+    struct CacheItem {
         WizardPageBase *page;
 
-        struct ControlItem
-        {
+        struct ControlItem {
             Control control;
             QString title;
             QString context;

@@ -2,18 +2,14 @@
 
 #pragma once
 
-// Modules
+#include <Hardware/CashAcceptors/SerialCashAcceptor.h>
 #include <Hardware/Protocols/CashAcceptor/SSP.h>
 
-// Project
-#include <Hardware/CashAcceptors/SerialCashAcceptor.h>
-
 //--------------------------------------------------------------------------------
-class SSPCashAcceptor : public TSerialCashAcceptor
-{
+class SSPCashAcceptor : public TSerialCashAcceptor {
     SET_SERIES("SSP")
 
-  public:
+public:
     SSPCashAcceptor();
 
     /// Возвращает список поддерживаемых устройств.
@@ -25,7 +21,7 @@ class SSPCashAcceptor : public TSerialCashAcceptor
     /// Вернуть купюру.
     virtual bool reject();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
@@ -51,7 +47,8 @@ class SSPCashAcceptor : public TSerialCashAcceptor
     virtual bool processReset();
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult execCommand(const QByteArray &aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
 
     /// Обновить прошивку.

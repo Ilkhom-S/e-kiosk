@@ -1,34 +1,33 @@
-// System
-#include "MessageQueue/MessageQueueConstants.h"
-
-// Project
 #include "MessageQueueServer.h"
 
-MessageQueueServer::MessageQueueServer(const QString &aQueueName)
-{
+#include "MessageQueue/MessageQueueConstants.h"
+
+MessageQueueServer::MessageQueueServer(const QString &aQueueName) {
     mLog = ILog::getInstance(CIMessageQueueServer::DefaultLog);
 
     mQueueName = aQueueName;
 }
 
 //----------------------------------------------------------------------------
-MessageQueueServer::MessageQueueServer(const QString &aQueueName, ILog *aLog)
-{
+MessageQueueServer::MessageQueueServer(const QString &aQueueName, ILog *aLog) {
     mLog = aLog;
 
     mQueueName = aQueueName;
 }
 
 //----------------------------------------------------------------------------
-MessageQueueServer::~MessageQueueServer()
-{
-}
+MessageQueueServer::~MessageQueueServer() {}
 
 //----------------------------------------------------------------------------
-bool MessageQueueServer::init()
-{
-    if (!connect(&mDisconnectSignalMapper, SIGNAL(mapped(QObject *)), this, SLOT(onSocketDisconnected(QObject *))) ||
-        !connect(&mReadyReadSignalMapper, SIGNAL(mapped(QObject *)), this, SLOT(onSocketReadyRead(QObject *))))
+bool MessageQueueServer::init() {
+    if (!connect(&mDisconnectSignalMapper,
+                 SIGNAL(mapped(QObject *)),
+                 this,
+                 SLOT(onSocketDisconnected(QObject *))) ||
+        !connect(&mReadyReadSignalMapper,
+                 SIGNAL(mapped(QObject *)),
+                 this,
+                 SLOT(onSocketReadyRead(QObject *))))
         return false;
 
     if (!isListening())
@@ -38,30 +37,25 @@ bool MessageQueueServer::init()
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::stop()
-{
+void MessageQueueServer::stop() {
     QLocalServer::close();
 }
 
 //----------------------------------------------------------------------------
-bool MessageQueueServer::subscribeOnMessageReceived(QObject *aObject)
-{
-    return connect(this, SIGNAL(onMessageReceived(QByteArray)), aObject, SLOT(onMessageReceived(QByteArray)));
+bool MessageQueueServer::subscribeOnMessageReceived(QObject *aObject) {
+    return connect(
+        this, SIGNAL(onMessageReceived(QByteArray)), aObject, SLOT(onMessageReceived(QByteArray)));
 }
 
 //----------------------------------------------------------------------------
-bool MessageQueueServer::subscribeOnDisconnected(QObject *aObject)
-{
+bool MessageQueueServer::subscribeOnDisconnected(QObject *aObject) {
     return connect(this, SIGNAL(onDisconnected()), aObject, SLOT(onDisconnected()));
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::sendMessage(const QByteArray &aMessage)
-{
-    foreach (QLocalSocket *socket, mSockets.keys())
-    {
-        if (socket->state() == QLocalSocket::ConnectedState)
-        {
+void MessageQueueServer::sendMessage(const QByteArray &aMessage) {
+    foreach (QLocalSocket *socket, mSockets.keys()) {
+        if (socket->state() == QLocalSocket::ConnectedState) {
             socket->write(aMessage + '\0');
             socket->flush();
             socket->waitForBytesWritten(100);
@@ -70,10 +64,11 @@ void MessageQueueServer::sendMessage(const QByteArray &aMessage)
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::incomingConnection(quintptr aSocketDescriptor)
-{
-    LOG(mLog, LogLevel::Normal,
-        QString("New incoming connection... Socket with descriptor %1 has been connected.").arg(aSocketDescriptor));
+void MessageQueueServer::incomingConnection(quintptr aSocketDescriptor) {
+    LOG(mLog,
+        LogLevel::Normal,
+        QString("New incoming connection... Socket with descriptor %1 has been connected.")
+            .arg(aSocketDescriptor));
 
     QLocalSocket *newSocket = new QLocalSocket(this);
     newSocket->setSocketDescriptor(aSocketDescriptor);
@@ -88,15 +83,14 @@ void MessageQueueServer::incomingConnection(quintptr aSocketDescriptor)
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::onSocketDisconnected(QObject *aObject)
-{
+void MessageQueueServer::onSocketDisconnected(QObject *aObject) {
     emit onDisconnected();
 
     QLocalSocket *socket = dynamic_cast<QLocalSocket *>(aObject);
 
-    if (socket)
-    {
-        LOG(mLog, LogLevel::Normal,
+    if (socket) {
+        LOG(mLog,
+            LogLevel::Normal,
             QString("Socket with descriptor %1 has been disconnected.").arg(mSockets[socket]));
 
         mBuffers.remove(mSockets[socket]);
@@ -107,11 +101,9 @@ void MessageQueueServer::onSocketDisconnected(QObject *aObject)
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::onSocketReadyRead(QObject *aObject)
-{
+void MessageQueueServer::onSocketReadyRead(QObject *aObject) {
     QLocalSocket *socket = dynamic_cast<QLocalSocket *>(aObject);
-    if (!socket)
-    {
+    if (!socket) {
         LOG(mLog, LogLevel::Error, "Wrong object was passed to onSocketReadyRead slot...");
         return;
     }
@@ -126,12 +118,9 @@ void MessageQueueServer::onSocketReadyRead(QObject *aObject)
 
     quintptr socketDescriptor = socket->socketDescriptor();
 
-    if (mBuffers.contains(socketDescriptor))
-    {
+    if (mBuffers.contains(socketDescriptor)) {
         mBuffers[socketDescriptor] = mBuffers[socketDescriptor] + newData;
-    }
-    else
-    {
+    } else {
         mBuffers[socketDescriptor] = newData;
     }
 
@@ -139,11 +128,9 @@ void MessageQueueServer::onSocketReadyRead(QObject *aObject)
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::parseInputBuffer(QByteArray &aBuffer)
-{
+void MessageQueueServer::parseInputBuffer(QByteArray &aBuffer) {
     int messageEnd = aBuffer.indexOf('\0');
-    while (messageEnd != -1)
-    {
+    while (messageEnd != -1) {
         QByteArray newMessageData = aBuffer.left(messageEnd);
 
         aBuffer = aBuffer.right(aBuffer.size() - messageEnd - 1);

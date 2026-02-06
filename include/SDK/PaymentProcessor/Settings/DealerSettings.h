@@ -2,206 +2,184 @@
 
 #pragma once
 
-// Boost
 #pragma push_macro("foreach")
 #undef foreach
 #include <boost/noncopyable.hpp>
 #pragma pop_macro("foreach")
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QReadWriteLock>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/ILogable.h>
 #include <Common/PropertyTree.h>
 
-// SDK
-#include <SDK/PaymentProcessor/Settings/Range.h>
-#include <SDK/PaymentProcessor/Settings/Provider.h>
 #include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>
+#include <SDK/PaymentProcessor/Settings/Provider.h>
+#include <SDK/PaymentProcessor/Settings/Range.h>
 
-// Project
 #include "Commissions.h"
 
 class ILog;
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
+namespace SDK {
+namespace PaymentProcessor {
 
-        //---------------------------------------------------------------------------
-        /// Структура с персональными данными дилера.
-        struct SPersonalSettings
-        {
-            bool isValid()
-            {
-                return !name.isEmpty() || !inn.isEmpty();
+//---------------------------------------------------------------------------
+/// Структура с персональными данными дилера.
+struct SPersonalSettings {
+    bool isValid() { return !name.isEmpty() || !inn.isEmpty(); }
+
+    QString pointName;
+    QString pointAddress;
+    QString pointExternalID;
+    QString name;
+    QString address;
+    QString businessAddress;
+    QString inn;
+    QString kbk;
+    QString phone;
+    QString isBank;
+
+    QString operatorName;
+    QString operatorAddress;
+    QString operatorInn;
+    QString operatorPhone;
+    QString operatorContractNumber;
+
+    QString bankName;
+    QString bankAddress;
+    QString bankBik;
+    QString bankInn;
+    QString bankPhone;
+    QString bankContractNumber;
+
+    QMap<QString, QString> mPrintingParameters;
+};
+
+//---------------------------------------------------------------------------
+class DealerSettings : public ISettingsAdapter, public ILogable, private boost::noncopyable {
+    struct SCustomer {
+        bool blocked;
+        QSet<QString> values;
+        Commissions commissions;
+
+        void addValue(const QString &aValue) {
+            if (!aValue.isEmpty()) {
+                values.insert(aValue);
             }
+        }
+        bool isEmpty() const { return values.isEmpty(); }
+        bool contains(QSet<QString> aValues) const { return !aValues.intersect(values).isEmpty(); }
+    };
 
-            QString pointName;
-            QString pointAddress;
-            QString pointExternalID;
-            QString name;
-            QString address;
-            QString businessAddress;
-            QString inn;
-            QString kbk;
-            QString phone;
-            QString isBank;
+public:
+    typedef QMap<qint64, SProvider> TProviderList;
 
-            QString operatorName;
-            QString operatorAddress;
-            QString operatorInn;
-            QString operatorPhone;
-            QString operatorContractNumber;
+    explicit DealerSettings(TPtree &aProperties);
+    virtual ~DealerSettings();
 
-            QString bankName;
-            QString bankAddress;
-            QString bankBik;
-            QString bankInn;
-            QString bankPhone;
-            QString bankContractNumber;
+    /// Валидация загруженных данных.
+    virtual bool isValid() const;
 
-            QMap<QString, QString> mPrintingParameters;
-        };
+    /// Получить имя адаптера.
+    static QString getAdapterName();
 
-        //---------------------------------------------------------------------------
-        class DealerSettings : public ISettingsAdapter, public ILogable, private boost::noncopyable
-        {
-            struct SCustomer
-            {
-                bool blocked;
-                QSet<QString> values;
-                Commissions commissions;
+    /// Инициализация настроек.
+    void initialize();
 
-                void addValue(const QString &aValue)
-                {
-                    if (!aValue.isEmpty())
-                    {
-                        values.insert(aValue);
-                    }
-                }
-                bool isEmpty() const
-                {
-                    return values.isEmpty();
-                }
-                bool contains(QSet<QString> aValues) const
-                {
-                    return !aValues.intersect(values).isEmpty();
-                }
-            };
+    /// Возвращает персональные данные дилера.
+    const SPersonalSettings &getPersonalSettings() const;
 
-          public:
-            typedef QMap<qint64, SProvider> TProviderList;
+    /// Возвращает оператора по идентификатору.
+    SProvider getProvider(qint64 aId);
 
-            explicit DealerSettings(TPtree &aProperties);
-            virtual ~DealerSettings();
+    /// Возвращает оператора по идентификатору.
+    SProvider getMNPProvider(qint64 aId, qint64 aCidIn, qint64 aCidOut);
 
-            /// Валидация загруженных данных.
-            virtual bool isValid() const;
+    /// Возвращает оператора по номеру шлюза.
+    QList<SProvider> getProvidersByCID(qint64 aCid);
 
-            /// Получить имя адаптера.
-            static QString getAdapterName();
+    /// Возвращает оператора(ов) для данного диапазона(ов).
+    QList<SProvider> getProvidersByRange(QList<SRange> aRanges,
+                                         QSet<qint64> aExclude = QSet<qint64>());
 
-            /// Инициализация настроек.
-            void initialize();
+    /// Возвращает список провайдеров по конкретному типу процессинга.
+    const QList<qint64> getProviders(const QString &aProcessingType);
 
-            /// Возвращает персональные данные дилера.
-            const SPersonalSettings &getPersonalSettings() const;
+    /// Возвращает список типов процессинга
+    QStringList getProviderProcessingTypes();
 
-            /// Возвращает оператора по идентификатору.
-            SProvider getProvider(qint64 aId);
+    void setExternalLimits(qint64 aProviderId, double aMinExternalLimit, double aMaxExternalLimit);
 
-            /// Возвращает оператора по идентификатору.
-            SProvider getMNPProvider(qint64 aId, qint64 aCidIn, qint64 aCidOut);
+    /// Возвращает false, если реквизиты платежа в чёрном списке.
+    bool isCustomerAllowed(const QVariantMap &aParameters);
 
-            /// Возвращает оператора по номеру шлюза.
-            QList<SProvider> getProvidersByCID(qint64 aCid);
+    /// Возвращает список комиссий по номеру оператора и заполненным полям.
+    TCommissions getCommissions(qint64 aProvider, const QVariantMap &aParameters);
 
-            /// Возвращает оператора(ов) для данного диапазона(ов).
-            QList<SProvider> getProvidersByRange(QList<SRange> aRanges, QSet<qint64> aExclude = QSet<qint64>());
+    /// Возвращает объект для подсчёта комиссии по оператору, заполненным полям и сумме платежа.
+    Commission getCommission(qint64 aProvider, const QVariantMap &aParameters, double aSum);
 
-            /// Возвращает список провайдеров по конкретному типу процессинга.
-            const QList<qint64> getProviders(const QString &aProcessingType);
+    /// Получение комиссии процессинга за платёж по указанному оператору. Используется для разбивки
+    /// комиссии на платёжном чеке. Все подсчёты производятся только методом getCommission.
+    ProcessingCommission getProcessingCommission(qint64 aProvider);
 
-            /// Возвращает список типов процессинга
-            QStringList getProviderProcessingTypes();
+    /// Получить размер НДС для провайдера
+    int getVAT(qint64 aProvider);
 
-            void setExternalLimits(qint64 aProviderId, double aMinExternalLimit, double aMaxExternalLimit);
+    /// Удаляет провайдера из списка
+    void disableProvider(qint64 aId);
 
-            /// Возвращает false, если реквизиты платежа в чёрном списке.
-            bool isCustomerAllowed(const QVariantMap &aParameters);
+    /// Перезаписать настройки комиссии
+    void setExternalCommissions(const Commissions &aCommissions);
 
-            /// Возвращает список комиссий по номеру оператора и заполненным полям.
-            TCommissions getCommissions(qint64 aProvider, const QVariantMap &aParameters);
+    /// Сбросить настройки комиссий до начальных
+    void resetExternalCommissions();
 
-            /// Возвращает объект для подсчёта комиссии по оператору, заполненным полям и сумме платежа.
-            Commission getCommission(qint64 aProvider, const QVariantMap &aParameters, double aSum);
+private:
+    typedef QList<SCustomer> TCustomers;
 
-            /// Получение комиссии процессинга за платёж по указанному оператору. Используется для разбивки комиссии
-            /// на платёжном чеке. Все подсчёты производятся только методом getCommission.
-            ProcessingCommission getProcessingCommission(qint64 aProvider);
+private:
+    /// Загружает список операторов.
+    bool loadProviders();
 
-            /// Получить размер НДС для провайдера
-            int getVAT(qint64 aProvider);
+    /// Загружает список операторов из xml файла.
+    bool loadOperatorsXML(const QString &aFileName);
 
-            /// Удаляет провайдера из списка
-            void disableProvider(qint64 aId);
+    /// Загружает оператора из буфера
+    bool loadProvidersFromBuffer(const std::string &aBuffer, SProvider &aProvider);
 
-            /// Перезаписать настройки комиссии
-            void setExternalCommissions(const Commissions &aCommissions);
+    /// Загружает комиссии.
+    bool loadCommissions();
 
-            /// Сбросить настройки комиссий до начальных
-            void resetExternalCommissions();
+    /// Загружает персональные данные дилера.
+    bool loadPersonalSettings();
 
-          private:
-            typedef QList<SCustomer> TCustomers;
+    /// Предикат для поиска в списке клиентов.
+    TCustomers::iterator findCustomer(const QVariantMap &aParameters);
 
-          private:
-            /// Загружает список операторов.
-            bool loadProviders();
+private:
+    TPtree &mProperties;
 
-            /// Загружает список операторов из xml файла.
-            bool loadOperatorsXML(const QString &aFileName);
+    QReadWriteLock mProvidersLock;
+    QMap<qint64, std::string> mProviderRawBuffer;
+    TProviderList mProviders;
 
-            /// Загружает оператора из буфера
-            bool loadProvidersFromBuffer(const std::string &aBuffer, SProvider &aProvider);
+    QMultiMap<qint64, qint64> mProviderGateways;
+    QMultiMap<QString, qint64> mProvidersProcessingIndex;
+    SPersonalSettings mPersonalSettings;
 
-            /// Загружает комиссии.
-            bool loadCommissions();
+    Commissions mCommissions;
+    Commissions mExternalCommissions;
 
-            /// Загружает персональные данные дилера.
-            bool loadPersonalSettings();
+    /// Чёрно-белый список клиентов.
+    TCustomers mCustomers;
 
-            /// Предикат для поиска в списке клиентов.
-            TCustomers::iterator findCustomer(const QVariantMap &aParameters);
+    /// Флаг состояния.
+    bool mIsValid;
+};
 
-          private:
-            TPtree &mProperties;
-
-            QReadWriteLock mProvidersLock;
-            QMap<qint64, std::string> mProviderRawBuffer;
-            TProviderList mProviders;
-
-            QMultiMap<qint64, qint64> mProviderGateways;
-            QMultiMap<QString, qint64> mProvidersProcessingIndex;
-            SPersonalSettings mPersonalSettings;
-
-            Commissions mCommissions;
-            Commissions mExternalCommissions;
-
-            /// Чёрно-белый список клиентов.
-            TCustomers mCustomers;
-
-            /// Флаг состояния.
-            bool mIsValid;
-        };
-
-        //---------------------------------------------------------------------------
-    } // namespace PaymentProcessor
+//---------------------------------------------------------------------------
+} // namespace PaymentProcessor
 } // namespace SDK
 
 //---------------------------------------------------------------------------

@@ -2,38 +2,29 @@
 
 // Include the interface header for moc processing
 
-// SDK
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
+namespace SDK {
+namespace PaymentProcessor {
 
-        // Dummy implementation of pure virtual methods
-        QList<QPair<QString, QString>> IDeviceTest::getTestNames() const
-        {
-            return QList<QPair<QString, QString>>();
-        }
+// Dummy implementation of pure virtual methods
+QList<QPair<QString, QString>> IDeviceTest::getTestNames() const {
+    return QList<QPair<QString, QString>>();
+}
 
-        bool IDeviceTest::run(const QString &)
-        {
-            return false;
-        }
+bool IDeviceTest::run(const QString &) {
+    return false;
+}
 
-        void IDeviceTest::stop()
-        {
-        }
+void IDeviceTest::stop() {}
 
-        bool IDeviceTest::isReady()
-        {
-            return false;
-        }
+bool IDeviceTest::isReady() {
+    return false;
+}
 
-        bool IDeviceTest::hasResult()
-        {
-            return false;
-        }
+bool IDeviceTest::hasResult() {
+    return false;
+}
 
-    } // namespace PaymentProcessor
+} // namespace PaymentProcessor
 } // namespace SDK

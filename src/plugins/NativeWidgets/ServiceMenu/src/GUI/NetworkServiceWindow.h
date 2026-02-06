@@ -2,25 +2,22 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QFutureWatcher>
 #include <QtNetwork/QNetworkProxy>
 #include <QtWidgets/QButtonGroup>
-#include "ui_NetworkServiceWindow.h"
-#include <Common/QtHeadersEnd.h>
 
-// Проект
 #include "DialupConnectionWindow.h"
-#include "UnmanagedConnectionWindow.h"
 #include "IServiceWindow.h"
+#include "UnmanagedConnectionWindow.h"
+#include "ui_NetworkServiceWindow.h"
 
 //------------------------------------------------------------------------
-class NetworkServiceWindow : public QWidget, public ServiceWindowBase, public Ui::NetworkServiceWindow
-{
+class NetworkServiceWindow : public QWidget,
+                             public ServiceWindowBase,
+                             public Ui::NetworkServiceWindow {
     Q_OBJECT
 
-  public:
+public:
     NetworkServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
     virtual bool initialize();
@@ -28,7 +25,7 @@ class NetworkServiceWindow : public QWidget, public ServiceWindowBase, public Ui
     virtual bool activate();
     virtual bool deactivate();
 
-  private slots:
+private slots:
     void onChangeConnectionType(QAbstractButton *aButton);
 
     void onCreateDialupConnection(const QString &aConnection, const QString &aNetworkDevice);
@@ -37,7 +34,7 @@ class NetworkServiceWindow : public QWidget, public ServiceWindowBase, public Ui
     void onTestUnmanagedConnection(QNetworkProxy aProxy);
     void onTestFinished();
 
-  private:
+private:
     QButtonGroup mTypeButtonGroup;
     DialupConnectionWindow *mDialupWindow;
     UnmanagedConnectionWindow *mUnmanagedWindow;

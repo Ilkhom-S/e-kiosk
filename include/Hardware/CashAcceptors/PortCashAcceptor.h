@@ -2,40 +2,26 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
+#include <Hardware/CashAcceptors/CashAcceptorBase.h>
 #include <Hardware/Common/DeviceCodeSpecification.h>
 #include <Hardware/Common/WaitingData.h>
 
-// Project
-#include <Hardware/CashAcceptors/CashAcceptorBase.h>
-
 /// Ожидание после резета
-namespace EResetWaiting
-{
-    enum Enum
-    {
-        No = 0,
-        Available,
-        Full
-    };
+namespace EResetWaiting {
+enum Enum { No = 0, Available, Full };
 } // namespace EResetWaiting
 
 //--------------------------------------------------------------------------------
-namespace CPortCashAcceptor
-{
-    /// Ожидание завершения выполнения функционала для фильтрации/отправки накопленных статусов.
-    const SWaitingData RestoreStatusesWaiting = SWaitingData(1, 10 * 1000);
+namespace CPortCashAcceptor {
+/// Ожидание завершения выполнения функционала для фильтрации/отправки накопленных статусов.
+const SWaitingData RestoreStatusesWaiting = SWaitingData(1, 10 * 1000);
 } // namespace CPortCashAcceptor
 
 //--------------------------------------------------------------------------------
-template <class T> class PortCashAcceptor : public CashAcceptorBase<T>
-{
-  public:
+template <class T> class PortCashAcceptor : public CashAcceptorBase<T> {
+public:
     PortCashAcceptor();
 
     /// Активировать/деактивировать приём с учетом отложенного выполнения.
@@ -47,14 +33,12 @@ template <class T> class PortCashAcceptor : public CashAcceptorBase<T>
     /// Обновить прошивку.
     virtual void updateFirmware(const QByteArray &aBuffer);
 
-  protected:
+protected:
     /// Инициализация устройства.
     virtual bool updateParameters();
 
     /// Запросить и сохранить параметры устройства.
-    virtual void processDeviceData()
-    {
-    }
+    virtual void processDeviceData() {}
 
     /// Получить и обработать статус.
     virtual bool processStatus(TStatusCodes &aStatusCodes);
@@ -63,10 +47,7 @@ template <class T> class PortCashAcceptor : public CashAcceptorBase<T>
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
     /// Получить статус.
-    virtual bool checkStatus(QByteArray & /*aAnswer*/)
-    {
-        return false;
-    }
+    virtual bool checkStatus(QByteArray & /*aAnswer*/) { return false; }
 
     /// Получить статусы.
     typedef QList<QByteArray> TStatusData;
@@ -89,32 +70,27 @@ template <class T> class PortCashAcceptor : public CashAcceptorBase<T>
     virtual void processEnable(bool aEnabled);
 
     /// Установка параметров по умолчанию.
-    virtual bool setDefaultParameters()
-    {
-        return true;
-    }
+    virtual bool setDefaultParameters() { return true; }
 
     /// Ждет определенного состояния купюроприёмника.
-    bool processAndWait(const TBoolMethod &aCommand, TBoolMethod aCondition, int aTimeout, bool aNeedReset = true,
-                        bool aRestartPolling = true, TBoolMethod aErrorCondition = TBoolMethod());
+    bool processAndWait(const TBoolMethod &aCommand,
+                        TBoolMethod aCondition,
+                        int aTimeout,
+                        bool aNeedReset = true,
+                        bool aRestartPolling = true,
+                        TBoolMethod aErrorCondition = TBoolMethod());
 
     /// Сброс.
     bool reset(bool aWait);
 
     /// Локальный сброс.
-    virtual bool processReset()
-    {
-        return false;
-    }
+    virtual bool processReset() { return false; }
 
     /// Завершен ли сброс.
     bool isResetCompleted(bool aWait);
 
     /// Применить таблицу номиналов.
-    virtual bool applyParTable()
-    {
-        return true;
-    }
+    virtual bool applyParTable() { return true; }
 
     /// Проверка возможности применения буфера статусов.
     virtual bool canApplyStatusBuffer();
@@ -123,10 +99,7 @@ template <class T> class PortCashAcceptor : public CashAcceptorBase<T>
     virtual void finalizeInitialization();
 
     /// Изменение режима приема денег.
-    virtual bool enableMoneyAcceptingMode(bool /*aEnabled*/)
-    {
-        return false;
-    }
+    virtual bool enableMoneyAcceptingMode(bool /*aEnabled*/) { return false; }
 
     /// Повтор изменения режима приема денег.
     bool reenableMoneyAcceptingMode();

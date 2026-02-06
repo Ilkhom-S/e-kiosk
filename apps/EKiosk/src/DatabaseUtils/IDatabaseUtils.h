@@ -2,16 +2,13 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
 
 class IDatabaseQuery;
 
 //---------------------------------------------------------------------------
-class IDatabaseUtils
-{
-  public:
+class IDatabaseUtils {
+public:
     virtual bool initialize() = 0;
 
     /// Подготавливает к выполнению запрос.

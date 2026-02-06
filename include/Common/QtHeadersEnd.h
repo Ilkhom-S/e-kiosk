@@ -6,9 +6,7 @@
 /* Close the Qt headers warning suppression started by QtHeadersBegin.h
 
    Example:
-         #include <Common/QtHeadersBegin.h>
          #include <QtCore/QList>
-         #include <Common/QtHeadersEnd.h>
 */
 
 /*

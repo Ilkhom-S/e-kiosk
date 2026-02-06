@@ -1,9 +1,9 @@
 /* @file Явное инстанцирование шаблонов принтеров. */
 
-// System
-#include "Base/Port/PortPrinterBase.h"
 #include <Hardware/Common/LibUSBDeviceBase.h>
 #include <Hardware/Common/VirtualDeviceBase.h>
+
+#include "Base/Port/PortPrinterBase.h"
 #include "POSPrinters/Citizen/CitizenPPU700/CitizenPPU700.h"
 #include "POSPrinters/Common/POSPrinter.h"
 #include "POSPrinters/Custom/CustomPrinters.h"

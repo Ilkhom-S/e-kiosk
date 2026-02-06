@@ -2,57 +2,45 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QMap>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
-#include <ScenarioEngine/Scenario.h>
-
-// SDK
 #include <SDK/Plugins/IFactory.h>
 
-// Project
+#include <ScenarioEngine/Scenario.h>
+
 #include "RemoteService.h"
 
 class IApplication;
 class ReportBuilder;
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        class ICore;
+namespace SDK {
+namespace PaymentProcessor {
+class ICore;
 
-        namespace Scripting
-        {
-            class PaymentService;
-        } // namespace Scripting
-    } // namespace PaymentProcessor
+namespace Scripting {
+class PaymentService;
+} // namespace Scripting
+} // namespace PaymentProcessor
 
-    namespace Plugin
-    {
-        class IEnvironment;
-    } // namespace Plugin
+namespace Plugin {
+class IEnvironment;
+} // namespace Plugin
 
-    namespace Driver
-    {
-        class IDevice;
-    } // namespace Driver
+namespace Driver {
+class IDevice;
+} // namespace Driver
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class FirmwareUploadScenario : public GUI::Scenario
-{
+class FirmwareUploadScenario : public GUI::Scenario {
     Q_OBJECT
 
-  public:
+public:
     FirmwareUploadScenario(IApplication *mApplication);
     virtual ~FirmwareUploadScenario();
 
-  public:
+public:
     /// Запуск сценария.
     virtual void start(const QVariantMap &aContext);
 
@@ -69,7 +57,8 @@ class FirmwareUploadScenario : public GUI::Scenario
     virtual bool initialize(const QList<GUI::SScriptObject> &aScriptObjects);
 
     /// Обработка сигнала из активного состояния с дополнительными аргументами.
-    virtual void signalTriggered(const QString &aSignal, const QVariantMap &aArguments = QVariantMap());
+    virtual void signalTriggered(const QString &aSignal,
+                                 const QVariantMap &aArguments = QVariantMap());
 
     /// Обработчик таймаута
     virtual void onTimeout();
@@ -77,7 +66,7 @@ class FirmwareUploadScenario : public GUI::Scenario
     /// Возвращает false, если сценарий не может быть остановлен в текущий момент.
     virtual bool canStop();
 
-  protected:
+protected:
     void timerEvent(QTimerEvent *aEvent);
 
     /// Заблокировать GUI
@@ -89,7 +78,7 @@ class FirmwareUploadScenario : public GUI::Scenario
     /// Почистить за собой файл прошивки
     void cleanFirmwareArtifacts();
 
-  private slots:
+private slots:
     /// Обработчик события прошивки устройства
     void onUpdated(bool aSuccess);
 
@@ -99,11 +88,11 @@ class FirmwareUploadScenario : public GUI::Scenario
     /// Получение сигнала что устройство успешно инициализированно
     void onDeviceInitialized();
 
-  public slots:
+public slots:
     /// Текущее состояние.
     virtual QString getState() const;
 
-  private:
+private:
     IApplication *mApplication;
     ReportBuilder *mReportBuilder;
     RemoteService::UpdateCommand mCommand;

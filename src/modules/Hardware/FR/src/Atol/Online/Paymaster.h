@@ -2,35 +2,33 @@
 
 #pragma once
 
-#include "AtolOnlineFRBase.h"
 #include "../Ejector/AtolVKP80BasedFR.h"
+#include "AtolOnlineFRBase.h"
 
 /// Константы Казначея.
-namespace CPaymaster
-{
-    /// Ошибки короткого статуса.
-    namespace ShortStatusError
-    {
-        const char PaperJam = '\x20';  /// Замятие бумаги.
-        const char Presenter = '\x40'; /// Только для PPU-700: Ошибка презентера или в презентере осталась бумага.
-    } // namespace ShortStatusError
+namespace CPaymaster {
+/// Ошибки короткого статуса.
+namespace ShortStatusError {
+const char PaperJam = '\x20'; /// Замятие бумаги.
+const char Presenter =
+    '\x40'; /// Только для PPU-700: Ошибка презентера или в презентере осталась бумага.
+} // namespace ShortStatusError
 
-    /// Минимально рекомендованный билд прошивки.
-    const int MinFRBuild = 7942;
+/// Минимально рекомендованный билд прошивки.
+const int MinFRBuild = 7942;
 } // namespace CPaymaster
 
 //--------------------------------------------------------------------------------
-template <class T> class Paymaster : public AtolVKP80BasedFR<T>
-{
+template <class T> class Paymaster : public AtolVKP80BasedFR<T> {
     SET_SUBSERIES("Paymaster")
 
-  public:
+public:
     Paymaster();
 
     /// Устанавливает конфигурацию устройству.
     virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
-  protected:
+protected:
     /// Инициализация устройства.
     virtual bool updateParameters();
 

@@ -1,33 +1,25 @@
 /* @file Вспомогательные функции для протоколов. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QFile>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QTextStream>
-#include <Common/QtHeadersEnd.h>
 
-// System
 #include <Hardware/Protocols/Common/ProtocolUtils.h>
 
-bool ProtocolUtils::getBit(const QByteArray &aBuffer, int aShift, bool invert)
-{
+bool ProtocolUtils::getBit(const QByteArray &aBuffer, int aShift, bool invert) {
     int byteNumber = aShift / 8;
 
-    if (byteNumber > aBuffer.size())
-    {
+    if (byteNumber > aBuffer.size()) {
         return false;
     }
 
-    if (invert)
-    {
+    if (invert) {
         byteNumber = aBuffer.size() - byteNumber - 1;
     }
 
     int bitNumber = aShift - byteNumber * 8;
 
-    if ((byteNumber + 1) <= aBuffer.size())
-    {
+    if ((byteNumber + 1) <= aBuffer.size()) {
         return (aBuffer[byteNumber] >> bitNumber) & 1;
     }
 
@@ -35,11 +27,9 @@ bool ProtocolUtils::getBit(const QByteArray &aBuffer, int aShift, bool invert)
 }
 
 //--------------------------------------------------------------------------------
-bool ProtocolUtils::checkBufferString(QString aData, QString *aLog)
-{
+bool ProtocolUtils::checkBufferString(QString aData, QString *aLog) {
     aData = aData.replace("0x", "").replace(" ", "");
-    auto makeResult = [&aLog](const QString &aLogData) -> bool
-    {
+    auto makeResult = [&aLog](const QString &aLogData) -> bool {
         if (aLog)
             *aLog = "Failed to check buffer string due to " + aLogData;
         return false;
@@ -47,19 +37,16 @@ bool ProtocolUtils::checkBufferString(QString aData, QString *aLog)
 
     int size = aData.size();
 
-    if (size % 2)
-    {
+    if (size % 2) {
         return makeResult("size = " + QString::number(size));
     }
 
-    for (int i = 0; i < size / 2; ++i)
-    {
+    for (int i = 0; i < size / 2; ++i) {
         bool OK;
         QString data = aData.mid(i * 2, 2);
         data.toUShort(&OK, 16);
 
-        if (!OK)
-        {
+        if (!OK) {
             return makeResult(QString("data #%1 = %2").arg(i).arg(data));
         }
     }
@@ -68,18 +55,15 @@ bool ProtocolUtils::checkBufferString(QString aData, QString *aLog)
 }
 
 //--------------------------------------------------------------------------------
-QByteArray ProtocolUtils::getBufferFromString(QString aData)
-{
+QByteArray ProtocolUtils::getBufferFromString(QString aData) {
     aData = aData.replace("0x", "").replace(" ", "");
     QByteArray result;
 
-    if (aData.size() % 2)
-    {
+    if (aData.size() % 2) {
         aData = "0" + aData;
     }
 
-    for (int i = 0; i < aData.size() / 2; ++i)
-    {
+    for (int i = 0; i < aData.size() / 2; ++i) {
         result += uchar(aData.mid(i * 2, 2).toUShort(0, 16));
     }
 
@@ -87,20 +71,17 @@ QByteArray ProtocolUtils::getBufferFromString(QString aData)
 }
 
 //--------------------------------------------------------------------------------
-ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromStrings(QStringList aDataList)
-{
+ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromStrings(QStringList aDataList) {
     ProtocolUtils::TBufferList result;
 
     aDataList.removeAll("");
     QRegularExpression regex(CProtocolUtils::LogRexExp);
 
-    for (int i = 0; i < aDataList.size(); ++i)
-    {
+    for (int i = 0; i < aDataList.size(); ++i) {
         QString rawLine = aDataList[i];
 
         QRegularExpressionMatch match = regex.match(aDataList[i]);
-        if (match.hasMatch() && (match.capturedTexts()[1].size() > 4))
-        {
+        if (match.hasMatch() && (match.capturedTexts()[1].size() > 4)) {
             QString lineData = match.capturedTexts()[1];
             result << ProtocolUtils::getBufferFromString(lineData);
         }
@@ -110,20 +91,17 @@ ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromStrings(QStringList a
 }
 
 //--------------------------------------------------------------------------------
-ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromLog(const QString &aData)
-{
+ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromLog(const QString &aData) {
     return getBufferListFromStrings(aData.split("\t"));
 }
 
 //--------------------------------------------------------------------------------
-ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromFile(const QString &aFileName)
-{
+ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromFile(const QString &aFileName) {
     ProtocolUtils::TBufferList result;
 
     QFile file(aFileName);
 
-    if (!file.exists() || !file.open(QIODevice::ReadOnly))
-    {
+    if (!file.exists() || !file.open(QIODevice::ReadOnly)) {
         return ProtocolUtils::TBufferList();
     }
 
@@ -135,21 +113,15 @@ ProtocolUtils::TBufferList ProtocolUtils::getBufferListFromFile(const QString &a
 }
 
 //--------------------------------------------------------------------------------
-char ProtocolUtils::mask(char aData, const QString &aMask)
-{
-    for (int i = 0; i < 8; ++i)
-    {
+char ProtocolUtils::mask(char aData, const QString &aMask) {
+    for (int i = 0; i < 8; ++i) {
         int bit = aMask[i].digitValue();
         char mask = 1 << (7 - i);
 
-        if (bit != -1)
-        {
-            if (bit)
-            {
+        if (bit != -1) {
+            if (bit) {
                 aData |= mask;
-            }
-            else
-            {
+            } else {
                 aData &= ~mask;
             }
         }
@@ -159,12 +131,10 @@ char ProtocolUtils::mask(char aData, const QString &aMask)
 }
 
 //--------------------------------------------------------------------------------
-QString ProtocolUtils::hexToBCD(const QByteArray &aBuffer, char filler)
-{
+QString ProtocolUtils::hexToBCD(const QByteArray &aBuffer, char filler) {
     QString result;
 
-    for (int i = 0; i < aBuffer.size(); ++i)
-    {
+    for (int i = 0; i < aBuffer.size(); ++i) {
         result += QString("%1").arg(uchar(aBuffer[i]), 2, 10, QChar(filler));
     }
 
@@ -172,14 +142,12 @@ QString ProtocolUtils::hexToBCD(const QByteArray &aBuffer, char filler)
 }
 
 //--------------------------------------------------------------------------------
-QByteArray ProtocolUtils::getHexReverted(double aValue, int aSize, int aPrecision)
-{
+QByteArray ProtocolUtils::getHexReverted(double aValue, int aSize, int aPrecision) {
     qint64 value = qRound64(aValue * pow(10.0, abs(aPrecision)));
     QString stringValue = QString("%1").arg(value, aSize * 2, 16, QChar(ASCII::Zero));
     QByteArray result;
 
-    for (int i = 0; i < aSize; ++i)
-    {
+    for (int i = 0; i < aSize; ++i) {
         result.append(uchar(stringValue.mid(2 * (aSize - i - 1), 2).toInt(0, 16)));
     }
 

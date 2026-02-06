@@ -2,8 +2,6 @@
 
 /// Подключаемые файлы
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDir>
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QFile>
@@ -21,16 +19,13 @@
 #include <QtSql/QSqlRecord>
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomNode>
-#include <Common/QtHeadersEnd.h>
 
-// Project
 #include "CopyFile.h"
 #include "textprogressbar.h"
 
-class DownloadManager : public QThread
-{
+class DownloadManager : public QThread {
     Q_OBJECT
-  public:
+public:
     DownloadManager();
 
     void setUpdatePointName(QString name);
@@ -43,10 +38,10 @@ class DownloadManager : public QThread
 
     QString settingsPath;
 
-  protected:
+protected:
     void run();
 
-  private:
+private:
     QString getOldHash();
     QString fileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm);
 
@@ -101,7 +96,7 @@ class DownloadManager : public QThread
 
     QDir dirCont;
 
-  private slots:
+private slots:
     void append(QUrl url);
     void startNextDownload();
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
@@ -114,10 +109,10 @@ class DownloadManager : public QThread
     void compliteUpdateIn();
     void toRestartTimer();
 
-  public slots:
+public slots:
     void startToUpdate();
 
-  signals:
+signals:
     void emit_Loging(int status, QString title, QString text);
     void emit_reDown();
     void emit_downOneByOne();

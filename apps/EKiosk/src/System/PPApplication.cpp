@@ -1,7 +1,5 @@
 /* @file Класс приложения для PaymentProcessor. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QAbstractEventDispatcher>
 #include <QtCore/QDir>
 #include <QtCore/QThread>
@@ -11,42 +9,43 @@
 #include <QtGui/QPixmap>
 #include <QtGui/QScreen>
 #include <QtGui/QSessionManager>
-#include <Common/QtHeadersEnd.h>
 
 #ifdef Q_OS_WIN
 #define NOMINMAX
 #include <Windows.h>
 #endif
 
-// Модули
 #include <Common/ExitCodes.h>
+
 #include <SysUtils/ISysUtils.h>
 
-// Проект
+#include "PPApplication.h"
 #include "Services/ServiceController.h"
 #include "System/SettingsConstants.h"
 #include "UnhandledException.h"
-#include "PPApplication.h"
 
 namespace PP = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------
-PPApplication::PPApplication(const QString &aName, const QString &aVersion, int &aArgumentCount, char **aArguments)
+PPApplication::PPApplication(const QString &aName,
+                             const QString &aVersion,
+                             int &aArgumentCount,
+                             char **aArguments)
     : BasicQtApplication<SafeQApplication>(aName, aVersion, aArgumentCount, aArguments),
-      mProtection("PaymentProcessorProtection")
-{
+      mProtection("PaymentProcessorProtection") {
     CatchUnhandledExceptions();
 
     // Производим проверку на наличие еще одной запущенной копии приложения.
     mProtection.attach();
 
-    if (!mProtection.create(1))
-    {
+    if (!mProtection.create(1)) {
         mProtection.detach();
 
-        ILog::getInstance(aName)->write(LogLevel::Warning, "Another instance of application was terminated.");
+        ILog::getInstance(aName)->write(LogLevel::Warning,
+                                        "Another instance of application was terminated.");
 
-        throw std::runtime_error("Can't run application, because another instance already running.");
+        throw std::runtime_error(
+            "Can't run application, because another instance already running.");
     }
 
     getQtApplication().setStyle("plastique");
@@ -67,38 +66,35 @@ PPApplication::PPApplication(const QString &aName, const QString &aVersion, int 
     connect(this, SIGNAL(screenshot()), SLOT(onScreenshot()));
 
     // Парсим параметры командной строки.
-    foreach (const QString &parameter, BasicQtApplication::getArguments())
-    {
+    foreach (const QString &parameter, BasicQtApplication::getArguments()) {
         mArguments.insert(parameter.section('=', 0, 0), parameter.section('=', 1, 1));
     }
 
-    connect(qApp, SIGNAL(commitDataRequest(QSessionManager &)), this, SLOT(closeBySystemRequest(QSessionManager &)),
+    connect(qApp,
+            SIGNAL(commitDataRequest(QSessionManager &)),
+            this,
+            SLOT(closeBySystemRequest(QSessionManager &)),
             Qt::DirectConnection);
 }
 
 //------------------------------------------------------------------------
-PPApplication::~PPApplication()
-{
+PPApplication::~PPApplication() {
     mProtection.detach();
 
     delete mServiceController;
 }
 
 //------------------------------------------------------------------------
-int PPApplication::exec()
-{
+int PPApplication::exec() {
     // Устанавливаем обработчик системных событий.
     QAbstractEventDispatcher::instance()->installNativeEventFilter(this);
 
     // блокируем скринсеййвер
     ISysUtils::disableScreenSaver();
 
-    if (mServiceController->initializeServices())
-    {
+    if (mServiceController->initializeServices()) {
         return BasicQtApplication::exec();
-    }
-    else
-    {
+    } else {
         LOG(getLog(), LogLevel::Error, "Failed to initialize PaymentProcessor.");
 
         // Выводим подробный отчет о запуске сервисов.
@@ -109,40 +105,34 @@ int PPApplication::exec()
 }
 
 //------------------------------------------------------------------------
-SDK::PaymentProcessor::ICore *PPApplication::getCore()
-{
+SDK::PaymentProcessor::ICore *PPApplication::getCore() {
     return mServiceController;
 }
 
 //------------------------------------------------------------------------
-void PPApplication::qtMessageHandler(QtMsgType /*aType*/, const QMessageLogContext & /*aContext*/,
-                                     const QString &aMessage)
-{
+void PPApplication::qtMessageHandler(QtMsgType /*aType*/,
+                                     const QMessageLogContext & /*aContext*/,
+                                     const QString &aMessage) {
     static ILog *log = ILog::getInstance("QtMessages");
 
     log->write(LogLevel::Normal, aMessage);
 }
 
 //------------------------------------------------------------------------
-QList<QImage> PPApplication::getScreenshot()
-{
+QList<QImage> PPApplication::getScreenshot() {
     mScreenshots.clear();
 
-    if (QThread::currentThread() != this->thread())
-    {
+    if (QThread::currentThread() != this->thread()) {
         mScreenshotMutex.lock();
 
         emit screenshot();
 
-        if (!mScreenshotCondition.wait(&mScreenshotMutex, 5000))
-        {
+        if (!mScreenshotCondition.wait(&mScreenshotMutex, 5000)) {
             LOG(getLog(), LogLevel::Error, "Failed to get screenshot, the application is busy.");
         }
 
         mScreenshotMutex.unlock();
-    }
-    else
-    {
+    } else {
         onScreenshot();
     }
 
@@ -150,15 +140,13 @@ QList<QImage> PPApplication::getScreenshot()
 }
 
 //------------------------------------------------------------------------
-void PPApplication::onScreenshot()
-{
+void PPApplication::onScreenshot() {
     QMutexLocker locker(&mScreenshotMutex);
 
 #ifdef Q_OS_WIN
     const auto screens = QGuiApplication::screens();
 
-    for (auto screen : screens)
-    {
+    for (auto screen : screens) {
         auto geometry = screen->geometry();
         screen->grabWindow(0, geometry.left(), geometry.top(), geometry.width(), geometry.height());
     }
@@ -170,14 +158,12 @@ void PPApplication::onScreenshot()
 }
 
 //------------------------------------------------------------------------
-QVariantMap PPApplication::getArguments() const
-{
+QVariantMap PPApplication::getArguments() const {
     return mArguments;
 }
 
 //------------------------------------------------------------------------
-IApplication::AppInfo PPApplication::getAppInfo() const
-{
+IApplication::AppInfo PPApplication::getAppInfo() const {
     AppInfo inf;
     inf.version = BasicQtApplication::getVersion();
     inf.appName = getName();
@@ -186,81 +172,76 @@ IApplication::AppInfo PPApplication::getAppInfo() const
 }
 
 //------------------------------------------------------------------------
-QSettings &PPApplication::getSettings() const
-{
+QSettings &PPApplication::getSettings() const {
     return BasicQtApplication::getSettings();
 }
 
 //------------------------------------------------------------------------
-ILog *PPApplication::getLog() const
-{
+ILog *PPApplication::getLog() const {
     return BasicQtApplication::getLog();
 }
 
 //------------------------------------------------------------------------
-QString PPApplication::getUserDataPath() const
-{
+QString PPApplication::getUserDataPath() const {
     QString dataDir = getSettings().contains(CSettings::UserDataPath)
                           ? getSettings().value(CSettings::UserDataPath).toString()
                           : "user";
 
     return QDir::cleanPath(QDir::fromNativeSeparators(
-        QDir::isAbsolutePath(dataDir) ? dataDir : BasicApplication::getWorkingDirectory() + "/" + dataDir));
+        QDir::isAbsolutePath(dataDir) ? dataDir
+                                      : BasicApplication::getWorkingDirectory() + "/" + dataDir));
 }
 
 //------------------------------------------------------------------------
-QString PPApplication::getPluginPath() const
-{
+QString PPApplication::getPluginPath() const {
     QString pluginDir = getSettings().contains(CSettings::PluginsPath)
                             ? getSettings().value(CSettings::PluginsPath).toString()
                             : "plugins";
 
     return QDir::cleanPath(QDir::fromNativeSeparators(
-        QDir::isAbsolutePath(pluginDir) ? pluginDir : BasicApplication::getWorkingDirectory() + "/" + pluginDir));
+        QDir::isAbsolutePath(pluginDir)
+            ? pluginDir
+            : BasicApplication::getWorkingDirectory() + "/" + pluginDir));
 }
 
 //------------------------------------------------------------------------
-QString PPApplication::getUserPluginPath() const
-{
+QString PPApplication::getUserPluginPath() const {
     return QString("%1/bin").arg(getUserDataPath());
 }
 
 //------------------------------------------------------------------------
-bool PPApplication::nativeEventFilter(const QByteArray &aEventType, void *aMessage, qintptr *aResult)
-{
+bool PPApplication::nativeEventFilter(const QByteArray &aEventType,
+                                      void *aMessage,
+                                      qintptr *aResult) {
 #ifdef Q_OS_WIN
     MSG *message = (MSG *)aMessage;
 
-    if (message)
-    {
-        switch (message->message)
-        {
-            case WM_SYSCOMMAND:
-                if (message->wParam == SC_SCREENSAVE)
-                {
-                    return true;
-                }
+    if (message) {
+        switch (message->message) {
+        case WM_SYSCOMMAND:
+            if (message->wParam == SC_SCREENSAVE) {
+                return true;
+            }
 
-                if (message->wParam == SC_MONITORPOWER)
-                {
-                    /*
-                    Nothing todo ;)
+            if (message->wParam == SC_MONITORPOWER) {
+                /*
+                Nothing todo ;)
 
-                    Sets the state of the display. This command supports devices that have power-saving features, such
-                    as a battery-powered personal computer.
+                Sets the state of the display. This command supports devices that have power-saving
+                features, such as a battery-powered personal computer.
 
-                    The lParam parameter can have the following values:
-                    -1 (the display is powering on)
-                    1 (the display is going to low power)
-                    2 (the display is being shut off)
-                    */
+                The lParam parameter can have the following values:
+                -1 (the display is powering on)
+                1 (the display is going to low power)
+                2 (the display is being shut off)
+                */
 
-                    return true;
-                }
-                break;
+                return true;
+            }
+            break;
 
-            case WM_POWERBROADCAST:
-                break;
+        case WM_POWERBROADCAST:
+            break;
         }
     }
 #else
@@ -271,16 +252,14 @@ bool PPApplication::nativeEventFilter(const QByteArray &aEventType, void *aMessa
 }
 
 //------------------------------------------------------------------------
-void PPApplication::exit(int aResultCode)
-{
+void PPApplication::exit(int aResultCode) {
     LOG(getLog(), LogLevel::Debug, QString("Exit application with %1 code.").arg(aResultCode));
 
     qApp->exit(aResultCode);
 }
 
 //------------------------------------------------------------------------
-void PPApplication::closeBySystemRequest(QSessionManager &aSessionManager)
-{
+void PPApplication::closeBySystemRequest(QSessionManager &aSessionManager) {
     // блокируем остановку системы.
     aSessionManager.cancel();
 

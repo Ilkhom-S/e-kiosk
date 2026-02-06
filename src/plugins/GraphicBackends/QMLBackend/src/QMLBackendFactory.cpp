@@ -2,17 +2,13 @@
 
 // Plugin SDK
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include "QMLBackendFactory.h"
-#include <QtCore/QDebug>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
+#include <QtCore/QDebug>
+
 #include <SDK/Plugins/PluginFactory.h>
 
-QMLBackendFactory::QMLBackendFactory()
-{
+QMLBackendFactory::QMLBackendFactory() {
     mName = "QML graphics backend";
     mDescription = "QML based graphics backend for qml widgets";
     mAuthor = "Humo";

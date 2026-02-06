@@ -2,46 +2,39 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
 #include <QtCore/QVariantMap>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
-#include <SDK/PaymentProcessor/Payment/Step.h>
-#include <SDK/PaymentProcessor/Core/Encashment.h>
-#include <SDK/PaymentProcessor/Settings/DealerSettings.h>
-#include <SDK/PaymentProcessor/Payment/IPayment.h>
-#include <SDK/PaymentProcessor/Core/IPaymentService.h>
 #include <SDK/Drivers/FR/FiscalDataTypes.h>
 #include <SDK/Drivers/PrintingModes.h>
+#include <SDK/PaymentProcessor/Core/Encashment.h>
+#include <SDK/PaymentProcessor/Core/IPaymentService.h>
+#include <SDK/PaymentProcessor/Payment/IPayment.h>
+#include <SDK/PaymentProcessor/Payment/Step.h>
+#include <SDK/PaymentProcessor/Settings/DealerSettings.h>
 
 #include "../GUI/PaymentInfo.h"
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        class ICore;
-        class IPrinterService;
-    } // namespace PaymentProcessor
+namespace SDK {
+namespace PaymentProcessor {
+class ICore;
+class IPrinterService;
+} // namespace PaymentProcessor
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class PaymentManager : public QObject
-{
+class PaymentManager : public QObject {
     Q_OBJECT
 
-  public:
+public:
     PaymentManager(SDK::PaymentProcessor::ICore *aCore);
     ~PaymentManager();
 
-  public:
+public:
     /// Указать менеджеру, что используется аппаратный ФР
     void useHardwareFiscalPrinter(bool aUseFiscalPrinter);
 
-  public:
+public:
     /// Возвращает текущий баланс, с конвертированную в QVariantMap
     QVariantMap getBalanceInfo() const;
 
@@ -78,18 +71,18 @@ class PaymentManager : public QObject
 
     void processPayment(qint64 id);
 
-  signals:
+signals:
     /// Срабатывает после печати чека платежа. Успешность операции передаётся в поле aError.
     void receiptPrinted(qint64 aPaymentId, bool aErrorHappened);
 
     /// Срабатывает при изменении состояния конкретного платежа
     void paymentChanged(qint64 aPaymentId);
 
-  private slots:
+private slots:
     /// Срабатывает после печати произвольного чека. Успешность операции передаётся в поле aError.
     void onReceiptPrinted(int aJobIndex, bool aErrorHappened);
 
-  private:
+private:
     /// Обновить список платежей
     void updatePaymentList();
 
@@ -97,7 +90,8 @@ class PaymentManager : public QObject
     bool printUnprintedReceiptsRegistry(const QSet<qint64> &aPayments);
 
     /// Преобразовать список параметров в структуру PaymentInfo
-    PaymentInfo loadPayment(const QList<SDK::PaymentProcessor::IPayment::SParameter> &aPaymentParams);
+    PaymentInfo
+    loadPayment(const QList<SDK::PaymentProcessor::IPayment::SParameter> &aPaymentParams);
 
     /// Конвертер баланса в параметры
     QVariantMap balanceParameters(const SDK::PaymentProcessor::SBalance &aBalance) const;
@@ -105,7 +99,7 @@ class PaymentManager : public QObject
     /// Расшифровать значение параметра
     QString decryptParameter(const QString &aValue);
 
-  private:
+private:
     QList<PaymentInfo> mPaymentList;
     SDK::PaymentProcessor::ICore *mCore;
     SDK::PaymentProcessor::IPaymentService *mPaymentService;

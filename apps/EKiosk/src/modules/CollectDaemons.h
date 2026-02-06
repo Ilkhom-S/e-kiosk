@@ -1,22 +1,18 @@
 #pragma once
 
-// Project
 #include "SendRequest.h"
 
-struct Bill
-{
+struct Bill {
     int face;
     int value = 0;
 };
 
-struct Coin
-{
+struct Coin {
     int face;
     int value = 0;
 };
 
-struct NominalData
-{
+struct NominalData {
     QString billCurrency;
     QString coinCurrency;
 
@@ -29,15 +25,13 @@ struct NominalData
     double coinSum = 0;
     double coinDivider = 100;
 
-    static NominalData fromVariant(const QVariantMap &v)
-    {
+    static NominalData fromVariant(const QVariantMap &v) {
         NominalData nominalData;
         nominalData.billCurrency = v.value("bill_currency").toString();
         nominalData.coinCurrency = v.value("coin_currency").toString();
 
         auto bills = v.value("bills").toList();
-        for (auto &b : bills)
-        {
+        for (auto &b : bills) {
             Bill bill;
             bill.face = b.toInt();
             bill.value = 0;
@@ -46,8 +40,7 @@ struct NominalData
         }
 
         auto coins = v.value("coins").toList();
-        for (auto &c : coins)
-        {
+        for (auto &c : coins) {
             Coin coin;
             coin.face = c.toInt();
             coin.value = 0;
@@ -58,13 +51,11 @@ struct NominalData
         return nominalData;
     }
 
-    void calculateTotal()
-    {
+    void calculateTotal() {
         billCount = 0;
         billSum = 0.0;
 
-        for (auto &b : bills)
-        {
+        for (auto &b : bills) {
             billCount += b.value;
             billSum += b.face * b.value;
         }
@@ -72,8 +63,7 @@ struct NominalData
         coinCount = 0;
         coinSum = 0.0;
 
-        for (auto &b : coins)
-        {
+        for (auto &b : coins) {
             coinCount += b.value;
             coinSum += b.face * b.value;
         }
@@ -82,11 +72,10 @@ struct NominalData
 
 class SendRequest;
 
-class CollectDaemons : public SendRequest
-{
+class CollectDaemons : public SendRequest {
     Q_OBJECT
 
-  public:
+public:
     CollectDaemons(QObject *parent = 0);
     void setNominalData(QVariantMap data);
 
@@ -96,8 +85,14 @@ class CollectDaemons : public SendRequest
 
     QVariantMap getNominalInfo();
 
-    QString getHtmlInfoBox(QString &nonCollectPay, int &moneyOutNum, double &moneyOutSum, QString data,
-                           QString &collectionId, QString &stackId, QString &trnFrom, QString &trnTo);
+    QString getHtmlInfoBox(QString &nonCollectPay,
+                           int &moneyOutNum,
+                           double &moneyOutSum,
+                           QString data,
+                           QString &collectionId,
+                           QString &stackId,
+                           QString &trnFrom,
+                           QString &trnTo);
     bool getCheckText(QString &text, bool preCheck, QString dateP, QString cid = QString());
     bool getDataCollectList(QStringList &lst, int &count_i);
 
@@ -110,12 +105,15 @@ class CollectDaemons : public SendRequest
 
     QString SMSTEXT;
 
-  private:
+private:
     NominalData nominalData;
 
     int getNonCollectOperationCount(const QString cid);
     int getCollectCount(bool new_collect);
-    bool sendCollection(QString &trnId, const QString collectionId, QString &collectionIdNext, QString &dateCreate,
+    bool sendCollection(QString &trnId,
+                        const QString collectionId,
+                        QString &collectionIdNext,
+                        QString &dateCreate,
                         QString xmlDenom);
     bool confirmCollection(QString collectionId);
 
@@ -123,12 +121,23 @@ class CollectDaemons : public SendRequest
     bool getDatePrevCollection(QString &date, QString collectionId);
     bool getTrnOperation(const QString collectId, const QString &cmd, QString &trn);
     bool getMoneyOut(const QString &collectionId, int &numOut, double &sumOut);
-    bool getCollectionInfo(QString collectionId, QString &collectionIdNext, QString &idTrn, QString &dateCreate,
+    bool getCollectionInfo(QString collectionId,
+                           QString &collectionIdNext,
+                           QString &idTrn,
+                           QString &dateCreate,
                            QString &denomXml);
     bool parsDenomilSlot(const QString &xmlDenom);
     bool updateMoneyOut(QString collectionId, QString collectionStatus);
-    void getXmlForSend(QString &xml, QString cid, QString cidNext, QString sid, QString dateCreate,
-                       QString collectDenom, int moneyOutCount, double moneyOutSum, QString trnFrom, QString trnTo);
+    void getXmlForSend(QString &xml,
+                       QString cid,
+                       QString cidNext,
+                       QString sid,
+                       QString dateCreate,
+                       QString collectDenom,
+                       int moneyOutCount,
+                       double moneyOutSum,
+                       QString trnFrom,
+                       QString trnTo);
     void parcerNote(const QDomNode &domElement);
 
     QString getCollectIdByDate(QString date);
@@ -144,7 +153,7 @@ class CollectDaemons : public SendRequest
 
     QString getCoinTxt(int coin);
 
-  private slots:
+private slots:
     bool parserCollectIntoOperation(const QString cid);
 
     void sendCollectRequest();
@@ -152,6 +161,6 @@ class CollectDaemons : public SendRequest
     void errResponse();
     void setDataNote(const QDomNode &domElement);
 
-  signals:
+signals:
     void lockUnlockAvtorization(bool lock, int sts);
 };

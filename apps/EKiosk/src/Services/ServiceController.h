@@ -2,37 +2,31 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QList>
 #include <QtCore/QSet>
 #include <QtCore/QTimer>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
-#include <SDK/PaymentProcessor/Core/ICore.h>
-#include <SDK/PaymentProcessor/Core/IService.h>
-#include <SDK/PaymentProcessor/Core/IEventService.h>
 #include <SDK/PaymentProcessor/Core/Event.h>
+#include <SDK/PaymentProcessor/Core/ICore.h>
+#include <SDK/PaymentProcessor/Core/IEventService.h>
+#include <SDK/PaymentProcessor/Core/IService.h>
 #include <SDK/Plugins/IExternalInterface.h>
 
 //----------------------------------------------------------------------------
 class IApplication;
 
-namespace SDK
-{
-    namespace Plugin
-    {
-        class IPlugin;
-    } // namespace Plugin
+namespace SDK {
+namespace Plugin {
+class IPlugin;
+} // namespace Plugin
 } // namespace SDK
 
 //----------------------------------------------------------------------------
-class ServiceController : public SDK::PaymentProcessor::ICore, public SDK::Plugin::IExternalInterface
-{
+class ServiceController : public SDK::PaymentProcessor::ICore,
+                          public SDK::Plugin::IExternalInterface {
     Q_OBJECT
 
-  public:
+public:
     ServiceController(IApplication *aApplication);
     virtual ~ServiceController();
 
@@ -45,7 +39,7 @@ class ServiceController : public SDK::PaymentProcessor::ICore, public SDK::Plugi
     /// Выводит отчет о выполнении инициализации в лог.
     void dumpFailureReport();
 
-  protected slots:
+protected slots:
     /// Остановка всех сервисов.
     void shutdownServices();
 
@@ -65,14 +59,14 @@ class ServiceController : public SDK::PaymentProcessor::ICore, public SDK::Plugi
     void onCloseCommandReceived();
     void onDisconnected();
 
-  protected slots:
+protected slots:
     void onEvent(const SDK::PaymentProcessor::Event &aEvent);
 
-  signals:
+signals:
     /// Сигнал к завершению работы.
     void exit(int aReturnCode);
 
-  protected:
+protected:
     /// Завершение работы сервисов. В случае неудачи по таймауту вызывает слот aRetrySlot.
     bool finalizeServices(const char *aRetrySlot);
 
@@ -82,7 +76,7 @@ class ServiceController : public SDK::PaymentProcessor::ICore, public SDK::Plugi
     /// Удалить плагины ядра
     void finalizeCoreItems();
 
-  protected:
+protected:
 #pragma region ICore interface
 
     /// ICore: возвращает интерфейс взаимодействия с платежами.
@@ -141,7 +135,7 @@ class ServiceController : public SDK::PaymentProcessor::ICore, public SDK::Plugi
 
 #pragma endregion
 
-  protected:
+protected:
     /// Пользовательские переменные.
     QVariantMap mUserProperties;
 

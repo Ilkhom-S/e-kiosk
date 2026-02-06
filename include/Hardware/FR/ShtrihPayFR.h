@@ -6,15 +6,15 @@
 
 //--------------------------------------------------------------------------------
 /// Класс протокола ShtrihFR.
-class ShtrihPayFRProtocol : public ProtocolBase
-{
-  public:
+class ShtrihPayFRProtocol : public ProtocolBase {
+public:
     ShtrihPayFRProtocol();
 
     /// Выполнить команду.
-    TResult processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, int aTimeout);
+    TResult
+    processCommand(const QByteArray &aCommandData, QByteArray &aUnpackedAnswer, int aTimeout);
 
-  private:
+private:
     /// Подсчет CRC.
     ushort calcCRC(const QByteArray &aData);
 

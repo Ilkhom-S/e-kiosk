@@ -2,16 +2,14 @@
 
 #pragma once
 
-// Modules
 #include <Hardware/Acceptors/CCTalkAcceptorBase.h>
 #include <Hardware/CashAcceptors/SerialCashAcceptor.h>
 
 //--------------------------------------------------------------------------------
 typedef CCTalkAcceptorBase<TSerialCashAcceptor> TCCTalkCashAcceptor;
 
-class CCTalkCashAcceptor : public TCCTalkCashAcceptor
-{
-  public:
+class CCTalkCashAcceptor : public TCCTalkCashAcceptor {
+public:
     CCTalkCashAcceptor();
 
     /// Возвращает список поддерживаемых устройств.
@@ -23,7 +21,7 @@ class CCTalkCashAcceptor : public TCCTalkCashAcceptor
     /// Вернуть купюру.
     virtual bool reject();
 
-  protected:
+protected:
     /// Запросить и сохранить параметры устройства.
     virtual void processDeviceData();
 
@@ -39,7 +37,8 @@ class CCTalkCashAcceptor : public TCCTalkCashAcceptor
     /// Установка параметров по умолчанию.
     virtual bool setDefaultParameters();
 
-    /// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней логики.
+    /// Анализирует коды статусов кастомных устройств и фильтрует несуществующие статусы для нижней
+    /// логики.
     virtual void cleanSpecificStatusCodes(TStatusCodes &aStatusCodes);
 
     /// Распарсить данные прошивки.
@@ -58,14 +57,11 @@ class CCTalkCashAcceptor : public TCCTalkCashAcceptor
     QMap<QByteArray, double> mScalingFactors;
 
     /// Виртуальный статус движения купюры после эскроу.
-    struct SRouting
-    {
+    struct SRouting {
         bool direction;
         bool active;
 
-        SRouting() : direction(false), active(false)
-        {
-        }
+        SRouting() : direction(false), active(false) {}
     };
 
     SRouting mVirtualRouting;

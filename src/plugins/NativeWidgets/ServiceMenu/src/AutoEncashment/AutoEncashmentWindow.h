@@ -2,42 +2,36 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QTimer>
 #include <QtCore/QSharedPointer>
-#include "ui_AutoEncashmentWindow.h"
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QTimer>
 
-// SDK
 #include <SDK/Drivers/WarningLevel.h>
 
-// Project
 #include "GUI/EncashmentWindow.h"
+#include "ui_AutoEncashmentWindow.h"
 
 class ServiceMenuBackend;
 class InputBox;
 
 //---------------------------------------------------------------------------
-class AutoEncashmentWindow : public EncashmentWindow
-{
+class AutoEncashmentWindow : public EncashmentWindow {
     Q_OBJECT
 
-  public:
+public:
     AutoEncashmentWindow(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
     ~AutoEncashmentWindow();
 
-  public:
+public:
     virtual bool initialize();
     virtual bool shutdown();
 
     virtual bool activate();
     virtual bool deactivate();
 
-  private:
+private:
     virtual void updateUI();
 
-  private slots:
+private slots:
     void onTestPrinter();
     void onEncashment();
     void onEncashmentAndZReport();
@@ -50,13 +44,15 @@ class AutoEncashmentWindow : public EncashmentWindow
     void onPanelChanged(int aIndex);
 
     void onDateTimeRefresh();
-    void onDeviceStatusChanged(const QString &aConfigName, const QString &aStatusString, const QString &aStatusColor,
+    void onDeviceStatusChanged(const QString &aConfigName,
+                               const QString &aStatusString,
+                               const QString &aStatusColor,
                                SDK::Driver::EWarningLevel::Enum aLevel);
 
-  private:
+private:
     Ui::AutoEncashmentWindow ui;
 
-  private:
+private:
     QTimer mDateTimeTimer;
     QVariantMap mTerminalInfo;
 };

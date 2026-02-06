@@ -1,21 +1,17 @@
 /* @file Кардридер Creator. */
 #pragma once
 
-// Modules
-#include <Hardware/Common/USBDeviceBase.h>
-#include <Hardware/Common/PortPollingDeviceBase.h>
-#include <Hardware/CardReaders/ProtoMifareReader.h>
 #include <Hardware/CardReaders/Creator.h>
-
-// Project
 #include <Hardware/CardReaders/CreatorReaderDataTypes.h>
+#include <Hardware/CardReaders/ProtoMifareReader.h>
+#include <Hardware/Common/PortPollingDeviceBase.h>
+#include <Hardware/Common/USBDeviceBase.h>
 
 //------------------------------------------------------------------------------
-class CreatorReader : public USBDeviceBase<PortPollingDeviceBase<ProtoMifareReader>>
-{
+class CreatorReader : public USBDeviceBase<PortPollingDeviceBase<ProtoMifareReader>> {
     SET_SERIES("Creator")
 
-  public:
+public:
     CreatorReader();
 
     /// Возвращает список поддерживаемых устройств.
@@ -25,7 +21,8 @@ class CreatorReader : public USBDeviceBase<PortPollingDeviceBase<ProtoMifareRead
     /// Проверка доступности устройства и карты.
     virtual bool isDeviceReady() const;
 
-    /// Выбросить карту (для моторизированных ридеров) или отключить электрически (для немоторизованных).
+    /// Выбросить карту (для моторизированных ридеров) или отключить электрически (для
+    /// немоторизованных).
     virtual void eject();
 #pragma endregion
 
@@ -37,7 +34,7 @@ class CreatorReader : public USBDeviceBase<PortPollingDeviceBase<ProtoMifareRead
     virtual bool communicate(const QByteArray &aSendMessage, QByteArray &aReceiveMessage);
 #pragma endregion
 
-  protected:
+protected:
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
@@ -45,8 +42,12 @@ class CreatorReader : public USBDeviceBase<PortPollingDeviceBase<ProtoMifareRead
     virtual bool updateParameters();
 
     /// Выполнить команду.
-    TResult processCommand(const QByteArray &aCommand, QByteArray *aAnswer = nullptr, bool aIOLogsDebugMode = false);
-    TResult processCommand(const QByteArray &aCommand, const QByteArray &aCommandData, QByteArray *aAnswer = nullptr,
+    TResult processCommand(const QByteArray &aCommand,
+                           QByteArray *aAnswer = nullptr,
+                           bool aIOLogsDebugMode = false);
+    TResult processCommand(const QByteArray &aCommand,
+                           const QByteArray &aCommandData,
+                           QByteArray *aAnswer = nullptr,
                            bool aIOLogsDebugMode = false);
 
     /// Проверить ответ.

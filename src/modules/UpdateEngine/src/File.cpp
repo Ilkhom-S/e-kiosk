@@ -1,75 +1,56 @@
 /* @file Файл дистрибутива. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "File.h"
+
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <Common/QtHeadersEnd.h>
 
-// System
 #include <NetworkTaskManager/HashVerifier.h>
 
-// Project
-#include "File.h"
-
-File::File()
-{
+File::File() {
     mSize = 0;
 }
 
 //---------------------------------------------------------------------------
 File::File(const QString &aName, const QString &aHash, const QString &aUrl, qint64 aSize /*= 0*/)
-    : mName(aName), mHash(aHash), mUrl(aUrl), mSize(aSize)
-{
-}
+    : mName(aName), mHash(aHash), mUrl(aUrl), mSize(aSize) {}
 
 //---------------------------------------------------------------------------
-bool File::operator==(const File &aFile) const
-{
+bool File::operator==(const File &aFile) const {
     return (this->mName.compare(aFile.mName, Qt::CaseInsensitive) == 0 &&
             this->mHash.compare(aFile.mHash, Qt::CaseInsensitive) == 0);
 }
 
 //---------------------------------------------------------------------------
-File::Result File::verify(const QString &aTempFilePath)
-{
+File::Result File::verify(const QString &aTempFilePath) {
     QFileInfo fInfo(aTempFilePath);
 
-    if (!fInfo.exists())
-    {
+    if (!fInfo.exists()) {
         return NotFullyDownloaded;
     }
 
-    if (size() > 0)
-    {
-        if (fInfo.size() < size())
-        {
+    if (size() > 0) {
+        if (fInfo.size() < size()) {
             return NotFullyDownloaded;
-        }
-        else if (fInfo.size() > size())
-        {
+        } else if (fInfo.size() > size()) {
             // файл на диске больше файла на сервере - нужно удалить и качать заново
             return Error;
         }
     }
 
     QFile f(aTempFilePath);
-    if (f.open(QIODevice::ReadOnly))
-    {
+    if (f.open(QIODevice::ReadOnly)) {
         Sha256Verifier sha256V(hash());
 
         bool hashOK = sha256V.verify(nullptr, f.readAll());
 
-        if (!hashOK && size() == 0)
-        {
+        if (!hashOK && size() == 0) {
             return NotFullyDownloaded;
         }
 
         return hashOK ? OK : Error;
-    }
-    else
-    {
+    } else {
         return Error;
     }
 }

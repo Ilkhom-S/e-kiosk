@@ -2,35 +2,31 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QList>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Hardware/Common/ProtocolBase.h>
 
-namespace CPuloon
-{
-    /// Размер данных о выдаваемом предмете.
-    const int ItemDataSize = 3;
+namespace CPuloon {
+/// Размер данных о выдаваемом предмете.
+const int ItemDataSize = 3;
 } // namespace CPuloon
 
 typedef QList<QByteArray> TAnswerList;
 
 //--------------------------------------------------------------------------------
-class Puloon : public ProtocolBase
-{
-  public:
+class Puloon : public ProtocolBase {
+public:
     /// Выполнить команду.
-    TResult processCommand(const QByteArray &aCommandData, TAnswerList &aAnswerList, int aTimeout) const;
+    TResult
+    processCommand(const QByteArray &aCommandData, TAnswerList &aAnswerList, int aTimeout) const;
 
-  private:
+private:
     /// Подсчет CRC.
     uchar calcCRC(const QByteArray &aData) const;
 
     /// Исполнить команду.
-    bool execCommand(const QByteArray &aCommandPacket, TAnswerList &aAnswerList, int aTimeout) const;
+    bool
+    execCommand(const QByteArray &aCommandPacket, TAnswerList &aAnswerList, int aTimeout) const;
 
     /// Переполучить ответ.
     bool regetAnswer(TAnswerList &aAnswerList) const;

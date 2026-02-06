@@ -1,11 +1,7 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtNetwork/QNetworkInterface>
-#include <Common/QtHeadersEnd.h>
 
-// Project
 #include "CheckConnection.h"
 
 #ifdef Q_OS_WIN
@@ -16,24 +12,21 @@
 class RasConnection;
 #endif
 
-namespace Connection
-{
-    enum conSate
-    {
-        conStateUp = 0,
-        conStateDown = 1,
-        conStateUpping = 2,
-        conStateError = 3,
-        SendingSMS = 4,
-        GetSimData = 5
-    };
+namespace Connection {
+enum conSate {
+    conStateUp = 0,
+    conStateDown = 1,
+    conStateUpping = 2,
+    conStateError = 3,
+    SendingSMS = 4,
+    GetSimData = 5
+};
 } // namespace Connection
 
-class ConnectionPart : public QObject
-{
+class ConnectionPart : public QObject {
     Q_OBJECT
 
-  public:
+public:
     ConnectionPart(QObject *parent = 0);
 
     QStringList getLocalConnectionList();
@@ -50,12 +43,13 @@ class ConnectionPart : public QObject
     void stopReconnect();
     void closeThis();
     bool restartWindows(bool restart);
-    int createNewDialupConnection(QString conName, QString devName, QString phone, QString login, QString pass);
+    int createNewDialupConnection(
+        QString conName, QString devName, QString phone, QString login, QString pass);
     bool hasInstalledModems(QStringList &lstModemList);
     int conState;
     QTimer *daemonTimer;
 
-  private:
+private:
 #ifdef Q_OS_WIN
     RasConnection *rasConn;
 #endif
@@ -63,10 +57,10 @@ class ConnectionPart : public QObject
 
     QString connectionName;
 
-  public slots:
+public slots:
     void nowStateDialuping(int state);
     void setDateTimeIn(QString dt);
-  signals:
+signals:
     void emit_connState(QString state, QString comment);
     void emit_errorState(QString errNum, QString errComment);
     void emit_ConnectionUp();

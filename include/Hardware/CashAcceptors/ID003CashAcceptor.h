@@ -2,18 +2,14 @@
 
 #pragma once
 
-// Modules
+#include <Hardware/CashAcceptors/SerialCashAcceptor.h>
 #include <Hardware/Protocols/CashAcceptor/ID003.h>
 
-// Project
-#include <Hardware/CashAcceptors/SerialCashAcceptor.h>
-
 //--------------------------------------------------------------------------------
-class ID003CashAcceptor : public TSerialCashAcceptor
-{
+class ID003CashAcceptor : public TSerialCashAcceptor {
     SET_SERIES("ID003")
 
-  public:
+public:
     ID003CashAcceptor();
 
     /// Возвращает список поддерживаемых устройств.
@@ -25,7 +21,7 @@ class ID003CashAcceptor : public TSerialCashAcceptor
     /// Вернуть купюру.
     virtual bool reject();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
@@ -48,7 +44,8 @@ class ID003CashAcceptor : public TSerialCashAcceptor
     virtual bool processReset();
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult execCommand(const QByteArray &aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
 
     /// Протокол.

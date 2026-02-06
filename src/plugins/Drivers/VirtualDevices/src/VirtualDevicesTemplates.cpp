@@ -1,8 +1,5 @@
 /* @file Инстанцирование шаблонов виртуальных устройств. */
 
-// System
-#include "../../../../modules/Hardware/CashAcceptors/src/CashAcceptorBase.cpp"
-#include "../../../../modules/Hardware/CashDispensers/src/DispenserBase.cpp"
 #include <Hardware/CashAcceptors/CashAcceptorBase.h>
 #include <Hardware/Common/DeviceBase.h>
 #include <Hardware/Common/PollingDeviceBase.h>
@@ -10,6 +7,9 @@
 #include <Hardware/Common/VirtualDeviceBase.h>
 #include <Hardware/Dispensers/DispenserBase.h>
 #include <Hardware/Printers/PrinterBase.h>
+
+#include "../../../../modules/Hardware/CashAcceptors/src/CashAcceptorBase.cpp"
+#include "../../../../modules/Hardware/CashDispensers/src/DispenserBase.cpp"
 
 template class CashAcceptorBase<DeviceBase<ProtoCashAcceptor>>;
 template class DispenserBase<DeviceBase<ProtoDispenser>>;

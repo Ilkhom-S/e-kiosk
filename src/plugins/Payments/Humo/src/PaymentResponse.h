@@ -2,23 +2,17 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
-#include <SDK/PaymentProcessor/Humo/Response.h>
-
-// Модули
 #include <Common/ILogable.h>
+
+#include <SDK/PaymentProcessor/Humo/Response.h>
 
 using namespace SDK::PaymentProcessor::Humo;
 
 //---------------------------------------------------------------------------
-class PaymentResponse : public Response, private ILogable
-{
-  public:
+class PaymentResponse : public Response, private ILogable {
+public:
     PaymentResponse(const Request &aRequest, const QString &aResponseString);
 
 #pragma region Response interface
@@ -28,7 +22,7 @@ class PaymentResponse : public Response, private ILogable
 
 #pragma endregion
 
-  private:
+private:
     /// Список полей, которые нельзя логировать.
     QStringList mCryptedFields;
 };

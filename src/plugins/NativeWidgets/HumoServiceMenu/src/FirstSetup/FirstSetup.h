@@ -2,23 +2,19 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QGraphicsProxyWidget>
-#include <Common/QtHeadersEnd.h>
 
 // Plugin SDK
-#include <SDK/Plugins/IPlugin.h>
 #include <SDK/GUI/IGraphicsItem.h>
+#include <SDK/Plugins/IPlugin.h>
 
 #include "WizardFrame.h"
 
 class HumoServiceBackend;
 
 //--------------------------------------------------------------------------
-class FirstSetup : public virtual SDK::Plugin::IPlugin, public virtual SDK::GUI::IGraphicsItem
-{
-  public:
+class FirstSetup : public virtual SDK::Plugin::IPlugin, public virtual SDK::GUI::IGraphicsItem {
+public:
     FirstSetup(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
     virtual ~FirstSetup();
 
@@ -36,7 +32,8 @@ class FirstSetup : public virtual SDK::Plugin::IPlugin, public virtual SDK::GUI:
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
     virtual QString getConfigurationName() const;
 
-    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
+    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
+    /// программы).
     virtual bool saveConfiguration();
 
     /// Проверяет успешно ли инициализировался плагин при создании.
@@ -67,17 +64,14 @@ class FirstSetup : public virtual SDK::Plugin::IPlugin, public virtual SDK::GUI:
     // Возвращает виджет.
     virtual QQuickItem *getWidget() const;
 
-    virtual QWidget *getNativeWidget() const
-    {
-        return mWizardFrame;
-    }
+    virtual QWidget *getNativeWidget() const { return mWizardFrame; }
 
     /// Возвращает контекст виджета.
     virtual QVariantMap getContext() const;
 
 #pragma endregion
 
-  private:
+private:
     bool mIsReady;
     QString mInstancePath;
     SDK::Plugin::IEnvironment *mEnvironment;

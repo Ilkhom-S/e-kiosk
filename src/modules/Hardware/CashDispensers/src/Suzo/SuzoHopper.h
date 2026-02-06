@@ -2,39 +2,29 @@
 
 #pragma once
 
-// Modules
 #include "Hardware/CashDevices/CCTalkDeviceBase.h"
-
-// Project
 #include "Hardware/Dispensers/PortDispenser.h"
 
 //--------------------------------------------------------------------------------
-namespace CSuzo
-{
-    /// Статус выдачи монет.
-    struct SStatus
-    {
-        uchar Id;
-        int remains;
-        int paid;
-        int unpaid;
+namespace CSuzo {
+/// Статус выдачи монет.
+struct SStatus {
+    uchar Id;
+    int remains;
+    int paid;
+    int unpaid;
 
-        SStatus() : Id(0), remains(0), paid(0), unpaid(0)
-        {
-        }
-        SStatus(char aId, int aRemains, int aPaid, int aUnpaid)
-            : Id(uchar(aId)), remains(uchar(aRemains)), paid(uchar(aPaid)), unpaid(uchar(aUnpaid))
-        {
-        }
-    };
+    SStatus() : Id(0), remains(0), paid(0), unpaid(0) {}
+    SStatus(char aId, int aRemains, int aPaid, int aUnpaid)
+        : Id(uchar(aId)), remains(uchar(aRemains)), paid(uchar(aPaid)), unpaid(uchar(aUnpaid)) {}
+};
 } // namespace CSuzo
 
 //--------------------------------------------------------------------------------
-class SuzoHopper : public CCTalkDeviceBase<PortDispenser>
-{
+class SuzoHopper : public CCTalkDeviceBase<PortDispenser> {
     SET_SUBSERIES("Suzo")
 
-  public:
+public:
     SuzoHopper();
 
     /// Получить поддерживаемые типы протоколов.
@@ -43,12 +33,13 @@ class SuzoHopper : public CCTalkDeviceBase<PortDispenser>
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Инициализация устройства.
     virtual bool updateParameters();
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult execCommand(const QByteArray &aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
 
     /// Получить статус.

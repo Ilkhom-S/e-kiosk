@@ -1,19 +1,14 @@
 /* @file Реализация фабрики плагина NativeBackend. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QCoreApplication>
-#include <Common/QtHeadersEnd.h>
-
-// SDK
-#include <SDK/Plugins/IPlugin.h>
-
-// Project
-#include "NativeBackend.h"
 #include "NativeBackendFactory.h"
 
-NativeBackendFactory::NativeBackendFactory()
-{
+#include <QtCore/QCoreApplication>
+
+#include <SDK/Plugins/IPlugin.h>
+
+#include "NativeBackend.h"
+
+NativeBackendFactory::NativeBackendFactory() {
     mModuleName = "native_backend";
     mName = "Native Backend";
     mDescription = "Native graphics backend for EKiosk";

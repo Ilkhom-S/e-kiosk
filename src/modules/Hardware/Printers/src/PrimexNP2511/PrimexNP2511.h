@@ -2,19 +2,15 @@
 
 #pragma once
 
-// Modules
 #include "Hardware/Printers/PortPrintersBase.h"
-
-// Project
 #include "PrimexPrinterData.h"
 
 //--------------------------------------------------------------------------------
-class PrimexNP2511 : public TSerialPrinterBase
-{
-  public:
+class PrimexNP2511 : public TSerialPrinterBase {
+public:
     PrimexNP2511();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
@@ -30,7 +26,7 @@ class PrimexNP2511 : public TSerialPrinterBase
     /// Печать штрих-кода.
     virtual bool printBarcode(const QString &aBarcode);
 
-  private:
+private:
     /// Запросить и сохранить параметры устройства.
     bool processDeviceData(const CPrimexNP2511::TDeviceParametersIt &aIt, QString &aData);
 

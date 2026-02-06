@@ -1,139 +1,114 @@
 /* @file Абстрактный запрос к серверу. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
-
-// Project
 #include "Request.h"
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        namespace Humo
-        {
+#include <QtCore/QStringList>
 
-            //---------------------------------------------------------------------------
-            Request::Request() : mIsOk(true), mIsCriticalError(false)
-            {
-            }
+namespace SDK {
+namespace PaymentProcessor {
+namespace Humo {
 
-            //---------------------------------------------------------------------------
-            Request::~Request()
-            {
-            }
+//---------------------------------------------------------------------------
+Request::Request() : mIsOk(true), mIsCriticalError(false) {}
 
-            //---------------------------------------------------------------------------
-            bool Request::isOk() const
-            {
-                return mIsOk;
-            }
+//---------------------------------------------------------------------------
+Request::~Request() {}
 
-            //---------------------------------------------------------------------------
-            bool Request::isCriticalError() const
-            {
-                return mIsCriticalError;
-            }
+//---------------------------------------------------------------------------
+bool Request::isOk() const {
+    return mIsOk;
+}
 
-            //---------------------------------------------------------------------------
-            void Request::addParameter(const QString &aName, const QVariant &aValue,
-                                       const QVariant &aLogValue /*= QVariant()*/)
-            {
-                mParameters[aName] = aValue;
+//---------------------------------------------------------------------------
+bool Request::isCriticalError() const {
+    return mIsCriticalError;
+}
 
-                if (!aLogValue.isNull())
-                {
-                    mLogParameters[aName] = aLogValue;
-                }
-            }
+//---------------------------------------------------------------------------
+void Request::addParameter(const QString &aName,
+                           const QVariant &aValue,
+                           const QVariant &aLogValue /*= QVariant()*/) {
+    mParameters[aName] = aValue;
 
-            //---------------------------------------------------------------------------
-            void Request::addRawParameter(const QString &aName, const QVariant &aValue,
-                                          const QVariant &aLogValue /*= QVariant()*/)
-            {
-                mRawParameters[aName] = aValue;
+    if (!aLogValue.isNull()) {
+        mLogParameters[aName] = aLogValue;
+    }
+}
 
-                if (!aLogValue.isNull())
-                {
-                    mRawLogParameters[aName] = aLogValue;
-                }
-            }
+//---------------------------------------------------------------------------
+void Request::addRawParameter(const QString &aName,
+                              const QVariant &aValue,
+                              const QVariant &aLogValue /*= QVariant()*/) {
+    mRawParameters[aName] = aValue;
 
-            //---------------------------------------------------------------------------
-            void Request::removeParameter(const QString &aName, bool aRAWParameter /*= false*/)
-            {
-                if (aRAWParameter)
-                {
-                    mRawParameters.remove(aName);
-                }
-                else
-                {
-                    mParameters.remove(aName);
-                }
-            }
+    if (!aLogValue.isNull()) {
+        mRawLogParameters[aName] = aLogValue;
+    }
+}
 
-            //---------------------------------------------------------------------------
-            QVariant Request::getParameter(const QString &aName, bool aRAWParameter /*= false*/) const
-            {
-                return aRAWParameter ? mRawParameters.value(aName, QVariant()) : mParameters.value(aName, QVariant());
-            }
+//---------------------------------------------------------------------------
+void Request::removeParameter(const QString &aName, bool aRAWParameter /*= false*/) {
+    if (aRAWParameter) {
+        mRawParameters.remove(aName);
+    } else {
+        mParameters.remove(aName);
+    }
+}
 
-            //---------------------------------------------------------------------------
-            const QVariantMap &Request::getParameters(bool aRAWParameter /*= false*/) const
-            {
-                return aRAWParameter ? mRawParameters : mParameters;
-            }
+//---------------------------------------------------------------------------
+QVariant Request::getParameter(const QString &aName, bool aRAWParameter /*= false*/) const {
+    return aRAWParameter ? mRawParameters.value(aName, QVariant())
+                         : mParameters.value(aName, QVariant());
+}
 
-            //---------------------------------------------------------------------------
-            void Request::clear()
-            {
-                mParameters.clear();
-                mLogParameters.clear();
-                mRawParameters.clear();
-                mRawLogParameters.clear();
-            }
+//---------------------------------------------------------------------------
+const QVariantMap &Request::getParameters(bool aRAWParameter /*= false*/) const {
+    return aRAWParameter ? mRawParameters : mParameters;
+}
 
-            //---------------------------------------------------------------------------
-            QString Request::toString() const
-            {
-                QString result;
+//---------------------------------------------------------------------------
+void Request::clear() {
+    mParameters.clear();
+    mLogParameters.clear();
+    mRawParameters.clear();
+    mRawLogParameters.clear();
+}
 
-                for (auto it = mParameters.begin(); it != mParameters.end(); ++it)
-                {
-                    result += QString("%1=%2\r\n").arg(it.key()).arg(it.value().toString());
-                }
+//---------------------------------------------------------------------------
+QString Request::toString() const {
+    QString result;
 
-                return result;
-            }
+    for (auto it = mParameters.begin(); it != mParameters.end(); ++it) {
+        result += QString("%1=%2\r\n").arg(it.key()).arg(it.value().toString());
+    }
 
-            //---------------------------------------------------------------------------
-            QString Request::toLogString() const
-            {
-                QStringList result;
+    return result;
+}
 
-                for (auto it = mParameters.begin(); it != mParameters.end(); ++it)
-                {
-                    result << QString("%1 = \"%2\"")
-                                  .arg(it.key())
-                                  .arg(mLogParameters.contains(it.key()) ? mLogParameters.value(it.key()).toString()
-                                                                         : it.value().toString());
-                }
+//---------------------------------------------------------------------------
+QString Request::toLogString() const {
+    QStringList result;
 
-                for (auto it = mRawParameters.begin(); it != mRawParameters.end(); ++it)
-                {
-                    result << QString("RAW(%1) = \"%2\"")
-                                  .arg(it.key())
-                                  .arg(mRawLogParameters.contains(it.key())
-                                           ? mRawLogParameters.value(it.key()).toString()
-                                           : it.value().toString());
-                }
+    for (auto it = mParameters.begin(); it != mParameters.end(); ++it) {
+        result << QString("%1 = \"%2\"")
+                      .arg(it.key())
+                      .arg(mLogParameters.contains(it.key())
+                               ? mLogParameters.value(it.key()).toString()
+                               : it.value().toString());
+    }
 
-                return result.join(", ");
-            }
+    for (auto it = mRawParameters.begin(); it != mRawParameters.end(); ++it) {
+        result << QString("RAW(%1) = \"%2\"")
+                      .arg(it.key())
+                      .arg(mRawLogParameters.contains(it.key())
+                               ? mRawLogParameters.value(it.key()).toString()
+                               : it.value().toString());
+    }
 
-            //------------------------------------------------------------------------------
-        } // namespace Humo
-    } // namespace PaymentProcessor
+    return result.join(", ");
+}
+
+//------------------------------------------------------------------------------
+} // namespace Humo
+} // namespace PaymentProcessor
 } // namespace SDK

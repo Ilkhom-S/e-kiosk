@@ -2,14 +2,11 @@
 
 // Plugin SDK
 
-// SDK
-#include <SDK/Plugins/PluginFactory.h>
-
-// Project
 #include "PluginLibraryDefinition.h"
 
-CoinAcceptorPluginFactory::CoinAcceptorPluginFactory()
-{
+#include <SDK/Plugins/PluginFactory.h>
+
+CoinAcceptorPluginFactory::CoinAcceptorPluginFactory() {
     mName = "CoinAcceptor";
     mDescription = "CoinAcceptor driver library";
     mAuthor = "Humo";

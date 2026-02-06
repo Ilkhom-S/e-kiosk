@@ -1,38 +1,30 @@
 /* @file Реализация модуля управления сторожевым сервисом через сокет. */
 
-// STL
-#include <cstdlib>
-#include <iostream>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QTranslator>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/BasicApplication.h>
 #include <Common/ExitCodes.h>
 #include <Common/SafeApplication.h>
 #include <Common/Version.h>
 
-// System
 #include <DebugUtils/DebugUtils.h>
+#include <cstdlib>
+#include <iostream>
 
-// Project
 #include "WatchServiceController.h"
 
-int main(int aArgc, char *aArgv[])
-{
+int main(int aArgc, char *aArgv[]) {
 
-    BasicQtApplication<SingleApplication> application("WatchServiceController", Humo::getVersion(), aArgc, aArgv);
+    BasicQtApplication<SingleApplication> application(
+        "WatchServiceController", Humo::getVersion(), aArgc, aArgv);
 
 #ifndef Q_OS_MACOS
     // Check for single instance BEFORE creating QApplication
-    if (application.getQtApplication().isSecondary())
-    {
-        // single_instance_guard.sendMessage(application.getQtApplication().arguments().join(' ').toUtf8());
+    if (application.getQtApplication().isSecondary()) {
+        // single_instance_guard.sendMessage(application.getQtApplication().arguments().join('
+        // ').toUtf8());
         qDebug() << "App already running.";
         qDebug() << "Primary instance PID: " << application.getQtApplication().primaryPid();
         qDebug() << "Primary instance user: " << application.getQtApplication().primaryUser();
@@ -42,7 +34,8 @@ int main(int aArgc, char *aArgv[])
 #endif
 
     // Перенаправляем логи.
-    ILog::getInstance(CIMessageQueueClient::DefaultLog)->setDestination(application.getLog()->getName());
+    ILog::getInstance(CIMessageQueueClient::DefaultLog)
+        ->setDestination(application.getLog()->getName());
 
     application.getQtApplication().setQuitOnLastWindowClosed(false);
 #ifndef Q_OS_MACOS

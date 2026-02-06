@@ -2,21 +2,17 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtWidgets/QGraphicsProxyWidget>
-#include <Common/QtHeadersEnd.h>
 
 // Plugin SDK
-#include <SDK/Plugins/IPlugin.h>
 #include <SDK/GUI/IGraphicsItem.h>
+#include <SDK/Plugins/IPlugin.h>
 
 #include "KeyboardWindow.h"
 
 //--------------------------------------------------------------------------
-class Keyboard : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem
-{
-  public:
+class Keyboard : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem {
+public:
     Keyboard(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
     ~Keyboard();
 
@@ -34,7 +30,8 @@ class Keyboard : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
     virtual QString getConfigurationName() const;
 
-    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
+    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
+    /// программы).
     virtual bool saveConfiguration();
 
     /// Проверяет успешно ли инициализировался плагин при создании.
@@ -65,17 +62,14 @@ class Keyboard : public SDK::Plugin::IPlugin, public SDK::GUI::IGraphicsItem
     // Возвращает виджет.
     virtual QQuickItem *getWidget() const;
 
-    virtual QWidget *getNativeWidget() const
-    {
-        return mKeyboardWindow;
-    }
+    virtual QWidget *getNativeWidget() const { return mKeyboardWindow; }
 
     /// Возвращает контекст виджета.
     virtual QVariantMap getContext() const;
 
 #pragma endregion
 
-  private:
+private:
     bool mIsReady;
     QString mInstancePath;
     SDK::Plugin::IEnvironment *mEnvironment;

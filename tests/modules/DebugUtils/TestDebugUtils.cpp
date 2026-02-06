@@ -1,29 +1,20 @@
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QStringList>
 #include <QtTest/QtTest>
-#include <Common/QtHeadersEnd.h>
 
-// ThirdParty
+#include <DebugUtils/DebugUtils.h>
 #include <boost/version.hpp>
 
-// System
-#include <DebugUtils/DebugUtils.h>
-
-class TestDebugUtils : public QObject
-{
+class TestDebugUtils : public QObject {
     Q_OBJECT
 
-  private slots:
-    void initTestCase()
-    {
+private slots:
+    void initTestCase() {
         qDebug() << "Testing DebugUtils with Boost.Stacktrace";
         qDebug() << "Boost version:" << BOOST_VERSION;
     }
 
-    void testDumpCallstackReturnsValidData()
-    {
+    void testDumpCallstackReturnsValidData() {
         QStringList stack;
         DumpCallstack(stack, nullptr);
 
@@ -37,14 +28,12 @@ class TestDebugUtils : public QObject
         bool hasAddress = false;
         bool hasFunction = false;
 
-        for (const QString &frame : stack)
-        {
-            if (frame.contains("0x"))
-            {
+        for (const QString &frame : stack) {
+            if (frame.contains("0x")) {
                 hasAddress = true;
             }
-            if (frame.contains("DumpCallstack") || frame.contains("testDumpCallstackReturnsValidData"))
-            {
+            if (frame.contains("DumpCallstack") ||
+                frame.contains("testDumpCallstackReturnsValidData")) {
                 hasFunction = true;
             }
         }
@@ -53,8 +42,7 @@ class TestDebugUtils : public QObject
         QVERIFY(hasFunction); // Should contain our function names
     }
 
-    void testDumpCallstackWithContext()
-    {
+    void testDumpCallstackWithContext() {
         QStringList stack1, stack2;
 
         // Get stack from current location
@@ -69,10 +57,8 @@ class TestDebugUtils : public QObject
 
         // Should contain the nested function in the stack
         bool foundNested = false;
-        for (const QString &frame : stack2)
-        {
-            if (frame.contains("nestedFunction") || frame.contains("operator()"))
-            {
+        for (const QString &frame : stack2) {
+            if (frame.contains("nestedFunction") || frame.contains("operator()")) {
                 foundNested = true;
                 break;
             }
@@ -80,8 +66,7 @@ class TestDebugUtils : public QObject
         QVERIFY(foundNested);
     }
 
-    void testDumpCallstackFormat()
-    {
+    void testDumpCallstackFormat() {
         QStringList stack;
         DumpCallstack(stack, nullptr);
 
@@ -97,8 +82,7 @@ class TestDebugUtils : public QObject
         QVERIFY(firstFrame.length() > 10); // Reasonable minimum length
     }
 
-    void testDumpCallstackConsistency()
-    {
+    void testDumpCallstackConsistency() {
         QStringList stack1, stack2;
 
         // Get two consecutive stack traces
@@ -112,8 +96,7 @@ class TestDebugUtils : public QObject
         QCOMPARE(stack1.first(), stack2.first());
     }
 
-    void testDumpCallstackFromDifferentThreads()
-    {
+    void testDumpCallstackFromDifferentThreads() {
         QStringList mainThreadStack;
         QStringList workerThreadStack;
 
@@ -127,8 +110,7 @@ class TestDebugUtils : public QObject
         worker.start();
         QMetaObject::invokeMethod(
             &worker,
-            [&]()
-            {
+            [&]() {
                 DumpCallstack(workerThreadStack, nullptr);
                 done = true;
             },
@@ -147,8 +129,7 @@ class TestDebugUtils : public QObject
         QVERIFY(mainThreadStack != workerThreadStack);
     }
 
-    void testExceptionHandlerCanBeSet()
-    {
+    void testExceptionHandlerCanBeSet() {
         // This test verifies that the exception handler can be set without crashing
         // We can't easily test the actual exception handling without crashing the test process
 
@@ -176,17 +157,15 @@ class TestDebugUtils : public QObject
         QVERIFY(true); // If we get here, the test passed
     }
 
-    void testStackTraceContainsExpectedFunctions()
-    {
+    void testStackTraceContainsExpectedFunctions() {
         QStringList stack;
         DumpCallstack(stack, nullptr);
 
         // Should contain Qt functions (since we're in a Qt test)
         bool hasQtFunction = false;
-        for (const QString &frame : stack)
-        {
-            if (frame.contains("QTest") || frame.contains("QObject") || frame.contains("QCoreApplication"))
-            {
+        for (const QString &frame : stack) {
+            if (frame.contains("QTest") || frame.contains("QObject") ||
+                frame.contains("QCoreApplication")) {
                 hasQtFunction = true;
                 break;
             }
@@ -197,8 +176,7 @@ class TestDebugUtils : public QObject
         qDebug() << "Qt functions in stack:" << hasQtFunction;
     }
 
-    void testStackTraceDepth()
-    {
+    void testStackTraceDepth() {
         QStringList stack;
         DumpCallstack(stack, nullptr);
 
@@ -211,8 +189,7 @@ class TestDebugUtils : public QObject
         qDebug() << "Stack depth:" << stack.size();
     }
 
-    void testStackTraceMemoryAddresses()
-    {
+    void testStackTraceMemoryAddresses() {
         QStringList stack;
         DumpCallstack(stack, nullptr);
 
@@ -220,10 +197,8 @@ class TestDebugUtils : public QObject
         QRegularExpression addressRegex("0x[0-9a-fA-F]+");
         bool hasValidAddress = false;
 
-        for (const QString &frame : stack)
-        {
-            if (addressRegex.match(frame).hasMatch())
-            {
+        for (const QString &frame : stack) {
+            if (addressRegex.match(frame).hasMatch()) {
                 hasValidAddress = true;
                 break;
             }
@@ -232,10 +207,7 @@ class TestDebugUtils : public QObject
         QVERIFY(hasValidAddress);
     }
 
-    void cleanupTestCase()
-    {
-        qDebug() << "DebugUtils tests completed";
-    }
+    void cleanupTestCase() { qDebug() << "DebugUtils tests completed"; }
 };
 
 QTEST_MAIN(TestDebugUtils)

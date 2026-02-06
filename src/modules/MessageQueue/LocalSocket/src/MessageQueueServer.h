@@ -1,29 +1,22 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QList>
 #include <QtCore/QMap>
 #include <QtCore/QSignalMapper>
 #include <QtCore/QString>
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include "Common/ILog.h"
-
-// System
 #include "MessageQueue/IMessageQueueServer.h"
 
-class MessageQueueServer : public QLocalServer, public IMessageQueueServer
-{
+class MessageQueueServer : public QLocalServer, public IMessageQueueServer {
     typedef QMap<QLocalSocket *, quintptr> TLocalSocketMap;
     typedef QMap<quintptr, QByteArray> TSocketBufferMap;
 
     Q_OBJECT
 
-  public:
+public:
     MessageQueueServer(const QString &aName);
     MessageQueueServer(const QString &aName, ILog *aLog);
     virtual ~MessageQueueServer();
@@ -44,21 +37,21 @@ class MessageQueueServer : public QLocalServer, public IMessageQueueServer
     /// слот onDisconnected().
     virtual bool subscribeOnDisconnected(QObject *aObject) override;
 
-  protected:
+protected:
     virtual void incomingConnection(quintptr socketDescriptor) override;
 
-  private:
+private:
     void parseInputBuffer(QByteArray &aBuffer);
 
-  signals:
+signals:
     void onMessageReceived(QByteArray aMessage);
     void onDisconnected();
 
-  private slots:
+private slots:
     void onSocketDisconnected(QObject *aObject);
     void onSocketReadyRead(QObject *aObject);
 
-  private:
+private:
     QSignalMapper mDisconnectSignalMapper;
     QSignalMapper mReadyReadSignalMapper;
     TLocalSocketMap mSockets;

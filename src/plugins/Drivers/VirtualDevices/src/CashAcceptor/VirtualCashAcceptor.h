@@ -2,15 +2,14 @@
 
 #pragma once
 
-#include "Hardware/Common/VirtualDeviceBase.h"
 #include "Hardware/CashAcceptors/CashAcceptorBase.h"
+#include "Hardware/Common/VirtualDeviceBase.h"
 
 //---------------------------------------------------------------------------------------------
 typedef VirtualDeviceBase<CashAcceptorBase<DeviceBase<ProtoCashAcceptor>>> TVirtualCashAcceptor;
 
-class VirtualCashAcceptor : public TVirtualCashAcceptor
-{
-  public:
+class VirtualCashAcceptor : public TVirtualCashAcceptor {
+public:
     VirtualCashAcceptor();
 
 #pragma region IDevice interface
@@ -32,7 +31,7 @@ class VirtualCashAcceptor : public TVirtualCashAcceptor
     virtual bool reject();
 #pragma endregion
 
-  private:
+private:
     /// Инициализация устройства.
     virtual bool updateParameters();
 

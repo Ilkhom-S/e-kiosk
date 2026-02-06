@@ -2,15 +2,12 @@
 
 #pragma once
 
-// STL
-#include <functional>
-
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QSet>
 #include <QtCore/QMutex>
-#include <QtCore/QWaitCondition>
+#include <QtCore/QSet>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QWaitCondition>
+
+#include <functional>
 
 #pragma push_macro("min")
 #pragma push_macro("max")
@@ -20,41 +17,37 @@
 // OPOS
 #import "OPOSFiscalPrinter.tlb" rename("ResetPrinter", "ResetOPOSPrinter")
 
-#include <Common/QtHeadersBegin.h>
 #pragma warning(disable : 4100) // warning C4100: 'identifier' : unreferenced formal parameter
 #include <OPOS/QtWrappers/FiscalPrinter.h>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
-#include "Hardware/Common/PollingDeviceBase.h"
 #include "Hardware/Common/OPOSPollingDeviceBase.h"
-#include "Hardware/Printers/PrinterBase.h"
+#include "Hardware/Common/PollingDeviceBase.h"
 #include "Hardware/FR/FRBase.h"
+#include "Hardware/Printers/PrinterBase.h"
 
 #pragma pop_macro("max")
 #pragma pop_macro("min")
 
-// Project
 #include "OPOSMStarTUPKDataTypes.h"
 
 //--------------------------------------------------------------------------------
 typedef OPOSPollingDeviceBase<ProtoFR, OPOS::OPOSFiscalPrinter> TPollingOPOSFR;
 typedef FRBase<PrinterBase<TPollingOPOSFR>> TOPOSFR;
 
-class OPOSMStarTUPK : public TOPOSFR
-{
+class OPOSMStarTUPK : public TOPOSFR {
     SET_SERIES("Multisoft")
 
-  public:
+public:
     OPOSMStarTUPK();
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release();
 
     /// Возвращает список сконфигурированных OPOS устройств.
     static QStringList getProfileNames();
 
-  protected:
+protected:
     /// Инициализировать ресурсы.
     virtual void initializeResources();
 
@@ -81,7 +74,8 @@ class OPOSMStarTUPK : public TOPOSFR
     virtual bool updateParameters();
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData,
+    virtual bool performFiscal(const QStringList &aReceipt,
+                               const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
     /// Печать Z отчета.
@@ -96,13 +90,15 @@ class OPOSMStarTUPK : public TOPOSFR
     /// Получить сумму в кассе.
     virtual double getAmountInCash();
 
-    /// Печать X-отчета. Параметром задаётся набор дополнительных строк для печати (например баланс).
+    /// Печать X-отчета. Параметром задаётся набор дополнительных строк для печати (например
+    /// баланс).
     virtual bool performXReport(const QStringList &aReceipt);
 
     /// Печать выплаты.
     virtual bool performEncashment(const QStringList &aReceipt, double aAmount);
 
-    // TODO: посмотреть, можно ли это сделать закрытием чека - фискального или нефискального или есть просто отрезка.
+    // TODO: посмотреть, можно ли это сделать закрытием чека - фискального или нефискального или
+    // есть просто отрезка.
     /// Обработка чека после печати.
     virtual bool receiptProcessing();
 

@@ -2,60 +2,52 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QStringList>
 #include <QtCore/QFutureWatcher>
 #include <QtCore/QMutex>
 #include <QtCore/QSet>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QStringList>
 
-// Modules
 #include <Common/ILog.h>
 
 // PP Core
+#include <SDK/PaymentProcessor/Core/Event.h>
 #include <SDK/PaymentProcessor/Core/IDeviceService.h>
+#include <SDK/PaymentProcessor/Core/IService.h>
 #include <SDK/Plugins/IPluginLoader.h>
 #include <SDK/Plugins/PluginParameters.h>
-#include <SDK/PaymentProcessor/Core/IService.h>
-#include <SDK/PaymentProcessor/Core/Event.h>
 
-// Project
 #include "IntegratedDrivers.h"
 
 class IApplication;
 class IHardwareDatabaseUtils;
 class DeviceManager;
 
-// TODO #29565 - метод перезаписи статуса модема, пока не отрефакторили соединение и модем в единое целое
+// TODO #29565 - метод перезаписи статуса модема, пока не отрефакторили соединение и модем в единое
+// целое
 #pragma deprecated(overwriteDeviceStatus)
 
 /// Варианты момента создания устройства
-namespace EDeviceCreationOrder
-{
-    enum Enum
-    {
-        OnDemand,
-        AtStart
-    };
+namespace EDeviceCreationOrder {
+enum Enum { OnDemand, AtStart };
 } // namespace EDeviceCreationOrder
 
 //------------------------------------------------------------------------------
 /// Реализация сервиса для работы с устройствами.
-class DeviceService : public SDK::PaymentProcessor::IDeviceService, public SDK::PaymentProcessor::IService
-{
+class DeviceService : public SDK::PaymentProcessor::IDeviceService,
+                      public SDK::PaymentProcessor::IService {
     Q_OBJECT
 
-  public:
+public:
     /// структура - статус устройства
-    class Status : public SDK::PaymentProcessor::IDeviceStatus
-    {
-      public:
+    class Status : public SDK::PaymentProcessor::IDeviceStatus {
+    public:
         Status();
         Status(const Status &aStatus);
-        explicit Status(SDK::Driver::EWarningLevel::Enum aLevel, const QString &aDescription, int aStatus);
+        explicit Status(SDK::Driver::EWarningLevel::Enum aLevel,
+                        const QString &aDescription,
+                        int aStatus);
 
-      public:
+    public:
         /// Уровень тревожности
         virtual SDK::Driver::EWarningLevel::Enum level() const;
 
@@ -65,13 +57,13 @@ class DeviceService : public SDK::PaymentProcessor::IDeviceService, public SDK::
         /// Проверить содержимое статуса на удовлетворение определенному уровню
         bool isMatched(SDK::Driver::EWarningLevel::Enum aLevel) const;
 
-      public:
+    public:
         SDK::Driver::EWarningLevel::Enum mLevel;
         QString mDescription;
         int mStatus;
     };
 
-  public:
+public:
     /// Получение экземпляра DeviceService.
     static DeviceService *instance(IApplication *aApplication);
 
@@ -129,7 +121,8 @@ class DeviceService : public SDK::PaymentProcessor::IDeviceService, public SDK::
     virtual void releaseDevice(SDK::Driver::IDevice *aDevice);
 
     /// Обновить прошивку устройства.
-    virtual UpdateFirmwareResult updateFirmware(const QByteArray &aFirmware, const QString &aDeviceGUID);
+    virtual UpdateFirmwareResult updateFirmware(const QByteArray &aFirmware,
+                                                const QString &aDeviceGUID);
 
     /// Получение списка параметров драйвера.
     virtual SDK::Plugin::TParameterList getDriverParameters(const QString &aDriverPath) const;
@@ -153,26 +146,31 @@ class DeviceService : public SDK::PaymentProcessor::IDeviceService, public SDK::
     virtual QString getDeviceConfigName(SDK::Driver::IDevice *aDevice);
 
     /// Получить статус устройства по имени конфигурации.
-    virtual QSharedPointer<SDK::PaymentProcessor::IDeviceStatus> getDeviceStatus(const QString &aConfigName);
+    virtual QSharedPointer<SDK::PaymentProcessor::IDeviceStatus>
+    getDeviceStatus(const QString &aConfigName);
 
     /// Освобождает все устройства.
     virtual void releaseAll();
 
     /// Перезаписать статус устройства (#29565)
-    virtual void overwriteDeviceStatus(SDK::Driver::IDevice *aDevice, SDK::Driver::EWarningLevel::Enum aLevel,
-                                       const QString &aDescription, int aStatus);
+    virtual void overwriteDeviceStatus(SDK::Driver::IDevice *aDevice,
+                                       SDK::Driver::EWarningLevel::Enum aLevel,
+                                       const QString &aDescription,
+                                       int aStatus);
 
-  private:
+private:
     void doDetect(const QString &aDeviceType);
     bool initializeDevice(const QString &aConfigName, SDK::Driver::IDevice *aDevice);
     void statusChanged(SDK::Driver::IDevice *aDevice, Status &aStatus);
 
-  private slots:
+private slots:
     void onDeviceDetected(const QString &aConfigName, SDK::Driver::IDevice *aDevice);
     void onDetectionFinished();
-    void onDeviceStatus(SDK::Driver::EWarningLevel::Enum aLevel, const QString &aDescription, int aStatus);
+    void onDeviceStatus(SDK::Driver::EWarningLevel::Enum aLevel,
+                        const QString &aDescription,
+                        int aStatus);
 
-  private:
+private:
     DeviceManager *mDeviceManager;
 
     /// Общий список параметров, необходимых для инициализации устройств.

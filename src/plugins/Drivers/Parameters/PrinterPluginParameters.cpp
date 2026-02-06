@@ -1,10 +1,8 @@
 /* @file Параметры плагинов для принтеров. */
 
-// Modules
-#include "Hardware/Common/HardwareConstants.h"
-
-// Project
 #include "PrinterPluginParameters.h"
+
+#include "Hardware/Common/HardwareConstants.h"
 #include "PrinterPluginParameterTranslations.h"
 
 using namespace SDK::Plugin;
@@ -15,79 +13,89 @@ namespace Values = CHardwareSDK::Values;
 namespace PPT = PluginParameterTranslations;
 
 //------------------------------------------------------------------------------
-SPluginParameter setPaginationDisabled()
-{
-    return SPluginParameter(PrinterSettings::PrintPageNumber, SPluginParameter::Bool, false, PPT::PrintPageNumber,
-                            QString(), false, QVariantMap());
+SPluginParameter setPaginationDisabled() {
+    return SPluginParameter(PrinterSettings::PrintPageNumber,
+                            SPluginParameter::Bool,
+                            false,
+                            PPT::PrintPageNumber,
+                            QString(),
+                            false,
+                            QVariantMap());
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setLeftMargin()
-{
+SPluginParameter setLeftMargin() {
     QStringList values;
 
-    for (int i = 0; i <= 15; ++i)
-    {
+    for (int i = 0; i <= 15; ++i) {
         values << QString::number(i);
     }
 
-    return SPluginParameter(PrinterSettings::LeftMargin, false, PPT::LeftMargin, QString(), "1", values, false);
+    return SPluginParameter(
+        PrinterSettings::LeftMargin, false, PPT::LeftMargin, QString(), "1", values, false);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setRemoteSensor(bool aEnabled)
-{
-    return SPluginParameter(PrinterSettings::RemotePaperSensor, false, PPT::RemotePaperSensor, QString(),
-                            aEnabled ? Values::Use : Values::NotUse, QStringList() << Values::Use << Values::NotUse,
+SPluginParameter setRemoteSensor(bool aEnabled) {
+    return SPluginParameter(PrinterSettings::RemotePaperSensor,
+                            false,
+                            PPT::RemotePaperSensor,
+                            QString(),
+                            aEnabled ? Values::Use : Values::NotUse,
+                            QStringList() << Values::Use << Values::NotUse,
                             false);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setJamSensorEnabled()
-{
-    return SPluginParameter(PrinterSettings::PaperJamSensor, false, PPT::PaperJamSensor, QString(), Values::Use,
-                            QStringList() << Values::Use << Values::NotUse, false);
+SPluginParameter setJamSensorEnabled() {
+    return SPluginParameter(PrinterSettings::PaperJamSensor,
+                            false,
+                            PPT::PaperJamSensor,
+                            QString(),
+                            Values::Use,
+                            QStringList() << Values::Use << Values::NotUse,
+                            false);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setWeightSensorsEnabled()
-{
-    return SPluginParameter(PrinterSettings::PaperWeightSensors, false, PPT::PaperWeightSensors, QString(), Values::Use,
-                            QStringList() << Values::Use << Values::NotUse, false);
+SPluginParameter setWeightSensorsEnabled() {
+    return SPluginParameter(PrinterSettings::PaperWeightSensors,
+                            false,
+                            PPT::PaperWeightSensors,
+                            QString(),
+                            Values::Use,
+                            QStringList() << Values::Use << Values::NotUse,
+                            false);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setFontSize(int aMin, int aMax, int aDefault, int aInterval)
-{
+SPluginParameter setFontSize(int aMin, int aMax, int aDefault, int aInterval) {
     QStringList values;
     int steps = 2 + (aMax - aMin) / aInterval;
 
-    for (int i = 0; i < steps; ++i)
-    {
+    for (int i = 0; i < steps; ++i) {
         int digit = qMin(aMin + i * aInterval, aMax);
         QString value = QString::number(digit);
 
-        if (!i || (values[i - 1] != value))
-        {
+        if (!i || (values[i - 1] != value)) {
             values << value;
         }
     }
 
-    return SPluginParameter(PrinterSettings::FontSize, false, PPT::FontSize, QString(), aDefault, values, false);
+    return SPluginParameter(
+        PrinterSettings::FontSize, false, PPT::FontSize, QString(), aDefault, values, false);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setLineSpacing(int aMin, int aMax, int aDefault, int aInterval, const QString &aOptionalTranslation)
-{
+SPluginParameter setLineSpacing(
+    int aMin, int aMax, int aDefault, int aInterval, const QString &aOptionalTranslation) {
     QStringList values(QString::number(aMin));
 
-    if (aMin == 1)
-    {
+    if (aMin == 1) {
         aMin = 0;
     }
 
-    for (int i = 0; i < (aMax - aMin) / aInterval; ++i)
-    {
+    for (int i = 0; i < (aMax - aMin) / aInterval; ++i) {
         int digit = qMin(aMin + (i + 1) * aInterval, aMax);
         values << QString::number(digit);
     }
@@ -95,74 +103,79 @@ SPluginParameter setLineSpacing(int aMin, int aMax, int aDefault, int aInterval,
     values.removeDuplicates();
     QString translation = PPT::LineSpacing;
 
-    if (!aOptionalTranslation.isEmpty())
-    {
+    if (!aOptionalTranslation.isEmpty()) {
         translation += " " + aOptionalTranslation;
     }
 
-    return SPluginParameter(PrinterSettings::LineSpacing, false, translation, QString(), aDefault, values, false);
+    return SPluginParameter(
+        PrinterSettings::LineSpacing, false, translation, QString(), aDefault, values, false);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setFeedingFactor()
-{
-    return SPluginParameter(PrinterSettings::FeedingFactor, false, PPT::FeedingFactor, QString(), "2",
-                            QStringList() << "1" << "2", false);
+SPluginParameter setFeedingFactor() {
+    return SPluginParameter(PrinterSettings::FeedingFactor,
+                            false,
+                            PPT::FeedingFactor,
+                            QString(),
+                            "2",
+                            QStringList() << "1" << "2",
+                            false);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setLoopEnabled(const QString &aOptionalTranslation, bool aAuto)
-{
+SPluginParameter setLoopEnabled(const QString &aOptionalTranslation, bool aAuto) {
     QStringList values;
 
-    if (aAuto)
-    {
+    if (aAuto) {
         values << Values::Auto;
     }
 
     values << Values::Use << Values::NotUse;
     QString translation = PPT::Loop;
 
-    if (!aOptionalTranslation.isEmpty())
-    {
+    if (!aOptionalTranslation.isEmpty()) {
         translation += " " + aOptionalTranslation;
     }
 
-    return SPluginParameter(PrinterSettings::Loop, false, translation, QString(), Values::Use, values, false);
+    return SPluginParameter(
+        PrinterSettings::Loop, false, translation, QString(), Values::Use, values, false);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setLeftReceiptTimeout(bool aZero)
-{
+SPluginParameter setLeftReceiptTimeout(bool aZero) {
     QStringList values = QStringList() << "10" << "20" << "30" << "40" << "50" << "60";
 
-    if (aZero)
-    {
+    if (aZero) {
         values.prepend("0");
     }
 
-    return SPluginParameter(PrinterSettings::LeftReceiptTimeout, false, PPT::LeftReceiptTimeout, QString(), "30",
-                            values, false);
+    return SPluginParameter(PrinterSettings::LeftReceiptTimeout,
+                            false,
+                            PPT::LeftReceiptTimeout,
+                            QString(),
+                            "30",
+                            values,
+                            false);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setLeftReceiptAction(const QString &aParameter, bool aRetract, bool aPush, const QString aDefault,
-                                      bool aAuto, const QString &aOptionalTranslation)
-{
+SPluginParameter setLeftReceiptAction(const QString &aParameter,
+                                      bool aRetract,
+                                      bool aPush,
+                                      const QString aDefault,
+                                      bool aAuto,
+                                      const QString &aOptionalTranslation) {
     QStringList values;
 
-    if (aAuto)
-    {
+    if (aAuto) {
         values << Values::Auto;
     }
 
-    if (aRetract)
-    {
+    if (aRetract) {
         values << PrinterValues::Retract;
     }
 
-    if (aPush)
-    {
+    if (aPush) {
         values << PrinterValues::Push;
     }
 
@@ -175,8 +188,7 @@ SPluginParameter setLeftReceiptAction(const QString &aParameter, bool aRetract, 
     else if (aParameter == PrinterSettings::NotTakenReceipt)
         title = PPT::NotTakenReceipt;
 
-    if (!aOptionalTranslation.isEmpty())
-    {
+    if (!aOptionalTranslation.isEmpty()) {
         title += " " + aOptionalTranslation;
     }
 
@@ -184,49 +196,58 @@ SPluginParameter setLeftReceiptAction(const QString &aParameter, bool aRetract, 
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setPresentationLength(const QString &aOptionalTranslation, int aMin, int aMax)
-{
+SPluginParameter setPresentationLength(const QString &aOptionalTranslation, int aMin, int aMax) {
     QString translation = PPT::PresentLength;
 
-    if (!aOptionalTranslation.isEmpty())
-    {
+    if (!aOptionalTranslation.isEmpty()) {
         translation += " " + aOptionalTranslation;
     }
 
     QList<int> values = QList<int>() << 0 << 2 << 4 << 6 << 8 << 10 << 12 << 14 << 16;
     QStringList pluginValues;
 
-    foreach (int value, values)
-    {
-        if (((aMin == -1) || (value >= aMin)) && ((aMax == -1) || (value <= aMax)))
-        {
+    foreach (int value, values) {
+        if (((aMin == -1) || (value >= aMin)) && ((aMax == -1) || (value <= aMax))) {
             pluginValues << QString::number(value);
         }
     }
 
-    return SPluginParameter(PrinterSettings::PresentationLength, false, translation, QString(), "10", pluginValues,
+    return SPluginParameter(PrinterSettings::PresentationLength,
+                            false,
+                            translation,
+                            QString(),
+                            "10",
+                            pluginValues,
                             false);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setCustomCodepage()
-{
-    return SPluginParameter(CHardware::Codepage, false, PPT::Codepage, QString(), CHardware::Codepages::CP866,
-                            QStringList() << CHardware::Codepages::CP866 << CHardware::Codepages::CustomKZT, false);
+SPluginParameter setCustomCodepage() {
+    return SPluginParameter(CHardware::Codepage,
+                            false,
+                            PPT::Codepage,
+                            QString(),
+                            CHardware::Codepages::CP866,
+                            QStringList()
+                                << CHardware::Codepages::CP866 << CHardware::Codepages::CustomKZT,
+                            false);
 }
 
 //------------------------------------------------------------------------------
-SPluginParameter setBackFeed(const QString &aOptionalTranslation)
-{
+SPluginParameter setBackFeed(const QString &aOptionalTranslation) {
     QString translation = PPT::BackFeed;
 
-    if (!aOptionalTranslation.isEmpty())
-    {
+    if (!aOptionalTranslation.isEmpty()) {
         translation += " " + aOptionalTranslation;
     }
 
-    return SPluginParameter(PrinterSettings::BackFeed, false, translation, QString(), Values::NotUse,
-                            QStringList() << Values::Use << Values::NotUse << Values::Auto, false);
+    return SPluginParameter(PrinterSettings::BackFeed,
+                            false,
+                            translation,
+                            QString(),
+                            Values::NotUse,
+                            QStringList() << Values::Use << Values::NotUse << Values::Auto,
+                            false);
 }
 
 //------------------------------------------------------------------------------

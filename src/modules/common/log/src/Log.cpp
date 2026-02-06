@@ -1,40 +1,33 @@
 /* @file Реализация статических методов интерфейса ILog. */
 
-// Modules
 #include <Common/ILog.h>
 
-// Project
 #include "LogManager.h"
 
 extern LogManager gLogManager;
 
 //---------------------------------------------------------------------------
-ILog *ILog::getInstance()
-{
+ILog *ILog::getInstance() {
     return getInstance("Default");
 }
 
 //---------------------------------------------------------------------------
-ILog *ILog::getInstance(const QString &aName)
-{
+ILog *ILog::getInstance(const QString &aName) {
     return getInstance(aName, LogType::File);
 }
 
 //---------------------------------------------------------------------------
-ILog *ILog::getInstance(const QString &aName, LogType::Enum aType)
-{
+ILog *ILog::getInstance(const QString &aName, LogType::Enum aType) {
     return gLogManager.getLog(aName, aType);
 }
 
 //---------------------------------------------------------------------------
-void ILog::logRotateAll()
-{
+void ILog::logRotateAll() {
     gLogManager.logRotateAll();
 }
 
 //---------------------------------------------------------------------------
-void ILog::setGlobalLevel(LogLevel::Enum aMaxLogLevel)
-{
+void ILog::setGlobalLevel(LogLevel::Enum aMaxLogLevel) {
     gLogManager.setGlobalLevel(aMaxLogLevel);
 }
 

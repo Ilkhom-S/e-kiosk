@@ -2,34 +2,30 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QMap>
-#include <QtCore/QUrl>
-#include <QtCore/QMutex>
-#include <QtCore/QWaitCondition>
-#include <QtCore/QTimer>
 #include <QtCore/QDateTime>
-#include <QtCore/QVariant>
+#include <QtCore/QMap>
+#include <QtCore/QMutex>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QTimer>
+#include <QtCore/QUrl>
+#include <QtCore/QVariant>
+#include <QtCore/QWaitCondition>
 
 class IVerifier;
 class DataStream;
 class NetworkTaskManager;
 
 //------------------------------------------------------------------------
-class NetworkTask : public QObject
-{
+class NetworkTask : public QObject {
     Q_OBJECT
 
     friend class NetworkTaskManager;
 
-  public:
+public:
     typedef QMap<QByteArray, QByteArray> TByteMap;
 
     /// Ошибки закачки
-    enum Error
-    {
+    enum Error {
         NoError = 0,
         StreamWriteError = -1,      /// Не удалось произвести запись в переданный поток данных.
         UnknownOperation = -2,      /// Неизвестный тип запроса к серверу.
@@ -45,8 +41,7 @@ class NetworkTask : public QObject
     };
 
     /// Флаги, влияющие на процесс выполнения запроса.
-    enum Flags
-    {
+    enum Flags {
         None = 0x0,
         BlockingMode = 0x1, /// Выполнить закачку в блокирующем режиме.
         Continue = 0x2,     /// Продолжить прерванную ранее закачку.
@@ -56,13 +51,7 @@ class NetworkTask : public QObject
     };
 
     /// Тип сетевого запроса.
-    enum Type
-    {
-        Head = 0,
-        Get,
-        Post,
-        Put
-    };
+    enum Type { Head = 0, Get, Post, Put };
 
     NetworkTask();
     virtual ~NetworkTask();
@@ -115,7 +104,7 @@ class NetworkTask : public QObject
     /// Получение времени из заголовка ответа сервера
     QDateTime getServerDate() const;
 
-  signals:
+signals:
     /// Сигнал срабатывает при завершении задачи.
     void onComplete();
 
@@ -123,10 +112,10 @@ class NetworkTask : public QObject
     /// aTotal - кол-во байт.
     void onProgress(qint64 aCurrent, qint64 aTotal);
 
-  private slots:
+private slots:
     void onTimeout();
 
-  protected:
+protected:
     void setSize(qint64 aCurrent, qint64 aTotal);
     void setError(int aError, const QString &aMessage = "");
     void setHttpError(int aError);
@@ -138,7 +127,7 @@ class NetworkTask : public QObject
     /// Сбросить ошибки предыдущей попытки скачивания
     void clearErrors();
 
-  private:
+private:
     bool mProcessing;
     QMutex mProcessingMutex;
     QWaitCondition mProcessingCondition;

@@ -2,30 +2,21 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QStringList>
 #include <QtCore/QProcess>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QStringList>
 
-// Modules
 #include <Common/ILogable.h>
 
 //------------------------------------------------------------------------------
-class Packer : public ILogable
-{
+class Packer : public ILogable {
     int mExitCode;
 
     QString mMessages;
 
-  public:
-    typedef enum
-    {
-        Zip,
-        SevenZip
-    } Format;
+public:
+    typedef enum { Zip, SevenZip } Format;
 
-  public:
+public:
     Packer(const QString &aToolPath, ILog *aLog);
 
     /// Задать расположение архиватора 7zip
@@ -46,33 +37,43 @@ class Packer : public ILogable
     /// Установить рекурсивный режим архивации
     void setRecursive(bool aRecursive);
 
-  public:
+public:
     /// Архивирует буфер в памяти в GZ формат
-    static bool gzipCompress(const QByteArray &aInBuffer, const QString &aFileName, QByteArray &aOutBuffer,
+    static bool gzipCompress(const QByteArray &aInBuffer,
+                             const QString &aFileName,
+                             QByteArray &aOutBuffer,
                              int aLevel = 9);
 
     /// Распаковывает GZ архив в память
-    static bool gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QByteArray &aOutBuffer);
+    static bool
+    gzipUncompress(const QByteArray &aInBuffer, QString &aFileName, QByteArray &aOutBuffer);
 
     /// Архивирует файлы в один том. В случае успеха возвращает имя сформированного архива.
-    QString pack(const QString &aTargetName, const QString &aSourceDir, const QStringList &aSearchMasks,
+    QString pack(const QString &aTargetName,
+                 const QString &aSourceDir,
+                 const QStringList &aSearchMasks,
                  const QStringList &aExcludeWildcard);
 
     /// Архивирует файлы в несколько томов, размер которых ограничивается aMaxPartSize в байтах.
-    QStringList pack(const QString &aTargetName, const QString &aSourceDir, const QStringList &aSearchMasks,
-                     const QStringList &aExcludeWildcard, int aMaxPartSize);
+    QStringList pack(const QString &aTargetName,
+                     const QString &aSourceDir,
+                     const QStringList &aSearchMasks,
+                     const QStringList &aExcludeWildcard,
+                     int aMaxPartSize);
 
     /// Протестировать архив
     bool test(const QString &aTargetName);
 
     /// Распаковать определенные файлы из архива в определенную папку
-    bool unpack(const QString &aSourceName, const QString &aDestinationDir, bool aSkipExisting,
+    bool unpack(const QString &aSourceName,
+                const QString &aDestinationDir,
+                bool aSkipExisting,
                 const QStringList &aExtractFiles = QStringList());
 
     /// Экстренно прервать процесс архиватора, может быть вызван только из соседнего потока
     void terminate();
 
-  public:
+public:
     /// Возвращает exit код последней операции
     int exitCode() const;
 
@@ -82,7 +83,7 @@ class Packer : public ILogable
     /// Возвращает текст полученный от архиватора
     const QString &messages() const;
 
-  private:
+private:
     QString mToolPath;
     bool mUpdateMode;
     Format mFormat;

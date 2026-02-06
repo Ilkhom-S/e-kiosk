@@ -5,17 +5,16 @@
 #include "StarPrinters.h"
 
 //--------------------------------------------------------------------------------
-class EjectorStarPrinter : public StarPrinter
-{
+class EjectorStarPrinter : public StarPrinter {
     SET_SUBSERIES("Ejector")
 
-  public:
+public:
     EjectorStarPrinter();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Забрать чек в ретрактор.
     virtual bool retract();
 };

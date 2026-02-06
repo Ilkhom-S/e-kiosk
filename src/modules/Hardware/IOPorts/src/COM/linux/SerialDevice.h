@@ -1,98 +1,70 @@
 #pragma once
 
-#include <sys/time.h>
-#include <sys/ioctl.h>
-#include <sys/select.h>
-
-#include <QtCore/QIODevice>
 #include <QtCore/QFile>
+#include <QtCore/QIODevice>
 #include <QtCore/QMutex>
 
+#include <sys/ioctl.h>
+#include <sys/select.h>
+#include <sys/time.h>
+
 //-----------------------------------------------------------------------------
-namespace CBaudRateType
-{
-    enum Enum
-    {
-        Baud50,
-        Baud75,
-        Baud110,
-        Baud134,
-        Baud150,
-        Baud200,
-        Baud300,
-        Baud600,
-        Baud1200,
-        Baud1800,
-        Baud2400,
-        Baud4800,
-        Baud9600,
-        Baud19200,
-        Baud38400,
-        Baud57600,
-        // Baud76800,
-        Baud115200,
-        Baud230400,
-        Baud460800,
-        Baud500000,
-        Baud576000,
-        Baud921600,
-        Baud1000000,
-        Baud1152000,
-        Baud1500000,
-        Baud2000000,
-        Baud2500000,
-        Baud3000000,
-        Baud3500000,
-        Baud4000000
-    };
+namespace CBaudRateType {
+enum Enum {
+    Baud50,
+    Baud75,
+    Baud110,
+    Baud134,
+    Baud150,
+    Baud200,
+    Baud300,
+    Baud600,
+    Baud1200,
+    Baud1800,
+    Baud2400,
+    Baud4800,
+    Baud9600,
+    Baud19200,
+    Baud38400,
+    Baud57600,
+    // Baud76800,
+    Baud115200,
+    Baud230400,
+    Baud460800,
+    Baud500000,
+    Baud576000,
+    Baud921600,
+    Baud1000000,
+    Baud1152000,
+    Baud1500000,
+    Baud2000000,
+    Baud2500000,
+    Baud3000000,
+    Baud3500000,
+    Baud4000000
+};
 } // namespace CBaudRateType
 
-namespace CDataBitsType
-{
-    enum Enum
-    {
-        Data5,
-        Data6,
-        Data7,
-        Data8
-    };
+namespace CDataBitsType {
+enum Enum { Data5, Data6, Data7, Data8 };
 } // namespace CDataBitsType
 
 //-----------------------------------------------------------------------------
-namespace CParityType
-{
-    enum Enum
-    {
-        None,
-        Odd,
-        Even,
-        Space
-    };
+namespace CParityType {
+enum Enum { None, Odd, Even, Space };
 } // namespace CParityType
 
 //-----------------------------------------------------------------------------
-namespace CStopBitsType
-{
-    enum Enum
-    {
-        Stop1,
-        Stop2
-    };
+namespace CStopBitsType {
+enum Enum { Stop1, Stop2 };
 } // namespace CStopBitsType
 
-namespace CFlowType
-{
-    enum Enum
-    {
-        Off,
-        Hardware,
-        XOnXOff
-    };
+namespace CFlowType {
+enum Enum { Off, Hardware, XOnXOff };
 } // namespace CFlowType
 
 //-----------------------------------------------------------------------------
-struct SerialDeviceSettings
-{
+struct SerialDeviceSettings {
     SerialDeviceSettings();
 
     CBaudRateType::Enum baudRate;
@@ -104,9 +76,8 @@ struct SerialDeviceSettings
 };
 
 //-----------------------------------------------------------------------------
-class SerialDevice : public QIODevice
-{
-  public:
+class SerialDevice : public QIODevice {
+public:
     explicit SerialDevice(const QString &aFilePath, QObject *aParent = 0);
     ~SerialDevice();
 
@@ -138,7 +109,7 @@ class SerialDevice : public QIODevice
     virtual void setDtr(bool aSet = true);
     virtual void setRts(bool aSet = true);
 
-  protected:
+protected:
     virtual qint64 readData(char *aData, qint64 aMaxSize);
     virtual qint64 writeData(const char *aData, qint64 aMaxSize);
 
@@ -150,11 +121,11 @@ class SerialDevice : public QIODevice
     virtual bool doSetFlowControl(CFlowType::Enum aFlowControl);
     virtual bool doSetTimeout(ulong aMsecs);
 
-  private:
+private:
     SerialDevice(const SerialDevice &);
     SerialDevice &operator=(const SerialDevice &);
 
-  private:
+private:
     QFile m_file;
     SerialDeviceSettings m_settings;
     mutable QMutex m_mutex;

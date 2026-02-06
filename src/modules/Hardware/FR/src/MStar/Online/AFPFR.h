@@ -2,26 +2,22 @@
 
 #pragma once
 
-// Modules
-#include "Hardware/Protocols/FR/AFPFR.h"
-
-// Project
-#include "Hardware/FR/PortFRBase.h"
 #include "AFPFRConstants.h"
 #include "AFPFRDataTypes.h"
+#include "Hardware/FR/PortFRBase.h"
+#include "Hardware/Protocols/FR/AFPFR.h"
 
 //--------------------------------------------------------------------------------
-class AFPFR : public TSerialFRBase
-{
+class AFPFR : public TSerialFRBase {
     SET_SERIES("AFP")
 
-  public:
+public:
     AFPFR();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
@@ -51,30 +47,44 @@ class AFPFR : public TSerialFRBase
 
     /// Выполнить команду.
     TResult processCommand(char aCommand, CAFPFR::TData *aAnswer = nullptr);
-    TResult processCommand(char aCommand, const CAFPFR::TData &aCommandData, CAFPFR::TData *aAnswer = nullptr);
-    TResult processCommand(char aCommand, const CAFPFR::TData &aCommandData, CAFPFR::TData *aAnswer,
+    TResult processCommand(char aCommand,
+                           const CAFPFR::TData &aCommandData,
+                           CAFPFR::TData *aAnswer = nullptr);
+    TResult processCommand(char aCommand,
+                           const CAFPFR::TData &aCommandData,
+                           CAFPFR::TData *aAnswer,
                            CAFPFR::EAnswerTypes::Enum aAnswerType);
-    TResult processCommand(char aCommand, const CAFPFR::TData &aCommandData, CAFPFR::TData *aAnswer,
+    TResult processCommand(char aCommand,
+                           const CAFPFR::TData &aCommandData,
+                           CAFPFR::TData *aAnswer,
                            const CAFPFR::TAnswerTypes &aAnswerTypes);
 
-    TResult processCommand(char aCommand, const QVariant &aCommandData, CAFPFR::TData *aAnswer = nullptr);
-    TResult processCommand(char aCommand, const QVariant &aCommandData, CAFPFR::TData *aAnswer,
+    TResult
+    processCommand(char aCommand, const QVariant &aCommandData, CAFPFR::TData *aAnswer = nullptr);
+    TResult processCommand(char aCommand,
+                           const QVariant &aCommandData,
+                           CAFPFR::TData *aAnswer,
                            CAFPFR::EAnswerTypes::Enum aAnswerType);
-    TResult processCommand(char aCommand, const QVariant &aCommandData, CAFPFR::TData *aAnswer,
+    TResult processCommand(char aCommand,
+                           const QVariant &aCommandData,
+                           CAFPFR::TData *aAnswer,
                            const CAFPFR::TAnswerTypes &aAnswerTypes);
 
     /// Выполнить команду.
-    EResult::Enum performCommand(TStatusCodes &aStatusCodes, char aCommand, CAFPFR::TData &aAnswerData);
+    EResult::Enum
+    performCommand(TStatusCodes &aStatusCodes, char aCommand, CAFPFR::TData &aAnswerData);
 
     /// Обработка ответа на предыдущей команды. Автоисправление некоторых ошибок.
     virtual bool processAnswer(char aCommand, char aError);
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData,
+    virtual bool performFiscal(const QStringList &aReceipt,
+                               const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
     /// Получить фискальные теги по номеру документа.
-    virtual bool getFiscalFields(quint32 aFDNumber, SDK::Driver::TFiscalPaymentData &aFPData,
+    virtual bool getFiscalFields(quint32 aFDNumber,
+                                 SDK::Driver::TFiscalPaymentData &aFPData,
                                  SDK::Driver::TComplexFiscalPaymentData &aPSData);
 
     /// Собрать данные о сессии перед выполнением Z-отчета.

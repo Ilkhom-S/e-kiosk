@@ -2,22 +2,16 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include "ui_WelcomeWizardPage.h"
-#include <Common/QtHeadersEnd.h>
-
-// Проект
 #include "WizardPage.h"
+#include "ui_WelcomeWizardPage.h"
 
 class ServiceMenuBackend;
 
 //---------------------------------------------------------------------------
-class WelcomeWizardPage : public WizardPageBase, protected Ui::WelcomeWizardPage
-{
+class WelcomeWizardPage : public WizardPageBase, protected Ui::WelcomeWizardPage {
     Q_OBJECT
 
-  public:
+public:
     WelcomeWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
     virtual bool initialize();
@@ -26,7 +20,7 @@ class WelcomeWizardPage : public WizardPageBase, protected Ui::WelcomeWizardPage
     virtual bool activate();
     virtual bool deactivate();
 
-  private slots:
+private slots:
     void onRunSetup();
 };
 

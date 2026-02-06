@@ -2,27 +2,23 @@
 
 #pragma once
 
-namespace SDK
-{
-    namespace Driver
-    {
+namespace SDK {
+namespace Driver {
 
-        //--------------------------------------------------------------------------------
-        /// Команды фискального регистратора.
-        namespace EFiscalPrinterCommand
-        {
-            enum Enum
-            {
-                Print,     /// Нефискальная печать.
-                Sale,      /// Чек продажи.
-                SaleBack,  /// Чек возврата продажи.
-                ZReport,   /// Z-отчёт.
-                XReport,   /// X-отчёт.
-                Encashment /// Выплата.
-            };
-        } // namespace EFiscalPrinterCommand
+//--------------------------------------------------------------------------------
+/// Команды фискального регистратора.
+namespace EFiscalPrinterCommand {
+enum Enum {
+    Print,     /// Нефискальная печать.
+    Sale,      /// Чек продажи.
+    SaleBack,  /// Чек возврата продажи.
+    ZReport,   /// Z-отчёт.
+    XReport,   /// X-отчёт.
+    Encashment /// Выплата.
+};
+} // namespace EFiscalPrinterCommand
 
-    } // namespace Driver
+} // namespace Driver
 } // namespace SDK
 
 //--------------------------------------------------------------------------------

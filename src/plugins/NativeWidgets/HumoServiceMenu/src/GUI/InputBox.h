@@ -3,45 +3,42 @@
 #pragma once
 
 // std
+#include <QtCore/QTimer>
+
 #include <functional>
 
-// Qt
-#include "Common/QtHeadersBegin.h"
-#include <QtCore/QTimer>
 #include "ui_InputBox.h"
-#include "Common/QtHeadersEnd.h"
 
 //---------------------------------------------------------------------------
-class InputBox : public QWidget
-{
+class InputBox : public QWidget {
     Q_OBJECT
 
-  public:
+public:
     typedef std::function<bool(const QString &)> ValidatorFunction;
 
-  public:
+public:
     InputBox(QWidget *parent, ValidatorFunction aValidator);
     ~InputBox();
 
-  public:
+public:
     void setLabelText(const QString &aText);
     void setTextValue(const QString &aValue);
 
     QString textValue() const;
 
-  signals:
+signals:
     void accepted();
 
-  private slots:
+private slots:
     void onOK();
     void onCancel();
     void mySetFocus();
     void onTextChanged();
 
-  private:
+private:
     virtual void showEvent(QShowEvent *aEvent);
 
-  private:
+private:
     Ui::InputBox ui;
     ValidatorFunction mValidator;
 };

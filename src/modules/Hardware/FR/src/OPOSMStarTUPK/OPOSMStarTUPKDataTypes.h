@@ -2,58 +2,36 @@
 
 #pragma once
 
-// System
+#include <QtCore/QString>
+
 #include "WinDef.h"
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
-
 //--------------------------------------------------------------------------------
-namespace COPOSMStarTUPK
-{
-    /// Параметры.
-    namespace Parameters
-    {
-        enum Enum
-        {
-            AutoCutter,
-            TaxesPrint,
-            ZBuffer
-        };
+namespace COPOSMStarTUPK {
+/// Параметры.
+namespace Parameters {
+enum Enum { AutoCutter, TaxesPrint, ZBuffer };
 
-        struct Data
-        {
-            QString name;
-            DWORD value;
+struct Data {
+    QString name;
+    DWORD value;
 
-            Data() : name(""), value(0)
-            {
-            }
-            Data(const char *aName, DWORD aValue) : name(aName), value(aValue)
-            {
-            }
-        };
-    } // namespace Parameters
+    Data() : name(""), value(0) {}
+    Data(const char *aName, DWORD aValue) : name(aName), value(aValue) {}
+};
+} // namespace Parameters
 
-    struct SErrorData
-    {
-        QString function;
-        int error;
+struct SErrorData {
+    QString function;
+    int error;
 
-        SErrorData() : error(0)
-        {
-        }
-        SErrorData(const QString &aFunction, int aError) : function(aFunction), error(aError)
-        {
-        }
+    SErrorData() : error(0) {}
+    SErrorData(const QString &aFunction, int aError) : function(aFunction), error(aError) {}
 
-        bool operator==(const SErrorData &aErrorData) const
-        {
-            return (aErrorData.function == function) && (aErrorData.error == error);
-        }
-    };
+    bool operator==(const SErrorData &aErrorData) const {
+        return (aErrorData.function == function) && (aErrorData.error == error);
+    }
+};
 } // namespace COPOSMStarTUPK
 
 //--------------------------------------------------------------------------------

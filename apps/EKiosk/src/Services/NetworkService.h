@@ -2,28 +2,23 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include <QtCore/QMutex>
+#include <QtCore/QSharedPointer>
 #include <QtCore/QString>
 #include <QtCore/QThread>
 #include <QtCore/QTimer>
-#include <QtCore/QMutex>
-#include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
 
-// Модули
 #include <Common/ILogable.h>
-#include <Connection/IConnection.h>
-#include <NetworkTaskManager/NetworkTaskManager.h>
 
-// SDK
+#include <SDK/Drivers/IModem.h>
+#include <SDK/Drivers/IWatchdog.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Core/INetworkService.h>
 #include <SDK/PaymentProcessor/Core/IService.h>
-#include <SDK/Drivers/IModem.h>
-#include <SDK/Drivers/IWatchdog.h>
 
-// Проект
+#include <Connection/IConnection.h>
+#include <NetworkTaskManager/NetworkTaskManager.h>
+
 #include "System/IApplication.h"
 
 class IHardwareDatabaseUtils;
@@ -33,11 +28,10 @@ class IHardwareDatabaseUtils;
 class NetworkService : protected QThread,
                        public SDK::PaymentProcessor::INetworkService,
                        public ILogable,
-                       public SDK::PaymentProcessor::IService
-{
+                       public SDK::PaymentProcessor::IService {
     Q_OBJECT
 
-  public:
+public:
     NetworkService(IApplication *aApplication);
     virtual ~NetworkService();
 
@@ -95,11 +89,11 @@ class NetworkService : protected QThread,
     /// Получает установленный User-Agent для http запросов
     virtual QString getUserAgent() const;
 
-  protected:
+protected:
     /// QThread.
     virtual void run();
 
-  private slots:
+private slots:
     void onModemInitialized();
     void doConnect(const SDK::PaymentProcessor::SConnection &aConnection);
     bool doDisconnect();
@@ -107,19 +101,20 @@ class NetworkService : protected QThread,
     /// Проверка есть ли связь, и попытаться поднять, если ее нет.
     void checkConnection();
 
-  private:
+private:
     SDK::Driver::IModem *getModem();
-    SDK::Driver::IModem *prepareModem(SDK::Driver::IModem *aModemDevice, const QString &aConnectionName);
+    SDK::Driver::IModem *prepareModem(SDK::Driver::IModem *aModemDevice,
+                                      const QString &aConnectionName);
     bool getConnectionTemplate(const QString &aConnectionName,
                                SDK::PaymentProcessor::SConnectionTemplate &aConnectionTem) const;
 
-  private slots:
+private slots:
     void onConnectionAlive();
     void onConnectionLost();
     void updateModemParameters();
     void onNetworkTaskStatus(bool aFailure);
 
-  private:
+private:
     SDK::PaymentProcessor::IDeviceService *mDeviceService;
     SDK::PaymentProcessor::IEventService *mEventService;
     QSharedPointer<IConnection> mConnection;

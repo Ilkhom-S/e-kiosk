@@ -2,34 +2,28 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QString>
 #include <QtCore/QObject>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QString>
 
-// SDK
-#include <SDK/Drivers/WarningLevel.h>
 #include <SDK/Drivers/Components.h>
+#include <SDK/Drivers/WarningLevel.h>
 
-// Project
 #include "Hardware/Common/MetaDevice.h"
 
-#define SET_DEVICE_TYPE(aType)                                                                                         \
-  public:                                                                                                              \
-    static QString getDeviceType()                                                                                     \
-    {                                                                                                                  \
-        return SDK::Driver::CComponents::aType;                                                                        \
+#define SET_DEVICE_TYPE(aType)                                                                     \
+public:                                                                                            \
+    static QString getDeviceType() {                                                               \
+        return SDK::Driver::CComponents::aType;                                                    \
     }
 
 //--------------------------------------------------------------------------------
-class ProtoDevice : public QObject
-{
+class ProtoDevice : public QObject {
     Q_OBJECT
 
-  signals:
+signals:
     /// Изменение состояния.
-    void status(SDK::Driver::EWarningLevel::Enum aLevel, const QString &aMessage, int aExtendedStatus);
+    void
+    status(SDK::Driver::EWarningLevel::Enum aLevel, const QString &aMessage, int aExtendedStatus);
 
     /// Окончание инициализации.
     void initialized();
@@ -40,31 +34,26 @@ class ProtoDevice : public QObject
     /// Необходимо обновить конфигурацию.
     void configurationChanged();
 
-  public slots:
+public slots:
     /// Инициализация.
     virtual void initialize() {};
 
     /// Идентификация.
-    virtual bool checkExistence()
-    {
-        return true;
-    };
+    virtual bool checkExistence() { return true; };
 
     /// Обработчик сигнала полла.
     virtual void onPoll() {};
 
-  protected slots:
+protected slots:
     /// Запуск/останов поллинга.
     virtual void setPollingActive(bool /*aActive*/) {};
 
     /// Обновить прошивку.
     virtual void updateFirmware(const QByteArray & /*aBuffer*/) {};
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
-    virtual bool performRelease()
-    {
-        return true;
-    };
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
+    virtual bool performRelease() { return true; };
 };
 
 //--------------------------------------------------------------------------------

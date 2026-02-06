@@ -1,16 +1,13 @@
-// Project
 #include "AuthRequest.h"
 
-AuthRequest::AuthRequest(QObject *parent) : SendRequest(parent)
-{
+AuthRequest::AuthRequest(QObject *parent) : SendRequest(parent) {
     senderName = "AUTH";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(errorResponse()));
     connect(this, SIGNAL(emit_DomElement(QDomNode)), this, SLOT(setDataNote(QDomNode)));
 }
 
-void AuthRequest::sendAuthRequest(QString login, QString otp, QString hash, QString cid)
-{
+void AuthRequest::sendAuthRequest(QString login, QString otp, QString hash, QString cid) {
     this->login = login;
 
     cid = cid.isEmpty() ? "" : QString("<cid>%1</cid>\n").arg(cid);
@@ -30,13 +27,11 @@ void AuthRequest::sendAuthRequest(QString login, QString otp, QString hash, QStr
     sendRequest(xml, 20000);
 }
 
-void AuthRequest::errorResponse()
-{
+void AuthRequest::errorResponse() {
     emit emitResult("", "", "", "");
 }
 
-void AuthRequest::setDataNote(const QDomNode &domElement)
-{
+void AuthRequest::setDataNote(const QDomNode &domElement) {
     resultCode = "";
     token = "";
     message = "";
@@ -44,8 +39,7 @@ void AuthRequest::setDataNote(const QDomNode &domElement)
     // Парсим данные
     parcerNote(domElement);
 
-    if (resultCode != "")
-    {
+    if (resultCode != "") {
         emit emitResult(resultCode, login, token, message);
         return;
     }
@@ -53,31 +47,25 @@ void AuthRequest::setDataNote(const QDomNode &domElement)
     emit emitResult("", "", "", "");
 }
 
-void AuthRequest::parcerNote(const QDomNode &domElement)
-{
+void AuthRequest::parcerNote(const QDomNode &domElement) {
     // Необходимо отпарсить документ
     QDomNode domNode = domElement.firstChild();
 
-    while (!domNode.isNull())
-    {
-        if (domNode.isElement())
-        {
+    while (!domNode.isNull()) {
+        if (domNode.isElement()) {
 
             QDomElement domElement = domNode.toElement();
             QString strTag = domElement.tagName();
 
-            if (strTag == "resultCode")
-            {
+            if (strTag == "resultCode") {
                 resultCode = domElement.text();
             }
 
-            if (strTag == "token")
-            {
+            if (strTag == "token") {
                 token = domElement.text();
             }
 
-            if (strTag == "message")
-            {
+            if (strTag == "message") {
                 message = domElement.text();
             }
         }

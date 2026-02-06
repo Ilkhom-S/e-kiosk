@@ -2,13 +2,11 @@
 
 #pragma once
 
-// Project
 #include "Payment.h"
 
 //------------------------------------------------------------------------------
-class MultistagePayment : public Payment
-{
-  public:
+class MultistagePayment : public Payment {
+public:
     MultistagePayment(PaymentFactory *aFactory);
 
 #pragma region SDK::PaymentProcessor::IPayment interface
@@ -39,7 +37,7 @@ class MultistagePayment : public Payment
     /// Выполнить запрос перехода на следующий шаг
     bool getNextStep();
 
-  protected:
+protected:
     /// Создаёт класс запроса по идентификатору шага.
     virtual Request *createRequest(const QString &aStep);
 

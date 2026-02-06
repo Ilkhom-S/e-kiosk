@@ -2,37 +2,30 @@
 
 #pragma once
 
-// SDK
-#include <SDK/PaymentProcessor/Core/ITask.h>
-
-// Модули
 #include <Common/ILogable.h>
 
-namespace Ucs
-{
+#include <SDK/PaymentProcessor/Core/ITask.h>
 
-    //---------------------------------------------------------------------------
-    class UscEncashTask : public QObject, public SDK::PaymentProcessor::ITask
-    {
-        Q_OBJECT
+namespace Ucs {
 
-      public:
-        UscEncashTask(const QString &aName, const QString &aLogName, const QString &aParams);
+//---------------------------------------------------------------------------
+class UscEncashTask : public QObject, public SDK::PaymentProcessor::ITask {
+    Q_OBJECT
 
-        /// выполнить задачу
-        virtual void execute();
+public:
+    UscEncashTask(const QString &aName, const QString &aLogName, const QString &aParams);
 
-        /// остановить выполнение задачи
-        virtual bool cancel()
-        {
-            return true;
-        };
+    /// выполнить задачу
+    virtual void execute();
 
-        /// подписаться на сигнал окончания задания
-        virtual bool subscribeOnComplete(QObject *aReceiver, const char *aSlot);
+    /// остановить выполнение задачи
+    virtual bool cancel() { return true; };
 
-      signals:
-        void finished(const QString &aName, bool aComplete);
-    };
+    /// подписаться на сигнал окончания задания
+    virtual bool subscribeOnComplete(QObject *aReceiver, const char *aSlot);
+
+signals:
+    void finished(const QString &aName, bool aComplete);
+};
 
 } // namespace Ucs

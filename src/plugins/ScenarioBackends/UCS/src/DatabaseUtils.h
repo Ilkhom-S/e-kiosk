@@ -2,54 +2,46 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QStringList>
 #include <QtCore/QDateTime>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QStringList>
 
-// SDK
-#include <SDK/PaymentProcessor/Core/IDatabaseService.h>
-
-// Modules
 #include <Common/ILogable.h>
 
-namespace UcsDB
-{
+#include <SDK/PaymentProcessor/Core/IDatabaseService.h>
 
-    //------------------------------------------------------------------------------
-    struct Encashment
-    {
-        QDateTime date;
-        QStringList receipt;
-        int printed;
+namespace UcsDB {
 
-        Encashment();
-    };
+//------------------------------------------------------------------------------
+struct Encashment {
+    QDateTime date;
+    QStringList receipt;
+    int printed;
 
-    //------------------------------------------------------------------------------
-    class DatabaseUtils : public ILogable
-    {
-        typedef QSharedPointer<IDatabaseQuery> TQueryPointer;
+    Encashment();
+};
 
-      public:
-        DatabaseUtils(SDK::PaymentProcessor::IDatabaseService *aDatabaseService, ILog *aLog);
+//------------------------------------------------------------------------------
+class DatabaseUtils : public ILogable {
+    typedef QSharedPointer<IDatabaseQuery> TQueryPointer;
 
-        bool isReadOnly() const;
+public:
+    DatabaseUtils(SDK::PaymentProcessor::IDatabaseService *aDatabaseService, ILog *aLog);
 
-        bool save(const Encashment &aEncashment);
+    bool isReadOnly() const;
 
-        QList<Encashment> getAllNotPrinted() const;
+    bool save(const Encashment &aEncashment);
 
-        bool markAsPrinted(const Encashment &aEncashment);
+    QList<Encashment> getAllNotPrinted() const;
 
-      private:
-        bool initTables();
+    bool markAsPrinted(const Encashment &aEncashment);
 
-      private:
-        SDK::PaymentProcessor::IDatabaseService *mDatabase;
-        bool mReadOnly;
-    };
+private:
+    bool initTables();
+
+private:
+    SDK::PaymentProcessor::IDatabaseService *mDatabase;
+    bool mReadOnly;
+};
 
 } // namespace UcsDB
 //------------------------------------------------------------------------------

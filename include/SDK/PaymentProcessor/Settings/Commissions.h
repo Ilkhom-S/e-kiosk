@@ -2,309 +2,269 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QMap>
 #include <QtCore/QList>
-#include <QtCore/QTime>
+#include <QtCore/QMap>
 #include <QtCore/QSet>
+#include <QtCore/QTime>
 #include <QtCore/QVariantMap>
 #include <QtCore/QWeakPointer>
-#include <Common/QtHeadersEnd.h>
 
-// Common
 #include <Common/PropertyTree.h>
 
 //----------------------------------------------------------------------------
 class QJsonArray;
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-
-        //----------------------------------------------------------------------------
-        namespace CCommissions
-        {
-            const double DefaultAboveValue = 0.0;
-            const double DefaultBelowValue = 1000000.0;
-            const double MinChargeValue = 0.0;
-            const double MaxChargeValue = 1000000.0;
-        } // namespace CCommissions
-
-        //----------------------------------------------------------------------------
-        class Commission
-        {
-            friend class CommissionList;
-            friend class Commissions;
-
-          public:
-            enum Type
-            {
-                Absolute,
-                Percent
-            };
-
-            enum RoundType
-            {
-                High,
-                Bank,
-                Low
-            };
-
-            enum Day
-            {
-                Mon = 1,
-                Tue,
-                Wed,
-                Thu,
-                Fri,
-                Sat,
-                Sun
-            };
-
-            enum Base
-            {
-                AmountAll,
-                Amount
-            };
+namespace SDK {
+namespace PaymentProcessor {
 
-            Commission();
+//----------------------------------------------------------------------------
+namespace CCommissions {
+const double DefaultAboveValue = 0.0;
+const double DefaultBelowValue = 1000000.0;
+const double MinChargeValue = 0.0;
+const double MaxChargeValue = 1000000.0;
+} // namespace CCommissions
 
-            /// Получение левой границы действия комиссии.
-            double getMinLimit() const;
+//----------------------------------------------------------------------------
+class Commission {
+    friend class CommissionList;
+    friend class Commissions;
 
-            /// Получение правой границы действия комиссии.
-            double getMaxLimit() const;
+public:
+    enum Type { Absolute, Percent };
 
-            /// Если для комиссии определен нижний лимит, то предикат возвращает true.
-            bool hasMinLimit() const;
+    enum RoundType { High, Bank, Low };
 
-            /// Если для комиссии определен верхний лимит, то предикат возвращает true.
-            bool hasMaxLimit() const;
+    enum Day { Mon = 1, Tue, Wed, Thu, Fri, Sat, Sun };
 
-            /// Если для комиссии определены лимиты, то предикат возвращает true.
-            bool hasLimits() const;
+    enum Base { AmountAll, Amount };
 
-            /// Возвращает комиссию для суммы aSum.
-            double getValueFor(double aSum, bool aAtAmount) const;
+    Commission();
 
-            /// Возвращает размер комиссии в процентах или денежных единицах в зависимости от типа.
-            double getValue() const;
+    /// Получение левой границы действия комиссии.
+    double getMinLimit() const;
 
-            /// Возвращает минимальный размер комиссии.
-            double getMinCharge() const;
+    /// Получение правой границы действия комиссии.
+    double getMaxLimit() const;
 
-            /// Возвращает максимальный размер комиссии.
-            double getMaxCharge() const;
+    /// Если для комиссии определен нижний лимит, то предикат возвращает true.
+    bool hasMinLimit() const;
 
-            /// Возвращает тип комиссии.
-            Type getType() const;
+    /// Если для комиссии определен верхний лимит, то предикат возвращает true.
+    bool hasMaxLimit() const;
 
-            /// Возвращает базу расчёта комиссии
-            Base getBase() const;
+    /// Если для комиссии определены лимиты, то предикат возвращает true.
+    bool hasLimits() const;
 
-          protected:
-            bool contains(double aSum) const;
+    /// Возвращает комиссию для суммы aSum.
+    double getValueFor(double aSum, bool aAtAmount) const;
 
-            bool operator>(const Commission &aOther) const;
-            bool operator<(const Commission &aOther) const;
+    /// Возвращает размер комиссии в процентах или денежных единицах в зависимости от типа.
+    double getValue() const;
 
-            /// Конструирование готового объекта по переданным настройкам.
-            static Commission fromSettings(const TPtree &aSettings);
+    /// Возвращает минимальный размер комиссии.
+    double getMinCharge() const;
 
-            static Commission fromVariant(const QVariant &aCommissions);
+    /// Возвращает максимальный размер комиссии.
+    double getMaxCharge() const;
 
-          private:
-            double mValue;
-            double mAbove;
-            double mBelow;
-            double mMinCharge;
-            double mMaxCharge;
-            Type mType;
-            RoundType mRound;
-            Base mBase;
-        };
+    /// Возвращает тип комиссии.
+    Type getType() const;
 
-        //----------------------------------------------------------------------------
-        typedef QList<Commission> TCommissions;
+    /// Возвращает базу расчёта комиссии
+    Base getBase() const;
 
-        //----------------------------------------------------------------------------
-        class CommissionList
-        {
-            friend class CommissionByTimeList;
-            friend class CommissionByDayList;
-            friend class Commissions;
+protected:
+    bool contains(double aSum) const;
 
-          protected:
-            CommissionList();
+    bool operator>(const Commission &aOther) const;
+    bool operator<(const Commission &aOther) const;
 
-            TCommissions getCommissions() const;
+    /// Конструирование готового объекта по переданным настройкам.
+    static Commission fromSettings(const TPtree &aSettings);
 
-            bool query(double aSum, Commission &aCommission) const;
+    static Commission fromVariant(const QVariant &aCommissions);
 
-            CommissionList &operator<<(const Commission &aCommission);
+private:
+    double mValue;
+    double mAbove;
+    double mBelow;
+    double mMinCharge;
+    double mMaxCharge;
+    Type mType;
+    RoundType mRound;
+    Base mBase;
+};
 
-            static CommissionList fromSettings(const TPtree &aSettings);
+//----------------------------------------------------------------------------
+typedef QList<Commission> TCommissions;
 
-            static CommissionList fromVariant(const QVariant &aCommissions);
+//----------------------------------------------------------------------------
+class CommissionList {
+    friend class CommissionByTimeList;
+    friend class CommissionByDayList;
+    friend class Commissions;
 
-          private:
-            TCommissions mCommissions;
-        };
+protected:
+    CommissionList();
 
-        //----------------------------------------------------------------------------
-        class CommissionByTimeList
-        {
-            friend class CommissionByDayList;
-            friend class Commissions;
+    TCommissions getCommissions() const;
 
-          protected:
-            CommissionByTimeList();
+    bool query(double aSum, Commission &aCommission) const;
 
-            TCommissions getCommissions() const;
+    CommissionList &operator<<(const Commission &aCommission);
 
-            bool query(double aSum, Commission &aCommission) const;
+    static CommissionList fromSettings(const TPtree &aSettings);
 
-            CommissionByTimeList &operator<<(const Commission &aCommission);
+    static CommissionList fromVariant(const QVariant &aCommissions);
 
-            static CommissionByTimeList fromSettings(const TPtree &aSettings);
+private:
+    TCommissions mCommissions;
+};
 
-            static CommissionByTimeList fromVariant(const QVariant &aCommissions);
+//----------------------------------------------------------------------------
+class CommissionByTimeList {
+    friend class CommissionByDayList;
+    friend class Commissions;
 
-          private:
-            QTime mBegin;
-            QTime mEnd;
+protected:
+    CommissionByTimeList();
 
-            CommissionList mCommissions;
-        };
+    TCommissions getCommissions() const;
 
-        //----------------------------------------------------------------------------
-        class CommissionByDayList
-        {
-            friend class Commissions;
+    bool query(double aSum, Commission &aCommission) const;
 
-          protected:
-            CommissionByDayList();
+    CommissionByTimeList &operator<<(const Commission &aCommission);
 
-            TCommissions getCommissions() const;
+    static CommissionByTimeList fromSettings(const TPtree &aSettings);
 
-            bool query(double aSum, Commission &aCommission) const;
+    static CommissionByTimeList fromVariant(const QVariant &aCommissions);
 
-            static CommissionByDayList fromSettings(const TPtree &aSettings);
+private:
+    QTime mBegin;
+    QTime mEnd;
 
-            static CommissionByDayList fromVariant(const QVariant &aCommissions);
+    CommissionList mCommissions;
+};
 
-          private:
-            QSet<Commission::Day> mDays;
+//----------------------------------------------------------------------------
+class CommissionByDayList {
+    friend class Commissions;
 
-            QList<CommissionByTimeList> mCommissionsByTime;
-            CommissionList mCommissions;
-        };
+protected:
+    CommissionByDayList();
 
-        //----------------------------------------------------------------------------
-        class ProcessingCommission
-        {
-            enum Type
-            {
-                // <Комиссия> = <amount>*<процент комиссии хумо>
-                Real = 1,
-                // Если <amount_all> меньше <amount>, то <Комиссия>=0
-                // Иначе <Комиссия> = (<amount_all> - <amount>)*<процент комиссии хумо >
-                Diff,
-                // <Комиссия> = <amount>*<процент комиссии хумо>/ (1 - <процент комиссии хумо>)
-                Inverse
-            };
+    TCommissions getCommissions() const;
 
-          public:
-            ProcessingCommission();
+    bool query(double aSum, Commission &aCommission) const;
 
-            /// Производит рассчёт комиссии в зависимости от сумм платежа.
-            double getValue(double aAmount, double aAmountAll);
+    static CommissionByDayList fromSettings(const TPtree &aSettings);
 
-            static ProcessingCommission fromSettings(const TPtree &aSettings);
+    static CommissionByDayList fromVariant(const QVariant &aCommissions);
 
-            static ProcessingCommission fromVariant(const QVariant &aCommissions);
+private:
+    QSet<Commission::Day> mDays;
 
-            /// Проверка на пустую комиссию
-            bool isNull() const;
+    QList<CommissionByTimeList> mCommissionsByTime;
+    CommissionList mCommissions;
+};
 
-          private:
-            Type mType;
-            double mValue;
-            double mMinValue;
-        };
+//----------------------------------------------------------------------------
+class ProcessingCommission {
+    enum Type {
+        // <Комиссия> = <amount>*<процент комиссии хумо>
+        Real = 1,
+        // Если <amount_all> меньше <amount>, то <Комиссия>=0
+        // Иначе <Комиссия> = (<amount_all> - <amount>)*<процент комиссии хумо >
+        Diff,
+        // <Комиссия> = <amount>*<процент комиссии хумо>/ (1 - <процент комиссии хумо>)
+        Inverse
+    };
 
-        //----------------------------------------------------------------------------
-        class Commissions
-        {
-            struct SComplexCommissions
-            {
-                static bool sortByMinLimit(const Commission &aFirst, const Commission &aSecond);
+public:
+    ProcessingCommission();
 
-                SComplexCommissions()
-                {
-                    vat = 0;
-                }
+    /// Производит рассчёт комиссии в зависимости от сумм платежа.
+    double getValue(double aAmount, double aAmountAll);
 
-                TCommissions getCommissions() const;
+    static ProcessingCommission fromSettings(const TPtree &aSettings);
 
-                Commission query(double aSum) const;
+    static ProcessingCommission fromVariant(const QVariant &aCommissions);
 
-                QList<CommissionByDayList> commissionsByDay;
-                QList<CommissionByTimeList> commissionsByTime;
-                CommissionList commissions;
-                int vat;
-            };
+    /// Проверка на пустую комиссию
+    bool isNull() const;
 
-          public:
-            Commissions();
+private:
+    Type mType;
+    double mValue;
+    double mMinValue;
+};
 
-            /// Получение списка актуальных комиссий по оператору.
-            TCommissions getCommissions(qint64 aOperator) const;
+//----------------------------------------------------------------------------
+class Commissions {
+    struct SComplexCommissions {
+        static bool sortByMinLimit(const Commission &aFirst, const Commission &aSecond);
 
-            /// Получение актуальной комиссии по идентификатору оператора и сумме платежа.
-            Commission getCommission(qint64 aProvider, double aSum) const;
+        SComplexCommissions() { vat = 0; }
 
-            /// Получение комиссии процессинга за платёж по указанному оператору. Используется для разбивки комиссии
-            /// на платёжном чеке. Все подсчёты производятся только методом getCommission.
-            ProcessingCommission getProcessingCommission(qint64 aProvider);
+        TCommissions getCommissions() const;
 
-            /// Получение размера НДС для тела платежа указанного провайдера
-            int getVAT(qint64 aProvider);
+        Commission query(double aSum) const;
 
-            /// Если во время загрузки комиссий произошла ошибка, то этот метод вернёт false.
-            bool isValid() const;
+        QList<CommissionByDayList> commissionsByDay;
+        QList<CommissionByTimeList> commissionsByTime;
+        CommissionList commissions;
+        int vat;
+    };
 
-            /// Проверить, есть ли настройки для конкретного оператора
-            /// Флаг позволяет выбрать, надо ли проверять комиссию процессинга
-            bool contains(qint64 aProvider, bool aCheckProcessing = false);
+public:
+    Commissions();
 
-            /// Чтение комиссий из настроек.
-            static Commissions fromSettings(const TPtree &aSettings);
+    /// Получение списка актуальных комиссий по оператору.
+    TCommissions getCommissions(qint64 aOperator) const;
 
-            /// Чтение комиссий из настроек.
-            static Commissions fromVariant(const QVariantList &aCommissions);
+    /// Получение актуальной комиссии по идентификатору оператора и сумме платежа.
+    Commission getCommission(qint64 aProvider, double aSum) const;
 
-            /// Дополнить комиссии недостающими элементами из настроек
-            void appendFromSettings(const TPtree &aSettings);
+    /// Получение комиссии процессинга за платёж по указанному оператору. Используется для разбивки
+    /// комиссии на платёжном чеке. Все подсчёты производятся только методом getCommission.
+    ProcessingCommission getProcessingCommission(qint64 aProvider);
 
-            /// Сбросить состояние
-            void clear();
+    /// Получение размера НДС для тела платежа указанного провайдера
+    int getVAT(qint64 aProvider);
 
-          protected:
-            SComplexCommissions loadCommissions(const TPtree &aBranch);
-            SComplexCommissions loadCommissions(const QVariant &aCommissions);
+    /// Если во время загрузки комиссий произошла ошибка, то этот метод вернёт false.
+    bool isValid() const;
 
-          private:
-            bool mIsValid;
-            QMap<qint64, SComplexCommissions> mProviderCommissions;
-            QMap<qint64, ProcessingCommission> mProcessingCommissions;
-            SComplexCommissions mDefaultCommissions;
-        };
+    /// Проверить, есть ли настройки для конкретного оператора
+    /// Флаг позволяет выбрать, надо ли проверять комиссию процессинга
+    bool contains(qint64 aProvider, bool aCheckProcessing = false);
 
-        //----------------------------------------------------------------------------
-    } // namespace PaymentProcessor
+    /// Чтение комиссий из настроек.
+    static Commissions fromSettings(const TPtree &aSettings);
+
+    /// Чтение комиссий из настроек.
+    static Commissions fromVariant(const QVariantList &aCommissions);
+
+    /// Дополнить комиссии недостающими элементами из настроек
+    void appendFromSettings(const TPtree &aSettings);
+
+    /// Сбросить состояние
+    void clear();
+
+protected:
+    SComplexCommissions loadCommissions(const TPtree &aBranch);
+    SComplexCommissions loadCommissions(const QVariant &aCommissions);
+
+private:
+    bool mIsValid;
+    QMap<qint64, SComplexCommissions> mProviderCommissions;
+    QMap<qint64, ProcessingCommission> mProcessingCommissions;
+    SComplexCommissions mDefaultCommissions;
+};
+
+//----------------------------------------------------------------------------
+} // namespace PaymentProcessor
 } // namespace SDK
 
 //----------------------------------------------------------------------------

@@ -2,46 +2,40 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QUrl>
-#include <QtCore/QString>
 #include <QtCore/QByteArray>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QString>
+#include <QtCore/QUrl>
 
 class ICryptEngine;
 class NetworkTaskManager;
 
 //---------------------------------------------------------------------------
-namespace EKeysUtilsError
-{
-    enum Enum
-    {
-        /// Ошибок нет
-        Ok = 0,
-        /// Во время обмена с сервером произошла сетевая ошибка
-        NetworkError,
-        /// Неправильный логин или пароль для генерации карточки ключа
-        WrongPassword,
-        /// Сервер отдал нам не всю необходимую информацию
-        WrongServerAnswer,
-        /// Время на сервере хумо сильно отличается от локального времени терминала
-        WrongLocalTime,
-        /// Неизвестная ошибка скрипта генерации карточки ключа
-        UnknownServerError,
-        /// Ошибка при создании пары ключей из карточки
-        KeyPairCreateError,
-        /// Невозможно экспортировать ключ из хранилища
-        KeyExportError
-    };
+namespace EKeysUtilsError {
+enum Enum {
+    /// Ошибок нет
+    Ok = 0,
+    /// Во время обмена с сервером произошла сетевая ошибка
+    NetworkError,
+    /// Неправильный логин или пароль для генерации карточки ключа
+    WrongPassword,
+    /// Сервер отдал нам не всю необходимую информацию
+    WrongServerAnswer,
+    /// Время на сервере хумо сильно отличается от локального времени терминала
+    WrongLocalTime,
+    /// Неизвестная ошибка скрипта генерации карточки ключа
+    UnknownServerError,
+    /// Ошибка при создании пары ключей из карточки
+    KeyPairCreateError,
+    /// Невозможно экспортировать ключ из хранилища
+    KeyExportError
+};
 
-    QString errorToString(Enum aError);
+QString errorToString(Enum aError);
 }; // namespace EKeysUtilsError
 
 //---------------------------------------------------------------------------
-struct SKeyPair
-{
-    SKeyPair()
-    {
+struct SKeyPair {
+    SKeyPair() {
         id = 0;
         engine = 0;
     }
@@ -66,8 +60,13 @@ struct SKeyPair
 ///		aLogin, aPassword - реквизиты для аутентификации.
 ///		aPair - результат генерации ключей.
 ///
-EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt, int aKeyNumber, NetworkTaskManager *aNetwork,
-                                    const QUrl &aUrl, const QString &aLogin, const QString &aPassword, SKeyPair &aPair);
+EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt,
+                                    int aKeyNumber,
+                                    NetworkTaskManager *aNetwork,
+                                    const QUrl &aUrl,
+                                    const QString &aLogin,
+                                    const QString &aPassword,
+                                    SKeyPair &aPair);
 
 /// Регистрирует открытый ключ на сервере.
 ///		aCrypt - криптодвижок, в котором будет создана пара ключей.
@@ -77,8 +76,12 @@ EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt, int aKeyNumber, Networ
 ///		aLogin, aPassword - реквизиты для аутентификации.
 ///		aPair - сюда запишется открытый ключ сервера после регистрации.
 ///
-EKeysUtilsError::Enum registerKeyPair(ICryptEngine *aCrypt, int aKeyNumber, NetworkTaskManager *aNetwork,
-                                      const QUrl &aUrl, const QString &aLogin, const QString &aPassword,
+EKeysUtilsError::Enum registerKeyPair(ICryptEngine *aCrypt,
+                                      int aKeyNumber,
+                                      NetworkTaskManager *aNetwork,
+                                      const QUrl &aUrl,
+                                      const QString &aLogin,
+                                      const QString &aPassword,
                                       SKeyPair &aPair);
 
 //---------------------------------------------------------------------------

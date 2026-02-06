@@ -7,55 +7,48 @@
 #include "libusb.h"
 #pragma warning(pop)
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QVector>
 #include <QtCore/QRecursiveMutex>
+#include <QtCore/QVector>
 #include <QtCore/qmath.h>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include "Hardware/Common/CommandResultData.h"
-
-// Project
 #include "Hardware/IOPorts/IOPortBase.h"
 #include "Hardware/IOPorts/LibUSBDeviceDataTypes.h"
 
 #define LIB_USB_CALL(aName, ...) handleResult(#aName, aName(__VA_ARGS__))
 
 //--------------------------------------------------------------------------------
-namespace CLibUSBPort
-{
-    /// Таймаут отправки 1 байта, [мс].
-    const double ByteTimeout = 0.01;
+namespace CLibUSBPort {
+/// Таймаут отправки 1 байта, [мс].
+const double ByteTimeout = 0.01;
 
-    /// Таймаут системных операций при отправке данных, [мс].
-    const double SystemTimeout = 1;
+/// Таймаут системных операций при отправке данных, [мс].
+const double SystemTimeout = 1;
 
-    /// Таймаут для отправки данных, [мс].
-    inline int writingTimeout(int aSize)
-    {
-        return qCeil(SystemTimeout + aSize * ByteTimeout);
-    }
+/// Таймаут для отправки данных, [мс].
+inline int writingTimeout(int aSize) {
+    return qCeil(SystemTimeout + aSize * ByteTimeout);
+}
 
-    /// Ошибки пропажи порта.
-    const QVector<int> DisappearingErrors =
-        QVector<int>() << LIBUSB_ERROR_IO         /// Ошибка ввода/вывода
-                       << LIBUSB_ERROR_NO_DEVICE; /// Устройство отсутствует (возможно, оно было отсоединено)
+/// Ошибки пропажи порта.
+const QVector<int> DisappearingErrors =
+    QVector<int>()
+    << LIBUSB_ERROR_IO         /// Ошибка ввода/вывода
+    << LIBUSB_ERROR_NO_DEVICE; /// Устройство отсутствует (возможно, оно было отсоединено)
 } // namespace CLibUSBPort
 
 //--------------------------------------------------------------------------------
-class LibUSBPort : public IOPortBase
-{
+class LibUSBPort : public IOPortBase {
     SET_SERIES("LibUSB")
 
-  public:
+public:
     LibUSBPort();
 
     /// Опрашивает данные портов.
     virtual void initialize();
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release();
 
     /// Открыть порт.
@@ -88,7 +81,7 @@ class LibUSBPort : public IOPortBase
     /// Получить системные свойства устройств.
     CLibUSB::TDeviceProperties getDevicesProperties(bool aForce);
 
-  protected:
+protected:
     /// Идентификация.
     virtual bool checkExistence();
 

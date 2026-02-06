@@ -2,47 +2,56 @@
 
 #pragma once
 
-// Modules
 #include <Hardware/Common/ProtocolBase.h>
-
-// Project
 #include <Hardware/FR/IncotexFRConstants.h>
 
 //--------------------------------------------------------------------------------
 /// Класс протокола Incotex.
-class IncotexFR : public ProtocolBase
-{
+class IncotexFR : public ProtocolBase {
     friend class MStarPrinters;
 
-  public:
+public:
     IncotexFR();
 
-  protected:
+protected:
     /// Выполнить команду протокола.
-    virtual bool processCommand(SDK::Driver::IIOPort *aPort, FRProtocolCommands::Enum aCommand,
-                                const QVariantMap &aCommandData, SUnpackedDataBase *aUnpackedData = 0);
+    virtual bool processCommand(SDK::Driver::IIOPort *aPort,
+                                FRProtocolCommands::Enum aCommand,
+                                const QVariantMap &aCommandData,
+                                SUnpackedDataBase *aUnpackedData = 0);
 
-  private:
+private:
     /// Местный processCommand, нужен, чтобы не дублировать вызовы и не создать дедлок.
-    bool localProcessCommand(SDK::Driver::IIOPort *aPort, FRProtocolCommands::Enum aCommand,
-                             const QVariantMap &aCommandData, CIncotexFR::SUnpackedData *aUnpackedData = 0);
+    bool localProcessCommand(SDK::Driver::IIOPort *aPort,
+                             FRProtocolCommands::Enum aCommand,
+                             const QVariantMap &aCommandData,
+                             CIncotexFR::SUnpackedData *aUnpackedData = 0);
 
     /// Обработка ответа на предыдущей команды. Автоисправление некоторых ошибок.
-    bool processAnswer(SDK::Driver::IIOPort *aPort, FRProtocolCommands::Enum aCommand, const QVariantMap &aCommandData,
-                       QByteArray &aAnswerData, CIncotexFR::SUnpackedData *aUnpackedData = 0);
+    bool processAnswer(SDK::Driver::IIOPort *aPort,
+                       FRProtocolCommands::Enum aCommand,
+                       const QVariantMap &aCommandData,
+                       QByteArray &aAnswerData,
+                       CIncotexFR::SUnpackedData *aUnpackedData = 0);
 
     /// Подсчет контрольной суммы пакета данных.
     const uchar calcCRC(const QByteArray &aData);
 
     /// Получение пакета с сформированной командой и её данными.
-    bool getCommandPacket(FRProtocolCommands::Enum aCommand, QByteArray &aPacket, QByteArray &aLocalCommandData,
+    bool getCommandPacket(FRProtocolCommands::Enum aCommand,
+                          QByteArray &aPacket,
+                          QByteArray &aLocalCommandData,
                           const QVariantMap &aCommandData);
 
     /// Исполнить команду.
-    bool execCommand(SDK::Driver::IIOPort *aPort, const QByteArray &aCommandPacket, QByteArray &aAnswerData);
+    bool execCommand(SDK::Driver::IIOPort *aPort,
+                     const QByteArray &aCommandPacket,
+                     QByteArray &aAnswerData);
 
     /// Упаковка команды и данных в пакет.
-    bool packData(FRProtocolCommands::Enum aCommand, const QVariantMap &aCommandData, QByteArray &aPacket);
+    bool packData(FRProtocolCommands::Enum aCommand,
+                  const QVariantMap &aCommandData,
+                  QByteArray &aPacket);
 
     /// Распаковка пришедших из порта данных.
     bool unpackData(const QByteArray &aPacket, QByteArray &aData);
@@ -82,7 +91,11 @@ class IncotexFR : public ProtocolBase
 
     /// Поместить реквизит в буфер данных для фискального документа.
     /// Возвращает: количество реквизитов.
-    const int addFiscalElement(QByteArray &aLocalData, char elementNumber, uchar aX, uchar aY, const QByteArray &aData,
+    const int addFiscalElement(QByteArray &aLocalData,
+                               char elementNumber,
+                               uchar aX,
+                               uchar aY,
+                               const QByteArray &aData,
                                ushort aFlags = CIncotexFR::FiscalData::Flags::DefaultFont);
 
     /// Выполнить команду запроса статусов.

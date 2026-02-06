@@ -1,180 +1,154 @@
 /* @file Плагин авто инкассации терминала */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtWidgets/QGraphicsScene>
-#include <Common/QtHeadersEnd.h>
+#include "AutoEncashment.h"
 
-// SDK
+#include <QtWidgets/QGraphicsScene>
+
 #include <SDK/PaymentProcessor/Components.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Core/IGUIService.h>
 #include <SDK/Plugins/IExternalInterface.h>
 #include <SDK/Plugins/PluginInitializer.h>
 
-// System
 #include "Backend/ServiceMenuBackend.h"
 
-// Project
-#include "AutoEncashment.h"
-
-namespace CAutoEncashment
-{
-    const QString PluginName = "AutoEncashment";
+namespace CAutoEncashment {
+const QString PluginName = "AutoEncashment";
 } // namespace CAutoEncashment
 
 //--------------------------------------------------------------------------
-namespace
-{
+namespace {
 
-    /// Конструктор плагина.
-    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    {
-        return new AutoEncashment(aFactory, aInstancePath);
-    }
+/// Конструктор плагина.
+SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
+                                   const QString &aInstancePath) {
+    return new AutoEncashment(aFactory, aInstancePath);
+}
 
 } // namespace
 
-REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application, SDK::PaymentProcessor::CComponents::GraphicsItem,
+REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
+                         SDK::PaymentProcessor::CComponents::GraphicsItem,
                          CAutoEncashment::PluginName),
-                &CreatePlugin, &SDK::Plugin::PluginInitializer::emptyParameterList, AutoEncashment);
+                &CreatePlugin,
+                &SDK::Plugin::PluginInitializer::emptyParameterList,
+                AutoEncashment);
 
 //--------------------------------------------------------------------------
 AutoEncashment::AutoEncashment(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mMainWidget(0), mEnvironment(aFactory), mInstancePath(aInstancePath), mAutoEncashmentWindow(0), mIsReady(false)
-{
+    : mMainWidget(0), mEnvironment(aFactory), mInstancePath(aInstancePath),
+      mAutoEncashmentWindow(0), mIsReady(false) {
     SDK::PaymentProcessor::ICore *core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
         mEnvironment->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
-    if (core)
-    {
-        mBackend = QSharedPointer<ServiceMenuBackend>(
-            new ServiceMenuBackend(mEnvironment, mEnvironment->getLog(CServiceMenuBackend::LogName)));
-    }
-    else
-    {
+    if (core) {
+        mBackend = QSharedPointer<ServiceMenuBackend>(new ServiceMenuBackend(
+            mEnvironment, mEnvironment->getLog(CServiceMenuBackend::LogName)));
+    } else {
         mEnvironment->getLog("ServiceMenu")->write(LogLevel::Error, "Failed to get ICore");
     }
 
     mIsReady = core != 0;
 
-    if (mIsReady)
-    {
+    if (mIsReady) {
         mMainWidget = new QGraphicsProxyWidget();
 
         mAutoEncashmentWindow = new AutoEncashmentWindow(mBackend.data());
         mAutoEncashmentWindow->initialize();
 
         mMainWidget->setWidget(mAutoEncashmentWindow);
-        mMainWidget->setScale(
-            qMin(core->getGUIService()->getScreenSize(0).width() / qreal(mAutoEncashmentWindow->width()),
-                 core->getGUIService()->getScreenSize(0).height() / qreal(mAutoEncashmentWindow->height())));
+        mMainWidget->setScale(qMin(core->getGUIService()->getScreenSize(0).width() /
+                                       qreal(mAutoEncashmentWindow->width()),
+                                   core->getGUIService()->getScreenSize(0).height() /
+                                       qreal(mAutoEncashmentWindow->height())));
 
-        qreal newWidgetWidth = core->getGUIService()->getScreenSize(0).width() / mMainWidget->scale();
+        qreal newWidgetWidth =
+            core->getGUIService()->getScreenSize(0).width() / mMainWidget->scale();
         mMainWidget->setMinimumWidth(newWidgetWidth);
         mMainWidget->setMaximumWidth(newWidgetWidth);
 
-        qreal newWidgetHeight = core->getGUIService()->getScreenSize(0).height() / mMainWidget->scale();
+        qreal newWidgetHeight =
+            core->getGUIService()->getScreenSize(0).height() / mMainWidget->scale();
         mMainWidget->setMinimumHeight(newWidgetHeight);
         mMainWidget->setMaximumHeight(newWidgetHeight);
     }
 }
 
 //--------------------------------------------------------------------------
-AutoEncashment::~AutoEncashment()
-{
-    if (mMainWidget)
-    {
+AutoEncashment::~AutoEncashment() {
+    if (mMainWidget) {
         mAutoEncashmentWindow->shutdown();
         mMainWidget->deleteLater();
     }
 }
 
 //--------------------------------------------------------------------------
-QString AutoEncashment::getPluginName() const
-{
+QString AutoEncashment::getPluginName() const {
     return CAutoEncashment::PluginName;
 }
 
 //--------------------------------------------------------------------------
-QVariantMap AutoEncashment::getConfiguration() const
-{
+QVariantMap AutoEncashment::getConfiguration() const {
     return mParameters;
 }
 
 //--------------------------------------------------------------------------
-void AutoEncashment::setConfiguration(const QVariantMap &aParameters)
-{
+void AutoEncashment::setConfiguration(const QVariantMap &aParameters) {
     mParameters = aParameters;
 }
 
 //--------------------------------------------------------------------------
-QString AutoEncashment::getConfigurationName() const
-{
+QString AutoEncashment::getConfigurationName() const {
     return mInstancePath;
 }
 
 //--------------------------------------------------------------------------
-bool AutoEncashment::saveConfiguration()
-{
+bool AutoEncashment::saveConfiguration() {
     return true;
 }
 
 //--------------------------------------------------------------------------
-bool AutoEncashment::isReady() const
-{
+bool AutoEncashment::isReady() const {
     return mIsReady;
 }
 
 //---------------------------------------------------------------------------
-void AutoEncashment::show()
-{
-}
+void AutoEncashment::show() {}
 
 //---------------------------------------------------------------------------
-void AutoEncashment::hide()
-{
-}
+void AutoEncashment::hide() {}
 
 //---------------------------------------------------------------------------
-void AutoEncashment::notify(const QString & /*aReason*/, const QVariantMap & /*aParameters*/)
-{
-}
+void AutoEncashment::notify(const QString & /*aReason*/, const QVariantMap & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
-void AutoEncashment::reset(const QVariantMap & /*aParameters*/)
-{
-    if (mAutoEncashmentWindow)
-    {
+void AutoEncashment::reset(const QVariantMap & /*aParameters*/) {
+    if (mAutoEncashmentWindow) {
         mAutoEncashmentWindow->shutdown();
         mAutoEncashmentWindow->initialize();
     }
 }
 
 //---------------------------------------------------------------------------
-QQuickItem *AutoEncashment::getWidget() const
-{
+QQuickItem *AutoEncashment::getWidget() const {
     // return mMainWidget;
     // FIXME
     return nullptr;
 }
 
 //---------------------------------------------------------------------------
-QVariantMap AutoEncashment::getContext() const
-{
+QVariantMap AutoEncashment::getContext() const {
     // TODO
     return QVariantMap();
 }
 
 //---------------------------------------------------------------------------
-bool AutoEncashment::isValid() const
-{
+bool AutoEncashment::isValid() const {
     return mMainWidget != 0;
 }
 
 //---------------------------------------------------------------------------
-QString AutoEncashment::getError() const
-{
+QString AutoEncashment::getError() const {
     return QString();
 }
 

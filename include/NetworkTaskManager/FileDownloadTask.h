@@ -2,30 +2,27 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QUrl>
 #include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QUrl>
 
 #include "NetworkTask.h"
 
 //------------------------------------------------------------------------
-class FileDownloadTask : public NetworkTask
-{
+class FileDownloadTask : public NetworkTask {
     Q_OBJECT
 
-  public:
+public:
     FileDownloadTask(const QUrl &aUrl, const QString &aPath);
 
     QString getPath() const;
 
     void closeFile();
 
-  public slots:
+public slots:
     /// Удаляем файл и создаем его заново
     void resetFile();
 
-  protected:
+protected:
     QUrl mUrl;
     QString mPath;
 };

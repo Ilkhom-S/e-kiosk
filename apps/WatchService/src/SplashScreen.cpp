@@ -1,42 +1,31 @@
 /* @file Вспомогательный экран, закрывающий рабочий стол. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "SplashScreen.h"
+
 #include <QtCore/QDir>
 #include <QtCore/QTimer>
 #include <QtWidgets/QHBoxLayout>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/BasicApplication.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Settings/DealerSettings.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
-// ThirdParty
+#include <SettingsManager/SettingsManager.h>
 #include <boost/bind/bind.hpp>
 #include <boost/bind/placeholders.hpp>
 
-// System
-#include <SettingsManager/SettingsManager.h>
-
-// Project
-#include "SplashScreen.h"
-
 using namespace boost::placeholders;
 
-// STL
 #include <algorithm>
 #include <memory>
 
-namespace CSplashScreen
-{
-    const char DefaultBackgroundStyle[] = "QWidget#wgtBackground { background-color: #f07e1b; }";
-    const char CustomBackgroundStyle[] = "QWidget#wgtBackground { border-image: url(%1); }";
-    const char StateImagesPath[] = ":/images/states/";
-    const char StateImageExtension[] = ".png";
-    const int MinStateShowSeconds = 2;
+namespace CSplashScreen {
+const char DefaultBackgroundStyle[] = "QWidget#wgtBackground { background-color: #f07e1b; }";
+const char CustomBackgroundStyle[] = "QWidget#wgtBackground { border-image: url(%1); }";
+const char StateImagesPath[] = ":/images/states/";
+const char StateImageExtension[] = ".png";
+const int MinStateShowSeconds = 2;
 } // namespace CSplashScreen
 
 //----------------------------------------------------------------------------
@@ -49,8 +38,7 @@ SplashScreen::SplashScreen(const QString &aLog, QWidget *aParent)
       QWidget(aParent, Qt::WindowStaysOnTopHint)
 #endif
       ,
-      mQuitRequested(false)
-{
+      mQuitRequested(false) {
     ui.setupUi(this);
 
     // FIXME: временно для #18645
@@ -67,48 +55,40 @@ SplashScreen::SplashScreen(const QString &aLog, QWidget *aParent)
     // connect(qApp, &QApplication::aboutToQuit, this,
     //         [this]()
     //         {
-    //             toLog(LogLevel::Normal, "aboutToQuit signal received - setting mQuitRequested to true");
-    //             mQuitRequested = true;
+    //             toLog(LogLevel::Normal, "aboutToQuit signal received - setting mQuitRequested to
+    //             true"); mQuitRequested = true;
     //         });
 }
 
 //----------------------------------------------------------------------------
 // Деструктор экрана заставки
-SplashScreen::~SplashScreen()
-{
-}
+SplashScreen::~SplashScreen() {}
 
 //----------------------------------------------------------------------------
 // Инициализация экрана заставки
-void SplashScreen::onInit()
-{
+void SplashScreen::onInit() {
     toLog(LogLevel::Normal, "SplashScreen onInit called");
 
     // Connect to aboutToQuit signal after initialization to avoid premature quit detection
-    connect(qApp, &QApplication::aboutToQuit, this,
-            [this]()
-            {
-                toLog(LogLevel::Normal, "aboutToQuit signal received - setting mQuitRequested to true");
-                mQuitRequested = true;
-            });
+    connect(qApp, &QApplication::aboutToQuit, this, [this]() {
+        toLog(LogLevel::Normal, "aboutToQuit signal received - setting mQuitRequested to true");
+        mQuitRequested = true;
+    });
 
     toLog(LogLevel::Normal, "SplashScreen onInit completed");
 }
 
 //----------------------------------------------------------------------------
 // Обработка события закрытия окна
-void SplashScreen::closeEvent(QCloseEvent *aEvent)
-{
-    toLog(LogLevel::Normal, QString("Close splash screen by event. mQuitRequested=%1").arg(mQuitRequested));
+void SplashScreen::closeEvent(QCloseEvent *aEvent) {
+    toLog(LogLevel::Normal,
+          QString("Close splash screen by event. mQuitRequested=%1").arg(mQuitRequested));
 
     // If quit is requested (e.g., from application menu), allow the window to close
-    if (mQuitRequested)
-    {
+    if (mQuitRequested) {
         aEvent->accept();
         toLog(LogLevel::Normal, "Quit requested - accepting close event.");
-    }
-    else
-    {
+    } else {
         // Otherwise, just minimize the window (don't close it)
         aEvent->ignore();
         showMinimized();
@@ -119,25 +99,22 @@ void SplashScreen::closeEvent(QCloseEvent *aEvent)
 
 //----------------------------------------------------------------------------
 // Фильтр событий для обработки кликов мыши
-bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent)
-{
-    if (aEvent->type() == QEvent::MouseButtonPress)
-    {
+bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent) {
+    if (aEvent->type() == QEvent::MouseButtonPress) {
         // Проверим, что был сделан клик по некоторой области
         QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(aEvent);
-        if (mouseEvent)
-        {
-            if (mAreas.isEmpty())
-            {
+        if (mouseEvent) {
+            if (mAreas.isEmpty()) {
                 // Размеры виджета до первого показа кривые
                 updateAreas();
             }
 
-            TAreas::iterator area = std::find_if(mAreas.begin(), mAreas.end(),
-                                                 boost::bind(&SplashScreen::testPoint, this, _1, mouseEvent->pos()));
+            TAreas::iterator area =
+                std::find_if(mAreas.begin(),
+                             mAreas.end(),
+                             boost::bind(&SplashScreen::testPoint, this, _1, mouseEvent->pos()));
 
-            if (area != mAreas.end())
-            {
+            if (area != mAreas.end()) {
                 emit clicked(area->first);
             }
         }
@@ -148,56 +125,51 @@ bool SplashScreen::eventFilter(QObject *aObject, QEvent *aEvent)
 
 //----------------------------------------------------------------------------
 // Проверка попадания точки в область
-bool SplashScreen::testPoint(const TAreas::value_type &aArea, const QPoint &aPoint) const
-{
+bool SplashScreen::testPoint(const TAreas::value_type &aArea, const QPoint &aPoint) const {
     return aArea.second.contains(aPoint);
 }
 
 //----------------------------------------------------------------------------
 // Обновление областей клика на экране
-void SplashScreen::updateAreas()
-{
+void SplashScreen::updateAreas() {
     int width = rect().width();
     int height = rect().height();
 
     mAreas << qMakePair(1, QRectF(QPointF(0, 0), QPointF(0.33 * width, 0.33 * height)))
            << qMakePair(2, QRectF(QPointF(0.66 * width, 0), QPointF(width, 0.33 * height)))
-           << qMakePair(5, QRectF(QPointF(0.33 * width, 0.33 * height), QPointF(0.66 * width, 0.66 * height)))
+           << qMakePair(5,
+                        QRectF(QPointF(0.33 * width, 0.33 * height),
+                               QPointF(0.66 * width, 0.66 * height)))
            << qMakePair(3, QRectF(QPointF(0, 0.66 * height), QPointF(0.33 * width, height)))
            << qMakePair(4, QRectF(QPointF(0.66 * width, 0.66 * height), QPointF(width, height)));
 }
 
 //----------------------------------------------------------------------------
 // Установка состояния экрана заставки
-void SplashScreen::setState(const QString &aSender, const QString &aState)
-{
+void SplashScreen::setState(const QString &aSender, const QString &aState) {
     // Проверим, есть ли такое состояние у нас в списке.
     TStateList::iterator it;
 
     QString stateCode = aState.left(aState.indexOf('_'));
     QString stateStatus = aState.right(aState.size() - stateCode.size() - 1);
 
-    for (it = mStates.begin(); it != mStates.end(); ++it)
-    {
+    for (it = mStates.begin(); it != mStates.end(); ++it) {
         QString oldStateCode = it->state.left(it->state.indexOf('_'));
         QString oldStateStatus = it->state.right(it->state.size() - oldStateCode.size() - 1);
 
-        if (stateCode == oldStateCode)
-        {
-            if (stateStatus == oldStateStatus)
-            {
+        if (stateCode == oldStateCode) {
+            if (stateStatus == oldStateStatus) {
                 // Уже установлено точно такое же состояние.
                 return;
             }
 
-            if (it->date.secsTo(QDateTime::currentDateTime()) < CSplashScreen::MinStateShowSeconds)
-            {
+            if (it->date.secsTo(QDateTime::currentDateTime()) <
+                CSplashScreen::MinStateShowSeconds) {
                 // Use new Qt5/6 compatible signal/slot syntax with lambda
-                QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000, it->widget,
+                QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000,
+                                   it->widget,
                                    [widget = it->widget]() { widget->deleteLater(); });
-            }
-            else
-            {
+            } else {
                 it->widget->deleteLater();
             }
 
@@ -207,16 +179,16 @@ void SplashScreen::setState(const QString &aSender, const QString &aState)
         }
     }
 
-    QString stateImagePath(CSplashScreen::StateImagesPath + aState + CSplashScreen::StateImageExtension);
+    QString stateImagePath(CSplashScreen::StateImagesPath + aState +
+                           CSplashScreen::StateImageExtension);
 
-    if (!QFile::exists(stateImagePath))
-    {
+    if (!QFile::exists(stateImagePath)) {
         return;
     }
 
-    QString css =
-        QString("QWidget { background-image: url(%1); min-width: 48; max-width: 48; min-height: 48; max-height: 48; }")
-            .arg(stateImagePath);
+    QString css = QString("QWidget { background-image: url(%1); min-width: 48; max-width: 48; "
+                          "min-height: 48; max-height: 48; }")
+                      .arg(stateImagePath);
 
     std::unique_ptr<QWidget> widget(new QWidget(this));
     widget->setStyleSheet(css);
@@ -229,22 +201,18 @@ void SplashScreen::setState(const QString &aSender, const QString &aState)
 
 //----------------------------------------------------------------------------
 // Удаление состояний для указанного отправителя
-void SplashScreen::removeStates(const QString &aSender)
-{
+void SplashScreen::removeStates(const QString &aSender) {
     TStateList::iterator it;
 
-    for (it = mStates.begin(); it != mStates.end(); ++it)
-    {
-        if (aSender == it->sender)
-        {
-            if (it->date.secsTo(QDateTime::currentDateTime()) < CSplashScreen::MinStateShowSeconds)
-            {
+    for (it = mStates.begin(); it != mStates.end(); ++it) {
+        if (aSender == it->sender) {
+            if (it->date.secsTo(QDateTime::currentDateTime()) <
+                CSplashScreen::MinStateShowSeconds) {
                 // Use new Qt5/6 compatible signal/slot syntax with lambda
-                QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000, it->widget,
+                QTimer::singleShot(CSplashScreen::MinStateShowSeconds * 1000,
+                                   it->widget,
                                    [widget = it->widget]() { widget->deleteLater(); });
-            }
-            else
-            {
+            } else {
                 it->widget->deleteLater();
             }
 
@@ -257,8 +225,7 @@ void SplashScreen::removeStates(const QString &aSender)
 
 //----------------------------------------------------------------------------
 // Установка пользовательского фона экрана заставки
-void SplashScreen::setCustomBackground(const QString &aPath)
-{
+void SplashScreen::setCustomBackground(const QString &aPath) {
     aPath.isEmpty() ? setStyleSheet(CSplashScreen::DefaultBackgroundStyle)
                     : setStyleSheet(QString(CSplashScreen::CustomBackgroundStyle).arg(aPath));
 }

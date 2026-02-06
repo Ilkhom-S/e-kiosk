@@ -2,10 +2,8 @@
 
 #pragma once
 
-// SDK
 #include <SDK/Drivers/IOPort/COMParameters.h>
 
-// Project
 #include "Hardware/Common/PortDeviceBase.h"
 
 //--------------------------------------------------------------------------------
@@ -13,39 +11,35 @@ typedef QList<int> TSerialDevicePortParameter;
 typedef QMap<int, TSerialDevicePortParameter> TSerialDevicePortParameters;
 
 /// Параметры COM-порта.
-struct SSerialPortParameters
-{
+struct SSerialPortParameters {
     int baudRate;
     int parity;
     int RTS;
     int DTR;
     int byteSize;
 
-    SSerialPortParameters() : baudRate(0), parity(0), RTS(0), DTR(0), byteSize(8)
-    {
-    }
+    SSerialPortParameters() : baudRate(0), parity(0), RTS(0), DTR(0), byteSize(8) {}
     SSerialPortParameters(int aBaudRate, int aParity, int aRTS, int aDTR, int aByteSize)
-        : baudRate(aBaudRate), parity(aParity), RTS(aRTS), DTR(aDTR), byteSize(aByteSize)
-    {
-    }
+        : baudRate(aBaudRate), parity(aParity), RTS(aRTS), DTR(aDTR), byteSize(aByteSize) {}
 };
 
 //--------------------------------------------------------------------------------
-template <class T> class SerialDeviceBase : public T
-{
+template <class T> class SerialDeviceBase : public T {
     SET_INTERACTION_TYPE(COM)
 
-  public:
+public:
     SerialDeviceBase();
 
     /// Получение списка настроек порта, необязательных для редактирования пользователем.
     static QStringList getOptionalPortSettings();
 
 #pragma region SDK::Driver::IDevice interface
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release();
 
-    /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из этого списка.
+    /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из
+    /// этого списка.
     virtual SDK::Driver::IDevice::IDetectingIterator *getDetectingIterator();
 #pragma endregion
 
@@ -57,7 +51,7 @@ template <class T> class SerialDeviceBase : public T
     virtual bool find();
 #pragma endregion
 
-  protected:
+protected:
     /// Идентификация.
     virtual bool checkExistence();
 

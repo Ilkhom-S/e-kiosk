@@ -2,31 +2,24 @@
 
 #pragma once
 
-// Boost
-#include <boost/function.hpp>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QThread>
-#include <QtCore/QMutex>
-#include <QtCore/QWaitCondition>
-#include <QtCore/QTimer>
-#include <QtCore/QString>
 #include <QtCore/QByteArray>
-#include <QtCore/QStringList>
+#include <QtCore/QMutex>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtCore/QThread>
+#include <QtCore/QTimer>
+#include <QtCore/QWaitCondition>
 
-// Modules
 #include <MessageQueue/IMessageQueueClient.h>
 #include <WatchServiceClient/IWatchServiceClient.h>
+#include <boost/function.hpp>
 
 //---------------------------------------------------------------------------
-class WatchServiceClient : public QThread, public IWatchServiceClient
-{
+class WatchServiceClient : public QThread, public IWatchServiceClient {
     Q_OBJECT
 
-  public:
+public:
     WatchServiceClient(const QString &aName, PingThread aThread);
     virtual ~WatchServiceClient();
 
@@ -40,7 +33,8 @@ class WatchServiceClient : public QThread, public IWatchServiceClient
     virtual bool isConnected() const override;
 
     /// IWatchServiceClient: Выполнение команды aCommand на модуле aModule c параметрами aParams.
-    virtual void execute(QString aCommand, QString aModule = QString(), QString aParams = QString()) override;
+    virtual void
+    execute(QString aCommand, QString aModule = QString(), QString aParams = QString()) override;
 
     /// IWatchServiceClient: Завершение работы всех модулей и сторожевого сервиса.
     virtual void stopService() override;
@@ -80,32 +74,32 @@ class WatchServiceClient : public QThread, public IWatchServiceClient
     /// const QString& aType, const QStringList & aTail).
     virtual bool subscribeOnCommandReceived(QObject *aObject) override;
 
-    /// IWatchServiceClient: Подписывает aObject на получение оповещения от сервиса о требованием завершить работу.
-    /// Объект должен иметь слот с сигнатурой onCloseCommandReceived().
+    /// IWatchServiceClient: Подписывает aObject на получение оповещения от сервиса о требованием
+    /// завершить работу. Объект должен иметь слот с сигнатурой onCloseCommandReceived().
     virtual bool subscribeOnCloseCommandReceived(QObject *aObject) override;
 
-    /// IWatchServiceClient: Подписывает aObject на получение оповещения о разрыве связи со сторожевым сервисом.
-    /// Объект должен иметь слот с сигнатурой onDisconnected().
+    /// IWatchServiceClient: Подписывает aObject на получение оповещения о разрыве связи со
+    /// сторожевым сервисом. Объект должен иметь слот с сигнатурой onDisconnected().
     virtual bool subscribeOnDisconnected(QObject *aObject) override;
 
     /// Подписывает aObject на получение оповещения от сервиса о закрытии любого модуля.
     /// Объект должен иметь слот с сигнатурой onModuleClosed(const QString &).
     virtual bool subscribeOnModuleClosed(QObject *aObject) override;
 
-  protected:
+protected:
     /// Рабочая процедура Qt'шной нитки.
     virtual void run() override;
 
     /// Пинг сторожевого сервиса.
     virtual void ping();
 
-  private:
+private:
     typedef boost::function<void()> TMethod;
 
     // Отправка сообщения по транспортному каналу.
     void sendMessage(const QByteArray &aMessage);
 
-  signals:
+signals:
     /// Вызов указанного метода в своём потоке.
     void invokeMethod(WatchServiceClient::TMethod aMethod);
 
@@ -119,10 +113,12 @@ class WatchServiceClient : public QThread, public IWatchServiceClient
     void onModuleClosed(const QString &aModuleName);
 
     /// От севера получена команда.
-    void onCommandReceived(const QString &aSender, const QString &aTarget, const QString &aType,
+    void onCommandReceived(const QString &aSender,
+                           const QString &aTarget,
+                           const QString &aType,
                            const QStringList &aTail);
 
-  protected slots:
+protected slots:
     /// Обработчик при вызове метода из родного потока.
     void onInvokeMethod(WatchServiceClient::TMethod aMethod);
 
@@ -135,7 +131,7 @@ class WatchServiceClient : public QThread, public IWatchServiceClient
     /// Получаем сообщение об отключении с транспортного уровня.
     void onDisconnected();
 
-  private:
+private:
     QSharedPointer<IMessageQueueClient> mClient;
 
     QTimer mPingTimer;

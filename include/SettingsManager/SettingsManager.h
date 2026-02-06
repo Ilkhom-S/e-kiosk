@@ -8,14 +8,10 @@
 #include <boost/property_tree/ptree.hpp>
 #pragma pop_macro("foreach")
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QList>
-#include <QtCore/QString>
 #include <QtCore/QMap>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QString>
 
-// Модули
 #include <Common/ILogable.h>
 #include <Common/PropertyTree.h>
 
@@ -23,8 +19,7 @@
 typedef QMap<QString, QString> TConfigFileMap;
 
 //---------------------------------------------------------------------------
-struct SSettingsSource
-{
+struct SSettingsSource {
     QString configFileName;
     QString adapterName;
     QString symlinkName;
@@ -32,21 +27,19 @@ struct SSettingsSource
 
     SSettingsSource();
     explicit SSettingsSource(const QString &aFileName, const QString &aAdapterName, bool aReadOnly);
-    explicit SSettingsSource(const QString &aFileName, const QString &aAdapterName, const char *aSymlinkName);
+    explicit SSettingsSource(const QString &aFileName,
+                             const QString &aAdapterName,
+                             const char *aSymlinkName);
 
-    bool isSymlink() const
-    {
-        return !symlinkName.isEmpty();
-    }
+    bool isSymlink() const { return !symlinkName.isEmpty(); }
 
     /// Имена полей из настроек, которые были загружены из данного источника.
     QList<QString> fieldNames;
 };
 
 //---------------------------------------------------------------------------
-class SettingsManager : public ILogable
-{
-  public:
+class SettingsManager : public ILogable {
+public:
     SettingsManager(const QString &aConfigPath);
     ~SettingsManager();
 
@@ -62,7 +55,7 @@ class SettingsManager : public ILogable
     /// Производит сравнение дерева настроек другого менеджера настроек
     bool isEqual(const SettingsManager &aManager) const;
 
-  private:
+private:
     bool readXML(const QString &aFileName, TPtree &aTree);
     bool writeXML(const QString &aFileName, const TPtree &aTree);
     void writeXMLNode(class QXmlStreamWriter &aWriter, const TPtree &aNode);

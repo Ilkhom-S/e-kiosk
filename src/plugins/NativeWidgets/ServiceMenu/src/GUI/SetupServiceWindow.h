@@ -2,20 +2,14 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include "ui_SetupServiceWindow.h"
-#include <Common/QtHeadersEnd.h>
-
-// Проект
 #include "IServiceWindow.h"
+#include "ui_SetupServiceWindow.h"
 
 //------------------------------------------------------------------------
-class SetupServiceWindow : public QFrame, public ServiceWindowBase, public Ui::SetupServiceWindow
-{
+class SetupServiceWindow : public QFrame, public ServiceWindowBase, public Ui::SetupServiceWindow {
     Q_OBJECT
 
-  public:
+public:
     SetupServiceWindow(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
     virtual bool initialize();
@@ -23,11 +17,11 @@ class SetupServiceWindow : public QFrame, public ServiceWindowBase, public Ui::S
     virtual bool activate();
     virtual bool deactivate();
 
-  protected slots:
+protected slots:
     // Активация/деактивация вкладок
     void onCurrentPageChanged(int aIndex);
 
-  private:
+private:
     int mCurrentPageIndex;
 };
 

@@ -6,35 +6,33 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний устройств на протоколе Shtrih.
-namespace CShtrihFR
-{
-    /// Префикс.
-    const char Prefix = ASCII::STX;
+namespace CShtrihFR {
+/// Префикс.
+const char Prefix = ASCII::STX;
 
-    /// Максимальный размер данных.
-    const int MaxCommandSize = 252;
+/// Максимальный размер данных.
+const int MaxCommandSize = 252;
 
-    /// Минимальный размер ответного пакета.
-    const int MinPacketAnswerSize = 5;
+/// Минимальный размер ответного пакета.
+const int MinPacketAnswerSize = 5;
 
-    /// Максимальное число повторений пакета в случае ошибки.
-    const int MaxRepeatPacket = 3;
+/// Максимальное число повторений пакета в случае ошибки.
+const int MaxRepeatPacket = 3;
 
-    /// Максимальное число попыток обмена технологическими пакетами.
-    const int MaxServiceRequests = 3;
+/// Максимальное число попыток обмена технологическими пакетами.
+const int MaxServiceRequests = 3;
 
-    /// Мусор в TCP-канале.
-    const char Trash = '\xFF';
+/// Мусор в TCP-канале.
+const char Trash = '\xFF';
 
-    /// Таймауты, [мс].
-    namespace Timeouts
-    {
-        /// Дефолтный чтения ответа.
-        const int DefaultAnswer = 3150;
+/// Таймауты, [мс].
+namespace Timeouts {
+/// Дефолтный чтения ответа.
+const int DefaultAnswer = 3150;
 
-        /// Ожидания ответа на ENQ (на открытие сессии) и ACK/NAK (на отправленную команду).
-        const int Transport = 100;
-    } // namespace Timeouts
+/// Ожидания ответа на ENQ (на открытие сессии) и ACK/NAK (на отправленную команду).
+const int Transport = 100;
+} // namespace Timeouts
 } // namespace CShtrihFR
 
 //--------------------------------------------------------------------------------

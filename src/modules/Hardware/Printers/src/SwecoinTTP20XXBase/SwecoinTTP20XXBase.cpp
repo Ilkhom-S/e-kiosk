@@ -1,22 +1,19 @@
 /* @file Принтеры Swecoin. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "SwecoinTTP20XXBase.h"
+
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QRegularExpression>
-#include <Common/QtHeadersEnd.h>
 
-// Project
-#include "SwecoinPrinterData.h"
-#include "SwecoinTTP20XXBase.h"
 #include <math.h>
+
+#include "SwecoinPrinterData.h"
 
 using namespace SDK::Driver::IOPort::COM;
 using namespace PrinterStatusCode;
 
 //--------------------------------------------------------------------------------
-SwecoinPrinter::SwecoinPrinter()
-{
+SwecoinPrinter::SwecoinPrinter() {
     // данные устройства
     mDeviceName = "Swecoin TTP Series printer";
 
@@ -43,10 +40,8 @@ SwecoinPrinter::SwecoinPrinter()
 }
 
 //--------------------------------------------------------------------------------
-bool SwecoinPrinter::isConnected()
-{
-    if (!mIOPort->write(CSwecoinPrinter::Commands::GetModelId))
-    {
+bool SwecoinPrinter::isConnected() {
+    if (!mIOPort->write(CSwecoinPrinter::Commands::GetModelId)) {
         return false;
     }
 
@@ -55,28 +50,25 @@ bool SwecoinPrinter::isConnected()
     clockTimer.start();
     int length = 0;
 
-    do
-    {
+    do {
         QByteArray data;
 
-        if (!mIOPort->read(data))
-        {
+        if (!mIOPort->read(data)) {
             return false;
         }
 
         // В Qt 6 при обращении к байтам QByteArray возвращается char,
         // используем uchar для корректного получения числового значения длины.
-        if ((answer.size() > 1) && (answer[0] == ASCII::NUL))
-        {
+        if ((answer.size() > 1) && (answer[0] == ASCII::NUL)) {
             length = static_cast<unsigned char>(answer[1]);
         }
 
         answer.append(data);
-    } while ((length && (answer.size() < length) && (clockTimer.elapsed() < CSwecoinPrinter::MaxReadIdTimeout)) ||
+    } while ((length && (answer.size() < length) &&
+              (clockTimer.elapsed() < CSwecoinPrinter::MaxReadIdTimeout)) ||
              (!length && (clockTimer.elapsed() < CSwecoinPrinter::MinReadIdTimeout)));
 
-    if (!length || (answer.size() < length))
-    {
+    if (!length || (answer.size() < length)) {
         return false;
     }
 
@@ -91,8 +83,7 @@ bool SwecoinPrinter::isConnected()
     QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
 
     // 3. Проверяем наличие совпадения через hasMatch()
-    if (match.hasMatch())
-    {
+    if (match.hasMatch()) {
         // 4. Извлекаем захваченную группу (индекс 1) и упрощаем строку
         mDeviceName = match.captured(1).simplified();
     }
@@ -101,16 +92,15 @@ bool SwecoinPrinter::isConnected()
 }
 
 //--------------------------------------------------------------------------------
-bool SwecoinPrinter::updateParameters()
-{
-    CSwecoinPrinter::TDeviceParameters deviceParameters = CSwecoinPrinter::CDeviceParameters().data();
+bool SwecoinPrinter::updateParameters() {
+    CSwecoinPrinter::TDeviceParameters deviceParameters =
+        CSwecoinPrinter::CDeviceParameters().data();
 
-    for (auto it = deviceParameters.begin(); it != deviceParameters.end(); ++it)
-    {
+    for (auto it = deviceParameters.begin(); it != deviceParameters.end(); ++it) {
         QByteArray data;
 
-        if (mIOPort->write(QByteArray(CSwecoinPrinter::Commands::GetData) + it.key()) && mIOPort->read(data))
-        {
+        if (mIOPort->write(QByteArray(CSwecoinPrinter::Commands::GetData) + it.key()) &&
+            mIOPort->read(data)) {
             setDeviceParameter(it->description, it->handler(data));
         }
     }
@@ -124,40 +114,35 @@ bool SwecoinPrinter::updateParameters()
 }
 
 //--------------------------------------------------------------------------------
-bool SwecoinPrinter::getStatus(TStatusCodes &aStatusCodes)
-{
+bool SwecoinPrinter::getStatus(TStatusCodes &aStatusCodes) {
     QByteArray answer;
 
-    if (!mIOPort->write(CSwecoinPrinter::Commands::GetStatus) || !mIOPort->read(answer) || (answer.size() > 2) ||
-        answer.isEmpty() || ((answer.size() != 1) && answer.startsWith(ASCII::ACK)) ||
-        ((answer.size() != 2) && answer.startsWith(ASCII::NAK)))
-    {
+    if (!mIOPort->write(CSwecoinPrinter::Commands::GetStatus) || !mIOPort->read(answer) ||
+        (answer.size() > 2) || answer.isEmpty() ||
+        ((answer.size() != 1) && answer.startsWith(ASCII::ACK)) ||
+        ((answer.size() != 2) && answer.startsWith(ASCII::NAK))) {
         return false;
     }
 
-    if (answer[0] != ASCII::ACK)
-    {
+    if (answer[0] != ASCII::ACK) {
         aStatusCodes.insert(CSwecoinPrinter::Statuses[answer[1]]);
     }
 
     if (!mIOPort->write(CSwecoinPrinter::Commands::GetPaperNearEndData) || !mIOPort->read(answer) ||
-        (answer.size() != 1))
-    {
+        (answer.size() != 1)) {
         return false;
     }
 
-    if (answer[0])
-    {
+    if (answer[0]) {
         aStatusCodes.insert(PrinterStatusCode::Warning::PaperNearEnd);
     }
 
-    if (!mIOPort->write(CSwecoinPrinter::Commands::GetSensorData) || !mIOPort->read(answer) || (answer.size() != 2))
-    {
+    if (!mIOPort->write(CSwecoinPrinter::Commands::GetSensorData) || !mIOPort->read(answer) ||
+        (answer.size() != 2)) {
         return false;
     }
 
-    if (answer[1] & CSwecoinPrinter::PaperInPresenterMask)
-    {
+    if (answer[1] & CSwecoinPrinter::PaperInPresenterMask) {
         aStatusCodes.insert(PrinterStatusCode::OK::PaperInPresenter);
     }
 

@@ -2,25 +2,21 @@
 
 #pragma once
 
-// SDK
 #include <SDK/Drivers/IIOPort.h>
 
-// Modules
+#include "Hardware/Common/CommandResults.h"
+#include "Hardware/Common/DeviceBase.h"
+#include "Hardware/Common/LoggingType.h"
 #include "Hardware/IOPorts/IOPortStatusesDescriptions.h"
 
-// Project
-#include "Hardware/Common/LoggingType.h"
-#include "Hardware/Common/DeviceBase.h"
-#include "Hardware/Common/CommandResults.h"
-
 //--------------------------------------------------------------------------------
-template <class T> class PortDeviceBase : public T
-{
-  public:
+template <class T> class PortDeviceBase : public T {
+public:
     PortDeviceBase();
 
 #pragma region SDK::Driver::IDevice interface
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release();
 
     /// Задаёт лог.
@@ -30,7 +26,7 @@ template <class T> class PortDeviceBase : public T
     virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 #pragma endregion
 
-  protected:
+protected:
     /// Идентификация.
     virtual bool checkExistence();
 
@@ -41,10 +37,7 @@ template <class T> class PortDeviceBase : public T
     virtual bool processStatus(TStatusCodes &aStatusCodes);
 
     /// Проверить порт.
-    virtual bool checkPort()
-    {
-        return false;
-    }
+    virtual bool checkPort() { return false; }
 
     /// Полл.
     virtual void doPoll(TStatusCodes &aStatusCodes);
@@ -54,15 +47,18 @@ template <class T> class PortDeviceBase : public T
                                  int aExtendedStatus = SDK::Driver::EStatus::Actual);
 
     /// Выполнить команду.
-    TResult processCommand(const QByteArray &aCommand, const QByteArray &aCommandData, QByteArray *aAnswer = nullptr);
+    TResult processCommand(const QByteArray &aCommand,
+                           const QByteArray &aCommandData,
+                           QByteArray *aAnswer = nullptr);
     TResult processCommand(char aCommand, QByteArray *aAnswer = nullptr);
     TResult processCommand(const QByteArray &aCommand, QByteArray *aAnswer = nullptr);
-    TResult processCommand(char aCommand, const QByteArray &aCommandData, QByteArray *aAnswer = nullptr);
+    TResult
+    processCommand(char aCommand, const QByteArray &aCommandData, QByteArray *aAnswer = nullptr);
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray & /*aCommand*/, const QByteArray & /*aCommandData*/,
-                                QByteArray * /*aAnswer*/ = nullptr)
-    {
+    virtual TResult execCommand(const QByteArray & /*aCommand*/,
+                                const QByteArray & /*aCommandData*/,
+                                QByteArray * /*aAnswer*/ = nullptr) {
         return CommandResult::Driver;
     }
 
@@ -77,7 +73,8 @@ template <class T> class PortDeviceBase : public T
     virtual bool canApplyStatusBuffer();
 
     /// Получить уровень тревожности по буферу статус-кодов.
-    virtual SDK::Driver::EWarningLevel::Enum getWarningLevel(const TStatusCollection &aStatusCollection);
+    virtual SDK::Driver::EWarningLevel::Enum
+    getWarningLevel(const TStatusCollection &aStatusCollection);
 
     /// Добавить данные порта в данные устройства.
     void addPortData();

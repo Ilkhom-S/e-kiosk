@@ -1,38 +1,32 @@
 /* @file Утилиты для логики устройств. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QRegularExpression>
-#include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
-
-// System
-#include "Hardware/Common/ASCII.h"
-
-// Project
 #include "DeviceUtils.h"
 
-bool DeviceUtils::isComplexFirmwareOld(const QString &aFirmware, const QString &aActualFirmware)
-{
-    QStringList actualFirmwareData = QString(aActualFirmware).split(ASCII::Dot);
-    QStringList deviceFirmwareData = QString(aFirmware).replace(QRegularExpression("[^0-9\\.]+"), "").split(ASCII::Dot);
+#include <QtCore/QRegularExpression>
+#include <QtCore/QStringList>
 
-    for (int i = 0; i < actualFirmwareData.size(); ++i)
-    {
-        if (i == deviceFirmwareData.size())
-        {
+#include "Hardware/Common/ASCII.h"
+
+bool DeviceUtils::isComplexFirmwareOld(const QString &aFirmware, const QString &aActualFirmware) {
+    QStringList actualFirmwareData = QString(aActualFirmware).split(ASCII::Dot);
+    QStringList deviceFirmwareData =
+        QString(aFirmware).replace(QRegularExpression("[^0-9\\.]+"), "").split(ASCII::Dot);
+
+    for (int i = 0; i < actualFirmwareData.size(); ++i) {
+        if (i == deviceFirmwareData.size()) {
             QStringList actualFirmwareRest = actualFirmwareData.mid(i);
-            bool actualFirmwareRestGreater =
-                std::find_if(actualFirmwareRest.begin(), actualFirmwareRest.end(), [](const QString &aSection) -> bool
-                             { return aSection.toInt(); }) != actualFirmwareRest.end();
+            bool actualFirmwareRestGreater = std::find_if(actualFirmwareRest.begin(),
+                                                          actualFirmwareRest.end(),
+                                                          [](const QString &aSection) -> bool {
+                                                              return aSection.toInt();
+                                                          }) != actualFirmwareRest.end();
 
             return (actualFirmwareData[i - 1].toInt() > deviceFirmwareData[i - 1].toInt()) ||
                    ((actualFirmwareData[i - 1].toInt() == deviceFirmwareData[i - 1].toInt()) &&
                     actualFirmwareRestGreater);
         }
 
-        if (actualFirmwareData[i].toInt() > deviceFirmwareData[i].toInt())
-        {
+        if (actualFirmwareData[i].toInt() > deviceFirmwareData[i].toInt()) {
             return true;
         }
     }
@@ -41,27 +35,24 @@ bool DeviceUtils::isComplexFirmwareOld(const QString &aFirmware, const QString &
 }
 
 //--------------------------------------------------------------------------------
-QString DeviceUtils::getPartDeviceData(const TDeviceData &aData, bool aHideEmpty, int aLevel)
-{
+QString DeviceUtils::getPartDeviceData(const TDeviceData &aData, bool aHideEmpty, int aLevel) {
     QStringList keys = aData.keys();
     int maxSize = 0;
 
-    foreach (auto key, keys)
-    {
+    foreach (auto key, keys) {
         maxSize = qMax(maxSize, key.size());
     }
 
     keys.sort();
     QString result;
 
-    for (int i = 0; i < keys.size(); ++i)
-    {
+    for (int i = 0; i < keys.size(); ++i) {
         QString key = keys[i];
         QString value = aData[key];
 
-        if (!aHideEmpty || !value.isEmpty())
-        {
-            key = QString(aLevel, ASCII::TAB) + key + QString(maxSize - key.size(), QChar(ASCII::Space));
+        if (!aHideEmpty || !value.isEmpty()) {
+            key = QString(aLevel, ASCII::TAB) + key +
+                  QString(maxSize - key.size(), QChar(ASCII::Space));
             result += QString("\n%1 : %2").arg(key).arg(value);
         }
     }

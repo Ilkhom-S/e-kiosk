@@ -2,50 +2,41 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QObject>
 #include <QtCore/QMap>
+#include <QtCore/QObject>
 #include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Core/IDeviceService.h>
 
-// Project
 #include "IConfigManager.h"
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        class ICore;
-    } // namespace PaymentProcessor
+namespace SDK {
+namespace PaymentProcessor {
+class ICore;
+} // namespace PaymentProcessor
 
-    namespace Plugin
-    {
-        class IEnvironment;
-        class IPlugin;
-    } // namespace Plugin
+namespace Plugin {
+class IEnvironment;
+class IPlugin;
+} // namespace Plugin
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class HardwareManager : public QObject, public IConfigManager
-{
+class HardwareManager : public QObject, public IConfigManager {
     Q_OBJECT
 
-  public:
+public:
     HardwareManager(SDK::Plugin::IEnvironment *aFactory, SDK::PaymentProcessor::ICore *aCore);
     ~HardwareManager();
 
-  public:
+public:
     /// Конфигурация изменилась?
     virtual bool isConfigurationChanged() const;
 
     /// Делаем текущую конфигурацию начальной
     virtual void resetConfiguration();
 
-  public:
+public:
     /// Начать поиск устройств
     void detect(const QString &aDeviceType = QString());
 
@@ -101,11 +92,12 @@ class HardwareManager : public QObject, public IConfigManager
     /// Присутствует ли фискальный принтер
     bool isFiscalPrinterPresent(bool aVirtual, bool aCheckPrintFullZReport = false);
 
-  private slots:
-    void deviceStatusChanged(const QString &aConfigName, SDK::Driver::EWarningLevel::Enum aLevel,
+private slots:
+    void deviceStatusChanged(const QString &aConfigName,
+                             SDK::Driver::EWarningLevel::Enum aLevel,
                              const QString &aDescription);
 
-  signals:
+signals:
     /// Посылается, когда обнаружено очередное устройство.
     void deviceDetected(const QString &aConfigName);
 
@@ -113,10 +105,12 @@ class HardwareManager : public QObject, public IConfigManager
     void detectionStopped();
 
     /// Сигнал об изменении статуса устройства.
-    void deviceStatusChanged(const QString &aConfigName, const QString &aStatusString, const QString &aStatusColor,
+    void deviceStatusChanged(const QString &aConfigName,
+                             const QString &aStatusString,
+                             const QString &aStatusColor,
                              SDK::Driver::EWarningLevel::Enum aLevel);
 
-  private:
+private:
     SDK::PaymentProcessor::ICore *mCore;
     SDK::PaymentProcessor::IDeviceService *mDeviceService;
     SDK::Plugin::IEnvironment *mFactory;

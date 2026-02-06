@@ -7,9 +7,7 @@
  Suppress warnings coming from Qt headers.
 
  Usage:
-         #include <Common/QtHeadersBegin.h>
          #include <QtCore/QList>
-         #include <Common/QtHeadersEnd.h>
 
  The MSVC variant enforces that every begin include is matched by an end include
  by defining `HUMO_SUPPRESS_QT_WARNINGS` while the Qt headers are included.
@@ -31,7 +29,6 @@
 
 #pragma warning(push)
 
-// Common MSVC warnings suppressed when including Qt headers or generated UI
 // files
 #pragma warning(disable : 4127) // conditional expression is constant
 #pragma warning(disable : 4231) // nonstandard extension used : 'extern' before

@@ -1,26 +1,24 @@
 #pragma once
 
-// Project
 #include "SendRequest.h"
 
 class SendRequest;
 
-class CommandConfirm : public SendRequest
-{
+class CommandConfirm : public SendRequest {
     Q_OBJECT
 
-  public:
+public:
     CommandConfirm(QObject *parent = 0);
 
-  private slots:
+private slots:
     void resendRequest();
     void setDataNote(const QDomNode &domElement);
     void sendRequestRepeet();
 
-  public slots:
+public slots:
     void sendCommandConfirm(QString trn, int cmd);
 
-  private:
+private:
     void parcerNote(const QDomNode &domElement);
 
     bool resultCode;
@@ -29,6 +27,6 @@ class CommandConfirm : public SendRequest
 
     QString trnCmd;
 
-  signals:
+signals:
     void emit_cmdConfirmed(QString trn);
 };

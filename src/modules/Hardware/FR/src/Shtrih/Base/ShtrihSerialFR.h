@@ -7,15 +7,14 @@
 //--------------------------------------------------------------------------------
 typedef ShtrihFRBase<ShtrihSerialFRBase> TShtrihSerialFRBase;
 
-class ShtrihSerialFR : public TShtrihSerialFRBase
-{
-  public:
+class ShtrihSerialFR : public TShtrihSerialFRBase {
+public:
     ShtrihSerialFR();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
@@ -31,7 +30,8 @@ class ShtrihSerialFR : public TShtrihSerialFRBase
     /// Добавить общие статусы.
     virtual void appendStatusCodes(ushort aFlags, TStatusCodes &aStatusCodes);
 
-    /// Определяет по ID модели, есть ли в ФР датчики, контролирующие перемещение печатающей матричной головки.
+    /// Определяет по ID модели, есть ли в ФР датчики, контролирующие перемещение печатающей
+    /// матричной головки.
     bool isHeadSensorsExist() const;
 
     /// Определяет по ID модели, есть ли в ФР весовой датчик для контрольной ленты.

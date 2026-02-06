@@ -2,42 +2,33 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
-#include <SDK/Plugins/IPlugin.h>
-#include <SDK/PaymentProcessor/Core/ICore.h>
-#include <SDK/PaymentProcessor/Core/IChargeProvider.h>
 #include <SDK/PaymentProcessor/Core/Event.h>
+#include <SDK/PaymentProcessor/Core/IChargeProvider.h>
+#include <SDK/PaymentProcessor/Core/ICore.h>
+#include <SDK/Plugins/IPlugin.h>
 
-// Project
 #include "API.h"
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        class DealerSettings;
-    } // namespace PaymentProcessor
+namespace SDK {
+namespace PaymentProcessor {
+class DealerSettings;
+} // namespace PaymentProcessor
 } // namespace SDK
 
-namespace
-{
-    const char *ParamRuntimePath = "ucs_runtime_path";
+namespace {
+const char *ParamRuntimePath = "ucs_runtime_path";
 } // namespace
 
 //------------------------------------------------------------------------------
 class UcsChargeProvider : public QObject,
                           public SDK::PaymentProcessor::IChargeProvider,
                           public SDK::Plugin::IPlugin,
-                          public ILogable
-{
+                          public ILogable {
     Q_OBJECT
 
-  public:
+public:
     UcsChargeProvider(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
     ~UcsChargeProvider();
 
@@ -54,7 +45,8 @@ class UcsChargeProvider : public QObject,
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
     virtual QString getConfigurationName() const;
 
-    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы).
+    /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
+    /// программы).
     virtual bool saveConfiguration();
 
     /// Проверяет успешно ли инициализировался плагин при создании.
@@ -73,17 +65,20 @@ class UcsChargeProvider : public QObject,
     /// Выключение провайдера
     virtual bool disable();
 
-  signals:
+signals:
     void stacked(SDK::PaymentProcessor::SNote);
 
-  public slots:
+public slots:
     void onEvent(const SDK::PaymentProcessor::Event &aEvent);
 
-  private slots:
-    void onSaleComplete(double aAmount, int aCurrency, const QString &aRRN, const QString &aConfirmationCode);
+private slots:
+    void onSaleComplete(double aAmount,
+                        int aCurrency,
+                        const QString &aRRN,
+                        const QString &aConfirmationCode);
     void onEncashmentComplete();
 
-  private:
+private:
     QString mInstancePath;
     QVariantMap mParameters;
     SDK::Plugin::IEnvironment *mFactory;

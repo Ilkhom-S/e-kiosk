@@ -2,24 +2,20 @@
 
 #pragma once
 
-// Modules
 #include <Hardware/Protocols/Wachdogs/LDogWD.h>
-
-// Project
 #include <Hardware/Watchdogs/WatchdogBase.h>
 
 //--------------------------------------------------------------------------------
-class LDog : public WatchdogBase
-{
+class LDog : public WatchdogBase {
     SET_SERIES("LDog")
 
-  public:
+public:
     LDog();
 
     /// Перезагрузка линии питания.
     virtual bool reset(const QString &aLine);
 
-  protected:
+protected:
     /// Идентифицирует устройство.
     virtual bool isConnected();
 
@@ -31,7 +27,8 @@ class LDog : public WatchdogBase
 
     /// Выполнить команду.
     TResult processCommand(char aCommand, QByteArray *aAnswer = nullptr);
-    TResult processCommand(char aCommand, const QByteArray &aCommandData, QByteArray *aAnswer = nullptr);
+    TResult
+    processCommand(char aCommand, const QByteArray &aCommandData, QByteArray *aAnswer = nullptr);
 
     /// Установить таймауты.
     bool setTimeouts(bool aEnabled);

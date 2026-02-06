@@ -1,35 +1,27 @@
 /* @file Окно настройки dialup. */
 
-// Проект
-
-// Project
 #include "DialupWizardPage.h"
 
-DialupWizardPage::DialupWizardPage(HumoServiceBackend *aBackend, QWidget *aParent) : WizardPageBase(aBackend, aParent)
-{
-}
+DialupWizardPage::DialupWizardPage(HumoServiceBackend *aBackend, QWidget *aParent)
+    : WizardPageBase(aBackend, aParent) {}
 
 //----------------------------------------------------------------------------
-bool DialupWizardPage::initialize()
-{
+bool DialupWizardPage::initialize() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool DialupWizardPage::shutdown()
-{
+bool DialupWizardPage::shutdown() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool DialupWizardPage::activate()
-{
+bool DialupWizardPage::activate() {
     return true;
 }
 
 //----------------------------------------------------------------------------
-bool DialupWizardPage::deactivate()
-{
+bool DialupWizardPage::deactivate() {
     return true;
 }
 

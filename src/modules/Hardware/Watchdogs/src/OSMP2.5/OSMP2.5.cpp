@@ -1,14 +1,14 @@
 /* @file Сторожевой таймер OSMP 2.5. */
 
 #include "OSMP2.5.h"
+
 #include "OSMP2.5Data.h"
 
 using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //--------------------------------------------------------------------------------
-OSMP25::OSMP25()
-{
+OSMP25::OSMP25() {
     // Данные порта.
     mPortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
     mPortParameters[EParameters::Parity].append(EParity::No);
@@ -22,17 +22,14 @@ OSMP25::OSMP25()
 }
 
 //----------------------------------------------------------------------------
-bool OSMP25::isConnected()
-{
+bool OSMP25::isConnected() {
     QByteArray answer;
 
-    if (!processCommand(COSMP25::Commands::GetVersion, &answer))
-    {
+    if (!processCommand(COSMP25::Commands::GetVersion, &answer)) {
         return false;
     }
 
-    if (ProtocolUtils::clean(answer).isEmpty() && isAutoDetecting())
-    {
+    if (ProtocolUtils::clean(answer).isEmpty() && isAutoDetecting()) {
         toLog(LogLevel::Error, mDeviceName + ": Unknown device trying to impersonate this device");
         return false;
     }
@@ -44,17 +41,14 @@ bool OSMP25::isConnected()
 }
 
 //--------------------------------------------------------------------------------
-bool OSMP25::updateParameters()
-{
+bool OSMP25::updateParameters() {
     QByteArray answer;
 
-    if (processCommand(COSMP25::Commands::SerialNumber, &answer))
-    {
+    if (processCommand(COSMP25::Commands::SerialNumber, &answer)) {
         QByteArray typeBuffer = answer.left(2);
         uint type = 0;
 
-        for (int i = 0; i < typeBuffer.size(); ++i)
-        {
+        for (int i = 0; i < typeBuffer.size(); ++i) {
             type += uint(uchar(typeBuffer[i])) << ((typeBuffer.size() - i - 1) * 8);
         }
 
@@ -62,46 +56,41 @@ bool OSMP25::updateParameters()
         setDeviceParameter(CDeviceData::SerialNumber, answer.mid(2).toHex());
     }
 
-    for (int i = 0; i < COSMP25::MaxKeys; ++i)
-    {
-        if (processCommand(COSMP25::Commands::ReadKey, QByteArray(1, uchar(i)), &answer) && (answer.size() > 1))
-        {
-            QString key = QString("%1_%2").arg(CDeviceData::Watchdogs::Key).arg(i, 2, 10, QChar(ASCII::Zero));
+    for (int i = 0; i < COSMP25::MaxKeys; ++i) {
+        if (processCommand(COSMP25::Commands::ReadKey, QByteArray(1, uchar(i)), &answer) &&
+            (answer.size() > 1)) {
+            QString key =
+                QString("%1_%2").arg(CDeviceData::Watchdogs::Key).arg(i, 2, 10, QChar(ASCII::Zero));
             setDeviceParameter(key, answer.mid(1, 8).toHex());
             setDeviceParameter(CDeviceData::Type, int(uchar(answer[0])), key);
         }
     }
 
-    return processCommand(COSMP25::Commands::SetModemPause, QByteArray(1, COSMP25::ModemResettingPause)) &&
-           processCommand(COSMP25::Commands::SetPCPause, QByteArray(1, COSMP25::PCResettingPause)) &&
+    return processCommand(COSMP25::Commands::SetModemPause,
+                          QByteArray(1, COSMP25::ModemResettingPause)) &&
+           processCommand(COSMP25::Commands::SetPCPause,
+                          QByteArray(1, COSMP25::PCResettingPause)) &&
            processCommand(COSMP25::Commands::SetPingTimeout, QByteArray(1, COSMP25::PingTimeout));
 }
 
 //----------------------------------------------------------------------------
 // TODO: сделать свич на линию питания.
-bool OSMP25::reset(const QString &aLine)
-{
-    if (!checkConnectionAbility())
-    {
+bool OSMP25::reset(const QString &aLine) {
+    if (!checkConnectionAbility()) {
         return false;
     }
 
-    if (!mStatusCollectionHistory.isEmpty() && (mInitialized == ERequestStatus::Fail))
-    {
+    if (!mStatusCollectionHistory.isEmpty() && (mInitialized == ERequestStatus::Fail)) {
         toLog(LogLevel::Error, QString("%1: Cannot reset line %2").arg(mDeviceName).arg(aLine));
         return false;
     }
 
-    if (!isWorkingThread() || (mInitialized == ERequestStatus::InProcess))
-    {
-        QMetaObject::invokeMethod(this, "reset", Qt::BlockingQueuedConnection, Q_ARG(QString, aLine));
-    }
-    else if (aLine == SDK::Driver::LineTypes::Modem)
-    {
+    if (!isWorkingThread() || (mInitialized == ERequestStatus::InProcess)) {
+        QMetaObject::invokeMethod(
+            this, "reset", Qt::BlockingQueuedConnection, Q_ARG(QString, aLine));
+    } else if (aLine == SDK::Driver::LineTypes::Modem) {
         return processCommand(COSMP25::Commands::ResetModem);
-    }
-    else if (aLine == SDK::Driver::LineTypes::Terminal)
-    {
+    } else if (aLine == SDK::Driver::LineTypes::Terminal) {
         return processCommand(COSMP25::Commands::ResetPC);
     }
 
@@ -109,57 +98,49 @@ bool OSMP25::reset(const QString &aLine)
 }
 
 //---------------------------------------------------------------------------
-bool OSMP25::getStatus(TStatusCodes &aStatusCodes)
-{
+bool OSMP25::getStatus(TStatusCodes &aStatusCodes) {
     QTime PCWakingUpTime = getConfigParameter(CHardware::Watchdog::PCWakingUpTime).toTime();
 
-    if (!PCWakingUpTime.isNull() && (PCWakingUpTime != mPCWakingUpTime))
-    {
+    if (!PCWakingUpTime.isNull() && (PCWakingUpTime != mPCWakingUpTime)) {
         int secsTo = PCWakingUpTime.secsTo(QTime::currentTime());
 
-        if (secsTo < 0)
-        {
+        if (secsTo < 0) {
             secsTo += 24 * 60 * 60;
         }
 
         int intervals = qRound(double(secsTo) / COSMP25::PCWakingUpInterval);
 
         if ((secsTo < COSMP25::PCWakingUpInterval) ||
-            (std::abs(COSMP25::PCWakingUpInterval * intervals - secsTo) < COSMP25::PCWakingUpLag))
-        {
+            (std::abs(COSMP25::PCWakingUpInterval * intervals - secsTo) < COSMP25::PCWakingUpLag)) {
             QByteArray answer;
             bool resetPCWakingUpTimeResult = true;
             bool needResetPCWakeUpTime = !mPCWakingUpTime.isNull();
 
-            if (!needResetPCWakeUpTime)
-            {
-                if (!processCommand(COSMP25::Commands::PCWakeUpTime, &answer) && !answer.isEmpty())
-                {
+            if (!needResetPCWakeUpTime) {
+                if (!processCommand(COSMP25::Commands::PCWakeUpTime, &answer) &&
+                    !answer.isEmpty()) {
                     resetPCWakingUpTimeResult = false;
                     toLog(LogLevel::Error, mDeviceName + ": Cannot get wake up timeout");
-                }
-                else
-                {
+                } else {
                     needResetPCWakeUpTime = answer[0];
                 }
             }
 
             if (needResetPCWakeUpTime && resetPCWakingUpTimeResult &&
-                !processCommand(COSMP25::Commands::ResetPCWakeUpTime))
-            {
+                !processCommand(COSMP25::Commands::ResetPCWakeUpTime)) {
                 resetPCWakingUpTimeResult = false;
                 toLog(LogLevel::Error, mDeviceName + ": Cannot reset wake up timeout");
             }
 
-            if (resetPCWakingUpTimeResult)
-            {
-                toLog(LogLevel::Normal, QString("%1: Set wake up timeout to %2 hours -> %3")
-                                            .arg(mDeviceName)
-                                            .arg(intervals / 2.0)
-                                            .arg(PCWakingUpTime.toString(COSMP25::TimeLogFormat)));
+            if (resetPCWakingUpTimeResult) {
+                toLog(LogLevel::Normal,
+                      QString("%1: Set wake up timeout to %2 hours -> %3")
+                          .arg(mDeviceName)
+                          .arg(intervals / 2.0)
+                          .arg(PCWakingUpTime.toString(COSMP25::TimeLogFormat)));
 
-                if (processCommand(COSMP25::Commands::PCWakeUpTime, QByteArray(1, uchar(intervals))))
-                {
+                if (processCommand(COSMP25::Commands::PCWakeUpTime,
+                                   QByteArray(1, uchar(intervals)))) {
                     mPCWakingUpTime = PCWakingUpTime;
                 }
             }
@@ -170,8 +151,9 @@ bool OSMP25::getStatus(TStatusCodes &aStatusCodes)
 }
 
 //----------------------------------------------------------------------------
-TResult OSMP25::execCommand(const QByteArray &aCommand, const QByteArray &aCommandData, QByteArray *aAnswer)
-{
+TResult OSMP25::execCommand(const QByteArray &aCommand,
+                            const QByteArray &aCommandData,
+                            QByteArray *aAnswer) {
     MutexLocker lock(&mExternalMutex);
 
     mProtocol.setPort(mIOPort);
@@ -181,8 +163,7 @@ TResult OSMP25::execCommand(const QByteArray &aCommand, const QByteArray &aComma
 }
 
 //----------------------------------------------------------------------------
-void OSMP25::setPingEnable(bool aEnabled)
-{
+void OSMP25::setPingEnable(bool aEnabled) {
     WatchdogBase::setPingEnable(aEnabled);
 
     char command = aEnabled ? COSMP25::Commands::SetPingEnable : COSMP25::Commands::SetPingDisable;
@@ -190,14 +171,12 @@ void OSMP25::setPingEnable(bool aEnabled)
 }
 
 //-----------------------------------------------------------------------------
-void OSMP25::onPing()
-{
+void OSMP25::onPing() {
     processCommand(COSMP25::Commands::Ping);
 }
 
 //--------------------------------------------------------------------------------
-void OSMP25::registerKey()
-{
+void OSMP25::registerKey() {
     START_IN_WORKING_THREAD(registerKey)
 
     QByteArray answer;

@@ -2,12 +2,8 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QVariantMap>
-#include <Common/QtHeadersEnd.h>
 
-// Проект
 #include "WizardPage.h"
 
 class EditorPane;
@@ -15,11 +11,10 @@ class DeviceSlot;
 class HardwareWindow;
 
 //----------------------------------------------------------------------------
-class HardwareWizardPage : public WizardPageBase
-{
+class HardwareWizardPage : public WizardPageBase {
     Q_OBJECT
 
-  public:
+public:
     HardwareWizardPage(ServiceMenuBackend *aBackend, QWidget *aParent = 0);
 
     virtual bool initialize();
@@ -28,7 +23,7 @@ class HardwareWizardPage : public WizardPageBase
     virtual bool activate();
     virtual bool deactivate();
 
-  protected slots:
+protected slots:
     /// Показываем диалог ожидания поиска устройств.
     void onDetectionStarted();
 
@@ -56,7 +51,7 @@ class HardwareWizardPage : public WizardPageBase
     /// Отменяем поиск устройств
     void onClicked(const QVariantMap &aParameters);
 
-  private:
+private:
     HardwareWindow *mHardwareWindow;
     QWidget *mEditorWindow;
 };

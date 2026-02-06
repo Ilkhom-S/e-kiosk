@@ -2,37 +2,29 @@
 
 #pragma once
 
-// Qt
-#include "Common/QtHeadersBegin.h"
-#include <QtCore/QSet>
 #include <QtCore/QObject>
-#include <QtCore/QVariantMap>
+#include <QtCore/QRegularExpression>
+#include <QtCore/QSet>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QTimer>
-#include <QtCore/QRegularExpression>
-#include "Common/QtHeadersEnd.h"
+#include <QtCore/QVariantMap>
 
-// SDK
-#include <SDK/PaymentProcessor/Core/EventTypes.h>
-#include <SDK/PaymentProcessor/Core/ICashDispenserManager.h>
-#include <SDK/GUI/IGraphicsItem.h>
-
-// Modules
 #include <Common/ILog.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        class ICore;
-        class INetworkService;
-        class TerminalSettings;
-    } // namespace PaymentProcessor
-    namespace Plugin
-    {
-        class IEnvironment;
-        class IPlugin;
-    } // namespace Plugin
+#include <SDK/GUI/IGraphicsItem.h>
+#include <SDK/PaymentProcessor/Core/EventTypes.h>
+#include <SDK/PaymentProcessor/Core/ICashDispenserManager.h>
+
+namespace SDK {
+namespace PaymentProcessor {
+class ICore;
+class INetworkService;
+class TerminalSettings;
+} // namespace PaymentProcessor
+namespace Plugin {
+class IEnvironment;
+class IPlugin;
+} // namespace Plugin
 } // namespace SDK
 
 class IConfigManager;
@@ -42,24 +34,21 @@ class NetworkManager;
 class PaymentManager;
 
 //------------------------------------------------------------------------
-namespace CHumoServiceBackend
-{
-    const QString LogName = "HumoService";
-    const int HeartbeatTimeout = 60 * 1000;
+namespace CHumoServiceBackend {
+const QString LogName = "HumoService";
+const int HeartbeatTimeout = 60 * 1000;
 } // namespace CHumoServiceBackend
 
 //------------------------------------------------------------------------
-class HumoServiceBackend : public QObject
-{
+class HumoServiceBackend : public QObject {
     Q_OBJECT
 
-  public:
+public:
     HumoServiceBackend(SDK::Plugin::IEnvironment *aFactory, ILog *aLog);
     ~HumoServiceBackend();
 
-  public:
-    enum AccessRights
-    {
+public:
+    enum AccessRights {
         Diagnostic,
         ViewLogs,
 
@@ -81,17 +70,9 @@ class HumoServiceBackend : public QObject
 
     typedef QSet<AccessRights> TAccessRights;
 
-    enum HandlerType
-    {
-        Info = 0,
-        Hardware,
-        Encashment,
-        Payment,
-        System,
-        Keys
-    };
+    enum HandlerType { Info = 0, Hardware, Encashment, Payment, System, Keys };
 
-  public:
+public:
     /// Авторизация и получение прав доступа.
     virtual bool authorize(const QString &aPassword);
 
@@ -104,22 +85,23 @@ class HumoServiceBackend : public QObject
     // Изменились ли настройки
     bool isConfigurationChanged();
 
-  public:
+public:
     HardwareManager *getHardwareManager();
     KeysManager *getKeysManager();
     NetworkManager *getNetworkManager();
     PaymentManager *getPaymentManager();
 
-  public:
+public:
     void toLog(const QString &aMessage);
     void toLog(LogLevel::Enum aLevel, const QString &aMessage);
     SDK::PaymentProcessor::ICore *getCore() const;
 
-  public:
+public:
     void getTerminalInfo(QVariantMap &aTerminalInfo);
 
     void sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType);
-    void sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType, const QVariantMap &aParameters);
+    void sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType,
+                   const QVariantMap &aParameters);
 
     /// Сохранить полную конфигурацию
     bool saveConfiguration();
@@ -138,20 +120,17 @@ class HumoServiceBackend : public QObject
     bool hasAnyPassword() const;
 
     /// С какими правами зашли в сервисное меню
-    QString getUserRole() const
-    {
-        return mUserRole;
-    }
+    QString getUserRole() const { return mUserRole; }
 
     QList<QWidget *> getExternalWidgets(bool aReset = true);
 
     void startHeartbeat();
     void stopHeartbeat();
 
-  private slots:
+private slots:
     void sendHeartbeat();
 
-  private:
+private:
     SDK::PaymentProcessor::ICore *mCore;
     SDK::Plugin::IEnvironment *mFactory;
     QSharedPointer<HardwareManager> mHardwareManager;

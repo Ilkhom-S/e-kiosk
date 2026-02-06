@@ -1,120 +1,105 @@
 /* @file Многошаговый платёж через процессинг Хумо. */
 
-// STL
-#include <algorithm>
+#include "MultistagePayment.h"
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtXml/QDomDocument>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Payment/Parameters.h>
 #include <SDK/PaymentProcessor/Payment/Step.h>
 
-// Project
-#include "MultistagePayment.h"
+#include <algorithm>
+
 #include "MultistagePaymentGetStepRequest.h"
 #include "MultistagePaymentGetStepResponse.h"
 
-namespace CMultistage
-{
-    const QString Step = "MULTISTAGE_STEP";            /// текущий шаг
-    const QString StepFields = "MULTISTAGE_FIELDS_%1"; /// список полей для конкретного шага
-    const QString History = "MULTISTAGE_HISTORY";      /// история шагов
+namespace CMultistage {
+const QString Step = "MULTISTAGE_STEP";            /// текущий шаг
+const QString StepFields = "MULTISTAGE_FIELDS_%1"; /// список полей для конкретного шага
+const QString History = "MULTISTAGE_HISTORY";      /// история шагов
 } // namespace CMultistage
 
 namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
-MultistagePayment::MultistagePayment(PaymentFactory *aFactory) : Payment(aFactory)
-{
-}
+MultistagePayment::MultistagePayment(PaymentFactory *aFactory) : Payment(aFactory) {}
 
 //---------------------------------------------------------------------------
-bool MultistagePayment::canProcessOffline() const
-{
+bool MultistagePayment::canProcessOffline() const {
     return false;
 }
 
 //---------------------------------------------------------------------------
-bool MultistagePayment::performStep(int aStep)
-{
-    if (aStep == PPSDK::EPaymentStep::GetStep)
-    {
+bool MultistagePayment::performStep(int aStep) {
+    if (aStep == PPSDK::EPaymentStep::GetStep) {
         // Для проверки номера генерируем временную сессию.
-        if (getSession().isEmpty())
-        {
-            setParameter(SParameter(PPSDK::CPayment::Parameters::Session, createPaymentSession(), true));
+        if (getSession().isEmpty()) {
+            setParameter(
+                SParameter(PPSDK::CPayment::Parameters::Session, createPaymentSession(), true));
         }
 
         return getNextStep();
-    }
-    else
-    {
+    } else {
         return Payment::performStep(aStep);
     }
 }
 
 //---------------------------------------------------------------------------
-bool MultistagePayment::getNextStep()
-{
-    toLog(LogLevel::Normal, QString("Payment %1. %2, operator: %3 (%4), session: %5, step: %6.")
-                                .arg(getID())
-                                .arg(CPayment::Requests::GetStep)
-                                .arg(mProviderSettings.id)
-                                .arg(mProviderSettings.name)
-                                .arg(getSession())
-                                .arg(currentStep()));
+bool MultistagePayment::getNextStep() {
+    toLog(LogLevel::Normal,
+          QString("Payment %1. %2, operator: %3 (%4), session: %5, step: %6.")
+              .arg(getID())
+              .arg(CPayment::Requests::GetStep)
+              .arg(mProviderSettings.id)
+              .arg(mProviderSettings.name)
+              .arg(getSession())
+              .arg(currentStep()));
 
     QScopedPointer<Request> request(createRequest(CPayment::Requests::GetStep));
-    if (!request)
-    {
-        toLog(LogLevel::Error, QString("Payment %1. Failed to create request for operation.").arg(getID()));
+    if (!request) {
+        toLog(LogLevel::Error,
+              QString("Payment %1. Failed to create request for operation.").arg(getID()));
 
         return false;
     }
 
     QUrl url(mProviderSettings.processor.requests[CPayment::Requests::GetStep].url);
-    if (!url.isValid())
-    {
+    if (!url.isValid()) {
         toLog(LogLevel::Error, QString("Payment %1. Can't find url for operation.").arg(getID()));
 
-        setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::BadProvider, true));
+        setParameter(
+            SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::BadProvider, true));
 
         return false;
     }
 
     QScopedPointer<Response> response(sendRequest(url, *request));
-    if (response)
-    {
-        if (response->isOk())
-        {
+    if (response) {
+        if (response->isOk()) {
             MultistagePaymentGetStepResponse *getStepResponse =
                 dynamic_cast<MultistagePaymentGetStepResponse *>(response.data());
 
-            toLog(LogLevel::Normal, QString("Payment %1. Get next step OK. New step %2.")
-                                        .arg(getID())
-                                        .arg(getStepResponse->getMultistageStep()));
+            toLog(LogLevel::Normal,
+                  QString("Payment %1. Get next step OK. New step %2.")
+                      .arg(getID())
+                      .arg(getStepResponse->getMultistageStep()));
 
-            SDK::PaymentProcessor::TProviderFields fields = parseFieldsXml(getStepResponse->getStepFields());
+            SDK::PaymentProcessor::TProviderFields fields =
+                parseFieldsXml(getStepResponse->getStepFields());
 
             nextStep(getStepResponse->getMultistageStep(), PPSDK::SProvider::fields2Json(fields));
 
             return true;
         }
-    }
-    else
-    {
-        setParameter(SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::NetworkError, true));
+    } else {
+        setParameter(
+            SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::NetworkError, true));
     }
 
     return false;
 }
 
 //---------------------------------------------------------------------------
-void MultistagePayment::nextStep(const QString &aStep, const QString &aFields)
-{
+void MultistagePayment::nextStep(const QString &aStep, const QString &aFields) {
     QStringList history = getHistory() << currentStep();
 
     setParameter(SParameter(CMultistage::History, history.join(";"), true));
@@ -123,10 +108,8 @@ void MultistagePayment::nextStep(const QString &aStep, const QString &aFields)
 }
 
 //---------------------------------------------------------------------------
-Request *MultistagePayment::createRequest(const QString &aStep)
-{
-    if (aStep == CPayment::Requests::GetStep)
-    {
+Request *MultistagePayment::createRequest(const QString &aStep) {
+    if (aStep == CPayment::Requests::GetStep) {
         return new MultistagePaymentGetStepRequest(this);
     }
 
@@ -134,10 +117,9 @@ Request *MultistagePayment::createRequest(const QString &aStep)
 }
 
 //------------------------------------------------------------------------------
-Response *MultistagePayment::createResponse(const Request &aRequest, const QString &aResponseString)
-{
-    if (dynamic_cast<const MultistagePaymentGetStepRequest *>(&aRequest))
-    {
+Response *MultistagePayment::createResponse(const Request &aRequest,
+                                            const QString &aResponseString) {
+    if (dynamic_cast<const MultistagePaymentGetStepRequest *>(&aRequest)) {
         return new MultistagePaymentGetStepResponse(aRequest, aResponseString);
     }
 
@@ -145,8 +127,7 @@ Response *MultistagePayment::createResponse(const Request &aRequest, const QStri
 }
 
 //---------------------------------------------------------------------------
-QString MultistagePayment::currentStep() const
-{
+QString MultistagePayment::currentStep() const {
     const SParameter &stepParam = getParameter(CMultistage::Step);
 
     QString res = stepParam.value.toString();
@@ -156,23 +137,19 @@ QString MultistagePayment::currentStep() const
 }
 
 //---------------------------------------------------------------------------
-bool MultistagePayment::isFirstStep() const
-{
+bool MultistagePayment::isFirstStep() const {
     return (currentStep() == "0");
 }
 
 //---------------------------------------------------------------------------
-bool MultistagePayment::isFinalStep() const
-{
+bool MultistagePayment::isFinalStep() const {
     return (currentStep() == CMultistage::Protocol::FinalStepValue);
 }
 
 //---------------------------------------------------------------------------
-QStringList MultistagePayment::getHistory()
-{
+QStringList MultistagePayment::getHistory() {
     PPSDK::IPayment::SParameter history = getParameter(CMultistage::History);
-    if (history.value.isValid())
-    {
+    if (history.value.isValid()) {
         return history.value.toString().split(";", Qt::SkipEmptyParts);
     }
 
@@ -180,10 +157,8 @@ QStringList MultistagePayment::getHistory()
 }
 
 //---------------------------------------------------------------------------
-PPSDK::TProviderFields MultistagePayment::getFieldsForStep(const QString &aStep) const
-{
-    if (aStep.isEmpty() || aStep == "0")
-    {
+PPSDK::TProviderFields MultistagePayment::getFieldsForStep(const QString &aStep) const {
+    if (aStep.isEmpty() || aStep == "0") {
         return getProviderSettings().fields;
     }
 
@@ -193,12 +168,10 @@ PPSDK::TProviderFields MultistagePayment::getFieldsForStep(const QString &aStep)
 }
 
 //---------------------------------------------------------------------------
-void loadProviderEnumItems(PPSDK::SProviderField::TEnumItems &aItemList, QDomNode aNode)
-{
+void loadProviderEnumItems(PPSDK::SProviderField::TEnumItems &aItemList, QDomNode aNode) {
     QDomElement itemElement = aNode.firstChildElement("item");
 
-    while (!itemElement.isNull())
-    {
+    while (!itemElement.isNull()) {
         PPSDK::SProviderField::SEnumItem item;
 
         item.title = itemElement.attributeNode("name").nodeValue();
@@ -214,23 +187,22 @@ void loadProviderEnumItems(PPSDK::SProviderField::TEnumItems &aItemList, QDomNod
         itemElement = itemElement.nextSiblingElement("item");
     }
 
-    std::stable_sort(aItemList.begin(), aItemList.end(),
-                     [](const PPSDK::SProviderField::SEnumItem &a, const PPSDK::SProviderField::SEnumItem &b)
-                     { return a.sort < b.sort; });
+    std::stable_sort(aItemList.begin(),
+                     aItemList.end(),
+                     [](const PPSDK::SProviderField::SEnumItem &a,
+                        const PPSDK::SProviderField::SEnumItem &b) { return a.sort < b.sort; });
 }
 
 //---------------------------------------------------------------------------
-SDK::PaymentProcessor::TProviderFields MultistagePayment::parseFieldsXml(const QString &aFieldsXml) const
-{
-    auto toBool = [](QDomNode aNode, bool aDefault) -> bool
-    {
+SDK::PaymentProcessor::TProviderFields
+MultistagePayment::parseFieldsXml(const QString &aFieldsXml) const {
+    auto toBool = [](QDomNode aNode, bool aDefault) -> bool {
         QString value = aNode.nodeValue();
 
         return (value == "true") ? true : (value == "false" ? false : aDefault);
     };
 
-    auto toInt = [](QDomNode aNode, int aDefault) -> int
-    {
+    auto toInt = [](QDomNode aNode, int aDefault) -> int {
         QString value = aNode.nodeValue();
 
         return value.isEmpty() ? aDefault : value.toInt();
@@ -239,12 +211,10 @@ SDK::PaymentProcessor::TProviderFields MultistagePayment::parseFieldsXml(const Q
     SDK::PaymentProcessor::TProviderFields resultFields;
 
     QDomDocument doc("mydocument");
-    if (doc.setContent(aFieldsXml))
-    {
+    if (doc.setContent(aFieldsXml)) {
         QDomNodeList fieldsList = doc.elementsByTagName("field");
 
-        for (int i = 0; i < fieldsList.size(); ++i)
-        {
+        for (int i = 0; i < fieldsList.size(); ++i) {
             QDomNode node = fieldsList.item(i);
 
             PPSDK::SProviderField field;
@@ -274,9 +244,11 @@ SDK::PaymentProcessor::TProviderFields MultistagePayment::parseFieldsXml(const Q
             resultFields << field;
         }
 
-        std::stable_sort(resultFields.begin(), resultFields.end(),
-                         [](const PPSDK::SProviderField &a, const PPSDK::SProviderField &b)
-                         { return a.sort < b.sort; });
+        std::stable_sort(resultFields.begin(),
+                         resultFields.end(),
+                         [](const PPSDK::SProviderField &a, const PPSDK::SProviderField &b) {
+                             return a.sort < b.sort;
+                         });
     }
 
     return resultFields;

@@ -2,28 +2,23 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QThread>
-#include <QtCore/QString>
 #include <QtCore/QList>
 #include <QtCore/QMap>
-#include <QtCore/QSharedPointer>
 #include <QtCore/QPointer>
+#include <QtCore/QSharedPointer>
+#include <QtCore/QString>
+#include <QtCore/QThread>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkProxy>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QSslError>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/ILogable.h>
 
 //------------------------------------------------------------------------
-namespace CNetworkTaskManager
-{
-    const char LogName[] = "DownloadManager";
-    const int BadTask = -1;
+namespace CNetworkTaskManager {
+const char LogName[] = "DownloadManager";
+const int BadTask = -1;
 } // namespace CNetworkTaskManager
 
 //------------------------------------------------------------------------
@@ -32,11 +27,10 @@ class NetworkTask;
 //------------------------------------------------------------------------
 /// Класс для упрощения отправки сетевых запросов. Поддерживаются блокирующие и
 /// неблокирующие механизмы. Все публичные методы потокозащищены.
-class NetworkTaskManager : public QThread, public ILogable
-{
+class NetworkTaskManager : public QThread, public ILogable {
     Q_OBJECT
 
-  public:
+public:
     NetworkTaskManager(ILog *aLog = nullptr);
     virtual ~NetworkTaskManager();
 
@@ -62,7 +56,7 @@ class NetworkTaskManager : public QThread, public ILogable
     // Получение User-Agent
     QString getUserAgent() const;
 
-  private slots:
+private slots:
     /// Синхронизированная установка proxy.
     void onSetProxy(QNetworkProxy aProxy);
 
@@ -86,18 +80,18 @@ class NetworkTaskManager : public QThread, public ILogable
     void onTaskSslErrors(const QList<QSslError> &aErrors);
     void onTaskComplete();
 
-  private:
+private:
     /// Рабочая процедура нити.
     void run();
 
     /// Загрузка сертификата из ресурсов
     QSslCertificate loadCertResource(const QString &aPath);
 
-  signals:
+signals:
     /// Сигнал об неуспешном сетевом соединении
     void networkTaskStatus(bool aFailure);
 
-  private:
+private:
     typedef QMap<QNetworkReply *, QPointer<NetworkTask>> TTaskMap;
 
     TTaskMap mTasks;

@@ -6,22 +6,16 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
-#include <windows.h>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QVector>
 #include <QtCore/QSet>
 #include <QtCore/QUuid>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QVector>
 
-// SDK
 #include <SDK/Drivers/IOPort/COMParameters.h>
 
-// Project
+#include <Hardware/IOPorts/COM/windows/SystemDeviceUtils.h>
 #include <Hardware/IOPorts/IOPortBase.h>
 #include <Hardware/IOPorts/IOPortGUIDs.h>
-#include <Hardware/IOPorts/COM/windows/SystemDeviceUtils.h>
+#include <windows.h>
 
 //--------------------------------------------------------------------------------
 typedef QVector<QUuid> TUuids;
@@ -34,22 +28,20 @@ typedef QMap<QString, QString> TIOPortDeviceData;
 
 //--------------------------------------------------------------------------------
 
-#define BOOL_CALL(aFunctionName, ...)                                                                                  \
-    [&]() -> bool                                                                                                      \
-    {                                                                                                                  \
-        if (!checkReady())                                                                                             \
-            return false;                                                                                              \
-        return process(std::bind(&::aFunctionName, mPortHandle, __VA_ARGS__), #aFunctionName);                         \
+#define BOOL_CALL(aFunctionName, ...)                                                              \
+    [&]() -> bool {                                                                                \
+        if (!checkReady())                                                                         \
+            return false;                                                                          \
+        return process(std::bind(&::aFunctionName, mPortHandle, __VA_ARGS__), #aFunctionName);     \
     }()
 
 //--------------------------------------------------------------------------------
-class AsyncSerialPortWin : public IOPortBase
-{
+class AsyncSerialPortWin : public IOPortBase {
     SET_SERIES("COM")
 
     typedef std::function<BOOL()> TBOOLMethod;
 
-  public:
+public:
     AsyncSerialPortWin();
 
     /// Возвращает список доступных в системе портов.
@@ -62,7 +54,8 @@ class AsyncSerialPortWin : public IOPortBase
     /// Устанавливает конфигурацию устройству.
     virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release();
 #pragma endregion
 
@@ -98,7 +91,7 @@ class AsyncSerialPortWin : public IOPortBase
     /// Изменить таймаут выполнения зависоноопасной операции
     void changePerformingTimeout(const QString &aContext, int aTimeout, int aPerformingTime);
 
-  protected:
+protected:
     /// Идентификация.
     virtual bool checkExistence();
 
@@ -188,7 +181,9 @@ class AsyncSerialPortWin : public IOPortBase
     static TData getSystemData(bool aForce = false);
 
     /// Получить данные о ресурсах.
-    static TWinDeviceProperties getDeviceProperties(const TUuids &aUuids, DWORD aPropertyName, bool aQuick = false,
+    static TWinDeviceProperties getDeviceProperties(const TUuids &aUuids,
+                                                    DWORD aPropertyName,
+                                                    bool aQuick = false,
                                                     TIOPortDeviceData *aData = nullptr);
 
     /// Ждать окончания асинхронного чтения из порта, если результат - WAIT_TIMEOUT.

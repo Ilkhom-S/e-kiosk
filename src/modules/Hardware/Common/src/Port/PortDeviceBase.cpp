@@ -1,10 +1,10 @@
 /* @file Базовый класс устройств на порту. */
 
-// System
+#include <Hardware/Common/PortDeviceBase.h>
+
 #include "Hardware/CardReaders/ProtoMifareReader.h"
 #include "Hardware/CashAcceptors/ProtoCashAcceptor.h"
 #include "Hardware/Common/PollingDeviceBase.h"
-#include <Hardware/Common/PortDeviceBase.h>
 #include "Hardware/Common/ProtoDevices.h"
 #include "Hardware/Dispensers/ProtoDispenser.h"
 #include "Hardware/FR/ProtoFR.h"

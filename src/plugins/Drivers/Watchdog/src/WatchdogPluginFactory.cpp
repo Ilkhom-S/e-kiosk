@@ -1,10 +1,8 @@
 /* @file Реализация фабрики плагина сторожевых таймеров. */
 
-// Project
 #include "WatchdogPluginFactory.h"
 
-WatchdogPluginFactory::WatchdogPluginFactory()
-{
+WatchdogPluginFactory::WatchdogPluginFactory() {
     mModuleName = "watchdogs";
     mName = "Watchdogs";
     mDescription = "Watchdog driver library.";

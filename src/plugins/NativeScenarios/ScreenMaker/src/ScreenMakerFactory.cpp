@@ -1,10 +1,8 @@
 /* @file Фабрика плагина ScreenMaker - инициализация метаданных. */
 
-// Project
 #include "ScreenMakerFactory.h"
 
-ScreenMakerPluginFactory::ScreenMakerPluginFactory()
-{
+ScreenMakerPluginFactory::ScreenMakerPluginFactory() {
     mName = "Screenshot maker";
     mDescription = "Native scenario for create and edit ui screenshot";
     mAuthor = "Humo";

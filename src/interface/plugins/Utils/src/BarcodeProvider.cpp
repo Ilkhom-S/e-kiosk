@@ -1,29 +1,25 @@
 /* @file Плагин для отрисовки штрихкодов в интерфейсе пользователя */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "BarcodeProvider.h"
+
 #include <QtCore/QDir>
 #include <QtCore/QSettings>
 #include <QtQuick/QQuickImageProvider>
-#include <Common/QtHeadersEnd.h>
-
-// Project
-#include "BarcodeProvider.h"
-#include "Log.h"
 #include <qzint.h>
 
-BarcodeProvider::BarcodeProvider() : QQuickImageProvider(QQmlImageProviderBase::Image), mDefaultBarcodeSize(200, 200)
-{
-}
+#include "Log.h"
+
+BarcodeProvider::BarcodeProvider()
+    : QQuickImageProvider(QQmlImageProviderBase::Image), mDefaultBarcodeSize(200, 200) {}
 
 //------------------------------------------------------------------------------
-QImage BarcodeProvider::requestImage(const QString &aId, QSize *aSize, const QSize &aRequestedSize)
-{
-    QSize barcodeSize = aRequestedSize.isValid() && !aRequestedSize.isEmpty() ? aRequestedSize : mDefaultBarcodeSize;
+QImage
+BarcodeProvider::requestImage(const QString &aId, QSize *aSize, const QSize &aRequestedSize) {
+    QSize barcodeSize = aRequestedSize.isValid() && !aRequestedSize.isEmpty() ? aRequestedSize
+                                                                              : mDefaultBarcodeSize;
     QString path = QString("%1|%2x%3").arg(aId).arg(barcodeSize.width()).arg(barcodeSize.height());
 
-    if (mBarcodeCache.contains(path))
-    {
+    if (mBarcodeCache.contains(path)) {
         return mBarcodeCache.value(path);
     }
 
@@ -35,41 +31,27 @@ QImage BarcodeProvider::requestImage(const QString &aId, QSize *aSize, const QSi
     int height = barcodeSize.height();
 
     // Парсим параметры
-    foreach (auto param, aId.split("&", QString::SkipEmptyParts))
-    {
+    foreach (auto param, aId.split("&", QString::SkipEmptyParts)) {
         QStringList nameValue = param.split("=");
-        if (nameValue.size() != 2)
-        {
+        if (nameValue.size() != 2) {
             continue;
         }
         QString name = nameValue[0].toLower();
         QString value = QByteArray::fromPercentEncoding(nameValue[1].toLatin1());
 
-        if (name == "bgcolor")
-        {
+        if (name == "bgcolor") {
             bgColor = QColor(value);
-        }
-        else if (name == "fgcolor")
-        {
+        } else if (name == "fgcolor") {
             fgColor = QColor(value);
-        }
-        else if (name == "text")
-        {
+        } else if (name == "text") {
             text = value;
-        }
-        else if (name == "type")
-        {
-            if (value == "code128")
-            {
+        } else if (name == "type") {
+            if (value == "code128") {
                 symbol = BARCODE_CODE128;
             }
-        }
-        else if (name == "whitespace")
-        {
+        } else if (name == "whitespace") {
             whitespace = value.toInt();
-        }
-        else if (name == "height")
-        {
+        } else if (name == "height") {
             height = value.toInt();
         }
     }
@@ -93,16 +75,16 @@ QImage BarcodeProvider::requestImage(const QString &aId, QSize *aSize, const QSi
 
     {
         QPainter painter(&image);
-        zint.render(painter, QRectF(0, 0, image.width(), image.height()), Zint::QZint::KeepAspectRatio);
+        zint.render(
+            painter, QRectF(0, 0, image.width(), image.height()), Zint::QZint::KeepAspectRatio);
         painter.end();
     }
 
-    if (zint.hasErrors())
-    {
-        Log(Log::Error) << QString("BarcodeProvider: failed render barcode '%1': %2.").arg(aId).arg(zint.lastError());
-    }
-    else
-    {
+    if (zint.hasErrors()) {
+        Log(Log::Error) << QString("BarcodeProvider: failed render barcode '%1': %2.")
+                               .arg(aId)
+                               .arg(zint.lastError());
+    } else {
         mBarcodeCache.insert(path, image);
     }
 

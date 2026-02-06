@@ -5,22 +5,20 @@
 #include <Hardware/Printers/PortPOSPrinters.h>
 
 /// Константы POS-принтеров с эжектором.
-namespace CEjectorPOS
-{
-    /// Минимальная длина презентации
-    const int MinPresentationLength = 2;
+namespace CEjectorPOS {
+/// Минимальная длина презентации
+const int MinPresentationLength = 2;
 } // namespace CEjectorPOS
 
 //--------------------------------------------------------------------------------
-template <class T> class EjectorPOS : public POSPrinter<T>
-{
-  public:
+template <class T> class EjectorPOS : public POSPrinter<T> {
+public:
     EjectorPOS();
 
     /// Устанавливает конфигурацию устройству.
     virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
-  protected:
+protected:
     /// Инициализация устройства.
     virtual bool updateParameters();
 };

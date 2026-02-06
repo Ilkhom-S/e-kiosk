@@ -2,29 +2,27 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QFileSystemWatcher>
 #include <QtCore/QFile>
+#include <QtCore/QFileSystemWatcher>
 #include <QtWidgets/QWidget>
+
 #include "ui_updatersplashscreen.h"
-#include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
-class UpdaterSplashScreen : public QWidget
-{
+class UpdaterSplashScreen : public QWidget {
     Q_OBJECT
 
-  public:
+public:
     UpdaterSplashScreen(QWidget *parent = 0, Qt::WFlags flags = 0);
     ~UpdaterSplashScreen();
 
-  private slots:
+private slots:
     void onFileUpdated(const QString &aPath);
 
-  private:
+private:
     void updateScreen();
 
-  private:
+private:
     Ui::mainWindow ui;
     QString m_progressFile;
     QFileSystemWatcher m_watcher;

@@ -5,12 +5,11 @@
 #include "ProtoShtrihFR.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class ShtrihFRBase : public ProtoShtrihFR<T>
-{
-  public:
+template <class T> class ShtrihFRBase : public ProtoShtrihFR<T> {
+public:
     ShtrihFRBase();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 

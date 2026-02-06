@@ -1,14 +1,12 @@
 /* @file Плагин драйвера GSM модема. */
 
-// System
 #include "../../../../modules/Hardware/Modems/src/ATModem/ATGSMModem.h"
 #include "Hardware/Plugins/CommonParameters.h"
 
 using namespace SDK::Plugin;
 
 //------------------------------------------------------------------------------
-TParameterList EnumParameters()
-{
+TParameterList EnumParameters() {
     return createNamedList<ATGSMModem>("GSM AT compatible modem");
 }
 

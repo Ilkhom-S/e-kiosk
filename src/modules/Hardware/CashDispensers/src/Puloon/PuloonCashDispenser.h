@@ -2,25 +2,21 @@
 
 #pragma once
 
-// Modules
 #include "Hardware/Common/DeviceCodeSpecification.h"
+#include "Hardware/Dispensers/PortDispenser.h"
 #include "Hardware/Protocols/Dispensers/Puloon.h"
 
-// Project
-#include "Hardware/Dispensers/PortDispenser.h"
-
 //--------------------------------------------------------------------------------
-class PuloonLCDM : public PortDispenser
-{
+class PuloonLCDM : public PortDispenser {
     SET_SERIES("Puloon")
 
-  public:
+public:
     PuloonLCDM();
 
     /// Возвращает список поддерживаемых устройств.
     static QStringList getModelList();
 
-  protected:
+protected:
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
@@ -35,7 +31,9 @@ class PuloonLCDM : public PortDispenser
 
     /// Выполнить команду.
     TResult processCommand(char aCommand, QByteArray *aAnswer = nullptr);
-    TResult processCommand(char aCommand, const QByteArray &aCommandData, QByteArray *aAnswer = nullptr,
+    TResult processCommand(char aCommand,
+                           const QByteArray &aCommandData,
+                           QByteArray *aAnswer = nullptr,
                            int aTimeout = 0);
 
     /// Вывод в лог изменения статуса.

@@ -2,37 +2,31 @@
 
 #pragma once
 
-// STL
+#include <QtCore/QAtomicInt>
+#include <QtCore/QFileInfo>
+#include <QtCore/QFutureWatcher>
+#include <QtCore/QMutex>
+#include <QtCore/QQueue>
+#include <QtCore/QSignalMapper>
+#include <QtCore/QVariantMap>
+#include <QtCore/QWaitCondition>
+
+#include <Common/ILogable.h>
+
+#include <SDK/Drivers/FR/FiscalPrinterCommand.h>
+#include <SDK/Drivers/IFiscalPrinter.h>
+#include <SDK/Drivers/IPrinter.h>
+#include <SDK/PaymentProcessor/Core/Event.h>
+#include <SDK/PaymentProcessor/Core/IDeviceService.h>
+#include <SDK/PaymentProcessor/Core/IPrinterService.h>
+#include <SDK/PaymentProcessor/Core/IService.h>
+#include <SDK/PaymentProcessor/FiscalRegister/IFiscalRegister.h>
+#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
+
 #include <algorithm>
 #include <array>
 #include <functional>
 #include <random>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QFutureWatcher>
-#include <QtCore/QMutex>
-#include <QtCore/QQueue>
-#include <QtCore/QVariantMap>
-#include <QtCore/QSignalMapper>
-#include <QtCore/QWaitCondition>
-#include <QtCore/QAtomicInt>
-#include <QtCore/QFileInfo>
-#include <Common/QtHeadersEnd.h>
-
-// SDK
-#include <SDK/PaymentProcessor/Core/IPrinterService.h>
-#include <SDK/PaymentProcessor/Core/IDeviceService.h>
-#include <SDK/PaymentProcessor/Core/IService.h>
-#include <SDK/PaymentProcessor/Core/Event.h>
-#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
-#include <SDK/Drivers/IPrinter.h>
-#include <SDK/Drivers/IFiscalPrinter.h>
-#include <SDK/Drivers/FR/FiscalPrinterCommand.h>
-#include <SDK/PaymentProcessor/FiscalRegister/IFiscalRegister.h>
-
-// Модули
-#include <Common/ILogable.h>
 
 // PP
 #include "DatabaseUtils/IHardwareDatabaseUtils.h"
@@ -46,8 +40,7 @@ namespace DeviceStatus = SDK::Driver::EWarningLevel;
 //---------------------------------------------------------------------------
 class PrintingService : public SDK::PaymentProcessor::IPrinterService,
                         public SDK::PaymentProcessor::IService,
-                        private ILogable
-{
+                        private ILogable {
     Q_OBJECT
 
     /// Команды печати чеков определенного типа.
@@ -58,7 +51,7 @@ class PrintingService : public SDK::PaymentProcessor::IPrinterService,
     friend class PrintZReport;
     friend class PrintReceipt;
 
-  public:
+public:
     PrintingService(IApplication *aApplication);
     virtual ~PrintingService();
 
@@ -95,10 +88,12 @@ class PrintingService : public SDK::PaymentProcessor::IPrinterService,
     /// Проверка принтера на возможность печати чека.
     virtual bool canPrintReceipt(const QString &aReceiptType, bool aRealCheck);
 
-    /// Печать типизированного чека с параметрами aParameters. Возвращает индекс задания, поставленного в очередь.
-    /// Результат придёт в сигнале receiptPrinted.
-    virtual int printReceipt(const QString &aReceiptType, const QVariantMap &aParameters,
-                             const QString &aReceiptTemplate, DSDK::EPrintingModes::Enum aPrintingMode,
+    /// Печать типизированного чека с параметрами aParameters. Возвращает индекс задания,
+    /// поставленного в очередь. Результат придёт в сигнале receiptPrinted.
+    virtual int printReceipt(const QString &aReceiptType,
+                             const QVariantMap &aParameters,
+                             const QString &aReceiptTemplate,
+                             DSDK::EPrintingModes::Enum aPrintingMode,
                              bool aServiceOperation = false);
 
     /// Сохранение электронной версии типизированного чека с параметрами aParameters.
@@ -108,7 +103,8 @@ class PrintingService : public SDK::PaymentProcessor::IPrinterService,
     virtual QString loadReceipt(qint64 aPaymentId);
 
     /// Печать тестового чека.
-    virtual bool printReceiptDirected(SDK::Driver::IPrinter *aPrinter, const QString &aReceiptTemplate,
+    virtual bool printReceiptDirected(SDK::Driver::IPrinter *aPrinter,
+                                      const QString &aReceiptTemplate,
                                       const QVariantMap &aParameters);
 
     /// Печать отчета.
@@ -119,12 +115,9 @@ class PrintingService : public SDK::PaymentProcessor::IPrinterService,
 
 #pragma endregion
 
-    bool enableBlankFiscalData() const
-    {
-        return mEnableBlankFiscalData;
-    }
+    bool enableBlankFiscalData() const { return mEnableBlankFiscalData; }
 
-  public:
+public:
     /// Получить объект фискального регистратора
     SDK::PaymentProcessor::IFiscalRegister *getFiscalRegister() const;
 
@@ -134,11 +127,11 @@ class PrintingService : public SDK::PaymentProcessor::IPrinterService,
     /// Получить настройки валюты
     SDK::PaymentProcessor::SCurrencySettings getCurrencySettings() const;
 
-  signals:
+signals:
     /// Сигнал о состоянии принтера
     void printerStatus(bool aReady);
 
-  private:
+private:
     /// Возвращает чек определенного тип с заполненными полями.
     QStringList getReceipt(const QString &aReceiptTemplate, const QVariantMap &aFields);
 
@@ -167,7 +160,8 @@ class PrintingService : public SDK::PaymentProcessor::IPrinterService,
     bool loadReceiptTemplate(const QFileInfo &aFileInfo);
 
     /// Печать чека, возвращает индекс задания, поставленного в очередь.
-    int performPrint(PrintCommand *aCommand, const QVariantMap &aParameters,
+    int performPrint(PrintCommand *aCommand,
+                     const QVariantMap &aParameters,
                      QStringList aReceiptTemplate = QStringList());
 
     /// Увеличение числа чеков в бд.
@@ -193,9 +187,11 @@ class PrintingService : public SDK::PaymentProcessor::IPrinterService,
 
     QString generateLine(const QString &aString);
 
-  private slots:
+private slots:
     /// Обработка статусов принтера.
-    void onStatusChanged(SDK::Driver::EWarningLevel::Enum aWarningLevel, const QString &aTranslation, int aStatus);
+    void onStatusChanged(SDK::Driver::EWarningLevel::Enum aWarningLevel,
+                         const QString &aTranslation,
+                         int aStatus);
 
     /// Обработка сигнала закрытия смены
     void onFRSessionClosed(const QVariantMap &aParameters);
@@ -215,7 +211,7 @@ class PrintingService : public SDK::PaymentProcessor::IPrinterService,
     /// Обработчик сигнала о наличии неотправленных чеков в фисклаьном регистраторе.
     void onOFDNotSent(bool aExist);
 
-  private:
+private:
     typedef QMap<QString, QString> TStaticParameters;
     typedef QMap<QString, QStringList> TCachedReceipts;
 
@@ -236,8 +232,7 @@ class PrintingService : public SDK::PaymentProcessor::IPrinterService,
 
     QFutureWatcher<bool> mFutureWatcher;
 
-    struct Task
-    {
+    struct Task {
         int index;
         PrintCommand *command;
         QVariantMap parameters;

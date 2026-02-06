@@ -5,29 +5,23 @@
 class HumoServiceBackend;
 
 //------------------------------------------------------------------------
-class IServiceWindow
-{
-  public:
+class IServiceWindow {
+public:
     virtual bool initialize() = 0;
     virtual bool shutdown() = 0;
 
     virtual bool activate() = 0;
     virtual bool deactivate() = 0;
 
-    virtual ~IServiceWindow()
-    {
-    }
+    virtual ~IServiceWindow() {}
 };
 
 //------------------------------------------------------------------------
-class ServiceWindowBase : public IServiceWindow
-{
-  public:
-    ServiceWindowBase(HumoServiceBackend *aBackend) : mBackend(aBackend)
-    {
-    }
+class ServiceWindowBase : public IServiceWindow {
+public:
+    ServiceWindowBase(HumoServiceBackend *aBackend) : mBackend(aBackend) {}
 
-  protected:
+protected:
     HumoServiceBackend *mBackend;
 };
 

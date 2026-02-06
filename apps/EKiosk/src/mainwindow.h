@@ -1,16 +1,14 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtWebSockets/QWebSocket>
 #include <QtWidgets/QMainWindow>
-#include <Common/QtHeadersEnd.h>
 
-// System
-#include "connection/Connect.h"
 #include <db/sqlconnection.h>
+
+#include "connection/Connect.h"
 #include "devices/ClassDevice.h"
+#include "main.h"
 #include "modules/AuthRequest.h"
 #include "modules/CheckOnline.h"
 #include "modules/CollectDaemons.h"
@@ -41,11 +39,7 @@
 #include "ui/searchdevicesform.h"
 #include "updater/update.h"
 
-// Project
-#include "main.h"
-
-struct TerminalParams
-{
+struct TerminalParams {
     QString login;
     QString token;
     QString secretLogin;
@@ -53,8 +47,7 @@ struct TerminalParams
 };
 
 // Параметры принтера
-struct PrinterParams
-{
+struct PrinterParams {
     QString name;
     QString port;
     QString comment;
@@ -68,8 +61,7 @@ struct PrinterParams
     int printCheckUntil = 0;
 };
 
-struct ValidatorParams
-{
+struct ValidatorParams {
     QString name;
     QString port;
     QString comment;
@@ -79,8 +71,7 @@ struct ValidatorParams
     QString partNumber;
 };
 
-struct CoinAcceptorParams
-{
+struct CoinAcceptorParams {
     QString name;
     QString port;
     QString comment;
@@ -90,8 +81,7 @@ struct CoinAcceptorParams
     QString partNumber;
 };
 
-struct ModemParams
-{
+struct ModemParams {
     bool found = false;
     QString name;
     QString port;
@@ -105,8 +95,7 @@ struct ModemParams
     QString number;
 };
 
-struct WDParams
-{
+struct WDParams {
     bool found = false;
     QString name;
     QString port;
@@ -114,8 +103,7 @@ struct WDParams
     bool present = false;
 };
 
-struct Config
-{
+struct Config {
     // Пораметры терминала
     TerminalParams terminalData;
     // Пораметры модема
@@ -220,130 +208,107 @@ struct Config
     bool autoUpdateStatus = true;
 };
 
-enum Page
-{
-    LoadingDevices = 0,
-    LoadingGprs = 1,
-    LoadingMain = 2
-};
+enum Page { LoadingDevices = 0, LoadingGprs = 1, LoadingMain = 2 };
 
-namespace Action
-{
-    enum Ac
-    {
-        /// Снят валидатор купюр
-        aOpenValidatorBox = 0,
-        /// АСО загружает обновления
-        aPoUpdateNow = 1,
-        /// АСО запускается
-        aPoStartNow = 2,
-        /// Обновляется конфигурация
-        aPoGetServices = 3
-    };
+namespace Action {
+enum Ac {
+    /// Снят валидатор купюр
+    aOpenValidatorBox = 0,
+    /// АСО загружает обновления
+    aPoUpdateNow = 1,
+    /// АСО запускается
+    aPoStartNow = 2,
+    /// Обновляется конфигурация
+    aPoGetServices = 3
+};
 } // namespace Action
 
-namespace CommandInit
-{
-    enum Cmd
-    {
-        /// Перезагрузить терминал
-        cRebootTerminal = 0,
-        /// Выключить терминал
-        cTurnOffTerminal = 1,
-        /// Обновить ПО
-        cUpdatePO = 2,
-        /// Включить Автообновление
-        cTurnOnAutoApdate = 3,
-        /// Выключить Автообновление
-        cTurnOffAutoApdate = 4,
-        /// Загрузить Лог
-        cGetLogTerminal = 5,
-        /// Перезагрузить купюроприемник
-        cRestartValidator = 6,
-        /// Отправить лог на сервер
-        cSendLogInfo = 7,
-        /// Удаленная инкассация
-        cGetIncashment = 8,
-        /// Отправить лог валидатора
-        cSendLogValidator = 9,
-        /// Обновление прошивки купюроприемника
-        cBVFirmwareUpdate = 10
-    };
+namespace CommandInit {
+enum Cmd {
+    /// Перезагрузить терминал
+    cRebootTerminal = 0,
+    /// Выключить терминал
+    cTurnOffTerminal = 1,
+    /// Обновить ПО
+    cUpdatePO = 2,
+    /// Включить Автообновление
+    cTurnOnAutoApdate = 3,
+    /// Выключить Автообновление
+    cTurnOffAutoApdate = 4,
+    /// Загрузить Лог
+    cGetLogTerminal = 5,
+    /// Перезагрузить купюроприемник
+    cRestartValidator = 6,
+    /// Отправить лог на сервер
+    cSendLogInfo = 7,
+    /// Удаленная инкассация
+    cGetIncashment = 8,
+    /// Отправить лог валидатора
+    cSendLogValidator = 9,
+    /// Обновление прошивки купюроприемника
+    cBVFirmwareUpdate = 10
+};
 } // namespace CommandInit
 
-namespace SmsSend
-{
-    enum smsState
-    {
-        NotSend = 0,
-        OK = 1
-    };
+namespace SmsSend {
+enum smsState { NotSend = 0, OK = 1 };
 
-    enum lockState
-    {
-        Unlock = 0,
-        Lock = 1
-    };
+enum lockState { Unlock = 0, Lock = 1 };
 } // namespace SmsSend
 
-struct LockItem
-{
+struct LockItem {
     bool lock;
     QString comment;
 };
 
-namespace Lock
-{
-    enum Data
-    {
-        // Терминал работает
-        Ok = 0,
-        // Терминал заблокирован из за недостатка средств
-        NonMoney = 1,
-        // Терминал заблокирован из за ошибки валидатора
-        ErrorValidator = 2,
-        // Терминал заблокирован из за проблемы с интерфейсом
-        ErrorInterface = 3,
-        // Терминал заблокирован по сигналу с сервера
-        LockFromServer = 4,
-        // Терминал заблокирован по ошибке определения устройств
-        ErrorDevice = 5,
-        // Терминал заблокирован по параметру is_active
-        IsActiveLock = 6,
-        // Терминал заблокирован по статусу Терминал не активен(11)
-        Status_11 = 7,
-        // Терминал заблокирован по статусу Доступ запрещен (Агент не активен (12))
-        Status_12 = 8,
-        // Терминал заблокирован по статусу Ошибка авторизации(Не верный номер
-        // терминала, логин, пароль (150))
-        ErrorAvtorizat = 9,
-        // Терминал заблокирован по статусу Не верный тип терминала(245)
-        ErrorTypeTrm = 10,
-        // Терминал заблокирован по статусу Нет прав на прим платежей(133)
-        ErrorNoRoulPay = 11,
-        // Терминал заблокирован по причине в системе более 5-и платежей
-        MorePayIn = 12,
-        // Пользователь(Персона) заблокирована(14)
-        ErrorTypeUser = 13,
-        // Терминал заблокирован по причине открыта админка
-        ErrorOpenAdminP = 14,
-        ErrorDublicateNominal = 15,
-        ErrorDatabase = 16
-    };
+namespace Lock {
+enum Data {
+    // Терминал работает
+    Ok = 0,
+    // Терминал заблокирован из за недостатка средств
+    NonMoney = 1,
+    // Терминал заблокирован из за ошибки валидатора
+    ErrorValidator = 2,
+    // Терминал заблокирован из за проблемы с интерфейсом
+    ErrorInterface = 3,
+    // Терминал заблокирован по сигналу с сервера
+    LockFromServer = 4,
+    // Терминал заблокирован по ошибке определения устройств
+    ErrorDevice = 5,
+    // Терминал заблокирован по параметру is_active
+    IsActiveLock = 6,
+    // Терминал заблокирован по статусу Терминал не активен(11)
+    Status_11 = 7,
+    // Терминал заблокирован по статусу Доступ запрещен (Агент не активен (12))
+    Status_12 = 8,
+    // Терминал заблокирован по статусу Ошибка авторизации(Не верный номер
+    // терминала, логин, пароль (150))
+    ErrorAvtorizat = 9,
+    // Терминал заблокирован по статусу Не верный тип терминала(245)
+    ErrorTypeTrm = 10,
+    // Терминал заблокирован по статусу Нет прав на прим платежей(133)
+    ErrorNoRoulPay = 11,
+    // Терминал заблокирован по причине в системе более 5-и платежей
+    MorePayIn = 12,
+    // Пользователь(Персона) заблокирована(14)
+    ErrorTypeUser = 13,
+    // Терминал заблокирован по причине открыта админка
+    ErrorOpenAdminP = 14,
+    ErrorDublicateNominal = 15,
+    ErrorDatabase = 16
+};
 } // namespace Lock
 
 QT_BEGIN_NAMESPACE
-namespace Ui
-{
-    class MainWindow;
+namespace Ui {
+class MainWindow;
 }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
-  public:
+public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
@@ -352,7 +317,7 @@ class MainWindow : public QMainWindow
 
     void init();
 
-  private:
+private:
     Ui::MainWindow *ui;
 
     Logger *logger;
@@ -411,7 +376,7 @@ class MainWindow : public QMainWindow
     // Updater
     DownloadManager *downManager;
 
-  private:
+private:
     QString lang;
     QString senderName;
     QString versionFull();
@@ -486,8 +451,10 @@ class MainWindow : public QMainWindow
     QString getWinprinterFromDB();
 
     bool commandExist(QString trn);
-    bool saveCommand(const QString trn, const int cmd, const QString account, const QString comment);
-    bool getActiveCommand(QString &trn, int &cmd, QString &account, QString &comment, QString &status);
+    bool
+    saveCommand(const QString trn, const int cmd, const QString account, const QString comment);
+    bool
+    getActiveCommand(QString &trn, int &cmd, QString &account, QString &comment, QString &status);
     bool commandStatusUpdate(QString trn, QString status);
 
     bool saveBillValidatorEvent(const QString event, const QString dateTime);
@@ -507,10 +474,10 @@ class MainWindow : public QMainWindow
 
     bool isModemConnectionUp(QString &connectionName);
 
-  protected:
+protected:
     void closeEvent(QCloseEvent *event);
 
-  private slots:
+private slots:
     void loadStyleSheet();
     qint32 generateEncodeKey();
 
@@ -581,7 +548,8 @@ class MainWindow : public QMainWindow
 
     // Devices
     void deviceSearchStart(QVariantMap data);
-    void deviceSearchResult(int device, int result, QString dev_name, QString dev_comment, QString dev_port);
+    void deviceSearchResult(
+        int device, int result, QString dev_name, QString dev_comment, QString dev_port);
     void deviceSearchFinished();
     void deviceTest(int device, QString name, QString port, QString comment);
     void saveDevice(int deviceId, QString deviceName, QString port, QString comment, int state);
@@ -658,7 +626,7 @@ class MainWindow : public QMainWindow
     void toValidatorLog(int state, QByteArray data, QString text);
     void closeApp();
 
-  signals:
+signals:
     void emitStatusAnimateSum(bool status);
     void emitStatusReturnNominal(bool status);
 };

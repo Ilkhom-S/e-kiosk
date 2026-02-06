@@ -5,12 +5,11 @@
 #include "Hardware/Printers/PortPrintersBase.h"
 
 //--------------------------------------------------------------------------------
-class SwecoinPrinter : public TSerialPrinterBase
-{
-  public:
+class SwecoinPrinter : public TSerialPrinterBase {
+public:
     SwecoinPrinter();
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 

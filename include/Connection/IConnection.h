@@ -2,44 +2,38 @@
 
 #pragma once
 
-// Qt
-#include "Common/QtHeadersBegin.h"
+#include <QtCore/QDateTime>
 #include <QtCore/QObject>
+#include <QtCore/QPair>
 #include <QtCore/QString>
 #include <QtCore/QUrl>
-#include <QtCore/QPair>
-#include <QtCore/QDateTime>
-#include "Common/QtHeadersEnd.h"
 
 #include <Common/ILog.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Connection/ConnectionTypes.h>
 
-// Проект
 #include "NetworkError.h"
 
 class NetworkTaskManager;
 
 //--------------------------------------------------------------------------------
 /// Интерфейс сетевого соединения.
-class IConnection : public QObject
-{
+class IConnection : public QObject {
     Q_OBJECT
 
-  public:
+public:
     /// Структура для проверки связи <url, response string>
     typedef QPair<QUrl, QString> CheckUrl;
 
-  public:
+public:
     /// Создать экземпляр соединения.
-    static IConnection *create(const QString &aName, EConnectionTypes::Enum aType, NetworkTaskManager *aNetwork,
+    static IConnection *create(const QString &aName,
+                               EConnectionTypes::Enum aType,
+                               NetworkTaskManager *aNetwork,
                                ILog *aLog);
 
     /// Деструктор.
-    virtual ~IConnection()
-    {
-    }
+    virtual ~IConnection() {}
 
     /// Возвращает имя соединения.
     virtual QString getName() const = 0;
@@ -65,14 +59,14 @@ class IConnection : public QObject
     /// Устанавливает список хостов для проверки соединения.
     virtual void setCheckHosts(const QList<CheckUrl> &aHosts) = 0;
 
-  signals:
+signals:
     /// При закрытии/обрыве соединения.
     void connectionLost();
 
     /// Сигнал об успешной проверке соединения
     void connectionAlive();
 
-  public:
+public:
     /// Поиск всех установленных в системе модемов.
     static QStringList getModems() noexcept(false);
 
@@ -89,13 +83,16 @@ class IConnection : public QObject
     static QStringList getLocalConnections() noexcept(false);
 
     /// Создать dialup соединение
-    static void createDialupConnection(const QString &aName, const QString &aPhone, const QString &aLogin,
-                                       const QString &aPassword, const QString &aDevice) noexcept(false);
+    static void createDialupConnection(const QString &aName,
+                                       const QString &aPhone,
+                                       const QString &aLogin,
+                                       const QString &aPassword,
+                                       const QString &aDevice) noexcept(false);
 
     /// Удалить dialup соединение
     static void removeDialupConnection(const QString &aName) noexcept(false);
 
-  public:
+public:
     static ILog *mLog;
 };
 

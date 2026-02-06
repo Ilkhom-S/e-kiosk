@@ -16,14 +16,11 @@
 class QAtResultParser;
 class QTextCodec;
 
-class QAtUtils
-{
-  private:
-    QAtUtils()
-    {
-    }
+class QAtUtils {
+private:
+    QAtUtils() {}
 
-  public:
+public:
     static QString quote(const QString &str);
     static QString quote(const QString &str, QTextCodec *codec);
     static QString decode(const QString &str, QTextCodec *codec);

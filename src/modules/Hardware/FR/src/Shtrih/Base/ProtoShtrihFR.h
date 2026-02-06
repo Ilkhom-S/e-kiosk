@@ -2,25 +2,22 @@
 
 #pragma once
 
-// Modules
 #include <Hardware/FR/ShtrihFR.h>
 
-// Project
-#include "../ShtrihFRDataTypes.h"
-#include "../ShtrihFRConstants.h"
-#include "ShtrihSerialFRBase.h"
-#include "../Online/ShtrihTCPFRBase.h"
 #include "../ModelData.h"
+#include "../Online/ShtrihTCPFRBase.h"
+#include "../ShtrihFRConstants.h"
+#include "../ShtrihFRDataTypes.h"
+#include "ShtrihSerialFRBase.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class ProtoShtrihFR : public T
-{
+template <class T> class ProtoShtrihFR : public T {
     SET_SERIES("Shtrih")
 
-  public:
+public:
     ProtoShtrihFR();
 
-  protected:
+protected:
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
@@ -45,7 +42,8 @@ template <class T> class ProtoShtrihFR : public T
     virtual bool getPrintingSettings();
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult execCommand(const QByteArray &aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
 
     /// Ошибка?
@@ -64,7 +62,8 @@ template <class T> class ProtoShtrihFR : public T
     virtual bool printLine(const QByteArray &aString);
 
     /// Печать фискального чека.
-    virtual bool performFiscal(const QStringList &aReceipt, const SDK::Driver::SPaymentData &aPaymentData,
+    virtual bool performFiscal(const QStringList &aReceipt,
+                               const SDK::Driver::SPaymentData &aPaymentData,
                                quint32 *aFDNumber = nullptr);
 
     /// Отмена фискального чека.
@@ -74,7 +73,8 @@ template <class T> class ProtoShtrihFR : public T
     bool openDocument(SDK::Driver::EPayOffTypes::Enum aPayOffType);
 
     /// Продажа.
-    virtual bool sale(const SDK::Driver::SUnitData &aUnitData, SDK::Driver::EPayOffTypes::Enum aPayOffType);
+    virtual bool sale(const SDK::Driver::SUnitData &aUnitData,
+                      SDK::Driver::EPayOffTypes::Enum aPayOffType);
 
     /// Закрыть чек.
     virtual bool closeDocument(double aSum, SDK::Driver::EPayTypes::Enum aPayType);
@@ -83,9 +83,7 @@ template <class T> class ProtoShtrihFR : public T
     virtual void checkSalesName(QString &aName);
 
     /// Установить флаги по ошибке в ответе.
-    virtual void setErrorFlags()
-    {
-    }
+    virtual void setErrorFlags() {}
 
     /// Печать Z отчета.
     virtual bool performZReport(bool aPrintDeferredReports);
@@ -107,7 +105,8 @@ template <class T> class ProtoShtrihFR : public T
 
     /// После подачи команды, связанной с печатью ждем окончания печати.
     // TODO: зачем ждем перед ожиданием?
-    bool waitForPrintingEnd(bool aCanBeOff = false, int aTimeout = CShtrihFR::Timeouts::MaxWaitForPrintingEnd);
+    bool waitForPrintingEnd(bool aCanBeOff = false,
+                            int aTimeout = CShtrihFR::Timeouts::MaxWaitForPrintingEnd);
 
     /// Проверить параметры налога.
     virtual bool checkTax(SDK::Driver::TVAT aVAT, CFR::Taxes::SData &aData);
@@ -122,11 +121,15 @@ template <class T> class ProtoShtrihFR : public T
     virtual SDK::Driver::ESessionState::Enum getSessionState();
 
     /// Установить параметр системной таблицы.
-    bool setFRParameter(const CShtrihFR::FRParameters::SData &aData, const QVariant &aValue, char aSeries = 1,
+    bool setFRParameter(const CShtrihFR::FRParameters::SData &aData,
+                        const QVariant &aValue,
+                        char aSeries = 1,
                         bool aCleanLogValue = false);
 
     /// Получить параметр системной таблицы.
-    bool getFRParameter(const CShtrihFR::FRParameters::SData &aData, QByteArray &aValue, char aSeries = 1);
+    bool getFRParameter(const CShtrihFR::FRParameters::SData &aData,
+                        QByteArray &aValue,
+                        char aSeries = 1);
 
     /// Установить параметры ФР.
     virtual void setFRParameters();

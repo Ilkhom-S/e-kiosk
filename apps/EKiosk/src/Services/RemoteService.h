@@ -2,25 +2,19 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QMutex>
-#include <QtCore/QTimer>
-#include <QtCore/QStringList>
-#include <QtCore/QSettings>
 #include <QtConcurrent/QtConcurrentRun>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QMutex>
+#include <QtCore/QSettings>
+#include <QtCore/QStringList>
+#include <QtCore/QTimer>
 
-// Modules
 #include <Common/ILogable.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Core/Event.h>
 #include <SDK/PaymentProcessor/Core/IRemoteClient.h>
 #include <SDK/PaymentProcessor/Core/IRemoteService.h>
 #include <SDK/PaymentProcessor/Core/IService.h>
 
-// Project
 #include "PaymentService.h"
 
 namespace PPSDK = SDK::PaymentProcessor;
@@ -30,13 +24,13 @@ class IHardwareDatabaseUtils;
 class QFileSystemWatcher;
 
 //---------------------------------------------------------------------------
-class RemoteService : public SDK::PaymentProcessor::IRemoteService, public PPSDK::IService, protected ILogable
-{
+class RemoteService : public SDK::PaymentProcessor::IRemoteService,
+                      public PPSDK::IService,
+                      protected ILogable {
     Q_OBJECT
 
-  public:
-    struct UpdateCommand
-    {
+public:
+    struct UpdateCommand {
         int ID;
         EStatus status;
 
@@ -53,7 +47,7 @@ class RemoteService : public SDK::PaymentProcessor::IRemoteService, public PPSDK
         bool isExternal() const;
     };
 
-  public:
+public:
     RemoteService(IApplication *aApplication);
     virtual ~RemoteService();
 
@@ -87,11 +81,11 @@ class RemoteService : public SDK::PaymentProcessor::IRemoteService, public PPSDK
 
 #pragma endregion
 
-    /// Попытка восстановление конфигурации терминала через один из подключенных клиентов мониторинга.
-    /// Возвращает true, если запрос на обновление конфигурации передан исполнителю.
+    /// Попытка восстановление конфигурации терминала через один из подключенных клиентов
+    /// мониторинга. Возвращает true, если запрос на обновление конфигурации передан исполнителю.
     bool restoreConfiguration();
 
-  protected:
+protected:
 #pragma region PPSDK::IRemoteService interface
 
     /// Добавляет в очередь команду на блокировку терминала.
@@ -109,19 +103,24 @@ class RemoteService : public SDK::PaymentProcessor::IRemoteService, public PPSDK
     /// Добавляет в очередь команду на выключение терминала.
     virtual int registerShutdownCommand() override;
 
-    /// Добавляет в очередь команду на изменение параметров платежа (поиск осуществляется по начальной сессии).
-    virtual int registerPaymentCommand(EPaymentOperation aOperation, const QString &aInitialSession,
+    /// Добавляет в очередь команду на изменение параметров платежа (поиск осуществляется по
+    /// начальной сессии).
+    virtual int registerPaymentCommand(EPaymentOperation aOperation,
+                                       const QString &aInitialSession,
                                        const QVariantMap &aParameters) override;
 
     /// Добавляет в очередь команду на обновление файлов.
-    virtual int registerUpdateCommand(EUpdateType aType, const QUrl &aConfigUrl, const QUrl &aUpdateUrl,
+    virtual int registerUpdateCommand(EUpdateType aType,
+                                      const QUrl &aConfigUrl,
+                                      const QUrl &aUpdateUrl,
                                       const QString &aComponents) override;
 
     /// Добавляет в очередь команду на получение скриншота.
     virtual int registerScreenshotCommand() override;
 
     /// Добавляет в очередь команду на перегенерацию ключей
-    virtual int registerGenerateKeyCommand(const QString &aLogin, const QString &aPassword) override;
+    virtual int registerGenerateKeyCommand(const QString &aLogin,
+                                           const QString &aPassword) override;
 
     /// Зарегистрировать номер произвольной команды
     virtual int registerAnyCommand() override;
@@ -137,14 +136,14 @@ class RemoteService : public SDK::PaymentProcessor::IRemoteService, public PPSDK
 
 #pragma endregion
 
-  private:
+private:
     /// Выполнение команды с помощью делегирования событийной системе.
     int executeCommand(PPSDK::EEventType::Enum aEvent);
 
     /// Увеличение номера последней зарегистрированной команды в БД.
     int increaseLastCommandID();
 
-  protected slots:
+protected slots:
     /// Обработка выполнения команды на изменения платежа.
     void onPaymentCommandComplete(int aID, EPaymentCommandResult::Enum aError);
 
@@ -173,15 +172,17 @@ class RemoteService : public SDK::PaymentProcessor::IRemoteService, public PPSDK
     /// Обработчик события об изменении состояния устройства
     void onDeviceStatusChanged(const QString &aConfigName);
 
-  private:
-    /// Проверяет наличие обновлённых отчётов от модуля обновления, возвращает кол-во выполненных команд
+private:
+    /// Проверяет наличие обновлённых отчётов от модуля обновления, возвращает кол-во выполненных
+    /// команд
     int checkUpdateReports();
 
     /// Проверка времени жизни команд в очереди
     int checkCommandsLifetime();
 
     /// Создание новой пары ключей
-    static void doGenerateKeyCommand(RemoteService *aMonitoringService, const QString &aLogin,
+    static void doGenerateKeyCommand(RemoteService *aMonitoringService,
+                                     const QString &aLogin,
                                      const QString &aPassword);
 
     /// проверка разрешения на создание команды обновления
@@ -202,11 +203,11 @@ class RemoteService : public SDK::PaymentProcessor::IRemoteService, public PPSDK
     /// Восстановление списка команд перед запуском
     void restoreCommandQueue();
 
-  public:
+public:
     /// Найти в списке команду с нужным типом
     UpdateCommand findUpdateCommand(EUpdateType aType);
 
-  private:
+private:
     /// Обновить список файлов
     void restartUpdateWatcher(QFileSystemWatcher *aWatcher = nullptr);
 
@@ -218,7 +219,7 @@ class RemoteService : public SDK::PaymentProcessor::IRemoteService, public PPSDK
     /// Запустить следующую команду обновления из очереди
     void startNextUpdateCommand();
 
-  private:
+private:
     IApplication *mApplication;
 
     IHardwareDatabaseUtils *mDatabase;

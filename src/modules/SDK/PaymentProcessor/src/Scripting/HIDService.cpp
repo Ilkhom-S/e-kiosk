@@ -1,14 +1,10 @@
 /* @file Прокси-класс для работы со сканером в скриптах. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QBuffer>
 #include <QtCore/QStringList>
 #include <QtGui/QImage>
 #include <QtQml/QJSEngine>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/Drivers/HardwareConstants.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Core/IEventService.h>
@@ -19,173 +15,160 @@
 
 namespace PPSDK = SDK::PaymentProcessor;
 
-namespace SDK
+namespace SDK {
+namespace PaymentProcessor {
+namespace Scripting {
+
+//------------------------------------------------------------------------------
+HIDService::HIDService(ICore *aCore) : mCore(aCore), mService(mCore->getHIDService()) {
+    connect(mService, SIGNAL(error()), SIGNAL(error()));
+
+    // Сигналы из ядра завернем в общий скртптовый сигнал hiddata
+    connect(mService, SIGNAL(ejected()), this, SLOT(onEjected()));
+    connect(mService, SIGNAL(inserted(QVariantMap)), this, SLOT(onInserted(QVariantMap)));
+
+    connect(mService,
+            SIGNAL(data(const QVariantMap &)),
+            this,
+            SLOT(onData(const QVariantMap &)),
+            Qt::QueuedConnection);
+}
+
+//------------------------------------------------------------------------------
+void HIDService::enable(const QString &aName) {
+    mService->setEnable(true, aName);
+}
+
+//------------------------------------------------------------------------------
+void HIDService::disable(const QString &aName) {
+    mService->setEnable(false, aName);
+}
+
+//------------------------------------------------------------------------------
+void HIDService::updateParameters(const QVariantMap &aParameters) {
+    mParameters = aParameters;
+}
+
+//------------------------------------------------------------------------------
+QString HIDService::getExternalData() {
+    qint64 providerId =
+        mParameters[SDK::PaymentProcessor::CPayment::Parameters::Provider].toLongLong();
+
+    return mCore->getPaymentService()->getProvider(providerId).externalDataHandler;
+}
+
+//------------------------------------------------------------------------------
+/*QJSValue JS_setField(QJSContext * aContext, QJSEngine *, void * aParameters)
 {
-    namespace PaymentProcessor
-    {
-        namespace Scripting
-        {
+        //reinterpret_cast<QVariantMap *>(aParameters)->insert(aContext->argument(0).toString(),
+aContext->argument(1).toString());
 
-            //------------------------------------------------------------------------------
-            HIDService::HIDService(ICore *aCore) : mCore(aCore), mService(mCore->getHIDService())
+        return QJSValue();
+}*/
+
+//------------------------------------------------------------------------------
+void HIDService::onData(const QVariantMap &aDataMap) {
+    QVariantMap parameters;
+    QString value;
+
+    if (aDataMap.contains(CHardwareSDK::HID::Text)) {
+        value = mService->valueToString(aDataMap.value(CHardwareSDK::HID::Text));
+
+        parameters.insert(HID::SOURCE, HID::SOURCE_SCANNER);
+        parameters.insert(HID::STRING, value);
+        parameters.insert(HID::RAW, value);
+        parameters.insert(HID::RAW_BASE64, QString(value.toLatin1().toBase64()));
+
+        parameters.insert(HID::EXTERNAL_DATA, false);
+
+        QString externalDataHandler = getExternalData();
+        if (!externalDataHandler.trimmed().isEmpty() && !value.isEmpty()) {
+            QJSEngine script;
+
+            // TODO PORT_QT5
+
+            /*script.globalObject().setProperty("value", value);
+            QJSValue setFunc = script.newFunction(JS_setField, &parameters);
+            script.globalObject().setProperty("setField", setFunc);
+
+            if (!script.canEvaluate(externalDataHandler))
             {
-                connect(mService, SIGNAL(error()), SIGNAL(error()));
-
-                // Сигналы из ядра завернем в общий скртптовый сигнал hiddata
-                connect(mService, SIGNAL(ejected()), this, SLOT(onEjected()));
-                connect(mService, SIGNAL(inserted(QVariantMap)), this, SLOT(onInserted(QVariantMap)));
-
-                connect(mService, SIGNAL(data(const QVariantMap &)), this, SLOT(onData(const QVariantMap &)),
-                        Qt::QueuedConnection);
+                    toLog(LogLevel::Warning, QString("Can't parse expression:
+            %1").arg(externalDataHandler)); return;
             }
 
-            //------------------------------------------------------------------------------
-            void HIDService::enable(const QString &aName)
+            script.evaluate(externalDataHandler);
+            if (script.hasUncaughtException())
             {
-                mService->setEnable(true, aName);
-            }
+                    toLog(LogLevel::Error, QString("An exception occured while calling (line %1):
+            %2\nBacktrace:\n%3.") .arg(script.uncaughtExceptionLineNumber())
+                            .arg(script.uncaughtException().toString())
+                            .arg(script.uncaughtExceptionBacktrace().join("\n")));
 
-            //------------------------------------------------------------------------------
-            void HIDService::disable(const QString &aName)
-            {
-                mService->setEnable(false, aName);
-            }
-
-            //------------------------------------------------------------------------------
-            void HIDService::updateParameters(const QVariantMap &aParameters)
-            {
-                mParameters = aParameters;
-            }
-
-            //------------------------------------------------------------------------------
-            QString HIDService::getExternalData()
-            {
-                qint64 providerId = mParameters[SDK::PaymentProcessor::CPayment::Parameters::Provider].toLongLong();
-
-                return mCore->getPaymentService()->getProvider(providerId).externalDataHandler;
-            }
-
-            //------------------------------------------------------------------------------
-            /*QJSValue JS_setField(QJSContext * aContext, QJSEngine *, void * aParameters)
-            {
-                    //reinterpret_cast<QVariantMap *>(aParameters)->insert(aContext->argument(0).toString(),
-            aContext->argument(1).toString());
-
-                    return QJSValue();
+                    return;
             }*/
 
-            //------------------------------------------------------------------------------
-            void HIDService::onData(const QVariantMap &aDataMap)
-            {
-                QVariantMap parameters;
-                QString value;
+            parameters.insert(HID::EXTERNAL_DATA, true);
+        }
+    }
 
-                if (aDataMap.contains(CHardwareSDK::HID::Text))
-                {
-                    value = mService->valueToString(aDataMap.value(CHardwareSDK::HID::Text));
+    if (aDataMap.contains(CHardwareSDK::HID::Image)) {
+        bool faceDetected = aDataMap.value(CHardwareSDK::HID::FaceDetected, false).value<bool>();
 
-                    parameters.insert(HID::SOURCE, HID::SOURCE_SCANNER);
-                    parameters.insert(HID::STRING, value);
-                    parameters.insert(HID::RAW, value);
-                    parameters.insert(HID::RAW_BASE64, QString(value.toLatin1().toBase64()));
+        QImage image = aDataMap.value(CHardwareSDK::HID::Image).value<QImage>();
+        QBuffer buffer;
+        buffer.open(QIODevice::WriteOnly);
+        image.convertToFormat(QImage::Format_RGB16).save(&buffer, "jpg");
 
-                    parameters.insert(HID::EXTERNAL_DATA, false);
+        parameters.insert(HID::SOURCE, HID::SOURCE_CAMERA);
+        parameters.insert(HID::RAW, image);
+        parameters.insert(HID::RAW_BASE64, QString(buffer.data().toBase64()));
+        parameters.insert(HID::CAMERA_FACE_DETECTED, faceDetected);
 
-                    QString externalDataHandler = getExternalData();
-                    if (!externalDataHandler.trimmed().isEmpty() && !value.isEmpty())
-                    {
-                        QJSEngine script;
+        if (faceDetected) {
+            buffer.open(QIODevice::WriteOnly);
+            aDataMap.value(CHardwareSDK::HID::ImageWithFaceArea)
+                .value<QImage>()
+                .convertToFormat(QImage::Format_RGB16)
+                .save(&buffer, "jpg");
+            parameters.insert(HID::CAMERA_FACE_DETECTED_IMAGE, QString(buffer.data().toBase64()));
+        }
+    }
 
-                        // TODO PORT_QT5
+    emit HIDData(parameters);
+}
 
-                        /*script.globalObject().setProperty("value", value);
-                        QJSValue setFunc = script.newFunction(JS_setField, &parameters);
-                        script.globalObject().setProperty("setField", setFunc);
+//------------------------------------------------------------------------------
+void HIDService::onInserted(const QVariantMap &aData) {
+    QVariantMap data;
 
-                        if (!script.canEvaluate(externalDataHandler))
-                        {
-                                toLog(LogLevel::Warning, QString("Can't parse expression:
-                        %1").arg(externalDataHandler)); return;
-                        }
+    data.insert(HID::SOURCE, HID::SOURCE_CARD);
+    data.insert(HID::SIGNAL, HID::SIGNAL_INSERT);
 
-                        script.evaluate(externalDataHandler);
-                        if (script.hasUncaughtException())
-                        {
-                                toLog(LogLevel::Error, QString("An exception occured while calling (line %1):
-                        %2\nBacktrace:\n%3.") .arg(script.uncaughtExceptionLineNumber())
-                                        .arg(script.uncaughtException().toString())
-                                        .arg(script.uncaughtExceptionBacktrace().join("\n")));
+    foreach (QString name, aData.keys()) {
+        data.insert(name, aData[name]);
+    }
 
-                                return;
-                        }*/
+    emit HIDData(data);
+}
 
-                        parameters.insert(HID::EXTERNAL_DATA, true);
-                    }
-                }
+//------------------------------------------------------------------------------
+void HIDService::onEjected() {
+    QVariantMap data;
 
-                if (aDataMap.contains(CHardwareSDK::HID::Image))
-                {
-                    bool faceDetected = aDataMap.value(CHardwareSDK::HID::FaceDetected, false).value<bool>();
+    data.insert(HID::SOURCE, HID::SOURCE_CARD);
+    data.insert(HID::SIGNAL, HID::SIGNAL_EJECT);
 
-                    QImage image = aDataMap.value(CHardwareSDK::HID::Image).value<QImage>();
-                    QBuffer buffer;
-                    buffer.open(QIODevice::WriteOnly);
-                    image.convertToFormat(QImage::Format_RGB16).save(&buffer, "jpg");
+    emit HIDData(data);
+}
 
-                    parameters.insert(HID::SOURCE, HID::SOURCE_CAMERA);
-                    parameters.insert(HID::RAW, image);
-                    parameters.insert(HID::RAW_BASE64, QString(buffer.data().toBase64()));
-                    parameters.insert(HID::CAMERA_FACE_DETECTED, faceDetected);
+//------------------------------------------------------------------------------
+void HIDService::executeExternalHandler(const QVariantMap &aExpression) {
+    emit externalHandler(aExpression);
+}
 
-                    if (faceDetected)
-                    {
-                        buffer.open(QIODevice::WriteOnly);
-                        aDataMap.value(CHardwareSDK::HID::ImageWithFaceArea)
-                            .value<QImage>()
-                            .convertToFormat(QImage::Format_RGB16)
-                            .save(&buffer, "jpg");
-                        parameters.insert(HID::CAMERA_FACE_DETECTED_IMAGE, QString(buffer.data().toBase64()));
-                    }
-                }
+//------------------------------------------------------------------------------
 
-                emit HIDData(parameters);
-            }
-
-            //------------------------------------------------------------------------------
-            void HIDService::onInserted(const QVariantMap &aData)
-            {
-                QVariantMap data;
-
-                data.insert(HID::SOURCE, HID::SOURCE_CARD);
-                data.insert(HID::SIGNAL, HID::SIGNAL_INSERT);
-
-                foreach (QString name, aData.keys())
-                {
-                    data.insert(name, aData[name]);
-                }
-
-                emit HIDData(data);
-            }
-
-            //------------------------------------------------------------------------------
-            void HIDService::onEjected()
-            {
-                QVariantMap data;
-
-                data.insert(HID::SOURCE, HID::SOURCE_CARD);
-                data.insert(HID::SIGNAL, HID::SIGNAL_EJECT);
-
-                emit HIDData(data);
-            }
-
-            //------------------------------------------------------------------------------
-            void HIDService::executeExternalHandler(const QVariantMap &aExpression)
-            {
-                emit externalHandler(aExpression);
-            }
-
-            //------------------------------------------------------------------------------
-
-        } // namespace Scripting
-    } // namespace PaymentProcessor
+} // namespace Scripting
+} // namespace PaymentProcessor
 } // namespace SDK

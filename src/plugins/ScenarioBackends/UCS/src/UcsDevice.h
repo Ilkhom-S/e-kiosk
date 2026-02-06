@@ -2,71 +2,51 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QSharedPointer>
 #include <QtCore/QFutureWatcher>
-#include <QtCore/QTimer>
 #include <QtCore/QReadWriteLock>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QSharedPointer>
+#include <QtCore/QTimer>
 
-// SDK
-#include <SDK/Drivers/ICardReader.h>
-#include <SDK/Drivers/Components.h>
-#include <SDK/Drivers/InteractionTypes.h>
-
-// Common
 #include <Common/ILogable.h>
 
-// Modules
+#include <SDK/Drivers/Components.h>
+#include <SDK/Drivers/ICardReader.h>
+#include <SDK/Drivers/InteractionTypes.h>
+
+#include "API.h"
 #include "SingleDetectingIterator.h"
 
-// Project
-#include "API.h"
-
-namespace Ucs
-{
-    const char ModelName[] = "UCS";
+namespace Ucs {
+const char ModelName[] = "UCS";
 } // namespace Ucs
 
 //--------------------------------------------------------------------------------
 class UcsDevice : public QObject,
                   public SDK::Driver::ICardReader,
                   private SDK::Driver::SingleDetectingIterator,
-                  public ILogable
-{
+                  public ILogable {
     Q_OBJECT
 
-  public:
+public:
     UcsDevice();
     ~UcsDevice();
 
-    static QString getDeviceType()
-    {
-        return SDK::Driver::CComponents::CardReader;
-    }
-    static QString getInteractionType()
-    {
-        return SDK::Driver::CInteractionTypes::External;
-    }
-    static QString getSeries()
-    {
-        return Ucs::ModelName;
-    }
-    static QString getSubSeries()
-    {
-        return "";
-    }
+    static QString getDeviceType() { return SDK::Driver::CComponents::CardReader; }
+    static QString getInteractionType() { return SDK::Driver::CInteractionTypes::External; }
+    static QString getSeries() { return Ucs::ModelName; }
+    static QString getSubSeries() { return ""; }
 
 #pragma region SDK::Driver::IDevice interface
 
-    /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из этого списка.
+    /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из
+    /// этого списка.
     virtual SDK::Driver::IDevice::IDetectingIterator *getDetectingIterator();
 
     /// Подключает и инициализует устройство.
     virtual void initialize();
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release();
 
     /// Возвращает конфигурацию устройства для сохранения.
@@ -99,15 +79,16 @@ class UcsDevice : public QObject,
     /// Проверка доступности устройства и карты.
     virtual bool isDeviceReady() const;
 
-    /// Выбросить карту (для моторизированных ридеров) или отключить электрически (для немоторизованных).
+    /// Выбросить карту (для моторизированных ридеров) или отключить электрически (для
+    /// немоторизованных).
     virtual void eject();
 
 #pragma endregion
 
-  public:
+public:
     void setCore(SDK::PaymentProcessor::ICore *aCore);
 
-  signals:
+signals:
     void configurationChanged();
 
     /// Изменение состояния.
@@ -120,17 +101,17 @@ class UcsDevice : public QObject,
     void ejected();
 
 #pragma region IDevice::IDetectingIterator
-  private:
+private:
     /// Поиск устройства.
     virtual bool find();
 #pragma endregion
 
-  private slots:
+private slots:
     void onReady();
     void onState(int aState, const QString &aDeviceName, bool aLast);
     void onEjected();
 
-  private:
+private:
     /// Параметры устройства.
     QVariantMap mConfiguration;
     mutable QReadWriteLock mConfigurationGuard;
@@ -144,11 +125,11 @@ class UcsDevice : public QObject,
     /// Есть ли параметр у устройства?
     bool containsConfigParameter(const QString &aName) const;
 
-  private:
+private:
     QString mLastGeneralizedStatus;
     void sendStatus(SDK::Driver::EWarningLevel::Enum, const QString &, int);
 
-  private:
+private:
     SDK::PaymentProcessor::ICore *mCore;
     QList<QPair<int, QString>> mStates;
 };

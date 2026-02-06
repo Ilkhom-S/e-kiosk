@@ -2,19 +2,16 @@
 
 #pragma once
 
-// Project
 #include "Payment.h"
 
 //------------------------------------------------------------------------------
-namespace CPin
-{
-    const char UIFieldName[] = "CARD";
+namespace CPin {
+const char UIFieldName[] = "CARD";
 } // namespace CPin
 
 //------------------------------------------------------------------------------
-class PinPayment : public Payment
-{
-  public:
+class PinPayment : public Payment {
+public:
     PinPayment(PaymentFactory *aFactory);
 
 #pragma region SDK::PaymentProcessor::IPayment interface
@@ -24,14 +21,14 @@ class PinPayment : public Payment
 
 #pragma endregion
 
-  protected:
+protected:
     /// Получение лимитов для данного платежа
     virtual bool getLimits(double &aMinAmount, double &aMaxAmount);
 
     /// Возвращает true, если ограничения на сумму платежа зависят от переданного параметра.
     virtual bool limitsDependOnParameter(const SParameter &aParameter);
 
-  protected:
+protected:
     /// Создаёт класс запроса по идентификатору шага.
     virtual Request *createRequest(const QString &aStep);
 };

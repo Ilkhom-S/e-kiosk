@@ -2,104 +2,94 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QObject>
 #include <QtCore/QVariantMap>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
-#include <SDK/PaymentProcessor/Core/Event.h>
-
-// Modules
 #include <Common/ILogable.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
+#include <SDK/PaymentProcessor/Core/Event.h>
 
-        class ICore;
-        class IHIDService;
+namespace SDK {
+namespace PaymentProcessor {
 
-        namespace Scripting
-        {
+class ICore;
+class IHIDService;
 
-            /// Константы для HID.
-            namespace HID
-            {
-                const char STRING[] = "hid_string";
-                const char EXTERNAL_DATA[] = "hid_external_data";
-                const char RAW[] = "hid_raw";
-                const char RAW_BASE64[] = "hid_raw_base64";
-                const char SOURCE[] = "hid_source";
-                const char SOURCE_CAMERA[] = "camera";
-                const char SOURCE_SCANNER[] = "scanner";
-                const char SOURCE_CARD[] = "card";
-                const char SIGNAL[] = "signal";
-                const char SIGNAL_INSERT[] = "insert";
-                const char SIGNAL_EJECT[] = "eject";
+namespace Scripting {
 
-                const char CAMERA_FACE_DETECTED[] = "hid_camera_face_detected";
-                const char CAMERA_FACE_DETECTED_IMAGE[] = "hid_camera_face_image_base64";
-            } // namespace HID
+/// Константы для HID.
+namespace HID {
+const char STRING[] = "hid_string";
+const char EXTERNAL_DATA[] = "hid_external_data";
+const char RAW[] = "hid_raw";
+const char RAW_BASE64[] = "hid_raw_base64";
+const char SOURCE[] = "hid_source";
+const char SOURCE_CAMERA[] = "camera";
+const char SOURCE_SCANNER[] = "scanner";
+const char SOURCE_CARD[] = "card";
+const char SIGNAL[] = "signal";
+const char SIGNAL_INSERT[] = "insert";
+const char SIGNAL_EJECT[] = "eject";
 
-            //------------------------------------------------------------------------------
-            /// Прокси-класс для работы со сканером в скриптах.
-            class HIDService : public QObject, public ILogable
-            {
-                Q_OBJECT
+const char CAMERA_FACE_DETECTED[] = "hid_camera_face_detected";
+const char CAMERA_FACE_DETECTED_IMAGE[] = "hid_camera_face_image_base64";
+} // namespace HID
 
-              public:
-                /// Конструктор.
-                HIDService(ICore *aCore);
+//------------------------------------------------------------------------------
+/// Прокси-класс для работы со сканером в скриптах.
+class HIDService : public QObject, public ILogable {
+    Q_OBJECT
 
-              public slots:
-                /// Обновить параметры сервиса.
-                void updateParameters(const QVariantMap &aParameters);
+public:
+    /// Конструктор.
+    HIDService(ICore *aCore);
 
-                /// Выполнить внешний обработчик.
-                void executeExternalHandler(const QVariantMap &aExpression);
+public slots:
+    /// Обновить параметры сервиса.
+    void updateParameters(const QVariantMap &aParameters);
 
-                /// Включить устройство.
-                void enable(const QString &aName = QString());
+    /// Выполнить внешний обработчик.
+    void executeExternalHandler(const QVariantMap &aExpression);
 
-                /// Отключить устройство.
-                void disable(const QString &aName = QString());
+    /// Включить устройство.
+    void enable(const QString &aName = QString());
 
-              signals:
-                /// Сигнал получения данных со сканера
-                void HIDData(const QVariantMap &aData);
+    /// Отключить устройство.
+    void disable(const QString &aName = QString());
 
-                /// Сигнал об ошибке чтения штих-кода/карты/т.п.
-                void error();
+signals:
+    /// Сигнал получения данных со сканера
+    void HIDData(const QVariantMap &aData);
 
-                void externalHandler(const QVariantMap &aExpression);
+    /// Сигнал об ошибке чтения штих-кода/карты/т.п.
+    void error();
 
-              private slots:
-                /// Обработчик сигнала от сервиса ядра
-                void onData(const QVariantMap &aData);
+    void externalHandler(const QVariantMap &aExpression);
 
-                /// Карта вставлена
-                void onInserted(const QVariantMap &aData);
+private slots:
+    /// Обработчик сигнала от сервиса ядра
+    void onData(const QVariantMap &aData);
 
-                /// Карта изъята
-                void onEjected();
+    /// Карта вставлена
+    void onInserted(const QVariantMap &aData);
 
-              private:
-                /// Возвращает скрипт on_external_data для активного платежа, если он есть.
-                QString getExternalData();
+    /// Карта изъята
+    void onEjected();
 
-              private:
-                /// Указатель на ядро.
-                ICore *mCore;
-                /// Указатель на сервис HID.
-                IHIDService *mService;
-                /// Параметры.
-                QVariantMap mParameters;
-            };
+private:
+    /// Возвращает скрипт on_external_data для активного платежа, если он есть.
+    QString getExternalData();
 
-            //------------------------------------------------------------------------------
-        } // namespace Scripting
-    } // namespace PaymentProcessor
+private:
+    /// Указатель на ядро.
+    ICore *mCore;
+    /// Указатель на сервис HID.
+    IHIDService *mService;
+    /// Параметры.
+    QVariantMap mParameters;
+};
+
+//------------------------------------------------------------------------------
+} // namespace Scripting
+} // namespace PaymentProcessor
 } // namespace SDK

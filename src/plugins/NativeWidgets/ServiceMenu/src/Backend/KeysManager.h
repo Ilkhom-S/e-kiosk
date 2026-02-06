@@ -2,53 +2,45 @@
 
 #pragma once
 
-// Qt
-#include "Common/QtHeadersBegin.h"
 #include <QtCore/QObject>
 #include <QtCore/QVariantMap>
-#include "Common/QtHeadersEnd.h"
 
-// Modules
-#include <KeysUtils/KeysUtils.h>
 #include <Crypt/ICryptEngine.h>
+#include <KeysUtils/KeysUtils.h>
 
-// Project
 #include "IConfigManager.h"
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
-        class ICore;
-        class ICryptService;
-        class TerminalSettings;
-    } // namespace PaymentProcessor
+namespace SDK {
+namespace PaymentProcessor {
+class ICore;
+class ICryptService;
+class TerminalSettings;
+} // namespace PaymentProcessor
 } // namespace SDK
 
 //---------------------------------------------------------------------------
-class KeysManager : public QObject, public IConfigManager
-{
+class KeysManager : public QObject, public IConfigManager {
     Q_OBJECT
 
-  public:
+public:
     KeysManager(SDK::PaymentProcessor::ICore *aCore);
     ~KeysManager();
 
-  public:
+public:
     /// Ключи создались?
     virtual bool isConfigurationChanged() const;
 
     /// Делаем текущую конфигурацию начальной
     virtual void resetConfiguration();
 
-  public:
+public:
     /// Получение информации о eToken
     CCrypt::TokenStatus tokenStatus() const;
 
     /// Форматирование ключа eToken
     bool formatToken();
 
-  public:
+public:
     /// Возвращает загруженные номера пар ключей
     QList<int> getLoadedKeys() const;
 
@@ -69,10 +61,10 @@ class KeysManager : public QObject, public IConfigManager
     QString getAP() const;
     QString getOP() const;
 
-  private:
+private:
     QString errorToString(EKeysUtilsError::Enum aCode) const;
 
-  private:
+private:
     SDK::PaymentProcessor::ICore *mCore;
     SDK::PaymentProcessor::ICryptService *mCryptService;
     SDK::PaymentProcessor::TerminalSettings *mTerminalSettings;

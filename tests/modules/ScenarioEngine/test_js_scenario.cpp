@@ -1,19 +1,14 @@
 /* @file Unit tests for JSScenario (ScenarioEngine) - Qt5/Qt6 compatibility. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtTest/QtTest>
-#include <Common/QtHeadersEnd.h>
 
-// System
 #include <ScenarioEngine/JSScenario.h>
 #include <ScenarioEngine/Scenario.h>
 
-class JSScenarioTest : public QObject
-{
+class JSScenarioTest : public QObject {
     Q_OBJECT
 
-  private slots:
+private slots:
     void testScriptEvaluation();
     void testStateTransitions();
     void testErrorHandling();
@@ -21,8 +16,7 @@ class JSScenarioTest : public QObject
     void testIncludeScript();
 };
 
-void JSScenarioTest::testScriptEvaluation()
-{
+void JSScenarioTest::testScriptEvaluation() {
     // Проверяем базовую работу JSScenario: загрузка и выполнение простого скрипта
     GUI::JSScenario scenario("TestScenario", "test_script.js", "", nullptr);
 
@@ -35,26 +29,22 @@ void JSScenarioTest::testScriptEvaluation()
     QVERIFY(scenario.getState() == scenario.getState()); // Should be valid state
 }
 
-void JSScenarioTest::testStateTransitions()
-{
+void JSScenarioTest::testStateTransitions() {
     // TODO: Add states, transitions, trigger signals, verify state changes
     QVERIFY(true); // Placeholder
 }
 
-void JSScenarioTest::testErrorHandling()
-{
+void JSScenarioTest::testErrorHandling() {
     // TODO: Load script with error, verify error is handled/logged
     QVERIFY(true); // Placeholder
 }
 
-void JSScenarioTest::testPauseResume()
-{
+void JSScenarioTest::testPauseResume() {
     // TODO: Pause scenario, resume, verify correct behavior
     QVERIFY(true); // Placeholder
 }
 
-void JSScenarioTest::testIncludeScript()
-{
+void JSScenarioTest::testIncludeScript() {
     // TODO: Test includeScript logic for both Qt5/Qt6
     QVERIFY(true); // Placeholder
 }

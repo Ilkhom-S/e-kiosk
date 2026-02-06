@@ -1,11 +1,9 @@
 /* @file Базовый класс сторожевого устройства. */
 
-// System
 #include <Hardware/Watchdogs/WatchdogBase.h>
 #include <Hardware/Watchdogs/WatchdogStatusesDescriptions.h>
 
-WatchdogBase::WatchdogBase()
-{
+WatchdogBase::WatchdogBase() {
     mPingTimer.moveToThread(&mThread);
 
     connect(&mPingTimer, SIGNAL(timeout()), SLOT(onPing()));
@@ -16,30 +14,27 @@ WatchdogBase::WatchdogBase()
     mSensorDisabledValue = false;
     setConfigParameter(CHardware::Watchdog::CanRegisterKey, false);
     setConfigParameter(CHardware::Watchdog::CanWakeUpPC, false);
-    mStatusCodesSpecification = DeviceStatusCode::PSpecifications(new WatchdogStatusCode::CSpecifications());
+    mStatusCodesSpecification =
+        DeviceStatusCode::PSpecifications(new WatchdogStatusCode::CSpecifications());
 }
 
 //----------------------------------------------------------------------------
-bool WatchdogBase::updateParameters()
-{
+bool WatchdogBase::updateParameters() {
     setPingEnable(true);
 
     return true;
 }
 
 //--------------------------------------------------------------------------------
-bool WatchdogBase::release()
-{
+bool WatchdogBase::release() {
     setPingEnable(false);
 
     return TWatchdogBase::release();
 }
 
 //-----------------------------------------------------------------------------
-void WatchdogBase::setPingEnable(bool aEnabled)
-{
-    if (checkConnectionAbility() && mPingTimer.interval())
-    {
+void WatchdogBase::setPingEnable(bool aEnabled) {
+    if (checkConnectionAbility() && mPingTimer.interval()) {
         toLog(LogLevel::Normal, aEnabled ? "Ping is enabled." : "Pinging is disabled.");
 
         QMetaObject::invokeMethod(&mPingTimer, aEnabled ? "start" : "stop", Qt::QueuedConnection);
@@ -47,17 +42,15 @@ void WatchdogBase::setPingEnable(bool aEnabled)
 }
 
 //---------------------------------------------------------------------------
-void WatchdogBase::cleanStatusCodes(TStatusCodes &aStatusCodes)
-{
+void WatchdogBase::cleanStatusCodes(TStatusCodes &aStatusCodes) {
     bool needUpdateConfiguration = false;
 
-    for (auto it = CWatchdogs::SensorData.data().begin(); it != CWatchdogs::SensorData.data().end(); ++it)
-    {
+    for (auto it = CWatchdogs::SensorData.data().begin(); it != CWatchdogs::SensorData.data().end();
+         ++it) {
         QString sensor = it.key();
         QString sensorValue = getConfigParameter(sensor, CHardwareSDK::Values::Auto).toString();
 
-        if (containsConfigParameter(sensor) && (sensorValue == CHardwareSDK::Values::Auto))
-        {
+        if (containsConfigParameter(sensor) && (sensorValue == CHardwareSDK::Values::Auto)) {
             needUpdateConfiguration = true;
 
             bool sensorActive = aStatusCodes.contains(it->statusCode) != mSensorDisabledValue;
@@ -66,14 +59,12 @@ void WatchdogBase::cleanStatusCodes(TStatusCodes &aStatusCodes)
             setConfigParameter(sensor, sensorValue);
         }
 
-        if (sensorValue != CHardwareSDK::Values::Use)
-        {
+        if (sensorValue != CHardwareSDK::Values::Use) {
             aStatusCodes.remove(it->statusCode);
         }
     }
 
-    if (needUpdateConfiguration)
-    {
+    if (needUpdateConfiguration) {
         emit configurationChanged();
     }
 
@@ -81,24 +72,23 @@ void WatchdogBase::cleanStatusCodes(TStatusCodes &aStatusCodes)
 }
 
 //--------------------------------------------------------------------------------
-void WatchdogBase::emitStatusCodes(TStatusCollection &aStatusCollection, int aExtendedStatus)
-{
+void WatchdogBase::emitStatusCodes(TStatusCollection &aStatusCollection, int aExtendedStatus) {
     TWatchdogBase::emitStatusCodes(aStatusCollection, aExtendedStatus);
 
     TStatusCodes statusCodes = getStatusCodes(aStatusCollection);
 
-    foreach (int statusCode, statusCodes)
-    {
-        auto it =
-            std::find_if(CWatchdogs::SensorData.data().begin(), CWatchdogs::SensorData.data().end(),
-                         [&](const CWatchdogs::SSensorData &aData) -> bool { return aData.statusCode == statusCode; });
+    foreach (int statusCode, statusCodes) {
+        auto it = std::find_if(CWatchdogs::SensorData.data().begin(),
+                               CWatchdogs::SensorData.data().end(),
+                               [&](const CWatchdogs::SSensorData &aData) -> bool {
+                                   return aData.statusCode == statusCode;
+                               });
 
-        if (it != CWatchdogs::SensorData.data().end())
-        {
+        if (it != CWatchdogs::SensorData.data().end()) {
             QString actionValue = getConfigParameter(it->action).toString();
 
-            if ((actionValue == CHardwareSDK::Values::Use) && CWatchdogs::SensorActionData.data().contains(actionValue))
-            {
+            if ((actionValue == CHardwareSDK::Values::Use) &&
+                CWatchdogs::SensorActionData.data().contains(actionValue)) {
                 int extendedStatus = CWatchdogs::SensorActionData[actionValue];
 
                 emitStatusCode(statusCode, extendedStatus);

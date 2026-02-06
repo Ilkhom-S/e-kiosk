@@ -2,12 +2,9 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QObject>
 #include <QtCore/QDateTime>
 #include <QtCore/QMutex>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QObject>
 
 #ifdef Q_OS_WIN
 #define NOMINMAX
@@ -15,25 +12,24 @@
 #endif
 
 //------------------------------------------------------------------------
-class TimeChangeListener : public QObject
-{
+class TimeChangeListener : public QObject {
     Q_OBJECT
 
-  public:
+public:
     TimeChangeListener(QObject *aParent);
     virtual ~TimeChangeListener();
 
-  signals:
+signals:
     /// сигнал об изменении времени (смещение в мс. примерное)
     void timeChanged(qint64 aOffset);
 
-  protected:
+protected:
     void timerEvent(QTimerEvent *aEvent);
 
     /// Проверка и попытка примерного вычисления смещения нового времени.
     QDateTime checkTimeOffset();
 
-  protected slots:
+protected slots:
     /// слот для развязывания хука с signal\slot Qt
     void emitTimeChanged();
 
@@ -41,17 +37,17 @@ class TimeChangeListener : public QObject
     void cleanTimeOffset();
 
 #ifdef Q_OS_WIN
-  protected:
+protected:
     static LRESULT CALLBACK MsgProc(int aCode, WPARAM aWParam, LPARAM aLParam);
 
-  private:
+private:
     static HHOOK mHook;
 #endif // Q_OS_WIN
 
-  private:
+private:
     static QMutex mHookMutex;
 
-  private:
+private:
     QDateTime mLastCheckTime;
     qint64 mTimeOffset;
 };

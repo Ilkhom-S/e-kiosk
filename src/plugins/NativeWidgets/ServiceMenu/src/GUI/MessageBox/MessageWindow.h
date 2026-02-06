@@ -1,36 +1,32 @@
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QPointer>
 #include <QtWidgets/QDialog>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/GUI/MessageBoxParams.h>
 
-// Project
 #include "ui_MessageWindow.h"
 
-class MessageWindow : public QDialog
-{
+class MessageWindow : public QDialog {
     Q_OBJECT
 
-  public:
+public:
     MessageWindow(QWidget *parent = 0);
     ~MessageWindow();
 
-  public:
-    void setup(const QString &aText, SDK::GUI::MessageBoxParams::Enum aIcon, SDK::GUI::MessageBoxParams::Enum aButton);
+public:
+    void setup(const QString &aText,
+               SDK::GUI::MessageBoxParams::Enum aIcon,
+               SDK::GUI::MessageBoxParams::Enum aButton);
 
-  private slots:
+private slots:
     void onClickedOk();
     void onClickedReject();
 
-  private:
+private:
     virtual void showEvent(QShowEvent *aEvent) override;
     virtual void hideEvent(QHideEvent *aEvent) override;
 
-  private:
+private:
     Ui::MessageWindow ui;
 };

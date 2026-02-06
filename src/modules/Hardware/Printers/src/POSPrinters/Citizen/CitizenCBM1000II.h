@@ -5,11 +5,10 @@
 #include "CitizenBase.h"
 
 //--------------------------------------------------------------------------------
-template <class T> class CitizenCBM1000II : public CitizenBase<POSPrinter<T>>
-{
+template <class T> class CitizenCBM1000II : public CitizenBase<POSPrinter<T>> {
     SET_SUBSERIES("CitizenCBM1000II")
 
-  public:
+public:
     CitizenCBM1000II();
 
     /// Устанавливает конфигурацию устройству.
@@ -17,8 +16,7 @@ template <class T> class CitizenCBM1000II : public CitizenBase<POSPrinter<T>>
 };
 
 //--------------------------------------------------------------------------------
-template <class T> CitizenCBM1000II<T>::CitizenCBM1000II()
-{
+template <class T> CitizenCBM1000II<T>::CitizenCBM1000II() {
     using namespace SDK::Driver::IOPort::COM;
 
     // статусы ошибок
@@ -49,8 +47,8 @@ template <class T> CitizenCBM1000II<T>::CitizenCBM1000II()
 }
 
 //--------------------------------------------------------------------------------
-template <class T> void CitizenCBM1000II<T>::setDeviceConfiguration(const QVariantMap &aConfiguration)
-{
+template <class T>
+void CitizenCBM1000II<T>::setDeviceConfiguration(const QVariantMap &aConfiguration) {
     POSPrinter<T>::setDeviceConfiguration(aConfiguration);
 
     int lineSpacing = this->getConfigParameter(CHardware::Printer::Settings::LineSpacing).toInt();
@@ -67,17 +65,16 @@ template <class T> void CitizenCBM1000II<T>::setDeviceConfiguration(const QVaria
 }
 
 //--------------------------------------------------------------------------------
-class SerialCitizenCBM1000II : public SerialPOSPrinter<CitizenCBM1000II<TSerialPrinterBase>>
-{
-  public:
-    SerialCitizenCBM1000II()
-    {
+class SerialCitizenCBM1000II : public SerialPOSPrinter<CitizenCBM1000II<TSerialPrinterBase>> {
+public:
+    SerialCitizenCBM1000II() {
         using namespace SDK::Driver::IOPort::COM;
 
         // параметры порта
-        mPortParameters.insert(EParameters::BaudRate, POSPrinters::TSerialDevicePortParameter()
-                                                          << EBaudRate::BR38400 << EBaudRate::BR19200
-                                                          << EBaudRate::BR4800 << EBaudRate::BR9600);
+        mPortParameters.insert(EParameters::BaudRate,
+                               POSPrinters::TSerialDevicePortParameter()
+                                   << EBaudRate::BR38400 << EBaudRate::BR19200 << EBaudRate::BR4800
+                                   << EBaudRate::BR9600);
     }
 };
 

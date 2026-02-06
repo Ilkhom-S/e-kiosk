@@ -1,22 +1,18 @@
 /* @file Модель для отображения списка провайдеров. */
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QAbstractListModel>
 #include <QtCore/QPointer>
+#include <QtCore/QReadWriteLock>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QStringList>
-#include <QtCore/QReadWriteLock>
 #include <QtXml/QDomDocument>
-#include <Common/QtHeadersEnd.h>
 
 class Item;
 class ItemObject;
 
 //------------------------------------------------------------------------------
-class GroupModel : public QAbstractListModel
-{
+class GroupModel : public QAbstractListModel {
     Q_OBJECT
 
     Q_PROPERTY(int count READ rowCount NOTIFY rowCountChanged)
@@ -27,8 +23,7 @@ class GroupModel : public QAbstractListModel
     Q_PROPERTY(QStringList elementFilter READ getElementFilter WRITE setElementFilter)
     Q_PROPERTY(quint16 maxNameLength READ getMaxNameLength)
 
-    enum EntryRoles
-    {
+    enum EntryRoles {
         IdRole = Qt::UserRole + 1,
         NameRole,
         TitleRole,
@@ -39,7 +34,7 @@ class GroupModel : public QAbstractListModel
         JSONRole
     };
 
-  public:
+public:
     GroupModel();
 
     virtual int rowCount(const QModelIndex &aParent = QModelIndex()) const;
@@ -54,7 +49,7 @@ class GroupModel : public QAbstractListModel
     /// Загрузить в модель данные статистики
     void setStatistic(QMap<qint64, quint32> &aStatistic);
 
-  public slots:
+public slots:
     QObject *get(int aIndex);
 
     int getMaxNameLength() const;
@@ -73,16 +68,16 @@ class GroupModel : public QAbstractListModel
     QStringList getElementFilter();
     void setElementFilter(QStringList aFilter);
 
-  signals:
+signals:
     void rowCountChanged();
     void categoryChanged();
     void categoryNameChanged();
 
-  public:
+public:
     typedef QSharedPointer<Item> ItemPtr;
     typedef QList<ItemPtr> ItemList;
 
-  private:
+private:
     bool loadContent(const QString &mFileName, QDomDocument &aDocument);
 
     /// Слияние двух groups
@@ -101,7 +96,7 @@ class GroupModel : public QAbstractListModel
 
     virtual QHash<int, QByteArray> roleNames() const;
 
-  private:
+private:
     QHash<int, QByteArray> mRoles;
 
     /// Имя xml файла с списком групп
@@ -141,9 +136,8 @@ class GroupModel : public QAbstractListModel
 };
 
 //------------------------------------------------------------------------------
-class Item
-{
-  public:
+class Item {
+public:
     Item(const QDomNode &aNode);
 
     virtual qint64 getId() const;
@@ -161,7 +155,7 @@ class Item
     virtual void setOrder(quint32 aOrder);
     virtual quint32 getOrder() const;
 
-  protected:
+protected:
     QDomNamedNodeMap mAttributes;
     bool mIsGroup;
     QString mElementName;
@@ -169,8 +163,7 @@ class Item
 };
 
 //------------------------------------------------------------------------------
-class ItemObject : public QObject
-{
+class ItemObject : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(qint64 id READ getId)
@@ -182,7 +175,7 @@ class ItemObject : public QObject
     Q_PROPERTY(QString json READ getJSON)
     Q_PROPERTY(bool isGroup READ isGroup)
 
-  public:
+public:
     ItemObject(const Item &aItem, QObject *aParent);
 
     qint64 getId() const;
@@ -194,7 +187,7 @@ class ItemObject : public QObject
     QString getJSON() const;
     bool isGroup() const;
 
-  private:
+private:
     const Item &mItem;
 };
 

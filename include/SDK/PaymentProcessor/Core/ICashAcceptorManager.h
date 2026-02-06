@@ -3,62 +3,55 @@
 #pragma once
 
 // Stl
-#include <tuple>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QtGlobal>
 #include <QtCore/QObject>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QtGlobal>
 
-// SDK
 #include <SDK/PaymentProcessor/Payment/Amount.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
+#include <tuple>
 
-        //------------------------------------------------------------------------------
-        class ICashAcceptorManager : public QObject
-        {
-            Q_OBJECT
+namespace SDK {
+namespace PaymentProcessor {
 
-          public:
-            /// Возвращает список доступных методов оплаты.
-            virtual QStringList getPaymentMethods() = 0;
+//------------------------------------------------------------------------------
+class ICashAcceptorManager : public QObject {
+    Q_OBJECT
 
-            /// Начать приём денег для указанного платежа.
-            virtual bool enable(qint64 aPayment, const QString &aPaymentMethod, TPaymentAmount aMaxAmount) = 0;
+public:
+    /// Возвращает список доступных методов оплаты.
+    virtual QStringList getPaymentMethods() = 0;
 
-            /// Завершить приём денег для указанного платежа. Возвращает false, если платеж еще обрабатывается.
-            virtual bool disable(qint64 aPayment) = 0;
+    /// Начать приём денег для указанного платежа.
+    virtual bool
+    enable(qint64 aPayment, const QString &aPaymentMethod, TPaymentAmount aMaxAmount) = 0;
 
-          signals:
-            /// Сигнал срабатывает, когда в платёж добавляется новая купюра.
-            void amountUpdated(qint64 aPayment, double aTotalAmount, double aAmount);
+    /// Завершить приём денег для указанного платежа. Возвращает false, если платеж еще
+    /// обрабатывается.
+    virtual bool disable(qint64 aPayment) = 0;
 
-            /// Сигнал срабатывает при ошибке приёма средств. В aError находится нелокализованная ошибка.
-            void warning(qint64 aPayment, QString aError);
+signals:
+    /// Сигнал срабатывает, когда в платёж добавляется новая купюра.
+    void amountUpdated(qint64 aPayment, double aTotalAmount, double aAmount);
 
-            /// Сигнал срабатывает при ошибке приёма средств. В aError находится нелокализованная ошибка.
-            void error(qint64 aPayment, QString aError);
+    /// Сигнал срабатывает при ошибке приёма средств. В aError находится нелокализованная ошибка.
+    void warning(qint64 aPayment, QString aError);
 
-            /// Сигнал срабатывает при подозрении на манипуляции с устройством приема денег.
-            void cheated(qint64 aPayment);
+    /// Сигнал срабатывает при ошибке приёма средств. В aError находится нелокализованная ошибка.
+    void error(qint64 aPayment, QString aError);
 
-            /// Сигнал об активности сервиса. Пример: отбракована купюра.
-            void activity();
+    /// Сигнал срабатывает при подозрении на манипуляции с устройством приема денег.
+    void cheated(qint64 aPayment);
 
-            /// Сигнал о выключении купюроприемника на прием денег.
-            void disabled(qint64 aPayment);
+    /// Сигнал об активности сервиса. Пример: отбракована купюра.
+    void activity();
 
-          protected:
-            virtual ~ICashAcceptorManager()
-            {
-            }
-        };
+    /// Сигнал о выключении купюроприемника на прием денег.
+    void disabled(qint64 aPayment);
 
-        //------------------------------------------------------------------------------
-    } // namespace PaymentProcessor
+protected:
+    virtual ~ICashAcceptorManager() {}
+};
+
+//------------------------------------------------------------------------------
+} // namespace PaymentProcessor
 } // namespace SDK

@@ -1,63 +1,55 @@
 /* @file Набор функций для создания и регистрации ключей на сервере. */
 
-// Qt headers
-
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QUrlQuery>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/ScopedPointerLaterDeleter.h>
 
-// System
 #include <Crypt/ICryptEngine.h>
 #include <KeysUtils/KeysUtils.h>
 #include <NetworkTaskManager/MemoryDataStream.h>
 #include <NetworkTaskManager/NetworkTask.h>
 #include <NetworkTaskManager/NetworkTaskManager.h>
 
-namespace CKeysFactory
-{
-    const int KeySize = 2048;
+namespace CKeysFactory {
+const int KeySize = 2048;
 
-    namespace ClientFields
-    {
-        const char User[] = "UserID";
-        const char Password[] = "Password";
-        const char Key[] = "key";
-        const char Phrase[] = "phrase";
-        const char Query[] = "query";
-        const char AcceptKeys[] = "accept_keys";
-    } // namespace ClientFields
+namespace ClientFields {
+const char User[] = "UserID";
+const char Password[] = "Password";
+const char Key[] = "key";
+const char Phrase[] = "phrase";
+const char Query[] = "query";
+const char AcceptKeys[] = "accept_keys";
+} // namespace ClientFields
 
-    namespace ServerFields
-    {
-        const char AP[] = "AP";
-        const char SD[] = "SD";
-        const char OP[] = "OP";
-        const char KeyCard[] = "KeyCard";
-        const char Error[] = "Error";
-        const char PublicKey[] = "PublicKey";
-    } // namespace ServerFields
+namespace ServerFields {
+const char AP[] = "AP";
+const char SD[] = "SD";
+const char OP[] = "OP";
+const char KeyCard[] = "KeyCard";
+const char Error[] = "Error";
+const char PublicKey[] = "PublicKey";
+} // namespace ServerFields
 
-    namespace ServerErrors
-    {
-        const char NoError[] = "0 OK";
-        const char WrongPassword[] = "2 Authentification error";
-    } // namespace ServerErrors
+namespace ServerErrors {
+const char NoError[] = "0 OK";
+const char WrongPassword[] = "2 Authentification error";
+} // namespace ServerErrors
 
-    namespace Queries
-    {
-        const char GetCard[] = "getcard";
-        const char RegisterKey[] = "putpublickey";
-    } // namespace Queries
+namespace Queries {
+const char GetCard[] = "getcard";
+const char RegisterKey[] = "putpublickey";
+} // namespace Queries
 } // namespace CKeysFactory
 
 //---------------------------------------------------------------------------
-EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt, int aKeyNumber, NetworkTaskManager *aNetwork,
-                                    const QUrl &aUrl, const QString &aLogin, const QString &aPassword, SKeyPair &aPair)
-{
+EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt,
+                                    int aKeyNumber,
+                                    NetworkTaskManager *aNetwork,
+                                    const QUrl &aUrl,
+                                    const QString &aLogin,
+                                    const QString &aPassword,
+                                    SKeyPair &aPair) {
     QUrl url(aUrl);
     QUrlQuery urlQuery;
 
@@ -77,8 +69,7 @@ EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt, int aKeyNumber, Networ
 
     task->waitForFinished();
 
-    if (task->getError() != NetworkTask::NoError)
-    {
+    if (task->getError() != NetworkTask::NoError) {
         // Получили сетевую ошибку.
         task->deleteLater();
 
@@ -87,16 +78,16 @@ EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt, int aKeyNumber, Networ
 
     // Если разница локального времени с серверным больше 10 мин., то ключи созданы не будут.
     QDateTime serverDate = task->getServerDate();
-    if (serverDate.isValid())
-    {
+    if (serverDate.isValid()) {
         int maxDeltaSec = 600;
         QDateTime localDate = QDateTime::currentDateTime();
 
-        if (qAbs(serverDate.secsTo(localDate)) > maxDeltaSec)
-        {
-            qDebug() << QString("Local date and server date don't match. Sytem date: %1. Server date: %2.")
-                            .arg(localDate.toLocalTime().toString("yyyy.MM.dd hh:mm:ss"))
-                            .arg(serverDate.toLocalTime().toString("yyyy.MM.dd hh:mm:ss"));
+        if (qAbs(serverDate.secsTo(localDate)) > maxDeltaSec) {
+            qDebug()
+                << QString(
+                       "Local date and server date don't match. Sytem date: %1. Server date: %2.")
+                       .arg(localDate.toLocalTime().toString("yyyy.MM.dd hh:mm:ss"))
+                       .arg(serverDate.toLocalTime().toString("yyyy.MM.dd hh:mm:ss"));
 
             return EKeysUtilsError::WrongLocalTime;
         }
@@ -112,49 +103,34 @@ EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt, int aKeyNumber, Networ
     QByteArray response = task->getDataStream()->takeAll();
 
     QList<QByteArray> dataList = response.split('&');
-    foreach (const QByteArray &data, dataList)
-    {
+    foreach (const QByteArray &data, dataList) {
         QList<QByteArray> parameter = data.split('=');
-        if (parameter.size() < 2)
-        {
+        if (parameter.size() < 2) {
             continue;
         }
 
         QByteArray name = parameter.first();
         QByteArray value = QByteArray::fromPercentEncoding(parameter.last());
 
-        if (name == CKeysFactory::ServerFields::AP)
-        {
+        if (name == CKeysFactory::ServerFields::AP) {
             pair.ap = QByteArray::fromBase64(value);
-        }
-        else if (name == CKeysFactory::ServerFields::SD)
-        {
+        } else if (name == CKeysFactory::ServerFields::SD) {
             pair.sd = QByteArray::fromBase64(value);
-        }
-        else if (name == CKeysFactory::ServerFields::OP)
-        {
+        } else if (name == CKeysFactory::ServerFields::OP) {
             pair.op = QByteArray::fromBase64(value);
-        }
-        else if (name == CKeysFactory::ServerFields::KeyCard)
-        {
+        } else if (name == CKeysFactory::ServerFields::KeyCard) {
             keyCard = QByteArray::fromBase64(value);
-        }
-        else if (name == CKeysFactory::ServerFields::Error)
-        {
-            if (value == CKeysFactory::ServerErrors::WrongPassword)
-            {
+        } else if (name == CKeysFactory::ServerFields::Error) {
+            if (value == CKeysFactory::ServerErrors::WrongPassword) {
                 return EKeysUtilsError::WrongPassword;
-            }
-            else if (value != CKeysFactory::ServerErrors::NoError)
-            {
+            } else if (value != CKeysFactory::ServerErrors::NoError) {
                 return EKeysUtilsError::UnknownServerError;
             }
         }
     }
 
     // Проверим всё ли получили
-    if (pair.ap.isEmpty() || pair.sd.isEmpty() || pair.op.isEmpty() || keyCard.isEmpty())
-    {
+    if (pair.ap.isEmpty() || pair.sd.isEmpty() || pair.op.isEmpty() || keyCard.isEmpty()) {
         return EKeysUtilsError::WrongServerAnswer;
     }
 
@@ -167,9 +143,11 @@ EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt, int aKeyNumber, Networ
 
     QString error;
 
-    if (!aCrypt->createKeyPair(aKeyNumber, static_cast<CCrypt::ETypeEngine>(pair.engine), keyCard,
-                               CKeysFactory::KeySize, error))
-    {
+    if (!aCrypt->createKeyPair(aKeyNumber,
+                               static_cast<CCrypt::ETypeEngine>(pair.engine),
+                               keyCard,
+                               CKeysFactory::KeySize,
+                               error)) {
         return EKeysUtilsError::KeyPairCreateError;
     }
 
@@ -181,25 +159,28 @@ EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt, int aKeyNumber, Networ
 }
 
 //---------------------------------------------------------------------------
-EKeysUtilsError::Enum registerKeyPair(ICryptEngine *aCrypt, int aKeyNumber, NetworkTaskManager *aNetwork,
-                                      const QUrl &aUrl, const QString &aLogin, const QString &aPassword,
-                                      SKeyPair &aPair)
-{
+EKeysUtilsError::Enum registerKeyPair(ICryptEngine *aCrypt,
+                                      int aKeyNumber,
+                                      NetworkTaskManager *aNetwork,
+                                      const QUrl &aUrl,
+                                      const QString &aLogin,
+                                      const QString &aPassword,
+                                      SKeyPair &aPair) {
     QByteArray publicKey;
     ulong serialNumber;
 
-    if (!aCrypt->exportPublicKey(aKeyNumber, publicKey, serialNumber))
-    {
+    if (!aCrypt->exportPublicKey(aKeyNumber, publicKey, serialNumber)) {
         return EKeysUtilsError::KeyPairCreateError;
     }
 
-    QByteArray request = QByteArray(CKeysFactory::ClientFields::User) + "=" + aLogin.toUtf8() + "&" +
-                         CKeysFactory::ClientFields::Password + "=" + aPassword.toUtf8() + "&" +
-                         CKeysFactory::ClientFields::Query + "=" + CKeysFactory::Queries::RegisterKey + "&" +
-                         CKeysFactory::ClientFields::Phrase + "=" + QString::number(serialNumber).toLatin1() + "&" +
-                         CKeysFactory::ClientFields::AcceptKeys + "=" +
-                         QString::number(CKeysFactory::KeySize).toLatin1() + "&" + CKeysFactory::ClientFields::Key +
-                         "=" + publicKey.toPercentEncoding();
+    QByteArray request =
+        QByteArray(CKeysFactory::ClientFields::User) + "=" + aLogin.toUtf8() + "&" +
+        CKeysFactory::ClientFields::Password + "=" + aPassword.toUtf8() + "&" +
+        CKeysFactory::ClientFields::Query + "=" + CKeysFactory::Queries::RegisterKey + "&" +
+        CKeysFactory::ClientFields::Phrase + "=" + QString::number(serialNumber).toLatin1() + "&" +
+        CKeysFactory::ClientFields::AcceptKeys + "=" +
+        QString::number(CKeysFactory::KeySize).toLatin1() + "&" + CKeysFactory::ClientFields::Key +
+        "=" + publicKey.toPercentEncoding();
 
     QScopedPointer<NetworkTask, ScopedPointerLaterDeleter<NetworkTask>> task(new NetworkTask());
 
@@ -213,8 +194,7 @@ EKeysUtilsError::Enum registerKeyPair(ICryptEngine *aCrypt, int aKeyNumber, Netw
 
     task->waitForFinished();
 
-    if (task->getError() != NetworkTask::NoError)
-    {
+    if (task->getError() != NetworkTask::NoError) {
         // Получили сетевую ошибку.
         task->deleteLater();
 
@@ -227,30 +207,22 @@ EKeysUtilsError::Enum registerKeyPair(ICryptEngine *aCrypt, int aKeyNumber, Netw
     bool publicKeyLoaded(false);
 
     QList<QByteArray> dataList = response.split('&');
-    foreach (const QByteArray &data, dataList)
-    {
+    foreach (const QByteArray &data, dataList) {
         QList<QByteArray> parameter = data.split('=');
-        if (parameter.size() < 2)
-        {
+        if (parameter.size() < 2) {
             continue;
         }
 
         QByteArray name = parameter.first();
         QByteArray value = QByteArray::fromPercentEncoding(parameter.last());
 
-        if (name == CKeysFactory::ServerFields::Error)
-        {
-            if (value == CKeysFactory::ServerErrors::WrongPassword)
-            {
+        if (name == CKeysFactory::ServerFields::Error) {
+            if (value == CKeysFactory::ServerErrors::WrongPassword) {
                 return EKeysUtilsError::WrongPassword;
-            }
-            else if (value == CKeysFactory::ServerErrors::NoError)
-            {
+            } else if (value == CKeysFactory::ServerErrors::NoError) {
                 continue;
             }
-        }
-        else if (name == CKeysFactory::ServerFields::PublicKey)
-        {
+        } else if (name == CKeysFactory::ServerFields::PublicKey) {
             aPair.serverPublicKey = QByteArray::fromPercentEncoding(value);
 
             publicKeyLoaded = true;
@@ -261,28 +233,26 @@ EKeysUtilsError::Enum registerKeyPair(ICryptEngine *aCrypt, int aKeyNumber, Netw
 }
 
 //---------------------------------------------------------------------------
-QString EKeysUtilsError::errorToString(Enum aError)
-{
-    switch (aError)
-    {
-        case Ok:
-            return "Ok";
-        case NetworkError:
-            return "NetworkError";
-        case WrongPassword:
-            return "WrongPassword";
-        case WrongServerAnswer:
-            return "WrongServerAnswer";
-        case WrongLocalTime:
-            return "WrongLocalTime";
-        case UnknownServerError:
-            return "UnknownServerError";
-        case KeyPairCreateError:
-            return "KeyPairCreateError";
-        case KeyExportError:
-            return "KeyExportError";
-        default:
-            return "UnknownError";
+QString EKeysUtilsError::errorToString(Enum aError) {
+    switch (aError) {
+    case Ok:
+        return "Ok";
+    case NetworkError:
+        return "NetworkError";
+    case WrongPassword:
+        return "WrongPassword";
+    case WrongServerAnswer:
+        return "WrongServerAnswer";
+    case WrongLocalTime:
+        return "WrongLocalTime";
+    case UnknownServerError:
+        return "UnknownServerError";
+    case KeyPairCreateError:
+        return "KeyPairCreateError";
+    case KeyExportError:
+        return "KeyExportError";
+    default:
+        return "UnknownError";
     }
 }
 

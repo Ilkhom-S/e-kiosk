@@ -2,21 +2,15 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QVariantMap>
 #include <QtCore/QSignalMapper>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QVariantMap>
 
-// SDK
-#include <SDK/PaymentProcessor/Core/IService.h>
-#include <SDK/Plugins/IPlugin.h>
-#include <SDK/PaymentProcessor/Core/HookConstants.h>
-
-// Модули
 #include <Common/ILogable.h>
 
-// Проект
+#include <SDK/PaymentProcessor/Core/HookConstants.h>
+#include <SDK/PaymentProcessor/Core/IService.h>
+#include <SDK/Plugins/IPlugin.h>
+
 #include "System/IApplication.h"
 
 /** TODO: Возможно этот интерфейс потом вынесем в SDK
@@ -28,24 +22,24 @@ protected:
 
 public:
         /// Вызывает метод у всех hook плагинов
-        virtual bool invokeMethod(const QString & aMetodName, //Qt::ConnectionType aType, QGenericReturnArgument aRet,
-                QGenericArgument aVal0 = QGenericArgument( 0 ),
-                QGenericArgument aVal1 = QGenericArgument(), QGenericArgument aVal2 = QGenericArgument(),
-                QGenericArgument aVal3 = QGenericArgument(), QGenericArgument aVal4 = QGenericArgument(),
-                QGenericArgument aVal5 = QGenericArgument(), QGenericArgument aVal6 = QGenericArgument(),
-                QGenericArgument aVal7 = QGenericArgument(), QGenericArgument aVal8 = QGenericArgument(),
-                QGenericArgument aVal9 = QGenericArgument() ) = 0;
+        virtual bool invokeMethod(const QString & aMetodName, //Qt::ConnectionType aType,
+QGenericReturnArgument aRet, QGenericArgument aVal0 = QGenericArgument( 0 ), QGenericArgument aVal1
+= QGenericArgument(), QGenericArgument aVal2 = QGenericArgument(), QGenericArgument aVal3 =
+QGenericArgument(), QGenericArgument aVal4 = QGenericArgument(), QGenericArgument aVal5 =
+QGenericArgument(), QGenericArgument aVal6 = QGenericArgument(), QGenericArgument aVal7 =
+QGenericArgument(), QGenericArgument aVal8 = QGenericArgument(), QGenericArgument aVal9 =
+QGenericArgument() ) = 0;
 
 };
 */
 
 //---------------------------------------------------------------------------
-class HookService : public QObject,
-                    /*public SDK::PaymentProcessor::IHookService,*/ public SDK::PaymentProcessor::IService
-{
+class HookService
+    : public QObject,
+      /*public SDK::PaymentProcessor::IHookService,*/ public SDK::PaymentProcessor::IService {
     Q_OBJECT
 
-  public:
+public:
     /// Получение DatabaseServiceа.
     static HookService *instance(IApplication *aApplication);
 
@@ -81,14 +75,19 @@ class HookService : public QObject,
     /// Методы интерфейса IHookService
 
     /// IHookService: Вызывает метод у всех hook плагинов
-    virtual bool invokeHook(const QString &aMetodName, QGenericArgument aVal0 = QGenericArgument(0),
-                            QGenericArgument aVal1 = QGenericArgument(), QGenericArgument aVal2 = QGenericArgument(),
-                            QGenericArgument aVal3 = QGenericArgument(), QGenericArgument aVal4 = QGenericArgument(),
-                            QGenericArgument aVal5 = QGenericArgument(), QGenericArgument aVal6 = QGenericArgument(),
-                            QGenericArgument aVal7 = QGenericArgument(), QGenericArgument aVal8 = QGenericArgument(),
+    virtual bool invokeHook(const QString &aMetodName,
+                            QGenericArgument aVal0 = QGenericArgument(0),
+                            QGenericArgument aVal1 = QGenericArgument(),
+                            QGenericArgument aVal2 = QGenericArgument(),
+                            QGenericArgument aVal3 = QGenericArgument(),
+                            QGenericArgument aVal4 = QGenericArgument(),
+                            QGenericArgument aVal5 = QGenericArgument(),
+                            QGenericArgument aVal6 = QGenericArgument(),
+                            QGenericArgument aVal7 = QGenericArgument(),
+                            QGenericArgument aVal8 = QGenericArgument(),
                             QGenericArgument aVal9 = QGenericArgument());
 
-  private:
+private:
     IApplication *mApplication;
 
     QList<SDK::Plugin::IPlugin *> mHooks;

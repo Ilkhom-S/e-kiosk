@@ -2,36 +2,34 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QTimer>
-#include <QtCore/QThread>
 #include <QtCore/QMutex>
+#include <QtCore/QThread>
+#include <QtCore/QTimer>
 #include <QtCore/QWaitCondition>
-#include <Common/QtHeadersEnd.h>
 
-// Project
 #include "Hardware/Common/FunctionTypes.h"
 #include "Hardware/Common/WaitingData.h"
 
 //--------------------------------------------------------------------------------
 /// Рабочий поток для класса-ожидателя.
-class ExpectorWorkingThread : public QThread
-{
+class ExpectorWorkingThread : public QThread {
     Q_OBJECT
 
-  public:
+public:
     ExpectorWorkingThread();
-    void process(TBoolMethod aOnPoll, TBoolMethod aCondition, TBoolMethod aErrorCondition, int aPollingInterval,
+    void process(TBoolMethod aOnPoll,
+                 TBoolMethod aCondition,
+                 TBoolMethod aErrorCondition,
+                 int aPollingInterval,
                  bool aPollingSensible);
 
-  public slots:
+public slots:
     void onPoll(); /// Опрос состояния.
 
-  signals:
+signals:
     void finished(bool aSuccess); /// Завершено.
 
-  private:
+private:
     virtual void run(); /// QThread: Рабочая процедура Qt'шной нити.
 
     QThread *mOwner;             /// Указатель на вызвавший поток.
@@ -44,35 +42,45 @@ class ExpectorWorkingThread : public QThread
 
 //--------------------------------------------------------------------------------
 /// Класс-ожидатель.
-class PollingExpector : public QObject
-{
+class PollingExpector : public QObject {
     Q_OBJECT
 
-  public:
+public:
     PollingExpector();
 
     /// Ожидание состояния или выполнения полла.
-    bool wait(TBoolMethod aCondition, int aPollingInterval, int aTimeout, bool aPollingSensible = false);
+    bool
+    wait(TBoolMethod aCondition, int aPollingInterval, int aTimeout, bool aPollingSensible = false);
     bool wait(TBoolMethod aCondition, const SWaitingData &aWaitingData);
 
     /// Ожидание состояния.
     template <class T>
-    bool wait(std::function<T()> aOnPoll, TBoolMethod aCondition, int aPollingInterval, int aTimeout,
+    bool wait(std::function<T()> aOnPoll,
+              TBoolMethod aCondition,
+              int aPollingInterval,
+              int aTimeout,
               bool aPollingSensible = false);
-    template <class T> bool wait(std::function<T()> aOnPoll, TBoolMethod aCondition, const SWaitingData &aWaitingData);
+    template <class T>
+    bool wait(std::function<T()> aOnPoll, TBoolMethod aCondition, const SWaitingData &aWaitingData);
 
     /// Ожидание состояния или ошибки.
     template <class T>
-    bool wait(std::function<T()> aOnPoll, TBoolMethod aCondition, TBoolMethod aErrorCondition, int aPollingInterval,
-              int aTimeout, bool aPollingSensible = false);
+    bool wait(std::function<T()> aOnPoll,
+              TBoolMethod aCondition,
+              TBoolMethod aErrorCondition,
+              int aPollingInterval,
+              int aTimeout,
+              bool aPollingSensible = false);
     template <class T>
-    bool wait(std::function<T()> aOnPoll, TBoolMethod aCondition, TBoolMethod aErrorCondition,
+    bool wait(std::function<T()> aOnPoll,
+              TBoolMethod aCondition,
+              TBoolMethod aErrorCondition,
               const SWaitingData &aWaitingData);
 
-  public slots:
+public slots:
     void onFinished(bool aSuccess); /// Завершено.
 
-  private:
+private:
     bool mResult;                         /// Результат ожидания.
     QMutex mGuard;                        /// Сторож для wait condition.
     QWaitCondition mWaitCondition;        /// Wait condition для таймаута ожидания.

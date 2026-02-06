@@ -2,17 +2,15 @@
 
 #pragma once
 
-// Проект
 #include "WizardPage.h"
 
 class HumoServiceBackend;
 
 //----------------------------------------------------------------------------
-class UnmanagedWizardPage : public WizardPageBase
-{
+class UnmanagedWizardPage : public WizardPageBase {
     Q_OBJECT
 
-  public:
+public:
     UnmanagedWizardPage(HumoServiceBackend *aBackend, QWidget *aParent = 0);
 
     virtual bool initialize();

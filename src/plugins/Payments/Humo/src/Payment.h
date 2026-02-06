@@ -2,18 +2,15 @@
 
 #pragma once
 
-// Modules
 #include <Payment/PaymentBase.h>
 
-// Project
 #include "PaymentFactory.h"
 
 //------------------------------------------------------------------------------
-class Payment : public PaymentBase
-{
+class Payment : public PaymentBase {
     friend class PaymentFactory;
 
-  public:
+public:
     Payment(PaymentFactory *aFactory);
 
     /// Возвращает связанную фабрику платежей.
@@ -32,7 +29,7 @@ class Payment : public PaymentBase
 
 #pragma endregion
 
-  protected:
+protected:
     /// Создаёт класс запроса по идентификатору шага.
     virtual Request *createRequest(const QString &aStep);
 
@@ -66,7 +63,7 @@ class Payment : public PaymentBase
     /// При ошибке проведения устанавливает таймауты для следующей попытки.
     virtual void setProcessError();
 
-  protected:
+protected:
     RequestSender mRequestSender;
 };
 

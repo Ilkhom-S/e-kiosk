@@ -1,19 +1,15 @@
 /* @file Дефолтное HID-устройство на COM-порту. */
 
-// System
 #include <Hardware/Scanners/SerialScanner.h>
 
-SerialScanner::SerialScanner()
-{
+SerialScanner::SerialScanner() {
     mDeviceName = "Generic serial HID";
     mAutoDetectable = false;
 }
 
 //--------------------------------------------------------------------------------
-bool SerialScanner::getData(QByteArray &aAnswer)
-{
-    if (mIOPort->getType() == SDK::Driver::EPortTypes::VirtualCOM)
-    {
+bool SerialScanner::getData(QByteArray &aAnswer) {
+    if (mIOPort->getType() == SDK::Driver::EPortTypes::VirtualCOM) {
         QVariantMap configuration;
         configuration.insert(CHardware::Port::COM::WaitResult, true);
         mIOPort->setDeviceConfiguration(configuration);

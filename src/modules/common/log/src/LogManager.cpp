@@ -1,26 +1,23 @@
 /* @file Лог-менеджер. */
 
-// Project
 #include "LogManager.h"
+
 #include "SimpleLog.h"
 
 LogManager gLogManager;
 
 //---------------------------------------------------------------------------
-LogManager::LogManager() : mMaxLogLevel(LogLevel::Normal)
-{
+LogManager::LogManager() : mMaxLogLevel(LogLevel::Normal) {
 #if defined(_DEBUG) || defined(DEBUG_INFO)
     mMaxLogLevel = LogLevel::Debug;
 #endif // _DEBUG || DEBUG_INFO
 }
 
 //---------------------------------------------------------------------------
-LogManager::~LogManager()
-{
+LogManager::~LogManager() {
     QMutexLocker lock(&mMutex);
 
-    while (!mLogs.isEmpty())
-    {
+    while (!mLogs.isEmpty()) {
         auto log = mLogs.take(mLogs.keys().first());
 
         log.reset();
@@ -28,14 +25,12 @@ LogManager::~LogManager()
 }
 
 //---------------------------------------------------------------------------
-ILog *LogManager::getLog(const QString &aName, LogType::Enum aType)
-{
+ILog *LogManager::getLog(const QString &aName, LogType::Enum aType) {
     QString name = QString("%1%2").arg(aName).arg(aType);
 
     QMutexLocker lock(&mMutex);
 
-    if (mLogs.contains(name))
-    {
+    if (mLogs.contains(name)) {
         return mLogs.value(name).get();
     }
 
@@ -46,19 +41,16 @@ ILog *LogManager::getLog(const QString &aName, LogType::Enum aType)
 }
 
 //---------------------------------------------------------------------------
-void LogManager::logRotateAll()
-{
+void LogManager::logRotateAll() {
     QMutexLocker lock(&mMutex);
 
-    foreach (auto log, mLogs.values())
-    {
+    foreach (auto log, mLogs.values()) {
         log->logRotate();
     }
 }
 
 //---------------------------------------------------------------------------
-void LogManager::setGlobalLevel(LogLevel::Enum aMaxLogLevel)
-{
+void LogManager::setGlobalLevel(LogLevel::Enum aMaxLogLevel) {
     mMaxLogLevel = aMaxLogLevel;
 }
 

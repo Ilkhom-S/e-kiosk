@@ -2,20 +2,16 @@
 
 #pragma once
 
-// Modules
+#include "Hardware/CoinAcceptors/CoinAcceptorBase.h"
 #include "Hardware/Protocols/CashAcceptor/NPSTalk.h"
 
-// Project
-#include "Hardware/CoinAcceptors/CoinAcceptorBase.h"
-
 //--------------------------------------------------------------------------------
-class NPSTalkCoinAcceptor : public CoinAcceptorBase
-{
+class NPSTalkCoinAcceptor : public CoinAcceptorBase {
     SET_SERIES("NPS")
 
     typedef QMap<uchar, uchar> TCoinsByChannel;
 
-  public:
+public:
     NPSTalkCoinAcceptor();
 
     /// Возвращает список поддерживаемых устройств.
@@ -24,7 +20,7 @@ class NPSTalkCoinAcceptor : public CoinAcceptorBase
     /// Получить статус.
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
-  protected:
+protected:
     /// Попытка самоидентификации.
     virtual bool isConnected();
 
@@ -41,7 +37,8 @@ class NPSTalkCoinAcceptor : public CoinAcceptorBase
     virtual bool enableMoneyAcceptingMode(bool aEnabled);
 
     /// Выполнить команду.
-    virtual TResult execCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult execCommand(const QByteArray &aCommand,
+                                const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
 
     /// Протокол.

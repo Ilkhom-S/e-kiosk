@@ -1,26 +1,66 @@
-# .clang-format (C++14 / C11)
 ---
 Language: Cpp
-BasedOnStyle: Qt
-
-# Explicitly set standard for C++14 compatibility
-Standard: c++11
-
-# Indentation & Alignment
-IndentWidth: 4
+# This is the raw expansion of the Qt Style for C++14 compatibility
+AccessModifierOffset: -4
+AlignAfterOpenBracket: Align
+AlignOperands: true
+AlignTrailingComments: true
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+BinPackArguments: false
+BinPackParameters: false
+BraceWrapping:
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: true
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Attach
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeColon
 ColumnLimit: 100
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
+IndentCaseLabels: false
+IndentWidth: 4
+NamespaceIndentation: None
+ObjCBlockIndentWidth: 4
 PointerAlignment: Right
+ReflowComments: true
+Standard: c++11
+TabWidth: 4
+UseTab: Never
 
-# Qt-specific handling for C11/C++14
-SpaceAfterCStyleCast: true
+# --- Include Management ---
+SortIncludes: true
+IncludeBlocks: Regroup
+
 IncludeCategories:
+  # 1. Qt Framework (Highest Priority)
   - Regex: '^<Q.*'
     Priority: 10
-  - Regex: '^<.*'
+
+  # 2. Global/Common Includes (<Common/...)
+  - Regex: '^<Common/.*'
     Priority: 20
-  - Regex: '.*'
+
+  # 3. SDK Includes (<SDK/...)
+  - Regex: '^<SDK/.*'
     Priority: 30
 
-# Avoid modern C++17 nested namespaces (e.g., namespace A::B)
-# This ensures code stays compatible with older compilers
-CompactNamespaces: false
+  # 4. Standard System Headers (<vector>, <stdio.h>, etc.)
+  - Regex: '^<.*'
+    Priority: 40
+
+  # 5. Local Project Headers ("File.h")
+  - Regex: '.*'
+    Priority: 50

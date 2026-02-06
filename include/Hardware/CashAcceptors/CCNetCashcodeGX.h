@@ -2,34 +2,32 @@
 
 #pragma once
 
+#include <Hardware/CashAcceptors/CCNetCashAcceptorBase.h>
 #include <cmath>
 
-#include <Hardware/CashAcceptors/CCNetCashAcceptorBase.h>
-
 //--------------------------------------------------------------------------------
-namespace CCCNetCashcodeGX
-{
-    /// Пауза после резета, [мс].
-    const int ResetPause = 15 * 1000;
+namespace CCCNetCashcodeGX {
+/// Пауза после резета, [мс].
+const int ResetPause = 15 * 1000;
 
-    /// Выход из initilaize-а.
-    const int ExitInitializeTimeout = 20 * 1000;
+/// Выход из initilaize-а.
+const int ExitInitializeTimeout = 20 * 1000;
 } // namespace CCCNetCashcodeGX
 
 //--------------------------------------------------------------------------------
-class CCNetCashcodeGX : public CCNetCashAcceptorBase
-{
+class CCNetCashcodeGX : public CCNetCashAcceptorBase {
     SET_SUBSERIES("CashcodeGX")
 
-  public:
+public:
     CCNetCashcodeGX();
 
-  protected:
+protected:
     /// Проверка возможности выполнения функционала, предполагающего связь с устройством.
     virtual bool checkConnectionAbility();
 
     /// Выполнить команду.
-    virtual TResult performCommand(const QByteArray &aCommand, const QByteArray &aCommandData,
+    virtual TResult performCommand(const QByteArray &aCommand,
+                                   const QByteArray &aCommandData,
                                    QByteArray *aAnswer = nullptr);
 
     /// Локальный сброс.

@@ -1,7 +1,7 @@
 /* @file Реализация плагина. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include "WebKitBackend.h"
+
 #include <QtCore/QDir>
 #include <QtCore/QMetaEnum>
 #include <QtNetwork/QSslConfiguration>
@@ -9,129 +9,113 @@
 #include <QtWebKitWidgets/QGraphicsWebView>
 #include <QtWebKitWidgets/QWebFrame>
 #include <QtWebKitWidgets/QWebPage>
-#include <Common/QtHeadersEnd.h>
 
-// SDK
 #include <SDK/PaymentProcessor/Components.h>
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/Plugins/IPluginFactory.h>
 #include <SDK/Plugins/PluginInitializer.h>
 
-// Project
-#include "WebKitBackend.h"
+namespace CWebKitBackend {
+/// Название плагина.
+const char PluginName[] = "Webkit";
 
-namespace CWebKitBackend
-{
-    /// Название плагина.
-    const char PluginName[] = "Webkit";
+/// Тип данного графического движка.
+const char Type[] = "web";
 
-    /// Тип данного графического движка.
-    const char Type[] = "web";
+/// Директория с ключами
+const QString KeysDir = "keys";
 
-    /// Директория с ключами
-    const QString KeysDir = "keys";
+/// Pem-файл
+const QString PemFile = "local.pem";
 
-    /// Pem-файл
-    const QString PemFile = "local.pem";
-
-    /// Key-файл
-    const QString KeyFile = "local.key";
+/// Key-файл
+const QString KeyFile = "local.key";
 } // namespace CWebKitBackend
 
 //------------------------------------------------------------------------------
-namespace
-{
+namespace {
 
-    /// Конструктор экземпляра плагина.
-    SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    {
-        return new WebKitBackend(aFactory, aInstancePath);
-    }
+/// Конструктор экземпляра плагина.
+SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
+                                   const QString &aInstancePath) {
+    return new WebKitBackend(aFactory, aInstancePath);
+}
 
-    QVector<SDK::Plugin::SPluginParameter> EnumParameters()
-    {
-        return QVector<SDK::Plugin::SPluginParameter>(1) << SDK::Plugin::SPluginParameter(
-                   SDK::Plugin::Parameters::Debug, SDK::Plugin::SPluginParameter::Bool, false,
-                   QT_TRANSLATE_NOOP("WebkitBackendParameters", "#debug_mode"),
-                   QT_TRANSLATE_NOOP("WebkitBackendParameters", "#debug_mode_howto"), false);
-    }
+QVector<SDK::Plugin::SPluginParameter> EnumParameters() {
+    return QVector<SDK::Plugin::SPluginParameter>(1) << SDK::Plugin::SPluginParameter(
+               SDK::Plugin::Parameters::Debug,
+               SDK::Plugin::SPluginParameter::Bool,
+               false,
+               QT_TRANSLATE_NOOP("WebkitBackendParameters", "#debug_mode"),
+               QT_TRANSLATE_NOOP("WebkitBackendParameters", "#debug_mode_howto"),
+               false);
+}
 
 } // namespace
 
 /// Регистрация плагина в фабрике.
-REGISTER_PLUGIN_WITH_PARAMETERS(SDK::Plugin::makePath(SDK::PaymentProcessor::Application,
-                                                      SDK::PaymentProcessor::CComponents::GraphicsBackend,
-                                                      CWebKitBackend::PluginName),
-                                &CreatePlugin, &EnumParameters);
+REGISTER_PLUGIN_WITH_PARAMETERS(
+    SDK::Plugin::makePath(SDK::PaymentProcessor::Application,
+                          SDK::PaymentProcessor::CComponents::GraphicsBackend,
+                          CWebKitBackend::PluginName),
+    &CreatePlugin,
+    &EnumParameters);
 
 //------------------------------------------------------------------------------
 WebKitBackend::WebKitBackend(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : mFactory(aFactory), mInstancePath(aInstancePath), mEngine(0), mCoreProxy(0)
-{
-}
+    : mFactory(aFactory), mInstancePath(aInstancePath), mEngine(0), mCoreProxy(0) {}
 
 //------------------------------------------------------------------------------
-WebKitBackend::~WebKitBackend()
-{
+WebKitBackend::~WebKitBackend() {
     mItems.clear();
 }
 
 //------------------------------------------------------------------------------
-QString WebKitBackend::getPluginName() const
-{
+QString WebKitBackend::getPluginName() const {
     return CWebKitBackend::PluginName;
 }
 
 //------------------------------------------------------------------------------
-QVariantMap WebKitBackend::getConfiguration() const
-{
+QVariantMap WebKitBackend::getConfiguration() const {
     return mParameters;
 }
 
 //------------------------------------------------------------------------------
-void WebKitBackend::setConfiguration(const QVariantMap &aParameters)
-{
+void WebKitBackend::setConfiguration(const QVariantMap &aParameters) {
     mParameters = aParameters;
 }
 
 //------------------------------------------------------------------------------
-QString WebKitBackend::getConfigurationName() const
-{
+QString WebKitBackend::getConfigurationName() const {
     return mInstancePath;
 }
 
 //------------------------------------------------------------------------------
-bool WebKitBackend::saveConfiguration()
-{
+bool WebKitBackend::saveConfiguration() {
     // У плагина нет параметров
     return true;
 }
 
 //------------------------------------------------------------------------------
-bool WebKitBackend::isReady() const
-{
+bool WebKitBackend::isReady() const {
     return true;
 }
 
 //------------------------------------------------------------------------------
-std::weak_ptr<SDK::GUI::IGraphicsItem> WebKitBackend::getItem(const SDK::GUI::GraphicsItemInfo &aInfo)
-{
+std::weak_ptr<SDK::GUI::IGraphicsItem>
+WebKitBackend::getItem(const SDK::GUI::GraphicsItemInfo &aInfo) {
     QMap<QString, std::shared_ptr<WebGraphicsItem>>::iterator it = mItems.find(aInfo.name);
 
-    if (it != mItems.end() && it.value()->getContext() == aInfo.context)
-    {
+    if (it != mItems.end() && it.value()->getContext() == aInfo.context) {
         return it.value();
     }
 
     std::shared_ptr<WebGraphicsItem> item(new WebGraphicsItem(aInfo, mCoreProxy, mEngine->getLog()),
                                           SDK::GUI::GraphicsItemDeleter());
 
-    if (item->isValid())
-    {
+    if (item->isValid()) {
         mItems.insert(aInfo.name, item);
-    }
-    else
-    {
+    } else {
         mEngine->getLog()->write(LogLevel::Error, item->getError());
     }
 
@@ -139,12 +123,9 @@ std::weak_ptr<SDK::GUI::IGraphicsItem> WebKitBackend::getItem(const SDK::GUI::Gr
 }
 
 //------------------------------------------------------------------------------
-bool WebKitBackend::removeItem(const SDK::GUI::GraphicsItemInfo &aInfo)
-{
-    foreach (auto item, mItems.values(aInfo.name))
-    {
-        if (item->getContext() == aInfo.context)
-        {
+bool WebKitBackend::removeItem(const SDK::GUI::GraphicsItemInfo &aInfo) {
+    foreach (auto item, mItems.values(aInfo.name)) {
+        if (item->getContext() == aInfo.context) {
             return mItems.remove(aInfo.name, item) != 0;
         }
     }
@@ -153,52 +134,45 @@ bool WebKitBackend::removeItem(const SDK::GUI::GraphicsItemInfo &aInfo)
 }
 
 //------------------------------------------------------------------------------
-QString WebKitBackend::getType() const
-{
+QString WebKitBackend::getType() const {
     return CWebKitBackend::Type;
 }
 
 //------------------------------------------------------------------------------
-QList<SDK::GUI::GraphicsItemInfo> WebKitBackend::getItemList()
-{
+QList<SDK::GUI::GraphicsItemInfo> WebKitBackend::getItemList() {
     return QList<SDK::GUI::GraphicsItemInfo>();
 }
 
 //------------------------------------------------------------------------------
-bool WebKitBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine)
-{
+bool WebKitBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine) {
     mEngine = aEngine;
     mCoreProxy = static_cast<SDK::PaymentProcessor::Scripting::Core *>(
-        mEngine->getGraphicsHost()->getInterface<QObject>(SDK::PaymentProcessor::Scripting::CProxyNames::Core));
+        mEngine->getGraphicsHost()->getInterface<QObject>(
+            SDK::PaymentProcessor::Scripting::CProxyNames::Core));
 
     // Импорт ssl сертификата
-    QFile pem(mFactory->getKernelDataDirectory() + QDir::separator() + CWebKitBackend::KeysDir + QDir::separator() +
-              CWebKitBackend::PemFile);
-    if (pem.open(QIODevice::ReadOnly))
-    {
+    QFile pem(mFactory->getKernelDataDirectory() + QDir::separator() + CWebKitBackend::KeysDir +
+              QDir::separator() + CWebKitBackend::PemFile);
+    if (pem.open(QIODevice::ReadOnly)) {
         QSslConfiguration conf = QSslConfiguration::defaultConfiguration();
 
         QSslCertificate cert(pem.readAll());
         conf.setLocalCertificate(cert);
         mEngine->getLog()->write(LogLevel::Normal, "WebKitBackend: Pem certifiacate added.");
 
-        QFile key(mFactory->getKernelDataDirectory() + QDir::separator() + CWebKitBackend::KeysDir + QDir::separator() +
-                  CWebKitBackend::KeyFile);
-        if (key.open(QIODevice::ReadOnly))
-        {
+        QFile key(mFactory->getKernelDataDirectory() + QDir::separator() + CWebKitBackend::KeysDir +
+                  QDir::separator() + CWebKitBackend::KeyFile);
+        if (key.open(QIODevice::ReadOnly)) {
             QSslKey k(key.readAll(), QSsl::Rsa);
             conf.setPrivateKey(k);
-            mEngine->getLog()->write(LogLevel::Normal, "WebKitBackend: Key for certifiacate added.");
-        }
-        else
-        {
+            mEngine->getLog()->write(LogLevel::Normal,
+                                     "WebKitBackend: Key for certifiacate added.");
+        } else {
             mEngine->getLog()->write(LogLevel::Error, "WebKitBackend: Can't open key file.");
         }
 
         QSslConfiguration::setDefaultConfiguration(conf);
-    }
-    else
-    {
+    } else {
         mEngine->getLog()->write(LogLevel::Error, "WebKitBackend: Can't open pem file.");
     }
 
@@ -206,8 +180,6 @@ bool WebKitBackend::initialize(SDK::GUI::IGraphicsEngine *aEngine)
 }
 
 //------------------------------------------------------------------------------
-void WebKitBackend::shutdown()
-{
-}
+void WebKitBackend::shutdown() {}
 
 //------------------------------------------------------------------------------

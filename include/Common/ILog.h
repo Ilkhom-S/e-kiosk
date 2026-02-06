@@ -2,43 +2,23 @@
 
 #pragma once
 
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QString>
-#include <Common/QtHeadersEnd.h>
 
 //---------------------------------------------------------------------------
 /// Уровень логирования.
-namespace LogLevel
-{
-    enum Enum
-    {
-        Off = 0,
-        Fatal,
-        Error,
-        Warning,
-        Normal,
-        Debug,
-        Trace,
-        Max = Trace
-    };
+namespace LogLevel {
+enum Enum { Off = 0, Fatal, Error, Warning, Normal, Debug, Trace, Max = Trace };
 } // namespace LogLevel
 
 //---------------------------------------------------------------------------
 /// Устройство вывода лога.
-namespace LogType
-{
-    enum Enum
-    {
-        File,
-        Console,
-        Debug
-    };
+namespace LogType {
+enum Enum { File, Console, Debug };
 } // namespace LogType
 
 //---------------------------------------------------------------------------
-class ILog
-{
-  public:
+class ILog {
+public:
     /// Возвращает экземпляр лога с направлением по умолчанию.
     static ILog *getInstance();
 
@@ -83,40 +63,38 @@ class ILog
     /// Принудительно закрыть журнал. Функция write заново его откроет.
     virtual void logRotate() = 0;
 
-  protected:
-    virtual ~ILog()
-    {
-    }
+protected:
+    virtual ~ILog() {}
 };
 
 //---------------------------------------------------------------------------
 // Запись в лог с проверкой указателя на лог.
-#define LOG(log, level, message)                                                                                       \
-    {                                                                                                                  \
-        if (log != 0)                                                                                                  \
-            log->write(level, message);                                                                                \
-        else                                                                                                           \
-            qCritical("Log pointer is empty. Message:%s.", qPrintable(message));                                       \
+#define LOG(log, level, message)                                                                   \
+    {                                                                                              \
+        if (log != 0)                                                                              \
+            log->write(level, message);                                                            \
+        else                                                                                       \
+            qCritical("Log pointer is empty. Message:%s.", qPrintable(message));                   \
     }
 
 //---------------------------------------------------------------------------
 // Запись в лог с именем функции и проверкой указателя на лог.
-#define LOGF(log, level, message)                                                                                      \
-    {                                                                                                                  \
-        if (log != 0)                                                                                                  \
-            log->write(level, message + QString(" (%1)").arg(Q_FUNC_INFO));                                            \
-        else                                                                                                           \
-            qCritical("Log pointer is empty. Message:%s.", qPrintable(message));                                       \
+#define LOGF(log, level, message)                                                                  \
+    {                                                                                              \
+        if (log != 0)                                                                              \
+            log->write(level, message + QString(" (%1)").arg(Q_FUNC_INFO));                        \
+        else                                                                                       \
+            qCritical("Log pointer is empty. Message:%s.", qPrintable(message));                   \
     }
 
 //---------------------------------------------------------------------------
 // Запись в лог с именем функции и проверкой указателя на лог.
-#define LOGB(log, level, message, binaryData)                                                                          \
-    {                                                                                                                  \
-        if (log != 0)                                                                                                  \
-            log->write(level, message, binaryData);                                                                    \
-        else                                                                                                           \
-            qCritical("Log pointer is empty. Message:%s.", qPrintable(message));                                       \
+#define LOGB(log, level, message, binaryData)                                                      \
+    {                                                                                              \
+        if (log != 0)                                                                              \
+            log->write(level, message, binaryData);                                                \
+        else                                                                                       \
+            qCritical("Log pointer is empty. Message:%s.", qPrintable(message));                   \
     }
 
 //---------------------------------------------------------------------------

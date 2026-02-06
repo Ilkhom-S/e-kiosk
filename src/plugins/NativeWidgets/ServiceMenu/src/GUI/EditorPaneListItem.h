@@ -2,42 +2,29 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtWidgets/QStyledItemDelegate>
 #include <QtWidgets/QListWidgetItem>
-#include <Common/QtHeadersEnd.h>
+#include <QtWidgets/QStyledItemDelegate>
 
 //------------------------------------------------------------------------
-class EditorPaneListItemDelegate : public QStyledItemDelegate
-{
+class EditorPaneListItemDelegate : public QStyledItemDelegate {
     Q_OBJECT
 
-  public:
+public:
     EditorPaneListItemDelegate(QObject *aParent = 0);
 };
 
 //------------------------------------------------------------------------
-class EditorPaneListItem : public QListWidgetItem
-{
-  public:
-    enum DataRole
-    {
-        ParameterName = Qt::UserRole + 1,
-        ParameterValue
-    };
+class EditorPaneListItem : public QListWidgetItem {
+public:
+    enum DataRole { ParameterName = Qt::UserRole + 1, ParameterValue };
 
-    EditorPaneListItem()
-    {
-    }
-    virtual ~EditorPaneListItem()
-    {
-    }
+    EditorPaneListItem() {}
+    virtual ~EditorPaneListItem() {}
 
     virtual QVariant data(int aRole) const;
     virtual void setData(int aRole, const QVariant &aValue);
 
-  private:
+private:
     QString mValue;
     QString mName;
 };

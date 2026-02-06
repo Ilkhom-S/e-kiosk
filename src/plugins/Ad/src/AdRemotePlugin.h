@@ -2,21 +2,17 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QThread>
-#include <QtCore/QTimer>
 #include <QtCore/QMap>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QThread>
+#include <QtCore/QTimer>
 
-// SDK
-#include <SDK/Plugins/IPlugin.h>
+#include <Common/ILogable.h>
+
 #include <SDK/PaymentProcessor/Core/ICore.h>
 #include <SDK/PaymentProcessor/Core/IRemoteClient.h>
+#include <SDK/Plugins/IPlugin.h>
 
-// Modules
-#include <Common/ILogable.h>
 #include <AdBackend/Client.h>
 
 using SDK::PaymentProcessor::Humo::Request;
@@ -24,11 +20,12 @@ using SDK::PaymentProcessor::Humo::RequestSender;
 using SDK::PaymentProcessor::Humo::Response;
 
 //------------------------------------------------------------------------------
-class AdRemotePlugin : public SDK::PaymentProcessor::IRemoteClient, public SDK::Plugin::IPlugin, public ILogable
-{
+class AdRemotePlugin : public SDK::PaymentProcessor::IRemoteClient,
+                       public SDK::Plugin::IPlugin,
+                       public ILogable {
     Q_OBJECT
 
-  public:
+public:
     //---------------------------------------------------------------------------
     // Конструктор плагина
     AdRemotePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
@@ -53,7 +50,8 @@ class AdRemotePlugin : public SDK::PaymentProcessor::IRemoteClient, public SDK::
     virtual QString getConfigurationName() const;
 
     //---------------------------------------------------------------------------
-    // Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной программы)
+    // Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
+    // программы)
     virtual bool saveConfiguration();
 
     //---------------------------------------------------------------------------
@@ -62,14 +60,14 @@ class AdRemotePlugin : public SDK::PaymentProcessor::IRemoteClient, public SDK::
 
 #pragma endregion
 
-  public:
+public:
     //---------------------------------------------------------------------------
     // Возвращает интерфейс ядра модуля проведения платежей
     SDK::PaymentProcessor::ICore *getCore() const;
 
 #pragma region SDK::PaymentProcessor::IRemoteClient interface
 
-  public:
+public:
     //---------------------------------------------------------------------------
     // Запуск клиента
     virtual void enable();
@@ -88,11 +86,11 @@ class AdRemotePlugin : public SDK::PaymentProcessor::IRemoteClient, public SDK::
 
 #pragma endregion
 
-  protected slots:
+protected slots:
     /// Обработка сигнала о обновленном контенте или что реклама у терминала протухла
     void needRestart();
 
-  protected:
+protected:
     QSharedPointer<Ad::Client> mClient;
 
     SDK::Plugin::IEnvironment *mFactory;

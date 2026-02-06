@@ -1,22 +1,19 @@
 #pragma once
 
-// System
 #include "dev/CCNetSM.h"
 #include "dev/EBDS.h"
 
-namespace ValidatorModel
-{
-    const QString CashCodeCCNET = "CashCode_CCNET";
-    const QString MeiEBDS = "Mei";
+namespace ValidatorModel {
+const QString CashCodeCCNET = "CashCode_CCNET";
+const QString MeiEBDS = "Mei";
 } // namespace ValidatorModel
 
 class CCNetSm;
 
-class ClassValidator : public QThread
-{
+class ClassValidator : public QThread {
     Q_OBJECT
 
-  public:
+public:
     ClassValidator(QObject *parent = 0);
 
     void setValidator(QString name);
@@ -26,7 +23,10 @@ class ClassValidator : public QThread
     void setDBError(bool error);
 
     bool openPort();
-    bool isItYou(QStringList &comList, QString &validator_name, QString &com_str, QString &validator_coment);
+    bool isItYou(QStringList &comList,
+                 QString &validator_name,
+                 QString &com_str,
+                 QString &validator_coment);
 
     void closeThis();
     bool pollState();
@@ -43,11 +43,11 @@ class ClassValidator : public QThread
 
     QString firmwareVersion;
 
-  public slots:
+public slots:
     void execCommand(int cmd);
     void getStatusFromValidator(int sts, QString comment);
 
-  private:
+private:
     CCNetSm *CCNetValidator;
     EBDS *EBDSValidator;
 
@@ -61,7 +61,7 @@ class ClassValidator : public QThread
 
     virtual void run() override;
 
-  signals:
+signals:
     void eNominal(int nominal);
     void eNominalDuplicate(int nominal);
     void showHideDialogAnimate(bool status);

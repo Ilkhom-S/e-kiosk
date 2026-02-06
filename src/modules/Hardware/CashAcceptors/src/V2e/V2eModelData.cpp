@@ -1,25 +1,20 @@
 /* @file Данные моделей устройств на протоколе V2e. */
 
-// Project
 #include "V2eModelData.h"
 
-CV2e::ModelData::ModelData()
-{
+CV2e::ModelData::ModelData() {
     add(CV2e::Models::Aurora, TModelKeys() << "VA" << "VE" << "VH" << "VV" << "LA" << "SA", true);
     add(CV2e::Models::Falcon, TModelKeys() << "W", true);
-    add(CV2e::Models::Argus, TModelKeys() << "A" << "B" << "C" << "D" << "E" << "F" << "G" << "H" << "J" << "K" << "P"
-                                          << "S" << "Y" << "1" << "2");
+    add(CV2e::Models::Argus,
+        TModelKeys() << "A" << "B" << "C" << "D" << "E" << "F" << "G" << "H" << "J" << "K" << "P"
+                     << "S" << "Y" << "1" << "2");
 }
 
 //--------------------------------------------------------------------------------
-SBaseModelData CV2e::ModelData::getData(const QString &aKey)
-{
-    for (auto it = data().begin(); it != data().end(); ++it)
-    {
-        foreach (const QString &key, it.key())
-        {
-            if (aKey.startsWith(key))
-            {
+SBaseModelData CV2e::ModelData::getData(const QString &aKey) {
+    for (auto it = data().begin(); it != data().end(); ++it) {
+        foreach (const QString &key, it.key()) {
+            if (aKey.startsWith(key)) {
                 return it.value();
             }
         }
@@ -29,14 +24,14 @@ SBaseModelData CV2e::ModelData::getData(const QString &aKey)
 }
 
 //--------------------------------------------------------------------------------
-void CV2e::ModelData::add(const QString &aName, const CV2e::TModelKeys &aModelKeys, bool aVerified)
-{
+void CV2e::ModelData::add(const QString &aName,
+                          const CV2e::TModelKeys &aModelKeys,
+                          bool aVerified) {
     append(aModelKeys, SBaseModelData(aName, aVerified));
 }
 
 //--------------------------------------------------------------------------------
-bool operator<(const CV2e::TModelKeys &aKeys1, const CV2e::TModelKeys &aKeys2)
-{
+bool operator<(const CV2e::TModelKeys &aKeys1, const CV2e::TModelKeys &aKeys2) {
     QStringList key1(aKeys1.begin(), aKeys1.end());
     std::sort(key1.begin(), key1.end());
 

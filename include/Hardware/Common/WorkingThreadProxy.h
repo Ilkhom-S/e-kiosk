@@ -2,29 +2,24 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
+#include <QtCore/QMutex>
 #include <QtCore/QObject>
 #include <QtCore/QString>
-#include <QtCore/QMutex>
 #include <QtCore/QWaitCondition>
-#include <Common/QtHeadersEnd.h>
 
-// Project
 #include "Hardware/Common/FunctionTypes.h"
 
 //--------------------------------------------------------------------------------
-class WorkingThreadProxy : public QObject
-{
+class WorkingThreadProxy : public QObject {
     Q_OBJECT
 
-  public:
+public:
     WorkingThreadProxy(QThread *aWorkingThread);
 
     /// Вызывает метод в рабочем потоке и возвращает результат.
     template <class T> T invokeMethod(std::function<T()> aMethod);
 
-  signals:
+signals:
     /// Сигналы для обработки указанного метода в нити объекта.
     void invoke(TVoidMethod aMethod);
     void invoke(TBoolMethod aMethod, bool *aResult);
@@ -32,7 +27,7 @@ class WorkingThreadProxy : public QObject
     void invoke(TDoubleMethod aMethod, double *aResult);
     void invoke(TStringMethod aMethod, QString *aResult);
 
-  protected slots:
+protected slots:
     /// Обработчики сигнала invoke.
     void onInvoke(TVoidMethod aMethod);
     void onInvoke(TBoolMethod aMethod, bool *aResult);
@@ -42,10 +37,8 @@ class WorkingThreadProxy : public QObject
 
     void checkThreadStarted();
 
-  protected:
-    WorkingThreadProxy()
-    {
-    }
+protected:
+    WorkingThreadProxy() {}
 
     /// Из рабочего ли потока происходит вызов.
     bool isWorkingThread();

@@ -2,51 +2,46 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtNetwork/QTcpSocket>
-#include <QtCore/QStringList>
 #include <QtCore/QSharedPointer>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QStringList>
+#include <QtNetwork/QTcpSocket>
 
-// Modules
 #include <Hardware/IOPorts/IOPortBase.h>
 
 //--------------------------------------------------------------------------------
-namespace CTCPPort
-{
-    /// Таймаут открытия порта, [мс].
-    const int OpeningTimeout = 200;
+namespace CTCPPort {
+/// Таймаут открытия порта, [мс].
+const int OpeningTimeout = 200;
 
-    /// Таймаут закрытия порта, [мс].
-    const int CloseningTimeout = 200;
+/// Таймаут закрытия порта, [мс].
+const int CloseningTimeout = 200;
 
-    /// Пауза после закрытия порта, [мс].
-    const int CloseningPause = 100;
+/// Пауза после закрытия порта, [мс].
+const int CloseningPause = 100;
 
-    /// Маска адреса.
-    const QString AddressMask = QString("^%1\\.%1\\.%1\\.%1$").arg("[0-9]{1,3}");
+/// Маска адреса.
+const QString AddressMask = QString("^%1\\.%1\\.%1\\.%1$").arg("[0-9]{1,3}");
 
-    /// Маска адреса для указания в логе.
-    const char AddressMaskLog[] = "0xx.0xx.0xx.0xx";
+/// Маска адреса для указания в логе.
+const char AddressMaskLog[] = "0xx.0xx.0xx.0xx";
 
-    /// Пинг устройства во избежание применения алгоритма Нейгла.
-    const char AntiNaglePing[] = "\xFF";
+/// Пинг устройства во избежание применения алгоритма Нейгла.
+const char AntiNaglePing[] = "\xFF";
 
-    /// Таймаут единичного чтения из порта, [мс].
-    const int ReadingTimeout = 3;
+/// Таймаут единичного чтения из порта, [мс].
+const int ReadingTimeout = 3;
 } // namespace CTCPPort
 
-#define PERFORM_IN_THREAD(aMethod, ...) invokeMethod(std::bind(&TCPPort::aMethod, this, __VA_ARGS__))
+#define PERFORM_IN_THREAD(aMethod, ...)                                                            \
+    invokeMethod(std::bind(&TCPPort::aMethod, this, __VA_ARGS__))
 
 //--------------------------------------------------------------------------------
-class TCPPort : public QObject, public IOPortBase
-{
+class TCPPort : public QObject, public IOPortBase {
     Q_OBJECT
 
     SET_SERIES("TCP")
 
-  public:
+public:
     TCPPort();
 
     /// Опрашивает данные портов.
@@ -73,11 +68,11 @@ class TCPPort : public QObject, public IOPortBase
     /// Порт существует?
     virtual bool isExist();
 
-  signals:
+signals:
     /// Сигнал для обработки указанного метода в нити объекта.
     void invoke(TBoolMethod aMethod, bool *aResult);
 
-  protected slots:
+protected slots:
     /// Изменение состояния.
     void onStateChanged(QAbstractSocket::SocketState aSocketState);
 
@@ -90,7 +85,7 @@ class TCPPort : public QObject, public IOPortBase
     /// Обработчик сигнала invoke.
     void onInvoke(TBoolMethod aMethod, bool *aResult);
 
-  protected:
+protected:
     /// Вызывает метод в рабочем потоке и возвращает результат.
     bool invokeMethod(TBoolMethod aMethod);
 

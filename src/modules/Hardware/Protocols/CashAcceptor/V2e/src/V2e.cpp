@@ -1,30 +1,22 @@
 /* @file Протокол V2e. */
 
-// STL
+#include <QtCore/QElapsedTimer>
+
+#include <Hardware/Protocols/CashAcceptor/V2e.h>
 #include <numeric>
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QElapsedTimer>
-#include <Common/QtHeadersEnd.h>
-
-// System
-#include <Hardware/Protocols/CashAcceptor/V2e.h>
-
-// Project
 #include "V2eConstants.h"
 
-ushort V2eProtocol::calcCRC(const QByteArray &aData)
-{
-    int sum = std::accumulate(aData.begin(), aData.end(), 0,
-                              [&](ushort arg1, char arg2) -> ushort { return arg1 + uchar(arg2); });
+ushort V2eProtocol::calcCRC(const QByteArray &aData) {
+    int sum = std::accumulate(aData.begin(), aData.end(), 0, [&](ushort arg1, char arg2) -> ushort {
+        return arg1 + uchar(arg2);
+    });
 
     return ~ushort(sum) + 1;
 }
 
 //--------------------------------------------------------------------------------
-void V2eProtocol::pack(QByteArray &aCommandData)
-{
+void V2eProtocol::pack(QByteArray &aCommandData) {
     int length = aCommandData.size() + 6;
     aCommandData.prepend(char(length));
     aCommandData.prepend(char(length >> 8));
@@ -38,45 +30,45 @@ void V2eProtocol::pack(QByteArray &aCommandData)
 }
 
 //--------------------------------------------------------------------------------
-bool V2eProtocol::check(const QByteArray &aAnswer, const QByteArray &aRequest)
-{
+bool V2eProtocol::check(const QByteArray &aAnswer, const QByteArray &aRequest) {
     using namespace ProtocolUtils;
 
     // минимальная длина
-    if (aAnswer.size() < CV2e::MinAnswerSize)
-    {
-        toLog(LogLevel::Error, QString("V2.2E: Invalid answer length = %1, need = %2 minimum")
-                                   .arg(aAnswer.size())
-                                   .arg(CV2e::MinAnswerSize));
+    if (aAnswer.size() < CV2e::MinAnswerSize) {
+        toLog(LogLevel::Error,
+              QString("V2.2E: Invalid answer length = %1, need = %2 minimum")
+                  .arg(aAnswer.size())
+                  .arg(CV2e::MinAnswerSize));
         return false;
     }
 
     // первый байт
-    if (aAnswer[0] != CV2e::Prefix)
-    {
-        toLog(
-            LogLevel::Error,
-            QString("V2.2E: Invalid prefix: %1, need %2").arg(toHexLog<char>(aAnswer[0])).arg(toHexLog(CV2e::Prefix)));
+    if (aAnswer[0] != CV2e::Prefix) {
+        toLog(LogLevel::Error,
+              QString("V2.2E: Invalid prefix: %1, need %2")
+                  .arg(toHexLog<char>(aAnswer[0]))
+                  .arg(toHexLog(CV2e::Prefix)));
         return false;
     }
 
     // длина
     int length = aAnswer.mid(2, 2).toHex().toUShort(0, 16);
 
-    if (length != aAnswer.size())
-    {
+    if (length != aAnswer.size()) {
         toLog(LogLevel::Error,
-              QString("V2.2E: Invalid length of the message: %1, need %2").arg(aAnswer.size()).arg(length));
+              QString("V2.2E: Invalid length of the message: %1, need %2")
+                  .arg(aAnswer.size())
+                  .arg(length));
         return false;
     }
 
     // команда
     if ((aAnswer[4] != CV2e::ACK) && (aAnswer[4] != CV2e::NAK) && (aAnswer[4] != CV2e::IRQ) &&
-        (aRequest[4] != CV2e::Retransmit) && (aRequest[4] != aAnswer[4]))
-    {
-        toLog(LogLevel::Error, QString("V2.2E: Invalid command in answer: %1, need %2")
-                                   .arg(toHexLog<char>(aAnswer[4]))
-                                   .arg(toHexLog<char>(aRequest[4])));
+        (aRequest[4] != CV2e::Retransmit) && (aRequest[4] != aAnswer[4])) {
+        toLog(LogLevel::Error,
+              QString("V2.2E: Invalid command in answer: %1, need %2")
+                  .arg(toHexLog<char>(aAnswer[4]))
+                  .arg(toHexLog<char>(aRequest[4])));
         return false;
     }
 
@@ -84,9 +76,9 @@ bool V2eProtocol::check(const QByteArray &aAnswer, const QByteArray &aRequest)
     ushort CRC = calcCRC(aAnswer.left(length - 2));
     ushort answerCRC = aAnswer.right(2).toHex().toUShort(0, 16);
 
-    if (CRC != answerCRC)
-    {
-        toLog(LogLevel::Error, QString("V2.2E: Invalid CRC of the message: %1, need %2").arg(CRC).arg(answerCRC));
+    if (CRC != answerCRC) {
+        toLog(LogLevel::Error,
+              QString("V2.2E: Invalid CRC of the message: %1, need %2").arg(CRC).arg(answerCRC));
         return false;
     }
 
@@ -94,33 +86,29 @@ bool V2eProtocol::check(const QByteArray &aAnswer, const QByteArray &aRequest)
 }
 
 //--------------------------------------------------------------------------------
-TResult V2eProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData)
-{
+TResult V2eProtocol::processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData) {
     QByteArray request = aCommandData;
     pack(request);
 
     int repeat = 0;
     bool correct = true;
 
-    do
-    {
-        if (!correct)
-        {
-            toLog(LogLevel::Normal, QString("V2.2E: iteration #%1 due to NAK in the answer").arg(repeat + 1));
+    do {
+        if (!correct) {
+            toLog(LogLevel::Normal,
+                  QString("V2.2E: iteration #%1 due to NAK in the answer").arg(repeat + 1));
         }
 
         TResult result = handleError(request, aAnswerData);
 
-        if (!result)
-        {
+        if (!result) {
             return result;
         }
 
         correct = (aAnswerData.size() != 1) || (aAnswerData[0] != CV2e::NAK);
     } while (!correct && (++repeat < CV2e::MaxRepeat));
 
-    if (!correct)
-    {
+    if (!correct) {
         toLog(LogLevel::Error, "V2.2E: Failed to handle NAK in answer");
         return CommandResult::Transport;
     }
@@ -129,17 +117,15 @@ TResult V2eProtocol::processCommand(const QByteArray &aCommandData, QByteArray &
 }
 
 //--------------------------------------------------------------------------------
-TResult V2eProtocol::handleError(const QByteArray &aRequest, QByteArray &aAnswer)
-{
+TResult V2eProtocol::handleError(const QByteArray &aRequest, QByteArray &aAnswer) {
     int repeat = 0;
     bool correct = true;
     QByteArray request(aRequest);
 
-    do
-    {
-        if (!correct)
-        {
-            toLog(LogLevel::Normal, QString("V2.2E: iteration #%1 due to error in the answer").arg(repeat + 1));
+    do {
+        if (!correct) {
+            toLog(LogLevel::Normal,
+                  QString("V2.2E: iteration #%1 due to error in the answer").arg(repeat + 1));
 
             request = QByteArray(1, CV2e::Retransmit);
             pack(request);
@@ -147,13 +133,11 @@ TResult V2eProtocol::handleError(const QByteArray &aRequest, QByteArray &aAnswer
 
         toLog(LogLevel::Normal, QString("V2.2E: >> {%1}").arg(request.toHex().data()));
 
-        if (!mPort->write(aRequest) || !getAnswer(aAnswer))
-        {
+        if (!mPort->write(aRequest) || !getAnswer(aAnswer)) {
             return CommandResult::Port;
         }
 
-        if (aAnswer.isEmpty())
-        {
+        if (aAnswer.isEmpty()) {
             return CommandResult::NoAnswer;
         }
 
@@ -162,8 +146,7 @@ TResult V2eProtocol::handleError(const QByteArray &aRequest, QByteArray &aAnswer
         aAnswer = aAnswer.mid(4, aAnswer.size() - 6);
     } while (!correct && (++repeat < CV2e::MaxRepeat));
 
-    if (!correct)
-    {
+    if (!correct) {
         toLog(LogLevel::Error, "V2.2E: Failed to handle errors in answer");
         return CommandResult::Transport;
     }
@@ -172,8 +155,7 @@ TResult V2eProtocol::handleError(const QByteArray &aRequest, QByteArray &aAnswer
 }
 
 //--------------------------------------------------------------------------------
-bool V2eProtocol::getAnswer(QByteArray &aAnswer)
-{
+bool V2eProtocol::getAnswer(QByteArray &aAnswer) {
     aAnswer.clear();
     QByteArray data;
     ushort length = 0;
@@ -181,22 +163,20 @@ bool V2eProtocol::getAnswer(QByteArray &aAnswer)
     QElapsedTimer clockTimer;
     clockTimer.restart();
 
-    do
-    {
+    do {
         data.clear();
 
-        if (!mPort->read(data, 10))
-        {
+        if (!mPort->read(data, 10)) {
             return false;
         }
 
         aAnswer.append(data);
 
-        if (aAnswer.size() > 3)
-        {
+        if (aAnswer.size() > 3) {
             length = aAnswer.mid(2, 2).toHex().toUShort(0, 16);
         }
-    } while ((clockTimer.elapsed() < CV2e::AnswerTimeout) && ((aAnswer.size() < length) || (!length)));
+    } while ((clockTimer.elapsed() < CV2e::AnswerTimeout) &&
+             ((aAnswer.size() < length) || (!length)));
 
     toLog(LogLevel::Normal, QString("V2.2E: << {%1}").arg(aAnswer.toHex().data()));
 

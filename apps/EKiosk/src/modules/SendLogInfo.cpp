@@ -1,14 +1,9 @@
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QFile>
-#include <QtCore/QFileInfo>
-#include <Common/QtHeadersEnd.h>
-
-// Project
 #include "SendLogInfo.h"
 
-SendLogInfo::SendLogInfo(QObject *parent) : SendRequest(parent)
-{
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
+
+SendLogInfo::SendLogInfo(QObject *parent) : SendRequest(parent) {
     senderName = "COMMAND_CONFIRM";
 
     connect(this, SIGNAL(emit_ErrResponse()), this, SLOT(resendRequest()));
@@ -22,41 +17,37 @@ SendLogInfo::SendLogInfo(QObject *parent) : SendRequest(parent)
     systemLog = "";
 }
 
-void SendLogInfo::resendRequest()
-{
-    if (countAllRep < 20)
-    {
+void SendLogInfo::resendRequest() {
+    if (countAllRep < 20) {
         // Повторная отправка
         QTimer::singleShot(20000 * this->countAllRep, this, SLOT(sendRequestRepeet()));
-    }
-    else
-    {
-        emit emit_Loging(2, "SEND_LOG_INFO",
+    } else {
+        emit emit_Loging(2,
+                         "SEND_LOG_INFO",
                          QString("Невозможно отправить лог с id - %1 на сервер, "
                                  "количество повторов превысело 20")
                              .arg(nowIdTrn));
     }
 }
 
-void SendLogInfo::sendRequestRepeet()
-{
+void SendLogInfo::sendRequestRepeet() {
     countAllRep++;
 
-    emit emit_Loging(0, "SEND_LOG_INFO",
-                     QString("Попытка N-%1 отправки на сервер лога с id - %2").arg(countAllRep).arg(nowIdTrn));
+    emit emit_Loging(
+        0,
+        "SEND_LOG_INFO",
+        QString("Попытка N-%1 отправки на сервер лога с id - %2").arg(countAllRep).arg(nowIdTrn));
 
     sendRequest(requestXml, 30000);
 }
 
-void SendLogInfo::setDataNote(const QDomNode &domElement)
-{
+void SendLogInfo::setDataNote(const QDomNode &domElement) {
     resultCode = false;
 
     // Парсим данные
     parcerNote(domElement);
 
-    if (resultCode)
-    {
+    if (resultCode) {
         // Обнуляем счетчик
         countAllRep = 0;
 
@@ -64,30 +55,27 @@ void SendLogInfo::setDataNote(const QDomNode &domElement)
 
         emit emit_cmdResponseCode(0);
 
-        emit this->emit_Loging(0, "SEND_LOG_INFO", QString("Лог с id - %1 на сервер успешно отправлен.").arg(nowIdTrn));
+        emit this->emit_Loging(0,
+                               "SEND_LOG_INFO",
+                               QString("Лог с id - %1 на сервер успешно отправлен.").arg(nowIdTrn));
     }
 }
 
-void SendLogInfo::parcerNote(const QDomNode &domElement)
-{
+void SendLogInfo::parcerNote(const QDomNode &domElement) {
     // Необходимо отпарсить документ
     QDomNode domNode = domElement.firstChild();
 
-    while (!domNode.isNull())
-    {
-        if (domNode.isElement())
-        {
+    while (!domNode.isNull()) {
+        if (domNode.isElement()) {
             QDomElement domElement = domNode.toElement();
             QString strTag = domElement.tagName();
 
             // if(Debugger) qDebug() << strTag + " " + domElement.text();
 
-            if (strTag == "resultCode")
-            {
+            if (strTag == "resultCode") {
                 QString sts = domElement.text();
 
-                if (sts == "0")
-                {
+                if (sts == "0") {
                     resultCode = true;
                 }
             }
@@ -98,8 +86,7 @@ void SendLogInfo::parcerNote(const QDomNode &domElement)
     }
 }
 
-void SendLogInfo::sendLogInfoToServer(QString trn, QString date)
-{
+void SendLogInfo::sendLogInfoToServer(QString trn, QString date) {
 
     QString header_xml = getHeaderRequest(Request::Type::SendLogInfo);
 
@@ -117,21 +104,23 @@ void SendLogInfo::sendLogInfoToServer(QString trn, QString date)
 
     QString dateCreate = vrmFileInf.birthTime().toString("yyyy-MM-dd HH:mm:ss");
 
-    QString center_xml = QString("<messages>\n"
-                                 "<message id=\"%1\" cmdtrn=\"%6\" datecreate=\"%2\">\n"
-                                 "<title>Log Message %3</title>\n"
-                                 "<attachments>\n"
-                                 "<attachment name=\"%3.txt\">%4</attachment>\n"
-                                 "</attachments>\n"
-                                 "</message>\n"
-                                 "</messages>\n")
-                             .arg(idTrn, dateCreate == "" ? vrmDate : dateCreate, vrmDate, striper, trn);
+    QString center_xml =
+        QString("<messages>\n"
+                "<message id=\"%1\" cmdtrn=\"%6\" datecreate=\"%2\">\n"
+                "<title>Log Message %3</title>\n"
+                "<attachments>\n"
+                "<attachment name=\"%3.txt\">%4</attachment>\n"
+                "</attachments>\n"
+                "</message>\n"
+                "</messages>\n")
+            .arg(idTrn, dateCreate == "" ? vrmDate : dateCreate, vrmDate, striper, trn);
 
     QString footer_xml = getFooterRequest();
 
     QString xml = QString(header_xml + center_xml + footer_xml);
 
-    emit emit_Loging(0, "SEND_LOG_INFO",
+    emit emit_Loging(0,
+                     "SEND_LOG_INFO",
                      QString("Начинаем отправлять лог на сервер(id - %1, дата "
                              "создания - %2, наименование - %3)")
                          .arg(idTrn, dateCreate, date + ".txt"));
@@ -142,8 +131,7 @@ void SendLogInfo::sendLogInfoToServer(QString trn, QString date)
     sendRequest(xml, 120000);
 }
 
-void SendLogInfo::sendLogValidatorToServer(QString trn, QString date, QString account)
-{
+void SendLogInfo::sendLogValidatorToServer(QString trn, QString date, QString account) {
     QString header_xml = getHeaderRequest(Request::Type::SendLogInfo);
 
     QString vrmDate = date;
@@ -158,21 +146,23 @@ void SendLogInfo::sendLogValidatorToServer(QString trn, QString date, QString ac
 
     QString dateCreate = vrmFileInf.birthTime().toString("yyyy-MM-dd HH:mm:ss");
 
-    QString center_xml = QString("<messages>\n"
-                                 "<message id=\"%1\" cmdtrn=\"%6\" datecreate=\"%2\">\n"
-                                 "<title>Log Validator Message %5</title>\n"
-                                 "<attachments>\n"
-                                 "<attachment name=\"%3.txt\">%4</attachment>\n"
-                                 "</attachments>\n"
-                                 "</message>\n"
-                                 "</messages>\n")
-                             .arg(idTrn, dateCreate == "" ? vrmDate : dateCreate, account, striper, date, trn);
+    QString center_xml =
+        QString("<messages>\n"
+                "<message id=\"%1\" cmdtrn=\"%6\" datecreate=\"%2\">\n"
+                "<title>Log Validator Message %5</title>\n"
+                "<attachments>\n"
+                "<attachment name=\"%3.txt\">%4</attachment>\n"
+                "</attachments>\n"
+                "</message>\n"
+                "</messages>\n")
+            .arg(idTrn, dateCreate == "" ? vrmDate : dateCreate, account, striper, date, trn);
 
     QString footer_xml = getFooterRequest();
 
     QString xml = QString(header_xml + center_xml + footer_xml);
 
-    emit emit_Loging(0, "SEND_LOG_VALIDATOR_INFO",
+    emit emit_Loging(0,
+                     "SEND_LOG_VALIDATOR_INFO",
                      QString("Начинаем отправлять лог валидатора на сервер(id - "
                              "%1, дата создания - %2, наименование - %3)")
                          .arg(idTrn, dateCreate, account + ".txt"));
@@ -183,13 +173,11 @@ void SendLogInfo::sendLogValidatorToServer(QString trn, QString date, QString ac
     sendRequest(xml, 120000);
 }
 
-void SendLogInfo::getCompressLogData(QString date, bool &result, QString &strip)
-{
+void SendLogInfo::getCompressLogData(QString date, bool &result, QString &strip) {
     QByteArray ba;
     QFile fileInfo(QString("log/%1.txt").arg(date));
 
-    if (!fileInfo.open(QIODevice::ReadOnly))
-    {
+    if (!fileInfo.open(QIODevice::ReadOnly)) {
         qDebug() << "Error opened file - " << date;
         ba = QString("Лог файл не найден").toUtf8();
         result = false;
@@ -207,19 +195,19 @@ void SendLogInfo::getCompressLogData(QString date, bool &result, QString &strip)
     strip = QString(qCompress(ba, 9).toBase64());
 }
 
-void SendLogInfo::getCompressValiatorLogData(QString date, QString account, bool &result, QString &strip)
-{
+void SendLogInfo::getCompressValiatorLogData(QString date,
+                                             QString account,
+                                             bool &result,
+                                             QString &strip) {
     QByteArray ba;
     QFile fileInfo(QString("logvalidator/%1/%2.txt").arg(date, account));
 
     QString string = "";
 
     // если меньше 9MB
-    if (fileInfo.size() < 9000000)
-    {
+    if (fileInfo.size() < 9000000) {
 
-        if (!fileInfo.open(QIODevice::ReadOnly))
-        {
+        if (!fileInfo.open(QIODevice::ReadOnly)) {
             qDebug() << "Error opened file - " << date;
             ba = QString("Лог файл не найден").toUtf8();
             result = false;
@@ -232,9 +220,7 @@ void SendLogInfo::getCompressValiatorLogData(QString date, QString account, bool
         fileInfo.close();
 
         string.append(ba);
-    }
-    else
-    {
+    } else {
         ba = "File is very big";
     }
 

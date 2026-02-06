@@ -3,29 +3,22 @@
 #pragma once
 
 // Linux
-#include <sys/time.h>
-#include <sys/ioctl.h>
-#include <sys/select.h>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QVector>
 #include <QtCore/QSet>
 #include <QtCore/QUuid>
-#include <Common/QtHeadersEnd.h>
+#include <QtCore/QVector>
 
-// SDK
 #include <SDK/Drivers/IOPort/COMParameters.h>
 
-// Project
 #include <Hardware/IOPorts/IOPortBase.h>
+#include <sys/ioctl.h>
+#include <sys/select.h>
+#include <sys/time.h>
 
 //--------------------------------------------------------------------------------
-class AsyncSerialPortLin : public IOPortBase
-{
+class AsyncSerialPortLin : public IOPortBase {
     SET_SERIES("COM")
 
-  public:
+public:
     AsyncSerialPortLin();
 
     /// Возвращает список доступных в системе портов.
@@ -38,7 +31,8 @@ class AsyncSerialPortLin : public IOPortBase
     /// Устанавливает конфигурацию устройству.
     virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release();
 #pragma endregion
 
@@ -74,7 +68,7 @@ class AsyncSerialPortLin : public IOPortBase
     /// Изменить таймаут выполнения зависоноопасной операции
     void changePerformingTimeout(const QString &aContext, int aTimeout, int aPerformingTime);
 
-  protected:
+protected:
     /// Идентификация.
     virtual bool checkExistence();
 

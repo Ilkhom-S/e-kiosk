@@ -1,72 +1,61 @@
 /* @file Класс, реализующий приложение для системы обновления. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QPointer>
 #include <QtCore/QSharedPointer>
 #include <QtWidgets/QApplication>
-#include <Common/QtHeadersEnd.h>
 
-// Modules
 #include <Common/BasicApplication.h>
 #include <Common/SafeApplication.h>
 
-// System
 #include <UpdateEngine/ReportBuilder.h>
 #include <UpdateEngine/Updater.h>
 #include <WatchServiceClient/IWatchServiceClient.h>
 
-// Project
 #include "SplashScreen.h"
 
-namespace CUpdaterApp
-{
-    /// таймаут выхода с ошибкой, если не дождались закрытия ekiosk.exe
-    const int ErrorExitTimeout = 15 * 60 * 1000;
+namespace CUpdaterApp {
+/// таймаут выхода с ошибкой, если не дождались закрытия ekiosk.exe
+const int ErrorExitTimeout = 15 * 60 * 1000;
 
-    /// Глобальный таймаут скачивания обновлений
-    const int MaxDownloadTime = 4 * 60 * 60 * 1000; // 4 часа
+/// Глобальный таймаут скачивания обновлений
+const int MaxDownloadTime = 4 * 60 * 60 * 1000; // 4 часа
 
-    /// Таймаут попыток повторного запуска по финишу BITS
-    const long BITSCompleteTimeout = 15 * 60; // 15 минут
+/// Таймаут попыток повторного запуска по финишу BITS
+const long BITSCompleteTimeout = 15 * 60; // 15 минут
 
-    const long BITSErrorRestartTimeout = 3 * 60; // 3 минуты
+const long BITSErrorRestartTimeout = 3 * 60; // 3 минуты
 
-    typedef enum
-    {
-        Download, // закачиваем обновления
-        Deploy,   // устанавливаем обновления
-        Finish    // окончание обновления
-    } State;
+typedef enum {
+    Download, // закачиваем обновления
+    Deploy,   // устанавливаем обновления
+    Finish    // окончание обновления
+} State;
 
-    namespace ExitCode
-    {
-        enum Enum
-        {
-            NoError = 0,         /// Выход без ошибок.
-            ErrorRunFromTempDir, /// Ошибка запуска из временной папки
-            NoWatchService,      /// Отсутствует соединение с WatchService
-            UnknownCommand,      /// Неизвестная команда
-            SecondInstance,      /// Повторный запуск приложения
-            UnknownError,
-            NetworkError,             /// Сетевая ошибка (не смог скачать)
-            ParseError,               /// Ошибка разбора ответа сервера обновления
-            DeployError,              /// Ошибка распаковки/копирования содержимого при обновлении/получении файлов
-            Aborted,                  /// Команда прервана снаружи
-            Blocked,                  /// Обновление заблокировано на стороне сервера
-            FailIntegrity,            /// Проверка целостности закончилась неуспехом
-            WorkInProgress,           /// Фоновая обработка задания
-            ContinueExecution = 54321 /// Перезапуск из временной папки
-        };
-    } // namespace ExitCode
+namespace ExitCode {
+enum Enum {
+    NoError = 0,         /// Выход без ошибок.
+    ErrorRunFromTempDir, /// Ошибка запуска из временной папки
+    NoWatchService,      /// Отсутствует соединение с WatchService
+    UnknownCommand,      /// Неизвестная команда
+    SecondInstance,      /// Повторный запуск приложения
+    UnknownError,
+    NetworkError,   /// Сетевая ошибка (не смог скачать)
+    ParseError,     /// Ошибка разбора ответа сервера обновления
+    DeployError,    /// Ошибка распаковки/копирования содержимого при обновлении/получении файлов
+    Aborted,        /// Команда прервана снаружи
+    Blocked,        /// Обновление заблокировано на стороне сервера
+    FailIntegrity,  /// Проверка целостности закончилась неуспехом
+    WorkInProgress, /// Фоновая обработка задания
+    ContinueExecution = 54321 /// Перезапуск из временной папки
+};
+} // namespace ExitCode
 } // namespace CUpdaterApp
 
 //---------------------------------------------------------------------------
-class UpdaterApp : public QObject, public BasicQtApplication<SafeQApplication>
-{
+class UpdaterApp : public QObject, public BasicQtApplication<SafeQApplication> {
     Q_OBJECT
 
-  public:
+public:
     UpdaterApp(int aArgc, char **aArgv);
     ~UpdaterApp();
 
@@ -79,9 +68,10 @@ class UpdaterApp : public QObject, public BasicQtApplication<SafeQApplication>
     /// Возвращает рабочий каталог приложения (может быть задан в .ini файле).
     virtual QString getWorkingDirectory() const;
 
-    static void qtMessageHandler(QtMsgType aType, const QMessageLogContext &aContext, const QString &aMessage);
+    static void
+    qtMessageHandler(QtMsgType aType, const QMessageLogContext &aContext, const QString &aMessage);
 
-  private slots:
+private slots:
     /// Система обновления в процессе работы, ожидаем следующей попытки
     void updateSystemIsWaiting();
 
@@ -118,7 +108,7 @@ class UpdaterApp : public QObject, public BasicQtApplication<SafeQApplication>
     /// Обработчик предельного времени закачки файлов
     void tooLondToDownload();
 
-  private:
+private:
     QSharedPointer<IWatchServiceClient> mWatchServiceClient;
     QPointer<Updater> mUpdater;
 
@@ -130,7 +120,7 @@ class UpdaterApp : public QObject, public BasicQtApplication<SafeQApplication>
     int mResultCode_;
     QString mResultDescription;
 
-  private:
+private:
     /// Получить значение параметра командной строки
     QString getArgument(const char *aName, const QString &aDefaultValue = QString()) const;
 
@@ -160,7 +150,7 @@ class UpdaterApp : public QObject, public BasicQtApplication<SafeQApplication>
     void setResultCode(CUpdaterApp::ExitCode::Enum aExitCode, const QString aMessage = QString());
     void updateErrorDescription();
 
-  private:
+private:
     /// Скопировать файлы
     bool copyFiles(const QString &from, const QString &mask, const QString &to);
 
@@ -170,7 +160,7 @@ class UpdaterApp : public QObject, public BasicQtApplication<SafeQApplication>
     /// Список директорий - исключений
     QStringList exceptionDirs() const;
 
-  private:
+private:
     void startErrorTimer();
     void stopErrorTimer();
 };

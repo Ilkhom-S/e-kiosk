@@ -3,12 +3,11 @@
 
 #include <SDK/Plugins/PluginFactory.h>
 
-class WatchdogPluginFactory : public SDK::Plugin::PluginFactory
-{
+class WatchdogPluginFactory : public SDK::Plugin::PluginFactory {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "SDK.Plugin.PluginFactory")
     Q_INTERFACES(SDK::Plugin::IPluginFactory)
-  public:
+public:
     WatchdogPluginFactory();
     ~WatchdogPluginFactory() override = default;
 };

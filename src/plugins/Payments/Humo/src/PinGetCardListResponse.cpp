@@ -1,21 +1,17 @@
 /* @file Ответ на запрос получения номиналов pin-карт. */
 
-// Project
 #include "PinGetCardListResponse.h"
 
-PinGetCardListResponse::PinGetCardListResponse(const Request &aRequest, const QString &aResponseString)
-    : Response(aRequest, aResponseString)
-{
-    if (getError() != EServerError::Ok)
-    {
+PinGetCardListResponse::PinGetCardListResponse(const Request &aRequest,
+                                               const QString &aResponseString)
+    : Response(aRequest, aResponseString) {
+    if (getError() != EServerError::Ok) {
         return;
     }
 
-    foreach (QString rawCard, getParameter("CARD_LIST").toString().split(":"))
-    {
+    foreach (QString rawCard, getParameter("CARD_LIST").toString().split(":")) {
         QStringList cardParams = rawCard.split("=", Qt::KeepEmptyParts);
-        if (cardParams.size() < 3)
-        {
+        if (cardParams.size() < 3) {
             continue;
         }
 
@@ -30,14 +26,12 @@ PinGetCardListResponse::PinGetCardListResponse(const Request &aRequest, const QS
 }
 
 //---------------------------------------------------------------------------
-bool PinGetCardListResponse::isOk()
-{
+bool PinGetCardListResponse::isOk() {
     return (getError() == EServerError::Ok);
 }
 
 //---------------------------------------------------------------------------
-const QList<SPinCard> &PinGetCardListResponse::getCards() const
-{
+const QList<SPinCard> &PinGetCardListResponse::getCards() const {
     return mCards;
 }
 

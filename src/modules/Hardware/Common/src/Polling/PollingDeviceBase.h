@@ -2,30 +2,25 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QTimer>
-#include <Common/QtHeadersEnd.h>
 
-// Project
 #include "Hardware/Common/DeviceBase.h"
 
-namespace CPollingDeviceBase
-{
-    /// Ожидание останова поллинга, [мс].
-    const SWaitingData StopWaiting = SWaitingData(1, 15 * 1000);
+namespace CPollingDeviceBase {
+/// Ожидание останова поллинга, [мс].
+const SWaitingData StopWaiting = SWaitingData(1, 15 * 1000);
 } // namespace CPollingDeviceBase
 
 /// Список задач.
 typedef QList<TVoidMethod> TTaskList;
 
 //---------------------------------------------------------------------------
-template <class T> class PollingDeviceBase : public DeviceBase<T>
-{
-  public:
+template <class T> class PollingDeviceBase : public DeviceBase<T> {
+public:
     PollingDeviceBase();
 
-    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова initialize().
+    /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
+    /// initialize().
     virtual bool release();
 
     /// Завершение инициализации.

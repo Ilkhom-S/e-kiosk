@@ -2,32 +2,28 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QSignalMapper>
-#include "ui_encashmentHistoryWindow.h"
-#include <Common/QtHeadersEnd.h>
 
-// Project
+#include "ui_encashmentHistoryWindow.h"
+
 class HumoServiceBackend;
 
 //------------------------------------------------------------------------
-class EncashmentHistoryWindow : public QWidget, protected Ui_EncashmentHistoryWindow
-{
+class EncashmentHistoryWindow : public QWidget, protected Ui_EncashmentHistoryWindow {
     Q_OBJECT
 
-  public:
+public:
     EncashmentHistoryWindow(HumoServiceBackend *aBackend, QWidget *aParent);
 
     virtual ~EncashmentHistoryWindow();
 
-  public slots:
+public slots:
     void updateHistory();
 
-  private slots:
+private slots:
     void printEncashment(int aIndex);
 
-  protected:
+protected:
     HumoServiceBackend *mBackend;
     QList<QWidget *> mWidgets;
     QSignalMapper *mSignalMapper;

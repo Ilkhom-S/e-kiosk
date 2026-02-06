@@ -1,108 +1,90 @@
 #pragma once
 
-// Platform
-#include <windows.h>
-
-// STL
-#include <iostream>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
 
-// Project
+#include <iostream>
 #include <psapi.h>
 #include <tchar.h>
 #include <tlhelp32.h>
+#include <windows.h>
 
-namespace CUtils
-{
-    TCHAR UnitellerHostName[] = L"Uniteller.SoftwareManager.ServiceHost.exe";
-    TCHAR UnitellerConsoleHostName[] = L"Uniteller.Framework.Kernel.ConsoleHost.exe";
-    char UnitellerServiceConfig[] = "service.config";
-    char UnitellerIdentificationKey[] = "Identification";
+namespace CUtils {
+TCHAR UnitellerHostName[] = L"Uniteller.SoftwareManager.ServiceHost.exe";
+TCHAR UnitellerConsoleHostName[] = L"Uniteller.Framework.Kernel.ConsoleHost.exe";
+char UnitellerServiceConfig[] = "service.config";
+char UnitellerIdentificationKey[] = "Identification";
 } // namespace CUtils
 
-namespace Ucs
-{
+namespace Ucs {
 
-    //---------------------------------------------------------------------------
-    inline QString getUnitellerHostPath()
-    {
-        PROCESSENTRY32 entry;
-        entry.dwSize = sizeof(PROCESSENTRY32);
+//---------------------------------------------------------------------------
+inline QString getUnitellerHostPath() {
+    PROCESSENTRY32 entry;
+    entry.dwSize = sizeof(PROCESSENTRY32);
 
-        QString path;
+    QString path;
 
-        HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
 
-        if (Process32First(snapshot, &entry))
-        {
-            while (Process32Next(snapshot, &entry))
-            {
-                if (_wcsicmp(entry.szExeFile, CUtils::UnitellerHostName) == 0 ||
-                    _wcsicmp(entry.szExeFile, CUtils::UnitellerConsoleHostName) == 0)
-                {
-                    HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
+    if (Process32First(snapshot, &entry)) {
+        while (Process32Next(snapshot, &entry)) {
+            if (_wcsicmp(entry.szExeFile, CUtils::UnitellerHostName) == 0 ||
+                _wcsicmp(entry.szExeFile, CUtils::UnitellerConsoleHostName) == 0) {
+                HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
 
-                    HANDLE processHandle =
-                        OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, entry.th32ProcessID);
+                HANDLE processHandle = OpenProcess(
+                    PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, entry.th32ProcessID);
 
-                    TCHAR fullPath[MAX_PATH] = {0};
+                TCHAR fullPath[MAX_PATH] = {0};
 
-                    if (processHandle != NULL)
-                    {
-                        if (GetModuleFileNameEx(processHandle, NULL, fullPath, MAX_PATH) != 0)
-                        {
-                            CloseHandle(processHandle);
-                            CloseHandle(hProcess);
-                            CloseHandle(snapshot);
-
-                            return QFileInfo(QString::fromWCharArray(fullPath)).dir().path();
-                        }
-
+                if (processHandle != NULL) {
+                    if (GetModuleFileNameEx(processHandle, NULL, fullPath, MAX_PATH) != 0) {
                         CloseHandle(processHandle);
+                        CloseHandle(hProcess);
+                        CloseHandle(snapshot);
+
+                        return QFileInfo(QString::fromWCharArray(fullPath)).dir().path();
                     }
 
-                    CloseHandle(hProcess);
-                }
-            }
-        }
-
-        CloseHandle(snapshot);
-
-        return QString();
-    }
-
-    //---------------------------------------------------------------------------
-    inline QString getUPID()
-    {
-        QFile config(
-            QString("%1%2%3").arg(getUnitellerHostPath()).arg(QDir::separator()).arg(CUtils::UnitellerServiceConfig));
-
-        if (config.open(QIODevice::ReadOnly))
-        {
-            QStringList content = QString(config.readAll()).split("\n");
-
-            foreach (QString line, content)
-            {
-                if (!line.contains(CUtils::UnitellerIdentificationKey))
-                {
-                    continue;
+                    CloseHandle(processHandle);
                 }
 
-                QRegularExpression rx("\"(.*)\"");
-                return rx.match(line).capturedStart() != -1
-                           ? rx.capturedTexts().last().rightJustified(10, '0').right(10)
-                           : QString().fill('0', 10);
+                CloseHandle(hProcess);
             }
         }
-
-        return QString();
     }
+
+    CloseHandle(snapshot);
+
+    return QString();
+}
+
+//---------------------------------------------------------------------------
+inline QString getUPID() {
+    QFile config(QString("%1%2%3")
+                     .arg(getUnitellerHostPath())
+                     .arg(QDir::separator())
+                     .arg(CUtils::UnitellerServiceConfig));
+
+    if (config.open(QIODevice::ReadOnly)) {
+        QStringList content = QString(config.readAll()).split("\n");
+
+        foreach (QString line, content) {
+            if (!line.contains(CUtils::UnitellerIdentificationKey)) {
+                continue;
+            }
+
+            QRegularExpression rx("\"(.*)\"");
+            return rx.match(line).capturedStart() != -1
+                       ? rx.capturedTexts().last().rightJustified(10, '0').right(10)
+                       : QString().fill('0', 10);
+        }
+    }
+
+    return QString();
+}
 
 } // namespace Ucs

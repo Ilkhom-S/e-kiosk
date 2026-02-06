@@ -2,7 +2,6 @@
 
 #pragma once
 
-// SDK
 #include <SDK/PaymentProcessor/Core/Event.h>
 
 // modules
@@ -11,28 +10,22 @@
 class IApplication;
 
 //---------------------------------------------------------------------------
-namespace CGUISignals
-{
-    const char StartGUI[] = "start_ui";
-    const char StopGUI[] = "stop_ui";
-    const char UpdateGUI[] = "update_ui";
-    const char ScreenPasswordUpdated[] = "screen_password_updated";
+namespace CGUISignals {
+const char StartGUI[] = "start_ui";
+const char StopGUI[] = "stop_ui";
+const char UpdateGUI[] = "update_ui";
+const char ScreenPasswordUpdated[] = "screen_password_updated";
 } // namespace CGUISignals
 
 //---------------------------------------------------------------------------
-class IdleScenario : public GUI::Scenario
-{
+class IdleScenario : public GUI::Scenario {
     Q_OBJECT
     Q_ENUMS(Command)
 
-  public:
-    enum Command
-    {
-        None,
-        Autoencashment
-    };
+public:
+    enum Command { None, Autoencashment };
 
-  public:
+public:
     IdleScenario(IApplication *mApplication);
     virtual ~IdleScenario();
 
@@ -52,33 +45,34 @@ class IdleScenario : public GUI::Scenario
     virtual bool initialize(const QList<GUI::SScriptObject> &aScriptObjects);
 
     /// Обработка сигнала из активного состояния с дополнительными аргументами.
-    virtual void signalTriggered(const QString &aSignal, const QVariantMap &aArguments = QVariantMap());
+    virtual void signalTriggered(const QString &aSignal,
+                                 const QVariantMap &aArguments = QVariantMap());
 
     /// Возвращает false, если сценарий не может быть остановлен в текущий момент.
     virtual bool canStop();
 
-  public slots:
+public slots:
     /// Текущее состояние.
     virtual QString getState() const;
 
     /// Обработчик таймаута
     virtual void onTimeout();
 
-  private:
+private:
     /// Определяем новое состояние.
     void updateState(const QString &aSignal, const QVariantMap &aParameters);
 
     /// Выполнение команды.
     void execCommand();
 
-  private slots:
+private slots:
     /// Обработчик события.
     void onEvent(const SDK::PaymentProcessor::Event &aEvent);
 
-  protected:
+protected:
     void timerEvent(QTimerEvent *aEvent);
 
-  private:
+private:
     IApplication *mApplication;
     QString mDefaultScenario;
     Command mCommand;

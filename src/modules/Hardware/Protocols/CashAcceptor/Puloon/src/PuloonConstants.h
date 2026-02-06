@@ -6,28 +6,27 @@
 
 //--------------------------------------------------------------------------------
 /// Константы, команды и коды состояний устройств на протоколе Puloon.
-namespace CPuloon
-{
-    /// Начало передачи данных.
-    const char CommandMark = ASCII::EOT;
+namespace CPuloon {
+/// Начало передачи данных.
+const char CommandMark = ASCII::EOT;
 
-    /// Начало передачи данных.
-    const char AnswerMark = ASCII::SOH;
+/// Начало передачи данных.
+const char AnswerMark = ASCII::SOH;
 
-    /// Префикс.
-    const char Prefix = ASCII::STX;
+/// Префикс.
+const char Prefix = ASCII::STX;
 
-    /// Постфикс.
-    const char Postfix = ASCII::ETX;
+/// Постфикс.
+const char Postfix = ASCII::ETX;
 
-    /// Минимальный размер ответного пакета.
-    const int MinPacketAnswerSize = 6;
+/// Минимальный размер ответного пакета.
+const int MinPacketAnswerSize = 6;
 
-    /// Максимальное число повторений пакета в случае ошибки.
-    const int MaxRepeatPacket = 3;
+/// Максимальное число повторений пакета в случае ошибки.
+const int MaxRepeatPacket = 3;
 
-    /// Дефолтный таймаут чтения ответа, [мс].
-    const int DefaultAnswerTimeout = 200;
+/// Дефолтный таймаут чтения ответа, [мс].
+const int DefaultAnswerTimeout = 200;
 } // namespace CPuloon
 
 //--------------------------------------------------------------------------------

@@ -2,7 +2,6 @@
 
 // Plugin SDK
 
-// SDK
 #include <SDK/Plugins/PluginFactory.h>
 
 QString SDK::Plugin::PluginFactory::mName = "FR";

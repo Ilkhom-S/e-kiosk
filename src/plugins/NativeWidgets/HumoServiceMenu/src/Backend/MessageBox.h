@@ -2,42 +2,36 @@
 
 #pragma once
 
-// Qt
-#include "Common/QtHeadersBegin.h"
 #include <QtCore/QObject>
-#include <QtCore/QTimer>
 #include <QtCore/QPointer>
-#include "Common/QtHeadersEnd.h"
+#include <QtCore/QTimer>
 
-// SDK
 #include <SDK/GUI/MessageBoxParams.h>
 #include <SDK/PaymentProcessor/Core/IGUIService.h>
 
-// Project
 #include "../GUI/MessageBox/MessageBox.h"
 
 //------------------------------------------------------------------------
-namespace CMessageBox
-{
-    extern const int WaitWindowTimeout; // 3 секунды - defined in GUI/MessageBox.h
+namespace CMessageBox {
+extern const int WaitWindowTimeout; // 3 секунды - defined in GUI/MessageBox.h
 } // namespace CMessageBox
 
 //------------------------------------------------------------------------
-class MessageBox : public QObject
-{
+class MessageBox : public QObject {
     Q_OBJECT
 
-  public:
+public:
     static void initialize(SDK::PaymentProcessor::IGUIService *aGUIService);
     static void shutdown();
 
-  public:
+public:
     static void info(const QString &aText);
     static void critical(const QString &aText);
     static void warning(const QString &aText);
     static void wait(const QString &aText, bool aCancelable = false);
-    static void modal(const QString &aText,
-                      SDK::GUI::MessageBoxParams::Enum aIcon = SDK::GUI::MessageBoxParams::Critical);
+    static void
+    modal(const QString &aText,
+          SDK::GUI::MessageBoxParams::Enum aIcon = SDK::GUI::MessageBoxParams::Critical);
 
     /// Окошко без кнопок. Показывается aTimeout миллисекунд
     static void notify(const QString &aText, int aTimeout = 1000);
@@ -56,41 +50,31 @@ class MessageBox : public QObject
     /// Обновляем параметры сигнала/слота и испускаем сигнал
     static void emitSignal(const QVariantMap &aParameters);
 
-  public:
-    void showPopup(const QString &aText, SDK::GUI::MessageBoxParams::Enum aIcon,
+public:
+    void showPopup(const QString &aText,
+                   SDK::GUI::MessageBoxParams::Enum aIcon,
                    SDK::GUI::MessageBoxParams::Enum aButton);
     bool showModal(const QString &aText, SDK::GUI::MessageBoxParams::Enum aIcon);
     void showNotify(const QString &aText, int aTimeout);
     void updatePopup(const QVariantMap &aParameters);
     void setReceiver(QObject *aReceiver);
     void emitPopupSignal(const QVariantMap &aParameters);
-    void startWaitTimer()
-    {
-        mWaitTimer.start(CMessageBox::WaitWindowTimeout);
-    }
-    void stopWaitTimer()
-    {
-        mWaitTimer.stop();
-    }
+    void startWaitTimer() { mWaitTimer.start(CMessageBox::WaitWindowTimeout); }
+    void stopWaitTimer() { mWaitTimer.stop(); }
 
-  public slots:
+public slots:
     void hideWindow();
 
-  signals:
+signals:
     void clicked(const QVariantMap &aParameters);
 
-  private:
+private:
     MessageBox(SDK::PaymentProcessor::IGUIService *aGUIService);
-    ~MessageBox()
-    {
-    }
+    ~MessageBox() {}
 
-    static MessageBox *getInstance()
-    {
-        return mInstance;
-    }
+    static MessageBox *getInstance() { return mInstance; }
 
-  private:
+private:
     static MessageBox *mInstance;
     SDK::PaymentProcessor::IGUIService *mGUIService;
     QPointer<QObject> mSignalReceiver;

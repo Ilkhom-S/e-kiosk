@@ -2,63 +2,56 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QStringList>
-#include <QtCore/QList>
-#include <QtCore/QVector>
 #include <QtCore/QDateTime>
-#include <Common/QtHeadersEnd.h>
-
-// SDK
-#include <SDK/PaymentProcessor/Settings/Range.h>
-#include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>
-#include <SDK/PaymentProcessor/Connection/Connection.h>
+#include <QtCore/QList>
+#include <QtCore/QStringList>
+#include <QtCore/QVector>
 
 #include <Common/ILogable.h>
 #include <Common/PropertyTree.h>
 
-namespace SDK
-{
-    namespace PaymentProcessor
-    {
+#include <SDK/PaymentProcessor/Connection/Connection.h>
+#include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>
+#include <SDK/PaymentProcessor/Settings/Range.h>
 
-        //----------------------------------------------------------------------------
-        class Directory : public ISettingsAdapter, public ILogable
-        {
-          public:
-            Directory(TPtree &aProperties);
-            ~Directory();
+namespace SDK {
+namespace PaymentProcessor {
 
-            /// Валидация данных.
-            virtual bool isValid() const;
+//----------------------------------------------------------------------------
+class Directory : public ISettingsAdapter, public ILogable {
+public:
+    Directory(TPtree &aProperties);
+    ~Directory();
 
-            /// Получить имя адаптера.
-            static QString getAdapterName();
+    /// Валидация данных.
+    virtual bool isValid() const;
 
-            /// Получить шаблоны соединения.
-            QList<SConnectionTemplate> getConnectionTemplates() const;
+    /// Получить имя адаптера.
+    static QString getAdapterName();
 
-            /// Возвращает диапазоны для заданного номера.
-            QList<SRange> getRangesForNumber(qint64 aNumber) const;
+    /// Получить шаблоны соединения.
+    QList<SConnectionTemplate> getConnectionTemplates() const;
 
-            /// Возвращает список ID операторов, которые имеют виртуальные ёмкости.
-            QSet<qint64> getOverlappedIDs() const;
+    /// Возвращает диапазоны для заданного номера.
+    QList<SRange> getRangesForNumber(qint64 aNumber) const;
 
-          private:
-            Directory(const Directory &);
-            void operator=(const Directory &);
+    /// Возвращает список ID операторов, которые имеют виртуальные ёмкости.
+    QSet<qint64> getOverlappedIDs() const;
 
-          private:
-            TPtree &mProperties;
+private:
+    Directory(const Directory &);
+    void operator=(const Directory &);
 
-            QVector<SRange> mRanges;
-            QVector<SRange> mOverlappedRanges;
-            QSet<qint64> mOverlappedIDs;
-            QDateTime mRangesTimestamp;
-        };
+private:
+    TPtree &mProperties;
 
-    } // namespace PaymentProcessor
+    QVector<SRange> mRanges;
+    QVector<SRange> mOverlappedRanges;
+    QSet<qint64> mOverlappedIDs;
+    QDateTime mRangesTimestamp;
+};
+
+} // namespace PaymentProcessor
 } // namespace SDK
 
 //---------------------------------------------------------------------------

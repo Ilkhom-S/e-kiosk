@@ -1,16 +1,12 @@
 /* @file Реализация фабрики плагина рекламы. */
 
-// Qt
-#include <Common/QtHeadersBegin.h>
-#include <QtCore/QStringList>
-#include <Common/QtHeadersEnd.h>
-
-// Project
 #include "AdPluginFactory.h"
+
+#include <QtCore/QStringList>
+
 #include "AdPluginImpl.h"
 
-AdPluginFactory::AdPluginFactory()
-{
+AdPluginFactory::AdPluginFactory() {
     mModuleName = "ad_plugin";
     mName = "Ad Plugin";
     mDescription = "Advertisement management plugin for EKiosk";

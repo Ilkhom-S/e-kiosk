@@ -2,64 +2,50 @@
 
 #pragma once
 
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QReadWriteLock>
-#include <Common/QtHeadersEnd.h>
 
-// Boost
 #pragma push_macro("foreach")
 #undef foreach
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/member.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index_container.hpp>
 #pragma pop_macro("foreach")
 
-// SDK
 #include <SDK/PaymentProcessor/Core/ICore.h>
-#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
-#include <SDK/PaymentProcessor/Settings/Provider.h>
 #include <SDK/PaymentProcessor/Payment/IPayment.h>
+#include <SDK/PaymentProcessor/Settings/Provider.h>
+#include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
 //------------------------------------------------------------------------------
-namespace CPayment
-{
-    namespace Requests
-    {
-        const char FakeCheck[] = "FAKE_CHECK";
-        const char Check[] = "CHECK";
-        const char Pay[] = "PAYMENT";
-        const char Status[] = "STATUS";
-        const char GetStep[] = "GETSTEP";
-    } // namespace Requests
+namespace CPayment {
+namespace Requests {
+const char FakeCheck[] = "FAKE_CHECK";
+const char Check[] = "CHECK";
+const char Pay[] = "PAYMENT";
+const char Status[] = "STATUS";
+const char GetStep[] = "GETSTEP";
+} // namespace Requests
 
-    namespace Steps
-    {
-        const int Init = 1;
-        const int Pay = 2;
-    } // namespace Steps
+namespace Steps {
+const int Init = 1;
+const int Pay = 2;
+} // namespace Steps
 } // namespace CPayment
 
 //------------------------------------------------------------------------------
-class PaymentBase : public SDK::PaymentProcessor::IPayment, public ILogable
-{
-    struct SParameterModifier
-    {
-        SParameterModifier(const SParameter &aModifiedValue) : modifiedValue(aModifiedValue)
-        {
-        }
+class PaymentBase : public SDK::PaymentProcessor::IPayment, public ILogable {
+    struct SParameterModifier {
+        SParameterModifier(const SParameter &aModifiedValue) : modifiedValue(aModifiedValue) {}
 
-        void operator()(SParameter &aParameter)
-        {
-            aParameter = modifiedValue;
-        }
+        void operator()(SParameter &aParameter) { aParameter = modifiedValue; }
 
-      private:
+    private:
         SParameter modifiedValue;
     };
 
-  public:
-    PaymentBase(SDK::PaymentProcessor::IPaymentFactory *aFactory, SDK::PaymentProcessor::ICore *aCore);
+public:
+    PaymentBase(SDK::PaymentProcessor::IPaymentFactory *aFactory,
+                SDK::PaymentProcessor::ICore *aCore);
 
 #pragma region SDK::PaymentProcessor::IPayment interface
 
@@ -146,7 +132,7 @@ class PaymentBase : public SDK::PaymentProcessor::IPayment, public ILogable
 
 #pragma endregion
 
-  public:
+public:
     /// Возвращает сумму, которая будет зачислена на счёт плательщика.
     virtual QString getAmount() const;
 
@@ -165,7 +151,7 @@ class PaymentBase : public SDK::PaymentProcessor::IPayment, public ILogable
     /// Возвращает настройки ключей для проведения платежа.
     const SDK::PaymentProcessor::SKeySettings &getKeySettings() const;
 
-  protected:
+protected:
     /// Устанавливает значение параметра во внутреннем списке.
     virtual void updateParameter(const SParameter &aParameter);
 
@@ -187,24 +173,26 @@ class PaymentBase : public SDK::PaymentProcessor::IPayment, public ILogable
     /// Критическая ошибка, проведение платежа прекращается.
     virtual bool isCriticalError(int aError) const;
 
-  protected:
+protected:
     struct NameTag;
     struct UpdateTag;
 
     typedef boost::multi_index_container<
         SParameter,
         boost::multi_index::indexed_by<
-            boost::multi_index::ordered_unique<boost::multi_index::tag<NameTag>,
-                                               boost::multi_index::member<SParameter, QString, &SParameter::name>>,
-            boost::multi_index::ordered_non_unique<boost::multi_index::tag<UpdateTag>,
-                                                   boost::multi_index::member<SParameter, bool, &SParameter::updated>>>>
+            boost::multi_index::ordered_unique<
+                boost::multi_index::tag<NameTag>,
+                boost::multi_index::member<SParameter, QString, &SParameter::name>>,
+            boost::multi_index::ordered_non_unique<
+                boost::multi_index::tag<UpdateTag>,
+                boost::multi_index::member<SParameter, bool, &SParameter::updated>>>>
         TParameterList;
 
-  private:
+private:
     mutable QReadWriteLock mParametersLock;
     TParameterList mParameters;
 
-  protected:
+protected:
     SDK::PaymentProcessor::IPaymentFactory *mFactory;
     SDK::PaymentProcessor::ICore *mCore;
 

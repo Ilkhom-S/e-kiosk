@@ -5,17 +5,16 @@
 #include <Hardware/Watchdogs/WatchdogBase.h>
 
 //----------------------------------------------------------------------------
-class Alarm : public WatchdogBase
-{
+class Alarm : public WatchdogBase {
     SET_SERIES("Alarm")
 
-  public:
+public:
     Alarm();
 
     /// Размыкание линии питания модема.
     virtual bool reset(const QString &aLine);
 
-  protected:
+protected:
     /// Идентифицирует устройство.
     virtual bool isConnected();
 

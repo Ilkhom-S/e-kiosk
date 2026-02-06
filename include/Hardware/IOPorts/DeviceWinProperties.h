@@ -5,33 +5,29 @@
 #include "Hardware/Common/Specifications.h"
 
 //--------------------------------------------------------------------------------
-namespace CDeviceProperties
-{
-    // Вместо "SPDRP" используем общий префикс
-    const char Prefix[] = "PROP";
+namespace CDeviceProperties {
+// Вместо "SPDRP" используем общий префикс
+const char Prefix[] = "PROP";
 
-    // Определяем кроссплатформенные идентификаторы свойств
-    enum EType : unsigned int
-    {
-        FriendlyName = 0,
-        DeviceDesc,
-        Manufacturer,
-        Class,
-        Driver,
-        Enumerator,
-        Location,
-        BusAddress,
-        PhysName
-    };
+// Определяем кроссплатформенные идентификаторы свойств
+enum EType : unsigned int {
+    FriendlyName = 0,
+    DeviceDesc,
+    Manufacturer,
+    Class,
+    Driver,
+    Enumerator,
+    Location,
+    BusAddress,
+    PhysName
+};
 } // namespace CDeviceProperties
 
 //--------------------------------------------------------------------------------
 /// Описатель свойств устройств. Работает на всех ОС без windows.h
-class DeviceProperties : public CDescription<unsigned int>
-{
-  public:
-    DeviceProperties()
-    {
+class DeviceProperties : public CDescription<unsigned int> {
+public:
+    DeviceProperties() {
         // Вместо APPEND(SPDRP_...) используем свои внутренние ID
         append(CDeviceProperties::FriendlyName, "FriendlyName");
         append(CDeviceProperties::DeviceDesc, "DeviceDesc");

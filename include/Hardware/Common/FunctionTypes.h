@@ -2,13 +2,9 @@
 
 #pragma once
 
-// STL
-#include <functional>
-
-// Qt
-#include <Common/QtHeadersBegin.h>
 #include <QtCore/QMetaType>
-#include <Common/QtHeadersEnd.h>
+
+#include <functional>
 
 //--------------------------------------------------------------------------------
 typedef std::function<void()> TVoidMethod;

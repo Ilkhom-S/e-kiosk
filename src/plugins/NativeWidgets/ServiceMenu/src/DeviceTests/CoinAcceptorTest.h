@@ -2,25 +2,22 @@
 
 #pragma once
 
-// SDK
 #include <Common/ObjectPointer.h>
+
 #include <SDK/Drivers/ICashAcceptor.h>
 #include <SDK/PaymentProcessor/IDeviceTest.h>
 
-namespace SDK
-{
-    namespace Driver
-    {
-        class IDevice;
-    } // namespace Driver
+namespace SDK {
+namespace Driver {
+class IDevice;
+} // namespace Driver
 } // namespace SDK
 
 //------------------------------------------------------------------------------
-class CoinAcceptorTest : public SDK::PaymentProcessor::IDeviceTest
-{
+class CoinAcceptorTest : public SDK::PaymentProcessor::IDeviceTest {
     Q_OBJECT
 
-  public:
+public:
     CoinAcceptorTest(SDK::Driver::IDevice *aDevice);
 
     /// Возвращает имена и описания тестов.
@@ -38,10 +35,10 @@ class CoinAcceptorTest : public SDK::PaymentProcessor::IDeviceTest
     /// Возвращает true, если тест устройства возвращает результат теста
     virtual bool hasResult();
 
-  private slots:
+private slots:
     void onStacked(SDK::Driver::TParList aNotes);
 
-  private:
+private:
     ObjectPointer<SDK::Driver::ICashAcceptor> mCoinAcceptor;
 };
 

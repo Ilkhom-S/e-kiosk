@@ -1,18 +1,14 @@
 #pragma once
 
-// System
 #include "../other/receipt.h"
-
-// Project
 #include "SendRequest.h"
 
 class SendRequest;
 
-class PayDaemons : public SendRequest
-{
+class PayDaemons : public SendRequest {
     Q_OBJECT
 
-  public:
+public:
     PayDaemons(QObject *parent = 0);
     QString getReceiptInfo(QString tranz_id);
 
@@ -27,15 +23,22 @@ class PayDaemons : public SendRequest
 
     void startTimer(const int sec);
 
-  private:
+private:
     bool GetOperationCount(const QString &id_trn);
 
-    bool getPayData(QString id_trn, QString &date_create, QString &prv_name, QString &account, QString &sum_from,
-                    QString &sum_to, QString &ratio_sum, QString &ratio_persent);
+    bool getPayData(QString id_trn,
+                    QString &date_create,
+                    QString &prv_name,
+                    QString &account,
+                    QString &sum_from,
+                    QString &sum_to,
+                    QString &ratio_sum,
+                    QString &ratio_persent);
     void sendPaymentToServer(bool withNon);
 
     bool getPaymentMap(QString &payment, int &count_pay, double &all_sum);
-    bool updateOperationStatus(const QString &id_trm, const QString &status, const QString &dateConfirm);
+    bool
+    updateOperationStatus(const QString &id_trm, const QString &status, const QString &dateConfirm);
     void parcerNote(const QDomNode &domElement);
 
     void confirmPayments();
@@ -54,11 +57,11 @@ class PayDaemons : public SendRequest
 
     QString getCollectionId();
 
-  private slots:
+private slots:
     void setDataNote(const QDomNode &domElement);
     void getErrResponse();
 
-  public slots:
+public slots:
     void sendPayRequest();
     void get_new_pay(QVariantMap payment);
     void get_update_pay(QVariantMap payment);
@@ -67,7 +70,7 @@ class PayDaemons : public SendRequest
     bool getCountPayment(int &count);
     void checkPayStatus54();
 
-  signals:
+signals:
     void emit_to_print(QString print);
     void lockUnlockNonSend(bool lock);
     void lockUnlockAvtorization(bool lock, int sts);

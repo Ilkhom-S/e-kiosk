@@ -2,36 +2,31 @@
 
 #pragma once
 
-// Modules
+#include <Hardware/Watchdogs/OSMPWdData.h>
 #include <Hardware/Watchdogs/WatchdogBase.h>
 
-// Project
-#include <Hardware/Watchdogs/OSMPWdData.h>
-
 //--------------------------------------------------------------------------------
-namespace COSMP
-{
-    /// Проверка на неправильную идентификацию
-    const QByteArray WrongDeviceCheck = QByteArray::fromRawData("\xa5\x00\x00\x5b", 4);
+namespace COSMP {
+/// Проверка на неправильную идентификацию
+const QByteArray WrongDeviceCheck = QByteArray::fromRawData("\xa5\x00\x00\x5b", 4);
 
-    /// Пауза при переоткрытии порта, [мс]
-    const int ReopenPortPause = 1000;
+/// Пауза при переоткрытии порта, [мс]
+const int ReopenPortPause = 1000;
 } // namespace COSMP
 
 //--------------------------------------------------------------------------------
-class OSMP : public WatchdogBase
-{
+class OSMP : public WatchdogBase {
     typedef QMap<EOSMPCommandId::Enum, const char *> TData;
 
     SET_SERIES("OSMP")
 
-  public:
+public:
     OSMP();
 
     /// Перезагрузка линии питания.
     virtual bool reset(const QString &aLine);
 
-  protected:
+protected:
     /// Обработчик сигнала пинга.
     virtual void onPing();
 
