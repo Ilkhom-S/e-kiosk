@@ -25,6 +25,9 @@
   "C_Cpp.default.intelliSenseMode": "macos-clang-x64",
   "C_Cpp.codeAnalysis.clangTidy.enabled": true,
   "C_Cpp.codeAnalysis.clangTidy.path": "/opt/homebrew/opt/llvm/bin/clang-tidy",
+  "C_Cpp.codeAnalysis.clangTidy.args": [
+    "--extra-arg=-isysroot/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+  ],
   "C_Cpp.formatting": "clangFormat",
   "C_Cpp.clang_format_style": "file",
   "C_Cpp.clang_format_path": "/opt/homebrew/opt/llvm/bin/clang-format",
