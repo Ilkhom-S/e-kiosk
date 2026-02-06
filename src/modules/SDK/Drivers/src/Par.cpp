@@ -5,9 +5,7 @@
 
 // SDK
 #include <SDK/Drivers/CashAcceptor/CurrencyList.h>
-
-// Project
-#include "Par.h"
+#include <SDK/Drivers/CashAcceptor/Par.h>
 
 namespace SDK
 {

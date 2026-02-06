@@ -213,7 +213,7 @@ void DeviceManager::releaseDevice(IDevice *aDevice)
     IPlugin *plugin = dynamic_cast<IPlugin *>(aDevice);
 
     // #55103 - не сохраняем новую конфигурацию устройства, при выходе из клиента,
-    //          т.к. иначе не сможем откатиться на старую версию ТК.
+    //          т.к. иначе не сможем откатиться на старую версию EK.
     // plugin->saveConfiguration();
 
     QString driverPath = plugin->getConfigurationName().section(CPlugin::InstancePathSeparator, 0, 0);

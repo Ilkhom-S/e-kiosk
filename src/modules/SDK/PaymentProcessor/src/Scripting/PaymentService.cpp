@@ -625,8 +625,6 @@ namespace SDK
                     if (field.name == aParamName)
                     {
                         QRegularExpression macroPattern("\\{(.+)\\}");
-                        ////////macroPattern.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
-                        /// compatibility // Removed for Qt5/6 compatibility // Removed for Qt5/6 compatibility
 
                         QString result = field.value;
 

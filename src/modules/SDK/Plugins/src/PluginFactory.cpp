@@ -17,9 +17,7 @@
 // SDK
 #include <SDK/Plugins/PluginFactory.h>
 #include <SDK/Plugins/PluginInitializer.h>
-
-// Project
-#include "PluginLoader.h"
+#include <SDK/Plugins/PluginLoader.h>
 
 namespace SDK
 {
@@ -506,7 +504,7 @@ namespace SDK
         //------------------------------------------------------------------------------
         QStringList PluginFactory::getRuntimeConfigurations(const QString &aPathFilter) const
         {
-            // Немного опимизации
+            // Немного оптимизации
             if (aPathFilter.isEmpty())
             {
                 return mCreatedPlugins.values();
@@ -521,7 +519,7 @@ namespace SDK
         //------------------------------------------------------------------------------
         QStringList PluginFactory::getPersistentConfigurations(const QString &aPathFilter) const
         {
-            // Немного опимизации
+            // Немного оптимизации
             if (aPathFilter.isEmpty())
             {
                 return mPersistentConfigurations.keys();

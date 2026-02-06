@@ -228,15 +228,15 @@ qint64 PaymentBase::getProvider(bool aMNP) const
         return myProvider;
     }
 
-    qint64 getewayIn = getParameter(PPSDK::CPayment::Parameters::MNPGatewayIn).value.toLongLong();
-    qint64 getewayOut = getParameter(PPSDK::CPayment::Parameters::MNPGatewayOut).value.toLongLong();
+    qint64 gatewayIn = getParameter(PPSDK::CPayment::Parameters::MNPGatewayIn).value.toLongLong();
+    qint64 gatewayOut = getParameter(PPSDK::CPayment::Parameters::MNPGatewayOut).value.toLongLong();
 
     PPSDK::DealerSettings *dealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
         mCore->getSettingsService()->getAdapter(PPSDK::CAdapterNames::DealerAdapter));
 
     Q_ASSERT(dealerSettings);
 
-    PPSDK::SProvider provider = dealerSettings->getMNPProvider(myProvider, getewayIn, getewayOut);
+    PPSDK::SProvider provider = dealerSettings->getMNPProvider(myProvider, gatewayIn, gatewayOut);
 
     return provider.isNull() ? myProvider : provider.id;
 }

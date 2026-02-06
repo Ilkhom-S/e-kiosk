@@ -16,7 +16,7 @@
 // Plugin SDK
 #include <SDK/Plugins/IPluginFactory.h>
 
-#include "PluginLoader.h"
+#include <SDK/Plugins/PluginLoader.h>
 
 namespace SDK
 {
