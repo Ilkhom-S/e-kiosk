@@ -25,7 +25,7 @@ Example:
 - **Naming Conventions:**
   - Classes: PascalCase (e.g., DeviceManager)
   - Methods: camelCase (e.g., initializeDevice)
-  - Member variables: m_camelCase (e.g., m_deviceList)
+  - Member variables: mCamelCase (e.g., mDeviceList)
   - Constants: UPPER_SNAKE_CASE or kPascalCase
   - Interfaces: Prefix with I (e.g., IDevice, ICryptEngine)
 - **Header Guards:** Use #pragma once

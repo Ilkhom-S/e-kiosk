@@ -64,19 +64,19 @@ CheckOptions:
   - key: readability-identifier-naming.EnumConstantCase
     value: CamelCase
 
-  # Member variables use m_ prefix
+  # Member variables use m prefix (mCamelCase)
   - key: readability-identifier-naming.MemberCase
-    value: camelBack
+    value: CamelCase
   - key: readability-identifier-naming.MemberPrefix
-    value: "m_"
+    value: "m"
   - key: readability-identifier-naming.PrivateMemberCase
-    value: camelBack
+    value: CamelCase
   - key: readability-identifier-naming.PrivateMemberPrefix
-    value: "m_"
+    value: "m"
   - key: readability-identifier-naming.ProtectedMemberCase
-    value: camelBack
+    value: CamelCase
   - key: readability-identifier-naming.ProtectedMemberPrefix
-    value: "m_"
+    value: "m"
 
   # Function parameters use a prefix
   - key: readability-identifier-naming.ParameterCase
