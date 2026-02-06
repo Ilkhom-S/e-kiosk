@@ -8,7 +8,7 @@
 DatabaseQuery::DatabaseQuery(QSqlDatabase db, IDatabaseQueryChecker *aQueryChecker)
     : QSqlQuery(db), mQueryChecker(aQueryChecker)
 {
-    m_log = ILog::getInstance(CIDatabaseQuery::DefaultLog);
+    mLog = ILog::getInstance(CIDatabaseQuery::DefaultLog);
 }
 
 //---------------------------------------------------------------------------
@@ -59,7 +59,7 @@ bool DatabaseQuery::prepare(const QString &aQuery)
     {
         mQueryChecker->isGood(false);
 
-        LOG(m_log, LogLevel::Error,
+        LOG(mLog, LogLevel::Error,
             QString("Can't prepare query: %1. Error: %2.").arg(aQuery).arg(QSqlQuery::lastError().databaseText()));
 
         return false;
@@ -87,7 +87,7 @@ bool DatabaseQuery::exec()
     {
         mQueryChecker->isGood(false);
 
-        LOG(m_log, LogLevel::Error,
+        LOG(mLog, LogLevel::Error,
             QString("Can't execute query: %1. Error: %2.")
                 .arg(QSqlQuery::lastQuery())
                 .arg(QSqlQuery::lastError().databaseText()));

@@ -38,7 +38,7 @@ class DatabaseQuery : public IDatabaseQuery, public QSqlQuery
     virtual QVariant value(int i) const override;
 
   private:
-    ILog *m_log;
+    ILog *mLog;
     IDatabaseQueryChecker *mQueryChecker;
 };
 
