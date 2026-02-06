@@ -60,10 +60,10 @@ class MessageQueueServer : public QTcpServer, public IMessageQueueServer
     void onSocketReadyRead(QTcpSocket *socket);
 
   private:
-    TLocalSocketMap m_sockets;
-    TSocketBufferMap m_buffers;
-    QString m_queueName;
-    ILog *m_log;
+    TLocalSocketMap mSockets;
+    TSocketBufferMap mBuffers;
+    QString mQueueName;
+    ILog *mLog;
 };
 
 //----------------------------------------------------------------------------

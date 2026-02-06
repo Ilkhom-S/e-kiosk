@@ -58,11 +58,11 @@ class MessageQueueClient : public QObject, public IMessageQueueClient
     void onDisconnected();
 
   private:
-    QLocalSocket m_socket;
-    QByteArray m_buffer;
+    QLocalSocket mSocket;
+    QByteArray mBuffer;
 
     /// Таймер, который будет следить за ответом сервера на пинг.
-    QTimer m_answerTimer;
+    QTimer mAnswerTimer;
 };
 
 //----------------------------------------------------------------------------

@@ -127,13 +127,13 @@ class StackWalker
     virtual void OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr);
     virtual void OnOutput(LPCSTR szText);
 
-    StackWalkerInternal *m_sw;
-    HANDLE m_hProcess;
-    DWORD m_dwProcessId;
-    BOOL m_modulesLoaded;
-    LPSTR m_szSymPath;
+    StackWalkerInternal *mSw;
+    HANDLE mHProcess;
+    DWORD mDwProcessId;
+    BOOL mModulesLoaded;
+    LPSTR mSzSymPath;
 
-    int m_options;
+    int mOptions;
 
     static BOOL __stdcall myReadProcMem(HANDLE hProcess, DWORD64 qwBaseAddress, PVOID lpBuffer, DWORD nSize,
                                         LPDWORD lpNumberOfBytesRead);

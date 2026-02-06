@@ -61,11 +61,11 @@ class MessageQueueClient : public QObject, public IMessageQueueClient, public IL
     void onDisconnected();
 
   private:
-    QTcpSocket m_socket;
-    QByteArray m_buffer;
+    QTcpSocket mSocket;
+    QByteArray mBuffer;
 
     /// Таймер, который будет следить за ответом сервера на пинг.
-    QTimer m_answerTimer;
+    QTimer mAnswerTimer;
 };
 
 //----------------------------------------------------------------------------

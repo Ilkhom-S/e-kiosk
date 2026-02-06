@@ -59,12 +59,12 @@ class MessageQueueServer : public QLocalServer, public IMessageQueueServer
     void onSocketReadyRead(QObject *aObject);
 
   private:
-    QSignalMapper m_disconnectSignalMapper;
-    QSignalMapper m_readyReadSignalMapper;
-    TLocalSocketMap m_sockets;
-    TSocketBufferMap m_buffers;
-    QString m_queueName;
-    ILog *m_log;
+    QSignalMapper mDisconnectSignalMapper;
+    QSignalMapper mReadyReadSignalMapper;
+    TLocalSocketMap mSockets;
+    TSocketBufferMap mBuffers;
+    QString mQueueName;
+    ILog *mLog;
 };
 
 //----------------------------------------------------------------------------
