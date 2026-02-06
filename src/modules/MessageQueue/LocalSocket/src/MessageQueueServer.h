@@ -29,23 +29,23 @@ class MessageQueueServer : public QLocalServer, public IMessageQueueServer
     virtual ~MessageQueueServer();
 
     /// Активировать очередь сообщений.
-    virtual bool init();
+    virtual bool init() override;
     /// Останавливает сервер.
-    virtual void stop();
+    virtual void stop() override;
 
     /// Послать сообщение всем подключенным клиентам.
-    virtual void sendMessage(const QByteArray &aMessage);
+    virtual void sendMessage(const QByteArray &aMessage) override;
 
     /// Подписаться на получение сообщения. aObject должен иметь
     /// слот onMessageReceived(QByteArray aMessage).
-    virtual bool subscribeOnMessageReceived(QObject *aObject);
+    virtual bool subscribeOnMessageReceived(QObject *aObject) override;
 
     /// Подписаться на получение сообщения. aObject должен иметь
     /// слот onDisconnected().
-    virtual bool subscribeOnDisconnected(QObject *aObject);
+    virtual bool subscribeOnDisconnected(QObject *aObject) override;
 
   protected:
-    virtual void incomingConnection(quintptr socketDescriptor);
+    virtual void incomingConnection(quintptr socketDescriptor) override;
 
   private:
     void parseInputBuffer(QByteArray &aBuffer);

@@ -27,10 +27,10 @@ class SplashScreen : public QWidget, protected ILogable
     virtual ~SplashScreen();
 
     /// Сворачивает окно вместо его закрытия.
-    virtual void closeEvent(QCloseEvent *aEvent);
+    virtual void closeEvent(QCloseEvent *aEvent) override;
 
     /// Отслеживает клики по экрану для доступа в сервисное меню.
-    virtual bool eventFilter(QObject *aObject, QEvent *aEvent);
+    virtual bool eventFilter(QObject *aObject, QEvent *aEvent) override;
 
     /// Установка произвольного изображения в качестве фона для защитного экрана.
     virtual void setCustomBackground(const QString &aPath);

@@ -64,73 +64,73 @@ class PaymentBase : public SDK::PaymentProcessor::IPayment, public ILogable
 #pragma region SDK::PaymentProcessor::IPayment interface
 
     /// Если предикат возвращает true, то платёж не сформирован должным образом и может быть удалён.
-    virtual bool isNull() const;
+    virtual bool isNull() const override;
 
     /// Возвращает фабрику, которой был создан платёж.
-    virtual SDK::PaymentProcessor::IPaymentFactory *getFactory() const;
+    virtual SDK::PaymentProcessor::IPaymentFactory *getFactory() const override;
 
     /// Установка параметра в платёж.
-    virtual void setParameter(const SParameter &aParameter);
+    virtual void setParameter(const SParameter &aParameter) override;
 
     /// Получение параметра по имени.
-    virtual SParameter getParameter(const QString &aName) const;
+    virtual SParameter getParameter(const QString &aName) const override;
 
     /// Получение всех параметров платежа.
-    virtual QList<SParameter> getParameters() const;
+    virtual QList<SParameter> getParameters() const override;
 
     /// Вычислить размер комиссии, без записи результата в параметры платежа
-    virtual QList<SParameter> calculateCommission(const QList<SParameter> &aParameters);
+    virtual QList<SParameter> calculateCommission(const QList<SParameter> &aParameters) override;
 
     /// Возвращает список параметров, достаточных для последующего восстановления платежа.
-    virtual QList<SParameter> serialize() const;
+    virtual QList<SParameter> serialize() const override;
 
     /// Восстановление платежа из списка параметров.
-    virtual bool restore(const QList<SParameter> &aParameters);
+    virtual bool restore(const QList<SParameter> &aParameters) override;
 
     /// Идентификатор платежа.
-    virtual qint64 getID() const;
+    virtual qint64 getID() const override;
 
     /// Тип платежа.
-    virtual QString getType() const;
+    virtual QString getType() const override;
 
     /// Возвращает активную сессию платежа.
-    virtual QString getSession() const;
+    virtual QString getSession() const override;
 
     /// Возвращает начальную сессию платежа.
-    virtual QString getInitialSession() const;
+    virtual QString getInitialSession() const override;
 
     /// Провайдер платежа.
-    virtual qint64 getProvider(bool aMNP) const;
+    virtual qint64 getProvider(bool aMNP) const override;
 
     /// Дата создания платежа.
-    virtual QDateTime getCreationDate() const;
+    virtual QDateTime getCreationDate() const override;
 
     /// Дата завершения формирования платежа.
-    virtual QDateTime getCompleteDate() const;
+    virtual QDateTime getCompleteDate() const override;
 
     /// Дата последнего изменения платежа.
-    virtual QDateTime getLastUpdateDate() const;
+    virtual QDateTime getLastUpdateDate() const override;
 
     /// Статус платежа.
-    virtual int getStatus() const;
+    virtual int getStatus() const override;
 
     /// Устанавливает платежу статус aStatus.
-    virtual void setStatus(int aStatus);
+    virtual void setStatus(int aStatus) override;
 
     ///	Возвращает приоритет платежа.
-    virtual Priority getPriority() const;
+    virtual Priority getPriority() const override;
 
     /// Устанавливает приоритет проведения платежу.
-    virtual void setPriority(Priority aPriority);
+    virtual void setPriority(Priority aPriority) override;
 
     /// Устанавливает дату следующей попытки проведения платежа.
-    virtual void setNextTryDate(const QDateTime &aDate);
+    virtual void setNextTryDate(const QDateTime &aDate) override;
 
     /// Устанавливает дату завершения формирования платежа.
-    virtual void setCompleteDate(const QDateTime &aDate);
+    virtual void setCompleteDate(const QDateTime &aDate) override;
 
     /// Возвращает true, если платёж можно провести в оффлайне.
-    virtual bool canProcessOffline() const;
+    virtual bool canProcessOffline() const override;
 
     /// Возвращает, можно ли обновлять лимиты платежа
     virtual bool getBlockUpdateLimits() const;
@@ -139,10 +139,10 @@ class PaymentBase : public SDK::PaymentProcessor::IPayment, public ILogable
     virtual void setBlockUpdateLimits(bool aBlock);
 
     /// Отмена платёжа. В случае успеха возвращает true.
-    virtual bool cancel();
+    virtual bool cancel() override;
 
     /// Отметка платежа как удаленного. В случае успеха возвращает true.
-    virtual bool remove();
+    virtual bool remove() override;
 
 #pragma endregion
 

@@ -22,20 +22,20 @@ class DatabaseQuery : public IDatabaseQuery, public QSqlQuery
     DatabaseQuery(QSqlDatabase db, IDatabaseQueryChecker *aQueryChecker);
     virtual ~DatabaseQuery();
 
-    virtual bool prepare(const QString &aQuery);
-    virtual void bindValue(const QString &aName, const QVariant &aValue);
-    virtual void bindValue(int aPos, const QVariant &aValue);
-    virtual bool exec();
-    virtual void clear();
+    virtual bool prepare(const QString &aQuery) override;
+    virtual void bindValue(const QString &aName, const QVariant &aValue) override;
+    virtual void bindValue(int aPos, const QVariant &aValue) override;
+    virtual bool exec() override;
+    virtual void clear() override;
 
-    virtual bool first();
-    virtual bool next();
-    virtual bool last();
+    virtual bool first() override;
+    virtual bool next() override;
+    virtual bool last() override;
 
-    virtual bool isValid();
-    virtual int numRowsAffected() const;
+    virtual bool isValid() override;
+    virtual int numRowsAffected() const override;
 
-    virtual QVariant value(int i) const;
+    virtual QVariant value(int i) const override;
 
   private:
     ILog *m_log;

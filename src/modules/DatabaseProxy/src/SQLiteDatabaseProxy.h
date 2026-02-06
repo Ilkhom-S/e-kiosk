@@ -35,52 +35,52 @@ class SQLiteDatabaseProxy : public IDatabaseProxy, protected ILogable
     virtual ~SQLiteDatabaseProxy();
 
     /// Установить интерфейс контроля над ошибками БД
-    virtual void setQueryChecker(IDatabaseQueryChecker *aQueryChecker);
+    virtual void setQueryChecker(IDatabaseQueryChecker *aQueryChecker) override;
 
     /// IDatabaseProxy: Открытие соединения с БД.
     virtual bool open(const QString &aDatabaseName = CIDatabaseProxy::DefaultDatabase,
                       const QString &aUser = CIDatabaseProxy::DefaultUser,
                       const QString &aPassword = CIDatabaseProxy::DefaultPassword,
                       const QString &aHost = CIDatabaseProxy::DefaultHost,
-                      const int aPort = CIDatabaseProxy::DefaultPort);
+                      const int aPort = CIDatabaseProxy::DefaultPort) override;
 
     /// IDatabaseProxy: Закрытие соединения с БД.
-    virtual void close();
+    virtual void close() override;
 
     /// IDatabaseProxy: Возвращает true, если база открыта.
-    virtual bool isConnected() const;
+    virtual bool isConnected() const override;
 
     /// IDatabaseProxy: Возвращает имя открытой БД.
-    virtual const QString &getCurrentBaseName() const;
+    virtual const QString &getCurrentBaseName() const override;
 
     /// IDatabaseProxy: Создаёт экземпляр запроса к БД.
-    virtual IDatabaseQuery *createQuery();
+    virtual IDatabaseQuery *createQuery() override;
 
     /// Создает и подготавливает экземпляр запроса к БД.
-    virtual IDatabaseQuery *createQuery(const QString &aQueryString);
+    virtual IDatabaseQuery *createQuery(const QString &aQueryString) override;
 
     /// IDatabaseProxy: Выполнение DML запроса. Помещает в rowsAffected количество затронутых строк.
-    virtual bool execDML(const QString &aQuery, long &aRowsAffected);
+    virtual bool execDML(const QString &aQuery, long &aRowsAffected) override;
 
     /// IDatabaseProxy: Выполнение запроса, содержащего, к примеру, COUNT(*). В result записывает значение ячейки (1,1).
-    virtual bool execScalar(const QString &aQuery, long &aResult);
+    virtual bool execScalar(const QString &aQuery, long &aResult) override;
 
     /// IDatabaseProxy: Выполнение произвольного запроса. Если запрос успешно выполнен, то результат функции будет не
     /// нулевым.
-    virtual IDatabaseQuery *execQuery(const QString &aQuery);
+    virtual IDatabaseQuery *execQuery(const QString &aQuery) override;
 
     /// IDatabaseProxy: Пытается создать новую транзакцию.
-    virtual bool transaction();
+    virtual bool transaction() override;
 
     /// IDatabaseProxy: Принимает изменения, внесённые во время последней транзакции.
-    virtual bool commit();
+    virtual bool commit() override;
 
     /// IDatabaseProxy: Сбрасывает изменения, внесённые во время последней транзакции.
-    virtual bool rollback();
+    virtual bool rollback() override;
 
   public:
     /// Проверка целостности базы
-    virtual bool checkIntegrity(QStringList &aListErrors);
+    virtual bool checkIntegrity(QStringList &aListErrors) override;
 
   protected:
     virtual bool safeExec(QSqlQuery *aQuery, const QString &aQueryMessage);

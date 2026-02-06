@@ -27,10 +27,10 @@ if(WIN32)
     file(GLOB TS_FILES_COMMON ../../../modules/Hardware/Common/src/locale/*.ts)
     set(TS_FILES ${TS_FILES_PLUGIN} ${TS_FILES_COMMON})
     if(TS_FILES)
-        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/locale)
+        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins/drivers)
         ek_add_translations(hid_devices
             SOURCES ${TS_FILES}
-            OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/locale
+            OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/plugins/drivers
         )
     endif()
 endif()

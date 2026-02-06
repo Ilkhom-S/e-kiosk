@@ -64,9 +64,9 @@ endif()
 # Translations
 file(GLOB TS_FILES src/locale/*.ts)
 if(TS_FILES)
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/locale)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins)
     ek_add_translations(service_menu
         SOURCES ${TS_FILES}
-        OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/locale
+        OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/plugins
     )
 endif()

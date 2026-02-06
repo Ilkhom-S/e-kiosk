@@ -33,6 +33,6 @@ if(TS_FILES)
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/locale)
     ek_add_translations(watchdogs
         SOURCES ${TS_FILES}
-        OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/locale
+        OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/plugins/drivers
     )
 endif()

@@ -29,9 +29,9 @@ file(GLOB TS_FILES_PLUGIN src/Locale/*.ts)
 file(GLOB TS_FILES_COMMON ../../../modules/Hardware/Common/src/locale/*.ts)
 set(TS_FILES ${TS_FILES_PLUGIN} ${TS_FILES_COMMON})
 if(TS_FILES)
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/locale)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins)
     ek_add_translations(ucs
         SOURCES ${TS_FILES}
-        OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/locale
+        OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/plugins
     )
 endif()

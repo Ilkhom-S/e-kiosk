@@ -32,28 +32,28 @@ class AudioService : public QObject,
     virtual ~AudioService();
 
     /// IService: Инициализация сервиса.
-    virtual bool initialize();
+    virtual bool initialize() override;
 
     /// IService: Закончена инициализация всех сервисов.
-    virtual void finishInitialize();
+    virtual void finishInitialize() override;
 
     /// Возвращает false, если сервис не может быть остановлен в текущий момент.
-    virtual bool canShutdown();
+    virtual bool canShutdown() override;
 
     /// IService: Завершение работы сервиса.
-    virtual bool shutdown();
+    virtual bool shutdown() override;
 
     /// IService: Возвращает имя сервиса.
-    virtual QString getName() const;
+    virtual QString getName() const override;
 
     /// IService: Список необходимых сервисов.
-    virtual const QSet<QString> &getRequiredServices() const;
+    virtual const QSet<QString> &getRequiredServices() const override;
 
     /// IService: Получить параметры сервиса.
-    virtual QVariantMap getParameters() const;
+    virtual QVariantMap getParameters() const override;
 
     /// IService: Сброс служебной информации.
-    virtual void resetParameters(const QSet<QString> &aParameters);
+    virtual void resetParameters(const QSet<QString> &aParameters) override;
 
 #pragma region SDK::PaymentProcessor::IAudioService interface
 

@@ -31,70 +31,70 @@ class WatchServiceClient : public QThread, public IWatchServiceClient
     virtual ~WatchServiceClient();
 
     /// IWatchServiceClient: Подключение к сторожевому сервису.
-    virtual bool start();
+    virtual bool start() override;
 
     /// IWatchServiceClient: Закрытие соединения со сторожевым сервисом.
-    virtual void stop();
+    virtual void stop() override;
 
     /// IWatchServiceClient: Возвращает true, если клиент подключён к сторожевому сервису.
-    virtual bool isConnected() const;
+    virtual bool isConnected() const override;
 
     /// IWatchServiceClient: Выполнение команды aCommand на модуле aModule c параметрами aParams.
-    virtual void execute(QString aCommand, QString aModule = QString(), QString aParams = QString());
+    virtual void execute(QString aCommand, QString aModule = QString(), QString aParams = QString()) override;
 
     /// IWatchServiceClient: Завершение работы всех модулей и сторожевого сервиса.
-    virtual void stopService();
+    virtual void stopService() override;
 
     /// IWatchServiceClient: Команда перезапуска сервиса.
-    virtual void restartService(QStringList aParameters);
+    virtual void restartService(QStringList aParameters) override;
 
     /// IWatchServiceClient: Перезагрузка компьютера.
-    virtual void rebootMachine();
+    virtual void rebootMachine() override;
 
     /// IWatchServiceClient: Выключение компьютера.
-    virtual void shutdownMachine();
+    virtual void shutdownMachine() override;
 
     /// IWatchServiceClient: Запуск модуля aModule с параметрами aParams.
-    virtual void startModule(QString aModule, QString aParams = QString());
+    virtual void startModule(QString aModule, QString aParams = QString()) override;
 
     /// IWatchServiceClient: Закрытие модуля aModule.
-    virtual void closeModule(QString aModule);
+    virtual void closeModule(QString aModule) override;
 
     /// Закрытие всех активных модулей без закрытия сервиса.
-    virtual void closeModules();
+    virtual void closeModules() override;
 
     /// IWatchServiceClient: Включение защитного экрана.
-    virtual void showSplashScreen();
+    virtual void showSplashScreen() override;
 
     /// IWatchServiceClient: Отключение защитного экрана.
-    virtual void hideSplashScreen();
+    virtual void hideSplashScreen() override;
 
     /// IWatchServiceClient: Сообщить сервису о статусе aStatus состояния aType.
-    virtual void setState(int aType, int aStatus);
+    virtual void setState(int aType, int aStatus) override;
 
     /// IWatchServiceClient: Сбрасывает все установленные статусы.
-    virtual void resetState();
+    virtual void resetState() override;
 
     /// IWatchServiceClient: Подписывает aObject на получение команд от сервиса. Объект должен иметь
     /// слот с сигнатурой onCommandReceived(const QString& aSender, const QString& aTarget,
     /// const QString& aType, const QStringList & aTail).
-    virtual bool subscribeOnCommandReceived(QObject *aObject);
+    virtual bool subscribeOnCommandReceived(QObject *aObject) override;
 
     /// IWatchServiceClient: Подписывает aObject на получение оповещения от сервиса о требованием завершить работу.
     /// Объект должен иметь слот с сигнатурой onCloseCommandReceived().
-    virtual bool subscribeOnCloseCommandReceived(QObject *aObject);
+    virtual bool subscribeOnCloseCommandReceived(QObject *aObject) override;
 
     /// IWatchServiceClient: Подписывает aObject на получение оповещения о разрыве связи со сторожевым сервисом.
     /// Объект должен иметь слот с сигнатурой onDisconnected().
-    virtual bool subscribeOnDisconnected(QObject *aObject);
+    virtual bool subscribeOnDisconnected(QObject *aObject) override;
 
     /// Подписывает aObject на получение оповещения от сервиса о закрытии любого модуля.
     /// Объект должен иметь слот с сигнатурой onModuleClosed(const QString &).
-    virtual bool subscribeOnModuleClosed(QObject *aObject);
+    virtual bool subscribeOnModuleClosed(QObject *aObject) override;
 
   protected:
     /// Рабочая процедура Qt'шной нитки.
-    virtual void run();
+    virtual void run() override;
 
     /// Пинг сторожевого сервиса.
     virtual void ping();

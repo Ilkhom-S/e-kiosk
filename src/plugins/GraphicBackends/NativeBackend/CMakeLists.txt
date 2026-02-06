@@ -16,6 +16,7 @@ ek_add_plugin(native_backend
     SOURCES ${NATIVEBACKEND_SOURCES}
     QT_MODULES Core Widgets
     DEPENDS PluginsSDK ek_common ek_boost
+    INSTALL_DIR "plugins/backends"
 )
 
 # Note: Depends on boost from thirdparty

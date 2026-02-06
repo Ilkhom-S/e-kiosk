@@ -34,4 +34,5 @@ ek_add_plugin(webkit_backend
     SOURCES ${WEBKITBACKEND_SOURCES}
     QT_MODULES ${WEBKIT_QT_MODULES}
     DEPENDS PluginsSDK
+    INSTALL_DIR "plugins/backends"
 )

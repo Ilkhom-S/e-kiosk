@@ -30,4 +30,5 @@ ek_add_plugin(qml_backend
     SOURCES ${QMLBACKEND_SOURCES}
     QT_MODULES ${QML_QT_MODULES}
     DEPENDS PluginsSDK ek_boost PPSDK GUISDK NetworkTaskManager
+    INSTALL_DIR "plugins/backends"
 )

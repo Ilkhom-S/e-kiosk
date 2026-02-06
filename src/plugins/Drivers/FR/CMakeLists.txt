@@ -34,10 +34,10 @@ file(GLOB TS_FILES_PRINTER ../Printer/src/locale/*.ts)
 file(GLOB TS_FILES_COMMON ../../../modules/Hardware/Common/src/locale/*.ts)
 set(TS_FILES ${TS_FILES_FR} ${TS_FILES_PRINTER} ${TS_FILES_COMMON})
 if(TS_FILES)
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/locale)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins/drivers)
     ek_add_translations(fiscal_registers
         SOURCES ${TS_FILES}
-        OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/locale
+        OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/plugins/drivers
     )
 endif()
 

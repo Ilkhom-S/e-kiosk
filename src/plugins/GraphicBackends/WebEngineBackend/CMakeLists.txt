@@ -41,4 +41,5 @@ ek_add_plugin(webengine_backend
     SOURCES ${WEBENGINEBACKEND_SOURCES}
     QT_MODULES ${WEBENGINE_QT_MODULES}
     DEPENDS PluginsSDK
+    INSTALL_DIR "plugins/backends"
 )

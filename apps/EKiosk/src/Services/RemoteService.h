@@ -62,28 +62,28 @@ class RemoteService : public SDK::PaymentProcessor::IRemoteService, public PPSDK
 #pragma region PPSDK::IService interface
 
     /// Инициализация сервиса.
-    virtual bool initialize();
+    virtual bool initialize() override;
 
     /// IService: Закончена инициализация всех сервисов.
-    virtual void finishInitialize();
+    virtual void finishInitialize() override;
 
     /// IService: Возвращает false, если сервис не может быть остановлен в текущий момент.
-    virtual bool canShutdown();
+    virtual bool canShutdown() override;
 
-    /// Завершение работы сервиса.
-    virtual bool shutdown();
+    /// IService: Завершение работы сервиса.
+    virtual bool shutdown() override;
 
     /// Возвращает имя сервиса.
-    virtual QString getName() const;
+    virtual QString getName() const override;
 
     /// Список зависимостей.
-    virtual const QSet<QString> &getRequiredServices() const;
+    virtual const QSet<QString> &getRequiredServices() const override;
 
     /// Получить параметры сервиса.
-    virtual QVariantMap getParameters() const;
+    virtual QVariantMap getParameters() const override;
 
     /// Сброс служебных параметров.
-    virtual void resetParameters(const QSet<QString> &aParameters);
+    virtual void resetParameters(const QSet<QString> &aParameters) override;
 
 #pragma endregion
 
@@ -95,45 +95,45 @@ class RemoteService : public SDK::PaymentProcessor::IRemoteService, public PPSDK
 #pragma region PPSDK::IRemoteService interface
 
     /// Добавляет в очередь команду на блокировку терминала.
-    virtual int registerLockCommand();
+    virtual int registerLockCommand() override;
 
     /// Добавляет в очередь команду на разблокировку терминала.
-    virtual int registerUnlockCommand();
+    virtual int registerUnlockCommand() override;
 
     /// Добавляет в очередь команду на перезагрузку терминала.
-    virtual int registerRebootCommand();
+    virtual int registerRebootCommand() override;
 
     /// Добавляет в очередь команду на перезапуск ТК.
-    virtual int registerRestartCommand();
+    virtual int registerRestartCommand() override;
 
     /// Добавляет в очередь команду на выключение терминала.
-    virtual int registerShutdownCommand();
+    virtual int registerShutdownCommand() override;
 
     /// Добавляет в очередь команду на изменение параметров платежа (поиск осуществляется по начальной сессии).
     virtual int registerPaymentCommand(EPaymentOperation aOperation, const QString &aInitialSession,
-                                       const QVariantMap &aParameters);
+                                       const QVariantMap &aParameters) override;
 
     /// Добавляет в очередь команду на обновление файлов.
     virtual int registerUpdateCommand(EUpdateType aType, const QUrl &aConfigUrl, const QUrl &aUpdateUrl,
-                                      const QString &aComponents);
+                                      const QString &aComponents) override;
 
     /// Добавляет в очередь команду на получение скриншота.
-    virtual int registerScreenshotCommand();
+    virtual int registerScreenshotCommand() override;
 
     /// Добавляет в очередь команду на перегенерацию ключей
-    virtual int registerGenerateKeyCommand(const QString &aLogin, const QString &aPassword);
+    virtual int registerGenerateKeyCommand(const QString &aLogin, const QString &aPassword) override;
 
     /// Зарегистрировать номер произвольной команды
-    virtual int registerAnyCommand();
+    virtual int registerAnyCommand() override;
 
     /// Сообщает сервису мониторинга что статус команды успешно отправлен
-    virtual void commandStatusSent(int aCommandId, int aStatus);
+    virtual void commandStatusSent(int aCommandId, int aStatus) override;
 
     /// Требует от клиентов обновления контента.
-    virtual void updateContent();
+    virtual void updateContent() override;
 
     /// Принудительная отправка сигнала heartbeat.
-    virtual void sendHeartbeat();
+    virtual void sendHeartbeat() override;
 
 #pragma endregion
 

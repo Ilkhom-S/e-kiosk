@@ -59,7 +59,7 @@ class ClassValidator : public QThread
 
     int cmdExec;
 
-    virtual void run();
+    virtual void run() override;
 
   signals:
     void eNominal(int nominal);

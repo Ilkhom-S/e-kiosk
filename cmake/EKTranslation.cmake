@@ -42,23 +42,52 @@ function(ek_add_translations TARGET_NAME)
     endif()
 
     set(_qm_files)
+
+    # Group .ts files by language (suffix after last underscore)
+    set(_ts_groups)
     foreach(_ts_file ${ARG_SOURCES})
         get_filename_component(_ts_name ${_ts_file} NAME_WE)
-        set(_qm_file "${ARG_OUTPUT_DIR}/${_ts_name}.qm")
+        # Extract language suffix (everything after the last underscore)
+        string(REGEX MATCH "_([^_]+)$" _lang_match ${_ts_name})
+        if(_lang_match)
+            set(_language ${CMAKE_MATCH_1})
+            list(APPEND _ts_groups ${_language})
+        else()
+            # If no language suffix, treat as 'en' or skip
+            set(_language "en")
+            list(APPEND _ts_groups ${_language})
+        endif()
+    endforeach()
+    list(REMOVE_DUPLICATES _ts_groups)
+
+    # For each language, collect all .ts files and create merged .qm
+    foreach(_language ${_ts_groups})
+        set(_ts_files_for_lang)
+        set(_qm_file "${ARG_OUTPUT_DIR}/${TARGET_NAME}_${_language}.qm")
+
+        # Collect all .ts files for this language
+        foreach(_ts_file ${ARG_SOURCES})
+            get_filename_component(_ts_name ${_ts_file} NAME_WE)
+            if(_ts_name MATCHES "_${_language}$" OR NOT _ts_name MATCHES "_")
+                list(APPEND _ts_files_for_lang ${_ts_file})
+            endif()
+        endforeach()
+
+        # Create custom command to merge all .ts files for this language into one .qm
         if(_use_qt_lrelease)
             add_custom_command(
                 OUTPUT ${_qm_file}
-                COMMAND Qt${QT_VERSION_MAJOR}::lrelease ${_ts_file} -qm ${_qm_file}
-                DEPENDS ${_ts_file}
-                COMMENT "Compiling translation ${_ts_name}.qm"
+                COMMAND Qt${QT_VERSION_MAJOR}::lrelease ${_ts_files_for_lang} -qm ${_qm_file}
+                DEPENDS ${_ts_files_for_lang}
+                COMMENT "Compiling merged translation ${TARGET_NAME}_${_language}.qm"
                 VERBATIM
             )
         else()
             add_custom_command(
                 OUTPUT ${_qm_file}
-                COMMAND ${_lrelease_exec} ${_ts_file} -qm ${_qm_file}
-                DEPENDS ${_ts_file}
-                COMMENT "Compiling translation ${_ts_name}.qm (using external lrelease)"
+                COMMAND ${_lrelease_exec} ${_ts_files_for_lang} -qm ${_qm_file}
+                DEPENDS ${_ts_files_for_lang}
+                COMMENT "Compiling merged translation ${TARGET_NAME}_${_language}.qm (using external lrelease)"
                 VERBATIM
             )
         endif()
