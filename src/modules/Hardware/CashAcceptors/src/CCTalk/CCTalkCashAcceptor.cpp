@@ -8,6 +8,14 @@
 #include "CCTalkCashAcceptorConstants.h"
 #include "CCTalkCashAcceptorModelData.h"
 
+namespace CCCTalk {
+namespace CashAcceptor {
+namespace Models {
+const char NV200Spectral[] = "NV200 Spectral";
+} // namespace Models
+} // namespace CashAcceptor
+} // namespace CCCTalk
+
 using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 

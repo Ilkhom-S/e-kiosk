@@ -9,8 +9,8 @@ namespace CAtolOnlinePrinters {
 const char Trade = '\x01';  /// Принтер, на базе которого собран торговый ФР.
 const char Memory = '\x07'; /// Печать в никуда.
 
-const char Default[] = "Default";               /// По умолчанию.
-const char CitizenPPU700[] = "Citizen PPU-700"; /// Citizen PPU-700.
+extern const char Default[];
+extern const char CitizenPPU700[];
 
 class CModels : public CDescription<char> {
 public:

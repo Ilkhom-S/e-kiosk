@@ -32,13 +32,13 @@ public:
 /// Модели.
 namespace Models {
 /// Название модели по умолчанию.
-const char Default[] = "SPARK FR";
+extern const char Default[];
 
 /// Модель SPARK 110K.
 const int Id110K = 110;
 
 /// Данные регэкспа для парсинга ответа на идентификацию.
-const char RegExpData[] = "([0-9]+).*([0-9\\.]+)";
+extern const char RegExpData[];
 
 /// Данные модели.
 struct SData {

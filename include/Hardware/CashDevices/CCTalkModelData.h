@@ -40,9 +40,9 @@ private:
 static CVendorData VendorData;
 
 //--------------------------------------------------------------------------------
-const char DefaultDeviceName[] =
+const char *DefaultDeviceName =
     "Unknown cash device based on ccTalk protocol"; /// Название устройства по умолчанию.
-const char DeviceNamePostfix[] =
+const char *DeviceNamePostfix =
     "cash device, unknown model based on ccTalk protocol"; /// Оконание названия устройства
                                                            /// известного производителя по
                                                            /// умолчанию.

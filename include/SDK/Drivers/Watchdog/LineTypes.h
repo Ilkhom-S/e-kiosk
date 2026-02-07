@@ -8,10 +8,10 @@ namespace Driver {
 //--------------------------------------------------------------------------------
 /// Состояния и статусы купюроприёмника.
 namespace LineTypes {
-const char BillAcceptor[] = "BillAcceptor";
-const char Printer[] = "Printer";
-const char Terminal[] = "Terminal";
-const char Modem[] = "Modem";
+extern const char BillAcceptor[];
+extern const char Printer[];
+extern const char Terminal[];
+extern const char Modem[];
 } // namespace LineTypes
 } // namespace Driver
 } // namespace SDK

@@ -2,6 +2,11 @@
 
 #include "AtolVKP80BasedFR.h"
 
+// ReInitialization constants definitions
+namespace ReInitialization {
+const char Data[] = "\x8F\x1B\x40";
+} // namespace ReInitialization
+
 //--------------------------------------------------------------------------------
 template class AtolVKP80BasedFR<AtolSerialFR>;
 template class AtolVKP80BasedFR<Atol2OnlineFRBase>;

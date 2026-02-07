@@ -18,7 +18,7 @@ struct SModelData {
 const uchar Custom80 = 1;  /// Custom VKP-80 80 мм.
 const uchar Virtual = 100; /// Печать в никуда.
 
-const char Default[] = "Default"; /// По умолчанию.
+extern const char Default[]; /// По умолчанию.
 
 class CModels : public CSpecification<uchar, SModelData> {
 public:

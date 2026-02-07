@@ -5,6 +5,17 @@
 //--------------------------------------------------------------------------------
 namespace CShtrihFR {
 namespace Models {
+const char Default[] = "Shtrih FR";
+const char RetractorDefault[] = "Shtrih retractor FR";
+const char EjectorDefault[] = "Shtrih ejector FR";
+const char OnlineDefault[] = "Shtrih online FR";
+const char OnlineRetractorDefault[] = "Shtrih retractor online FR";
+} // namespace Models
+} // namespace CShtrihFR
+
+//--------------------------------------------------------------------------------
+namespace CShtrihFR {
+namespace Models {
 
 CData::CData() {
     /// Штрихи.

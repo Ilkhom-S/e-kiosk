@@ -7,9 +7,9 @@
 //--------------------------------------------------------------------------------
 namespace CV2e {
 namespace Models {
-const char Aurora[] = "GPT Aurora";
-const char Falcon[] = "GPT Falcon";
-const char Argus[] = "GPT Argus";
+extern const char Aurora[];
+extern const char Falcon[];
+extern const char Argus[];
 } // namespace Models
 
 typedef QSet<QString> TModelKeys;

@@ -18,13 +18,13 @@
 /// Работа с реестром.
 namespace CRegistrySerialPort {
 /// Начальный путь для поиска
-const char InitialPath[] = "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Enum";
+extern const char InitialPath[];
 
 /// Начальный путь для быстрого поиска
 const wchar_t QuickInitialPath[] = L"HARDWARE\\DEVICEMAP\\SERIALCOMM";
 
 /// Cвойство для формирования пути для открытия порта.
-const char PathProperty[] = "FriendlyName";
+extern const char PathProperty[];
 
 /// Зарезервированные символы QRegExp.
 const char RegexSymbols[] = {'+', '-', '*', '?', ')', '(', '{', '}', '^', '.'};

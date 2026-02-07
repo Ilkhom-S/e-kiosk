@@ -5,6 +5,37 @@
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QtMath>
 
+//--------------------------------------------------------------------------------
+/// Константы, команды и коды состояний принтеров Custom.
+namespace CCustomPrinter {
+namespace Models {
+const char TG2480[] = "Custom TG2480";
+const char TG2480H[] = "Custom TG2480H";
+const char TG2460H[] = "Custom TG2460H";
+const char TL80[] = "Custom TL80";
+const char TL60[] = "Custom TL60";
+} // namespace Models
+
+/// Команды.
+namespace Commands {
+const char PrintImage[] = "\x1B\x2A"; /// Печать изображения.
+} // namespace Commands
+
+//----------------------------------------------------------------------------
+/// GAM (Graphics advanced mode).
+namespace GAM {
+/// Команды.
+namespace Commands {
+const char SetPageLength[] = "\x1B\x26\x6C\x30\x52"; /// Установить длину страницы = 0. По размеру?
+const char SetResolution204[] = "\x1B\x2A\x74\x32\x30\x34\x52"; /// Установить разрешение 240 dpi.
+const char SetNoCompression[] = "\x1B\x2A\x62\x30\x4D";         /// Отменить сжатие изображения.
+const char SetLeftMargin[] = "\x1B\x2A\x70\x58";                /// Установить сдвиг слева.
+const char SendData[] = "\x1B\x2A\x62\x57";                     /// Послать картинку в принтер.
+const char PrintImage[] = "\x1B\x2A\x72\x42";                   /// Печать изображения.
+} // namespace Commands
+} // namespace GAM
+} // namespace CCustomPrinter
+
 template class CustomPrinter<TSerialPrinterBase>;
 
 //--------------------------------------------------------------------------------

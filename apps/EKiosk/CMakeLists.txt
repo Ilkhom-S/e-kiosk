@@ -40,6 +40,7 @@ ek_add_application(ekiosk
     GUISDK
     PluginsSDK
     DriversSDK
+    HardwareProtocols
     GraphicsEngine
     ScenarioEngine
     SettingsManager

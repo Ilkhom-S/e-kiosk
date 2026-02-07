@@ -102,3 +102,21 @@ const Request &Response::getRequest() const {
 } // namespace Humo
 } // namespace PaymentProcessor
 } // namespace SDK
+
+//---------------------------------------------------------------------------
+// Definitions for CResponse::Parameters constants
+namespace SDK {
+namespace PaymentProcessor {
+namespace Humo {
+namespace CResponse {
+namespace Parameters {
+extern const char Result[] = "RESULT";
+extern const char Error[] = "ERROR";
+extern const char ErrorCode[] = "ERROR_CODE";
+extern const char ErrorMessage[] = "ERRMSG";
+extern const char ErrorMessage2[] = "ERROR_MSG";
+} // namespace Parameters
+} // namespace CResponse
+} // namespace Humo
+} // namespace PaymentProcessor
+} // namespace SDK

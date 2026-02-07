@@ -10,13 +10,12 @@
 //--------------------------------------------------------------------------------
 namespace CEpsonEUT400 {
 namespace Command {
-const char GetVersion[] = "\x1D\x49\x41";    /// Получение версии прошивки.
-const char GetFont[] = "\x1D\x49\x45";       /// Получение установленного шрифта.
-const char GetMemorySize[] = "\x1D\x49\x72"; /// Получение размера установленной памяти.
-const char GetOptions[] = "\x1D\x49\x73";    /// Получение списка дополнительных устройств.
-const char Cut[] = "\x1D\x56\x31";           /// Отрезка без возможности обратной промотки.
-const char CutBackFeed[] =
-    "\x1D\x56\x42\x01"; /// Промотка и отрезка с возможностью обратной промотки.
+extern const char GetVersion[];    /// Получение версии прошивки.
+extern const char GetFont[];       /// Получение установленного шрифта.
+extern const char GetMemorySize[]; /// Получение размера установленной памяти.
+extern const char GetOptions[];    /// Получение списка дополнительных устройств.
+extern const char Cut[];           /// Отрезка без возможности обратной промотки.
+extern const char CutBackFeed[];    /// Промотка и отрезка с возможностью обратной промотки.
 const QByteArray LoopEnable =
     QByteArray::fromRawData("\x1C\x28\x7A\x02\x00\x01\x00", 7); /// Включение петли
 const QByteArray LoopDisable =
@@ -36,7 +35,7 @@ const QByteArray SetMemorySwitch = QByteArray::fromRawData(
 /// Работа с мemory-switch (MSW)
 namespace MemorySwitch {
 /// Префикс
-const char Prefix[] = "\x37\x21";
+extern const char Prefix[];
 
 /// Постфикс
 const char Postfix = ASCII::NUL;
@@ -48,13 +47,13 @@ const int AnswerSize = 11;
 const char ReceiptProcessing2 = 8;
 
 /// MSW8: маска правильных значений при использовании обратной промотки
-const char ReceiptProcessing2Mask[] = "xx0xx1xx";
+extern const char ReceiptProcessing2Mask[];
 
 /// MSW8: маска проверки обратной промотки
-const char BackFeedMask[] = "xxxxx1xx";
+extern const char BackFeedMask[];
 
 /// MSW8: маска отсутствия обратной промотки
-const char NoBackFeedMask[] = "xxxxx0xx";
+extern const char NoBackFeedMask[];
 
 /// Маска правильных значений
 const QByteArray AnswerForEnter = QByteArray::fromRawData("\x37\x20\x00", 3);

@@ -2,13 +2,15 @@
 
 #pragma once
 
+#include <QtGlobal>
+
 //--------------------------------------------------------------------------------
 namespace CSSP {
 /// Первый байт при упаковке данных.
-const char Prefix[] = "\x7F";
+extern const char Prefix[];
 
 /// Маскированный проефикс.
-const char MaskedPrefix[] = "\x7F\x7F";
+extern const char MaskedPrefix[];
 
 /// Флаг последовательности.
 const char SequenceFlag = '\x80';

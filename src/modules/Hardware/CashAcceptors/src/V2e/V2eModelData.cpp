@@ -2,6 +2,14 @@
 
 #include "V2eModelData.h"
 
+namespace CV2e {
+namespace Models {
+const char Aurora[] = "GPT Aurora";
+const char Falcon[] = "GPT Falcon";
+const char Argus[] = "GPT Argus";
+} // namespace Models
+} // namespace CV2e
+
 CV2e::ModelData::ModelData() {
     add(CV2e::Models::Aurora, TModelKeys() << "VA" << "VE" << "VH" << "VV" << "LA" << "SA", true);
     add(CV2e::Models::Falcon, TModelKeys() << "W", true);

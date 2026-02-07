@@ -4,6 +4,12 @@
 
 #include "Hardware/Protocols/Common/ProtocolUtils.h"
 
+namespace CIntelHex {
+const char Separator1[] = "\r\n";
+const char Separator2[] = "\n";
+const char Separator3[] = "\r";
+} // namespace CIntelHex
+
 //--------------------------------------------------------------------------------
 bool IntelHex::parseRecord(const QString &aRecord, SRecordData &aData, QString &aErrorDescription) {
     if (aRecord.size() < CIntelHex::MinRecordLength) {

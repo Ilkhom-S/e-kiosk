@@ -18,7 +18,7 @@ const int ClearingPresenterRepeatTimeout = 90;
 const int ZBufferVirtualOverflow = 15;
 
 /// Новая строка.
-const char LineSpacer[] = "\r\n";
+extern const char LineSpacer[];
 
 /// Количество символов в строке-разделителе по умолчанию.
 const int DefaultHRSize = 35;

@@ -18,6 +18,10 @@
 #include <numeric>
 
 #include "DatabaseUtils/IHardwareDatabaseUtils.h"
+
+namespace CFundsService {
+const char LogName[] = "Funds";
+} // namespace CFundsService
 #include "Services/CashAcceptorManager.h"
 #include "Services/CashDispenserManager.h"
 #include "Services/DatabaseService.h"

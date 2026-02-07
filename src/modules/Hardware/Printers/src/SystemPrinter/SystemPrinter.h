@@ -15,7 +15,7 @@
 /// Константы системного принтера.
 namespace CSystemPrinter {
 /// Тег конца строки.
-const char BRtag[] = "<br>";
+extern const char BRtag[];
 
 /// Отступ по умолчанию.
 const qreal DefaultMargin = 1.0;

@@ -15,7 +15,7 @@ const int MinUnpackedAnswerSize = 1;
 const int MinUnpackedErrorSize = 2;
 
 /// Формат представления даты для вывода в лог.
-const char TimeLogFormat[] = "hh:mm";
+extern const char TimeLogFormat[];
 
 /// Размер шрифта - уменьшенный.
 const char FontSize = 1;
@@ -24,13 +24,13 @@ const char FontSize = 1;
 const char SessionReportNoRetraction = '\x00';
 
 /// Id для определения версии ФН 1.0.
-const char FS10Id[] = "v_1_0";
+extern const char FS10Id[];
 
 /// Id для определения версии ФН 1.1.
-const char FS11Id[] = "v_1_1";
+extern const char FS11Id[];
 
 /// Последняя актуальная прошивка.
-const char LastFirmware[] = "1.0.25";
+extern const char LastFirmware[];
 
 /// Признак вывода на печать.
 namespace Print {

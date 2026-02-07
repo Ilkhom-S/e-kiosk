@@ -20,7 +20,7 @@ enum Enum { OK, Error, TryLater };
 } // namespace EncashmentResult
 
 namespace EncashmentParameter {
-const char StackerID[] = "STACKER_ID";
+extern const char StackerID[];
 } // namespace EncashmentParameter
 
 //------------------------------------------------------------------------------

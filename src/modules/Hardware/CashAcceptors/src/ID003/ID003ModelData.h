@@ -8,29 +8,29 @@
 namespace CID003 {
 /// Модели
 namespace Models {
-const char GPTAurora[] = "GPT Aurora";
-const char JCMIPRO[] = "JCM IPRO";
-const char JCMUBA[] = "JCM UBA";
-const char CashcodeMVU[] = "Cashcode MVU";
-const char JCMVega[] = "JCM Vega";
+extern const char GPTAurora[];
+extern const char JCMIPRO[];
+extern const char JCMUBA[];
+extern const char CashcodeMVU[];
+extern const char JCMVega[];
 } // namespace Models
 
 /// Подтип протокола. Разделение чисто символическое, связано с лицензированием пользования
 /// протокола ID003. По подтипу можно сделать вывод о фирме, которая его реализовала в девайсе.
 namespace ProtocolData {
-const char GPTAurora[] = "ID003 GPT"; /// Id GPT на ID003.
+extern const char GPTAurora[];
 
 /// Подтип протокола. Разделение чисто символическое, связано с лицензированием пользования
 /// протоколом ID003. По подтипу можно сделать вывод о фирме, которая его реализовала в девайсе.
 namespace Alias {
-const char ID003[] = "ID003";       /// ID003 (JCM).
-const char ID003Ext[] = "External"; /// ID003 (JCM, расширенная идентификация).
-const char BDP[] = "BDP";           /// BDP (Cashcode).
-const char OP003[] = "OP003";       /// OP003 (КБ СП).
+extern const char ID003[];
+extern const char ID003Ext[];
+extern const char BDP[];
+extern const char OP003[];
 } // namespace Alias
 
 /// Лексема ответа на запрос идентификации.
-const char Lexeme[] = "[0-9A-Za-z_\\.]";
+extern const char Lexeme[];
 const QString IdLexeme = QString("(%1*)").arg(Lexeme);
 
 /// Класс для перебора регулярок для парсинга ответа на запрос идентификации.

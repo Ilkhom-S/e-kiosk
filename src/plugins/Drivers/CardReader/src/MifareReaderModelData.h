@@ -7,7 +7,7 @@
 //------------------------------------------------------------------------------
 namespace CMifareReader {
 /// Неизвестный ридер c PC/SC интерфейсом
-const char UnknownModel[] = "Unknown PC/SC Reader";
+extern const char UnknownModel[];
 
 /// Данные моделей.
 class DetectingData : public CUSBDevice::ProductDataBase<SModelData> {

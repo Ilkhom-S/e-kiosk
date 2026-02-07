@@ -8,26 +8,26 @@
 //--------------------------------------------------------------------------------
 namespace CPrimOnlineFR {
 /// Параметр снятия Z-отчета наружу.
-const char ZReportOut[] = "00";
+extern const char ZReportOut[];
 
 /// Параметр снятия Z-отчета в буфер.
-const char ZReportInBuffer[] = "01";
+extern const char ZReportInBuffer[];
 
 /// По умолчанию использовать последнюю регистрацию.
-const char LastRegistration[] = "00";
+extern const char LastRegistration[];
 
 /// Количество типов оплаты.
 const int PayTypeAmount = '\x0F';
 
 /// Данные для парсинга TLV-структур фискального чека.
-const char RegExpTLVData[] = "<([0-9]+)>(.*)";
+extern const char RegExpTLVData[];
 
 /// Формат представления даты-времени в теге 1012 при получении данных о тегах фискального
 /// документа.
-const char FFDateTimeFormat[] = "dd.MM.yyyy hh:mm";
+extern const char FFDateTimeFormat[];
 
 /// Версия ФН без возможности запроса флага агента.
-const char FSNoAgentFlags[] = "fn_v_1_0";
+extern const char FSNoAgentFlags[];
 
 //----------------------------------------------------------------------------
 /// Настройки для ПФД.

@@ -16,6 +16,12 @@
 namespace PrinterSettings = CHardware::Printer::Settings;
 
 //--------------------------------------------------------------------------------
+/// Константы системного принтера.
+namespace CSystemPrinter {
+const char BRtag[] = "<br>";
+} // namespace CSystemPrinter
+
+//--------------------------------------------------------------------------------
 SystemPrinter::SystemPrinter() {
     // данные устройства
     mDeviceName = "System printer";

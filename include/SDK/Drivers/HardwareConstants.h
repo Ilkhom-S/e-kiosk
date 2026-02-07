@@ -9,95 +9,95 @@ namespace Driver {
 //---------------------------------------------------------------------------
 namespace CAllHardware {
 /// Общие константы.
-const char RequiredDevice[] = "required_device";
-const char DeviceData[] = "device_data";
-const char ModelName[] = "model_name";
-const char ProtocolName[] = "protocol_name";
-const char DetectingPriority[] = "detect_priority";
-const char Mask[] = "mask";
-const char SystemName[] = "system_name";
-const char SearchingType[] = "searching_type";
-const char RequiredResource[] = "required_resource";
-const char Existence[] = "existence";
-const char InteractionType[] = "interaction_type";
-const char WaitUpdatingTimeout[] = "wait_updating_timeout";
-const char OperatorPresence[] = "operator_presence";
-const char FiscalServerPresence[] = "fiscal_server_presence";
-const char OptionalPortSettings[] = "optional_port_settings";
-const char OptionalPortSettingsEnable[] = "optional_port_settings_enable";
-const char SerialNumber[] = "serial_number";
-const char CanOnline[] = "can_online";
-const char LibraryVersion[] = "library_version";
+extern const char RequiredDevice[];
+extern const char DeviceData[];
+extern const char ModelName[];
+extern const char ProtocolName[];
+extern const char DetectingPriority[];
+extern const char Mask[];
+extern const char SystemName[];
+extern const char SearchingType[];
+extern const char RequiredResource[];
+extern const char Existence[];
+extern const char InteractionType[];
+extern const char WaitUpdatingTimeout[];
+extern const char OperatorPresence[];
+extern const char FiscalServerPresence[];
+extern const char OptionalPortSettings[];
+extern const char OptionalPortSettingsEnable[];
+extern const char SerialNumber[];
+extern const char CanOnline[];
+extern const char LibraryVersion[];
 
 /// Значения настроек.
 namespace Values {
-const char Use[] = "use";
-const char NotUse[] = "not_use";
-const char Auto[] = "auto";
+extern const char Use[];
+extern const char NotUse[];
+extern const char Auto[];
 } // namespace Values
 
 /// Типы поиска устройств.
 namespace SearchingTypes {
-const char Loading[] = "loading";
-const char AutoDetecting[] = "auto_detecting";
+extern const char Loading[];
+extern const char AutoDetecting[];
 } // namespace SearchingTypes
 
 /// Варианты нахождения устройств.
 namespace ExistenceTypes {
-const char Unique[] = "unique";
-const char Multiple[] = "multiple";
+extern const char Unique[];
+extern const char Multiple[];
 } // namespace ExistenceTypes
 
 /// Константы устройств приема денег.
 namespace CashAcceptor {
-const char SystemCurrencyId[] = "system_currency_id";
+extern const char SystemCurrencyId[];
 } // namespace CashAcceptor
 
 /// Константы фискального регистратора.
 namespace FR {
-const char FSSerialNumber[] = "fs_serial_number";
-const char TaxSystems[] = "tax_systems";
-const char AgentFlags[] = "agent_flags";
-const char AgentFlagsData[] = "agent_flags_data";
-const char SectionNames[] = "section_names";
-const char DealerTaxSystem[] = "dealer_tax_system";
-const char DealerAgentFlag[] = "dealer_agent_flag";
-const char DealerVAT[] = "dealer_vat";
-const char DealerSupportPhone[] = "dealer_support_phone";
-const char UserPhone[] = "user_phone";
-const char UserMail[] = "user_mail";
-const char ZReportTime[] = "z_report_time";
-const char FiscalFieldData[] = "fiscal_field_data";
-const char WithoutPrinting[] = "without_printing";
-const char CanWithoutPrinting[] = "can_without_printing";
-const char NullingSumInCash[] = "nulling_sum_in_cash";
+extern const char FSSerialNumber[];
+extern const char TaxSystems[];
+extern const char AgentFlags[];
+extern const char AgentFlagsData[];
+extern const char SectionNames[];
+extern const char DealerTaxSystem[];
+extern const char DealerAgentFlag[];
+extern const char DealerVAT[];
+extern const char DealerSupportPhone[];
+extern const char UserPhone[];
+extern const char UserMail[];
+extern const char ZReportTime[];
+extern const char FiscalFieldData[];
+extern const char WithoutPrinting[];
+extern const char CanWithoutPrinting[];
+extern const char NullingSumInCash[];
 } // namespace FR
 
 /// Константы принтера.
 namespace Printer {
-const char LineSize[] = "line_size";
-const char ReceiptTemplate[] = "receipt_template";
-const char PrintingMode[] = "printing_mode";
-const char ServiceOperation[] = "service_operation";
-const char BlockTerminalOnError[] = "block_terminal_on_error";
-const char OFDNotSentError[] = "ofd_not_sent_error";
+extern const char LineSize[];
+extern const char ReceiptTemplate[];
+extern const char PrintingMode[];
+extern const char ServiceOperation[];
+extern const char BlockTerminalOnError[];
+extern const char OFDNotSentError[];
 } // namespace Printer
 
 /// Константы HID-устройств.
 namespace HID {
 /// Аттрибуты, передаваемые в сигнале о новых введённых данных
-const char *const Text = "text";                         // QString
-const char *const Image = "image";                       // QImage
-const char *const FaceDetected = "face_detected";        // bool
-const char *const ImageWithFaceArea = "image_with_face"; // QImage
+extern const char Text[];              // QString
+extern const char Image[];             // QImage
+extern const char FaceDetected[];      // bool
+extern const char ImageWithFaceArea[]; // QImage
 } // namespace HID
 
 /// Константы порта.
 namespace Port {
 /// Константы TCP-порта.
 namespace TCP {
-const char IP[] = "ip";
-const char Number[] = "port_number";
+extern const char IP[];
+extern const char Number[];
 } // namespace TCP
 } // namespace Port
 } // namespace CAllHardware

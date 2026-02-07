@@ -2,6 +2,18 @@
 
 #include "CustomVKP80III.h"
 
+//--------------------------------------------------------------------------------
+/// Константы и команды Custom VKP-80 III.
+namespace CCustomVKP80III {
+/// Команды.
+namespace Command {
+const char GetModelId[] = "\x1D\x49\xFF";    /// Получение идентификатора модели.
+const char EjectorActivation[] = "\x1C\x50"; /// Неизменяемая часть команды активации эжектора.
+} // namespace Command
+
+const char ModelId[] = "\x02\x05"; /// Идентификатор модели.
+} // namespace CCustomVKP80III
+
 template class CustomVKP80III<TSerialPrinterBase>;
 
 //--------------------------------------------------------------------------------

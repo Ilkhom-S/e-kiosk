@@ -11,7 +11,7 @@
 
 namespace CIDTechReader {
 // Имя dll SDK.
-const char DLLSDKName[] = "libIDTechSDK.dll.1.0.16";
+extern const char DLLSDKName[];
 } // namespace CIDTechReader
 
 //------------------------------------------------------------------------------

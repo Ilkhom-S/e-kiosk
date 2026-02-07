@@ -17,7 +17,7 @@
 #include "SingleDetectingIterator.h"
 
 namespace Uniteller {
-const char ModelName[] = "Uniteller";
+extern const char ModelName[];
 } // namespace Uniteller
 
 //--------------------------------------------------------------------------------

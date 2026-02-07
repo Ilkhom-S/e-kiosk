@@ -32,10 +32,10 @@ const double Delta = 2.4; // V = Vnom +/- Vdelta
 
 /// Команды.
 namespace Commands {
-const char Identification[] = "\x17";
-const char Initialize[] = "\x16";
-const char Status[] = "\x18";
-const char Voltage[] = "\x19";
+extern const char Identification[];
+extern const char Initialize[];
+extern const char Status[];
+extern const char Voltage[];
 } // namespace Commands
 
 //----------------------------------------------------------------------------

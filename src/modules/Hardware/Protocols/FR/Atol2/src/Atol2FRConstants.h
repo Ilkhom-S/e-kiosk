@@ -18,10 +18,10 @@ const char Postfix = ASCII::ETX;
 const char MaskByte = ASCII::DLE;
 
 /// Экранирующий DLE.
-const char DLEMask[] = "\x10\x10";
+extern const char DLEMask[];
 
 /// Экранирующий ETX.
-const char ETXMask[] = "\x10\x03";
+extern const char ETXMask[];
 
 /// Минимальный размер ответного пакета.
 const int MinAnswerSize = 5;

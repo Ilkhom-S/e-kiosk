@@ -26,11 +26,11 @@ namespace Scripting {
 //------------------------------------------------------------------------------
 /// Имена объектов для экспорта в скрипты.
 namespace CProxyNames {
-const char Core[] = "Core";
-const char EventType[] = "EventType";
-const char PaymentStep[] = "PaymentStep";
-const char PaymentStepResult[] = "PaymentStepResult";
-const char Payment[] = "Payment";
+extern const char Core[];
+extern const char EventType[];
+extern const char PaymentStep[];
+extern const char PaymentStepResult[];
+extern const char Payment[];
 } // namespace CProxyNames
 
 //------------------------------------------------------------------------------

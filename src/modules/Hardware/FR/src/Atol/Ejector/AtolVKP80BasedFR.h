@@ -14,7 +14,7 @@ const int MaxReInitPrinterCount = 3;
 /// Переинициализация принтера Custom VKP-80.
 namespace ReInitialization {
 /// Данные комманды.
-const char Data[] = "\x8F\x1B\x40";
+extern const char Data[];
 
 /// Таймаут, [мс].
 const int Timeout = 2000;

@@ -7,7 +7,7 @@
 //--------------------------------------------------------------------------------
 namespace CHHP {
 /// Имя устройства по умолчанию.
-const char DefaultName[] = "Unknown HHP USB HID Device";
+extern const char DefaultName[];
 
 class DetectingData : public CUSBDevice::ProductData {
 public:

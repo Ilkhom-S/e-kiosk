@@ -133,3 +133,19 @@ QString Core::getMD5Hash(const QString &aSource) {
 } // namespace Scripting
 } // namespace PaymentProcessor
 } // namespace SDK
+
+//---------------------------------------------------------------------------
+// Definitions for CProxyNames constants
+namespace SDK {
+namespace PaymentProcessor {
+namespace Scripting {
+namespace CProxyNames {
+extern const char Core[] = "Core";
+extern const char EventType[] = "EventType";
+extern const char PaymentStep[] = "PaymentStep";
+extern const char PaymentStepResult[] = "PaymentStepResult";
+extern const char Payment[] = "Payment";
+} // namespace CProxyNames
+} // namespace Scripting
+} // namespace PaymentProcessor
+} // namespace SDK

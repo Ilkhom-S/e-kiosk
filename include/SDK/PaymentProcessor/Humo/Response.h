@@ -13,11 +13,11 @@ namespace Humo {
 //---------------------------------------------------------------------------
 namespace CResponse {
 namespace Parameters {
-const char Result[] = "RESULT";
-const char Error[] = "ERROR";
-const char ErrorCode[] = "ERROR_CODE";
-const char ErrorMessage[] = "ERRMSG";
-const char ErrorMessage2[] = "ERROR_MSG";
+extern const char Result[];
+extern const char Error[];
+extern const char ErrorCode[];
+extern const char ErrorMessage[];
+extern const char ErrorMessage2[];
 } // namespace Parameters
 } // namespace CResponse
 

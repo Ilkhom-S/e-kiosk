@@ -11,6 +11,11 @@
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
+namespace CCCTalk {
+const char UnknownType[] = "unknown";
+} // namespace CCCTalk
+
+//--------------------------------------------------------------------------------
 CCTalkCAProtocol::CCTalkCAProtocol()
     : mAddress(CCCTalk::Address::Unknown), mType(CCCTalk::UnknownType) {}
 

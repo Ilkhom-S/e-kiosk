@@ -43,7 +43,7 @@ const int USSDAttempt = 100; /// Между попытками USSD-запрос
 } // namespace Pauses
 
 /// Имя по умолчанию.
-const char DefaultName[] = "GSM AT compatible modem";
+extern const char DefaultName[];
 
 /// Число попыток getBalance.
 const int BalanceAttempts = 10;

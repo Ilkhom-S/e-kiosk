@@ -21,7 +21,7 @@ const char StringSeparatorByte = '|';
 const int MinIdentSize = 109;
 
 /// Формат представления даты и времени в ответе на запрос статуса ФН-а.
-const char FRDateTimeFormat[] = "ddMMyyyyhhmm";
+extern const char FRDateTimeFormat[];
 
 /// Данные типов фискальных документов.
 class CPayOffTypeData : public CSpecification<SDK::Driver::EPayOffTypes::Enum, QByteArray> {
@@ -39,57 +39,57 @@ public:
 static CPayOffTypeData PayOffTypeData;
 
 /// Количество чеков.
-const char ChecksQuantity[] = "01";
+extern const char ChecksQuantity[];
 
 /// Дата и время в команде.
 const bool DateTimeInCommand = true;
 
 /// ID прошивки для ПРИМ-21 03 на базе принтера Custom VKP-80.
-const char FirmarePRIM21_03[] = "LPC22";
+extern const char FirmarePRIM21_03[];
 
 /// ПФД.
 
 /// Артикул товара/услуги.
-const char ServiceMarking[] = "1";
+extern const char ServiceMarking[];
 
 /// Количество наименований товара/услуги.
-const char ServiceQuantity[] = "1";
+extern const char ServiceQuantity[];
 
 /// Единица измерения товара/услуги.
-const char MeasurementUnit[] = " ";
+extern const char MeasurementUnit[];
 
 /// Индекс секции.
-const char SectionIndex[] = "01";
+extern const char SectionIndex[];
 
 /// Идентификатор секции.
-const char SectionID[] = "TERMINAL";
+extern const char SectionID[];
 
 /// Идентификатор (фамилия) оператора.
-const char OperatorID[] = " ";
+extern const char OperatorID[];
 
 /// Шрифт.
-const char Font[] = "00";
+extern const char Font[];
 
 /// Количество копий.
-const char Copies[] = "01";
+extern const char Copies[];
 
 /// Шаг сетки копий
 const char CopуGrid[] = "0000";
 
 /// Шаг сетки строк
-const char LineGrid[] = "00";
+extern const char LineGrid[];
 
 /// Название платежной карты. платежных карт у нас нет, но в посылку надо что-то положить.
-const char PaymentCardName[] = " ";
+extern const char PaymentCardName[];
 
 /// Не печатать документ.
-const char DontPrintFD[] = "00";
+extern const char DontPrintFD[];
 
 /// Налоговая ставка куда будет складываться последний снятый Z отчет - последняя, неиспользуемая.
 const int LastTaxRate = 7;
 
 /// Название налоговой ставки куда будет складываться последний снятый Z отчет.
-const char LastTaxRateName[] = "Z-report number";
+extern const char LastTaxRateName[];
 
 /// Маска печати шапки чека перед ПФД.
 const ushort NeedPrintFiscalCapMask = 0x8000;
@@ -110,7 +110,7 @@ const ushort LongReportMask2 = 0x0005;
 const ushort NullingSumInCashMask = 0x0100;
 
 /// Версия ПО ФР, где присутствуют презентер и ретрактор.
-const char SoftVersionPresenter[] = "LPC22";
+extern const char SoftVersionPresenter[];
 
 /// Максимальный размер произвольного G поля в ПФД.
 const int MaxLengthGField = 80;
@@ -128,7 +128,7 @@ const ushort DocumentMask = 0x0007;
 const int SetFiscalModeTimeout = 3 * 1000;
 
 /// Текст на чеке перед выходом из незапланированного режима принтера
-const char EndPrinterModeText[] = "           PRINTER MODE";
+extern const char EndPrinterModeText[];
 
 //----------------------------------------------------------------------------
 /// Шрифт для фискальных документов.
@@ -196,7 +196,7 @@ const char FRControl = '\x94';
 const char GetFRControlSettings = '\x95';
 const char GetKKMInfo = '\x97';
 
-const char SetFiscalMode[] = "\x1B\x1B";
+extern const char SetFiscalMode[];
 
 /// Дата и время в команде.
 const QSet<char> DateTimeIn = QSet<char>()

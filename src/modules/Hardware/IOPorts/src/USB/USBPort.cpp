@@ -15,7 +15,15 @@ QMutex USBPort::mSystemPropertyMutex(QMutex::Recursive);
 #endif
 
 //--------------------------------------------------------------------------------
-USBPort::USBPort() {
+namespace CUSBPort {
+namespace DeviceTags {
+const char ACPI[] = "ACPI";
+const char Mouse[] = "Mouse";
+const char USBPDO[] = "USBPDO";
+} // namespace DeviceTags
+} // namespace CUSBPort
+
+//--------------------------------------------------------------------------------
     mType = EPortTypes::USB;
     // Удалены привязки к Windows GUID и DWORD свойствам
     setOpeningTimeout(CAsyncSerialPort::OpeningTimeout + CUSBPort::OpeningPause);

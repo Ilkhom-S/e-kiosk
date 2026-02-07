@@ -39,6 +39,15 @@ function(ek_add_library TARGET_NAME)
         target_link_libraries(${TARGET_NAME} PUBLIC Qt${QT_VERSION_MAJOR}::Core)
     endif()
 
+    # Add Qt include directories as SYSTEM to suppress warnings from Qt headers
+    if(ARG_QT_MODULES)
+        foreach(qt_module ${ARG_QT_MODULES})
+            target_include_directories(${TARGET_NAME} SYSTEM PUBLIC ${Qt${QT_VERSION_MAJOR}${qt_module}_INCLUDE_DIRS})
+        endforeach()
+    else()
+        target_include_directories(${TARGET_NAME} SYSTEM PUBLIC ${Qt${QT_VERSION_MAJOR}Core_INCLUDE_DIRS})
+    endif()
+
     if(ARG_DEPENDS)
         target_link_libraries(${TARGET_NAME} PUBLIC ${ARG_DEPENDS})
     endif()

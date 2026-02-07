@@ -17,7 +17,7 @@
 #include "SingleDetectingIterator.h"
 
 namespace Ucs {
-const char ModelName[] = "UCS";
+extern const char ModelName[];
 } // namespace Ucs
 
 //--------------------------------------------------------------------------------

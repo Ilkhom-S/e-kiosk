@@ -7,273 +7,273 @@
 //---------------------------------------------------------------------------
 namespace CHardware {
 /// Общие константы.
-const char OPOSName[] = "opos_name";
-const char Codepage[] = "codepage";
-const char CallingType[] = "calling_type";
-const char AutomaticStatus[] = "automatic_status_issue";
-const char UpdatingFilenameExtension[] = "updating_filename_extension";
-const char PluginParameterNames[] = "plugin_parameter_names";
-const char RequiredResourceNames[] = "required_resource_names";
-const char PluginPath[] = "plugin_path";
-const char ConfigData[] = "config_data";
-const char CanSoftReboot[] = "can_soft_reboot";
-const char ProtocolType[] = "protocol_type";
+extern const char OPOSName[];
+extern const char Codepage[];
+extern const char CallingType[];
+extern const char AutomaticStatus[];
+extern const char UpdatingFilenameExtension[];
+extern const char PluginParameterNames[];
+extern const char RequiredResourceNames[];
+extern const char PluginPath[];
+extern const char ConfigData[];
+extern const char CanSoftReboot[];
+extern const char ProtocolType[];
 
 /// Типы вызова функционала драйвера.
 namespace CallingTypes {
-const char Internal[] = "internal";
-const char External[] = "external";
+extern const char Internal[];
+extern const char External[];
 } // namespace CallingTypes
 
 /// Типы устройств.
 namespace Types {
-const char CashAcceptor[] = "CashAcceptor";
-const char BillAcceptor[] = "BillAcceptor";
-const char Dispenser[] = "Dispenser";
-const char CoinAcceptor[] = "CoinAcceptor";
-const char DualCashAcceptor[] = "DualCashAcceptor";
+extern const char CashAcceptor[];
+extern const char BillAcceptor[];
+extern const char Dispenser[];
+extern const char CoinAcceptor[];
+extern const char DualCashAcceptor[];
 } // namespace Types
 
 /// Кодировки.
 namespace Codepages {
-const char CP850[] = "CP858 (Western Europe)";
-const char CP866[] = "CP866 (Cyrillic Russian)";
-const char Win1250[] = "Win-1250 (Eastern & Central Europe)";
-const char Win1251[] = "Win-1251 (Cyrillic)";
-const char Win1252[] = "Win-1252 (Western Europe)";
-const char Base[] = "Base";
-const char SPARK[] = "SPARK";
-const char ATOL[] = "ATOL";
-const char CustomKZT[] = "CP866 (Kazakhstan)";
+extern const char CP850[];
+extern const char CP866[];
+extern const char Win1250[];
+extern const char Win1251[];
+extern const char Win1252[];
+extern const char Base[];
+extern const char SPARK[];
+extern const char ATOL[];
+extern const char CustomKZT[];
 } // namespace Codepages
 
 /// Константы порта.
 namespace Port {
-const char IOLogging[] = "IO_logging";
-const char DeviceModelName[] = "device_model_name";
-const char MaxReadingSize[] = "max_reading_size";
-const char OpeningTimeout[] = "opening_timeout";
-const char OpeningContext[] = "port_opening_context";
-const char Suspended[] = "suspended";
-const char JustConnected[] = "just_connected";
+extern const char IOLogging[];
+extern const char DeviceModelName[];
+extern const char MaxReadingSize[];
+extern const char OpeningTimeout[];
+extern const char OpeningContext[];
+extern const char Suspended[];
+extern const char JustConnected[];
 
 /// Константы COM-порта.
 namespace COM {
-const char BaudRate[] = "baud_rate";
-const char Parity[] = "parity";
-const char ByteSize[] = "byte_size";
-const char StopBits[] = "stop_bits";
-const char RTS[] = "rts";
-const char DTR[] = "dtr";
-const char WaitResult[] = "wait_result";
-const char ControlRemoving[] = "control_removing";
+extern const char BaudRate[];
+extern const char Parity[];
+extern const char ByteSize[];
+extern const char StopBits[];
+extern const char RTS[];
+extern const char DTR[];
+extern const char WaitResult[];
+extern const char ControlRemoving[];
 } // namespace COM
 
 /// Константы USB-порта.
 namespace USB {
-const char VID[] = "vid";
-const char PID[] = "pid";
+extern const char VID[];
+extern const char PID[];
 } // namespace USB
 } // namespace Port
 
 /// Константы кардридера.
 namespace CardReader {
-const char Track1[] = "track1";
-const char Track2[] = "track2";
-const char Track3[] = "track3";
+extern const char Track1[];
+extern const char Track2[];
+extern const char Track3[];
 } // namespace CardReader
 
 /// Константы устройства работы с деньгами.
 namespace CashDevice {
 /// Типы протокола CCTalk.
 namespace CCTalkTypes {
-const char CRC8[] = "CRC8";
-const char CRC16[] = "CRC16";
-const char CRC16Encrypted[] = "CRC16 Encrypted";
+extern const char CRC8[];
+extern const char CRC16[];
+extern const char CRC16Encrypted[];
 } // namespace CCTalkTypes
 } // namespace CashDevice
 
 /// Константы устройства приема денег.
 namespace CashAcceptor {
-const char SecurityLevel[] = "set_security";
-const char ParTable[] = "par_table";
-const char Enabled[] = "enabled";
-const char OnlyDefferedDisable[] = "only_deffered_disable";
-const char DisablingTimeout[] = "disabling_timeout";
-const char InitializeTimeout[] = "initialize_timeout";
-const char ProcessEnabling[] = "process_enabling";
-const char ProcessDisabling[] = "process_disabling";
-const char StackedFilter[] = "stacked_filter";
+extern const char SecurityLevel[];
+extern const char ParTable[];
+extern const char Enabled[];
+extern const char OnlyDefferedDisable[];
+extern const char DisablingTimeout[];
+extern const char InitializeTimeout[];
+extern const char ProcessEnabling[];
+extern const char ProcessDisabling[];
+extern const char StackedFilter[];
 } // namespace CashAcceptor
 
 /// Константы виртуального устройства приема денег.
 namespace VirtualCashAcceptor {
-const char NotesPerEscrow[] = "notes_per_escrow";
+extern const char NotesPerEscrow[];
 } // namespace VirtualCashAcceptor
 
 /// Константы диспенсера.
 namespace Dispenser {
-const char Units[] = "units";
-const char JammedItem[] = "jammed_item";
-const char NearEndCount[] = "near_end_count";
+extern const char Units[];
+extern const char JammedItem[];
+extern const char NearEndCount[];
 } // namespace Dispenser
 
 /// Константы сканера.
 namespace Scanner {
-const char Prefix[] = "prefix";
+extern const char Prefix[];
 } // namespace Scanner
 
 /// Константы принтера.
 namespace Printer {
-const char FeedingAmount[] = "feeding_amount";
-const char NeedCutting[] = "need_cutting";
-const char NeedSeparating[] = "need_separating";
-const char ByteString[] = "byte_string";
-const char Receipt[] = "receipt";
-const char PresenterEnable[] = "presenter_enable";
-const char RetractorEnable[] = "retractor_enable";
-const char PresenterStatusEnable[] = "presenter_status_enable";
-const char VerticalMountMode[] = "vertical_mount_mode";
-const char AutoRetractionTimeout[] = "auto_retraction_timeout";
-const char BlackMark[] = "black_mark";
-const char PowerOnReaction[] = "power-on_reaction";
-const char OutCall[] = "out_call";
-const char LineSize[] = "line_size";
-const char PrintingMode[] = "printing_mode";
+extern const char FeedingAmount[];
+extern const char NeedCutting[];
+extern const char NeedSeparating[];
+extern const char ByteString[];
+extern const char Receipt[];
+extern const char PresenterEnable[];
+extern const char RetractorEnable[];
+extern const char PresenterStatusEnable[];
+extern const char VerticalMountMode[];
+extern const char AutoRetractionTimeout[];
+extern const char BlackMark[];
+extern const char PowerOnReaction[];
+extern const char OutCall[];
+extern const char LineSize[];
+extern const char PrintingMode[];
 
 /// Команды.
 namespace Commands {
-const char Cutting[] = "cutting_command";
-const char Presentation[] = "presentation_command";
-const char Pushing[] = "pushing_command";
-const char Retraction[] = "retraction_command";
+extern const char Cutting[];
+extern const char Presentation[];
+extern const char Pushing[];
+extern const char Retraction[];
 } // namespace Commands
 
 /// Настройки для плагина.
 namespace Values {
-const char Cut[] = "cut";
-const char Retract[] = "retract";
-const char Push[] = "push";
-const char Present[] = "present";
+extern const char Cut[];
+extern const char Retract[];
+extern const char Push[];
+extern const char Present[];
 } // namespace Values
 
 /// Настройки для плагина.
 namespace Settings {
-const char NotTakenReceipt[] = "not_taken_receipt";
-const char PreviousReceipt[] = "previous_receipt";
-const char PreviousAndNotTakenReceipts[] = "previous_and_not_taken_receipts";
-const char LeftReceiptTimeout[] = "receipt_processing_timeout";
-const char FontSize[] = "font_size";
-const char LineSpacing[] = "line_spacing";
-const char FeedingFactor[] = "feeding_factor";
-const char PresentationLength[] = "presentation_length";
-const char Loop[] = "loop";
-const char Hold[] = "hold";
-const char Ejector[] = "ejector";
-const char RemotePaperSensor[] = "remote_paper_sensor";
-const char PaperJamSensor[] = "paper_jam_sensor";
-const char PaperWeightSensors[] = "paper_weight_sensors";
-const char DocumentCap[] = "document_cap";
-const char BackFeed[] = "back_feed";
-const char PrintPageNumber[] = "print_page_number";
-const char LeftMargin[] = "left_margin";
-const char RightMargin[] = "right_margin";
+extern const char NotTakenReceipt[];
+extern const char PreviousReceipt[];
+extern const char PreviousAndNotTakenReceipts[];
+extern const char LeftReceiptTimeout[];
+extern const char FontSize[];
+extern const char LineSpacing[];
+extern const char FeedingFactor[];
+extern const char PresentationLength[];
+extern const char Loop[];
+extern const char Hold[];
+extern const char Ejector[];
+extern const char RemotePaperSensor[];
+extern const char PaperJamSensor[];
+extern const char PaperWeightSensors[];
+extern const char DocumentCap[];
+extern const char BackFeed[];
+extern const char PrintPageNumber[];
+extern const char LeftMargin[];
+extern const char RightMargin[];
 } // namespace Settings
 
 /// Параметры обработки чека после отрезки.
 namespace EjectorMode {
-const char Presenting[] = "presenting";
-const char Printing[] = "printing";
-const char Action[] = "action";
+extern const char Presenting[];
+extern const char Printing[];
+extern const char Action[];
 } // namespace EjectorMode
 } // namespace Printer
 
 /// Константы сторожевого таймера.
 namespace Watchdog {
-const char CanRegisterKey[] = "can_register_key";
-const char CanWakeUpPC[] = "can_wake_up_pc";
-const char PCWakingUpTime[] = "pc_waking_up_time";
+extern const char CanRegisterKey[];
+extern const char CanWakeUpPC[];
+extern const char PCWakingUpTime[];
 
 namespace Sensor {
-const char Safe[] = "safe";            /// Сейф.
-const char UpperUnit[] = "upper_unit"; /// Верхний модуль.
-const char LowerUnit[] = "lower_unit"; /// Верхний модуль.
+extern const char Safe[];            /// Сейф.
+extern const char UpperUnit[]; /// Верхний модуль.
+extern const char LowerUnit[]; /// Верхний модуль.
 
 /// Настройки срабатывания датчиков.
 namespace Action {
-const char Safe[] = "safe_action";            /// Сейф.
-const char UpperUnit[] = "upper_unit_action"; /// Верхний модуль.
-const char LowerUnit[] = "lower_unit_action"; /// Верхний модуль.
+extern const char Safe[];            /// Сейф.
+extern const char UpperUnit[]; /// Верхний модуль.
+extern const char LowerUnit[]; /// Верхний модуль.
 } // namespace Action
 
 /// Действия при срабатывании датчика.
 namespace ActionValue {
-const char EnterServiceMenu[] = "enter service menu"; /// Войти в сервисное меню.
-const char LockTerminal[] = "lock terminal";          /// Заблокировать терминал.
+extern const char EnterServiceMenu[]; /// Войти в сервисное меню.
+extern const char LockTerminal[];          /// Заблокировать терминал.
 } // namespace ActionValue
 } // namespace Sensor
 } // namespace Watchdog
 
 /// Константы фискального регистратора.
 namespace FR {
-const char EjectorParameters[] = "ejector_parameters";
-const char FiscalMode[] = "fiscal_mode";
-const char CanAutoCloseSession[] = "can_auto_close_session";
-const char FiscalChequeCreation[] = "fiscal_cheque_creation";
-const char SessionOpeningTime[] = "session_opening_time";
-const char Amount[] = "amount";
-const char StartZReportNumber[] = "begin_z_report_number";
-const char ZReportNumber[] = "z_report_number";
-const char EKLZRequestType[] = "EKLZ_request_type";
-const char EKLZData[] = "EKLZ_data";
-const char EKLZStatus[] = "EKLZ_status";
-const char CVCNumber[] = "cvc_number";
-const char ForcePerformZReport[] = "force_perform_z_report";
-const char PrinterModel[] = "printer_model";
-const char CanZReportWithoutPrinting[] = "can_z_report_without_printing";
+extern const char EjectorParameters[];
+extern const char FiscalMode[];
+extern const char CanAutoCloseSession[];
+extern const char FiscalChequeCreation[];
+extern const char SessionOpeningTime[];
+extern const char Amount[];
+extern const char StartZReportNumber[];
+extern const char ZReportNumber[];
+extern const char EKLZRequestType[];
+extern const char EKLZData[];
+extern const char EKLZStatus[];
+extern const char CVCNumber[];
+extern const char ForcePerformZReport[];
+extern const char PrinterModel[];
+extern const char CanZReportWithoutPrinting[];
 
 /// Команды.
 namespace Commands {
-const char PrintingDeferredZReports[] = "printing_deferred_z_reports_command";
+extern const char PrintingDeferredZReports[];
 } // namespace Commands
 
 /// Варианты использования настроек.
 namespace Values {
-const char Adaptive[] = "adaptive";
-const char Discrete[] = "discrete";
-const char LoopAndPushNotTakenOnTimeout[] = "loop and push not taken receipt on timeout";
-const char NoLoopAndPushNotTakenOnTimeout[] = "no loop and push not taken receipt on timeout";
-const char NoLoopAndRetractNotTakenOnTimeout[] = "no loop and retract not taken receipt on timeout";
+extern const char Adaptive[];
+extern const char Discrete[];
+extern const char LoopAndPushNotTakenOnTimeout[];
+extern const char NoLoopAndPushNotTakenOnTimeout[];
+extern const char NoLoopAndRetractNotTakenOnTimeout[];
 } // namespace Values
 
 namespace Strings {
-const char Payment[] = "payment_name";
-const char Depositing[] = "depositing_name";
-const char INN[] = "inn_name";
-const char SerialNumber[] = "serial_number_name";
-const char DocumentNumber[] = "document_number_name";
-const char Amount[] = "amount_name";
-const char Date[] = "date_name";
-const char Time[] = "time_name";
-const char Session[] = "session_name";
-const char Cashier[] = "cashier_name";
-const char ReceiptNumber[] = "receipt_number_name";
-const char Total[] = "total";
-const char WithoutTaxes[] = "without_taxes";
+extern const char Payment[];
+extern const char Depositing[];
+extern const char INN[];
+extern const char SerialNumber[];
+extern const char DocumentNumber[];
+extern const char Amount[];
+extern const char Date[];
+extern const char Time[];
+extern const char Session[];
+extern const char Cashier[];
+extern const char ReceiptNumber[];
+extern const char Total[];
+extern const char WithoutTaxes[];
 } // namespace Strings
 
 namespace DocumentCapData {
-const char DealerName[] = "dealer_name";
-const char DealerAddress[] = "dealer_address";
-const char DealerSupportPhone[] = "dealer_support_phone";
-const char PointAddress[] = "point_address";
+extern const char DealerName[];
+extern const char DealerAddress[];
+extern const char DealerSupportPhone[];
+extern const char PointAddress[];
 } // namespace DocumentCapData
 } // namespace FR
 
 /// Константы веб-камеры.
 namespace WebCamera {
-const char FaceDetection[] = "face_detection";
-const char FPS[] = "fps";
+extern const char FaceDetection[];
+extern const char FPS[];
 } // namespace WebCamera
 } // namespace CHardware
 

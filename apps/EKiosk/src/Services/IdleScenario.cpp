@@ -18,6 +18,13 @@
 #include "GUIService.h"
 #include "SettingsService.h"
 #include "System/IApplication.h"
+
+namespace CGUISignals {
+const char StartGUI[] = "start_ui";
+const char StopGUI[] = "stop_ui";
+const char UpdateGUI[] = "update_ui";
+const char ScreenPasswordUpdated[] = "screen_password_updated";
+} // namespace CGUISignals
 #include "TerminalService.h"
 
 namespace PPSDK = SDK::PaymentProcessor;

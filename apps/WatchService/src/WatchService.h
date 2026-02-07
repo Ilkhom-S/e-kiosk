@@ -19,8 +19,8 @@
 
 //----------------------------------------------------------------------------
 namespace CStartMode {
-const char Normal[] = "normal";
-const char Exclusive[] = "exclusive";
+extern const char Normal[];
+extern const char Exclusive[];
 } // namespace CStartMode
 
 //----------------------------------------------------------------------------

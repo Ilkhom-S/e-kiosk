@@ -61,13 +61,13 @@ const SWaitingData EjectorWaiting = SWaitingData(300, 20 * 1000);
 //----------------------------------------------------------------------------
 /// Команды.
 namespace Commands {
-const char Initialize[] = "\x1B\x40";        /// Переинициализация логики.
-const char Reset[] = "\x1B\x06\x18";         /// Сброс (логика + механика).
-const char ASBStatus[] = "\x1B\x06\x01";     /// Статус (ASB).
-const char ETBMark[] = "\x17";               /// Метка (ETB) для ASB статуса.
-const char SetASB[] = "\x1B\x1E\x61\x03";    /// Установить ASB.
-const char PrintImage[] = "\x1B\x58";        /// Печать изображения.
-const char FeedImageLine[] = "\x1B\x49\x18"; /// Промотка линии изображения.
+extern const char Initialize[];        /// Переинициализация логики.
+extern const char Reset[];         /// Сброс (логика + механика).
+extern const char ASBStatus[];     /// Статус (ASB).
+extern const char ETBMark[];               /// Метка (ETB) для ASB статуса.
+extern const char SetASB[];    /// Установить ASB.
+extern const char PrintImage[];        /// Печать изображения.
+extern const char FeedImageLine[]; /// Промотка линии изображения.
 const QByteArray WaitForPrintingEnd = QByteArray::fromRawData(
     "\x1B\x1D\x03\x01\x00\x00", 6); /// Дождаться окончания печати и получить счетчик чеков.
 

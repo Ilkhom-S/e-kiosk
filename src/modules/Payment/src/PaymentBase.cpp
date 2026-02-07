@@ -18,6 +18,17 @@
 #include <SDK/PaymentProcessor/Payment/IPayment.h>
 #include <SDK/PaymentProcessor/Payment/IPaymentFactory.h>
 #include <SDK/PaymentProcessor/Payment/Parameters.h>
+
+//------------------------------------------------------------------------------
+namespace CPayment {
+namespace Requests {
+const char FakeCheck[] = "FAKE_CHECK";
+const char Check[] = "CHECK";
+const char Pay[] = "PAYMENT";
+const char Status[] = "STATUS";
+const char GetStep[] = "GETSTEP";
+} // namespace Requests
+} // namespace CPayment
 #include <SDK/PaymentProcessor/Payment/Step.h>
 #include <SDK/PaymentProcessor/Settings/DealerSettings.h>
 #include <SDK/PaymentProcessor/Settings/ISettingsAdapter.h>

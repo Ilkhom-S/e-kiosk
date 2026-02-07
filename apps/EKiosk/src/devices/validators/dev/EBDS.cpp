@@ -6,6 +6,16 @@
 #include <QtCore/QElapsedTimer>
 #include <QtMath>
 
+// Definitions for EBDS constants
+namespace EBDSConstruct {
+const char AdvancedModelTag[] = "SCN";
+
+namespace Commands {
+const char GetPar[] = "\x70\x02";
+const char SetInhibits[] = "\x70\x03";
+} // namespace Commands
+} // namespace EBDSConstruct
+
 EBDS::EBDS(QObject *parent) : BaseValidatorDevices(parent) {
     preDateTime = QDateTime::currentDateTime().addSecs(-1);
 

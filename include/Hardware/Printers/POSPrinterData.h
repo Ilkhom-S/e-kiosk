@@ -11,23 +11,22 @@
 namespace CPOSPrinter {
 /// Команды.
 namespace Command {
-const char GetModelId[] = "\x1D\x49\x01";    /// Получение идентификатора модели.
-const char GetTypeId[] = "\x1D\x49\x02";     /// Получение идентификатора типа модели.
-const char GetROMVersion[] = "\x1D\x49\x03"; /// Получение версии прошивки.
-const char Initialize[] = "\x1B\x40";        /// Инициализация.
-const char SetEnabled[] = "\x1B\x3D\x01";    /// Включение доступности принтера.
-const char SetUSCharacterSet[] =
-    "\x1B\x52\x30";                        /// Установка набора символов США (не кодовая страница).
-const char SetStandardMode[] = "\x1B\x53"; /// Установка стандартного режима.
-const char Present[] = "\x1D\x65\x03";     /// Неизменяемая часть команды презентации чека.
-const char Retract[] = "\x1D\x65\x02";     /// Забирание чека в ретрактор.
-const char Push[] = "\x1D\x65\x05";        /// Выталкивание чека.
-const char LoopEnable[] = "\x1D\x65\x12";  /// Включение петли.
-const char LoopDisable[] = "\x1D\x65\x14"; /// Выключение петли.
-const char GetPaperStatus[] = "\x1B\x76";  /// Запрос статуса бумаги.
-const char Cut[] = "\x1B\x69";             /// Отрезка.
-const char PrintImage[] = "\x1D\x76\x30";  /// Печать картинки.
-const char AlignLeft[] = "\x1B\x61\x30";   /// Выравнивание по левому краю.
+extern const char GetModelId[];    /// Получение идентификатора модели.
+extern const char GetTypeId[];     /// Получение идентификатора типа модели.
+extern const char GetROMVersion[]; /// Получение версии прошивки.
+extern const char Initialize[];        /// Инициализация.
+extern const char SetEnabled[];    /// Включение доступности принтера.
+extern const char SetUSCharacterSet[]; /// Установка набора символов США (не кодовая страница).
+extern const char SetStandardMode[]; /// Установка стандартного режима.
+extern const char Present[];     /// Неизменяемая часть команды презентации чека.
+extern const char Retract[];     /// Забирание чека в ретрактор.
+extern const char Push[];        /// Выталкивание чека.
+extern const char LoopEnable[];  /// Включение петли.
+extern const char LoopDisable[]; /// Выключение петли.
+extern const char GetPaperStatus[];  /// Запрос статуса бумаги.
+extern const char Cut[];             /// Отрезка.
+extern const char PrintImage[];  /// Печать картинки.
+extern const char AlignLeft[];   /// Выравнивание по левому краю.
 
 inline QByteArray GetStatus(char aStatusType) {
     return QByteArray("\x10\x04") + aStatusType;
@@ -41,16 +40,16 @@ inline QByteArray SetLineSpacing(int aSpacing) {
 
 /// Штрих-коды.
 namespace Barcode {
-const char Height[] = "\x1D\x68";      /// Высота штрих-кода - 20.25 мм.
-const char HRIPosition[] = "\x1D\x48"; /// Позиционирование символов штрих-кода - выше штрих-кода.
-const char FontSize[] = "\x1D\x66";    /// Размер шрифта штрих-кода.
-const char Width[] = "\x1D\x77";       /// Ширина линии - 0.25 мм.
-const char Print[] = "\x1D\x6B";       /// Печать.
+extern const char Height[];      /// Высота штрих-кода - 20.25 мм.
+extern const char HRIPosition[]; /// Позиционирование символов штрих-кода - выше штрих-кода.
+extern const char FontSize[];    /// Размер шрифта штрих-кода.
+extern const char Width[];       /// Ширина линии - 0.25 мм.
+extern const char Print[];       /// Печать.
 } // namespace Barcode
 } // namespace Command
 
 const char RussianCodePage = '\x11';              /// Номер русской кодовой страницы.
-const char DefaultName[] = "Unknown POS Printer"; /// Имя принтера по умолчанию.
+extern const char DefaultName[]; /// Имя принтера по умолчанию.
 
 /// Штрих-коды.
 namespace Barcode {
@@ -59,7 +58,7 @@ const char HRIPosition = '\x01';       /// Позиционирование си
 const char FontSize = '\x49';          /// Размер шрифта штрих-кода.
 const char Width = '\x02';             /// Ширина линии - 0.25 мм.
 const char CodeSystem128 = '\x49';     /// Система штрих-кода - CODE128.
-const char Code128Spec[] = "\x7B\x42"; /// Спецификация (уточнение, подвид) системы Code128.
+extern const char Code128Spec[]; /// Спецификация (уточнение, подвид) системы Code128.
 } // namespace Barcode
 
 /// Константы для представления коэффициентов масштаба (1 или 2).

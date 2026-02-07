@@ -17,10 +17,10 @@ namespace PPSDK = SDK::PaymentProcessor;
 //---------------------------------------------------------------------------
 namespace CPrintCommands {
 /// Постфикс имени файла нераспечатанных чеков.
-const char NotPrintedPostfix[] = "_not_printed";
+extern const char NotPrintedPostfix[];
 
 /// Шаблон имени файла фискального чека.
-const char ReceiptNameTemplate[] = "hhmmsszzz";
+extern const char ReceiptNameTemplate[];
 
 /// Данные фискальных тегов.
 const QStringList FFDataList = QStringList()

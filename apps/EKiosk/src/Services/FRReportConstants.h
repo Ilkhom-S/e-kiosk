@@ -1,19 +1,19 @@
 /* @file Константы для отчета с данными ФР. */
 
 namespace CFRReport {
-const char ZReport[] = "z_report";
-const char Number[] = "number";
+extern const char ZReport[];
+extern const char Number[];
 
-const char FR[] = "fr";
-const char Serial[] = "serial";
-const char RNM[] = "rnm";
+extern const char FR[];
+extern const char Serial[];
+extern const char RNM[];
 
-const char PaymentCount[] = "payment_count";
-const char PaymentAmount[] = "payment_amount";
-const char NonNullableAmount[] = "non_nullable_amount";
+extern const char PaymentCount[];
+extern const char PaymentAmount[];
+extern const char NonNullableAmount[];
 
-const char FRDateTime[] = "fr_date_time";
-const char SystemDateTime[] = "system_date_time";
+extern const char FRDateTime[];
+extern const char SystemDateTime[];
 } // namespace CFRReport
 
 //---------------------------------------------------------------------------

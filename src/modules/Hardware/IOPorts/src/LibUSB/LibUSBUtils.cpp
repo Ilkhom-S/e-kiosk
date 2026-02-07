@@ -14,6 +14,10 @@
 
 using namespace ProtocolUtils;
 
+namespace CLibUSBUtils {
+const char Locale[] = "ru";
+} // namespace CLibUSBUtils
+
 namespace LibUSBUtils {
 //--------------------------------------------------------------------------------
 libusb_context *getContext(ILog *aLog) {

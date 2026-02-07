@@ -24,7 +24,7 @@ class NetworkTaskManager;
 namespace Uniteller {
 const quint16 DefaultPort = 10400;
 const int SocketTimeout = 5000;
-const char LogName[] = "Uniteller";
+extern const char LogName[];
 } // namespace Uniteller
 
 //---------------------------------------------------------------------------

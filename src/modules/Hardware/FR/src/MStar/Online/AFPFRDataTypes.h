@@ -86,7 +86,7 @@ typedef SData (*TData)(int aSeries);
 /// Данные моделей.
 namespace Models {
 /// Модели по умолчанию.
-const char Default[] = "Multisoft AFP online FR";
+extern const char Default[];
 
 struct SData {
     QString name;

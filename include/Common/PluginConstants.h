@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 namespace CPluginParameters {
 /// Общие константы.
-const char PPVersion[] = "e_kiosk_version";
+extern const char PPVersion[];
 } // namespace CPluginParameters
 
 //---------------------------------------------------------------------------

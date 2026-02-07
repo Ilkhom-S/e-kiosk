@@ -74,7 +74,7 @@ const char FeedChequeTape = 0x02;
 const char DefaultPresentationLength = 9;
 
 /// Формат представления даты и времени в ответе на длинный запрос статуса.
-const char DateTimeFormat[] = "ddMMyyyyhhmmss";
+extern const char DateTimeFormat[];
 
 /// Пароль администратора по умолчанию.
 const char AdminPassword = 30;

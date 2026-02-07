@@ -20,6 +20,11 @@
 
 using namespace SDK::Driver;
 
+// MetaDevice constants definitions
+namespace CMetaDevice {
+const char DefaultName[] = "Meta device";
+} // namespace CMetaDevice
+
 //-------------------------------------------------------------------------------
 template <class T>
 MetaDevice<T>::MetaDevice()

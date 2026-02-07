@@ -16,7 +16,7 @@ namespace Scripting {
 
 /// Константы сервиса рекламы.
 namespace CAdService {
-const char DefaultBanner[] = "banner";
+extern const char DefaultBanner[];
 } // namespace CAdService
 
 //------------------------------------------------------------------------------

@@ -155,6 +155,8 @@ ek_add_library(HardwareModems
 file(GLOB_RECURSE HARDWAREPROTOCOLS_SOURCES
     Protocols/CashAcceptor/*/src/*.cpp
     Protocols/CashAcceptor/*/src/*.h
+    Protocols/Common/src/*.cpp
+    Protocols/Common/src/*.h
     Protocols/Watchdog/*/src/*.cpp
     Protocols/Watchdog/*/src/*.h
 )
@@ -163,8 +165,10 @@ set(HARDWAREPROTOCOLS_HEADERS
 )
 if(EKIOSK_ENABLE_FR)
     file(GLOB_RECURSE HARDWAREPROTOCOLS_FR_SOURCES
+        Protocols/FR/Atol/src/*.*
         Protocols/FR/Atol2/src/*.*
         Protocols/FR/Atol3/src/*.*
+        Protocols/FR/Base/src/*.*
         Protocols/FR/Common/src/*.*
         Protocols/FR/Prim/src/*.*
         Protocols/FR/Shtrih/src/*.*
@@ -172,7 +176,11 @@ if(EKIOSK_ENABLE_FR)
         Protocols/FR/Kasbi/src/*.*
         Protocols/FR/AFP/src/*.*
     )
-    list(APPEND HARDWAREPROTOCOLS_SOURCES ${HARDWAREPROTOCOLS_FR_SOURCES})
+    file(GLOB HARDWAREPROTOCOLS_FR_MAIN_SOURCES
+        Protocols/FR/src/*.cpp
+        Protocols/FR/src/*.h
+    )
+    list(APPEND HARDWAREPROTOCOLS_SOURCES ${HARDWAREPROTOCOLS_FR_SOURCES} ${HARDWAREPROTOCOLS_FR_MAIN_SOURCES})
     list(APPEND HARDWAREPROTOCOLS_HEADERS
         ${CMAKE_SOURCE_DIR}/include/Hardware/Protocols/FR/FiscalChequeStates.h
     )

@@ -4,6 +4,15 @@
 
 #include <QtCore/QElapsedTimer>
 
+//--------------------------------------------------------------------------------
+namespace CCitizenPPU700 {
+/// Команды.
+namespace Command {
+const char GetFirmware[] = "\x1D\x49\x41";     /// Получение версии прошивки.
+const char GetSerialNumber[] = "\x1D\x49\x44"; /// Получение серийного номера.
+} // namespace Command
+} // namespace CCitizenPPU700
+
 template class SerialPOSPrinter<CitizenPPU700<TSerialPrinterBase>>;
 template class SerialPOSPrinter<CitizenPPU700II<TSerialPrinterBase>>;
 

@@ -4,6 +4,8 @@
 
 #include <Hardware/IOPorts/AsyncSerialPort.h>
 
+const char GeneralRS232[] = "ACPI";
+
 #ifdef Q_OS_WIN
 // Windows implementation
 #include <Hardware/IOPorts/COM/windows/AsyncSerialPortWin.h>

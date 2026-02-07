@@ -18,7 +18,7 @@ public:
 
 private:
     /// Устанавливает соединение используя IP Helper API.
-    virtual void doConnect() throw(...);
+    virtual void doConnect() throw(...) override;
 
     /// Разрывает соединение используя IP Helper API.
     virtual void doDisconnect() throw(...);

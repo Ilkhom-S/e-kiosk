@@ -52,3 +52,15 @@ QString AdService::getContent(const QString &aName) {
 } // namespace Scripting
 } // namespace PaymentProcessor
 } // namespace SDK
+
+//---------------------------------------------------------------------------
+// Definitions for CAdService constants
+namespace SDK {
+namespace PaymentProcessor {
+namespace Scripting {
+namespace CAdService {
+extern const char DefaultBanner[] = "banner";
+} // namespace CAdService
+} // namespace Scripting
+} // namespace PaymentProcessor
+} // namespace SDK

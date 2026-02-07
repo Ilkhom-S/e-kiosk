@@ -6,7 +6,7 @@ namespace SDK {
 namespace Driver {
 
 #define ADD_IT(aType)                                                                              \
-    const char aType[] = #aType;                                                                   \
+    extern const char aType[];                                                                     \
     class It##aType {};
 
 /// Типы взаимодействия.

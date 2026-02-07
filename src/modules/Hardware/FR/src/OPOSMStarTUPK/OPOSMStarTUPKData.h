@@ -8,9 +8,9 @@
 
 //--------------------------------------------------------------------------------
 namespace COPOSMStarTUPK {
-const char ModelName[] = "Multisoft MStar-TUP-K"; /// название модели.
-const char DeviceNameTag[] = "MSTAR-TUP-K";       /// Тег для идентификации.
-const char OPOSName[] = "mstartk";                /// OPOS-имя.
+extern const char ModelName[];
+extern const char DeviceNameTag[];
+extern const char OPOSName[];
 
 const int MaxLineLength = 41;  /// Максимальное количество символов в строке.
 const int MaxOPOSResult = 200; /// Максимальное значение для OPOS-результата.
@@ -50,8 +50,8 @@ const int TransactionInProgress = 2053; /// Транзакция в состоя
 
 /// Коды ошибок.
 namespace PrinterCommands {
-const char Feed[] = "1b6103"; /// Промотка, количество строк для промотки по умолчанию.
-const char Cut[] = "1b6402";  /// Отрезка.
+extern const char Feed[];
+extern const char Cut[];
 } // namespace PrinterCommands
 
 /// Данные команд прямого доступа к принтеру.

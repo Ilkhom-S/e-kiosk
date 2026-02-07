@@ -5,36 +5,36 @@
 //--------------------------------------------------------------------------------
 namespace ProtocolNames {
 namespace CashDevice {
-const char CCTalk[] = "ccTalk";
-const char CCNet[] = "CCNet";
-const char SSP[] = "SSP";
+extern const char CCTalk[];
+extern const char CCNet[];
+extern const char SSP[];
 } // namespace CashDevice
 
 namespace CashAcceptor {
-const char NPSTalk[] = "NPSTalk";
-const char ID003[] = "ID003";
-const char EBDS[] = "EBDS";
-const char V2e[] = "V2e";
-const char ICT[] = "ICT";
+extern const char NPSTalk[];
+extern const char ID003[];
+extern const char EBDS[];
+extern const char V2e[];
+extern const char ICT[];
 } // namespace CashAcceptor
 
 namespace FR {
-const char ATOL2[] = "ATOL2";
-const char ATOL3[] = "ATOL3";
-const char Shtrih[] = "Shtrih";
-const char PRIM[] = "PRIM";
-const char SPARK[] = "SPARK";
-const char Kasbi[] = "Kasbi";
-const char AFP[] = "AFP";
-const char Incotex[] = "Incotex";
+extern const char ATOL2[];
+extern const char ATOL3[];
+extern const char Shtrih[];
+extern const char PRIM[];
+extern const char SPARK[];
+extern const char Kasbi[];
+extern const char AFP[];
+extern const char Incotex[];
 } // namespace FR
 
 namespace Dispenser {
-const char Puloon[] = "Puloon";
+extern const char Puloon[];
 } // namespace Dispenser
 
 namespace Cardreader {
-const char Creator[] = "Creator";
+extern const char Creator[];
 } // namespace Cardreader
 } // namespace ProtocolNames
 //--------------------------------------------------------------------------------

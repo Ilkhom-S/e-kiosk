@@ -15,7 +15,7 @@ const char Prefix = ASCII::STX;
 const char Postfix = ASCII::ETX;
 
 /// Пароль для связи.
-const char Password[] = "PIRI";
+extern const char Password[];
 
 /// Максимальное значение Id пакета.
 const char MaxId = '\xF0';

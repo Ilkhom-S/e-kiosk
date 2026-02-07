@@ -3,29 +3,30 @@
 # Style: m_camelCase members, camelCase logic, PascalCase globals.
 
 Checks: >
-  -*,
-  bugprone-*,
-  clang-analyzer-*,
-  cppcoreguidelines-*,
-  modernize-*,
-  performance-*,
-  readability-*,
-  -modernize-use-trailing-return-type,
-  -cppcoreguidelines-avoid-magic-numbers,
-  -cppcoreguidelines-pro-type-reinterpret-cast,
-  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
-  -cppcoreguidelines-owning-memory,
-  -cppcoreguidelines-pro-type-vararg,
-  -cppcoreguidelines-non-private-member-variables-in-classes,
-  -modernize-avoid-c-arrays,
-  -readability-magic-numbers,
-  -readability-identifier-length,
-  -readability-function-cognitive-complexity,
-  -bugprone-easily-swappable-parameters,
-  -modernize-concat-nested-namespaces
+    -*,
+    bugprone-*,
+    clang-analyzer-*,
+    cppcoreguidelines-*,
+    modernize-*,
+    performance-*,
+    readability-*,
+    -modernize-use-trailing-return-type,
+    -cppcoreguidelines-avoid-magic-numbers,
+    -cppcoreguidelines-pro-type-reinterpret-cast,
+    -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+    -cppcoreguidelines-owning-memory,
+    -cppcoreguidelines-pro-type-vararg,
+    -cppcoreguidelines-non-private-member-variables-in-classes,
+    -modernize-avoid-c-arrays,
+    -cppcoreguidelines-avoid-c-arrays,
+    -readability-magic-numbers,
+    -readability-identifier-length,
+    -readability-function-cognitive-complexity,
+    -bugprone-easily-swappable-parameters,
+    -modernize-concat-nested-namespaces
 
 # Treat warnings as errors in CI
-WarningsAsErrors: ''
+WarningsAsErrors: ""
 
 # Header filter - Only analyze project headers, ignoring thirdparty and generated Qt files
 # Includes protection for moc_, ui_, and qrc_ files
@@ -35,73 +36,73 @@ HeaderFilterRegex: '^(?!.*(thirdparty|vcpkg_installed|build|external|moc_|ui_|qr
 FormatStyle: file
 
 CheckOptions:
-  # --- CLASSES & TYPES (PascalCase) ---
-  - key: readability-identifier-naming.ClassCase
-    value: CamelCase
-  - key: readability-identifier-naming.StructCase
-    value: CamelCase
-  - key: readability-identifier-naming.EnumCase
-    value: CamelCase
-  - key: readability-identifier-naming.EnumConstantCase
-    value: CamelCase
-  - key: readability-identifier-naming.NamespaceCase
-    value: CamelCase
+    # --- CLASSES & TYPES (PascalCase) ---
+    - key: readability-identifier-naming.ClassCase
+      value: CamelCase
+    - key: readability-identifier-naming.StructCase
+      value: CamelCase
+    - key: readability-identifier-naming.EnumCase
+      value: CamelCase
+    - key: readability-identifier-naming.EnumConstantCase
+      value: CamelCase
+    - key: readability-identifier-naming.NamespaceCase
+      value: CamelCase
 
-  # --- MEMBER VARIABLES (STATE) ---
-  # Public members (Structs/Pimpl): camelCase (No prefix)
-  - key: readability-identifier-naming.PublicMemberCase
-    value: camelBack
-  - key: readability-identifier-naming.PublicMemberPrefix
-    value: ''
+    # --- MEMBER VARIABLES (STATE) ---
+    # Public members (Structs/Pimpl): camelCase (No prefix)
+    - key: readability-identifier-naming.PublicMemberCase
+      value: camelBack
+    - key: readability-identifier-naming.PublicMemberPrefix
+      value: ""
 
-  # Private/Protected members: m_camelCase (Qt Standard)
-  - key: readability-identifier-naming.PrivateMemberCase
-    value: camelBack
-  - key: readability-identifier-naming.PrivateMemberPrefix
-    value: 'm_'
-  - key: readability-identifier-naming.ProtectedMemberCase
-    value: camelBack
-  - key: readability-identifier-naming.ProtectedMemberPrefix
-    value: 'm_'
+    # Private/Protected members: m_camelCase (Qt Standard)
+    - key: readability-identifier-naming.PrivateMemberCase
+      value: camelBack
+    - key: readability-identifier-naming.PrivateMemberPrefix
+      value: "m_"
+    - key: readability-identifier-naming.ProtectedMemberCase
+      value: camelBack
+    - key: readability-identifier-naming.ProtectedMemberPrefix
+      value: "m_"
 
-  # --- LOGIC VARIABLES (TEMPORARY) ---
-  # Parameters, Locals, and Local Consts: camelCase
-  - key: readability-identifier-naming.ParameterCase
-    value: camelBack
-  - key: readability-identifier-naming.LocalVariableCase
-    value: camelBack
-  - key: readability-identifier-naming.ConstantCase
-    value: camelBack
+    # --- LOGIC VARIABLES (TEMPORARY) ---
+    # Parameters, Locals, and Local Consts: camelCase
+    - key: readability-identifier-naming.ParameterCase
+      value: camelBack
+    - key: readability-identifier-naming.LocalVariableCase
+      value: camelBack
+    - key: readability-identifier-naming.ConstantCase
+      value: camelBack
 
-  # --- CONSTANTS & GLOBALS ---
-  # Global/Static constants: PascalCase (Matches Qt API like Qt::Key_Enter)
-  - key: readability-identifier-naming.GlobalConstantCase
-    value: CamelCase
-  - key: readability-identifier-naming.StaticConstantCase
-    value: CamelCase
-  - key: readability-identifier-naming.MacroDefinitionCase
-    value: UPPER_CASE
+    # --- CONSTANTS & GLOBALS ---
+    # Global/Static constants: PascalCase (Matches Qt API like Qt::Key_Enter)
+    - key: readability-identifier-naming.GlobalConstantCase
+      value: CamelCase
+    - key: readability-identifier-naming.StaticConstantCase
+      value: CamelCase
+    - key: readability-identifier-naming.MacroDefinitionCase
+      value: UPPER_CASE
 
-  # --- FUNCTIONS & METHODS ---
-  - key: readability-identifier-naming.FunctionCase
-    value: camelBack
-  - key: readability-identifier-naming.MethodCase
-    value: camelBack
+    # --- FUNCTIONS & METHODS ---
+    - key: readability-identifier-naming.FunctionCase
+      value: camelBack
+    - key: readability-identifier-naming.MethodCase
+      value: camelBack
 
-  # --- C++14 SPECIFIC MODERNIZATION ---
-  - key: modernize-use-nullptr.NullMacros
-    value: 'NULL'
-  - key: modernize-use-auto.MinTypeNameLength
-    value: '5'
-  - key: modernize-use-auto.RemoveStars
-    value: 'false'
-  - key: modernize-make-unique.MakeSmartPtrFunction
-    value: 'std::make_unique'
+    # --- C++14 SPECIFIC MODERNIZATION ---
+    - key: modernize-use-nullptr.NullMacros
+      value: "NULL"
+    - key: modernize-use-auto.MinTypeNameLength
+      value: "5"
+    - key: modernize-use-auto.RemoveStars
+      value: "false"
+    - key: modernize-make-unique.MakeSmartPtrFunction
+      value: "std::make_unique"
 
-  # --- QT PERFORMANCE & READABILITY ---
-  - key: performance-unnecessary-value-param.AllowedTypes
-    value: 'QString;QStringList;QByteArray;QVariant;QList;QVector;QMap;QSet'
-  - key: readability-implicit-bool-conversion.AllowPointerConditions
-    value: 'true'
-  - key: readability-braces-around-statements.ShortStatementLines
-    value: '1'
+    # --- QT PERFORMANCE & READABILITY ---
+    - key: performance-unnecessary-value-param.AllowedTypes
+      value: "QString;QStringList;QByteArray;QVariant;QList;QVector;QMap;QSet"
+    - key: readability-implicit-bool-conversion.AllowPointerConditions
+      value: "true"
+    - key: readability-braces-around-statements.ShortStatementLines
+      value: "1"

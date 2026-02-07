@@ -26,8 +26,6 @@ namespace GUI {
 class JSScenario : public Scenario {
     Q_OBJECT
 
-    Q_PROPERTY(QVariantMap context READ getContext)
-
 public:
     JSScenario(const QString &aName,
                const QString &aPath,

@@ -1,8 +1,10 @@
 # DriversSDK module
 
-file(GLOB DRIVERSSDK_SOURCES
+file(GLOB_RECURSE DRIVERSSDK_SOURCES
     src/*.cpp
     src/*.h
+    Watchdog/src/*.cpp
+    Watchdog/src/*.h
 )
 
 # Include SDK headers from includes directory

@@ -17,14 +17,14 @@ const int ExitInitializeTimeout = 5 * 1000;
 namespace Commands {
 /// Обновление прошивки. A1..A3 - это вроде как команды купюроприёмника
 namespace UpdatingFirmware {
-const char SetBaudRate[] = "\xA0";
-const char WriteHead[] = "\xA1";
-const char WriteBlock[] = "\xA2";
-const char Exit[] = "\xA3";
+extern const char SetBaudRate[];
+extern const char WriteHead[];
+extern const char WriteBlock[];
+extern const char Exit[];
 } // namespace UpdatingFirmware
 
-const char GetInternalVersion[] = "\x70";
-const char GetSerial[] = "\x72";
+extern const char GetInternalVersion[];
+extern const char GetSerial[];
 } // namespace Commands
 
 /// Обновление прошивки.

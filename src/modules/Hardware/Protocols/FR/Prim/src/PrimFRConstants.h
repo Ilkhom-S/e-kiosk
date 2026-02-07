@@ -14,13 +14,13 @@ const char Prefix = ASCII::STX;
 const char Postfix = ASCII::ETX;
 
 /// Пароль для связи.
-const char Password[] = "AERF";
+extern const char Password[];
 
 /// Байт-разделитель.
 const char Separator = '\x1C';
 
 /// Признак конца посылки.
-const char AnswerEndMark[] = "\x1C\x03";
+extern const char AnswerEndMark[];
 
 /// Количество повторов
 namespace RepeatingCount {

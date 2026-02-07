@@ -24,22 +24,22 @@ namespace CFR {
 const EFFD::Enum ActualFFD = EFFD::F105;
 
 /// Формат представления даты.
-const char DateFormat[] = "ddMMyyyy";
+extern const char DateFormat[];
 
 /// Формат представления даты-времени для парсинга даты bp TLV-параметра фискального тега.
-const char TLVDateTimeFormat[] = "yyyyMMddhhmm";
+extern const char TLVDateTimeFormat[];
 
 /// Формат представления даты для вывода в лог.
-const char DateLogFormat[] = "dd.MM.yyyy";
+extern const char DateLogFormat[];
 
 /// Формат представления даты для вывода в лог.
-const char TimeLogFormat[] = "hh:mm:ss";
+extern const char TimeLogFormat[];
 
 /// Формат представления даты для вывода в лог даты и времени.
-const char DateTimeLogFormat[] = "dd.MM.yyyy hh:mm:ss";
+extern const char DateTimeLogFormat[];
 
 /// Формат представления даты для вывода в лог даты и времени.
-const char DateTimeShortLogFormat[] = "dd.MM.yyyy hh:mm";
+extern const char DateTimeShortLogFormat[];
 
 /// Количество секунд в сутках.
 const int SecsInDay = 24 * 60 * 60;
@@ -60,8 +60,8 @@ const int FS15ValidityDays = 470;
 
 /// Результаты запроса статуса.
 namespace Result {
-const char Error[] = "__ERROR__"; /// Ошибка устройства, либо ответ неверно скомпонован.
-const char Fail[] = "__FAIL__";   /// Транспортная/протокольная ошибка.
+extern const char Error[]; /// Ошибка устройства, либо ответ неверно скомпонован.
+extern const char Fail[];   /// Транспортная/протокольная ошибка.
 } // namespace Result
 
 /// ИНН.
@@ -404,8 +404,8 @@ static CPayOffTypes PayOffTypes;
 //--------------------------------------------------------------------------------
 /// Операция платежного агента (1044).
 namespace AgentOperation {
-const char Payment[] = "Платеж";
-const char Payout[] = "Выдача наличных";
+extern const char Payment[];
+extern const char Payout[];
 } // namespace AgentOperation
 
 /// Банковский платежный агент?

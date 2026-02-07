@@ -1,55 +1,55 @@
 {
-  // Exclude build output, third-party, and vcpkg folders from search and IntelliSense
-  "files.exclude": {
-    "build/": true,
-    "thirdparty/": false,
-    "vcpkg_installed/": true
-  },
-  "search.exclude": {
-    "build/": true,
-    "thirdparty/": true,
-    "vcpkg_installed/": true
-  },
-  "c-cpp-flylint.excludeFromWorkspacePaths": [
-    "thirdparty",
-    "build",
-    "vcpkg_installed"
-  ],
-  "C_Cpp.default.compileCommands": "${workspaceFolder}/build/macos-qt6/compile_commands.json",
-  "editor.formatOnSave": true,
-  "[cpp]": {
-    "editor.defaultFormatter": "xaver.clang-format"
-  },
-  "C_Cpp.default.cppStandard": "c++14",
-  "C_Cpp.default.cStandard": "c11",
-  "C_Cpp.default.intelliSenseMode": "macos-clang-x64",
-  "C_Cpp.codeAnalysis.clangTidy.enabled": true,
-  "C_Cpp.codeAnalysis.clangTidy.path": "/opt/homebrew/opt/llvm/bin/clang-tidy",
-  "C_Cpp.codeAnalysis.clangTidy.args": [
-    "--extra-arg=-isysroot/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
-  ],
-  "C_Cpp.formatting": "clangFormat",
-  "C_Cpp.clang_format_style": "file",
-  "C_Cpp.clang_format_path": "/opt/homebrew/opt/llvm/bin/clang-format",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.clang-tidy": "explicit"
-  },
-  "cmake.configureOnOpen": true,
-  "cmake.buildDirectory": "${workspaceFolder}/build",
-  "cmake.configureArgs": [],
-  "cmake.buildArgs": [],
-  "cmake.ctestArgs": [],
-  "cmake.debugConfig": {
-    "type": "cppdbg",
-    "MIMode": "lldb",
-    "logging": {
-      "moduleLoad": false
+    // Exclude build output, third-party, and vcpkg folders from search and IntelliSense
+    "files.exclude": {
+        "build/": true,
+        "thirdparty/": false,
+        "vcpkg_installed/": true
     },
-    "miDebuggerPath": "/Users/ilkhom/.vscode/extensions/ms-vscode.cpptools-1.30.3-darwin-arm64/debugAdapters/lldb-mi/bin/lldb-mi"
-  },
-  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-  "chat.tools.terminal.autoApprove": {
-    "clang++": true
-  },
-  "svg.preview.background": "dark-transparent"
+    "search.exclude": {
+        "build/": true,
+        "thirdparty/": true,
+        "vcpkg_installed/": true
+    },
+    "c-cpp-flylint.excludeFromWorkspacePaths": [
+        "thirdparty",
+        "build",
+        "vcpkg_installed"
+    ],
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/macos-qt6/compile_commands.json",
+    "editor.formatOnSave": true,
+    "[cpp]": {
+        "editor.defaultFormatter": "xaver.clang-format"
+    },
+    "C_Cpp.default.cppStandard": "c++14",
+    "C_Cpp.default.cStandard": "c11",
+    "C_Cpp.default.intelliSenseMode": "macos-clang-x64",
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "C_Cpp.codeAnalysis.clangTidy.path": "/opt/homebrew/opt/llvm/bin/clang-tidy",
+    "C_Cpp.codeAnalysis.clangTidy.args": [
+        "--extra-arg=-isysroot/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+    ],
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.clang_format_style": "file",
+    "C_Cpp.clang_format_path": "/opt/homebrew/opt/llvm/bin/clang-format",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.clang-tidy": "explicit"
+    },
+    "cmake.configureOnOpen": true,
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.configureArgs": [],
+    "cmake.buildArgs": [],
+    "cmake.ctestArgs": [],
+    "cmake.debugConfig": {
+        "type": "cppdbg",
+        "MIMode": "lldb",
+        "logging": {
+            "moduleLoad": false
+        },
+        "miDebuggerPath": "/Users/ilkhom/.vscode/extensions/ms-vscode.cpptools-1.30.3-darwin-arm64/debugAdapters/lldb-mi/bin/lldb-mi"
+    },
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "chat.tools.terminal.autoApprove": {
+        "clang++": true
+    },
+    "svg.preview.background": "dark-transparent"
 }

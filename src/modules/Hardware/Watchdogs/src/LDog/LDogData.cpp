@@ -1,0 +1,8 @@
+/* @file Данные для работы с LDog. */
+
+#include "LDogData.h"
+
+/// Ключ для выполнения сброса флагов вскрытия корпуса.
+const char CLDog::ResetKey[] =
+    "\x34\x12\x30\xF4\x0A\xFE\x05\x23\xDE\xAF\x12\xFE\x63\x1E\x1F\x2F\x2F\x1D\x8A\x6E\xFF\x25"
+    "\x4F\x16\x2E\x4E\x1F\xF2\xAF\x12";

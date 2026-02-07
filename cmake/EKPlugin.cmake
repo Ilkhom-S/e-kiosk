@@ -49,6 +49,14 @@ function(ek_add_plugin TARGET_NAME)
             target_link_libraries(${TARGET_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::${qt_module})
         endforeach()
     endif()
+
+    # Add Qt include directories as SYSTEM to suppress warnings from Qt headers
+    if(ARG_QT_MODULES)
+        foreach(qt_module ${ARG_QT_MODULES})
+            target_include_directories(${TARGET_NAME} SYSTEM PRIVATE ${Qt${QT_VERSION_MAJOR}${qt_module}_INCLUDE_DIRS})
+        endforeach()
+    endif()
+
     if(ARG_DEPENDS)
         target_link_libraries(${TARGET_NAME} PRIVATE ${ARG_DEPENDS})
     endif()

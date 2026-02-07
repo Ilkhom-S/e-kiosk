@@ -172,3 +172,28 @@ void HIDService::executeExternalHandler(const QVariantMap &aExpression) {
 } // namespace Scripting
 } // namespace PaymentProcessor
 } // namespace SDK
+
+//---------------------------------------------------------------------------
+// Definitions for HID constants
+namespace SDK {
+namespace PaymentProcessor {
+namespace Scripting {
+namespace HID {
+extern const char STRING[] = "hid_string";
+extern const char EXTERNAL_DATA[] = "hid_external_data";
+extern const char RAW[] = "hid_raw";
+extern const char RAW_BASE64[] = "hid_raw_base64";
+extern const char SOURCE[] = "hid_source";
+extern const char SOURCE_CAMERA[] = "camera";
+extern const char SOURCE_SCANNER[] = "scanner";
+extern const char SOURCE_CARD[] = "card";
+extern const char SIGNAL[] = "signal";
+extern const char SIGNAL_INSERT[] = "insert";
+extern const char SIGNAL_EJECT[] = "eject";
+
+extern const char CAMERA_FACE_DETECTED[] = "hid_camera_face_detected";
+extern const char CAMERA_FACE_DETECTED_IMAGE[] = "hid_camera_face_image_base64";
+} // namespace HID
+} // namespace Scripting
+} // namespace PaymentProcessor
+} // namespace SDK

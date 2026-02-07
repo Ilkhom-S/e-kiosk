@@ -8,28 +8,28 @@ namespace PaymentProcessor {
 //------------------------------------------------------------------------------
 namespace CServiceParameters {
 namespace Networking {
-const char SimBalance[] = "sim_balance";   /// Баланс на сим-карте.
-const char SignalLevel[] = "signal_level"; /// Уровень сигнала.
-const char Provider[] = "provider";        /// Имя оператора.
+extern const char SimBalance[];
+extern const char SignalLevel[];
+extern const char Provider[];
 } // namespace Networking
 
 namespace Funds {
-const char RejectCount[] = "reject_count"; /// Число непринятых купюр.
+extern const char RejectCount[];
 } // namespace Funds
 
 namespace Printing {
-const char ReceiptCount[] = "receipts_printed"; /// Число напечатанных чеков.
-const char SessionStatus[] = "session_status";  /// Сессия ФРа: открыта/закрыта.
-const char ZReportCount[] = "z_report_count";   /// Число имеющихся Z-отчетов.
+extern const char ReceiptCount[];
+extern const char SessionStatus[];
+extern const char ZReportCount[];
 } // namespace Printing
 
 namespace Payment {
-const char UnprocessedPaymentCount[] = "unprocessed_payments"; /// Число необработанных платежей
-const char PaymentsPerDay[] = "payments_per_day";              /// Число платежей за день
+extern const char UnprocessedPaymentCount[];
+extern const char PaymentsPerDay[];
 } // namespace Payment
 
 namespace Terminal {
-const char RestartCount[] = "restart_count"; /// Число запусков ПО.
+extern const char RestartCount[];
 } // namespace Terminal
 } // namespace CServiceParameters
 

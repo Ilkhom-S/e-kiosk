@@ -18,7 +18,7 @@ namespace PaymentProcessor {
 //------------------------------------------------------------------------------
 /// Интерфейсы ядра.
 namespace CInterfaces {
-const char ICore[] = "SDK::PaymentProcessor::ICore";
+extern const char ICore[];
 } // namespace CInterfaces
 
 //------------------------------------------------------------------------------

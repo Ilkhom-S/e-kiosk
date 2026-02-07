@@ -8,7 +8,7 @@
 //--------------------------------------------------------------------------------
 namespace CShtrihOnlineFR {
 /// Формат представления даты [активизации] ФН в ответе на длинный запрос статуса ФН.
-const char DateFormat[] = "yyyyMMdd";
+extern const char DateFormat[];
 
 /// Размер сектора на SD-карте, [байт].
 const int SectorSizeSD = 512;
@@ -32,7 +32,7 @@ const QDate V2 = QDate(2017, 5, 17);
 } // namespace MinFWDate
 
 /// Данные налога для продажи - налог вычисляется ФР.
-const char FiscalTaxData[] = "\xFF\xFF\xFF\xFF\xFF";
+extern const char FiscalTaxData[];
 
 /// Сервисные команды (параметры).
 namespace Service {
@@ -157,23 +157,20 @@ const char Service = '\xFE';          /// Сервисная команда.
 
 /// Коды команд ФН.
 namespace FS {
-const char GetStatus[] = "\xFF\x01";             /// Получить статус ФН.
-const char GetNumber[] = "\xFF\x02";             /// Получить номер ФН.
-const char GetValidity[] = "\xFF\x03";           /// Получить срок действия ФН.
-const char GetVersion[] = "\xFF\x04";            /// Получить версию ФН.
-const char GetFiscalizationTotal[] = "\xFF\x09"; /// Получить итог фискализации.
-const char GetFDbyNumber[] = "\xFF\x0A";         /// Получить фискальный документ по его номеру.
-const char SetOFDParameter[] =
-    "\xFF\x0C"; /// Передать произвольную TLV структуру (реквизит для ОФД).
-const char GetOFDInterchangeStatus[] = "\xFF\x39"; /// Получить статус информационного обмена c ОФД.
-const char StartFiscalTLVData[] =
-    "\xFF\x3A"; /// Начать получение данных фискального документа в TLV-формате.
-const char GetFiscalTLVData[] = "\xFF\x3B"; /// Получить данные фискального документа в TLV-формате.
-const char GetSessionParameters[] = "\xFF\x40"; /// Получить параметры текущей смены.
-const char CloseDocument[] = "\xFF\x45";        /// Закрыть фискальный чек.
-const char Sale[] = "\xFF\x46";                 /// Продажа.
-const char SetOFDParameterLinked[] =
-    "\xFF\x4D"; /// Передать произвольную TLV структуру (реквизит для ОФД), привязанную к операции.
+extern const char GetStatus[];             /// Получить статус ФН.
+extern const char GetNumber[];             /// Получить номер ФН.
+extern const char GetValidity[];           /// Получить срок действия ФН.
+extern const char GetVersion[];            /// Получить версию ФН.
+extern const char GetFiscalizationTotal[]; /// Получить итог фискализации.
+extern const char GetFDbyNumber[];         /// Получить фискальный документ по его номеру.
+extern const char SetOFDParameter[];       /// Передать произвольную TLV структуру (реквизит для ОФД).
+extern const char GetOFDInterchangeStatus[]; /// Получить статус информационного обмена c ОФД.
+extern const char StartFiscalTLVData[];     /// Начать получение данных фискального документа в TLV-формате.
+extern const char GetFiscalTLVData[]; /// Получить данные фискального документа в TLV-формате.
+extern const char GetSessionParameters[]; /// Получить параметры текущей смены.
+extern const char CloseDocument[];        /// Закрыть фискальный чек.
+extern const char Sale[];                 /// Продажа.
+extern const char SetOFDParameterLinked[];  /// Передать произвольную TLV структуру (реквизит для ОФД), привязанную к операции.
 } // namespace FS
 } // namespace Commands
 

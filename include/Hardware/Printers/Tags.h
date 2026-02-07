@@ -18,7 +18,7 @@
 /// Теги.
 namespace Tags {
 /// BR.
-const char BR[] = "[br]";
+extern const char BR[];
 
 namespace Direction {
 enum Enum { Open, Close };

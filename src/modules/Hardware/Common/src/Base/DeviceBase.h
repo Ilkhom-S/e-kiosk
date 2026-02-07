@@ -21,10 +21,10 @@ namespace CDevice {
 const int StatusCollectionHistoryCount = 10;
 
 /// Имя устройства по умолчанию.
-const char DefaultName[] = "Unknown device";
+extern const char DefaultName[];
 
 /// Разделитель статусов.
-const char StatusSeparator[] = "; ";
+extern const char StatusSeparator[];
 } // namespace CDevice
 
 //--------------------------------------------------------------------------------

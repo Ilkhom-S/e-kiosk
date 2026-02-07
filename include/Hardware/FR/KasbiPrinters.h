@@ -9,7 +9,7 @@ namespace CKasbiPrinters {
 const char Auto = '\x00';    /// Автоопределение.
 const char Virtual = '\xFE'; /// Печать в никуда.
 
-const char Default[] = "Auto"; /// По умолчанию.
+extern const char Default[]; /// По умолчанию.
 
 class CModels : public CDescription<char> {
 public:

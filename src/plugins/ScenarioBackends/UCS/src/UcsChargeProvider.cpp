@@ -28,6 +28,8 @@ QPointer<UcsChargeProvider> &plugin() {
 
 //------------------------------------------------------------------------------
 namespace {
+const char ParamRuntimePath[] = "ucs_runtime_path";
+
 /// Конструктор экземпляра плагина.
 SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
                                    const QString &aInstancePath) {

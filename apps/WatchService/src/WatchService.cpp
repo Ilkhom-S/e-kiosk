@@ -19,6 +19,11 @@
 
 #include "CpuSpeed.h"
 
+namespace CStartMode {
+const char Normal[] = "normal";
+const char Exclusive[] = "exclusive";
+} // namespace CStartMode
+
 #if 0 // #40592 Пока выключаем данную опцию
 #include "processenumerator.h"
 #endif

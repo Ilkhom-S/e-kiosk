@@ -10,11 +10,11 @@
 /// Константы, команды и коды состояний принтеров Custom.
 namespace CCustomPrinter {
 namespace Models {
-const char TG2480[] = "Custom TG2480";
-const char TG2480H[] = "Custom TG2480H";
-const char TG2460H[] = "Custom TG2460H";
-const char TL80[] = "Custom TL80";
-const char TL60[] = "Custom TL60";
+extern const char TG2480[];
+extern const char TG2480H[];
+extern const char TG2460H[];
+extern const char TL80[];
+extern const char TL60[];
 } // namespace Models
 
 /// Высота линии изображения в пикселях (1 пиксель == 1 бит).
@@ -29,7 +29,7 @@ const int MaxImageWidth = 319;
 //----------------------------------------------------------------------------
 /// Команды.
 namespace Commands {
-const char PrintImage[] = "\x1B\x2A"; /// Печать изображения.
+extern const char PrintImage[]; /// Печать изображения.
 } // namespace Commands
 
 //----------------------------------------------------------------------------
@@ -51,12 +51,12 @@ inline qint64 getImagePause(const QImage &aImage,
 
 /// Команды.
 namespace Commands {
-const char SetPageLength[] = "\x1B\x26\x6C\x30\x52"; /// Установить длину страницы = 0. По размеру?
-const char SetResolution204[] = "\x1B\x2A\x74\x32\x30\x34\x52"; /// Установить разрешение 240 dpi.
-const char SetNoCompression[] = "\x1B\x2A\x62\x30\x4D";         /// Отменить сжатие изображения.
-const char SetLeftMargin[] = "\x1B\x2A\x70\x58";                /// Установить сдвиг слева.
-const char SendData[] = "\x1B\x2A\x62\x57";                     /// Послать картинку в принтер.
-const char PrintImage[] = "\x1B\x2A\x72\x42";                   /// Печать изображения.
+extern const char SetPageLength[]; /// Установить длину страницы = 0. По размеру?
+extern const char SetResolution204[]; /// Установить разрешение 240 dpi.
+extern const char SetNoCompression[];         /// Отменить сжатие изображения.
+extern const char SetLeftMargin[];                /// Установить сдвиг слева.
+extern const char SendData[];                     /// Послать картинку в принтер.
+extern const char PrintImage[];                   /// Печать изображения.
 } // namespace Commands
 } // namespace GAM
 } // namespace CCustomPrinter

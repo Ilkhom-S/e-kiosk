@@ -9,37 +9,37 @@ namespace PaymentProcessor {
 namespace CPayment {
 namespace Parameters {
 /// Обязательные параметры.
-const char ID[] = "ID";
-const char Type[] = "PROCESSING_TYPE";
-const char CreationDate[] = "CREATION_DATE";
-const char LastUpdateDate[] = "LAST_UPDATE_DATE";
-const char CompleteDate[] = "COMPLETE_DATE";
-const char Provider[] = "PROVIDER";
-const char Status[] = "STATUS";
-const char Priority[] = "PRIORITY";
-const char InitialSession[] = "INITIAL_SESSION";
-const char Amount[] = "AMOUNT";
-const char AmountAll[] = "AMOUNT_ALL";
-const char CRC[] = "CRC";
-const char Cheated[] = "CHEATED";
+extern const char ID[];
+extern const char Type[];
+extern const char CreationDate[];
+extern const char LastUpdateDate[];
+extern const char CompleteDate[];
+extern const char Provider[];
+extern const char Status[];
+extern const char Priority[];
+extern const char InitialSession[];
+extern const char Amount[];
+extern const char AmountAll[];
+extern const char CRC[];
+extern const char Cheated[];
 
 /// Опциональные параметры.
-const char Change[] = "CHANGE";
-const char Fee[] = "FEE";
-const char DealerFee[] = "DEALER_FEE";
-const char ProcessingFee[] = "PROCESSING_FEE";
-const char Session[] = "SESSION";
-const char Step[] = "STEP";
-const char ServerError[] = "SERVER_ERROR";
-const char ServerResult[] = "SERVER_RESULT";
-const char ErrorMessage[] = "ERROR_MESSAGE";
-const char NumberOfTries[] = "NUMBER_OF_TRIES";
-const char NextTryDate[] = "NEXT_TRY_DATE";
-const char Signature[] = "SIGNATURE";
-const char AddInfo[] = "ADDINFO";
-const char TransactionId[] = "TRANSID";
-const char AuthCode[] = "AUTHCODE";
-const char Vat[] = "VAT";
+extern const char Change[];
+extern const char Fee[];
+extern const char DealerFee[];
+extern const char ProcessingFee[];
+extern const char Session[];
+extern const char Step[];
+extern const char ServerError[];
+extern const char ServerResult[];
+extern const char ErrorMessage[];
+extern const char NumberOfTries[];
+extern const char NextTryDate[];
+extern const char Signature[];
+extern const char AddInfo[];
+extern const char TransactionId[];
+extern const char AuthCode[];
+extern const char Vat[];
 
 /*
 PAY_TOOL = N – тип оплаты :
@@ -49,23 +49,23 @@ PAY_TOOL = N – тип оплаты :
         В случае если Контрагент, не являющийся банком, принимает платеж по
         банковской карте, значение параметра PAY_TOOL = 2.
         При отсутствии параметра значение принимается равным 0. */
-const char PayTool[] = "PAY_TOOL";
+extern const char PayTool[];
 
 /// Вспомогательные параметры.
-const char MinAmount[] = "MIN_AMOUNT";
-const char MaxAmount[] = "MAX_AMOUNT";
-const char MaxAmountAll[] = "MAX_AMOUNT_ALL";
-const char AcceptAmount[] = "ACCEPT_AMOUNT";
-const char ProviderFields[] = "PROVIDER_FIELDS";
-const char ProviderFieldsExt[] = "PROVIDER_FIELDS_EXT";
-const char ProviderFieldsDelimiter[] = "#";
-const char ReceiptPrinted[] = "RECEIPT_PRINTED";
-const char OriginalPayment[] = "ORIGINAL_PAYMENT";
-const char BlockUpdateLimits[] = "BLOCK_UPDATE_LIMITS";
+extern const char MinAmount[];
+extern const char MaxAmount[];
+extern const char MaxAmountAll[];
+extern const char AcceptAmount[];
+extern const char ProviderFields[];
+extern const char ProviderFieldsExt[];
+extern const char ProviderFieldsDelimiter[];
+extern const char ReceiptPrinted[];
+extern const char OriginalPayment[];
+extern const char BlockUpdateLimits[];
 
 /// MNP
-const char MNPGatewayIn[] = "GATEWAY_IN";
-const char MNPGatewayOut[] = "GATEWAY_OUT";
+extern const char MNPGatewayIn[];
+extern const char MNPGatewayOut[];
 } // namespace Parameters
 } // namespace CPayment
 

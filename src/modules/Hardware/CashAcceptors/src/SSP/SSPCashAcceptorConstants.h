@@ -63,10 +63,10 @@ const SWaitingData NotReadyWaiting = SWaitingData(150, 1000);
 const SWaitingData ReadyWaiting = SWaitingData(150, 20 * 1000);
 
 /// Виртуальный статус Enabled.
-const char EnabledStatus[] = "Enabled status";
+extern const char EnabledStatus[];
 
 /// Виртуальный статус Disabled.
-const char DisabledStatus[] = "Disabled status";
+extern const char DisabledStatus[];
 
 /// Минимальное количество запрещаемых каналов для NV200.
 const int NV200MinInhibitedChannels = 16;

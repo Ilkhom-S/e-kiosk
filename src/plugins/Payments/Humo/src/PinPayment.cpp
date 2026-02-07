@@ -5,6 +5,13 @@
 #include "PinPaymentCheckRequest.h"
 #include "PinPaymentStatusRequest.h"
 
+//------------------------------------------------------------------------------
+namespace CPin {
+const char UIFieldName[] = "CARD";
+} // namespace CPin
+
+//------------------------------------------------------------------------------
+
 PinPayment::PinPayment(PaymentFactory *aFactory) : Payment(aFactory) {}
 
 //---------------------------------------------------------------------------

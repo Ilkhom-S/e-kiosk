@@ -13,13 +13,13 @@ namespace PaymentProcessor {
 namespace CMonitoringService {
 namespace CommandParameters {
 /// Степень готовности команды.
-const char Progress[] = "progress";
+extern const char Progress[];
 
 /// Описание состояния команды.
-const char Description[] = "description";
+extern const char Description[];
 
 /// Результат команды "получить скриншот".
-const char Screenshots[] = "screenshots";
+extern const char Screenshots[];
 } // namespace CommandParameters
 } // namespace CMonitoringService
 

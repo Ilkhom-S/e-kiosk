@@ -18,6 +18,11 @@
 #include <QtXml/QDomDocument>
 
 #include <Common/Exception.h>
+
+//---------------------------------------------------------------------------
+namespace CUpdater {
+const char Name[] = "Updater";
+} // namespace CUpdater
 #include <Common/ScopedPointerLaterDeleter.h>
 
 #include <NetworkTaskManager/FileDownloadTask.h>

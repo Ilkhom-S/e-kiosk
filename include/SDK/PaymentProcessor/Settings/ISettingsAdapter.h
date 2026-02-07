@@ -13,11 +13,11 @@ namespace PaymentProcessor {
 
 //---------------------------------------------------------------------------
 namespace CAdapterNames {
-const char TerminalAdapter[] = "TerminalSettings";
-const char DealerAdapter[] = "DealerSettings";
-const char UserAdapter[] = "UserSettings";
-const char Directory[] = "Directory";
-const char Extensions[] = "Extensions";
+extern const char TerminalAdapter[];
+extern const char DealerAdapter[];
+extern const char UserAdapter[];
+extern const char Directory[];
+extern const char Extensions[];
 }; // namespace CAdapterNames
 
 //---------------------------------------------------------------------------

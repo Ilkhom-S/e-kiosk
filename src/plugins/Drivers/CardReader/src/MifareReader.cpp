@@ -9,6 +9,11 @@
 using namespace SDK::Driver;
 
 //------------------------------------------------------------------------------
+namespace CMifareReader {
+const char SAM2Header[] = "\x04\x01\x01";
+} // namespace CMifareReader
+
+//------------------------------------------------------------------------------
 MifareReader::MifareReader() : mReady(false) {
     // данные USB-функционала
     mDetectingData->set(CUSBVendors::ACS, CMifareReader::DetectingData().getProductData());

@@ -14,10 +14,10 @@
 namespace CIDTech {
 namespace Models {
 /// Название кардридера IDTech по умолчанию.
-const char Default[] = "ViVOpay cardreader";
+extern const char Default[];
 
 // TODO: убрать
-const char Kiosk_III_IV[] = "IDTech ViVOpay Kiosk III/IV";
+extern const char Kiosk_III_IV[];
 
 namespace EModes {
 enum Enum { Unknown = 0, COM, USB, HID, BT, Keyboard };

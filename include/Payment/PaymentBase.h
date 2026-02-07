@@ -19,11 +19,11 @@
 //------------------------------------------------------------------------------
 namespace CPayment {
 namespace Requests {
-const char FakeCheck[] = "FAKE_CHECK";
-const char Check[] = "CHECK";
-const char Pay[] = "PAYMENT";
-const char Status[] = "STATUS";
-const char GetStep[] = "GETSTEP";
+extern const char FakeCheck[];
+extern const char Check[];
+extern const char Pay[];
+extern const char Status[];
+extern const char GetStep[];
 } // namespace Requests
 
 namespace Steps {

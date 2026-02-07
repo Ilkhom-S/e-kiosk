@@ -2,6 +2,29 @@
 
 #include "ID003ModelData.h"
 
+namespace CID003 {
+namespace Models {
+const char GPTAurora[] = "GPT Aurora";
+const char JCMIPRO[] = "JCM IPRO";
+const char JCMUBA[] = "JCM UBA";
+const char CashcodeMVU[] = "Cashcode MVU";
+const char JCMVega[] = "JCM Vega";
+} // namespace Models
+
+namespace ProtocolData {
+const char GPTAurora[] = "ID003 GPT";
+
+namespace Alias {
+const char ID003[] = "ID003";
+const char ID003Ext[] = "External";
+const char BDP[] = "BDP";
+const char OP003[] = "OP003";
+} // namespace Alias
+
+const char Lexeme[] = "[0-9A-Za-z_\\.]";
+} // namespace ProtocolData
+} // namespace CID003
+
 using namespace CID003::ProtocolData;
 
 //--------------------------------------------------------------------------------

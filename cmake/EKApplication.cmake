@@ -60,6 +60,13 @@ function(ek_add_application TARGET_NAME)
     endif()
     # Add default BasicApplication dependency that all applications need
     target_link_libraries(${TARGET_NAME} PRIVATE BasicApplication)
+
+    # Add Qt include directories as SYSTEM to suppress warnings from Qt headers
+    set(all_qt_modules Core ${ARG_QT_MODULES})
+    foreach(qt_module ${all_qt_modules})
+        target_include_directories(${TARGET_NAME} SYSTEM PRIVATE ${Qt${QT_VERSION_MAJOR}${qt_module}_INCLUDE_DIRS})
+    endforeach()
+
     if(ARG_DEPENDS)
         target_link_libraries(${TARGET_NAME} PRIVATE ${ARG_DEPENDS})
     endif()

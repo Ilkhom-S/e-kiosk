@@ -12,9 +12,9 @@ namespace CUSBPort {
 const int OpeningPause = 500;
 
 namespace DeviceTags {
-const char ACPI[] = "ACPI";
-const char Mouse[] = "Mouse";
-const char USBPDO[] = "USBPDO";
+extern const char ACPI[];
+extern const char Mouse[];
+extern const char USBPDO[];
 } // namespace DeviceTags
 
 const int DefaultMaxReadSize = 1024;

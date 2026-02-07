@@ -163,10 +163,10 @@ struct SServiceMenuSettings {
 
 //----------------------------------------------------------------------------
 namespace CServiceMenuPasswords {
-const char Service[] = "service_password";
-const char Screen[] = "screen_password";
-const char Collection[] = "collection_password";
-const char Technician[] = "technician_password";
+extern const char Service[];
+extern const char Screen[];
+extern const char Collection[];
+extern const char Technician[];
 } // namespace CServiceMenuPasswords
 
 //----------------------------------------------------------------------------

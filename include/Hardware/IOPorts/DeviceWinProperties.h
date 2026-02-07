@@ -7,7 +7,7 @@
 //--------------------------------------------------------------------------------
 namespace CDeviceProperties {
 // Вместо "SPDRP" используем общий префикс
-const char Prefix[] = "PROP";
+extern const char Prefix[];
 
 // Определяем кроссплатформенные идентификаторы свойств
 enum EType : unsigned int {

@@ -11,6 +11,13 @@ set(IOPORTS_HEADERS
 
 set(IOPORTS_SOURCES ${IOPORTS_COMMON_SOURCES} ${IOPORTS_HEADERS})
 
+# Main sources
+file(GLOB_RECURSE IOPORTS_MAIN_SOURCES
+    src/*.cpp
+    src/*.h
+)
+list(APPEND IOPORTS_SOURCES ${IOPORTS_MAIN_SOURCES})
+
 # Platform-specific sources
 if(WIN32)
     file(GLOB IOPORTS_WIN_SOURCES

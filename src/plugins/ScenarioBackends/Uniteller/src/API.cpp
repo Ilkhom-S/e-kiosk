@@ -15,6 +15,9 @@
 
 #pragma comment(lib, "psapi.lib")
 
+// Define the extern constant
+const char Uniteller::LogName[] = "Uniteller";
+
 namespace PPSDK = SDK::PaymentProcessor;
 
 namespace CUniteller {

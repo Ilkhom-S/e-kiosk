@@ -12,9 +12,9 @@
 namespace USB {
 /// Объект использования дескриптора.
 namespace DescriptorUsage {
-const char Device[] = "device";
-const char Interface[] = "interface";
-const char Both[] = "device and interface";
+extern const char Device[];
+extern const char Interface[];
+extern const char Both[];
 } // namespace DescriptorUsage
 
 typedef QMap<uint8_t, QString> TProtocolData;

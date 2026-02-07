@@ -39,7 +39,7 @@ struct SModelData {
 
 /// Модели.
 namespace Models {
-#define ADD_LEXEME(aModel) const char aModel[] = "STAR " #aModel
+#define ADD_LEXEME(aModel) extern const char aModel[]
 
 ADD_LEXEME(TUP542);
 ADD_LEXEME(TUP592);
@@ -58,8 +58,8 @@ ADD_LEXEME(TSP828L);
 ADD_LEXEME(TSP1043);
 ADD_LEXEME(FVP10);
 
-const char Unknown[] = "Unknown STAR printer";
-const char UnknownEjector[] = "Unknown STAR printer with ejector";
+extern const char Unknown[];
+extern const char UnknownEjector[];
 
 /// данные моделей.
 class CData : public CSpecification<QString, SModelData> {

@@ -22,7 +22,7 @@ class QDomElement;
 
 //---------------------------------------------------------------------------
 namespace CUpdater {
-const char Name[] = "Updater";
+extern const char Name[];
 } // namespace CUpdater
 
 //---------------------------------------------------------------------------

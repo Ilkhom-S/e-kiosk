@@ -11,10 +11,10 @@ class IApplication;
 
 //---------------------------------------------------------------------------
 namespace CGUISignals {
-const char StartGUI[] = "start_ui";
-const char StopGUI[] = "stop_ui";
-const char UpdateGUI[] = "update_ui";
-const char ScreenPasswordUpdated[] = "screen_password_updated";
+extern const char StartGUI[];
+extern const char StopGUI[];
+extern const char UpdateGUI[];
+extern const char ScreenPasswordUpdated[];
 } // namespace CGUISignals
 
 //---------------------------------------------------------------------------

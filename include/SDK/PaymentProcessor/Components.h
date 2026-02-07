@@ -7,33 +7,33 @@ namespace PaymentProcessor {
 
 //---------------------------------------------------------------------------
 /// Все расширения для ПП должны иметь соответствующий идентификатор приложения.
-const char Application[] = "PaymentProcessor";
+extern const char Application[];
 
 //---------------------------------------------------------------------------
 /// Список возможных компонентов, расширяющих функциональность приложения.
 namespace CComponents {
 /// Графический бэкэнд.
-const char GraphicsBackend[] = "GraphicsBackend";
+extern const char GraphicsBackend[];
 /// Фабрика платежей.
-const char PaymentFactory[] = "PaymentFactory";
+extern const char PaymentFactory[];
 /// Удалённый клиент.
-const char RemoteClient[] = "RemoteClient";
+extern const char RemoteClient[];
 /// Графический элемент.
-const char GraphicsItem[] = "GraphicsItem";
+extern const char GraphicsItem[];
 /// Фабрика сценариев.
-const char ScenarioFactory[] = "ScenarioFactory";
+extern const char ScenarioFactory[];
 /// Провайдер зарядки.
-const char ChargeProvider[] = "ChargeProvider";
+extern const char ChargeProvider[];
 /// Хук.
-const char Hook[] = "Hook";
+extern const char Hook[];
 /// Источник рекламы.
-const char AdSource[] = "AdSource";
+extern const char AdSource[];
 /// Фискальный регистратор.
-const char FiscalRegister[] = "FiscalRegister";
+extern const char FiscalRegister[];
 /// Фабрика скриптов.
-const char ScriptFactory[] = "ScriptFactory";
+extern const char ScriptFactory[];
 /// Основной элемент.
-const char CoreItem[] = "CoreItem";
+extern const char CoreItem[];
 } // namespace CComponents
 
 //---------------------------------------------------------------------------

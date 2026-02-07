@@ -5,6 +5,11 @@
 
 #include <Hardware/IOPorts/TCPPort.h>
 
+namespace CTCPPort {
+const char AddressMaskLog[] = "0xx.0xx.0xx.0xx";
+const char AntiNaglePing[] = "\xFF";
+} // namespace CTCPPort
+
 TCPPort::TCPPort()
     : mState(QAbstractSocket::UnconnectedState), mError(QAbstractSocket::UnknownSocketError),
       mSocketGuard(QMutex::Recursive) {

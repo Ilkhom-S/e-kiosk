@@ -19,6 +19,14 @@ const int DefaultDatabasePort = 0;
 } // namespace CDefaults
 
 //---------------------------------------------------------------------------
+namespace CServiceMenuPasswords {
+const char Service[] = "service_password";
+const char Screen[] = "screen_password";
+const char Collection[] = "collection_password";
+const char Technician[] = "technician_password";
+} // namespace CServiceMenuPasswords
+
+//---------------------------------------------------------------------------
 QString TerminalSettings::getAdapterName() {
     return CAdapterNames::TerminalAdapter;
 }

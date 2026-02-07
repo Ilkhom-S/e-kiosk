@@ -15,7 +15,7 @@ const char Address = '\x10';
 const char Postfix = '\x0D';
 
 /// Маскированный конечный байт пакета.
-const char MaskedPostfix[] = "\x40\xCD";
+extern const char MaskedPostfix[];
 
 /// Минимальный размер ответного пакета.
 const int MinAnswerSize = 4;

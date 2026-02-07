@@ -14,9 +14,9 @@
 //--------------------------------------------------------------------------------
 namespace CIntelHex {
 /// Разделители записей в ssf-файле.
-const char Separator1[] = "\r\n";
-const char Separator2[] = "\n";
-const char Separator3[] = "\r";
+extern const char Separator1[];
+extern const char Separator2[];
+extern const char Separator3[];
 
 /// Префикс записи.
 const char Prefix = ASCII::Colon;

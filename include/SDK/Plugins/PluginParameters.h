@@ -14,8 +14,8 @@ namespace Plugin {
 //------------------------------------------------------------------------------
 /// Список имен параметров общих для любого плагина.
 namespace Parameters {
-extern const char *Debug;     /// Режим отладки
-extern const char *Singleton; /// Плагин - единоличник
+extern const char Debug[];     /// Режим отладки
+extern const char Singleton[]; /// Плагин - единоличник
 } // namespace Parameters
 
 //------------------------------------------------------------------------------

@@ -8,7 +8,7 @@
 namespace CCCTalk {
 namespace CashAcceptor {
 namespace Models {
-const char NV200Spectral[] = "NV200 Spectral";
+extern const char NV200Spectral[];
 } // namespace Models
 
 class CModelData : public CModelDataBase {

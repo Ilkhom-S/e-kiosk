@@ -25,45 +25,45 @@ const int OnlineTradeBuild = 5199;
 const int OnlineTerminalBuild = 5652;
 
 namespace Models {
-const char TriumF[] = "ATOL Trium-F";
-const char FelixRF[] = "ATOL Felix-R-F";
-const char Felix02K[] = "ATOL Felix-02K";
-const char Mercury140F[] = "ATOL Mercury-140F";
-const char Tornado[] = "ATOL Tornado";
-const char Mercury130[] = "ATOL Mercury-130";
-const char MercuryMSK[] = "ATOL Mercury-MSK";
-const char FelixRK[] = "ATOL Felix-R-K";
-const char Felix3SK[] = "ATOL Felix-3S-K";
-const char FPrint01K[] = "ATOL FPrint-01K";
-const char FPrint02K[] = "ATOL FPrint-02K";
-const char FPrint03K[] = "ATOL FPrint-03K";
-const char FPrint88K[] = "ATOL FPrint-88K";
-const char BIXOLON01K[] = "ATOL BIXOLON-01K";
-const char MicroFR01K[] = "ATOL Micro-FR-01K";
-const char FPrint5200K[] = "ATOL FPrint-5200K";
-const char Flaton11K[] = "ATOL Flaton-11K";
+extern const char TriumF[];
+extern const char FelixRF[];
+extern const char Felix02K[];
+extern const char Mercury140F[];
+extern const char Tornado[];
+extern const char Mercury130[];
+extern const char MercuryMSK[];
+extern const char FelixRK[];
+extern const char Felix3SK[];
+extern const char FPrint01K[];
+extern const char FPrint02K[];
+extern const char FPrint03K[];
+extern const char FPrint88K[];
+extern const char BIXOLON01K[];
+extern const char MicroFR01K[];
+extern const char FPrint5200K[];
+extern const char Flaton11K[];
 
-const char PayVKP80K[] = "PayVKP-80K";
-const char PayPPU700K[] = "PayPPU-700K";
-const char PayCTS2000K[] = "PayCTS-2000K";
+extern const char PayVKP80K[];
+extern const char PayPPU700K[];
+extern const char PayCTS2000K[];
 
-const char FPrint55K[] = "ATOL FPrint-55K";
-const char FPrint11PTK[] = "ATOL FPrint-11PTK";
-const char FPrint22K[] = "ATOL FPrint-22K";
-const char FPrint77PTK[] = "ATOL FPrint-77PTK";
+extern const char FPrint55K[];
+extern const char FPrint11PTK[];
+extern const char FPrint22K[];
+extern const char FPrint77PTK[];
 
-const char Atol11F[] = "ATOL-11F";
-const char Atol15F[] = "ATOL-15F";
-const char Atol25F[] = "ATOL-25F";
-const char Atol30F[] = "ATOL-30F";
-const char Atol42FC[] = "ATOL-42FC";
-const char Atol52F[] = "ATOL-52F";
-const char Atol55F[] = "ATOL-55F";
-const char Atol77F[] = "ATOL-77F";
-const char Atol91F[] = "ATOL-91F";
+extern const char Atol11F[];
+extern const char Atol15F[];
+extern const char Atol25F[];
+extern const char Atol30F[];
+extern const char Atol42FC[];
+extern const char Atol52F[];
+extern const char Atol55F[];
+extern const char Atol77F[];
+extern const char Atol91F[];
 
-const char Paymaster[] = "Sensis Kaznachej";
-const char FPrint22PTK[] = "ATOL FPrint-22PTK";
+extern const char Paymaster[];
+extern const char FPrint22PTK[];
 } // namespace Models
 
 /// Данные моделей.

@@ -11,6 +11,10 @@
 using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
+namespace CCCTalk {
+const char TeachMode[] = "TM";
+} // namespace CCCTalk
+
 //---------------------------------------------------------------------------
 template <class T>
 CCTalkAcceptorBase<T>::CCTalkAcceptorBase() : mEnabled(false), mCurrency(Currency::NoCurrency) {

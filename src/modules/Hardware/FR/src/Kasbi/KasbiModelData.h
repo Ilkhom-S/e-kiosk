@@ -9,7 +9,7 @@ namespace CKasbiFR {
 /// Модели.
 namespace Models {
 /// Название модели по умолчанию.
-const char Default[] = "Kasbi FR";
+extern const char Default[];
 
 /// Данные модели.
 struct SData {

@@ -25,6 +25,13 @@
 
 #pragma comment(lib, "psapi.lib")
 
+// Ucs constants definitions
+namespace Ucs {
+const char LogName[] = "Ucs";
+const char ScriptObjectName[] = "Ucs";
+const char EncashmentTask[] = "ucs_encash_sync";
+} // namespace Ucs
+
 namespace CUcs {
 const char *DefaultTerminalID = "0000000000";
 const int ReconnectTimeout = 5000;

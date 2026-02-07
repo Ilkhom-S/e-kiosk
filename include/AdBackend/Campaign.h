@@ -8,7 +8,7 @@
 
 //---------------------------------------------------------------------------
 namespace Ad {
-const char DefaultChannelPostfix[] = "_default";
+extern const char DefaultChannelPostfix[];
 
 struct Campaign {
     qint64 id;         /// ID кампании

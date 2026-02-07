@@ -46,7 +46,7 @@ inline QStringList Emulator() {
 } // namespace Tags
 
 /// ACPI-устройства, такие как обычные COM-порты (не устройство расширения или виртуальный порт).
-const char GeneralRS232[] = "ACPI";
+extern const char GeneralRS232[];
 
 /// Признаки невозможности ожидания результата GetOverlappedResult.
 const QStringList CannotWaitResult = QStringList() << "FTDI" << "LPC USB VCom Port" << "ATOL"

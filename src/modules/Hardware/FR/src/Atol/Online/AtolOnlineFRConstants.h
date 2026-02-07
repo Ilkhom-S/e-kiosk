@@ -9,7 +9,7 @@
 //--------------------------------------------------------------------------------
 namespace CAtolOnlineFR {
 /// Имя модели по умолчанию
-const char DefaultModelName[] = "ATOL online FR";
+extern const char DefaultModelName[];
 
 /// Снятие Z-отчетов наружу
 const char ZReportOut = '\x00';
@@ -36,10 +36,10 @@ const char ZReportParameters = '\x00';
 const char SalingFiscalDocument = '\x01';
 
 /// Формат представления даты [активизации] ФН в ответе на длинный запрос статуса ФН.
-const char DateFormat[] = "yyyyMMdd";
+extern const char DateFormat[];
 
 /// Формат представления даты для вывода в лог.
-const char TimeLogFormat[] = "hh:mm";
+extern const char TimeLogFormat[];
 
 /// Знак скидки (0 – скидка; 1 – надбавка). Скидка не используется.
 const char DiscountSign = ASCII::NUL;
@@ -96,10 +96,10 @@ const char Saling = CAtolFR::FiscalFlags::ExecutionMode | CAtolFR::FiscalFlags::
 
 /// Регистры
 namespace Registers {
-const char OFDNotSentCount[] = "not sent fiscal to OFD documents count";
-const char ExtendedErrorData[] = "extended error data";
-const char FFD[] = "FFD";
-const char SessionData[] = "session data";
+extern const char OFDNotSentCount[];
+extern const char ExtendedErrorData[];
+extern const char FFD[];
+extern const char SessionData[];
 } // namespace Registers
 
 #define PROCESS_ATOL_FD_DATA(aCommand, ...)                                                        \
@@ -117,20 +117,19 @@ const char SetOFDParameter = '\xE8';           /// Запись реквизит
 const char GetOFDParameter = '\xE9';           /// Получение реквизита.
 const char PrintDeferredZReports = '\x95';     /// Распечатать отложенные Z-отчеты.
 const char ClearZBuffer = '\x97';              /// Очистить буфер Z-отчетов.
-const char Reboot[] = "\xCE\x41";              /// Перезагрузить ФР по питанию.
-const char GetInternalFirmware[] = "\x9D\x91"; /// Получить внутренний номер прошивки.
+extern const char Reboot[];              /// Перезагрузить ФР по питанию.
+extern const char GetInternalFirmware[]; /// Получить внутренний номер прошивки.
 
 /// Коды команд ФН-а.
 namespace FS {
-const char GetStatus[] = "\xA4\x30";             /// Получить статус ФН.
-const char GetNumber[] = "\xA4\x31";             /// Получить номер ФН.
-const char GetValidity[] = "\xA4\x32";           /// Получить срок действия ФН.
-const char GetVersion[] = "\xA4\x33";            /// Получить версию ФН.
-const char GetFiscalizationTotal[] = "\xA4\x43"; /// Получить итог фискализации.
-const char GetFDbyNumber[] = "\xA4\x40";         /// Получить фискальный документ по его номеру.
-const char StartFiscalTLVData[] =
-    "\xA4\x45"; /// Начать получение данных фискального документа в TLV-формате.
-const char GetFiscalTLVData[] = "\xA4\x46"; /// Получить данные фискального документа в TLV-формате.
+extern const char GetStatus[];             /// Получить статус ФН.
+extern const char GetNumber[];             /// Получить номер ФН.
+extern const char GetValidity[];           /// Получить срок действия ФН.
+extern const char GetVersion[];            /// Получить версию ФН.
+extern const char GetFiscalizationTotal[]; /// Получить итог фискализации.
+extern const char GetFDbyNumber[];         /// Получить фискальный документ по его номеру.
+extern const char StartFiscalTLVData[];    /// Начать получение данных фискального документа в TLV-формате.
+extern const char GetFiscalTLVData[]; /// Получить данные фискального документа в TLV-формате.
 } // namespace FS
 } // namespace Commands
 

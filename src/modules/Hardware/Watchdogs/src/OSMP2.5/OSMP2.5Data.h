@@ -7,7 +7,7 @@
 //----------------------------------------------------------------------------
 namespace COSMP25 {
 /// Тег модели для идентификации.
-const char ModelTag[] = "2.5.";
+extern const char ModelTag[];
 
 /// Интервал пинга, [мс].
 const int PingInterval = 10000;
@@ -31,7 +31,7 @@ const int MaxKeys = 32;
 const int PCWakingUpInterval = 30 * 60;
 
 /// Формат представления даты и времени для вывода в лог.
-const char TimeLogFormat[] = "hh:mm:ss";
+extern const char TimeLogFormat[];
 
 /// Временной лаг установки времени перезагрузки PC, [с].
 const int PCWakingUpLag = 5;
@@ -41,14 +41,14 @@ namespace Commands {
 const char GetVersion = '\x00';           /// Версия
 const char SerialNumber = '\x01';         /// Серийный номер
 const char ResetModem = '\x02';           /// Сброс модема
-const char SetModemPause[] = "\x02\x02";  /// Установка времени сброса модема
+extern const char SetModemPause[];  /// Установка времени сброса модема
 const char SetPingEnable = '\x03';        /// Включение таймера сторожа
-const char SetPingTimeout[] = "\x03\x02"; /// Установка времени сторожа таймера
+extern const char SetPingTimeout[]; /// Установка времени сторожа таймера
 const char SetPingDisable = '\x04';       /// Отключение таймера сторожа
 const char Ping = '\x05';                 /// СБрос времени сторожа
 const char ResetClock = '\x06';           /// Сброс часов
 const char ResetPC = '\x0C';              /// Сброс PC
-const char SetPCPause[] = "\x0C\x02";     /// Установка таймаута сброса PC
+extern const char SetPCPause[];     /// Установка таймаута сброса PC
 const char WriteKey = '\x11';             /// Запись ключа
 const char ReadKey = '\x12';              /// Чтение ключа
 const char PCWakeUpTime = '\x15';         /// Установка/получение времени включения PC

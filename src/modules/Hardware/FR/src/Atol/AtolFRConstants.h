@@ -61,10 +61,10 @@ const char FullCutting = 4;
 const char DefaultFiscalFeedCTC2000 = 4;
 
 /// Формат представления даты и времени в ответе на длинный запрос статуса.
-const char DateTimeFormat[] = "yyyyMMddhhmmss";
+extern const char DateTimeFormat[];
 
 /// Формат представления даты и времени в ответе на запрос даты-времени сессии.
-const char SessionDTFormat[] = "ddMMyyyyhhmmss";
+extern const char SessionDTFormat[];
 
 /// Подсистемы ФР, имеющие свой софт - константы для запроса версий софта.
 namespace FRSubSystems {
@@ -232,14 +232,14 @@ inline SData TaxDescription(int aSeries) {
 
 /// Регистры
 namespace Registers {
-const char PaymentAmount[] = "amount of payments";
-const char PaymentCount[] = "count of successful payments";
-const char MoneyInCash[] = "money in cash";
-const char CurrentDateTime[] = "current date and time";
-const char SessionInfo[] = "last session info";
-const char SerialNumber[] = "serial number";
-const char NonNullableAmount[] = "non-nullable amount";
-const char PrintingSettings[] = "printing settings";
+extern const char PaymentAmount[];
+extern const char PaymentCount[];
+extern const char MoneyInCash[];
+extern const char CurrentDateTime[];
+extern const char SessionInfo[];
+extern const char SerialNumber[];
+extern const char NonNullableAmount[];
+extern const char PrintingSettings[];
 } // namespace Registers
 
 /// Режимы.

@@ -25,7 +25,7 @@
 /// Общие константы мета-устройств.
 namespace CMetaDevice {
 /// Имя устройства по умолчанию.
-const char DefaultName[] = "Meta device";
+extern const char DefaultName[];
 } // namespace CMetaDevice
 
 /// Данные устройства для логирования и мониторинга.

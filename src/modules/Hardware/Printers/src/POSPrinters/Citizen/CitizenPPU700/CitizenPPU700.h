@@ -9,8 +9,8 @@
 namespace CCitizenPPU700 {
 /// Команды.
 namespace Command {
-const char GetFirmware[] = "\x1D\x49\x41";     /// Получение версии прошивки.
-const char GetSerialNumber[] = "\x1D\x49\x44"; /// Получение серийного номера.
+extern const char GetFirmware[];     /// Получение версии прошивки.
+extern const char GetSerialNumber[]; /// Получение серийного номера.
 
 const QByteArray GetMemorySwitch5 =
     QByteArray::fromRawData("\x1D\x28\x45\x02\x00\x04\x05", 7); /// Получить значение мем-свича 5.

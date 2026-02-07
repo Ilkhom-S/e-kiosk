@@ -82,10 +82,10 @@ struct SModelParameters {
 };
 
 /// Имя модели по умолчанию
-const char DefaultModelName[] = "PRIM FR";
+extern const char DefaultModelName[];
 
 /// Имя модели по умолчанию
-const char DefaultOnlineModelName[] = "PRIM Online FR";
+extern const char DefaultOnlineModelName[];
 
 /// Описатель данных моделей.
 class CModelData : public CSpecification<Models::Enum, SModelParameters> {

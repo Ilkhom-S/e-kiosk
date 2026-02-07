@@ -37,6 +37,11 @@ namespace PPSDK = SDK::PaymentProcessor;
 typedef boost::property_tree::basic_ptree<std::string, std::string> TPtreeOperators;
 
 //---------------------------------------------------------------------------
+namespace EncashmentParameter {
+const char StackerID[] = "STACKER_ID";
+} // namespace EncashmentParameter
+
+//---------------------------------------------------------------------------
 namespace CMultistage {
 const QString Type = "multistage";
 

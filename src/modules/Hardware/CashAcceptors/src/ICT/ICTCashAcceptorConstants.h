@@ -27,7 +27,7 @@ const char Identification[] = {ACK, Disable, Poll, Enable, Poll, Disable, Poll};
 
 /// Ответы.
 namespace Answers {
-const char Identification[] = "\x5E\x3E\x5E";
+extern const char Identification[];
 } // namespace Answers
 
 //--------------------------------------------------------------------------------
@@ -35,7 +35,7 @@ const char Identification[] = "\x5E\x3E\x5E";
 namespace States {
 const char Idling = '\x3E';        /// Включен на прием купюр.
 const char Disabled = '\x5E';      /// Отключен для приема купюр.
-const char PowerUp[] = "\x80\x8F"; /// Включили питание.
+extern const char PowerUp[];  /// Включили питание.
 const char Escrow = '\x81';        /// Временное депонирование.
 const char ErrorExlusion = '\x2F'; /// Предыдущая ошибка перестала быть.
 } // namespace States

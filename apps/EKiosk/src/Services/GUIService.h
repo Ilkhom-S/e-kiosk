@@ -22,10 +22,10 @@ class PluginService;
 class GuardService;
 
 namespace CGUIService {
-const char LogName[] = "Interface";
-const char IntruderLogName[] = "Penetration";
-const char BackedObjectPrefix[] = "Backend$";
-const char IdleScenarioName[] = "idle";
+extern const char LogName[];
+extern const char IntruderLogName[];
+extern const char BackedObjectPrefix[];
+extern const char IdleScenarioName[];
 const int CheckTopmostWindowTimeout = 5 * 1000;
 } // namespace CGUIService
 

@@ -19,6 +19,11 @@
 namespace FiscalCommand = SDK::Driver::EFiscalPrinterCommand;
 namespace PPSDK = SDK::PaymentProcessor;
 
+namespace CPrintCommands {
+const char NotPrintedPostfix[] = "_not_printed";
+const char ReceiptNameTemplate[] = "hhmmsszzz";
+} // namespace CPrintCommands
+
 //---------------------------------------------------------------------------
 void PrintCommand::setReceiptTemplate(const QString &aTemplateName) {
     mReceiptTemplate = aTemplateName;
@@ -153,10 +158,10 @@ DSDK::SPaymentData PrintFiscalCommand::getPaymentData(const QVariantMap &aParame
     }
 
 #if 0
-	//TODO - решить как на верхнем уровне в интерфейсе мы будем давать возможность 
+	//TODO - решить как на верхнем уровне в интерфейсе мы будем давать возможность
 	//       вводить телефон/email для отправки чека ПЕРЕД печатью этого чека.
 	//       Отключено по жалобе дилеров 1 sms = 2руб в счете от ОФД
-	//       #60325 
+	//       #60325
 	QVariantMap upperKeyParameters = toUpperCaseKeys(aParameters);
 	QRegularExpression phoneRegexp("^9\\d{9}$");
 

@@ -28,7 +28,7 @@ const int CommandIteration = 100;
 } // namespace Pause
 
 /// Максимальное количество монет, которое можно установить.
-const char MaxPayoutCapacity[] = "\xFF\xFF";
+extern const char MaxPayoutCapacity[];
 
 /// Максимальное количество повторов для команды.
 const int CommandMaxIteration = 3;

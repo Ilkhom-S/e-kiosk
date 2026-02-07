@@ -9,7 +9,7 @@ namespace CCCTalk {
 namespace Dispenser {
 /// Параметры моделей.
 namespace Models {
-const char Default[] = "Default dispenser on ccTalk protocol";
+extern const char Default[];
 } // namespace Models
 
 class CModelData : public CModelDataBase {

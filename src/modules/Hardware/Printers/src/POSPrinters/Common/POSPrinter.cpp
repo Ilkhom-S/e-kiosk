@@ -13,6 +13,42 @@ using namespace PrinterStatusCode;
 POSPrinters::TModelIds POSPrinters::ModelData::mModelIds;
 
 //--------------------------------------------------------------------------------
+namespace CPOSPrinter {
+namespace Command {
+const char GetModelId[] = "\x1D\x49\x01";
+const char GetTypeId[] = "\x1D\x49\x02";
+const char GetROMVersion[] = "\x1D\x49\x03";
+const char Initialize[] = "\x1B\x40";
+const char SetEnabled[] = "\x1B\x3D\x01";
+const char SetUSCharacterSet[] = "\x1B\x52\x30";
+const char SetStandardMode[] = "\x1B\x53";
+const char Present[] = "\x1D\x65\x03";
+const char Retract[] = "\x1D\x65\x02";
+const char Push[] = "\x1D\x65\x05";
+const char LoopEnable[] = "\x1D\x65\x12";
+const char LoopDisable[] = "\x1D\x65\x14";
+const char GetPaperStatus[] = "\x1B\x76";
+const char Cut[] = "\x1B\x69";
+const char PrintImage[] = "\x1D\x76\x30";
+const char AlignLeft[] = "\x1B\x61\x30";
+
+namespace Barcode {
+const char Height[] = "\x1D\x68";
+const char HRIPosition[] = "\x1D\x48";
+const char FontSize[] = "\x1D\x66";
+const char Width[] = "\x1D\x77";
+const char Print[] = "\x1D\x6B";
+} // namespace Barcode
+} // namespace Command
+
+const char DefaultName[] = "Unknown POS Printer";
+
+namespace Barcode {
+const char Code128Spec[] = "\x7B\x42";
+} // namespace Barcode
+} // namespace CPOSPrinter
+
+//--------------------------------------------------------------------------------
 template class POSPrinter<TSerialPrinterBase>;
 
 //--------------------------------------------------------------------------------

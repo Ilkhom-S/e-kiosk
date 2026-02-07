@@ -14,6 +14,10 @@
 
 using namespace SDK::Driver;
 
+namespace CIDTechReader {
+const char DLLSDKName[] = "libIDTechSDK.dll.1.0.16";
+} // namespace CIDTechReader
+
 IDTechReader *IDTechReader::mInstance = nullptr;
 int IDTechReader::mInstanceCounter = 0;
 

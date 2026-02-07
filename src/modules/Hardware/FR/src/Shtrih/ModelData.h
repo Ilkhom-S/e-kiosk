@@ -15,11 +15,11 @@ typedef QList<int> TIds;
 /// Параметры моделей.
 namespace Models {
 /// Модели по умолчанию.
-const char Default[] = "Shtrih FR";
-const char RetractorDefault[] = "Shtrih retractor FR";
-const char EjectorDefault[] = "Shtrih ejector FR";
-const char OnlineDefault[] = "Shtrih online FR";
-const char OnlineRetractorDefault[] = "Shtrih retractor online FR";
+extern const char Default[];
+extern const char RetractorDefault[];
+extern const char EjectorDefault[];
+extern const char OnlineDefault[];
+extern const char OnlineRetractorDefault[];
 
 /// ИД моделей.
 namespace ID {

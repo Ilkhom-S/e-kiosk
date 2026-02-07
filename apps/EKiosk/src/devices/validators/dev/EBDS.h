@@ -18,7 +18,7 @@ const int AnswerTimeout = 500;
 const int ResetTimeout = 8000;
 
 /// Тег для идентификации Advanced-модели.
-const char AdvancedModelTag[] = "SCN";
+extern const char AdvancedModelTag[];
 
 /// Направление приема - любое (2-3 биты).
 const char Orientation = 0x0C;
@@ -68,8 +68,8 @@ const QByteArray GetVariantVersion =
     QByteArray::fromRawData("\x60\x00\x00\x09", 4); /// Версия билл-сета.
 
 /// Для типа Extended.
-const char GetPar[] = "\x70\x02";      /// Получить номинал по индексу.
-const char SetInhibits[] = "\x70\x03"; /// Установить запрещения номиналов.
+extern const char GetPar[];
+extern const char SetInhibits[];
 } // namespace Commands
 
 // Byte 0

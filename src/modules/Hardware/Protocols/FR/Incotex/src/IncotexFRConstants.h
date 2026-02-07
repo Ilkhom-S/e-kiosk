@@ -154,8 +154,8 @@ const char GetFRParameters = '\x5C';
 const char CashierRegistration = '\x31';
 const char GetRegister = '\x55';
 
-const char SetFiscalMode[] = "\x1B\x1B";
-const char Cut[] = "\x1B\x64\x30";
+extern const char SetFiscalMode[];
+extern const char Cut[];
 } // namespace Commands
 
 /// Регистры - не все, используемые.

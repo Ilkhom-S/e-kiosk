@@ -32,15 +32,15 @@ const char DoubleHeight = '\x80';
 
 /// Пакеты команд.
 namespace Commands {
-const char Initialize[] = "\x1B\x40";
-const char GetStatus[] = "\x1B\x76";
-const char GetSettings[] = "\x1D\xFB";
+extern const char Initialize[];
+extern const char GetStatus[];
+extern const char GetSettings[];
 
-const char GetPresenterStatus[] = "\x1D\xFC";
+extern const char GetPresenterStatus[];
 } // namespace Commands
 
 namespace Answers {
-const char GetSettings[] = "\xEB\xCF";
+extern const char GetSettings[];
 const char GetPresenterStatus = '\xEB';
 
 namespace Presenter {

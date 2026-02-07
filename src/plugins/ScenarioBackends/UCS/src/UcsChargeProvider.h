@@ -18,7 +18,7 @@ class DealerSettings;
 } // namespace SDK
 
 namespace {
-const char *ParamRuntimePath = "ucs_runtime_path";
+extern const char ParamRuntimePath[];
 } // namespace
 
 //------------------------------------------------------------------------------

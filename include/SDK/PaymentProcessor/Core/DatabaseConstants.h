@@ -9,39 +9,39 @@ namespace PaymentProcessor {
 namespace CDatabaseConstants {
 /// Имена обязательных устройств.
 namespace Devices {
-const char Terminal[] = "Terminal";
+extern const char Terminal[];
 } // namespace Devices
 
 /// Имена параметров в БД.
 namespace Parameters {
 /// Общие параметры.
-const char DeviceName[] = "device_name"; /// Содержит имя устройства.
-const char DeviceInfo[] = "device_info"; /// Содержит различную информацию о устройстве.
+extern const char DeviceName[]; /// Содержит имя устройства.
+extern const char DeviceInfo[]; /// Содержит различную информацию о устройстве.
 
 /// Параметры принтеров.
-const char ReceiptCount[] = "receipt_count"; /// Счётчик напечатанных чеков.
+extern const char ReceiptCount[]; /// Счётчик напечатанных чеков.
 
 /// Параметры модемов.
-const char BalanceLevel[] = "balance_level";     /// Баланс сим-карты.
-const char SignalLevel[] = "signal_level";       /// Уровень сигнала модема.
-const char ConnectionName[] = "connection_name"; /// Название модемного соединения.
-const char LastCheckBalanceTime[] =
-    "last_check_balance_time"; /// Время последней проверки баланса и уровня сигнала
+extern const char BalanceLevel[];   /// Баланс сим-карты.
+extern const char SignalLevel[];    /// Уровень сигнала модема.
+extern const char ConnectionName[]; /// Название модемного соединения.
+extern const char LastCheckBalanceTime[];
+/// Время последней проверки баланса и уровня сигнала
 
 /// Параметры купюроприемника.
-const char RejectCount[] = "reject_count";
+extern const char RejectCount[];
 
 /// Параметры терминала.
-const char DisabledParam[] = "disabled";               /// Заблокирован или нет терминал.
-const char LastUpdateTime[] = "last_update_time";      /// Время последнего скачивания конфигураций.
-const char LaunchCount[] = "launch_count";             /// Число запусков ПО.
-const char LastStartDate[] = "last_start_date";        /// Время последнего запуска.
-const char Configuration[] = "configuration";          /// Конфигурация ПО.
-const char OperationSystem[] = "operation_system";     /// Версия операционной системы.
-const char DisplayResolution[] = "display_resolution"; /// Разрешение экрана.
+extern const char DisabledParam[];     /// Заблокирован или нет терминал.
+extern const char LastUpdateTime[];    /// Время последнего скачивания конфигураций.
+extern const char LaunchCount[];       /// Число запусков ПО.
+extern const char LastStartDate[];     /// Время последнего запуска.
+extern const char Configuration[];     /// Конфигурация ПО.
+extern const char OperationSystem[];   /// Версия операционной системы.
+extern const char DisplayResolution[]; /// Разрешение экрана.
 
 /// Параметры диспенсера
-const char CashUnits[] = "cash_units"; /// Описание содержимого диспенсера по кассетам
+extern const char CashUnits[]; /// Описание содержимого диспенсера по кассетам
 } // namespace Parameters
 } // namespace CDatabaseConstants
 

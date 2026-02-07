@@ -26,7 +26,7 @@ struct SDeviceCodeSpecification {
         : statusCode(aStatusCode), description(aDescription) {}
 };
 
-const char UnknownDeviceCodeDescription[] = "unknown device code";
+extern const char UnknownDeviceCodeDescription[];
 
 /// Спецификация состояний устройства.
 template <class T>

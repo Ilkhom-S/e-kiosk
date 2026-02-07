@@ -5,122 +5,122 @@
 //---------------------------------------------------------------------------
 namespace CDeviceData {
 /// Общие константы.
-const char ModelName[] = "model_name";
-const char Port[] = "port";
-const char Name[] = "name";
-const char Driver[] = "driver";
-const char ModelKey[] = "model_key";
-const char ModelNumber[] = "model_number";
-const char Revision[] = "revision";
-const char Firmware[] = "firmware";
-const char BootFirmware[] = "boot_firmware";
-const char CheckSum[] = "check_sum";
-const char SerialNumber[] = "serial_number";
-const char BoardVersion[] = "board_version";
-const char Build[] = "build";
-const char Switches[] = "switches";
-const char Memory[] = "memory";
-const char Version[] = "version";
-const char Type[] = "type";
-const char Address[] = "address";
-const char Date[] = "date";
-const char FirmwareUpdatable[] = "firmware_updatable";
-const char ProjectNumber[] = "project_number";
-const char ProductCode[] = "product_code";
-const char Vendor[] = "vendor";
-const char ProtocolVersion[] = "protocol_version";
-const char SDCard[] = "sd_card";
-const char Error[] = "error";
-const char NotConnected[] = "not_connected";
-const char Identity[] = "identity";
-const char Token[] = "token_data";
-const char InternalFirmware[] = "device_id_key";
-const char InternalHardware[] = "device_id_value";
-const char ControllerBuild[] = "controller_build";
-const char Count[] = "count";
-const char Number[] = "number";
+extern const char ModelName[];
+extern const char Port[];
+extern const char Name[];
+extern const char Driver[];
+extern const char ModelKey[];
+extern const char ModelNumber[];
+extern const char Revision[];
+extern const char Firmware[];
+extern const char BootFirmware[];
+extern const char CheckSum[];
+extern const char SerialNumber[];
+extern const char BoardVersion[];
+extern const char Build[];
+extern const char Switches[];
+extern const char Memory[];
+extern const char Version[];
+extern const char Type[];
+extern const char Address[];
+extern const char Date[];
+extern const char FirmwareUpdatable[];
+extern const char ProjectNumber[];
+extern const char ProductCode[];
+extern const char Vendor[];
+extern const char ProtocolVersion[];
+extern const char SDCard[];
+extern const char Error[];
+extern const char NotConnected[];
+extern const char Identity[];
+extern const char Token[];
+extern const char InternalFirmware[];
+extern const char InternalHardware[];
+extern const char ControllerBuild[];
+extern const char Count[];
+extern const char Number[];
 
 /// Общие значения.
 namespace Values {
-const char Yes[] = "yes";
-const char No[] = "no";
-const char Opened[] = "opened";
-const char Closed[] = "closed";
-const char Disabled[] = "disabled";
-const char Enabled[] = "enabled";
-const char Absent[] = "absent";
+extern const char Yes[];
+extern const char No[];
+extern const char Opened[];
+extern const char Closed[];
+extern const char Disabled[];
+extern const char Enabled[];
+extern const char Absent[];
 } // namespace Values
 
 /// Порты.
 namespace Ports {
-const char Mine[] = "port_data";
-const char Other[] = "other_port_data";
+extern const char Mine[];
+extern const char Other[];
 
 namespace USB {
-const char ConfigAmount[] = "config_amount";
-const char BusNumber[] = "device_bus_number";
-const char Address[] = "device_address";
-const char PortNumber[] = "device_port_number";
-const char ConfigData[] = "config_data";
-const char Specification[] = "usb_specification";
-const char FirmwareVersion[] = "device_firmware_version";
-const char Code[] = "device_code";
-const char Description[] = "device_description";
-const char EP0PacketSize[] = "ep0_packet_size";
-const char Vendor[] = "device_vendor";
-const char Product[] = "device_product";
-const char BOSData[] = "bos_data";
+extern const char ConfigAmount[];
+extern const char BusNumber[];
+extern const char Address[];
+extern const char PortNumber[];
+extern const char ConfigData[];
+extern const char Specification[];
+extern const char FirmwareVersion[];
+extern const char Code[];
+extern const char Description[];
+extern const char EP0PacketSize[];
+extern const char Vendor[];
+extern const char Product[];
+extern const char BOSData[];
 
 namespace BOS {
-const char Capability[] = "capability";
+extern const char Capability[];
 
 namespace Capability2_0 {
-const char Attributes[] = "2_0_attributes";
+extern const char Attributes[];
 } // namespace Capability2_0
 
 namespace Capability3_0 {
-const char Attributes[] = "3_0_attributes";
-const char SpeedSupported[] = "speed_supported";
-const char FunctionalitySupport[] = "functionality_support";
-const char U1ExitLatency[] = "u1_exit_latency";
-const char U2ExitLatency[] = "u2_exit_latency";
+extern const char Attributes[];
+extern const char SpeedSupported[];
+extern const char FunctionalitySupport[];
+extern const char U1ExitLatency[];
+extern const char U2ExitLatency[];
 } // namespace Capability3_0
 } // namespace BOS
 
 namespace Config {
-const char InterfaceAmount[] = "interface_amount";
-const char InterfaceData[] = "interface_data";
-const char Index[] = "config_index";
-const char Value[] = "config_value";
-const char Attributes[] = "config_attributes";
-const char MaxPower[] = "config_max_power";
+extern const char InterfaceAmount[];
+extern const char InterfaceData[];
+extern const char Index[];
+extern const char Value[];
+extern const char Attributes[];
+extern const char MaxPower[];
 
 namespace Interface {
-const char EndpointAmount[] = "endpoint_amount";
-const char EndpointData[] = "endpoint_data";
-const char Number[] = "interface_number";
-const char Index[] = "interface_index";
-const char AlternateSetting[] = "interface_alternate_setting";
-const char Code[] = "interface_code";
-const char Description[] = "interface_description";
+extern const char EndpointAmount[];
+extern const char EndpointData[];
+extern const char Number[];
+extern const char Index[];
+extern const char AlternateSetting[];
+extern const char Code[];
+extern const char Description[];
 
 namespace Endpoint {
-const char TransferType[] = "ep_transfer_type";
-const char IsoSyncType[] = "ep_iso_sync_type";
-const char IsoUsageType[] = "ep_iso_usage_type";
-const char CompanionAmount[] = "ep_companion_amount";
-const char CompanionData[] = "ep_companion_data";
-const char Address[] = "ep_address";
-const char Attributes[] = "ep_attributes";
-const char MaxPacketSize[] = "ep_max_packet_size";
-const char PollingInterval[] = "ep_polling_interval";
-const char SyncRefreshRate[] = "ep_sync_refresh_rate";
-const char SynchAddress[] = "ep_sync_address";
+extern const char TransferType[];
+extern const char IsoSyncType[];
+extern const char IsoUsageType[];
+extern const char CompanionAmount[];
+extern const char CompanionData[];
+extern const char Address[];
+extern const char Attributes[];
+extern const char MaxPacketSize[];
+extern const char PollingInterval[];
+extern const char SyncRefreshRate[];
+extern const char SynchAddress[];
 
 namespace Companion {
-const char MaxBurstPacketAmount[] = "companion_ep_max_burst";
-const char Attributes[] = "companion_ep_attributes";
-const char BytesPerInterval[] = "companion_ep_bytes_per_interval";
+extern const char MaxBurstPacketAmount[];
+extern const char Attributes[];
+extern const char BytesPerInterval[];
 } // namespace Companion
 } // namespace Endpoint
 } // namespace Interface
@@ -130,134 +130,134 @@ const char BytesPerInterval[] = "companion_ep_bytes_per_interval";
 
 /// OPOS-устройства.
 namespace OPOS {
-const char Description[] = "description";
-const char ControlObject[] = "control_object";
-const char ServiceObject[] = "service_object";
+extern const char Description[];
+extern const char ControlObject[];
+extern const char ServiceObject[];
 } // namespace OPOS
 
 /// Купюроприемники и монетоприемники.
 namespace CashAcceptors {
-const char AssetNumber[] = "asset_number";
-const char BillSet[] = "bill_set";
-const char Alias[] = "alias";
-const char Interface[] = "interface";
-const char CountryCode[] = "country_code";
-const char StackerType[] = "stacker_type";
-const char Database[] = "database";
-const char ModificationNumber[] = "modification_number";
-const char LastUpdate[] = "last_update";
+extern const char AssetNumber[];
+extern const char BillSet[];
+extern const char Alias[];
+extern const char Interface[];
+extern const char CountryCode[];
+extern const char StackerType[];
+extern const char Database[];
+extern const char ModificationNumber[];
+extern const char LastUpdate[];
 } // namespace CashAcceptors
 
 /// Модемы
 namespace Modems {
-const char IMEI[] = "imei";
-const char IMSI[] = "imsi";
-const char SIMNumber[] = "sim_number";
-const char SIMId[] = "sim_id";
-const char GSMCells[] = "gsm_cells";
+extern const char IMEI[];
+extern const char IMSI[];
+extern const char SIMNumber[];
+extern const char SIMId[];
+extern const char GSMCells[];
 } // namespace Modems
 
 /// Принтеры
 namespace Printers {
-const char Location[] = "location";
-const char Comment[] = "comment";
-const char Server[] = "server";
-const char Share[] = "share";
-const char Unicode[] = "unicode";
-const char Cutter[] = "cutter";
-const char LabelPrinting[] = "label_printing";
-const char BMSensor[] = "bm_sensor";
-const char Font[] = "font";
-const char Presenter[] = "presenter";
-const char PaperSupply[] = "paper_supply";
-const char Codes[] = "codes";
-const char PNESensor[] = "pne_sensor";
+extern const char Location[];
+extern const char Comment[];
+extern const char Server[];
+extern const char Share[];
+extern const char Unicode[];
+extern const char Cutter[];
+extern const char LabelPrinting[];
+extern const char BMSensor[];
+extern const char Font[];
+extern const char Presenter[];
+extern const char PaperSupply[];
+extern const char Codes[];
+extern const char PNESensor[];
 } // namespace Printers
 
 /// Фискальные регистраторы
 namespace FR {
-const char OnlineMode[] = "online_mode";
-const char INN[] = "inn";
-const char RNM[] = "rnm";
-const char AgentFlags[] = "agent_flags";
-const char TaxSystems[] = "tax_systems";
-const char FFDFR[] = "ffd_fr";
-const char FFDFS[] = "ffd_fs";
-const char OFDServer[] = "ofd_server";
-const char TotalPaySum[] = "total_pay_sum";
-const char Session[] = "session";
-const char OwnerId[] = "owner_id";
-const char ReregistrationNumber[] = "reregistration_number";
-const char FreeReregistrations[] = "free_reregistrations";
-const char LastRegistrationDate[] = "last_registration_date";
-const char Activated[] = "activated";
-const char Language[] = "language";
-const char CurrentDate[] = "fr_current_date";
-const char FutureClosingDate[] = "future_closing_date";
-const char LastClosingDate[] = "last_closing_date";
-const char OpeningDate[] = "opening_date";
-const char FiscalDocuments[] = "fiscal_documents";
-const char NonFiscalDocuments[] = "non_fiscal_document";
-const char Printer[] = "printer";
-const char EKLZ[] = "eklz";
-const char OperationModes[] = "operation_modes";
-const char AutomaticNumber[] = "automatic_number";
-const char DTDBuild[] = "dtd_build"; // data transfer device
-const char CanProcessZBuffer[] = "can_process_z_buffer";
-const char Taxes[] = "taxes";
-const char Taxes2019Applied[] = "taxes_2019_applied";
+extern const char OnlineMode[];
+extern const char INN[];
+extern const char RNM[];
+extern const char AgentFlags[];
+extern const char TaxSystems[];
+extern const char FFDFR[];
+extern const char FFDFS[];
+extern const char OFDServer[];
+extern const char TotalPaySum[];
+extern const char Session[];
+extern const char OwnerId[];
+extern const char ReregistrationNumber[];
+extern const char FreeReregistrations[];
+extern const char LastRegistrationDate[];
+extern const char Activated[];
+extern const char Language[];
+extern const char CurrentDate[];
+extern const char FutureClosingDate[];
+extern const char LastClosingDate[];
+extern const char OpeningDate[];
+extern const char FiscalDocuments[];
+extern const char NonFiscalDocuments[];
+extern const char Printer[];
+extern const char EKLZ[];
+extern const char OperationModes[];
+extern const char AutomaticNumber[];
+extern const char DTDBuild[]; // data transfer device
+extern const char CanProcessZBuffer[];
+extern const char Taxes[];
+extern const char Taxes2019Applied[];
 } // namespace FR
 
 /// ЭКЛЗ.
 namespace EKLZ {
-const char Serial[] = "eklz_serial";
-const char ActivizationDate[] = "eklz_activization_date";
-const char FreeActivizations[] = "eklz_free_activizations";
+extern const char Serial[];
+extern const char ActivizationDate[];
+extern const char FreeActivizations[];
 } // namespace EKLZ
 
 /// ФП.
 namespace FM {
-const char FreeSessions[] = "fm_free_sessions";
-const char Firmware[] = "fm_firmware";
+extern const char FreeSessions[];
+extern const char Firmware[];
 } // namespace FM
 
 /// ФН.
 namespace FS {
-const char SerialNumber[] = "fs_serial_number";
-const char ValidityData[] = "fs_validity_data";
-const char DifferenceDT[] = "fs_difference_date_time";
-const char Version[] = "fs_version";
-const char Expiration[] = "fs_expiration";
-const char FFD[] = "fs_ffd";
-const char Provider[] = "fs_provider";
-const char Revision[] = "fs_revision";
+extern const char SerialNumber[];
+extern const char ValidityData[];
+extern const char DifferenceDT[];
+extern const char Version[];
+extern const char Expiration[];
+extern const char FFD[];
+extern const char Provider[];
+extern const char Revision[];
 } // namespace FS
 
 /// Сторожевые таймеры.
 namespace Watchdogs {
-const char Key[] = "key";
-const char CanWakeUpPC[] = "can_wake_up_pc";
-const char PowerControlLogic[] = "power_control_logic";
-const char AdvancedPowerLogic[] = "advanced_power_logic";
+extern const char Key[];
+extern const char CanWakeUpPC[];
+extern const char PowerControlLogic[];
+extern const char AdvancedPowerLogic[];
 
 namespace Sub {
-const char All[] = "all_devices";
-const char CrossUSBCard[] = "cross_usb_card";
-const char PowerSupply[] = "power_supply_device";
+extern const char All[];
+extern const char CrossUSBCard[];
+extern const char PowerSupply[];
 } // namespace Sub
 } // namespace Watchdogs
 
 /// PC health.
 namespace Health {
-const char HandleCount[] = "handle_count";
-const char HandleCountAll[] = "handle_count_all";
-const char CPUTemperature[] = "cpu_temperature";
-const char Antivirus[] = "antivirus";
-const char Firewall[] = "firewall";
-const char Motherboard[] = "motherboard";
-const char CPU[] = "cpu";
-const char HDD[] = "hdd";
-const char TimeZone[] = "time_zone";
+extern const char HandleCount[];
+extern const char HandleCountAll[];
+extern const char CPUTemperature[];
+extern const char Antivirus[];
+extern const char Firewall[];
+extern const char Motherboard[];
+extern const char CPU[];
+extern const char HDD[];
+extern const char TimeZone[];
 } // namespace Health
 } // namespace CDeviceData
 

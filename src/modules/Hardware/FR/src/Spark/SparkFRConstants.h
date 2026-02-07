@@ -38,7 +38,7 @@ const SWaitingData PrintingWaiting = SWaitingData(300, 5 * 1000);
 const char Separator = '\x0A';
 
 /// Формат представления времени в ответе на длинный запрос статуса.
-const char TimeFormat[] = "hhmmss";
+extern const char TimeFormat[];
 
 /// Номер перерегистрации, если ЭКЛЗ не активирована.
 const char NoReregistrationNumber = '\xAF';
@@ -47,7 +47,7 @@ const char NoReregistrationNumber = '\xAF';
 const int CashPaymentType = 8;
 
 /// Без налогов.
-const char NoTaxes[] = "  ";
+extern const char NoTaxes[];
 
 /// Максимально возможное количество налоговых ставок.
 const int TaxRateCount = 4;
@@ -69,7 +69,7 @@ const QDateTime ClosedSession = QDateTime(QDate(1, 1, 1), QTime(0, 0));
 const int Password = 0;
 
 /// Z-отчёт выталкивается вперёд перед печатью следующего.
-const char PushZReport[] = "2";
+extern const char PushZReport[];
 
 /// Системные флаги.
 namespace SystemFlags {
@@ -98,45 +98,43 @@ const char SessionExpired = '\x20';
 /// Коды команд.
 namespace Commands {
 /// Команды получения информации об устройстве.
-const char ENQT[] = "\x1A"; /// Объединённый статус
-
-const char GetFWVersion[] = "SV";   /// Версия прошивки
-const char KKMInfo[] = "S1";        /// Информация о ресурсах и настройках
-const char EKLZInfo[] = "S\"";      /// Информация об ЭКЛЗ
-const char GetEKLZError[] = "S!";   /// Номер фискализации и код фатальной ошибки
-const char ZBufferSpace[] = "SA";   /// Инфо о свободном/занятом месте в Z-буфере
-const char ZBufferCount[] = "SAA";  /// Количество Z-отчетов в Z-буфере
-const char PrintLine[] = "PP";      /// Печать строки
-const char Cut[] = "Pp0";           /// Отрезка
-const char TaxesAndFlags[] = "S3";  /// Налоги и системные флаги
-const char SetFlag[] = "PJ";        /// Установка системного флага
-const char Payin[] = "91";          /// Внесение
-const char ClosePayIO[] = "t";      /// Закрыть внесение/выплату.
-const char Payout[] = "90";         /// Выплата
-const char Sale0[] = " ";           /// Продажа без налогов
-const char Sale1[] = "!";           /// Продажа c налогом 1
-const char Sale2[] = "\"";          /// Продажа c налогом 2
-const char Sale3[] = "#";           /// Продажа c налогом 3
-const char Sale4[] = "$";           /// Продажа c налогом 4
-const char SetTaxes[] = "PT";       /// Установить налоги
-const char AcceptTaxes[] = "Pt";    /// Подтвердить налоги
-const char CloseFiscal[] = "1";     /// Закрыть фискальный чек.
-const char CancelFiscal[] = "7";    /// Аннулировать фискальный чек.
-const char Reports[] = "I";         /// Снять отчет.
-const char PrintZBuffer[] = "PALL"; /// Печать буфера Z-отчётов.
-const char EnterPassword[] = "W  "; /// Ввести управляющий пароль.
-const char GetTotal[] = "Sg";       /// Получить накопительные итогах.
-const char GetCashAcceptorTotal[] =
-    "S|bf3";                             /// Получить количество денег в кассете купюроприёмника.
-const char Push[] = "S|-1";              /// Вытолкнуть вперед.
-const char Retract[] = "S|-0";           /// Вытолкнуть назад.
-const char OpenKKM[] = "o";              /// Открыть систему.
-const char CloseKKM[] = "zz";            /// Закрыть систему.
-const char SetCashier[] = "5";           /// Установить кассира.
-const char GetSensorState[] = "S|R";     /// Получить состояние датчиков.
-const char SetTextProperty[] = "P@";     /// Установить текстовый реквизит.
-const char SetTextPropertyName[] = "PL"; /// Установить наименование текстового реквизита.
-const char GetTextPropertyName[] = "SY"; /// Получить наименование текстового реквизита.
+extern const char ENQT[];
+extern const char GetFWVersion[];
+extern const char KKMInfo[];
+extern const char EKLZInfo[];
+extern const char GetEKLZError[];
+extern const char ZBufferSpace[];
+extern const char ZBufferCount[];
+extern const char PrintLine[];
+extern const char Cut[];
+extern const char TaxesAndFlags[];
+extern const char SetFlag[];
+extern const char Payin[];
+extern const char ClosePayIO[];
+extern const char Payout[];
+extern const char Sale0[];
+extern const char Sale1[];
+extern const char Sale2[];
+extern const char Sale3[];
+extern const char Sale4[];
+extern const char SetTaxes[];
+extern const char AcceptTaxes[];
+extern const char CloseFiscal[];
+extern const char CancelFiscal[];
+extern const char Reports[];
+extern const char PrintZBuffer[];
+extern const char EnterPassword[];
+extern const char GetTotal[];
+extern const char GetCashAcceptorTotal[];
+extern const char Push[];
+extern const char Retract[];
+extern const char OpenKKM[];
+extern const char CloseKKM[];
+extern const char SetCashier[];
+extern const char GetSensorState[];
+extern const char SetTextProperty[];
+extern const char SetTextPropertyName[];
+extern const char GetTextPropertyName[];
 
 struct SData {
     QByteArray answer; /// Код команды в ответе. Может отличаться от кода команды в запросе.

@@ -4,6 +4,7 @@
 
 #include <QtCore/QMap>
 #include <QtCore/QString>
+#include <QtCore/QVariant>
 
 namespace SDK {
 namespace GUI {

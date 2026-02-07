@@ -8,7 +8,7 @@
 
 //--------------------------------------------------------------------------------
 namespace Currency {
-const char NoCurrencyCode[] = "XXX";
+extern const char NoCurrencyCode[];
 
 class Codes : public CSpecification<QString, int> {
 public:

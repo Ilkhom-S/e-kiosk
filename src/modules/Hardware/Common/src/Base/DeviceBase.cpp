@@ -19,6 +19,14 @@
 #include "Hardware/HID/ProtoHID.h"
 #include "Hardware/Watchdogs/ProtoWatchdog.h"
 
+// DeviceBase constants definitions
+namespace CDevice {
+const char DefaultName[] = "Unknown device";
+const char StatusSeparator[] = "; ";
+} // namespace CDevice
+
+const char UnknownDeviceCodeDescription[] = "unknown device code";
+
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------

@@ -13,6 +13,8 @@
 #include "DataStream.h"
 #include "NetworkTask.h"
 
+const char CNetworkTaskManager::LogName[] = "DownloadManager";
+
 NetworkTaskManager::NetworkTaskManager(ILog *aLog) : ILogable(aLog) {
     qRegisterMetaType<QNetworkProxy>("QNetworkProxy");
     qRegisterMetaType<NetworkTask *>("NetworkTask");

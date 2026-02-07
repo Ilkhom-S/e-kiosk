@@ -5,6 +5,12 @@
 #include <QtCore/QRegularExpression>
 #include <QtCore/QSettings>
 
+// Registry constants definitions
+namespace CRegistrySerialPort {
+const char InitialPath[] = "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Enum";
+const char PathProperty[] = "FriendlyName";
+} // namespace CRegistrySerialPort
+
 QStringList SystemDeviceUtils::enumerateCOMPorts() {
     TCHAR buffer[USHRT_MAX];
     memset(buffer, NULL, sizeof(buffer));

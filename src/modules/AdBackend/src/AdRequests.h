@@ -10,38 +10,38 @@
 //------------------------------------------------------------------------------
 namespace Ad {
 namespace Parameters {
-const char RequestType[] = "REQUEST_TYPE";
-const char ResponseType[] = "RESPONSE_TYPE";
-const char Channel[] = "CHANNEL";
-const char Channels[] = "CHANNELS";
+extern const char RequestType[];
+extern const char ResponseType[];
+extern const char Channel[];
+extern const char Channels[];
 
-const char ID[] = "ID";
-const char MD5[] = "MD5";
-const char Expired[] = "EXPIRED";
-const char Url[] = "URL";
-const char Text[] = "TEXT";
+extern const char ID[];
+extern const char MD5[];
+extern const char Expired[];
+extern const char Url[];
+extern const char Text[];
 
-const char Stat[] = "STAT";
+extern const char Stat[];
 
-const char DefaultID[] = "DEFAULT_ID";
-const char DefaultUrl[] = "DEFAULT_URL";
-const char DefaultMD5[] = "DEFAULT_MD5";
-const char DefaultText[] = "DEFAULT_TEXT";
+extern const char DefaultID[];
+extern const char DefaultUrl[];
+extern const char DefaultMD5[];
+extern const char DefaultText[];
 
 /// Формат даты/времени в ответах сервера Хумо и в ini файле конфигурации
-const char DateTimeFormat[] = "dd.MM.yyyy hh:mm:ss";
-const char DateFormat[] = "dd.MM.yyyy";
+extern const char DateTimeFormat[];
+extern const char DateFormat[];
 
 /// Поля запроса с формой
-const char DateForm[] = "DATE_FORM";
-const char Data[] = "DATA";
+extern const char DateForm[];
+extern const char Data[];
 } // namespace Parameters
 
 namespace Requests {
-const char ChannelList[] = "CHANNEL_LIST";
-const char Channel[] = "GET_CHANNEL";
-const char Statistics[] = "STATISTICS";
-const char Form[] = "FEEDBACK";
+extern const char ChannelList[];
+extern const char Channel[];
+extern const char Statistics[];
+extern const char Form[];
 } // namespace Requests
 } // namespace Ad
 

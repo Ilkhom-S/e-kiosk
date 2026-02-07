@@ -18,6 +18,13 @@
 
 #include "Services/EventService.h"
 #include "Services/FirmwareUploadScenario.h"
+
+namespace CGUIService {
+const char LogName[] = "Interface";
+const char IntruderLogName[] = "Penetration";
+const char BackedObjectPrefix[] = "Backend$";
+const char IdleScenarioName[] = "idle";
+} // namespace CGUIService
 #include "Services/IdleScenario.h"
 #include "Services/PluginService.h"
 #include "Services/ServiceNames.h"

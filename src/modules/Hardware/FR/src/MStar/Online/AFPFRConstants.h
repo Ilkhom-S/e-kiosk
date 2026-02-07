@@ -16,13 +16,13 @@ const int MinAnswerDataSize = 4;
 const char Separator = '\x1C';
 
 /// Имя модели.
-const char ModelName[] = "Multisoft MStar-TK2";
+extern const char ModelName[];
 
 /// Формат представления даты в ответах.
-const char DateFormat[] = "ddMMyyyy";
+extern const char DateFormat[];
 
 /// Формат представления времени в ответах.
-const char TimeFormat[] = "hhmmss";
+extern const char TimeFormat[];
 
 /// Количество отделов.
 const int SectionAmount = 16;

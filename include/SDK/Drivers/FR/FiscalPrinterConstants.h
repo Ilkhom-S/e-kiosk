@@ -9,21 +9,21 @@ namespace Driver {
 /// Константы фискального регистратора.
 namespace CFiscalPrinter {
 /// Серийный номер.
-const char Serial[] = "serial";
+extern const char Serial[];
 /// Регистрационный номер.
-const char RNM[] = "rnm";
+extern const char RNM[];
 /// Номер Z-отчёта.
-const char ZReportNumber[] = "z_report_number";
+extern const char ZReportNumber[];
 /// Количество платежей.
-const char PaymentCount[] = "payment_count";
+extern const char PaymentCount[];
 /// Необнуляемая сумма.
-const char NonNullableAmount[] = "non_nullable_amount";
+extern const char NonNullableAmount[];
 /// Сумма платежа.
-const char PaymentAmount[] = "payment_amount";
+extern const char PaymentAmount[];
 /// Дата и время ФР.
-const char FRDateTime[] = "fr_date_time";
+extern const char FRDateTime[];
 /// Системная дата и время.
-const char SystemDateTime[] = "system_date_time";
+extern const char SystemDateTime[];
 } // namespace CFiscalPrinter
 
 } // namespace Driver

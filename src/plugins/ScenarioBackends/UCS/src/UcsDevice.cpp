@@ -16,6 +16,8 @@ using namespace SDK::Driver;
 namespace Ucs {
 /// Имя устройства по умолчанию.
 const char DeviceName[] = "UCS";
+
+const char ModelName[] = "UCS";
 } // namespace Ucs
 
 //--------------------------------------------------------------------------------

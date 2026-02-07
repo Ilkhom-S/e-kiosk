@@ -7,17 +7,17 @@ namespace PaymentProcessor {
 
 //---------------------------------------------------------------------------
 namespace CReceiptType {
-const char Payment[] = "payment";
-const char Error[] = "error";
-const char Balance[] = "balance";
-const char Encashment[] = "encashment";
-const char ZReport[] = "z_report";
-const char ZReportFull[] = "z_report_full";
-const char XReport[] = "x_report";
-const char Test[] = "test";
-const char DispenserEncashment[] = "dispense_encashment";
-const char DispenserBalance[] = "dispense_balance";
-const char Disabled[] = "disabled";
+extern const char Payment[];
+extern const char Error[];
+extern const char Balance[];
+extern const char Encashment[];
+extern const char ZReport[];
+extern const char ZReportFull[];
+extern const char XReport[];
+extern const char Test[];
+extern const char DispenserEncashment[];
+extern const char DispenserBalance[];
+extern const char Disabled[];
 } // namespace CReceiptType
 
 //---------------------------------------------------------------------------

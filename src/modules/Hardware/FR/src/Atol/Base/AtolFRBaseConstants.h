@@ -23,11 +23,11 @@ const char GetRegNumber = 0x14; /// Запрос регистрационног�
 
 /// Регистры
 namespace Registers {
-const char FreeReregistrations[] = "free reregistrations";
-const char FreeFMSessions[] = "free fiscal memory sessions";
-const char EKLZActivizationResources[] = "EKLZ activization resources";
-const char EKLZRegistrationData[] = "EKLZ registration data";
-const char EKLZActivizationData[] = "EKLZ activization data";
+extern const char FreeReregistrations[];
+extern const char FreeFMSessions[];
+extern const char EKLZActivizationResources[];
+extern const char EKLZRegistrationData[];
+extern const char EKLZActivizationData[];
 } // namespace Registers
 
 //------------------------------------------------------------------------------------------------

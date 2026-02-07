@@ -20,7 +20,7 @@ struct SCurrencyData {
     SCurrencyData(const QString &aCountry, int aCode) : country(aCountry), code(aCode) {}
 };
 
-const char TeachMode[] = "TM";
+extern const char TeachMode[];
 
 class CCurrencyData : public CSpecification<QByteArray, SCurrencyData> {
 public:

@@ -4,6 +4,11 @@
 
 #include <QtCore/QRegularExpression>
 
+//--------------------------------------------------------------------------------
+namespace Tags {
+const char BR[] = "[br]";
+} // namespace Tags
+
 void Tags::Engine::appendByGroup(bool aBitField,
                                  Type::Enum aType,
                                  const QByteArray &aPrefix,

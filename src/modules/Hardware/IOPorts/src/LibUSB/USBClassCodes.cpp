@@ -2,6 +2,15 @@
 
 #include "USBClassCodes.h"
 
+// USB constants definitions
+namespace USB {
+namespace DescriptorUsage {
+const char Device[] = "device";
+const char Interface[] = "interface";
+const char Both[] = "device and interface";
+} // namespace DescriptorUsage
+} // namespace USB
+
 //--------------------------------------------------------------------------------
 namespace USB {
 CClassData::CClassData() {

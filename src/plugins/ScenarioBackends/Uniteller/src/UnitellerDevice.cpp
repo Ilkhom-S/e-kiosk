@@ -14,6 +14,11 @@ using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
 namespace Uniteller {
+const char ModelName[] = "Uniteller";
+} // namespace Uniteller
+
+//--------------------------------------------------------------------------------
+namespace Uniteller {
 /// Имя устройства по умолчанию.
 const char DeviceName[] = "Uniteller";
 } // namespace Uniteller

@@ -30,10 +30,10 @@ const int MaxPartSize = 8192;
 const int MinBlocksInPart = MaxPartSize / MaxBlockSize;
 
 /// Данные команды инициализации записи изображения.
-const char InitData[] = "\x8F\x1D\x2A";
+extern const char InitData[];
 
 /// Данные команды обнуления счетчика байтов.
-const char ClearCounterData[] = "\x90\x01";
+extern const char ClearCounterData[];
 
 /// Данные команды обнуления счетчика байтов.
 const QByteArray WriteData = QByteArray::fromRawData("\x8F\x1D\x2F\x00", 4);

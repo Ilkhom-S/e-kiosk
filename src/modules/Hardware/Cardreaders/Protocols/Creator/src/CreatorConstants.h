@@ -30,7 +30,7 @@ const int USBAnswerSize = 10 * USBPacketSize;
 const QByteArray EmptyUSBAnswer = QByteArray(USBAnswerSize, ASCII::NUL);
 
 /// Постфикс - заменитель NUL-последовательности байтов в конце USB-запросов для логгирования.
-const char NULLogPostfix[] = " NUL";
+extern const char NULLogPostfix[];
 
 /// Минимальный размер ответного пакета.
 const int MinPacketAnswerSize = 7;

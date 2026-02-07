@@ -19,7 +19,7 @@ class CashDispenserManager;
 class CashAcceptorManager;
 
 namespace CFundsService {
-const char LogName[] = "Funds";
+extern const char LogName[];
 } // namespace CFundsService
 
 //---------------------------------------------------------------------------

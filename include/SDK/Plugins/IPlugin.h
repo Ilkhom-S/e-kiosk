@@ -13,13 +13,13 @@ namespace Plugin {
 
 namespace CPlugin {
 /// Разделитель пути плагина и имени экземпляра.
-const char InstancePathSeparator[] = ".configuration_";
+extern const char InstancePathSeparator[];
 
 /// Измененные имена параметров.
-const char ModifiedKeys[] = "modified_keys";
+extern const char ModifiedKeys[];
 
 /// Измененные значения параметров.
-const char ModifiedValues[] = "modified_values";
+extern const char ModifiedValues[];
 } // namespace CPlugin
 
 //------------------------------------------------------------------------------

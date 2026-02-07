@@ -19,20 +19,20 @@ namespace Scripting {
 
 /// Константы для HID.
 namespace HID {
-const char STRING[] = "hid_string";
-const char EXTERNAL_DATA[] = "hid_external_data";
-const char RAW[] = "hid_raw";
-const char RAW_BASE64[] = "hid_raw_base64";
-const char SOURCE[] = "hid_source";
-const char SOURCE_CAMERA[] = "camera";
-const char SOURCE_SCANNER[] = "scanner";
-const char SOURCE_CARD[] = "card";
-const char SIGNAL[] = "signal";
-const char SIGNAL_INSERT[] = "insert";
-const char SIGNAL_EJECT[] = "eject";
+extern const char STRING[];
+extern const char EXTERNAL_DATA[];
+extern const char RAW[];
+extern const char RAW_BASE64[];
+extern const char SOURCE[];
+extern const char SOURCE_CAMERA[];
+extern const char SOURCE_SCANNER[];
+extern const char SOURCE_CARD[];
+extern const char SIGNAL[];
+extern const char SIGNAL_INSERT[];
+extern const char SIGNAL_EJECT[];
 
-const char CAMERA_FACE_DETECTED[] = "hid_camera_face_detected";
-const char CAMERA_FACE_DETECTED_IMAGE[] = "hid_camera_face_image_base64";
+extern const char CAMERA_FACE_DETECTED[];
+extern const char CAMERA_FACE_DETECTED_IMAGE[];
 } // namespace HID
 
 //------------------------------------------------------------------------------

@@ -28,9 +28,9 @@ class NetworkTaskManager;
 
 //---------------------------------------------------------------------------
 namespace Ucs {
-const char LogName[] = "Ucs";
-const char ScriptObjectName[] = "Ucs";
-const char EncashmentTask[] = "ucs_encash_sync";
+extern const char LogName[];
+extern const char ScriptObjectName[];
+extern const char EncashmentTask[];
 
 typedef void *(*EftpCreate)(char *szConfigPath);
 typedef void (*EftpDestroy)(void *pvSelf);

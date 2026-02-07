@@ -8,23 +8,23 @@
 namespace CSettings {
 //---------------------------------------------------------------------------
 // Путь к плагинам
-const char PluginsPath[] = "common/plugins_path";
+extern const char PluginsPath[];
 
 //---------------------------------------------------------------------------
 // Путь к пользовательским данным
-const char UserDataPath[] = "common/user_data_path";
+extern const char UserDataPath[];
 
 //---------------------------------------------------------------------------
 // Путь к интерфейсу
-const char InterfacePath[] = "common/interface_path";
+extern const char InterfacePath[];
 
 //---------------------------------------------------------------------------
 // Путь к контенту
-const char ContentPath[] = "common/content_path";
+extern const char ContentPath[];
 
 //---------------------------------------------------------------------------
 // Путь к рекламе
-const char AdPath[] = "common/ad_path";
+extern const char AdPath[];
 } // namespace CSettings
 
 //---------------------------------------------------------------------------

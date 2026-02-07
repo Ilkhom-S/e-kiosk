@@ -37,15 +37,15 @@ public:
 
     int exec();
 
-    virtual SDK::PaymentProcessor::ICore *getCore();
-    virtual QVariantMap getArguments() const;
-    virtual QSettings &getSettings() const;
-    virtual QList<QImage> getScreenshot();
-    virtual IApplication::AppInfo getAppInfo() const;
-    virtual ILog *getLog() const;
-    virtual QString getUserDataPath() const;
-    virtual QString getPluginPath() const;
-    virtual QString getUserPluginPath() const;
+    virtual SDK::PaymentProcessor::ICore *getCore() override;
+    virtual QVariantMap getArguments() const override;
+    virtual QSettings &getSettings() const override;
+    virtual QList<QImage> getScreenshot() override;
+    virtual IApplication::AppInfo getAppInfo() const override;
+    virtual ILog *getLog() const override;
+    virtual QString getUserDataPath() const override;
+    virtual QString getPluginPath() const override;
+    virtual QString getUserPluginPath() const override;
 
     static void
     qtMessageHandler(QtMsgType aType, const QMessageLogContext &aContext, const QString &aMessage);

@@ -91,23 +91,23 @@ const char Cardreader = 0x04;  /// Кардридер.
 //--------------------------------------------------------------------------------
 /// Команды
 namespace Commands {
-const char Reset[] = "\x30";
-const char SetSecurity[] = "\x32";
-const char GetStatus[] = "\x33";
-const char EnableBillTypes[] = "\x34";
-const char Stack[] = "\x35";
-const char Return[] = "\x36";
-const char GetVersion[] = "\x37";
-const char GetParList[] = "\x41";
-const char UpdateFirmware[] = "\x50";
+extern const char Reset[];
+extern const char SetSecurity[];
+extern const char GetStatus[];
+extern const char EnableBillTypes[];
+extern const char Stack[];
+extern const char Return[];
+extern const char GetVersion[];
+extern const char GetParList[];
+extern const char UpdateFirmware[];
 
 /// Обновление прошивки.
 namespace UpdatingFirmware {
 const QByteArray GetStatus = QByteArray::fromRawData("\x50\x00", 2);
-const char GetBlockSize[] = "\x50\x01";
-const char Write[] = "\x50\x02";
-const char Exit[] = "\x50\x03";
-const char SetBaudRate[] = "\x50\x05";
+extern const char GetBlockSize[];
+extern const char Write[];
+extern const char Exit[];
+extern const char SetBaudRate[];
 } // namespace UpdatingFirmware
 } // namespace Commands
 

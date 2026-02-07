@@ -35,10 +35,10 @@ static CStatuses Statuses;
 
 /// Команды.
 namespace Commands {
-const char Initialize[] = "\x1B\x40";           /// Инициализация.
-const char SetFont[] = "\x1B\x50\x31";          /// Установить шрифт.
-const char SetLeftAlign[] = "\x1B\x4E\x01\xA0"; /// Установить выравнивание слева.
-const char GetStatus[] = "\x1B\x6B\xFF";        /// Cтатус.
+extern const char Initialize[];           /// Инициализация.
+extern const char SetFont[];          /// Установить шрифт.
+extern const char SetLeftAlign[]; /// Установить выравнивание слева.
+extern const char GetStatus[];        /// Cтатус.
 } // namespace Commands
 
 /// Теги.

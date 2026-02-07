@@ -17,7 +17,7 @@
 
 //------------------------------------------------------------------------
 namespace CNetworkTaskManager {
-const char LogName[] = "DownloadManager";
+extern const char LogName[];
 const int BadTask = -1;
 } // namespace CNetworkTaskManager
 

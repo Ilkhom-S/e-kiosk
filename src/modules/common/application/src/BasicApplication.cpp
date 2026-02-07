@@ -18,6 +18,10 @@
 
 #ifdef Q_OS_WIN
 #include <comdef.h>
+
+namespace CPluginParameters {
+const char PPVersion[] = "e_kiosk_version";
+} // namespace CPluginParameters
 #include <comutil.h>
 #include <windows.h>
 #endif

@@ -23,10 +23,10 @@ const int CloseningPause = 100;
 const QString AddressMask = QString("^%1\\.%1\\.%1\\.%1$").arg("[0-9]{1,3}");
 
 /// Маска адреса для указания в логе.
-const char AddressMaskLog[] = "0xx.0xx.0xx.0xx";
+extern const char AddressMaskLog[];
 
 /// Пинг устройства во избежание применения алгоритма Нейгла.
-const char AntiNaglePing[] = "\xFF";
+extern const char AntiNaglePing[];
 
 /// Таймаут единичного чтения из порта, [мс].
 const int ReadingTimeout = 3;

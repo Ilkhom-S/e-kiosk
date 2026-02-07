@@ -7,6 +7,10 @@
 
 #include "Hardware/CashAcceptors/CashAcceptorStatusesDescriptions.h"
 
+namespace Currency {
+const char NoCurrencyCode[] = "XXX";
+} // namespace Currency
+
 using namespace SDK::Driver;
 
 //---------------------------------------------------------------------------
