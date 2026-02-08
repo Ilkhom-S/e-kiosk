@@ -1,7 +1,5 @@
 /* @file Реализация базы данных. */
 
-#include "DatabaseUtils.h"
-
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QResource>
@@ -10,6 +8,8 @@
 #include <QtCore/QVariantList>
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlQuery>
+
+#include <AdBackend/DatabaseUtils.h>
 
 inline void initMyResource() {
     Q_INIT_RESOURCE(BackendResources);

@@ -10,7 +10,8 @@ namespace SDK {
 namespace PaymentProcessor {
 
 namespace CChargeProvider {
-static const char StackedSignal[] = SIGNAL(stacked(SDK::PaymentProcessor::SNote));
+// We use a pointer here because it's a header-only interface constant
+static const char *StackedSignal = SIGNAL(stacked(SDK::PaymentProcessor::SNote));
 } // namespace CChargeProvider
 
 //------------------------------------------------------------------------------

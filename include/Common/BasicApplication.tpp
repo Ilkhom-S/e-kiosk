@@ -5,17 +5,19 @@
 // Qt includes needed for template implementation
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include <QtCore/QStringList>
 #include <QtCore/QSharedPointer>
+#include <QtCore/QStringList>
 
 //---------------------------------------------------------------------------
 // Реализация BasicQtApplication
 
 template <typename T>
-BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &aVersion, int &aArgumentCount,
+BasicQtApplication<T>::BasicQtApplication(const QString &aName,
+                                          const QString &aVersion,
+                                          int &aArgumentCount,
                                           char **aArguments)
-    : BasicApplication(aName, aVersion, aArgumentCount, aArguments), m_QtApplication(aArgumentCount, aArguments, true)
-{
+    : BasicApplication(aName, aVersion, aArgumentCount, aArguments),
+      m_QtApplication(aArgumentCount, aArguments, true) {
     // Set application name and version on the Qt application instance
     m_QtApplication.setApplicationName(aName);
     m_QtApplication.setApplicationVersion(aVersion);
@@ -26,19 +28,20 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &a
 
     // Check multiple possible locations for translation files
     QStringList searchPaths;
-    searchPaths << getWorkingDirectory();                                  // Working directory
-    searchPaths << QDir(getWorkingDirectory()).absoluteFilePath("locale"); // locale subdirectory in working dir
+    searchPaths << getWorkingDirectory(); // Working directory
+    searchPaths << QDir(getWorkingDirectory())
+                       .absoluteFilePath("locale"); // locale subdirectory in working dir
 
     // On macOS, also check app bundle locations
 #ifdef Q_OS_MACOS
     QString appDir = m_QtApplication.applicationDirPath();
-    searchPaths << QDir(appDir).absoluteFilePath("../Resources/locale"); // Contents/Resources/locale
-    searchPaths << QDir(appDir).absoluteFilePath("locale");              // Contents/MacOS/locale (fallback)
+    searchPaths << QDir(appDir).absoluteFilePath(
+        "../Resources/locale");                             // Contents/Resources/locale
+    searchPaths << QDir(appDir).absoluteFilePath("locale"); // Contents/MacOS/locale (fallback)
 #endif
 
     bool translationLoaded = false;
-    for (const QString &searchPath : searchPaths)
-    {
+    for (const QString &searchPath : searchPaths) {
         QDir translationsDir(searchPath);
         if (!translationsDir.exists())
             continue;
@@ -48,27 +51,26 @@ BasicQtApplication<T>::BasicQtApplication(const QString &aName, const QString &a
         translationsDir.setNameFilters(translationFilters);
 
         QStringList translationFiles = translationsDir.entryList(QDir::Files, QDir::Name);
-        if (!translationFiles.isEmpty())
-        {
+        if (!translationFiles.isEmpty()) {
             QString translationFile = translationsDir.absoluteFilePath(translationFiles.first());
             m_Translator = QSharedPointer<QTranslator>(new QTranslator(&m_QtApplication));
 
-            if (m_Translator->load(translationFile))
-            {
+            if (m_Translator->load(translationFile)) {
                 m_QtApplication.installTranslator(m_Translator.data());
-                getLog()->write(LogLevel::Normal, QString("Translation %1 loaded.").arg(translationFile));
+                getLog()->write(LogLevel::Normal,
+                                QString("Translation %1 loaded.").arg(translationFile));
                 translationLoaded = true;
                 break; // Stop after loading the first translation file
-            }
-            else
-            {
-                getLog()->write(LogLevel::Warning, QString("Failed to load translation %1.").arg(translationFile));
+            } else {
+                getLog()->write(LogLevel::Warning,
+                                QString("Failed to load translation %1.").arg(translationFile));
             }
         }
     }
-    if (!translationLoaded)
-    {
-        getLog()->write(LogLevel::Normal, QString("No translations found for %1 in searched locations.").arg(appName));
+    if (!translationLoaded) {
+        getLog()->write(
+            LogLevel::Normal,
+            QString("No translations found for %1 in searched locations.").arg(appName));
     }
 
     // Now that Qt application is created, write the log header

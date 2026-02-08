@@ -45,20 +45,20 @@ BasicApplication::BasicApplication(const QString &aName,
                                    const QString &aVersion,
                                    int aArgumentCount,
                                    char **aArguments)
-    : mName(aName), mVersion(aVersion), mArgumentCount(aArgumentCount), mArguments(aArguments) {
+    : m_Name(aName), m_Version(aVersion), m_ArgumentCount(aArgumentCount), m_Arguments(aArguments) {
     // Parse provided argv for quick checks (e.g., 'test')
     QStringList args;
     for (int i = 0; i < aArgumentCount; ++i) {
         args << QString::fromUtf8(aArguments[i]);
     }
     // detect test mode from args first, then environment
-    mTestMode = args.contains(QStringLiteral("test")) ||
-                qEnvironmentVariableIsSet("EKIOSK_TEST_MODE") ||
-                qEnvironmentVariableIsSet("TEST_MODE");
+    m_TestMode = args.contains(QStringLiteral("test")) ||
+                 qEnvironmentVariableIsSet("EKIOSK_TEST_MODE") ||
+                 qEnvironmentVariableIsSet("TEST_MODE");
 
     // Инициализируем настройки из .ini файла на основе пути к исполняемому
     // файлу
-    QFileInfo info(QString::fromLocal8Bit(mArguments[0]));
+    QFileInfo info(QString::fromLocal8Bit(m_Arguments[0]));
     QString basePath = info.absolutePath();
 
     // На macOS для app bundle нужно использовать директорию, содержащую .app,
@@ -84,16 +84,16 @@ BasicApplication::BasicApplication(const QString &aName,
     QString settingsFilePath =
         QDir::toNativeSeparators(basePath + QDir::separator() + info.completeBaseName() + ".ini");
 
-    mSettings.reset(new QSettings(ISysUtils::rmBOM(settingsFilePath), QSettings::IniFormat));
+    m_Settings.reset(new QSettings(ISysUtils::rmBOM(settingsFilePath), QSettings::IniFormat));
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) && defined(Q_OS_WIN)
-    mSettings->setIniCodec("UTF-8");
+    m_Settings->setIniCodec("UTF-8");
 #endif
 
     // Устанавливаем рабочий каталог
-    mWorkingDirectory = basePath;
-    if (mSettings->contains("common/working_directory")) {
-        QString directory = mSettings->value("common/working_directory").toString();
-        mWorkingDirectory = QDir::toNativeSeparators(QDir::cleanPath(
+    m_WorkingDirectory = basePath;
+    if (m_Settings->contains("common/working_directory")) {
+        QString directory = m_Settings->value("common/working_directory").toString();
+        m_WorkingDirectory = QDir::toNativeSeparators(QDir::cleanPath(
             (QDir::isAbsolutePath(directory) ? "" : (basePath + QDir::separator())) + directory));
     }
 
@@ -101,8 +101,8 @@ BasicApplication::BasicApplication(const QString &aName,
     setInstance();
 
     // Выставим уровень логирования из user.ini
-    QString userFilePath = mWorkingDirectory + QDir::separator() +
-                           mSettings->value("common/user_data_path").toString() +
+    QString userFilePath = m_WorkingDirectory + QDir::separator() +
+                           m_Settings->value("common/user_data_path").toString() +
                            QDir::separator() + "user.ini";
     QSettings userSettings(ISysUtils::rmBOM(userFilePath), QSettings::IniFormat);
     if (userSettings.contains("log/level")) {
@@ -116,13 +116,13 @@ BasicApplication::BasicApplication(const QString &aName,
 
     // Initialize logger
 #ifdef QT_DEBUG
-    mLog = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::Console);
+    m_Log = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::Console);
 #else
-    mLog = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::File);
+    m_Log = ILog::getInstance(aName.isEmpty() ? "BasicApplication" : aName, LogType::File);
 #endif
-    if (mLog) {
-        mLog->setDestination(aName.isEmpty() ? "basic_app" : aName.toLower());
-        mLog->setLevel(LogLevel::Normal); // Default to Normal level
+    if (m_Log) {
+        m_Log->setDestination(aName.isEmpty() ? "basic_app" : aName.toLower());
+        m_Log->setLevel(LogLevel::Normal); // Default to Normal level
     }
 
     // install Qt message handler that uses our logger
@@ -143,7 +143,7 @@ BasicApplication::BasicApplication(const QString &aName,
                                       EOAC_NONE,
                                       nullptr);
     if (FAILED(hr)) {
-        LOG(mLog,
+        LOG(m_Log,
             LogLevel::Error,
             QString("CoInitializeSecurity failed: %1.")
                 .arg(QString::fromWCharArray((const wchar_t *)_com_error(hr).ErrorMessage())));
@@ -154,13 +154,15 @@ BasicApplication::BasicApplication(const QString &aName,
 //---------------------------------------------------------------------------
 // Выводит стандартный заголовок в лог (вызывается после создания QApplication).
 void BasicApplication::writeLogHeader() {
-    if (mLog) {
-        mLog->write(LogLevel::Normal, "**********************************************************");
-        mLog->write(LogLevel::Normal, QString("Application: %1").arg(getName()));
-        mLog->write(LogLevel::Normal, QString("File: %1").arg(getFileName()));
-        mLog->write(LogLevel::Normal, QString("Version: %1").arg(getVersion()));
-        mLog->write(LogLevel::Normal, QString("Operating system: %1").arg(getOSVersion()));
-        mLog->write(LogLevel::Normal, "**********************************************************");
+    if (m_Log) {
+        m_Log->write(LogLevel::Normal,
+                     "**********************************************************");
+        m_Log->write(LogLevel::Normal, QString("Application: %1").arg(getName()));
+        m_Log->write(LogLevel::Normal, QString("File: %1").arg(getFileName()));
+        m_Log->write(LogLevel::Normal, QString("Version: %1").arg(getVersion()));
+        m_Log->write(LogLevel::Normal, QString("Operating system: %1").arg(getOSVersion()));
+        m_Log->write(LogLevel::Normal,
+                     "**********************************************************");
     }
 }
 
@@ -168,33 +170,33 @@ BasicApplication::~BasicApplication() = default;
 
 // BasicApplication core implementations
 
-BasicApplication *BasicApplication::mInstance = nullptr;
+BasicApplication *BasicApplication::m_Instance = nullptr;
 
 //---------------------------------------------------------------------------
 // Устанавливает экземпляр приложения.
 void BasicApplication::setInstance() {
-    mInstance = this;
+    m_Instance = this;
 }
 
 //---------------------------------------------------------------------------
 // Возвращает экземпляр приложения.
 BasicApplication *BasicApplication::getInstance() {
-    return mInstance;
+    return m_Instance;
 }
 
 //---------------------------------------------------------------------------
 // Возвращает имя приложения.
 QString BasicApplication::getName() const {
-    if (!mName.isEmpty())
-        return mName;
+    if (!m_Name.isEmpty())
+        return m_Name;
     return QCoreApplication::applicationName();
 }
 
 //---------------------------------------------------------------------------
 // Возвращает версию приложения.
 QString BasicApplication::getVersion() const {
-    if (!mVersion.isEmpty())
-        return mVersion;
+    if (!m_Version.isEmpty())
+        return m_Version;
     return QCoreApplication::applicationVersion();
 }
 
@@ -206,8 +208,8 @@ QString BasicApplication::getFileName() const {
         return QFileInfo(QCoreApplication::applicationFilePath()).fileName();
     } else {
         // Fallback: use the executable path from arguments
-        if (mArgumentCount > 0) {
-            return QFileInfo(QString::fromLocal8Bit(mArguments[0])).fileName();
+        if (m_ArgumentCount > 0) {
+            return QFileInfo(QString::fromLocal8Bit(m_Arguments[0])).fileName();
         }
         return QString(); // Empty string if no arguments
     }
@@ -226,19 +228,19 @@ QString BasicApplication::getOSVersion() const {
 //---------------------------------------------------------------------------
 // Возвращает рабочий каталог приложения (может быть задан в .ini файле).
 QString BasicApplication::getWorkingDirectory() const {
-    return mWorkingDirectory;
+    return m_WorkingDirectory;
 }
 
 //---------------------------------------------------------------------------
 // Возвращает настройки приложения
 QSettings &BasicApplication::getSettings() const {
-    return *mSettings;
+    return *m_Settings;
 }
 
 //---------------------------------------------------------------------------
 // Возвращает лог приложения.
 ILog *BasicApplication::getLog() const {
-    return mLog;
+    return m_Log;
 }
 
 //---------------------------------------------------------------------------
@@ -283,7 +285,7 @@ void messageHandler(QtMsgType type, const QMessageLogContext &context, const QSt
 //---------------------------------------------------------------------------
 // Возвращает true, если приложение запущено в тестовом режиме.
 bool BasicApplication::isTestMode() const {
-    return mTestMode;
+    return m_TestMode;
 }
 
 //---------------------------------------------------------------------------
@@ -297,7 +299,7 @@ bool BasicApplication::startDetachedProcess(const QString &program, const QStrin
 void BasicApplication::detectTestMode() {
     // We can detect test mode either from provided arguments, which are not
     // available in this lightweight BasicApplication, or from environment vars
-    mTestMode =
+    m_TestMode =
         qEnvironmentVariableIsSet("EKIOSK_TEST_MODE") || qEnvironmentVariableIsSet("TEST_MODE");
 
     // Note: Message handler is already installed in constructor

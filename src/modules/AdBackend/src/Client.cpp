@@ -1,7 +1,5 @@
 /* @file Реализация клиента, взаимодействующего с сервером рекламы. */
 
-#include "Client.h"
-
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
@@ -16,6 +14,7 @@
 #include <SDK/PaymentProcessor/Core/ISettingsService.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
+#include <AdBackend/Client.h>
 #include <AdBackend/DatabaseUtils.h>
 #include <AdBackend/IDatabaseUtils.h>
 

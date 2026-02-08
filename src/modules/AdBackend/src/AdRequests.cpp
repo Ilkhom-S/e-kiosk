@@ -7,7 +7,7 @@
 #include <SDK/PaymentProcessor/Payment/Parameters.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
-#include "Client.h"
+#include <AdBackend/Client.h>
 
 namespace Ad {
 namespace Parameters {

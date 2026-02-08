@@ -8,8 +8,9 @@
 #include <SDK/PaymentProcessor/Core/ISettingsService.h>
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
+#include <AdBackend/Client.h>
+
 #include "AdRequests.h"
-#include "Client.h"
 
 namespace PPSDK = SDK::PaymentProcessor;
 
