@@ -112,10 +112,10 @@ signals:
     void finished(const QVariantMap &aResult);
 
 protected:
-    QString mName;        /// Название сценария.
-    QString mPath;        /// Пусть к файлу сценария.
-    int mDefaultTimeout;  /// Таймаут состояния по умолчанию.
-    QTimer mTimeoutTimer; /// Таймер состояния.
+    QString m_Name;        /// Название сценария.
+    QString m_Path;        /// Пусть к файлу сценария.
+    int m_DefaultTimeout;  /// Таймаут состояния по умолчанию.
+    QTimer m_TimeoutTimer; /// Таймер состояния.
 };
 
 } // namespace GUI

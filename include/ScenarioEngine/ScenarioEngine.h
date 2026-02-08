@@ -91,16 +91,16 @@ private:
     typedef QMap<QString, SScenarioDescriptor> TScenarioDescriptorMap;
 
     /// Загруженные сценарии-объекты.
-    TScenarioStorageMap mScenarioStorage;
+    TScenarioStorageMap m_ScenarioStorage;
 
     /// Описатели сценариев
-    TScenarioDescriptorMap mScenarios;
+    TScenarioDescriptorMap m_Scenarios;
 
     /// Стек сценариев.
-    QStack<Scenario *> mScenarioStack;
+    QStack<Scenario *> m_ScenarioStack;
 
-    QList<SScriptObject> mScriptObjects;
-    int mLogPadding;
+    QList<SScriptObject> m_ScriptObjects;
+    int m_LogPadding;
 };
 
 } // namespace GUI
