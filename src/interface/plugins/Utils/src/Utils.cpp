@@ -91,7 +91,7 @@ void Utils::generateKeyEvent(int aKey, int aModifiers, const QString &aText) con
 int maskLength(QString mask) {
     int len = 0;
 
-    mask.remove(QRegExp("(;.)$"));
+    mask.remove(QRegularExpression("(;.)$"));
 
     for (int i = 0; i < mask.size(); ++i) {
         if (mask[i] == '\\') {
@@ -196,25 +196,30 @@ int Utils::getCursorPosition(const QString &aMask,
 
 //------------------------------------------------------------------------------
 QString Utils::format(const QString &aSource, const QString &aFormat) const {
-    QString result;
+    QString result = aFormat;
 
-    if (!aFormat.isEmpty()) {
-        QRegExp rx("\\[(\\d+)\\]");
-
-        QString outFormat = aFormat;
-        int pos;
-
-        while ((pos = rx.indexIn(outFormat, 0)) >= 0) {
-            int srcIndex = rx.cap(1).toInt() - 1;
-
-            if (srcIndex < aSource.size()) {
-                outFormat.replace(pos, rx.matchedLength(), aSource.at(srcIndex));
-            } else {
-                outFormat.remove(pos, rx.matchedLength());
+    if (!result.isEmpty()) {
+        QRegularExpression rx("\\[(\\d+)\\]");
+        QList<QPair<int, QString>> replacements;
+        
+        // Find all matches
+        QRegularExpressionMatchIterator it = rx.globalMatch(result);
+        while (it.hasNext()) {
+            QRegularExpressionMatch match = it.next();
+            int srcIndex = match.captured(1).toInt() - 1;
+            QString replacement = (srcIndex >= 0 && srcIndex < aSource.size()) ? 
+                                QString(aSource.at(srcIndex)) : QString();
+            replacements.append(qMakePair(match.capturedStart(), replacement));
+        }
+        
+        // Replace from the end to avoid position shifts
+        for (int i = replacements.size() - 1; i >= 0; --i) {
+            const auto &replacement = replacements.at(i);
+            QRegularExpressionMatch match = rx.match(result, replacement.first);
+            if (match.hasMatch()) {
+                result.replace(match.capturedStart(), match.capturedLength(), replacement.second);
             }
         }
-
-        result = outFormat;
     }
 
     return result;
