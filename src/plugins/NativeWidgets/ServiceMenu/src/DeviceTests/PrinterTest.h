@@ -24,7 +24,7 @@ class PrinterTest : public SDK::PaymentProcessor::IDeviceTest {
     Q_OBJECT
 
 public:
-    PrinterTest(SDK::Driver::IDevice *m_Device, SDK::PaymentProcessor::ICore *aCore);
+    PrinterTest(SDK::Driver::IDevice *aDevice, SDK::PaymentProcessor::ICore *aCore);
 
     /// Возвращает имена и описания тестов.
     virtual QList<QPair<QString, QString>> getTestNames() const;

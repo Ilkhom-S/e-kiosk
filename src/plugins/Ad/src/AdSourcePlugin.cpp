@@ -9,6 +9,7 @@
 #include <SDK/Plugins/PluginInitializer.h>
 
 #include <AdBackend/Client.h>
+#include <utility>
 
 #include "AdRemotePlugin.h"
 
@@ -22,7 +23,7 @@ const char PluginName[] = "HumoAd";
 //------------------------------------------------------------------------------
 namespace {
 /// Конструктор экземпляра плагина.
-SDK::Plugin::IPlugin *CreateAdSourcePlugin(SDK::Plugin::IEnvironment *aFactory,
+SDK::Plugin::IPlugin *createAdSourcePlugin(SDK::Plugin::IEnvironment *aFactory,
                                            const QString &aInstancePath) {
     return new AdSourcePlugin(aFactory, aInstancePath);
 }
@@ -31,15 +32,15 @@ SDK::Plugin::IPlugin *CreateAdSourcePlugin(SDK::Plugin::IEnvironment *aFactory,
 REGISTER_PLUGIN(makePath(PPSDK::Application,
                          PPSDK::CComponents::AdSource,
                          CAdRemotePlugin::PluginName),
-                &CreateAdSourcePlugin,
+                &createAdSourcePlugin,
                 &SDK::Plugin::PluginInitializer::emptyParameterList,
                 AdSourcePlugin);
 } // namespace
 
 //---------------------------------------------------------------------------
 // Конструктор плагина источника рекламы
-AdSourcePlugin::AdSourcePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : m_Factory(aFactory), m_InstancePath(aInstancePath) {
+AdSourcePlugin::AdSourcePlugin(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath)
+    : m_Factory(aFactory), m_InstancePath(std::move(aInstancePath)) {
     m_Client = getAdClientInstance(aFactory);
 
     m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
@@ -47,7 +48,7 @@ AdSourcePlugin::AdSourcePlugin(SDK::Plugin::IEnvironment *aFactory, const QStrin
 }
 
 //------------------------------------------------------------------------------
-AdSourcePlugin::~AdSourcePlugin(void) {
+AdSourcePlugin::~AdSourcePlugin() {
     m_Client.clear();
 }
 
@@ -58,7 +59,7 @@ QString AdSourcePlugin::getPluginName() const {
 
 //------------------------------------------------------------------------------
 QVariantMap AdSourcePlugin::getConfiguration() const {
-    return QVariantMap();
+    return {};
 }
 
 //------------------------------------------------------------------------------

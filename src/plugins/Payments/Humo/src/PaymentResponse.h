@@ -23,7 +23,7 @@ public:
 #pragma endregion
 
 private:
-    /// Список полей, которые нельзя логировать.
+    /// Список полей, которые нельзя логгировать.
     QStringList m_CryptedFields;
 };
 

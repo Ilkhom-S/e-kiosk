@@ -27,7 +27,7 @@ public:
     /// Ошибки закачки
     enum Error {
         NoError = 0,
-        Stream_WriteError = -1,      /// Не удалось произвести запись в переданный поток данных.
+        Stream_WriteError = -1,     /// Не удалось произвести запись в переданный поток данных.
         UnknownOperation = -2,      /// Неизвестный тип запроса к серверу.
         Timeout = -3,               /// Превышен таймаут ожидания запроса.
         BadTask = -4,               /// Ошибочный запрос к серверу. Пример: пытаемся скачать
@@ -132,7 +132,7 @@ private:
     QMutex m_ProcessingMutex;
     QWaitCondition m_ProcessingCondition;
     QTimer m_Timer;
-    NetworkTaskManager *m_Manager;
+    NetworkTaskManager *m_Manager{};
     Type m_Type;
     QUrl m_Url;
     Flags m_Flags;

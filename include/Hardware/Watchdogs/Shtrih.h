@@ -37,12 +37,12 @@ protected:
 
     void packedData(const QByteArray &aCommandPacket, QByteArray &aPacket);
 
-    bool unpackData(const QByteArray &aPacket,
-                    const QByteArray &aAnswer,
-                    CShtrih::TAnswersBuffer &aUnpackedBuffer) const;
+    static bool unpackData(const QByteArray &aPacket,
+                           const QByteArray &aAnswer,
+                           CShtrih::TAnswersBuffer &aUnpackedBuffer);
 
     /// Подсчет контрольной суммы пакета данных.
-    uchar calcCRC(const QByteArray &aData) const;
+    static uchar calcCRC(const QByteArray &aData);
 
     /// Команда широковещательная?
     bool isBroadcastCommand(const QByteArray &aPacket) const;

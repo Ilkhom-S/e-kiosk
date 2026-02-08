@@ -13,6 +13,7 @@
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
 #include <algorithm>
+#include <math.h>
 #include <numeric>
 
 #include "DatabaseUtils/IHardwareDatabaseUtils.h"
@@ -40,7 +41,7 @@ bool CashDispenserManager::initialize(IPaymentDatabaseUtils *aDatabase) {
     m_Dispensers.clear();
 
     // Получаем настройки терминала
-    PPSDK::TerminalSettings *settings =
+    auto *settings =
         SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
 
     m_CurrencyName = settings->getCurrencySettings().name;
@@ -64,7 +65,7 @@ void CashDispenserManager::updateHardwareConfiguration() {
     m_Dispensers.clear();
 
     // Получаем настройки терминала
-    PPSDK::TerminalSettings *settings =
+    auto *settings =
         SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
 
     // Получаем список всех доступных устройств.
@@ -72,7 +73,7 @@ void CashDispenserManager::updateHardwareConfiguration() {
         QRegularExpression(QString("(%1)").arg(DSDK::CComponents::Dispenser)));
 
     foreach (const QString &configurationName, deviceList) {
-        DSDK::IDispenser *device =
+        auto *device =
             dynamic_cast<DSDK::IDispenser *>(m_DeviceService->acquireDevice(configurationName));
 
         if (device) {
@@ -120,7 +121,7 @@ void CashDispenserManager::shutdown() {
 void CashDispenserManager::onStatusChanged(DSDK::EWarningLevel::Enum aLevel,
                                            const QString &aTranslation,
                                            int /*aStatus*/) {
-    DSDK::IDispenser *dispenser = dynamic_cast<DSDK::IDispenser *>(sender());
+    auto *dispenser = dynamic_cast<DSDK::IDispenser *>(sender());
 
     if (!dispenser) {
         return;
@@ -140,7 +141,7 @@ void CashDispenserManager::onStatusChanged(DSDK::EWarningLevel::Enum aLevel,
 //---------------------------------------------------------------------------
 PPSDK::SCashUnit *
 CashDispenserManager::checkSignal(QObject *aSender, const QString &aSignalName, int aUnit) {
-    DSDK::IDispenser *dispenser = dynamic_cast<DSDK::IDispenser *>(aSender);
+    auto *dispenser = dynamic_cast<DSDK::IDispenser *>(aSender);
 
     if (!dispenser) {
         toLog(LogLevel::Error,
@@ -184,8 +185,8 @@ bool CashDispenserManager::handleSignal(QObject *aSender,
               .arg(nominal)
               .arg(aAmount, 0, 'f', 2));
 
-    if (!cashUnit->count) {
-        DSDK::IDispenser *dispenser = dynamic_cast<DSDK::IDispenser *>(aSender);
+    if (cashUnit->count == 0) {
+        auto *dispenser = dynamic_cast<DSDK::IDispenser *>(aSender);
         setCashList(dispenser);
     }
 
@@ -207,7 +208,7 @@ void CashDispenserManager::setCashList(DSDK::IDispenser *aDispenser) {
 
 //---------------------------------------------------------------------------
 void CashDispenserManager::onUnitsDefined() {
-    DSDK::IDispenser *dispenser = dynamic_cast<DSDK::IDispenser *>(sender());
+    auto *dispenser = dynamic_cast<DSDK::IDispenser *>(sender());
     TDispensers dispensers;
 
     if (dispenser) {
@@ -224,7 +225,7 @@ void CashDispenserManager::onUnitsDefined() {
         QString configPath = m_Dispensers.value(dispenser);
         int units = dispenser->units();
 
-        if (units) {
+        if (units != 0) {
             int currentUnits =
                 m_CurrencyCashList.contains(configPath) ? m_CurrencyCashList[configPath].size() : 0;
 
@@ -253,7 +254,7 @@ void CashDispenserManager::onDispensed(int aUnit, int aItems) {
 
         m_Amounts += SAmounts(-amount, amount);
 
-        if (canDispense(m_Amounts.toDispensing)) {
+        if (canDispense(m_Amounts.toDispensing) != 0.0) {
             emit activity();
 
             dispense(m_Amounts.toDispensing);
@@ -277,7 +278,7 @@ void CashDispenserManager::onDispensed(int aUnit, int aItems) {
 
 //---------------------------------------------------------------------------
 void CashDispenserManager::onRejected(int aUnit, int aItems) {
-    PPSDK::TPaymentAmount amount;
+    PPSDK::TPaymentAmount amount = NAN;
     handleSignal(sender(), "Rejected", aUnit, aItems, amount);
 }
 
@@ -300,8 +301,8 @@ CashDispenserManager::getItem_DataSet(PPSDK::TPaymentAmount aAmount) {
             auto cashList = m_CurrencyCashList[m_Dispensers[dispenser]];
 
             for (int i = 0; i < cashList.size(); i++) {
-                if (dispenser->isDeviceReady(i) && cashList[i].count && cashList[i].nominal &&
-                    (cashList[i].nominal <= aAmount)) {
+                if (dispenser->isDeviceReady(i) && (cashList[i].count != 0) &&
+                    (cashList[i].nominal != 0) && (cashList[i].nominal <= aAmount)) {
                     int count = (cashList[i].count > 0) ? cashList[i].count : 0;
                     result[cashList[i].nominal] << SItem_Data(dispenser, i, count);
                 }
@@ -333,14 +334,14 @@ void CashDispenserManager::loadCashList() {
     m_CurrencyCashList.clear();
 
     for (auto it = m_Dispensers.begin(); it != m_Dispensers.end(); ++it) {
-        QString configPath = *it;
+        const QString &configPath = *it;
         QString cashUnitData =
             m_Database->getDeviceParam(configPath, PPSDK::CDatabaseConstants::Parameters::CashUnits)
                 .toString();
         QStringList cashUnits = cashUnitData.split(";", Qt::SkipEmptyParts);
 
-        for (int i = 0; i < cashUnits.size(); ++i) {
-            QStringList unit = cashUnits[i].split(":");
+        for (const auto &i : cashUnits) {
+            QStringList unit = i.split(":");
             int count = unit[2].toInt();
             PPSDK::SCashUnit cashUnit(unit[0], unit[1].toInt(), count);
             m_CurrencyCashList[configPath] << cashUnit;
@@ -352,13 +353,13 @@ void CashDispenserManager::loadCashList() {
 
 //---------------------------------------------------------------------------
 bool CashDispenserManager::getItem_Data(SDK::PaymentProcessor::TPaymentAmount aAmount,
-                                        TItem_DataSet &aItem_Data,
-                                        TItem_DataSetIt &aItem_DataSetIt) {
-    if (aItem_Data.isEmpty()) {
+                                        TItem_DataSet &aItemData,
+                                        TItem_DataSetIt &aItemDataSetIt) {
+    if (aItemData.isEmpty()) {
         return false;
     }
 
-    QList<int> nominals = aItem_Data.keys();
+    QList<int> nominals = aItemData.keys();
 
     if (*std::min_element(nominals.begin(), nominals.end()) > aAmount) {
         return false;
@@ -378,30 +379,30 @@ bool CashDispenserManager::getItem_Data(SDK::PaymentProcessor::TPaymentAmount aA
         }
     }
 
-    aItem_DataSetIt = TItem_DataSetIt(aItem_Data.find(nominal));
+    aItemDataSetIt = TItem_DataSetIt(aItemData.find(nominal));
 
     return true;
 }
 
 //---------------------------------------------------------------------------
 PPSDK::TPaymentAmount CashDispenserManager::canDispense(PPSDK::TPaymentAmount aRequiredAmount) {
-    TItem_DataSet item_DataSet = getItem_DataSet(aRequiredAmount);
-    TItem_DataSetIt item_DataSetIt;
+    TItem_DataSet itemDataSet = getItem_DataSet(aRequiredAmount);
+    TItem_DataSetIt itemDataSetIt;
     PPSDK::TPaymentAmount dispensingAmount = 0;
 
-    while (getItem_Data(aRequiredAmount - dispensingAmount, item_DataSet, item_DataSetIt)) {
-        int nominal = item_DataSetIt.key();
+    while (getItem_Data(aRequiredAmount - dispensingAmount, itemDataSet, itemDataSetIt)) {
+        int nominal = itemDataSetIt.key();
         int requiredCount = int(aRequiredAmount - dispensingAmount) / nominal;
         int availableCount = std::accumulate(
-            item_DataSetIt->begin(),
-            item_DataSetIt->end(),
+            itemDataSetIt->begin(),
+            itemDataSetIt->end(),
             0,
             [](int aCount, const SItem_Data &data) -> int { return aCount + data.count; });
         int count = qMin(requiredCount, availableCount);
         dispensingAmount += count * nominal;
 
         if (count == availableCount) {
-            item_DataSet.erase(item_DataSetIt);
+            itemDataSet.erase(itemDataSetIt);
         }
     }
 
@@ -415,10 +416,10 @@ void CashDispenserManager::dispense(PPSDK::TPaymentAmount aAmount) {
         toLog(LogLevel::Normal, QString("Amount to dispensing = %1").arg(aAmount, 0, 'f', 2));
     }
 
-    TItem_DataSet item_DataSet = getItem_DataSet(aAmount);
-    TItem_DataSetIt item_DataSetIt;
+    TItem_DataSet itemDataSet = getItem_DataSet(aAmount);
+    TItem_DataSetIt itemDataSetIt;
 
-    if (!getItem_Data(aAmount, item_DataSet, item_DataSetIt)) {
+    if (!getItem_Data(aAmount, itemDataSet, itemDataSetIt)) {
         m_Amounts = SAmounts(0, 0);
 
         toLog(LogLevel::Warning,
@@ -426,8 +427,8 @@ void CashDispenserManager::dispense(PPSDK::TPaymentAmount aAmount) {
 
         emit dispensed(0);
     } else {
-        int requiredCount = int(aAmount) / item_DataSetIt.key();
-        SItem_Data &data = *item_DataSetIt->begin();
+        int requiredCount = int(aAmount) / itemDataSetIt.key();
+        SItem_Data &data = *itemDataSetIt->begin();
         int count = qMin(data.count, requiredCount);
 
         data.dispenser->dispense(data.unit, count);
@@ -466,7 +467,7 @@ bool CashDispenserManager::setCashUnitsState(const QString &aDeviceConfiguration
 
 //---------------------------------------------------------------------------
 bool CashDispenserManager::storeNotes(QObject *aSender, int aUnit, int aItems) {
-    DSDK::IDispenser *dispenser = dynamic_cast<DSDK::IDispenser *>(aSender);
+    auto *dispenser = dynamic_cast<DSDK::IDispenser *>(aSender);
 
     if (!dispenser) {
         toLog(LogLevel::Error,
@@ -478,7 +479,7 @@ bool CashDispenserManager::storeNotes(QObject *aSender, int aUnit, int aItems) {
 
     PPSDK::SCashUnit *cashUnit = &m_CurrencyCashList[configurationName][aUnit];
 
-    PPSDK::TerminalSettings *settings =
+    auto *settings =
         SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
 
     QList<PPSDK::SNote> notes;

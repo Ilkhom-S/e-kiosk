@@ -30,10 +30,10 @@ protected slots:
     virtual void applyUnitList() {};
 
     /// Выдать.
-    virtual void dispense(int /*aUnit*/, int /*aItems*/) {};
+    void dispense(int /*aUnit*/, int /*aItems*/) override {};
 
     /// Выдать.
-    virtual void perform_Dispense(int /*aUnit*/, int /*aItems*/) {};
+    virtual void performDispense(int /*aUnit*/, int /*aItems*/) {};
 };
 
 //--------------------------------------------------------------------------------

@@ -110,7 +110,7 @@ EKeysUtilsError::Enum createKeyPair(ICryptEngine *aCrypt,
         }
 
         QByteArray name = parameter.first();
-        QByteArray value = QByteArray::from_PercentEncoding(parameter.last());
+        QByteArray value = QByteArray::fromPercentEncoding(parameter.last());
 
         if (name == CKeysFactory::ServerFields::AP) {
             pair.ap = QByteArray::from_Base64(value);
@@ -214,7 +214,7 @@ EKeysUtilsError::Enum registerKeyPair(ICryptEngine *aCrypt,
         }
 
         QByteArray name = parameter.first();
-        QByteArray value = QByteArray::from_PercentEncoding(parameter.last());
+        QByteArray value = QByteArray::fromPercentEncoding(parameter.last());
 
         if (name == CKeysFactory::ServerFields::Error) {
             if (value == CKeysFactory::ServerErrors::WrongPassword) {
@@ -223,7 +223,7 @@ EKeysUtilsError::Enum registerKeyPair(ICryptEngine *aCrypt,
                 continue;
             }
         } else if (name == CKeysFactory::ServerFields::PublicKey) {
-            aPair.serverPublicKey = QByteArray::from_PercentEncoding(value);
+            aPair.serverPublicKey = QByteArray::fromPercentEncoding(value);
 
             publicKeyLoaded = true;
         }

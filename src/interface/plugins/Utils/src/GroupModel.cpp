@@ -49,7 +49,7 @@ static QString rm_Bom(const QString &aFile) {
         const uchar *dd = (const uchar *)data.constData();
         if (data.size() >= 3 && dd[0] == 0xef && dd[1] == 0xbb && dd[2] == 0xbf) {
             file.resize(0);
-            file.write(QString::from_Utf8(data.remove(0, 3)).toUtf8());
+            file.write(QString::fromUtf8(data.remove(0, 3)).toUtf8());
         }
     }
 

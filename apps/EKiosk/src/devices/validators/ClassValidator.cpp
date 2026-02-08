@@ -89,8 +89,8 @@ void ClassValidator::setPartNumber(QString partNumber) {
     }
 }
 
-void ClassValidator::setPortListInfo(QStringList port_list) {
-    portList = port_list;
+void ClassValidator::setPortListInfo(QStringList portList) {
+    portList = portList;
 }
 
 bool ClassValidator::openPort() {
@@ -128,19 +128,19 @@ void ClassValidator::execCommand(int cmd) {
 }
 
 bool ClassValidator::pollState() {
-    bool pollState_in = false;
+    bool pollStateIn = false;
 
     if (validatorName == ValidatorModel::CashCodeCCNET) {
         if (!CCNetValidator->stopPoll) {
-            pollState_in = true;
+            pollStateIn = true;
         }
     } else if (validatorName == ValidatorModel::MeiEBDS) {
         if (!EBDSValidator->stopPoll) {
-            pollState_in = true;
+            pollStateIn = true;
         }
     }
 
-    return pollState_in;
+    return pollStateIn;
 }
 
 void ClassValidator::run() {
@@ -168,10 +168,10 @@ void ClassValidator::run() {
 
     case ValidatorCommands::StopPolling:
         if (validatorName == ValidatorModel::CashCodeCCNET) {
-            this->msleep(20);
+            ClassValidator::msleep(20);
             CCNetValidator->CmdStopPoll();
         } else if (validatorName == ValidatorModel::MeiEBDS) {
-            this->msleep(20);
+            ClassValidator::msleep(20);
             EBDSValidator->CmdStopPoll();
         }
         break;
@@ -190,22 +190,21 @@ void ClassValidator::run() {
         }
         break;
     }
-    return;
 }
 
-bool ClassValidator::isItYou(QStringList &com_List,
-                             QString &validator_name,
-                             QString &com_str,
-                             QString &validator_coment) {
-    if ((validator_name != "") && (com_str != "") && (com_str.contains("COM"))) {
-        this->setValidator(validator_name);
-        this->setPortName(com_str);
+bool ClassValidator::isItYou(QStringList &comList,
+                             QString &validatorName,
+                             QString &comStr,
+                             QString &validatorComent) {
+    if ((validatorName != "") && (comStr != "") && (comStr.contains("COM"))) {
+        this->setValidator(validatorName);
+        this->setPortName(comStr);
 
-        if (validator_name == ValidatorModel::CashCodeCCNET) {
+        if (validatorName == ValidatorModel::CashCodeCCNET) {
             if (CCNetValidator->isItYou()) {
-                nowValidatorName = validator_name;
-                nowPortName = com_str;
-                nowComent = validator_coment = CCNetValidator->PartNumber;
+                nowValidatorName = validatorName;
+                nowPortName = comStr;
+                nowComent = validatorComent = CCNetValidator->PartNumber;
                 this->vPartNumber = CCNetValidator->PartNumber;
                 this->vSerialNumber = CCNetValidator->SerialNumber;
                 CCNetValidator->closePort();
@@ -213,11 +212,11 @@ bool ClassValidator::isItYou(QStringList &com_List,
             }
         }
 
-        if (validator_name == ValidatorModel::MeiEBDS) {
+        if (validatorName == ValidatorModel::MeiEBDS) {
             if (EBDSValidator->isItYou()) {
-                nowValidatorName = validator_name;
-                nowPortName = com_str;
-                nowComent = validator_coment = EBDSValidator->partNumber;
+                nowValidatorName = validatorName;
+                nowPortName = comStr;
+                nowComent = validatorComent = EBDSValidator->partNumber;
                 this->vPartNumber = EBDSValidator->partNumber;
                 this->vSerialNumber = EBDSValidator->serialNumber;
                 EBDSValidator->closePort();
@@ -226,18 +225,18 @@ bool ClassValidator::isItYou(QStringList &com_List,
         }
     }
 
-    for (int dev_count = 0; dev_count < Validator_List.count(); dev_count++) {
+    for (int devCount = 0; devCount < Validator_List.count(); devCount++) {
 
-        this->setValidator(Validator_List.at(dev_count));
+        this->setValidator(Validator_List.at(devCount));
 
-        for (int com_count = 0; com_count < com_List.count(); com_count++) {
-            this->setPortName(com_List.at(com_count));
+        for (int comCount = 0; comCount < comList.count(); comCount++) {
+            this->setPortName(comList.at(comCount));
 
             if (validatorName == ValidatorModel::CashCodeCCNET) {
                 if (CCNetValidator->isItYou()) {
-                    nowValidatorName = validator_name = Validator_List.at(dev_count);
-                    nowPortName = com_str = com_List.at(com_count);
-                    nowComent = validator_coment = CCNetValidator->PartNumber;
+                    nowValidatorName = validatorName = Validator_List.at(devCount);
+                    nowPortName = comStr = comList.at(comCount);
+                    nowComent = validatorComent = CCNetValidator->PartNumber;
                     CCNetValidator->closePort();
                     return true;
                 }
@@ -245,9 +244,9 @@ bool ClassValidator::isItYou(QStringList &com_List,
 
             if (validatorName == ValidatorModel::MeiEBDS) {
                 if (EBDSValidator->isItYou()) {
-                    nowValidatorName = validator_name = Validator_List.at(dev_count);
-                    nowPortName = com_str = com_List.at(com_count);
-                    nowComent = validator_coment = EBDSValidator->partNumber;
+                    nowValidatorName = validatorName = Validator_List.at(devCount);
+                    nowPortName = comStr = comList.at(comCount);
+                    nowComent = validatorComent = EBDSValidator->partNumber;
                     EBDSValidator->closePort();
                     return true;
                 }
@@ -258,27 +257,25 @@ bool ClassValidator::isItYou(QStringList &com_List,
     return false;
 }
 
-bool ClassValidator::CIsItYou(QString &validat_name) {
-    if (validat_name == ValidatorModel::CashCodeCCNET) {
+bool ClassValidator::CIsItYou(QString &validatName) {
+    if (validatName == ValidatorModel::CashCodeCCNET) {
         if (CCNetValidator->isItYou()) {
             this->vPartNumber = CCNetValidator->PartNumber;
             this->vSerialNumber = CCNetValidator->SerialNumber;
             CCNetValidator->closePort();
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
-    if (validat_name == ValidatorModel::MeiEBDS) {
+    if (validatName == ValidatorModel::MeiEBDS) {
         if (EBDSValidator->isItYou()) {
             this->vPartNumber = EBDSValidator->partNumber;
             this->vSerialNumber = EBDSValidator->serialNumber;
             EBDSValidator->closePort();
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     return false;

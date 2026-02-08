@@ -134,7 +134,7 @@ QString TemplatePlugin::getHelloMessage() const {
 //---------------------------------------------------------------------------
 // Выполняет основную работу плагина.
 /// Пример метода для демонстрации функциональности.
-void TemplatePlugin::doWork() {
+void TemplatePlugin::doWork() const {
     qDebug() << "TemplatePlugin is doing work:" << getHelloMessage();
 
     // Здесь реализуется основная логика плагина:
@@ -207,14 +207,14 @@ namespace {
 /// @param aFactory Указатель на фабрику плагинов
 /// @param aInstancePath Путь к экземпляру плагина
 /// @return указатель на созданный плагин
-SDK::Plugin::IPlugin *CreatePlugin(SDK::Plugin::IEnvironment *aFactory,
+SDK::Plugin::IPlugin *createPlugin(SDK::Plugin::IEnvironment *aFactory,
                                    const QString &aInstancePath) {
     return new TemplatePlugin(aFactory, aInstancePath);
 }
 
 /// Возвращает параметры плагина.
 /// @return QVector с параметрами плагина
-QVector<SDK::Plugin::SPluginParameter> Enum_Parameters() {
+QVector<SDK::Plugin::SPluginParameter> enumParameters() {
     return QVector<SDK::Plugin::SPluginParameter>() << SDK::Plugin::SPluginParameter(
                SDK::Plugin::Parameters::Debug,
                SDK::Plugin::SPluginParameter::Bool,
@@ -231,6 +231,6 @@ QVector<SDK::Plugin::SPluginParameter> Enum_Parameters() {
 REGISTER_PLUGIN_WITH_PARAMETERS(makePath(SDK::PaymentProcessor::Application,
                                          "Template",
                                          "TemplatePlugin"),
-                                &CreatePlugin,
-                                &Enum_Parameters,
+                                &createPlugin,
+                                &enumParameters,
                                 TemplatePlugin);

@@ -49,7 +49,7 @@ function(ek_enable_static_analysis target)
         find_program(CLANG_TIDY_EXECUTABLE NAMES clang-tidy)
         if(CLANG_TIDY_EXECUTABLE)
             set_target_properties(${target} PROPERTIES
-                CXX_CLANG_TIDY "${CLANG_TIDY_EXECUTABLE};-checks=*"
+                CXX_CLANG_TIDY "${CLANG_TIDY_EXECUTABLE};--header-filter=^(?!.*(thirdparty|vcpkg_installed|build|external|moc_|ui_|qrc_)).*\\.(h|hpp)$"
             )
         else()
             message(WARNING "clang-tidy not found: static analysis will be skipped for ${target}")

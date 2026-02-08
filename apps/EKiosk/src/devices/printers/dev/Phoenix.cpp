@@ -18,16 +18,21 @@ bool Phoenix_PRINTER::openPort() {
         if (serialPort->open(QIODevice::ReadWrite)) {
             // Устанавливаем параметры открытия порта
             is_open = false;
-            if (!serialPort->setDataBits(QSerialPort::Data8))
+            if (!serialPort->setDataBits(QSerialPort::Data8)) {
                 return false;
-            if (!serialPort->setParity(QSerialPort::NoParity))
+            }
+            if (!serialPort->setParity(QSerialPort::NoParity)) {
                 return false;
-            if (!serialPort->setStopBits(QSerialPort::OneStop))
+            }
+            if (!serialPort->setStopBits(QSerialPort::OneStop)) {
                 return false;
-            if (!serialPort->setFlowControl(QSerialPort::SoftwareControl))
+            }
+            if (!serialPort->setFlowControl(QSerialPort::SoftwareControl)) {
                 return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud9600))
+            }
+            if (!serialPort->setBaudRate(QSerialPort::Baud9600)) {
                 return false;
+            }
 
             is_open = true;
         } else {
@@ -49,8 +54,9 @@ bool Phoenix_PRINTER::isItYou() {
 
 bool Phoenix_PRINTER::isEnabled(int status) {
     //        int status = 0;
-    if (!getStatus(status))
+    if (!getStatus(status)) {
         return false;
+    }
     return (status != PrinterState::PrinterNotAvailable);
 }
 
@@ -59,11 +65,11 @@ bool Phoenix_PRINTER::getStatus(int &aStatus) {
     // засылаем в порт команду самоидентификации
     QByteArray cmd;
     QByteArray answer;
-    bool resp_data = false;
+    bool respData = false;
 
     cmd.push_back(CMDPhoenix::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDPhoenix::PrinterStatusCommandSecondByte);
-    if (!this->sendCommand(cmd, true, 200, resp_data, answer, 0)) {
+    if (!this->sendCommand(cmd, true, 200, respData, answer, 0)) {
         // if(Debugger) qDebug() << "AV268::getStatus(): error in
         // sendPacketInPort()";
         return false;
@@ -78,12 +84,13 @@ bool Phoenix_PRINTER::getStatus(int &aStatus) {
     uchar status = 0;
     // В некоторых случаях присылается больше 1 байта
     // тогда наш байт - второй
-    if (answer.size() > 1)
+    if (answer.size() > 1) {
         status = answer[1];
-    else
+    } else {
         status = answer[0];
+    }
     // Проверим, что это наш статус
-    if ((status & 0x10) || (status & 0x80)) {
+    if (((status & 0x10) != 0) || ((status & 0x80) != 0)) {
         // Не наш принтер
         // if(Debugger) qDebug() << QString("AV268::getStatus(): wrong byte returned:
         // %1").arg(status);
@@ -133,10 +140,10 @@ bool Phoenix_PRINTER::initialize() {
     QByteArray cmd;
     cmd.push_back(CMDPhoenix::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDPhoenix::PrinterInitCommandSecondByte);
-    bool resp_data = false;
+    bool respData = false;
     QByteArray response;
 
-    bool res = this->sendCommand(cmd, false, 200, resp_data, response, 290);
+    bool res = this->sendCommand(cmd, false, 200, respData, response, 290);
 
     return res;
 }
@@ -147,9 +154,9 @@ bool Phoenix_PRINTER::cut() {
     cmd.push_back(CMDPhoenix::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDPhoenix::PrinterCutCommandSecondByte);
 
-    bool resp_data = false;
+    bool respData = false;
     QByteArray response;
-    bool res = this->sendCommand(cmd, true, 200, resp_data, response, 50);
+    bool res = this->sendCommand(cmd, true, 200, respData, response, 50);
 
     return res;
 }
@@ -222,10 +229,11 @@ void Phoenix_PRINTER::getSpecialCharacters(QByteArray &printText) {
                       probel);
 
     // Добавляем звезды
-    int col_z = (checkWidth - 11 - leftMargin) / 2;
+    int colZ = (checkWidth - 11 - leftMargin) / 2;
     QByteArray star;
-    for (int j = 1; j <= col_z; j++)
+    for (int j = 1; j <= colZ; j++) {
         star.append("*");
+    }
 
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::StarCount +
                               CScharsetParam::CloseTagDelimiter)
@@ -245,10 +253,7 @@ bool Phoenix_PRINTER::printCheck(const QString &aCheck) {
     QByteArray answer;
     bool respData = false;
 
-    if (!this->sendCommand(printText, false, 0, respData, answer, 0))
-        return false;
-
-    return true;
+    return this->sendCommand(printText, false, 0, respData, answer, 0);
 }
 
 bool Phoenix_PRINTER::print(const QString &aCheck) {
@@ -260,10 +265,10 @@ bool Phoenix_PRINTER::print(const QString &aCheck) {
     cmd.push_back(0x4D);
     cmd.push_back(avzero);
 
-    bool resp_data = false;
+    bool respData = false;
     QByteArray response;
 
-    this->sendCommand(cmd, false, 200, resp_data, response, 290);
+    this->sendCommand(cmd, false, 200, respData, response, 290);
 
     // Печатаем текст
     this->printCheck(aCheck);

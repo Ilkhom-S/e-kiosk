@@ -36,7 +36,7 @@ template <class T> bool DispenserBase<T>::updateParameters() {
     this->processDeviceData();
     this->adjustUnitList(m_UnitError || m_UnitData.isEmpty());
 
-    if (!m_Units) {
+    if (m_Units == 0) {
         this->toLog(LogLevel::Error, this->m_DeviceName + ": No units.");
         return false;
     }
@@ -74,7 +74,7 @@ template <class T> void DispenserBase<T>::applyUnitList() {
 
 //---------------------------------------------------------------------------
 template <class T> void DispenserBase<T>::adjustUnitList(bool aConfigData) {
-    m_UnitError = !m_Units;
+    m_UnitError = (m_Units == 0);
 
     if (m_UnitError) {
         return;
@@ -151,7 +151,7 @@ template <class T> void DispenserBase<T>::checkUnitStatus(TStatusCodes &aStatusC
     }
 
     if ((this->m_Initialized != ERequestStatus::InProcess) && (this->m_UnitData.size() > aUnit) &&
-        !this->m_UnitData[aUnit]) {
+        (this->m_UnitData[aUnit] == 0)) {
         aStatusCodes.insert(data.empty);
         aStatusCodes.remove(data.nearEmpty);
     }
@@ -191,7 +191,7 @@ template <class T> void DispenserBase<T>::cleanStatusCodes(TStatusCodes &aStatus
 template <class T>
 void DispenserBase<T>::postPollingAction(const TStatusCollection &aNewStatusCollection,
                                          const TStatusCollection &aOldStatusCollection) {
-    if (this->m_NeedGetUnits && this->m_Units) {
+    if (this->m_NeedGetUnits && (this->m_Units != 0)) {
         this->m_NeedGetUnits = false;
         this->toLog(LogLevel::Warning, this->m_DeviceName + ": emit units defined");
 
@@ -214,14 +214,14 @@ void DispenserBase<T>::emitStatusCodes(TStatusCollection &aStatusCollection,
 
 //--------------------------------------------------------------------------------
 template <class T> int DispenserBase<T>::units() {
-    this->m_NeedGetUnits = !this->m_Units;
+    this->m_NeedGetUnits = (this->m_Units == 0);
 
     return this->m_Units;
 }
 
 //--------------------------------------------------------------------------------
 template <class T> void DispenserBase<T>::dispense(int aUnit, int aItems) {
-    if (!aItems) {
+    if (aItems == 0) {
         this->toLog(LogLevel::Error, this->m_DeviceName + ": Nothing for dispense");
 
         return;
@@ -237,7 +237,8 @@ template <class T> void DispenserBase<T>::dispense(int aUnit, int aItems) {
         emit this->unitEmpty(aUnit);
 
         return;
-    } else if (!this->m_UnitData[aUnit]) {
+    }
+    if (!this->m_UnitData[aUnit]) {
         this->emitDispensed(aUnit, 0, " due to unit is empty already");
 
         return;

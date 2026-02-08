@@ -76,7 +76,7 @@ CData::CData() {
 }
 
 //--------------------------------------------------------------------------------
-QStringList CData::getNonEjectorModels(bool aOnline) {
+static QStringList CData::getNonEjectorModels(bool aOnline) {
     QMap<int, CShtrihFR::SModelData> modelData = CShtrihFR::Models::CData().data();
     QStringList models;
 
@@ -94,7 +94,7 @@ QStringList CData::getNonEjectorModels(bool aOnline) {
 }
 
 //--------------------------------------------------------------------------------
-QStringList CData::getModelList(const TIds &aIds) {
+static QStringList CData::getModelList(const TIds &aIds) {
     QStringList models;
 
     foreach (int id, aIds) {
@@ -110,34 +110,34 @@ QStringList CData::getModelList(int aId) {
 }
 
 //--------------------------------------------------------------------------------
-void CData::addOld(int aNumber,
-                   const QString &aName,
-                   bool aVerified,
-                   bool aEjector,
-                   int aZReportQuantity,
-                   int aFeed,
-                   const QDate &aDate,
-                   int aBuild) {
+static void CData::addOld(int aNumber,
+                          const QString &aName,
+                          bool aVerified,
+                          bool aEjector,
+                          int aZReportQuantity,
+                          int aFeed,
+                          const QDate &aDate,
+                          int aBuild) {
     append(aNumber,
            SModelData("", aName, aVerified, aEjector, aZReportQuantity, aFeed, aDate, aBuild, 0));
 }
 
 //--------------------------------------------------------------------------------
-void CData::addNew(int aNumber,
-                   const char *aId,
-                   const QString &aName,
-                   bool aVerified,
-                   bool aEjector,
-                   int aZReportQuantity,
-                   int aFeed,
-                   const QDate &aDate,
-                   int aLinePrintingTimeout) {
-    QDate FWDate =
+static void CData::addNew(int aNumber,
+                          const char *aId,
+                          const QString &aName,
+                          bool aVerified,
+                          bool aEjector,
+                          int aZReportQuantity,
+                          int aFeed,
+                          const QDate &aDate,
+                          int aLinePrintingTimeout) {
+    QDate fwDate =
         aDate.isValid()
             ? aDate
             : (m_DefaultFWDate.isValid() ? m_DefaultFWDate : QDate::currentDate().addYears(100));
     append(aNumber,
-           SModelData(QString::from_Utf8(aId),
+           SModelData(QString::fromUtf8(aId),
                       aName,
                       aVerified,
                       aEjector,

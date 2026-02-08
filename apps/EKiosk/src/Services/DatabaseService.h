@@ -24,51 +24,51 @@ public:
 #pragma region SDK::PaymentProcessor::IService interface
 
     /// IService: Инициализация сервиса.
-    virtual bool initialize();
+    virtual bool initialize() override;
 
     /// IService: Закончена инициализация всех сервисов.
-    virtual void finishInitialize();
+    virtual void finishInitialize() override;
 
     /// IService: Возвращает false, если сервис не может быть остановлен в текущий момент.
-    virtual bool canShutdown();
+    virtual bool canShutdown() override;
 
     /// IService: Завершение работы сервиса.
-    virtual bool shutdown();
+    virtual bool shutdown() override;
 
     /// IService: Возвращает имя сервиса.
-    virtual QString getName() const;
+    virtual QString getName() const override;
 
     /// Получение списка необходимых сервисов.
-    virtual const QSet<QString> &getRequiredServices() const;
+    virtual const QSet<QString> &getRequiredServices() const override;
 
     /// Получить параметры сервиса.
-    virtual QVariantMap getParameters() const;
+    virtual QVariantMap getParameters() const override;
 
     /// Сброс служебной информации.
-    virtual void resetParameters(const QSet<QString> &aParameters);
+    virtual void resetParameters(const QSet<QString> &aParameters) override;
 
 #pragma endregion
 
 #pragma region SDK::PaymentProcessor::IDatabaseService interface
 
     /// Выполнение запроса по строке.
-    virtual bool execQuery(const QString &aQuery);
+    virtual bool execQuery(const QString &aQuery) override;
 
     /// Подготавливает запрос к привязке параметров.
-    virtual QSharedPointer<IDatabaseQuery> prepareQuery(const QString &aQuery);
+    virtual QSharedPointer<IDatabaseQuery> prepareQuery(const QString &aQuery) override;
 
     /// Создание запроса по строке и его выполнение.
-    virtual QSharedPointer<IDatabaseQuery> createAndExecQuery(const QString &aQuery);
+    virtual QSharedPointer<IDatabaseQuery> createAndExecQuery(const QString &aQuery) override;
 
     /// Выполнение переданного запроса.
-    virtual bool execQuery(QSharedPointer<IDatabaseQuery> aQuery);
+    virtual bool execQuery(QSharedPointer<IDatabaseQuery> aQuery) override;
 
 #pragma endregion
 
 #pragma region SDK::PaymentProcessor::IDatabaseErrorChecker interface
 
     /// Проверка на ошибки при выполнении запросов к БД
-    bool isGood(bool aQueryResult);
+    bool isGood(bool aQueryResult) override;
 
 #pragma endregion
 
@@ -76,7 +76,7 @@ public:
     template <typename T> T *getDatabaseUtils() { return dynamic_cast<T *>(m_DbUtils.data()); }
 
 protected:
-    virtual ~DatabaseService();
+    virtual ~DatabaseService() override;
 
 private:
     IApplication *m_Application;

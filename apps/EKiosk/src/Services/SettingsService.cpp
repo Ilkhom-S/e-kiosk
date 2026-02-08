@@ -25,7 +25,7 @@ namespace AdapterNames = PPSDK::CAdapterNames;
 
 //---------------------------------------------------------------------------
 SettingsService *SettingsService::instance(IApplication *aApplication) {
-    return static_cast<SettingsService *>(
+    return dynamic_cast<SettingsService *>(
         aApplication->getCore()->getService(CServices::SettingsService));
 }
 
@@ -34,7 +34,7 @@ SettingsService::SettingsService(IApplication *aApplication)
     : m_Application(aApplication), m_SettingsManager(nullptr), m_RestoreConfiguration(false) {}
 
 //---------------------------------------------------------------------------
-SettingsService::~SettingsService() {}
+SettingsService::~SettingsService() = default;
 
 //---------------------------------------------------------------------------
 bool SettingsService::initialize() {
@@ -51,7 +51,7 @@ bool SettingsService::initialize() {
     // если ключ присутствует и в system.ini, и в user.ini, будет использоваться значение из
     // user.ini. Такой подход обеспечивает гибкость и удобство конфигурирования.
     QList<SSettingsSource> settingsSources;
-    settingsSources << SSettingsSource(ISysUtils::rm_BOM(m_Application->getWorkingDirectory() +
+    settingsSources << SSettingsSource(ISysUtils::rm_BOM(IApplication::getWorkingDirectory() +
                                                          "/data/system.ini"),
                                        AdapterNames::TerminalAdapter,
                                        true)
@@ -71,7 +71,7 @@ bool SettingsService::initialize() {
                     << SSettingsSource("user.ini", AdapterNames::UserAdapter, true)
 
                     << SSettingsSource("numcapacity.xml", AdapterNames::Directory, true)
-                    << SSettingsSource(m_Application->getWorkingDirectory() + "/data/directory.xml",
+                    << SSettingsSource(IApplication::getWorkingDirectory() + "/data/directory.xml",
                                        AdapterNames::Directory,
                                        true)
                     << SSettingsSource("config.xml", AdapterNames::Extensions, true)
@@ -91,7 +91,7 @@ bool SettingsService::initialize() {
     m_SettingsManager->loadSettings(settingsSources);
 
     // Инициализируем все адаптеры настроек.
-    SDK::PaymentProcessor::TerminalSettings *terminalSettings =
+    auto *terminalSettings =
         new SDK::PaymentProcessor::TerminalSettings(m_SettingsManager->getProperties());
     terminalSettings->setLog(m_Application->getLog());
     terminalSettings->initialize();
@@ -110,20 +110,19 @@ bool SettingsService::initialize() {
 
     terminalSettings->setAppEnvironment(environment);
 
-    SDK::PaymentProcessor::DealerSettings *dealerSettings =
+    auto *dealerSettings =
         new SDK::PaymentProcessor::DealerSettings(m_SettingsManager->getProperties());
     dealerSettings->setLog(m_Application->getLog());
     dealerSettings->initialize();
 
-    SDK::PaymentProcessor::Directory *directory =
-        new SDK::PaymentProcessor::Directory(m_SettingsManager->getProperties());
+    auto *directory = new SDK::PaymentProcessor::Directory(m_SettingsManager->getProperties());
     directory->setLog(m_Application->getLog());
 
-    SDK::PaymentProcessor::ExtensionsSettings *extensionsSettings =
+    auto *extensionsSettings =
         new SDK::PaymentProcessor::ExtensionsSettings(m_SettingsManager->getProperties());
     extensionsSettings->setLog(m_Application->getLog());
 
-    SDK::PaymentProcessor::UserSettings *userSettings =
+    auto *userSettings =
         new SDK::PaymentProcessor::UserSettings(m_SettingsManager->getProperties());
     userSettings->setLog(m_Application->getLog());
 
@@ -175,11 +174,11 @@ const QSet<QString> &SettingsService::getRequiredServices() const {
 
 //---------------------------------------------------------------------------
 QVariantMap SettingsService::getParameters() const {
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
-void SettingsService::resetParameters(const QSet<QString> &) {}
+void SettingsService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 SettingsManager *SettingsService::getSettingsManager() const {

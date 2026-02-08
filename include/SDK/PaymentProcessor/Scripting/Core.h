@@ -122,7 +122,7 @@ public slots:
     void postEvent(int aEvent, QVariant aParameters);
 
     /// Метод для подсчета md5.
-    QString getMD5Hash(const QString &aSource);
+    static QString getMD5Hash(const QString &aSource);
 
 signals:
     /// Сигнал об обновлении пользовательских свойств.

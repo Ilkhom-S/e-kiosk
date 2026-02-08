@@ -12,7 +12,7 @@ namespace Humo {
 Request::Request() : m_IsOk(true), m_IsCriticalError(false) {}
 
 //---------------------------------------------------------------------------
-Request::~Request() {}
+Request::~Request() = default;
 
 //---------------------------------------------------------------------------
 bool Request::isOk() const {

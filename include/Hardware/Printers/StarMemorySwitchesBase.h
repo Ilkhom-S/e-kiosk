@@ -105,9 +105,9 @@ protected:
              const TModels &models = TModels());
 
     /// Заполнить данные параметра мем-свича.
-    void fillExcept(TMSWParameters &aParameters,
-                    const TMSWSimpleParameters &aKnownParameters,
-                    const QString &aExceptValue = "");
+    static void fillExcept(TMSWParameters &aParameters,
+                           const TMSWSimpleParameters &aKnownParameters,
+                           const QString &aExceptValue = "");
     void fillExcept(TMSWParameters &aParameters,
                     const QString &aValue,
                     const QString &aKey,

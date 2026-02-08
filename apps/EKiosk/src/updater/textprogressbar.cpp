@@ -2,7 +2,7 @@
 
 #include <QtCore/QByteArray>
 
-#include <stdio.h>
+#include <cstdio>
 
 TextProgressBar::TextProgressBar() : value(0), maximum(-1), iteration(0) {}
 
@@ -25,8 +25,9 @@ void TextProgressBar::update() {
         int hashes = percent / 2;
 
         QByteArray progressbar(hashes, '#');
-        if (percent % 2)
+        if ((percent % 2) != 0) {
             progressbar += '>';
+        }
 
         printf("\r[%-50s] %3d%% %s     ", progressbar.constData(), percent, qPrintable(message));
     } else {

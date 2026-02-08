@@ -23,24 +23,24 @@ namespace PP = SDK::PaymentProcessor;
 
 namespace CDatabaseService {
 /// Максимальное кол-во ошибок базы, после которых терминал блокирует свою работу
-const int Maximum_DatabaseErrors = 13;
+const int MaximumDatabaseErrors = 13;
 } // namespace CDatabaseService
 
 //---------------------------------------------------------------------------
 DatabaseService *DatabaseService::instance(IApplication *aApplication) {
-    return static_cast<DatabaseService *>(
+    return dynamic_cast<DatabaseService *>(
         aApplication->getCore()->getService(CServices::DatabaseService));
 }
 
 //---------------------------------------------------------------------------
 DatabaseService::DatabaseService(IApplication *aApplication)
-    : m_Application(aApplication), m_Database(0), m_ErrorCounter(0) {}
+    : m_Application(aApplication), m_Database(nullptr), m_ErrorCounter(0) {}
 
 //---------------------------------------------------------------------------
 DatabaseService::~DatabaseService() {
     if (m_Database) {
         IDatabaseProxy::freeInstance(m_Database);
-        m_Database = 0;
+        m_Database = nullptr;
     }
 }
 
@@ -48,7 +48,7 @@ DatabaseService::~DatabaseService() {
 bool DatabaseService::initialize() {
     LOG(m_Application->getLog(), LogLevel::Normal, "Initializing database...");
 
-    PP::TerminalSettings *terminalSettings =
+    auto *terminalSettings =
         SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
 
     // Инициализация базы данных.
@@ -86,9 +86,11 @@ bool DatabaseService::initialize() {
             errorsList.clear();
 
             // Проверка на ошибку полностью испорченного формата базы
-            integrityFailed = !m_Database->checkIntegrity(errorsList) ||
-                              errorsList.filter(QRegularExpression("*malformed*")).size() ||
-                              !m_DbUtils->initialize();
+            integrityFailed =
+                !m_Database->checkIntegrity(errorsList) ||
+                (static_cast<int>(!errorsList.filter(QRegularExpression("*malformed*")).empty()) !=
+                 0) ||
+                !m_DbUtils->initialize();
 
             if (integrityFailed) {
                 LOG(m_Application->getLog(),
@@ -113,7 +115,7 @@ bool DatabaseService::initialize() {
                 continue;
             }
 
-            if (retryCount && !integrityFailed) {
+            if ((retryCount != 0) && !integrityFailed) {
                 // Отмечаем статус устройства, что БД была восстановлена
                 EventService::instance(m_Application)
                     ->sendEvent(SDK::PaymentProcessor::Event(SDK::PaymentProcessor::EEventType::OK,
@@ -149,7 +151,7 @@ bool DatabaseService::shutdown() {
 
     if (m_Database) {
         IDatabaseProxy::freeInstance(m_Database);
-        m_Database = 0;
+        m_Database = nullptr;
     }
 
     return true;
@@ -170,11 +172,11 @@ const QSet<QString> &DatabaseService::getRequiredServices() const {
 
 //---------------------------------------------------------------------------
 QVariantMap DatabaseService::getParameters() const {
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
-void DatabaseService::resetParameters(const QSet<QString> &) {}
+void DatabaseService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 /// Выполнение запроса по строке.
 bool DatabaseService::execQuery(const QString &aQuery) {
@@ -187,7 +189,7 @@ bool DatabaseService::execQuery(const QString &aQuery) {
 QSharedPointer<IDatabaseQuery> DatabaseService::prepareQuery(const QString &aQuery) {
     auto queryDeleter = [&](IDatabaseQuery *aQuery) { m_DbUtils->releaseQuery(aQuery); };
 
-    return QSharedPointer<IDatabaseQuery>(m_DbUtils->prepareQuery(aQuery), queryDeleter);
+    return {m_DbUtils->prepareQuery(aQuery), queryDeleter};
 }
 
 //---------------------------------------------------------------------------
@@ -203,12 +205,12 @@ QSharedPointer<IDatabaseQuery> DatabaseService::createAndExecQuery(const QString
         return query;
     }
 
-    return QSharedPointer<IDatabaseQuery>();
+    return {};
 }
 
 //---------------------------------------------------------------------------
 bool DatabaseService::isGood(bool aQueryResult) {
-    if (!aQueryResult && ++m_ErrorCounter >= CDatabaseService::Maximum_DatabaseErrors) {
+    if (!aQueryResult && ++m_ErrorCounter >= CDatabaseService::MaximumDatabaseErrors) {
         const char message[] = "Database error counter has reached a limit value. Lock the "
                                "terminal due to a DB error.";
         LOG(m_Application->getLog(), LogLevel::Error, message);

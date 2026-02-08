@@ -12,6 +12,7 @@
 #include <QtStateMachine/QFinalState>
 
 #include <memory>
+#include <utility>
 
 namespace GUI {
 
@@ -37,14 +38,13 @@ const char ScriptCanStopFunction[] =
     "canStop"; /// Возвращает false, если сценарий не может быть остановлен в текущий момент.
 
 /// Параметры состояний.
-const char Param_Initial[] = "initial";                 /// Начальное состояние.
-const char Param_Final[] = "final";                     /// Конечное состояние.
-const char Param_Timeout[] = "timeout";                 /// Таймаут состояния.
-const char Param_UserActivity[] = "ignoreUserActivity"; /// Игнорировать активность пользователя.
-const char Param_SignalName[] =
-    "signal";                         /// Имя сигнала, при которому мы пришли в данное состояние.
-const char Param_Result[] = "result"; /// Результат работы сценария.
-const char Param_ResultError[] = "resultError"; /// Ошибка, возвращаемая сценарием.
+const char ParamInitial[] = "initial";                 /// Начальное состояние.
+const char ParamFinal[] = "final";                     /// Конечное состояние.
+const char ParamTimeout[] = "timeout";                 /// Таймаут состояния.
+const char ParamUserActivity[] = "ignoreUserActivity"; /// Игнорировать активность пользователя.
+const char ParamSignalName[] = "signal"; /// Имя сигнала, при которому мы пришли в данное состояние.
+const char ParamResult[] = "result";     /// Результат работы сценария.
+const char ParamResultError[] = "resultError"; /// Ошибка, возвращаемая сценарием.
 } // namespace CJSScenario
 
 //---------------------------------------------------------------------------
@@ -54,40 +54,37 @@ public:
     /// Пользовательский тип.
     static const int Type = QEvent::User + 1;
 
-    ScenarioEvent(const QString &aSignal) : QEvent(QEvent::Type(Type)), m_Signal(aSignal) {}
-    QString getSignal() const { return m_Signal; }
+    ScenarioEvent(QString aSignal) : QEvent(QEvent::Type(Type)), m_signal(std::move(aSignal)) {}
+    [[nodiscard]] QString getSignal() const { return m_signal; }
 
 private:
-    QString m_Signal;
+    QString m_signal;
 };
 
 //---------------------------------------------------------------------------
 /// Переход между состояниями сценария.
 class ScenarioTransition : public QAbstractTransition {
 public:
-    ScenarioTransition(const QString &aSignal) : m_Signal(aSignal) {}
+    ScenarioTransition(QString aSignal) : m_signal(std::move(aSignal)) {}
 
-    virtual void onTransition(QEvent *) {}
-    virtual bool eventTest(QEvent *aEvent) {
+    void onTransition(QEvent * /*event*/) override {}
+    bool eventTest(QEvent *aEvent) override {
         if (aEvent->type() == ScenarioEvent::Type) {
-            ScenarioEvent *se = static_cast<ScenarioEvent *>(aEvent);
-            return m_Signal == se->getSignal();
+            auto *se = dynamic_cast<ScenarioEvent *>(aEvent);
+            return m_signal == se->getSignal();
         }
 
         return false;
     }
 
 private:
-    QString m_Signal;
+    QString m_signal;
 };
 
 //---------------------------------------------------------------------------
-JSScenario::JSScenario(const QString &aName,
-                       const QString &aPath,
-                       const QString &aBasePath,
-                       ILog *aLog)
-    : Scenario(aName, aLog), m_Path(aPath), m_BasePath(aBasePath), m_IsPaused(true),
-      m_DefaultTimeout(0) {
+JSScenario::JSScenario(const QString &aName, QString aPath, QString aBasePath, ILog *aLog)
+    : Scenario(aName, aLog), m_Path(std::move(aPath)), m_BasePath(std::move(aBasePath)),
+      m_IsPaused(true), m_DefaultTimeout(0) {
     connect(
         &m_EnterSignalMapper, SIGNAL(mapped(const QString &)), SLOT(onEnterState(const QString &)));
     connect(
@@ -129,7 +126,7 @@ void JSScenario::start(const QVariantMap &aContext) {
                  m_Name + ":" + CJSScenario::ScriptStartFunction);
 
     m_SignalArguments.clear();
-    m_SignalArguments[CJSScenario::Param_SignalName] = "start";
+    m_SignalArguments[CJSScenario::ParamSignalName] = "start";
 
     m_StateMachine->setInitialState(m_States[m_CurrentState].qstate);
     m_StateMachine->start();
@@ -164,7 +161,7 @@ void JSScenario::resume(const QVariantMap &aContext) {
                  m_Name + ":" + CJSScenario::ScriptResumeFunction);
 
     m_SignalArguments.clear();
-    m_SignalArguments[CJSScenario::Param_SignalName] = "resume";
+    m_SignalArguments[CJSScenario::ParamSignalName] = "resume";
 
     m_StateMachine->setInitialState(m_States[m_CurrentState].qstate);
     m_StateMachine->start();
@@ -257,7 +254,7 @@ void JSScenario::signalTriggered(const QString &aSignal, const QVariantMap &aArg
     }
 
     m_SignalArguments = aArguments;
-    m_SignalArguments[CJSScenario::Param_SignalName] = aSignal;
+    m_SignalArguments[CJSScenario::ParamSignalName] = aSignal;
 
     m_StateMachine->postEvent(new ScenarioEvent(aSignal));
 }
@@ -298,10 +295,10 @@ void JSScenario::addState(const QString &aStateName, const QVariantMap &aParamet
     }
 
     // Начальное, конечное или обычное состояние.
-    if (aParameters.contains(CJSScenario::Param_Final)) {
+    if (aParameters.contains(CJSScenario::ParamFinal)) {
         state.qstate = new QFinalState();
     } else {
-        if (aParameters.contains(CJSScenario::Param_Initial)) {
+        if (aParameters.contains(CJSScenario::ParamInitial)) {
             m_InitialState = state.name;
         }
 
@@ -340,7 +337,7 @@ void JSScenario::addTransition(const QString &aSource,
     std::unique_ptr<ScenarioTransition> transition(new ScenarioTransition(aSignal));
     transition->setTargetState(dst->qstate);
 
-    QState *state = dynamic_cast<QState *>(src->qstate);
+    auto *state = dynamic_cast<QState *>(src->qstate);
     if (!state) {
         toLog(LogLevel::Error,
               QString("Failed to add '%1->%2' transition to '%3' scenario: source state cannot "
@@ -403,7 +400,7 @@ void JSScenario::onEnterState(const QString &aState) {
     }
 
     TStateList::iterator s = m_States.find(aState);
-    bool final = s->parameters.contains(CJSScenario::Param_Final);
+    bool final = s->parameters.contains(CJSScenario::ParamFinal);
 
     toLog(LogLevel::Normal, QString("ENTER %1 %2state.").arg(aState).arg(final ? "final " : ""));
 
@@ -422,7 +419,7 @@ void JSScenario::onEnterState(const QString &aState) {
 
     // Если достигли конечного состояния - копируем результат.
     if (final) {
-        m_Context[CJSScenario::Param_Result] = s->parameters[CJSScenario::Param_Result];
+        m_Context[CJSScenario::ParamResult] = s->parameters[CJSScenario::ParamResult];
     }
 
     foreach (Scenario::SExternalStateHook hook, m_Hooks) {
@@ -464,7 +461,7 @@ void JSScenario::onFinish() {
                      QString("%1:%2").arg(m_Name).arg(CJSScenario::ScriptStopFunction));
 
     // Помещаем в контекст возвращаемое сценарием значение
-    m_Context[CJSScenario::Param_ResultError] = resultError.toVariant();
+    m_Context[CJSScenario::ParamResultError] = resultError.toVariant();
 
     emit finished(m_Context);
 }
@@ -484,7 +481,7 @@ QJSValue JSScenario::functionCall(const QString &aFunction,
 
     if (!function.isCallable()) {
         toLog(LogLevel::Debug, QString("Function '%1' is not callable.").arg(aNameForLog));
-        return QJSValue();
+        return {};
     }
 
     toLog(LogLevel::Normal, QString("CALL %1 function.").arg(aNameForLog));
@@ -509,7 +506,7 @@ QJSValue JSScenario::functionCall(const QString &aFunction,
 
 //---------------------------------------------------------------------------
 QJSValue JSScenario::includeScript(void *aContext, QJSEngine *aEngine, void *aScenario) {
-    JSScenario *self = static_cast<JSScenario *>(aScenario);
+    auto *self = static_cast<JSScenario *>(aScenario);
 
     // For Qt6 QJSEngine, we implement a simpler include mechanism
     // We expect the first argument to be the file path to include
@@ -519,7 +516,7 @@ QJSValue JSScenario::includeScript(void *aContext, QJSEngine *aEngine, void *aSc
     // A full implementation would require more complex JavaScript context management
     // Note: Cannot use toLog() here as this is a static method
     qWarning() << "includeScript called but not fully implemented in Qt6 QJSEngine";
-    return QJSValue(false);
+    return {false};
 }
 
 //---------------------------------------------------------------------------

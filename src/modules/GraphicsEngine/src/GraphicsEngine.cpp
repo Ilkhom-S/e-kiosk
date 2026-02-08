@@ -421,7 +421,7 @@ bool GraphicsEngine::hidePopup(const QVariantMap &aParameters) {
 //---------------------------------------------------------------------------
 void GraphicsEngine::notify(const QString &aEvent, const QVariantMap &aParameters) {
     auto formatParams = [](const QVariantMap &aParameters) -> QString {
-        return QString::from_Utf8(
+        return QString::fromUtf8(
             QJsonDocument::from_Variant(aParameters).toJson(QJsonDocument::Compact));
     };
 
@@ -461,7 +461,7 @@ void GraphicsEngine::popupNotify(const QString &aEvent, const QVariantMap &aPara
         toLog(LogLevel::Normal,
               QString("NOTIFY_BY_POPUP '%1'. Parameters: %2")
                   .arg(m_TopWidget->info.name)
-                  .arg(QString::from_Utf8(
+                  .arg(QString::fromUtf8(
                       QJsonDocument::from_Variant(aParameters).toJson(QJsonDocument::Compact))));
     }
 }
@@ -624,7 +624,7 @@ bool GraphicsEngine::showWidget(const QString &aWidget,
             Q_ARG(bool, aPopup));
 
         QString popupMessage =
-            aPopup ? QString::from_Utf8(
+            aPopup ? QString::fromUtf8(
                          QJsonDocument::from_Variant(aParameters).toJson(QJsonDocument::Compact))
                    : QString();
 

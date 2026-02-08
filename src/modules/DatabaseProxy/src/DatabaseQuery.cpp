@@ -3,13 +3,12 @@
 
 #include <DatabaseProxy/IDatabaseProxy.h>
 
-DatabaseQuery::DatabaseQuery(QSqlDatabase db, IDatabaseQueryChecker *aQueryChecker)
-    : QSqlQuery(db), m_QueryChecker(aQueryChecker) {
-    m_Log = ILog::getInstance(CIDatabaseQuery::DefaultLog);
-}
+DatabaseQuery::DatabaseQuery(const QSqlDatabase &db, IDatabaseQueryChecker *aQueryChecker)
+    : QSqlQuery(db), m_Log(ILog::getInstance(CIDatabaseQuery::DefaultLog)),
+      m_QueryChecker(aQueryChecker) {}
 
 //---------------------------------------------------------------------------
-DatabaseQuery::~DatabaseQuery() {}
+DatabaseQuery::~DatabaseQuery() = default;
 
 //---------------------------------------------------------------------------
 bool DatabaseQuery::first() {

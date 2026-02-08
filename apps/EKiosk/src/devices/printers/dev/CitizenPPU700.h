@@ -252,7 +252,7 @@ public:
     bool print(const QString &aCheck);
     bool registerLogo(const QString &aPixelString, uchar aWidth);
     bool printImageI(const QString &aPixelString, uchar aWidth, bool aNeedRegisterLogo);
-    QString getImage(QString fileName);
+    static QString getImage(QString fileName);
 
 protected:
     bool openPort();

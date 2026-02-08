@@ -18,7 +18,7 @@ public:
     TemplatePlugin(SDK::Plugin::IEnvironment *aEnvironment, const QString &aInstancePath);
 
     /// Деструктор плагина.
-    ~TemplatePlugin();
+    ~TemplatePlugin() override;
 
 #pragma region SDK::Plugin::IPlugin interface
 
@@ -54,11 +54,11 @@ public:
 
     /// Выполняет основную работу плагина.
     /// Пример метода для демонстрации функциональности.
-    void doWork();
+    void doWork() const;
 
     /// Обрабатывает ошибки плагина.
     /// @param errorMessage Сообщение об ошибке
-    void handleError(const QString &errorMessage);
+    static void handleError(const QString &errorMessage);
 
 private:
     /// Указатель на окружение плагина.

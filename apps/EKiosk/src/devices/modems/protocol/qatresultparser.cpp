@@ -51,12 +51,8 @@
 
 class QAtResultParserPrivate {
 public:
-    QAtResultParserPrivate(const QString &content) {
-        response = content;
-        posn = 0;
-        linePosn = 0;
-        notification = false;
-    }
+    QAtResultParserPrivate(const QString &content)
+        : response(content), posn(0), linePosn(0), notification(false) {}
 
     QString response;
     QString line;
@@ -80,14 +76,16 @@ QAtResultParser::QAtResultParser(const QAtResult &result) {
     expected to have the format \c{NAME: VALUE}.  The next() function
     will be called internally to position the parser at \c{VALUE}.
 */
-QAtResultParser::QAtResultParser(const QString &notification) {
-    d = new QAtResultParserPrivate(notification);
+QAtResultParser::QAtResultParser(const QString &notification)
+    : d(new QAtResultParserPrivate(notification)) {
+
     int posn = 0;
     while (posn < notification.length() && notification[posn] != ':') {
         ++posn;
     }
-    if (posn < notification.length())
+    if (posn < notification.length()) {
         ++posn; // Account for the colon.
+    }
     next(notification.left(posn));
     d->notification = true;
 }
@@ -164,7 +162,7 @@ uint QAtResultParser::readNumeric() {
     uint value = 0;
     while (d->linePosn < d->line.length() && d->line[d->linePosn] >= '0' &&
            d->line[d->linePosn] <= '9') {
-        value = value * 10 + (uint)(d->line[d->linePosn].unicode() - '0');
+        value = (value * 10) + (uint)(d->line[d->linePosn].unicode() - '0');
         ++(d->linePosn);
     }
     if (d->linePosn < d->line.length() && d->line[d->linePosn] == ',') {
@@ -305,47 +303,29 @@ QList<QAtResultParser::Node> QAtResultParser::readList() {
     \sa QAtResultParser::readList()
 */
 
-QAtResultParser::Node::Node(uint number) {
-    _kind = Number;
-    _number = number;
-    _list = 0;
-}
+QAtResultParser::Node::Node(uint number) : _kind(Number), _number(number), _list(0) {}
 
-QAtResultParser::Node::Node(uint first, uint last) {
-    _kind = Range;
-    _number = first;
-    _last = last;
-    _list = 0;
-}
+QAtResultParser::Node::Node(uint first, uint last)
+    : _kind(Range), _number(first), _last(last), _list(0) {}
 
-QAtResultParser::Node::Node(const QString &str) {
-    _kind = String;
-    _str = str;
-    _list = 0;
-}
+QAtResultParser::Node::Node(const QString &str) : _kind(String), _str(str), _list(0) {}
 
-QAtResultParser::Node::Node(QList<Node> *list) {
-    _kind = List;
-    _list = list;
-}
+QAtResultParser::Node::Node(QList<Node> *list) : _kind(List), _list(list) {}
 
 /*!
     Create a new result list node from \a other.
 */
-QAtResultParser::Node::Node(const Node &other) {
-    _kind = other._kind;
-    _number = other._number;
-    _last = other._last;
-    _str = other._str;
-    _list = (other._list ? new QList<Node>(*other._list) : 0);
-}
+QAtResultParser::Node::Node(const Node &other)
+    : _kind(other._kind), _number(other._number), _last(other._last), _str(other._str),
+      _list(other._list ? new QList<Node>(*other._list) : 0) {}
 
 /*!
     Destruct this node.
 */
 QAtResultParser::Node::~Node() {
-    if (_list)
+    {
         delete _list;
+    }
 }
 
 /*!

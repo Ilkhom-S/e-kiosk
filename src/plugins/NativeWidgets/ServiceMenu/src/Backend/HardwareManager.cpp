@@ -21,8 +21,7 @@ const QString StatusError = "#7e0000";
 
 //------------------------------------------------------------------------
 HardwareManager::HardwareManager(SDK::Plugin::IEnvironment *aFactory, PPSDK::ICore *aCore)
-    : m_Factory(aFactory), m_Core(aCore) {
-    m_DeviceService = m_Core->getDeviceService();
+    : m_DeviceService(m_Core->getDeviceService()), m_Factory(aFactory), m_Core(aCore) {
 
     connect(m_DeviceService,
             SIGNAL(deviceDetected(const QString &)),
@@ -42,7 +41,7 @@ HardwareManager::HardwareManager(SDK::Plugin::IEnvironment *aFactory, PPSDK::ICo
 }
 
 //------------------------------------------------------------------------
-HardwareManager::~HardwareManager() {}
+HardwareManager::~HardwareManager() = default;
 
 //------------------------------------------------------------------------
 bool HardwareManager::isConfigurationChanged() const {
@@ -109,7 +108,7 @@ QVariantMap HardwareManager::getDeviceConfiguration(const QString &aConfigName) 
     if (config.isEmpty()) {
         SDK::Plugin::IPlugin *plugin =
             m_Factory->getPluginLoader()->createPlugin(aConfigName, aConfigName);
-        SDK::Driver::IDevice *device = dynamic_cast<SDK::Driver::IDevice *>(plugin);
+        auto *device = dynamic_cast<SDK::Driver::IDevice *>(plugin);
 
         if (device) {
             config = device->getDeviceConfiguration();
@@ -149,11 +148,7 @@ QString HardwareManager::createDevice(const QString &aDriverPath, const QVariant
 bool HardwareManager::checkDevice(const QString &aConfigName) {
     DSDK::IDevice *device = m_DeviceService->acquireDevice(aConfigName);
 
-    if (device) {
-        return true;
-    }
-
-    return false;
+    return device != nullptr;
 }
 
 //------------------------------------------------------------------------
@@ -234,8 +229,8 @@ bool HardwareManager::isFiscalPrinterPresent(bool aVirtual, bool aCheckPrintFull
         QString deviceType = config.section(".", 2, 2);
 
         if (aVirtual && DSDK::CComponents::isPrinter(deviceType)) {
-            auto device = getDevice(config);
-            auto printer = device ? dynamic_cast<DSDK::IPrinter *>(device) : nullptr;
+            auto *device = getDevice(config);
+            auto *printer = device ? dynamic_cast<DSDK::IPrinter *>(device) : nullptr;
 
             isVirtualFiscal =
                 isVirtualFiscal || (haveVirtualFiscal && printer->isDeviceReady(false));
@@ -243,11 +238,11 @@ bool HardwareManager::isFiscalPrinterPresent(bool aVirtual, bool aCheckPrintFull
 
         if ((deviceType == DSDK::CComponents::DocumentPrinter) ||
             (deviceType == DSDK::CComponents::FiscalRegistrator)) {
-            auto device = getDevice(config);
-            auto fiscalPrinter = device ? dynamic_cast<DSDK::IFiscalPrinter *>(device) : nullptr;
+            auto *device = getDevice(config);
+            auto *fiscalPrinter = device ? dynamic_cast<DSDK::IFiscalPrinter *>(device) : nullptr;
 
             isFiscal =
-                isFiscal || (fiscalPrinter && fiscalPrinter->isFiscal() &&
+                isFiscal || ((fiscalPrinter != nullptr) && fiscalPrinter->isFiscal() &&
                              fiscalPrinter->isDeviceReady(false) &&
                              (aCheckPrintFullZReport ? fiscalPrinter->canProcessZBuffer() : true));
         }

@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 namespace CMifareReader {
 /// Запрос получения версии карты.
-const QByteArray GetVersionRequest = QByteArray::from_RawData("\x80\x60\x00\x00\x00", 5);
+const QByteArray GetVersionRequest = QByteArray::fromRawData("\x80\x60\x00\x00\x00", 5);
 
 /// Заголовок ответа на запрос версии карты.
 extern const char SAM2Header[];

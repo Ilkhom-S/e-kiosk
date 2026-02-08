@@ -34,7 +34,7 @@ protected:
 
     /// Вычислить контрольную сумму пакета данных.
     static uchar calcCRC8(const QByteArray &aData);
-    ushort calcCRC16(const QByteArray &aData);
+    static ushort calcCRC16(const QByteArray &aData);
 
     /// Адрес устройства.
     uchar m_Address;

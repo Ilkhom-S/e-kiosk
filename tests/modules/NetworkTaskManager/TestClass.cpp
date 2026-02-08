@@ -21,7 +21,7 @@ NetworkTaskManagerTestClass::NetworkTaskManagerTestClass()
     : m_application("TestUnit", "1.0", 0, nullptr) {}
 
 //------------------------------------------------------------------------
-NetworkTaskManagerTestClass::~NetworkTaskManagerTestClass() {}
+NetworkTaskManagerTestClass::~NetworkTaskManagerTestClass() = default;
 
 //------------------------------------------------------------------------
 void NetworkTaskManagerTestClass::httpGetTest() {
@@ -74,7 +74,7 @@ void NetworkTaskManagerTestClass::httpGetRegetTest() {
     // Отрезаем половину прочитанных данных
     data.resize(data.size() / 2);
 
-    QBuffer *buffer = new QBuffer();
+    auto *buffer = new QBuffer();
     buffer->setData(data);
 
     task->setDataStream(new DataStream(buffer));

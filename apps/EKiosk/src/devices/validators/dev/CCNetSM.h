@@ -330,7 +330,7 @@ public:
     void CmdStopPoll();
     bool CmdFirmwareUpdate(QString version);
 
-    bool stopPoll;
+    bool stopPoll{};
     bool hasDBError;
 
     QString PartNumber;
@@ -338,22 +338,22 @@ public:
     QString AssetNumber;
 
     bool maxSum_Reject;
-    int maxSum;
+    int maxSum{};
 
 private:
-    bool sts_animate_dlg;
-    int status;
+    bool sts_animate_dlg{};
+    int status{};
     QDateTime preDateTime;
     bool execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdResponse);
     bool openPort();
     QByteArray makeCustom_Request(int adr, int cmd, const QByteArray &data);
     void ParsIdentification(QByteArray respData);
     int readPollInfo(QByteArray byte);
-    void setBoolingDlgState(bool sts);
+    static void setBoolingDlgState(bool sts);
     void setReturnNominalState(bool sts);
     bool validatorLogEnable;
 
-    int getNominal(const uchar nom);
+    static int getNominal(const uchar nom);
 
     int nominalSum;
     bool escrowed;
@@ -367,7 +367,7 @@ private:
     QByteArray fwPacketRequest(quint8 command, quint8 address, const QByteArray &data);
     QByteArray fwPacketUpdRequest(quint16 adr, const QByteArray &data);
 
-    QByteArray firmwareGet(QString version);
+    static QByteArray firmwareGet(QString version);
 
     bool fwCmdExec(const QByteArray aCommandData);
     bool serviceModeSwitch();
@@ -390,7 +390,7 @@ protected:
 
     bool sendACK();
 
-    ushort calcCRC16(const QByteArray &aData);
+    static ushort calcCRC16(const QByteArray &aData);
 
     QString check(const QByteArray &aAnswer);
 

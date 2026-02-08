@@ -16,8 +16,8 @@ class Plugin : public QObject, public SDK::Plugin::IPlugin, public ILogable {
     Q_OBJECT
 
 public:
-    Plugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
-    ~Plugin();
+    Plugin(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath);
+    ~Plugin() override;
 
 public:
 #pragma region SDK::Plugin::IPlugin interface
@@ -49,7 +49,7 @@ public:
 private:
     SDK::Plugin::IEnvironment *m_Environment;
     QString m_InstancePath;
-    QVariantMap m_Parameters;
+    QVariantMap m_Parameters{};
     QString m_HelloMessage;
 };
 

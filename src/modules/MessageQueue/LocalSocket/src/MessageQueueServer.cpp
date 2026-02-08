@@ -2,21 +2,20 @@
 
 #include "MessageQueue/MessageQueueConstants.h"
 
-MessageQueueServer::MessageQueueServer(const QString &aQueueName) {
-    m_Log = ILog::getInstance(CIMessageQueueServer::DefaultLog);
+MessageQueueServer::MessageQueueServer(const QString &aQueueName)
+    : m_Log(ILog::getInstance(CIMessageQueueServer::DefaultLog)) {
 
     m_QueueName = aQueueName;
 }
 
 //----------------------------------------------------------------------------
-MessageQueueServer::MessageQueueServer(const QString &aQueueName, ILog *aLog) {
-    m_Log = aLog;
+MessageQueueServer::MessageQueueServer(const QString &aQueueName, ILog *aLog) : m_Log(aLog) {
 
     m_QueueName = aQueueName;
 }
 
 //----------------------------------------------------------------------------
-MessageQueueServer::~MessageQueueServer() {}
+MessageQueueServer::~MessageQueueServer() = default;
 
 //----------------------------------------------------------------------------
 bool MessageQueueServer::init() {
@@ -27,11 +26,13 @@ bool MessageQueueServer::init() {
         !connect(&m_ReadyReadSignalMapper,
                  SIGNAL(mapped(QObject *)),
                  this,
-                 SLOT(onSocketReadyRead(QObject *))))
+                 SLOT(onSocketReadyRead(QObject *)))) {
         return false;
+    }
 
-    if (!isListening())
+    if (!isListening()) {
         return listen(m_QueueName);
+    }
 
     return true;
 }
@@ -83,7 +84,7 @@ void MessageQueueServer::incomingConnection(quintptr aSocketDescriptor) {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::onSocketDisconnected(QObject *aObject) {
+void MessageQueueServer::onSocketDisconnected(const QObject *aObject) {
     emit onDisconnected();
 
     QLocalSocket *socket = dynamic_cast<QLocalSocket *>(aObject);
@@ -128,7 +129,7 @@ void MessageQueueServer::onSocketReadyRead(QObject *aObject) {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueServer::parseInputBuffer(QByteArray &aBuffer) {
+static void MessageQueueServer::parseInputBuffer(QByteArray &aBuffer) {
     int messageEnd = aBuffer.indexOf('\0');
     while (messageEnd != -1) {
         QByteArray newMessageData = aBuffer.left(messageEnd);

@@ -41,7 +41,7 @@ MultistagePaymentGetStepResponse::MultistagePaymentGetStepResponse(const Request
         m_IsOk = true;
     } else {
         m_Fields =
-            QString::from_Local8Bit(QByteArray::from_PercentEncoding(fields.toString().toLatin1()))
+            QString::fromLocal8Bit(QByteArray::fromPercentEncoding(fields.toString().toLatin1()))
                 .trimmed();
 
         QDom_Document doc("mydocument");

@@ -12,7 +12,8 @@ using namespace SDK::Driver;
 using namespace SDK::Driver::IOPort::COM;
 
 //---------------------------------------------------------------------------
-CCNetCashAcceptorBase::CCNetCashAcceptorBase() : m_Firmware(0) {
+CCNetCashAcceptorBase::CCNetCashAcceptorBase()
+    : m_Firmware(0), m_CurrencyCode(Currency::NoCurrency), m_NeedChangeBaudrate(false) {
     // параметры порта
     m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);
     m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR19200);
@@ -31,10 +32,9 @@ CCNetCashAcceptorBase::CCNetCashAcceptorBase() : m_Firmware(0) {
     m_PollingIntervalDisabled = CCCNet::PollingIntervals::Disabled;
     setConfigParameter(CHardware::UpdatingFilenameExtension, "ssf");
     m_ResetWaiting = EResetWaiting::Available;
-    m_CurrencyCode = Currency::NoCurrency;
+
     setConfigParameter(CHardwareSDK::WaitUpdatingTimeout, CCCNet::WaitUpdatingTimeout);
     m_SupportedModels = getModelList();
-    m_NeedChangeBaudrate = false;
 
     setConfigParameter(CHardware::CashAcceptor::InitializeTimeout,
                        CCCNet::Timeouts::ExitInitialize);
@@ -110,7 +110,7 @@ bool CCNetCashAcceptorBase::isNotBusyPowerUp() {
     }
 
     CCCNet::DeviceCodeSpecification *specification =
-        m_DeviceCodeSpecification.dynamicCast<CCCNet::DeviceCodeSpecification>().data();
+        m_DeviceCodeSpecification.dynamicCast<CCCNet::DeviceCodeSpecification>().data() = nullptr;
 
     foreach (auto deviceCodeBuffer, m_DeviceCodeBuffers) {
         if (!deviceCodeBuffer.isEmpty()) {
@@ -195,7 +195,7 @@ bool CCNetCashAcceptorBase::checkConnection(QByteArray &aAnswer) {
     expector.wait<bool>(statusPoll, isNotEnabled, CCCNet::NotEnabled);
 
     CCCNet::DeviceCodeSpecification *specification =
-        m_DeviceCodeSpecification.dynamicCast<CCCNet::DeviceCodeSpecification>().data();
+        m_DeviceCodeSpecification.dynamicCast<CCCNet::DeviceCodeSpecification>().data() = nullptr;
 
     auto isNotBusy = [&]() -> bool {
         return !m_DeviceCodeBuffers.isEmpty() &&
@@ -284,11 +284,11 @@ bool CCNetCashAcceptorBase::isConnected() {
         m_DeviceName = data.name;
         processDeviceData(answer);
 
-        if (m_Firmware) {
+        if (m_Firmware != 0) {
             int base = m_Firmware / 100;
             int index = m_Firmware % 100;
 
-            typedef QMap<QString, CCCNet::TFimwareVersions> TFimwareSpecification;
+            using TFimwareSpecification = QMap<QString, CCCNet::TFimwareVersions>;
             auto checkVersion = [&](const TFimwareSpecification &aSpecification,
                                     std::function<bool(int)> aCheck) {
                 if (aSpecification.contains(m_DeviceName) &&
@@ -349,7 +349,7 @@ void CCNetCashAcceptorBase::processDeviceData(QByteArray &aAnswer) {
         assetNumberBuffer =
             aAnswer.mid(aAnswer.indexOf(serialNumber.toUtf8()) + serialNumber.size());
     } else if (m_DeviceName.startsWith(CCCNet::Cashcode)) {
-        QString firmware = answerData.last();
+        const QString &firmware = answerData.last();
         int index = firmware.indexOf(QRegularExpression("\\d+"));
         m_Firmware = firmware.mid(index, 4).replace(QRegularExpression("\\D"), "0").toInt();
     }
@@ -403,7 +403,7 @@ bool CCNetCashAcceptorBase::enableMoneyAcceptingMode(bool aEnabled) {
     QByteArray commandData(3, ASCII::NUL);
 
     bool isCoinsEnabled =
-        std::find_if(m_EscrowParTable.data().begin(),
+        std::find_if(m_EscrowParTable.data().begin() = false,
                      m_EscrowParTable.data().end(),
                      [&](const SPar &par) -> bool {
                          return (par.cashReceiver == ECashReceiver::CoinAcceptor) && par.enabled &&
@@ -474,7 +474,7 @@ bool CCNetCashAcceptorBase::perform_UpdateFirmware(const QByteArray &aBuffer) {
 
     PollingExpector expector;
     TStatusCodes statusCodes;
-    char status;
+    char status = 0;
     auto updatingStatusPoll = [&]() -> bool {
         status = getUpdatingStatus();
         return status != CCCNet::UpdatingFirmware::Answers::Error;
@@ -622,10 +622,12 @@ bool CCNetCashAcceptorBase::processBlockUpdating(uint aAddress,
 bool CCNetCashAcceptorBase::processUpdating(const QByteArray &aBuffer, int aSectionSize) {
     QString mainRecord(aBuffer);
     QStringList recordList = mainRecord.split(CIntelHex::Separator1);
-    if (recordList.size() == 1)
+    if (recordList.size() == 1) {
         recordList = mainRecord.split(CIntelHex::Separator2);
-    if (recordList.size() == 1)
+    }
+    if (recordList.size() == 1) {
         recordList = mainRecord.split(CIntelHex::Separator3);
+    }
 
     IntelHex::TAddressedBlockList addressedBlockList;
     QString errorDescription;

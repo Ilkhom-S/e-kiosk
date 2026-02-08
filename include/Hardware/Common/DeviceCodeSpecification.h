@@ -25,7 +25,7 @@ public:
     /// Получить спецификации девайс-кодов по байт-массиву. байт-массив не должен содержать лишних
     /// байтов перед статусными байтами.
     virtual void getSpecification(const QByteArray &aBuffer,
-                                  TDeviceCodeSpecifications &aSpecifications) {
+                                  TDeviceCodeSpecifications &aSpecifications) override {
         SDeviceCodeSpecification specification =
             ((aBuffer.size() > 1) && m_ExtraCodeSpecification.data().contains(aBuffer[0]))
                 ? m_ExtraCodeSpecification[aBuffer[0]][aBuffer[1]]
@@ -34,7 +34,7 @@ public:
     }
 
     /// Получить спецификации девайс-кодов по 1 байту.
-    void getSpecification(char aAnswerData, TStatusCodes &aStatusCodes) {
+    void getSpecification(char aAnswerData, TStatusCodes &aStatusCodes) override {
         TDeviceCodeSpecifications specification;
         getSpecification(QByteArray(1, aAnswerData), specification);
 
@@ -80,7 +80,7 @@ public:
     /// Получить спецификации девайс-кодов по байт-массиву. байт-массив не должен содержать лишних
     /// байтов перед статусными байтами.
     virtual void getSpecification(const QByteArray &aBuffer,
-                                  TDeviceCodeSpecifications &aSpecifications) {
+                                  TDeviceCodeSpecifications &aSpecifications) override {
         foreach (int shift, m_Buffer.keys()) {
             int byteNumber = shift / 8;
 
@@ -114,7 +114,7 @@ public:
 
     /// Получить спецификации девайс-кодов по байт-массиву. байт-массив не должен содержать лишних
     /// байтов перед статусными байтами.
-    void getSpecification(char aAnswerData, TStatusCodes &aStatusCodes) {
+    void getSpecification(char aAnswerData, TStatusCodes &aStatusCodes) override {
         getSpecification(QByteArray(1, aAnswerData), aStatusCodes);
     }
 

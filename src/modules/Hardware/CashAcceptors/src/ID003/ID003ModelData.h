@@ -58,7 +58,7 @@ struct SModelData : public SBaseModelData {
 
     SModelData() {}
     SModelData(const QString &aName, bool aVerified) : SBaseModelData(aName, aVerified) {}
-    SModelData(const QString &aDefaultName, const QString &aType);
+    SModelData(const QString &aDefaultName, QString aType);
 };
 
 class ModelData : public CSpecification<char, SModelData> {

@@ -54,8 +54,9 @@ const int NetworkFailureTimeout = 3;
 
 //---------------------------------------------------------------------------
 NetworkService::NetworkService(IApplication *aApplication)
-    : ILogable("Connection"), m_DeviceService(0), m_EventService(0), m_Connection(0),
-      m_Enabled(true), m_DontWatchConnection(false), m_Application(aApplication), m_Fails(0) {
+    : ILogable("Connection"), m_DeviceService(nullptr), m_EventService(nullptr),
+      m_Connection(nullptr), m_Enabled(true), m_DontWatchConnection(false),
+      m_Application(aApplication), m_Fails(0) {
     QObject::moveToThread(this);
 
     setObjectName(CServices::NetworkService);
@@ -80,7 +81,7 @@ NetworkService::NetworkService(IApplication *aApplication)
 }
 
 //---------------------------------------------------------------------------
-NetworkService::~NetworkService() {}
+NetworkService::~NetworkService() = default;
 
 //---------------------------------------------------------------------------
 bool NetworkService::initialize() {
@@ -88,7 +89,7 @@ bool NetworkService::initialize() {
 
     m_EventService = m_Application->getCore()->getEventService();
 
-    PP::TerminalSettings *terminalSettings =
+    auto *terminalSettings =
         SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
 
     m_DatabaseUtils =
@@ -154,7 +155,7 @@ QVariantMap NetworkService::getParameters() const {
 }
 
 //---------------------------------------------------------------------------
-void NetworkService::resetParameters(const QSet<QString> &) {}
+void NetworkService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 const QSet<QString> &NetworkService::getRequiredServices() const {
@@ -168,8 +169,7 @@ const QSet<QString> &NetworkService::getRequiredServices() const {
 //---------------------------------------------------------------------------
 bool NetworkService::getConnectionTemplate(const QString &aConnectionName,
                                            PP::SConnectionTemplate &aConnectionTemplate) const {
-    PP::Directory *directory =
-        SettingsService::instance(m_Application)->getAdapter<PP::Directory>();
+    auto *directory = SettingsService::instance(m_Application)->getAdapter<PP::Directory>();
 
     foreach (PP::SConnectionTemplate connectionTemplate, directory->getConnectionTemplates()) {
         if (connectionTemplate.name == aConnectionName) {
@@ -296,9 +296,9 @@ void NetworkService::updateModem_Parameters() {
     doDisconnect();
 
     // Получаем параметры.
-    SDK::Driver::IModem *modem_Device = prepareModem(getModem(), "");
+    SDK::Driver::IModem *modemDevice = prepareModem(getModem(), "");
 
-    if (modem_Device) {
+    if (modemDevice) {
         m_Balance.reset();
         m_Operator.reset();
         m_SignalLevel.reset();
@@ -309,14 +309,14 @@ void NetworkService::updateModem_Parameters() {
             QString reply;
 
             // Выполняем USSD-запрос и извлекаем из него строку с информацией о балансе.
-            if (modem_Device->processUSSD(connectionTemplate.balanceNumber, reply)) {
+            if (modemDevice->processUSSD(connectionTemplate.balanceNumber, reply)) {
                 QRegularExpression regExp(connectionTemplate.regExp);
                 QRegularExpressionMatch match = regExp.match(reply);
 
                 if (match.capturedStart() != -1) {
                     m_Balance = match.captured(0);
                     m_DatabaseUtils->setDeviceParam(
-                        m_DeviceService->getDeviceConfigName(modem_Device),
+                        m_DeviceService->getDeviceConfigName(modemDevice),
                         PP::CDatabaseConstants::Parameters::BalanceLevel,
                         m_Balance.get());
                 } else {
@@ -334,7 +334,7 @@ void NetworkService::updateModem_Parameters() {
 
         QString operatorName;
 
-        if (modem_Device->getOperator(operatorName)) {
+        if (modemDevice->getOperator(operatorName)) {
             m_Operator = operatorName;
         } else {
             toLog(LogLevel::Error, "Failed to retrieve GSM operator info.");
@@ -342,22 +342,22 @@ void NetworkService::updateModem_Parameters() {
             m_Operator = getConnection().name;
         }
 
-        m_DatabaseUtils->setDeviceParam(m_DeviceService->getDeviceConfigName(modem_Device),
+        m_DatabaseUtils->setDeviceParam(m_DeviceService->getDeviceConfigName(modemDevice),
                                         PP::CDatabaseConstants::Parameters::ConnectionName,
                                         m_Operator.get());
 
         int signalLevel = 0;
 
-        if (modem_Device->getSignalQuality(signalLevel)) {
+        if (modemDevice->getSignalQuality(signalLevel)) {
             m_SignalLevel = signalLevel;
-            m_DatabaseUtils->setDeviceParam(m_DeviceService->getDeviceConfigName(modem_Device),
+            m_DatabaseUtils->setDeviceParam(m_DeviceService->getDeviceConfigName(modemDevice),
                                             PP::CDatabaseConstants::Parameters::SignalLevel,
                                             m_SignalLevel.get());
         } else {
             toLog(LogLevel::Error, "Failed to retrieve signal level.");
         }
 
-        m_DatabaseUtils->setDeviceParam(m_DeviceService->getDeviceConfigName(modem_Device),
+        m_DatabaseUtils->setDeviceParam(m_DeviceService->getDeviceConfigName(modemDevice),
                                         PP::CDatabaseConstants::Parameters::LastCheckBalanceTime,
                                         QDateTime::currentDateTime());
 
@@ -367,18 +367,18 @@ void NetworkService::updateModem_Parameters() {
             toLog(LogLevel::Error, "Get balance error.");
         }
 
-        QString modem_Info;
+        QString modemInfo;
 
-        if (modem_Device->getInfo(modem_Info)) {
-            toLog(LogLevel::Normal, QString("Modem info: %1").arg(modem_Info));
-            m_DatabaseUtils->setDeviceParam(m_DeviceService->getDeviceConfigName(modem_Device),
+        if (modemDevice->getInfo(modemInfo)) {
+            toLog(LogLevel::Normal, QString("Modem info: %1").arg(modemInfo));
+            m_DatabaseUtils->setDeviceParam(m_DeviceService->getDeviceConfigName(modemDevice),
                                             PP::CDatabaseConstants::Parameters::DeviceInfo,
-                                            modem_Info);
+                                            modemInfo);
         }
 
         SDK::Driver::IModem::TMessages messages;
 
-        if (modem_Device->takeMessages(messages)) {
+        if (modemDevice->takeMessages(messages)) {
             foreach (auto sms, messages) {
                 toLog(LogLevel::Normal,
                       QString("SMS [%1] at %2: %3.")
@@ -420,7 +420,7 @@ void NetworkService::doConnect(const SDK::PaymentProcessor::SConnection &aConnec
         m_Connection->setCheckPeriod(aConnection.checkInterval);
 
         // Всегда читаем список серверов для проверки соединения из конфигов.
-        auto settings =
+        auto *settings =
             SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
         m_Connection->setCheckHosts(settings->getCheckHosts());
         connect(m_Connection.data(),
@@ -470,7 +470,7 @@ void NetworkService::doConnect(const SDK::PaymentProcessor::SConnection &aConnec
         // TODO #29565 - проверяем статус модема, и в случае ошибок выставляем ему статус OK -
         // Connection enstablished
         if (isConnected() && getConnection().type == EConnectionTypes::Dialup) {
-            auto modem = getModem();
+            auto *modem = getModem();
             if (modem) {
                 DeviceService::instance(m_Application)
                     ->overwriteDeviceStatus(modem, SDK::Driver::EWarningLevel::OK, "Connected", 0);
@@ -536,7 +536,7 @@ void NetworkService::run() {
 
         SDK::Driver::IModem *modem = getModem();
 
-        if (getConnection().type == EConnectionTypes::Dialup && modem) {
+        if (getConnection().type == EConnectionTypes::Dialup && (modem != nullptr)) {
             modem->subscribe(
                 SDK::Driver::IDevice::InitializedSignal, this, SLOT(onModem_Initialized()));
 
@@ -603,7 +603,7 @@ void NetworkService::onConnectionLost() {
     // TODO #29565 - проверяем статус модема, и в случае OK выставляем ему статус Warning -
     // Disconnected
     if (getConnection().type == EConnectionTypes::Dialup) {
-        auto modem = getModem();
+        auto *modem = getModem();
         if (modem) {
             DeviceService::instance(m_Application)
                 ->overwriteDeviceStatus(
@@ -614,13 +614,13 @@ void NetworkService::onConnectionLost() {
     // Или сбросить модем сторожевиком.
     if (getConnection().type == EConnectionTypes::Dialup) {
         // Сбрасываем модем посредством сторожа.
-        PP::TerminalSettings *settings =
+        auto *settings =
             SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
 
         QStringList watchdogConfigName =
             settings->getDeviceList().filter(SDK::Driver::CComponents::Watchdog);
 
-        SDK::Driver::IWatchdog *watchdogDevice = 0;
+        SDK::Driver::IWatchdog *watchdogDevice = nullptr;
 
         if (!watchdogConfigName.empty()) {
             watchdogDevice = dynamic_cast<SDK::Driver::IWatchdog *>(
@@ -652,29 +652,27 @@ void NetworkService::onConnectionLost() {
 //---------------------------------------------------------------------------
 SDK::Driver::IModem *NetworkService::getModem() {
     // Запрашиваем модем.
-    PP::TerminalSettings *settings =
-        SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
+    auto *settings = SettingsService::instance(m_Application)->getAdapter<PP::TerminalSettings>();
 
-    QStringList modem_ConfigName =
-        settings->getDeviceList().filter(SDK::Driver::CComponents::Modem);
-    SDK::Driver::IModem *modem_Device =
-        !modem_ConfigName.empty() ? dynamic_cast<SDK::Driver::IModem *>(
-                                        m_DeviceService->acquireDevice(modem_ConfigName.first()))
-                                  : nullptr;
+    QStringList modemConfigName = settings->getDeviceList().filter(SDK::Driver::CComponents::Modem);
+    SDK::Driver::IModem *modemDevice =
+        !modemConfigName.empty() ? dynamic_cast<SDK::Driver::IModem *>(
+                                       m_DeviceService->acquireDevice(modemConfigName.first()))
+                                 : nullptr;
 
-    if (!modem_Device) {
+    if (!modemDevice) {
         toLog(LogLevel::Error, "Modem is not present.");
     }
 
-    return modem_Device;
+    return modemDevice;
 }
 
 //---------------------------------------------------------------------------
-SDK::Driver::IModem *NetworkService::prepareModem(SDK::Driver::IModem *aModem_Device,
+SDK::Driver::IModem *NetworkService::prepareModem(SDK::Driver::IModem *aModemDevice,
                                                   const QString &aConnectionName) {
-    if (aModem_Device) {
+    if (aModemDevice) {
         // Сбрасываем модем.
-        if (!aModem_Device->reset()) {
+        if (!aModemDevice->reset()) {
             toLog(LogLevel::Error, "Failed to reset modem.");
         }
 
@@ -682,7 +680,7 @@ SDK::Driver::IModem *NetworkService::prepareModem(SDK::Driver::IModem *aModem_De
 
         // Инициализируем модем.
         if (getConnectionTemplate(aConnectionName, connectionTemplate)) {
-            if (!aModem_Device->setInitString(connectionTemplate.initString)) {
+            if (!aModemDevice->setInitString(connectionTemplate.initString)) {
                 toLog(LogLevel::Error,
                       QString("Failed to set modem initialization string: %1.")
                           .arg(connectionTemplate.initString));
@@ -690,7 +688,7 @@ SDK::Driver::IModem *NetworkService::prepareModem(SDK::Driver::IModem *aModem_De
         }
     }
 
-    return aModem_Device;
+    return aModemDevice;
 }
 
 //---------------------------------------------------------------------------

@@ -114,11 +114,10 @@ bool DealerPayment::haveLocalData() {
               QString("Payment %1. (dealer) LocalDataFile: %3.").arg(getID()).arg(dataFile));
 
         return m_LocalData.loadInfo(dataFile);
-    } else {
-        toLog(LogLevel::Error, QString("Payment %1. Failed get IEnvironment object.").arg(getID()));
-
-        return false;
     }
+    toLog(LogLevel::Error, QString("Payment %1. Failed get IEnvironment object.").arg(getID()));
+
+    return false;
 }
 
 //---------------------------------------------------------------------------
@@ -126,9 +125,9 @@ QString DealerPayment::getAddinfo(QMap<QString, QString> &aValues) {
     QStringList result;
     auto columns = m_LocalData.getColumns();
 
-    for (int i = 0; i < columns.size(); i++) {
-        QString fieldID = columns[i].first;
-        QString fieldName = columns[i].second;
+    for (auto &column : columns) {
+        QString fieldID = column.first;
+        QString fieldName = column.second;
 
         result << QString("%1: %2").arg(fieldName).arg(aValues.value(fieldID));
     }
@@ -142,8 +141,8 @@ QString DealerPayment::getAddFields() {
     auto columns = m_LocalData.getColumns();
 
     for (int i = 0; i < columns.size(); i++) {
-        if (i) {
-            fields << QString("<field id=\"%1\" type=\"text\"><name>%2</name></field>")
+        if (i != 0) {
+            fields << QString(R"(<field id="%1" type="text"><name>%2</name></field>)")
                           .arg(columns[i].first)
                           .arg(columns[i].second);
         }

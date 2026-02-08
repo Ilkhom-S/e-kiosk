@@ -18,7 +18,7 @@ UpdaterSplashScreen::UpdaterSplashScreen(QWidget *parent, Qt::WFlags flags)
 }
 
 //---------------------------------------------------------------------------
-UpdaterSplashScreen::~UpdaterSplashScreen() {}
+UpdaterSplashScreen::~UpdaterSplashScreen() = default;
 
 //---------------------------------------------------------------------------
 void UpdaterSplashScreen::onFileUpdated(const QString &aPath) {
@@ -30,15 +30,17 @@ void UpdaterSplashScreen::onFileUpdated(const QString &aPath) {
     QString line;
     while (true) {
         QString buf =
-            QString::from_Latin1(file.readLine().data()).replace("\n", "").replace("\r", "");
-        if (buf.isEmpty())
+            QString::fromLatin1(file.readLine().data()).replace("\n", "").replace("\r", "");
+        if (buf.isEmpty()) {
             break;
+        }
 
         line = buf;
     }
 
-    if (line.isEmpty())
+    if (line.isEmpty()) {
         return;
+    }
 
     QStringList params = line.split(";");
     if (params.count() > 2) {

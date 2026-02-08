@@ -19,7 +19,7 @@ class AdPluginImpl : public QObject, public SDK::Plugin::IPlugin {
 public:
     //---------------------------------------------------------------------------
     // Конструктор плагина
-    AdPluginImpl(SDK::Plugin::IEnvironment *environment, const QString &instancePath);
+    AdPluginImpl(SDK::Plugin::IEnvironment *environment, QString instancePath);
 
     //---------------------------------------------------------------------------
     // Деструктор плагина

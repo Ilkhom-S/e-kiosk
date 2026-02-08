@@ -17,10 +17,10 @@ bool ProtocolUtils::getBit(const QByteArray &aBuffer, int aShift, bool invert) {
         byteNumber = aBuffer.size() - byteNumber - 1;
     }
 
-    int bitNumber = aShift - byteNumber * 8;
+    int bitNumber = aShift - (byteNumber * 8);
 
     if ((byteNumber + 1) <= aBuffer.size()) {
-        return (aBuffer[byteNumber] >> bitNumber) & 1;
+        return ((aBuffer[byteNumber] >> bitNumber) & 1) != 0;
     }
 
     return false;
@@ -30,23 +30,24 @@ bool ProtocolUtils::getBit(const QByteArray &aBuffer, int aShift, bool invert) {
 bool ProtocolUtils::checkBufferString(QString aData, QString *aLog) {
     aData = aData.replace("0x", "").replace(" ", "");
     auto makeResult = [&aLog](const QString &aLogData) -> bool {
-        if (aLog)
+        if (aLog) {
             *aLog = "Failed to check buffer string due to " + aLogData;
+        }
         return false;
     };
 
     int size = aData.size();
 
-    if (size % 2) {
+    if ((size % 2) != 0) {
         return makeResult("size = " + QString::number(size));
     }
 
     for (int i = 0; i < size / 2; ++i) {
-        bool OK;
+        bool ok = false;
         QString data = aData.mid(i * 2, 2);
-        data.toUShort(&OK, 16);
+        data.toUShort(&ok, 16);
 
-        if (!OK) {
+        if (!ok) {
             return makeResult(QString("data #%1 = %2").arg(i).arg(data));
         }
     }
@@ -59,12 +60,12 @@ QByteArray ProtocolUtils::getBufferFrom_String(QString aData) {
     aData = aData.replace("0x", "").replace(" ", "");
     QByteArray result;
 
-    if (aData.size() % 2) {
+    if ((aData.size() % 2) != 0) {
         aData = "0" + aData;
     }
 
     for (int i = 0; i < aData.size() / 2; ++i) {
-        result += uchar(aData.mid(i * 2, 2).toUShort(0, 16));
+        result += uchar(aData.mid(i * 2, 2).toUShort(nullptr, 16));
     }
 
     return result;
@@ -78,7 +79,6 @@ ProtocolUtils::TBufferList ProtocolUtils::getBufferListFrom_Strings(QStringList 
     QRegularExpression regex(CProtocolUtils::LogRexExp);
 
     for (int i = 0; i < aDataList.size(); ++i) {
-        QString rawLine = aDataList[i];
 
         QRegularExpressionMatch match = regex.match(aDataList[i]);
         if (match.hasMatch() && (match.capturedTexts()[1].size() > 4)) {
@@ -102,7 +102,7 @@ ProtocolUtils::TBufferList ProtocolUtils::getBufferListFrom_File(const QString &
     QFile file(aFileName);
 
     if (!file.exists() || !file.open(QIODevice::ReadOnly)) {
-        return ProtocolUtils::TBufferList();
+        return {};
     }
 
     QTextStream ts(&file);
@@ -119,7 +119,7 @@ char ProtocolUtils::mask(char aData, const QString &aMask) {
         char mask = 1 << (7 - i);
 
         if (bit != -1) {
-            if (bit) {
+            if (bit != 0) {
                 aData |= mask;
             } else {
                 aData &= ~mask;
@@ -134,8 +134,8 @@ char ProtocolUtils::mask(char aData, const QString &aMask) {
 QString ProtocolUtils::hexToBCD(const QByteArray &aBuffer, char filler) {
     QString result;
 
-    for (int i = 0; i < aBuffer.size(); ++i) {
-        result += QString("%1").arg(uchar(aBuffer[i]), 2, 10, QChar(filler));
+    for (char i : aBuffer) {
+        result += QString("%1").arg(uchar(i), 2, 10, QChar(filler));
     }
 
     return result;
@@ -148,7 +148,7 @@ QByteArray ProtocolUtils::getHexReverted(double aValue, int aSize, int aPrecisio
     QByteArray result;
 
     for (int i = 0; i < aSize; ++i) {
-        result.append(uchar(stringValue.mid(2 * (aSize - i - 1), 2).toInt(0, 16)));
+        result.append(uchar(stringValue.mid(2 * (aSize - i - 1), 2).toInt(nullptr, 16)));
     }
 
     return result;

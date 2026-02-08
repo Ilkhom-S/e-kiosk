@@ -33,14 +33,14 @@ bool PrinterService::checkPrinter(bool aRealCheck) {
     if (aRealCheck) {
         // эта проверка должна вызываться крайне редко, т.к. в случае не ответа принтера подвешивает
         // интерфейс
-        if (m_CheckSynchronizer.futures().size() == 0 ||
-            m_CheckSynchronizer.futures().last().isFinished())
+        if (m_CheckSynchronizer.futures().empty() ||
+            m_CheckSynchronizer.futures().last().isFinished()) {
             m_CheckSynchronizer.addFuture(QtConcurrent::run([this]() { privateCheckPrinter(); }));
+        }
 
         return true;
-    } else {
-        return m_PrinterService->canPrintReceipt("payment", false);
     }
+    return m_PrinterService->canPrintReceipt("payment", false);
 }
 
 //------------------------------------------------------------------------------
@@ -104,7 +104,7 @@ QString PrinterService::loadReceipt(qint64 aPaymentId) {
 
 //------------------------------------------------------------------------------
 bool PrinterService::checkReceiptMail() {
-    return !(static_cast<PPSDK::TerminalSettings *>(
+    return !(dynamic_cast<PPSDK::TerminalSettings *>(
                  m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter))
                  ->getReceiptMailURL()
                  .isEmpty());

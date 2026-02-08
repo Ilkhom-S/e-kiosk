@@ -20,7 +20,7 @@ class WatchServiceClient : public QThread, public IWatchServiceClient {
     Q_OBJECT
 
 public:
-    WatchServiceClient(const QString &aName, PingThread aThread);
+    WatchServiceClient(QString aName, PingThread aThread);
     virtual ~WatchServiceClient();
 
     /// IWatchServiceClient: Подключение к сторожевому сервису.
@@ -120,7 +120,7 @@ signals:
 
 protected slots:
     /// Обработчик при вызове метода из родного потока.
-    void onInvokeMethod(WatchServiceClient::TMethod aMethod);
+    static void onInvokeMethod(const WatchServiceClient::TMethod &aMethod);
 
     /// Обработчик для пинга сторожевого сервиса.
     void onPing();

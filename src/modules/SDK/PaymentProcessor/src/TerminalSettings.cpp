@@ -33,7 +33,7 @@ QString TerminalSettings::getAdapterName() {
 
 //---------------------------------------------------------------------------
 TerminalSettings::TerminalSettings(TPtree &aProperties)
-    : m_Properties(aProperties.get_child(CAdapterNames::TerminalAdapter, aProperties)) {}
+    : m_properties(aProperties.get_child(CAdapterNames::TerminalAdapter, aProperties)) {}
 
 //---------------------------------------------------------------------------
 TerminalSettings::~TerminalSettings() = default;
@@ -41,13 +41,13 @@ TerminalSettings::~TerminalSettings() = default;
 //---------------------------------------------------------------------------
 void TerminalSettings::initialize() {
     foreach (auto error,
-             m_Properties.get("config.terminal.critical_errors", QString())
+             m_properties.get("config.terminal.critical_errors", QString())
                  .split(",", Qt::SkipEmptyParts)) {
         bool ok = false;
         int errorId = error.toInt(&ok);
 
         if (ok) {
-            m_CriticalErrors << errorId;
+            m_criticalErrors << errorId;
         }
     }
 }
@@ -57,20 +57,20 @@ SConnection TerminalSettings::getConnection() const {
     SConnection connection;
 
     try {
-        connection.name = m_Properties.get<QString>("terminal.connection.name");
+        connection.name = m_properties.get<QString>("terminal.connection.name");
 
-        auto type = m_Properties.get<QString>("terminal.connection.type");
+        auto type = m_properties.get<QString>("terminal.connection.type");
         connection.type = (type.compare("modem", Qt::CaseInsensitive) != 0)
                               ? EConnectionTypes::Unmanaged
                               : EConnectionTypes::Dialup;
         connection.checkInterval =
-            m_Properties.get("config.terminal.connection_check_interval.<xmlattr>.value",
+            m_properties.get("config.terminal.connection_check_interval.<xmlattr>.value",
                              CConnection::DefaultCheckInterval);
         connection.checkInterval = connection.checkInterval < 1 ? 1 : connection.checkInterval;
 
         QNetworkProxy proxy;
 
-        auto proxyType = m_Properties.get<QString>("terminal.proxy.type", QString("none"));
+        auto proxyType = m_properties.get<QString>("terminal.proxy.type", QString("none"));
 
         if (proxyType == "http") {
             proxy.setType(QNetworkProxy::HttpProxy);
@@ -83,10 +83,10 @@ SConnection TerminalSettings::getConnection() const {
         }
 
         if (proxy.type() != QNetworkProxy::NoProxy) {
-            proxy.setHostName(m_Properties.get<QString>("terminal.proxy.host"));
-            proxy.setPort(m_Properties.get<QString>("terminal.proxy.port").toUShort());
-            proxy.setPassword(m_Properties.get("terminal.proxy.password", QString()));
-            proxy.setUser(m_Properties.get("terminal.proxy.login", QString()));
+            proxy.setHostName(m_properties.get<QString>("terminal.proxy.host"));
+            proxy.setPort(m_properties.get<QString>("terminal.proxy.port").toUShort());
+            proxy.setPassword(m_properties.get("terminal.proxy.password", QString()));
+            proxy.setUser(m_properties.get("terminal.proxy.login", QString()));
         }
 
         connection.proxy = proxy;
@@ -397,8 +397,7 @@ QVariantMap TerminalSettings::getChargeProviderAccess() const {
     static TPtree emptyTreeChargeAccess;
     BOOST_FOREACH (const TPtree::value_type &value,
                    m_Properties.get_child("system.charge_access", emptyTreeChargeAccess)) {
-        result.insert(QString::from_StdString(value.first),
-                      value.second.get_value<QString>().split(","));
+        result.insert(QString::fromStdString.first), value.second.get_value<QString>().split(",");
     }
 
     return result;
@@ -454,7 +453,7 @@ SCommonSettings TerminalSettings::getCommonSettings() const {
         (!settings.autoZReportTime.isNull() && settings.autoZReportTime.isValid())
             ? settings.autoZReportTime.toString("hh:mm")
             : "";
-    settings.autoZReportTime = QTime::from_String(
+    settings.autoZReportTime = QTime::fromString(
         m_Properties.get("config.hardware.printer_settings.auto_z_report_time", defaultZReportTime),
         "hh:mm");
 
@@ -648,7 +647,7 @@ QString TerminalSettings::getAdProfile() const {
 //---------------------------------------------------------------------------
 QTime TerminalSettings::autoUpdate() const {
     if (m_Properties.get<bool>("config.terminal.check_update", false)) {
-        return QTime::from_String(
+        return QTime::fromString(
             m_Properties.get<QString>("config.terminal.check_update.<xmlattr>.start", ""), "hh:mm");
     }
 

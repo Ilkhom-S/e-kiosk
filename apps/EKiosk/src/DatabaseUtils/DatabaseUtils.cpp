@@ -25,7 +25,7 @@ const QString DatabaseUpdateParam = "db_update";
 // Список патчей базы
 struct {
     int version;
-    QString Script;
+    QString script;
 } Patches[] = {
     {6, ":/scripts/db_patch_6.sql"},
     {7, ":/scripts/db_patch_7.sql"},
@@ -41,10 +41,10 @@ struct {
 //---------------------------------------------------------------------------
 DatabaseUtils::DatabaseUtils(IDatabaseProxy &aProxy, IApplication *aApplication)
     : m_Database(aProxy), m_Application(aApplication), m_Log(aApplication->getLog()),
-      m_PaymentLog(ILog::getInstance("Payments")), m_AccessMutex(QRecursiveMutex()) {}
+      m_PaymentLog(ILog::getInstance("Payments")), {}
 
 //---------------------------------------------------------------------------
-DatabaseUtils::~DatabaseUtils() {}
+DatabaseUtils::~DatabaseUtils() = default;
 
 //---------------------------------------------------------------------------
 bool DatabaseUtils::initialize() {
@@ -58,20 +58,18 @@ bool DatabaseUtils::initialize() {
         }
 
         // Проверяем, созданы ли таблицы.
-        if (!databaseTableCount()) {
+        if (databaseTableCount() == 0) {
             updateDatabase(CDatabaseUtils::EmptyDatabaseScript);
             // после этого скрипта databasePatch() = 5
         }
 
-        for (int i = 0; i < sizeof(CDatabaseUtils::Patches) / sizeof(CDatabaseUtils::Patches[0]);
-             i++) {
-            if (databasePatch() < CDatabaseUtils::Patches[i].version) {
+        for (auto &patche : CDatabaseUtils::Patches) {
+            if (databasePatch() < patche.version) {
                 LOG(m_Log,
                     LogLevel::Normal,
-                    QString("Patch database to version %1.")
-                        .arg(CDatabaseUtils::Patches[i].version));
+                    QString("Patch database to version %1.").arg(patche.version));
 
-                updateDatabase(CDatabaseUtils::Patches[i].Script);
+                updateDatabase(patche.script);
             }
         }
     } catch (...) {
@@ -100,7 +98,7 @@ bool DatabaseUtils::updateDatabase(const QString &aSqlScriptName) {
     QString resSQL = ftemp.readAll();
 
     // Удалим комментарии ("-- some comment") и ("/* many \n comment */").
-    QRegularExpression rx("(\\/\\*.*\\*\\/|\\-\\-.*\\n)");
+    QRegularExpression rx(R"((\/\*.*\*\/|\-\-.*\n))");
     ////////rx.setMinimal(true); // Removed for Qt5/6 compatibility // Removed for Qt5/6
     /// compatibility // Removed for
     /// Qt5/6 compatibility // Removed for Qt5/6 compatibility

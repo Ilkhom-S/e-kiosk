@@ -16,23 +16,24 @@
 template <class T> QString makeDriverPath();
 
 #include <Hardware/Plugins/CommonParameters.h>
+#include <utility>
 
 //------------------------------------------------------------------------------
 template <class T> class DevicePluginBase : public SDK::Plugin::IPlugin, public T {
 public:
     DevicePluginBase(const QString &aPluginName,
                      SDK::Plugin::IEnvironment *aEnvironment,
-                     const QString &aInstancePath)
-        : m_InstanceName(aInstancePath), m_Environment(aEnvironment) {
-        m_PluginName = aPluginName + " plugin";
+                     QString aInstancePath)
+        : m_instanceName(std::move(aInstancePath)), m_environment(aEnvironment) {
+        m_pluginName = aPluginName + " plugin";
         this->setLog(aEnvironment->getLog(""));
 
-        if (m_Environment) {
-            SDK::Plugin::IPluginLoader *pluginLoader = m_Environment->getPluginLoader();
+        if (m_environment) {
+            SDK::Plugin::IPluginLoader *pluginLoader = m_environment->getPluginLoader();
 
             if (pluginLoader) {
                 QString path =
-                    m_InstanceName.section(SDK::Plugin::CPlugin::InstancePathSeparator, 0, 0);
+                    m_instanceName.section(SDK::Plugin::CPlugin::InstancePathSeparator, 0, 0);
                 SDK::Plugin::TParameterList parameterList =
                     pluginLoader->getPluginParametersDescription(path);
                 QStringList pluginParameterNames;
@@ -65,35 +66,37 @@ public:
         }
     }
 
-    virtual ~DevicePluginBase() {}
+    ~DevicePluginBase() override = default;
 
     /// Возвращает название плагина.
-    virtual QString getPluginName() const { return m_PluginName; }
+    [[nodiscard]] QString getPluginName() const override { return m_pluginName; }
 
     /// Возвращает параметры плагина.
-    virtual QVariantMap getConfiguration() const { return T::getDeviceConfiguration(); }
+    [[nodiscard]] QVariantMap getConfiguration() const override {
+        return T::getDeviceConfiguration();
+    }
 
     /// Настраивает плагин.
-    virtual void setConfiguration(const QVariantMap &aParameters) {
+    void setConfiguration(const QVariantMap &aParameters) override {
         T::setDeviceConfiguration(aParameters);
     }
 
     /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
     /// программы).
-    virtual bool saveConfiguration() {
-        return m_Environment->saveConfiguration(m_InstanceName, T::getDeviceConfiguration());
+    bool saveConfiguration() override {
+        return m_environment->saveConfiguration(m_instanceName, T::getDeviceConfiguration());
     }
 
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
-    virtual QString getConfigurationName() const { return m_InstanceName; }
+    [[nodiscard]] QString getConfigurationName() const override { return m_instanceName; }
 
     /// Проверяет успешно ли инициализировался плагин при создании.
-    virtual bool isReady() const { return true; }
+    [[nodiscard]] bool isReady() const override { return true; }
 
 private:
-    QString m_PluginName;
-    QString m_InstanceName;
-    SDK::Plugin::IEnvironment *m_Environment;
+    QString m_pluginName;
+    QString m_instanceName;
+    SDK::Plugin::IEnvironment *m_environment;
 };
 
 //--------------------------------------------------------------------------------

@@ -4,15 +4,15 @@
 
 namespace CCCNet {
 namespace Commands {
-const char Reset[] = "\x30";
-const char SetSecurity[] = "\x32";
-const char GetStatus[] = "\x33";
-const char EnableBillTypes[] = "\x34";
-const char Stack[] = "\x35";
-const char Return[] = "\x36";
-const char GetVersion[] = "\x37";
-const char GetParList[] = "\x41";
-const char UpdateFirmware[] = "\x50";
+const char Reset[] = R"(0)";
+const char SetSecurity[] = R"(2)";
+const char GetStatus[] = R"(3)";
+const char EnableBillTypes[] = R"(4)";
+const char Stack[] = R"(5)";
+const char Return[] = R"(6)";
+const char GetVersion[] = R"(7)";
+const char GetParList[] = R"(A)";
+const char UpdateFirmware[] = R"(P)";
 
 namespace UpdatingFirmware {
 const char GetBlockSize[] = "\x50\x01";

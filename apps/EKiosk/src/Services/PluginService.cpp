@@ -31,18 +31,16 @@ const QString HumoSignerName = "HUMO";
 
 //------------------------------------------------------------------------------
 PluginService *PluginService::instance(IApplication *aApplication) {
-    return static_cast<PluginService *>(
+    return dynamic_cast<PluginService *>(
         aApplication->getCore()->getService(CServices::PluginService));
 }
 
 //------------------------------------------------------------------------------
 PluginService::PluginService(IApplication *aApplication)
-    : ILogable("Plugins"), m_PluginLoader(nullptr) {
-    m_Application = aApplication;
-}
+    : ILogable("Plugins"), m_Application(aApplication), m_PluginLoader(nullptr) {}
 
 //------------------------------------------------------------------------------
-PluginService::~PluginService() {}
+PluginService::~PluginService() = default;
 
 //------------------------------------------------------------------------------
 bool PluginService::initialize() {
@@ -53,7 +51,10 @@ bool PluginService::initialize() {
 
 #ifndef _DEBUG
     // Запустим фоновую проверку плагинов на наличие цифровой подписи
-    m_PluginVerifierSynchronizer.addFuture(QtConcurrent::run([this]() { return verifyPlugins(); }));
+    m_PluginVerifierSynchronizer.addFuture(QtConcurrent::run([this]() {
+        verifyPlugins();
+        return;
+    }));
 #endif
 
     return true;
@@ -80,7 +81,7 @@ bool PluginService::shutdown() {
 #endif
         toLog(LogLevel::Debug, "Destroy plugins loader...");
 
-        delete static_cast<SDK::Plugin::PluginLoader *>(m_PluginLoader);
+        delete dynamic_cast<SDK::Plugin::PluginLoader *>(m_PluginLoader);
 #ifdef Q_OS_WIN
     }
 #endif
@@ -105,17 +106,17 @@ const QSet<QString> &PluginService::getRequiredServices() const {
 
 //------------------------------------------------------------------------------
 QVariantMap PluginService::getParameters() const {
-    return QVariantMap();
+    return {};
 }
 
 //------------------------------------------------------------------------------
-void PluginService::resetParameters(const QSet<QString> &) {}
+void PluginService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //------------------------------------------------------------------------------
 QString PluginService::getState() const {
     QStringList result;
 
-    if (m_UnsignedPlugins.count()) {
+    if (m_UnsignedPlugins.count() != 0) {
         result << QString("Unsigned : {%1}").arg(m_UnsignedPlugins.join(";"));
     }
 
@@ -152,7 +153,7 @@ QString PluginService::getVersion() const {
 
 //------------------------------------------------------------------------------
 QString PluginService::getDirectory() const {
-    return m_Application->getWorkingDirectory();
+    return IApplication::getWorkingDirectory();
 }
 
 //------------------------------------------------------------------------------
@@ -162,7 +163,7 @@ QString PluginService::getDataDirectory() const {
 
 //------------------------------------------------------------------------------
 QString PluginService::getLogsDirectory() const {
-    return m_Application->getWorkingDirectory() + "/logs";
+    return IApplication::getWorkingDirectory() + "/logs";
 }
 
 //------------------------------------------------------------------------------
@@ -179,7 +180,7 @@ bool PluginService::canConfigurePlugin(const QString & /*aInstancePath*/) const 
 //------------------------------------------------------------------------------
 QVariantMap PluginService::getPluginConfiguration(const QString & /*aInstancePath*/) const {
     // Не используется.
-    return QVariantMap();
+    return {};
 }
 
 //------------------------------------------------------------------------------

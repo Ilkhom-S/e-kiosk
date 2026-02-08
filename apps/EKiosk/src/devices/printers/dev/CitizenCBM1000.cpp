@@ -25,8 +25,9 @@ bool CitizenCBM1000_PRINTER::openPort() {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
-            if (!serialPort->setDataBits(QSerialPort::Data8))
+            if (!serialPort->setDataBits(QSerialPort::Data8)) {
                 return false;
+            }
             //                if (!devicePort->setParity(AbstractSerial::ParityNone))
             //                return false; if
             //                (!devicePort->setStopBits(AbstractSerial::StopBits1))
@@ -35,8 +36,9 @@ bool CitizenCBM1000_PRINTER::openPort() {
             //                return false; if
             //                (!serialPort->setCharIntervalTimeout(CMDCitizenCBM1000::charTimeOut))
             //                return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud19200))
+            if (!serialPort->setBaudRate(QSerialPort::Baud19200)) {
                 return false;
+            }
 
             // if(Debugger) qDebug() << "\nPrinter " << CMDCitizenCBM1000::DeviceName
             // << " to Port " << devicePort->deviceName() << " open in " <<
@@ -78,8 +80,9 @@ bool CitizenCBM1000_PRINTER::isItYou() {
 
 bool CitizenCBM1000_PRINTER::isEnabled(int status) {
     //        int status = 0;
-    if (!getStatus(status))
+    if (!getStatus(status)) {
         return false;
+    }
     return (status != PrinterState::PrinterNotAvailable);
 }
 
@@ -88,11 +91,11 @@ bool CitizenCBM1000_PRINTER::getStatus(int &aStatus) {
     // засылаем в порт команду самоидентификации
     QByteArray cmd;
     QByteArray answer;
-    bool resp_data = false;
+    bool respData = false;
 
     cmd.push_back(CMDCitizenCBM1000::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDCitizenCBM1000::PrinterStatusCommandSecondByte);
-    if (!this->sendCommand(cmd, true, 200, resp_data, answer, 0)) {
+    if (!this->sendCommand(cmd, true, 200, respData, answer, 0)) {
         // if(Debugger) qDebug() << "AV268::getStatus(): error in
         // sendPacketInPort()";
         return false;
@@ -107,12 +110,13 @@ bool CitizenCBM1000_PRINTER::getStatus(int &aStatus) {
     uchar status = 0;
     // В некоторых случаях присылается больше 1 байта
     // тогда наш байт - второй
-    if (answer.size() > 1)
+    if (answer.size() > 1) {
         status = answer[1];
-    else
+    } else {
         status = answer[0];
+    }
     // Проверим, что это наш статус
-    if ((status & 0x10) || (status & 0x80)) {
+    if (((status & 0x10) != 0) || ((status & 0x80) != 0)) {
         // Не наш принтер
         // if(Debugger) qDebug() << QString("AV268::getStatus(): wrong byte returned:
         // %1").arg(status);
@@ -161,10 +165,10 @@ bool CitizenCBM1000_PRINTER::initialize() {
     QByteArray cmd;
     cmd.push_back(CMDCitizenCBM1000::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDCitizenCBM1000::PrinterInitCommandSecondByte);
-    bool resp_data = false;
+    bool respData = false;
     QByteArray response;
 
-    bool res = this->sendCommand(cmd, true, 200, resp_data, response, 290);
+    bool res = this->sendCommand(cmd, true, 200, respData, response, 290);
 
     return res;
 }
@@ -175,9 +179,9 @@ bool CitizenCBM1000_PRINTER::cut() {
     cmd.push_back(CMDCitizenCBM1000::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDCitizenCBM1000::PrinterCutCommandSecondByte);
 
-    bool resp_data = false;
+    bool respData = false;
     QByteArray response;
-    bool res = this->sendCommand(cmd, true, 200, resp_data, response, 50);
+    bool res = this->sendCommand(cmd, true, 200, respData, response, 50);
 
     return res;
 }
@@ -249,10 +253,11 @@ void CitizenCBM1000_PRINTER::getSpecialCharacters(QByteArray &printText) {
                       probel);
 
     // Добавляем звезды
-    int col_z = (checkWidth - 11 - leftMargin) / 2;
+    int colZ = (checkWidth - 11 - leftMargin) / 2;
     QByteArray star;
-    for (int j = 1; j <= col_z; j++)
+    for (int j = 1; j <= colZ; j++) {
         star.append("*");
+    }
 
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::StarCount +
                               CScharsetParam::CloseTagDelimiter)
@@ -272,10 +277,7 @@ bool CitizenCBM1000_PRINTER::printCheck(const QString &aCheck) {
     QByteArray answer;
     bool respData = false;
 
-    if (!this->sendCommand(printText, false, 0, respData, answer, 0))
-        return false;
-
-    return true;
+    return this->sendCommand(printText, false, 0, respData, answer, 0);
 }
 
 void CitizenCBM1000_PRINTER::print(const QString &aCheck) {
@@ -286,10 +288,10 @@ void CitizenCBM1000_PRINTER::print(const QString &aCheck) {
     cmd.push_back(0x4D);
     cmd.push_back(0x01);
 
-    bool resp_data = false;
+    bool respData = false;
     QByteArray response;
 
-    this->sendCommand(cmd, false, 200, resp_data, response, 290);
+    this->sendCommand(cmd, false, 200, respData, response, 290);
 
     // Печатаем текст
     this->printCheck(aCheck);
@@ -307,8 +309,9 @@ bool CitizenCBM1000_PRINTER::feed(int aCount) {
     cmd.push_back(0x0A);
     cmd.push_back(0x0D);
     for (int i = 0; i < aCount; ++i) {
-        if (!this->sendCommand(cmd, true, 50, respData, answer, 0))
+        if (!this->sendCommand(cmd, true, 50, respData, answer, 0)) {
             return false;
+        }
     }
 
     return true;

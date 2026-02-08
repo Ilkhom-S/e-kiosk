@@ -13,7 +13,7 @@ class IDatabaseQueryChecker;
 //---------------------------------------------------------------------------
 class DatabaseQuery : public IDatabaseQuery, public QSqlQuery {
 public:
-    DatabaseQuery(QSqlDatabase db, IDatabaseQueryChecker *aQueryChecker);
+    DatabaseQuery(const QSqlDatabase &db, IDatabaseQueryChecker *aQueryChecker);
     virtual ~DatabaseQuery() override;
 
     virtual bool prepare(const QString &aQuery) override;

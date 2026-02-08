@@ -22,12 +22,12 @@ public:
 //------------------------------------------------------------------------
 class Md5Verifier : public IHashVerifier {
 public:
-    Md5Verifier(const QString &aMD5);
+    explicit Md5Verifier(QString aMD5);
 
-    virtual bool verify(NetworkTask *aTask, const QByteArray &aData);
+    virtual bool verify(NetworkTask *aTask, const QByteArray &aData) override;
 
-    QString referenceHash() const { return m_MD5; }
-    QString calculatedHash() const { return m_CalculatedMD5; }
+    QString referenceHash() const override { return m_MD5; }
+    QString calculatedHash() const override { return m_CalculatedMD5; }
 
 private:
     QString m_MD5;
@@ -37,12 +37,12 @@ private:
 //------------------------------------------------------------------------
 class Sha256Verifier : public IHashVerifier {
 public:
-    Sha256Verifier(const QString &aSha256);
+    explicit Sha256Verifier(QString aSha256);
 
-    virtual bool verify(NetworkTask *aTask, const QByteArray &aData);
+    virtual bool verify(NetworkTask *aTask, const QByteArray &aData) override;
 
-    QString referenceHash() const { return m_Sha256; }
-    QString calculatedHash() const { return m_CalculatedSha256; }
+    QString referenceHash() const override { return m_Sha256; }
+    QString calculatedHash() const override { return m_CalculatedSha256; }
 
 private:
     QString m_Sha256;

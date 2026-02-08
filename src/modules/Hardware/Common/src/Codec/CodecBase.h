@@ -21,7 +21,7 @@ struct SCharData {
     SCharData() : character(QChar(CCodec::DefaultCharacter)), main(false) {}
     SCharData(const QString &aCharacter, bool aMain) : character(aCharacter), main(aMain) {}
     SCharData(const char *aCharacter, bool aMain)
-        : character(QString::from_Utf8(aCharacter)), main(aMain) {}
+        : character(QString::fromUtf8(aCharacter)), main(aMain) {}
     SCharData(const QChar &aCharacter, bool aMain) : character(aCharacter), main(aMain) {}
 
     bool operator==(const SCharData &aData) const {

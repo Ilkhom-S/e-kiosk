@@ -321,7 +321,7 @@ void DownloadManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal) 
         unit = "MB/s";
     }
 
-    progressBar.setMessage(QString::from_Latin1("%1 %2").arg(speed, 3, 'f', 1).arg(unit));
+    progressBar.setMessage(QString::fromLatin1("%1 %2").arg(speed, 3, 'f', 1).arg(unit));
     progressBar.update();
 }
 

@@ -133,7 +133,7 @@ void ServiceMenuBackend::sendEvent(SDK::PaymentProcessor::EEventType::Enum aEven
 //------------------------------------------------------------------------
 void ServiceMenuBackend::sendEvent(SDK::PaymentProcessor::EEventType::Enum aEventType,
                                    const QVariantMap &aParameters) {
-    SDK::PaymentProcessor::Event e(aEventType, "", QVariant::from_Value(aParameters));
+    SDK::PaymentProcessor::Event e(aEventType, "", QVariant::fromValue(aParameters));
     m_Core->getEventService()->sendEvent(e);
 }
 
@@ -271,7 +271,7 @@ bool ServiceMenuBackend::authorize(const QString &aPassword) {
     bool result = true;
     m_AccessRights.clear();
 
-    QString hash = QString::from_Utf8(
+    QString hash = QString::fromUtf8(
         QCryptographicHash::hash(aPassword.toLatin1(), QCryptographicHash::Md5).toHex());
     SDK::PaymentProcessor::SServiceMenuPasswords serviceMenuSettings =
         m_TerminalSettings->getServiceMenuPasswords();

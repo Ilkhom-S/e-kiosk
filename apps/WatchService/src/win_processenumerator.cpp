@@ -33,7 +33,7 @@ void loadDosDriveMap(QMap<QString, QString> &aResult) {
 
             char path[MAX_PATH] = {0};
             if (QueryDosDeviceA(str, path, MAX_PATH)) {
-                aResult.insert(QString::from_Latin1(path), QString::from_Latin1(str));
+                aResult.insert(QString::fromLatin1(path), QString::fromLatin1(str));
             }
 
             // get the next drive

@@ -507,7 +507,7 @@ template <class T> bool AtolOnlineFRBase<T>::sale(const SUnitData &aUnitData) {
     commandData.append(CAtolOnlineFR::DiscountSign);        // знак скидки
     commandData.append(getBCD(0, 7, 2, 3));                 // информация о скидке
     commandData.append(QByteArray(2, ASCII::NUL));          // зарезервировано
-    commandData.append(m_Codec->from_Unicode(aUnitData.name)); // товар
+    commandData.append(m_Codec->fromUnicode(aUnitData.name)); // товар
 
     return processCommand(CAtolOnlineFR::Commands::EndSale, commandData);
 }

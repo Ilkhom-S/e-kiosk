@@ -101,7 +101,7 @@ template <class T> void CitizenPPU700<T>::processDeviceData() {
 template <class T>
 bool CitizenPPU700<T>::getNULStoppedAnswer(QByteArray &aAnswer, int aTimeout) const {
     QVariantMap configuration;
-    configuration.insert(CHardware::Port::IOLogging, QVariant().from_Value(ELoggingType::Write));
+    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::Write));
     this->m_IOPort->setDeviceConfiguration(configuration);
 
     aAnswer.clear();

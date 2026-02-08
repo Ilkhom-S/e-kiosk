@@ -53,7 +53,7 @@ void LibUSBPort::initialize() {
     const libusb_version *versionData = libusb_get_version();
 
     if (versionData) {
-        QString RCVersion = versionData->rc ? QString(versionData->rc).simplified() : "";
+        QString rcVersion = versionData->rc ? QString(versionData->rc).simplified() : "";
         QString description =
             versionData->describe ? QString(versionData->describe).simplified() : "";
         QString data = QString("version %1.%2.%3.%4%5%6")
@@ -61,13 +61,13 @@ void LibUSBPort::initialize() {
                            .arg(versionData->minor)
                            .arg(versionData->micro)
                            .arg(versionData->nano)
-                           .arg(RCVersion.isEmpty() ? "" : (" " + RCVersion))
+                           .arg(rcVersion.isEmpty() ? "" : (" " + rcVersion))
                            .arg(description.isEmpty() ? "" : QString(" (%1)").arg(description));
 
         setDeviceParameter(CHardwareSDK::LibraryVersion, data);
     }
 
-    m_InitializationError = !LibUSBUtils::getContext(m_Log);
+    m_InitializationError = (LibUSBUtils::getContext(m_Log) == nullptr);
 
     if (m_InitializationError) {
         return;
@@ -93,14 +93,14 @@ bool LibUSBPort::release() {
     LibUSBUtils::releaseDeviceList();
     LibUSBUtils::releaseContext(m_Log);
 
-    bool result = MetaDevice::release();
+    bool result = IOPortBase::release();
 
     return closingResult && result;
 }
 
 //--------------------------------------------------------------------------------
 bool LibUSBPort::opened() {
-    return m_Handle;
+    return m_Handle != nullptr;
 }
 
 //--------------------------------------------------------------------------------
@@ -150,17 +150,13 @@ bool LibUSBPort::open() {
 
     LIB_USB_CALL(libusb_set_auto_detach_kernel_driver, m_Handle, 1);
 
-    if (!LIB_USB_CALL(libusb_claim_interface, m_Handle, 0)) {
-        return false;
-    }
-
-    return true;
+    return LIB_USB_CALL(libusb_claim_interface, m_Handle, 0);
 }
 
 //--------------------------------------------------------------------------------
 bool LibUSBPort::close() {
     bool result = true;
-    bool beenOpened = m_Handle;
+    bool beenOpened = m_Handle != nullptr;
 
     if (!m_InitializationError && m_Handle) {
         result = LIB_USB_CALL(libusb_release_interface, m_Handle, 0);
@@ -223,14 +219,14 @@ bool LibUSBPort::read(QByteArray &aData, int aTimeout, int aMinSize) {
 
     while ((waitingTimer.elapsed() < aTimeout) && (aData.size() < aMinSize)) {
         int received = 0;
-        CLibUSB::SEndPoint &EP = m_DeviceProperties.deviceToHost;
-        m_ReadingBuffer.fill(ASCII::NUL, EP.maxPacketSize);
+        CLibUSB::SEndPoint &ep = m_DeviceProperties.deviceToHost;
+        m_ReadingBuffer.fill(ASCII::NUL, ep.maxPacketSize);
 
         TResult result = LIB_USB_CALL(m_DeviceProperties.hostToDevice.processIO,
                                       m_Handle,
-                                      EP.data,
-                                      (unsigned char *)&m_ReadingBuffer[0],
-                                      EP.maxPacketSize,
+                                      ep.data,
+                                      (unsigned char *)m_ReadingBuffer.data(),
+                                      ep.maxPacketSize,
                                       &received,
                                       aTimeout);
 
@@ -357,7 +353,7 @@ CLibUSB::TDeviceProperties LibUSBPort::getDevicesProperties(bool aForce) {
 
     for (auto it = properties.begin(); it != properties.end();) {
         QString deviceProduct = it->deviceData.value(DeviceUSBData::Product).toString().toLower();
-        bool needErase = !it->VID || !it->PID || deviceProduct.contains("mouse");
+        bool needErase = (it->VID == 0u) || (it->PID == 0u) || deviceProduct.contains("mouse");
         it = needErase ? properties.erase(it) : std::next(it);
     }
 

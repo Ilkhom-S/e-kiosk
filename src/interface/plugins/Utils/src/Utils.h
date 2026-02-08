@@ -115,23 +115,24 @@ private:
 
 private:
     QQmlEngine *m_Engine;
-    mutable QMap<QString, QTextCodec *> m_CodecCache;
+    mutable QMap<QString, QTextCodec *> m_CodecCache{};
 
-    QSharedPointer<Skin> m_Skin;
-    QSharedPointer<Translator> m_Translator;
-    QSharedPointer<GroupModel> m_GroupModel;               /// Модель иконок внутри корневых групп
-    QSharedPointer<GroupModel> m_RootGroupModel;           /// Модель иконок корневых групп
-    QSharedPointer<ProviderListModel> m_ProviderListModel; /// Сквозной список провайдеров для поиска
-    QSharedPointer<ProviderListFilter> m_ProviderListFilter; /// Фильтр для поиска провайдеров
+    QSharedPointer<Skin> m_Skin{};
+    QSharedPointer<Translator> m_Translator{};
+    QSharedPointer<GroupModel> m_GroupModel{};     /// Модель иконок внутри корневых групп
+    QSharedPointer<GroupModel> m_RootGroupModel{}; /// Модель иконок корневых групп
+    QSharedPointer<ProviderListModel>
+        m_ProviderListModel{}; /// Сквозной список провайдеров для поиска
+    QSharedPointer<ProviderListFilter> m_ProviderListFilter{}; /// Фильтр для поиска провайдеров
 
-    QString m_InterfacePath;
-    QString m_UserPath;
+    QString m_InterfacePath{};
+    QString m_UserPath{};
 
     bool m_UseCommonSounds;
     bool m_UseNarratorSounds;
     bool m_UseAutoOrderProviders;
 
-    QPointer<QObject> m_GuiService;
+    QPointer<QObject> m_GuiService{};
 };
 
 //------------------------------------------------------------------------------

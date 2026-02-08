@@ -6,21 +6,18 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/qendian.h>
 
+#include <algorithm>
+
 #include "CCNetFirmware.h"
 #include "CashPayment.h"
 
-typedef int (*SendFirm_WareDataByPathFunc)(int, char *);
-typedef long (*GetDataStatusFunc)();
+using SendFirm_WareDataByPathFunc = int (*)(int, char *);
+using GetDataStatusFunc = long (*)();
 
-CCNetSm::CCNetSm(QObject *parent) : BaseValidatorDevices(parent) {
+CCNetSm::CCNetSm(QObject *parent)
+    : BaseValidatorDevices(parent), validatorLogEnable(false), maxSum_Reject(false),
+      hasDBError(false), escrowed(false), firmwareUpdating(false), nominalSum(0) {
     preDateTime = QDateTime::currentDateTime().addSecs(-1);
-
-    validatorLogEnable = false;
-    maxSum_Reject = false;
-    hasDBError = false;
-    escrowed = false;
-    firmwareUpdating = false;
-    nominalSum = 0;
 }
 
 bool CCNetSm::OpenPort() {
@@ -36,7 +33,6 @@ void CCNetSm::sendStatusTo(int sts, QString comment) {
 
         emit this->emitStatus(status, comment);
     }
-    return;
 }
 
 bool CCNetSm::openPort() {
@@ -52,19 +48,24 @@ bool CCNetSm::openPort() {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
-            if (!serialPort->setDataBits(QSerialPort::Data8))
+            if (!serialPort->setDataBits(QSerialPort::Data8)) {
                 return false;
-            if (!serialPort->setParity(QSerialPort::NoParity))
+            }
+            if (!serialPort->setParity(QSerialPort::NoParity)) {
                 return false;
-            if (!serialPort->setStopBits(QSerialPort::OneStop))
+            }
+            if (!serialPort->setStopBits(QSerialPort::OneStop)) {
                 return false;
-            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl))
+            }
+            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl)) {
                 return false;
+            }
             //            if
             //            (!serialPort->setCharIntervalTimeout(ValidatorConstants::CCNetSm_CharTimeOut))
             //            return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud9600))
+            if (!serialPort->setBaudRate(QSerialPort::Baud9600)) {
                 return false;
+            }
 
             is_open = true;
         } else {
@@ -97,16 +98,16 @@ bool CCNetSm::isItYou() {
 
             this->ParsIdentification(respData);
             return true;
-        } else {
-            if (checkBootloader()) {
-                PartNumber = "BOOTLDR";
-                SerialNumber = "";
-                return true;
-            }
-
-            this->closePort();
-            return false;
         }
+        if (checkBootloader()) {
+            PartNumber = "BOOTLDR";
+            SerialNumber = "";
+            return true;
+        }
+
+        this->closePort();
+        return false;
+
     } else {
 
         return false;
@@ -146,22 +147,22 @@ bool CCNetSm::CmdGetStatus() {
 }
 
 ushort CCNetSm::calcCRC16(const QByteArray &aData) {
-    ushort CRC = 0;
+    ushort crc = 0;
 
-    for (int i = 0; i < aData.size(); ++i) {
+    for (char i : aData) {
         ushort byteCRC = 0;
-        ushort value = uchar(CRC ^ aData[i]);
+        ushort value = uchar(crc ^ i);
 
         for (int j = 0; j < 8; ++j) {
             ushort data = byteCRC >> 1;
-            byteCRC = ((byteCRC ^ value) & 1) ? (data ^ 0x8408) : data;
+            byteCRC = (((byteCRC ^ value) & 1) != 0) ? (data ^ 0x8408) : data;
             value = value >> 1;
         }
 
-        CRC = byteCRC ^ (CRC >> 8);
+        crc = byteCRC ^ (crc >> 8);
     }
 
-    return CRC;
+    return crc;
 }
 
 QByteArray CCNetSm::makeCustom_Request(int adr, int cmd, const QByteArray &data) {
@@ -176,9 +177,9 @@ QByteArray CCNetSm::makeCustom_Request(int adr, int cmd, const QByteArray &data)
 
     request[2] = request.size() + 2;
 
-    ushort CRC = calcCRC16(request);
-    request.append(uchar(CRC));
-    request.append(uchar(CRC >> 8));
+    ushort crc = calcCRC16(request);
+    request.append(uchar(crc));
+    request.append(uchar(crc >> 8));
 
     return request;
 }
@@ -188,81 +189,82 @@ bool CCNetSm::execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdRespon
         if (is_open) {
 
             QByteArray cmdRequest;
-            QByteArray btm_data;
+            QByteArray btmData;
 
             switch (cmdType) {
 
             case ValidatorCommands::Reset:
                 cmdRequest = this->makeCustom_Request(
-                    CCNetConstruct::PABillValidator, CCNetConstruct::CCReset, 0);
+                    CCNetConstruct::PABillValidator, CCNetConstruct::CCReset, nullptr);
                 break;
 
             case ValidatorCommands::GetNominalTable:
                 cmdRequest = this->makeCustom_Request(
-                    CCNetConstruct::PABillValidator, CCNetConstruct::CCGetBillTable, 0);
+                    CCNetConstruct::PABillValidator, CCNetConstruct::CCGetBillTable, nullptr);
                 break;
 
             case ValidatorCommands::SetEnabled: {
-                btm_data.clear();
-                btm_data.resize(6);
+                btmData.clear();
+                btmData.resize(6);
 
-                btm_data[0] = '\xFF';
-                btm_data[1] = '\xFF';
-                btm_data[2] = '\xFF';
+                btmData[0] = '\xFF';
+                btmData[1] = '\xFF';
+                btmData[2] = '\xFF';
 
-                btm_data[3] = '\xFF';
-                btm_data[4] = '\xFF';
-                btm_data[5] = '\xFF';
+                btmData[3] = '\xFF';
+                btmData[4] = '\xFF';
+                btmData[5] = '\xFF';
 
                 cmdRequest = this->makeCustom_Request(
-                    CCNetConstruct::PABillValidator, CCNetConstruct::CCEnableBillTypes, btm_data);
+                    CCNetConstruct::PABillValidator, CCNetConstruct::CCEnableBillTypes, btmData);
             } break;
 
             case ValidatorCommands::Poll:
                 cmdRequest = this->makeCustom_Request(
-                    CCNetConstruct::PABillValidator, CCNetConstruct::CCPoll, 0);
+                    CCNetConstruct::PABillValidator, CCNetConstruct::CCPoll, nullptr);
                 break;
 
             case ValidatorCommands::Idintification:
                 cmdRequest = this->makeCustom_Request(
-                    CCNetConstruct::PABillValidator, CCNetConstruct::CCIdentification, 0);
+                    CCNetConstruct::PABillValidator, CCNetConstruct::CCIdentification, nullptr);
                 break;
 
             case ValidatorCommands::SetSecurity: {
-                btm_data.clear();
-                btm_data.resize(6);
+                btmData.clear();
+                btmData.resize(6);
 
                 for (int i = 0; i < 3; i++) {
-                    btm_data[i] = '\xFF';
+                    btmData[i] = '\xFF';
                 }
 
                 cmdRequest = this->makeCustom_Request(
-                    CCNetConstruct::PABillValidator, CCNetConstruct::CCSetSecurity, btm_data);
+                    CCNetConstruct::PABillValidator, CCNetConstruct::CCSetSecurity, btmData);
             } break;
 
             case ValidatorCommands::ACK:
                 cmdRequest = this->makeCustom_Request(
-                    CCNetConstruct::PABillValidator, CCNetConstruct::CCAck, 0);
+                    CCNetConstruct::PABillValidator, CCNetConstruct::CCAck, nullptr);
                 break;
 
             case ValidatorCommands::SetDisabled: {
-                btm_data.clear();
-                btm_data.resize(6);
-                for (int i = 0; i < 6; i++)
-                    btm_data[i] = 0x00;
+                btmData.clear();
+                btmData.resize(6);
+                for (int i = 0; i < 6; i++) {
+                    btmData[i] = 0x00;
+                }
 
                 cmdRequest = this->makeCustom_Request(
-                    CCNetConstruct::PABillValidator, CCNetConstruct::CCEnableBillTypes, btm_data);
+                    CCNetConstruct::PABillValidator, CCNetConstruct::CCEnableBillTypes, btmData);
             } break;
 
             case ValidatorCommands::Return:
                 cmdRequest = this->makeCustom_Request(
-                    CCNetConstruct::PABillValidator, CCNetConstruct::CCReturn, 0);
+                    CCNetConstruct::PABillValidator, CCNetConstruct::CCReturn, nullptr);
                 break;
 
             case ValidatorCommands::Stack:
                 cmdRequest = this->makeCustom_Request(
-                    CCNetConstruct::PABillValidator, CCNetConstruct::CCStack, 0);
+                    CCNetConstruct::PABillValidator, CCNetConstruct::CCStack, nullptr);
                 break;
 
             default:
@@ -281,7 +283,7 @@ bool CCNetSm::execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdRespon
                 return true;
             }
 
-            if (!result) {
+            if (result == 0u) {
                 qDebug() << "result " << result;
             }
 
@@ -305,7 +307,7 @@ bool CCNetSm::execCommand(ValidatorCommands::Enum cmdType, QByteArray &cmdRespon
 
 TResult CCNetSm::processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData) {
     // Выполняем команду
-    int NAKCounter = 1;
+    int nakCounter = 1;
     int checkingCounter = 1;
 
     do {
@@ -321,10 +323,10 @@ TResult CCNetSm::processCommand(const QByteArray &aCommandData, QByteArray &aAns
 
         TResult result = getAnswer(aAnswerData);
 
-        this->msleep(50);
+        CCNetSm::msleep(50);
 
         if (result == CommandResult::Transport) {
-            NAKCounter++;
+            nakCounter++;
         } else if (result == CommandResult::Protocol) {
             checkingCounter++;
         } else {
@@ -332,7 +334,7 @@ TResult CCNetSm::processCommand(const QByteArray &aCommandData, QByteArray &aAns
         }
     }
 
-    while ((NAKCounter <= CCNetConstruct::MaxRepeatPacket) &&
+    while ((nakCounter <= CCNetConstruct::MaxRepeatPacket) &&
            (checkingCounter <= CCNetConstruct::MaxRepeatPacket));
 
     return (checkingCounter <= CCNetConstruct::MaxRepeatPacket) ? CommandResult::Transport
@@ -368,17 +370,19 @@ TResult CCNetSm::getAnswer(QByteArray &aAnswerData) {
     //    }
 
     if (index == -1) {
-        if (debugger)
+        if (debugger) {
             qDebug() << "CCNet: Answer does not contains any logic data or it is "
                         "incomplete answer";
+        }
         return CommandResult::Protocol;
     }
 
     aAnswerData = answers[index];
 
     if (aAnswerData[3] == CCNetConstruct::NAK) {
-        if (debugger)
+        if (debugger) {
             qDebug() << "CCNet: Answer contains NAK, attemp to repeat command";
+        }
         return CommandResult::Transport;
     }
 
@@ -418,10 +422,10 @@ QString CCNetSm::check(const QByteArray &aAnswer) {
 
     // CRC
     ushort answerCRC = calcCRC16(aAnswer.left(length - 2));
-    ushort CRC = qToBigEndian(aAnswer.right(2).toHex().toUShort(0, 16));
+    ushort crc = qToBigEndian(aAnswer.right(2).toHex().toUShort(nullptr, 16));
 
-    if (CRC != answerCRC) {
-        return QString("CCNet: Invalid CRC = %1, need %2").arg(CRC).arg(answerCRC);
+    if (crc != answerCRC) {
+        return QString("CCNet: Invalid CRC = %1, need %2").arg(crc).arg(answerCRC);
     }
 
     return "";
@@ -440,8 +444,9 @@ bool CCNetSm::readAnswers(QList<QByteArray> &aAnswers, int aTimeout) {
         QByteArray answerData;
 
         if (!serialPort->waitForReadyRead(150)) {
-            if (debugger)
+            if (debugger) {
                 qDebug() << "waitForReadyRead false";
+            }
         }
 
         // Есть ответ
@@ -449,7 +454,7 @@ bool CCNetSm::readAnswers(QList<QByteArray> &aAnswers, int aTimeout) {
 
         answer.append(answerData);
         int begin = index;
-        int lastBegin;
+        int lastBegin = 0;
 
         do {
             lastBegin = begin;
@@ -457,7 +462,8 @@ bool CCNetSm::readAnswers(QList<QByteArray> &aAnswers, int aTimeout) {
 
             if (begin == -1) {
                 break;
-            } else if (answer.size() > 2) {
+            }
+            if (answer.size() > 2) {
                 if (begin < answer.size()) {
                     index = begin;
                 }
@@ -471,11 +477,12 @@ bool CCNetSm::readAnswers(QList<QByteArray> &aAnswers, int aTimeout) {
             }
         } while (lastBegin != begin);
     } while ((clockTimer.elapsed() < aTimeout) &&
-             ((answer.mid(index).size() != length) || !length));
+             ((answer.mid(index).size() != length) || (length == 0)));
 
     if (answer.isEmpty()) {
-        if (debugger)
+        if (debugger) {
             qDebug() << "CCNet: << {}";
+        }
         return true;
     }
 
@@ -486,7 +493,7 @@ bool CCNetSm::readAnswers(QList<QByteArray> &aAnswers, int aTimeout) {
         begin = size;
     }
 
-    if (begin) {
+    if (begin != 0) {
         aAnswers << answer.mid(0, begin);
     }
 
@@ -510,7 +517,7 @@ bool CCNetSm::readAnswers(QList<QByteArray> &aAnswers, int aTimeout) {
 
 bool CCNetSm::sendACK() {
     QByteArray cmdRequest =
-        this->makeCustom_Request(CCNetConstruct::PABillValidator, CCNetConstruct::CCAck, 0);
+        this->makeCustom_Request(CCNetConstruct::PABillValidator, CCNetConstruct::CCAck, nullptr);
 
     if (isOpened()) {
         serialPort->write(cmdRequest);
@@ -548,11 +555,13 @@ void CCNetSm::ParsIdentification(QByteArray respData) {
     QByteArray pn;
     QByteArray sn;
 
-    for (int i = 3; i <= 17; i++)
+    for (int i = 3; i <= 17; i++) {
         pn.append(respData[i]);
+    }
 
-    for (int i = 18; i <= 29; i++)
+    for (int i = 18; i <= 29; i++) {
         sn.append(respData[i]);
+    }
 
     if (pn.startsWith("C100")) {
         pn = pn.left(5) + sn.trimmed();
@@ -662,7 +671,7 @@ void CCNetSm::CmdStartPoll() {
         }
     }
 
-    this->msleep(10);
+    CCNetSm::msleep(10);
     this->CmdStopPoll();
 }
 
@@ -1118,39 +1127,39 @@ QByteArray CCNetSm::fwCmdRequest(const QByteArray &data, quint8 command) {
             packet[4 + i] = data[i];
         }
 
-        ushort CRC = calcCRC16(packet.left(4));
-        packet[4] = uchar(CRC);
-        packet[5] = uchar(CRC >> 8);
+        ushort crc = calcCRC16(packet.left(4));
+        packet[4] = uchar(crc);
+        packet[5] = uchar(crc >> 8);
     } else {
         packet.resize(6);
         for (int i = 0; i < data.size(); ++i) {
             packet[i] = data[i];
         }
 
-        ushort CRC = calcCRC16(packet.left(4));
-        packet[4] = uchar(CRC);
-        packet[5] = uchar(CRC >> 8);
+        ushort crc = calcCRC16(packet.left(4));
+        packet[4] = uchar(crc);
+        packet[5] = uchar(crc >> 8);
     }
 
     return packet;
 }
 
 QByteArray CCNetSm::fwPacketRequest(quint8 command, quint8 address, const QByteArray &data) {
-    int PacketSize = CCNetConstruct::FwPacketSize;
-    QByteArray packet(PacketSize, 0);
+    int packetSize = CCNetConstruct::FwPacketSize;
+    QByteArray packet(packetSize, 0);
 
     packet[0] = 0x02;
     packet[1] = 0x01;
     packet[2] = command;
     packet[3] = address;
 
-    for (int i = 0; i < data.size() && (4 + i) < PacketSize - 2; ++i) {
+    for (int i = 0; i < data.size() && (4 + i) < packetSize - 2; ++i) {
         packet[4 + i] = data[i];
     }
 
-    ushort CRC = calcCRC16(packet.left(PacketSize - 2));
-    packet[PacketSize - 2] = uchar(CRC);
-    packet[PacketSize - 1] = uchar(CRC >> 8);
+    ushort crc = calcCRC16(packet.left(packetSize - 2));
+    packet[packetSize - 2] = uchar(crc);
+    packet[packetSize - 1] = uchar(crc >> 8);
 
     return packet;
 }
@@ -1160,8 +1169,8 @@ QByteArray CCNetSm::fwPacketUpdRequest(quint16 adr, const QByteArray &data) {
 
     QByteArray packet(packetSize, 0);
 
-    quint8 addrHi = static_cast<quint8>((adr >> 8) & 0xFF);
-    quint8 addrLo = static_cast<quint8>(adr & 0xFF);
+    auto addrHi = static_cast<quint8>((adr >> 8) & 0xFF);
+    auto addrLo = static_cast<quint8>(adr & 0xFF);
 
     packet[0] = 0x02;
     packet[1] = 0x03;
@@ -1174,9 +1183,9 @@ QByteArray CCNetSm::fwPacketUpdRequest(quint16 adr, const QByteArray &data) {
         packet[6 + i] = data[i];
     }
 
-    ushort CRC = calcCRC16(packet.left(packetSize - 2));
-    packet[packetSize - 2] = uchar(CRC);
-    packet[packetSize - 1] = uchar(CRC >> 8);
+    ushort crc = calcCRC16(packet.left(packetSize - 2));
+    packet[packetSize - 2] = uchar(crc);
+    packet[packetSize - 1] = uchar(crc >> 8);
 
     return packet;
 }
@@ -1203,9 +1212,9 @@ bool CCNetSm::fwCmdExec(const QByteArray aCommandData) {
 
         aAnswerData.append(answerData);
 
-    } while ((clockTimer.elapsed() < 2000) && QString::from_Utf8(aAnswerData) != "OK");
+    } while ((clockTimer.elapsed() < 2000) && QString::fromUtf8(aAnswerData) != "OK");
 
-    return QString::from_Utf8(aAnswerData) == "OK";
+    return QString::fromUtf8(aAnswerData) == "OK";
 }
 
 bool CCNetSm::serviceModeSwitch() {
@@ -1246,8 +1255,8 @@ bool CCNetSm::resetValidator() {
 bool CCNetSm::unlockValidator() {
     QByteArray packet(64, 0);
 
-    ushort adr;
-    bool res;
+    ushort adr = 0;
+    bool res = false;
 
     auto bloader = QByteArray(reinterpret_cast<const char *>(CCNetFirmware::bloader),
                               sizeof(CCNetFirmware::bloader));
@@ -1255,7 +1264,7 @@ bool CCNetSm::unlockValidator() {
     for (int i = 0; i < 16; i++) {
         packet = bloader.mid(i * 64, 64);
 
-        adr = (ushort)(0x3000 + i * 0x0200);
+        adr = (ushort)(0x3000 + (i * 0x0200));
 
         res = fwCmdExec(fwPacketUpdRequest(adr, packet));
 
@@ -1348,7 +1357,7 @@ bool CCNetSm::checkBootloader() {
 
 QByteArray CCNetSm::firmwareGet(QString version) {
     if (version.isEmpty()) {
-        return QByteArray();
+        return {};
     }
 
     QByteArray data;
@@ -1365,7 +1374,7 @@ QByteArray CCNetSm::firmwareGet(QString version) {
         for (const QString &hexStr : hexList) {
             if (hexStr.startsWith("0x", Qt::CaseInsensitive)) {
 
-                bool ok;
+                bool ok = false;
                 uchar byte = hexStr.mid(2).toUInt(&ok, 16);
 
                 if (ok) {
@@ -1395,7 +1404,7 @@ bool CCNetSm::CmdFirmwareUpdate(QString version) {
         QDir directory("assets/firmware/cashcode");
         QStringList firmwareList = directory.entryList(QStringList() << "*.txt", QDir::Files);
 
-        version = firmwareList.length() > 0 ? firmwareList.last().remove(".txt") : "";
+        version = !firmwareList.empty() ? firmwareList.last().remove(".txt") : "";
     }
 
     QByteArray fwData = firmwareGet(version);
@@ -1412,37 +1421,35 @@ bool CCNetSm::CmdFirmwareUpdate(QString version) {
     if (checkBootloader()) {
         bool result = firmwareUpdate(fwData);
         return result;
-    } else {
-        // Переводим в режим сервиса
-        if (!serviceModeSwitch()) {
-            emit emitLog(2, "FIRMWARE_CCNET", "Ошибка входа в сервисный режим");
-            emit emitFirmwareUpdate("cancel");
-            return false;
-        }
+    } // Переводим в режим сервиса
+    if (!serviceModeSwitch()) {
+        emit emitLog(2, "FIRMWARE_CCNET", "Ошибка входа в сервисный режим");
+        emit emitFirmwareUpdate("cancel");
+        return false;
+    }
 
-        emit emitLog(0, "FIRMWARE_CCNET", "Вход в сервисный режим ОК");
+    emit emitLog(0, "FIRMWARE_CCNET", "Вход в сервисный режим ОК");
 
-        // Загружаем бутлоадер
-        if (!unlockValidator()) {
-            emit emitLog(0, "FIRMWARE_CCNET", "Выход из сервисного режима");
-            resetValidator();
-            msleep(1000);
-            emit emitFirmwareUpdate("cancel");
-            return false;
-        }
-
+    // Загружаем бутлоадер
+    if (!unlockValidator()) {
+        emit emitLog(0, "FIRMWARE_CCNET", "Выход из сервисного режима");
+        resetValidator();
         msleep(1000);
+        emit emitFirmwareUpdate("cancel");
+        return false;
+    }
 
-        if (checkBootloader()) {
-            bool result = firmwareUpdate(fwData);
-            return result;
-        } else {
-            emit emitLog(0, "FIRMWARE_CCNET", "Bootloader false");
-            resetValidator();
-            msleep(1000);
-            emit emitFirmwareUpdate("error");
-            return false;
-        }
+    msleep(1000);
+
+    if (checkBootloader()) {
+        bool result = firmwareUpdate(fwData);
+        return result;
+    } else {
+        emit emitLog(0, "FIRMWARE_CCNET", "Bootloader false");
+        resetValidator();
+        msleep(1000);
+        emit emitFirmwareUpdate("error");
+        return false;
     }
 }
 
@@ -1453,15 +1460,15 @@ bool CCNetSm::firmwareUpdate(const QByteArray fw) {
     firmwareUpdating = true;
 
     for (int page = 0; page < 112; page++) {
-        for (int i = 0; i < 512; i++)
-            packet[i] = fw[i + page * 512];
+        for (int i = 0; i < 512; i++) {
+            packet[i] = fw[i + (page * 512)];
+        }
 
         bool res = fwCmdExec(fwPacketRequest(0xAA, 0x10 + page, packet));
 
         if (res) {
             prg = 0.91 * page;
-            if (prg > 100)
-                prg = 100;
+            prg = std::min<double>(prg, 100);
 
             emit emitLog(0, "FIRMWARE_CCNET", QString("Обновление прошивки %1%").arg(qRound(prg)));
         } else {
@@ -1521,13 +1528,13 @@ bool CCNetSm::fwUpdateC100(QString version) {
     QString port = com_Name;
     QByteArray filePathBytes = path.toUtf8();
 
-    int state;
+    int state = 0;
     int nPort = port.remove("COM").toInt();
     char *filePath = filePathBytes.data();
 
-    SendFirm_WareDataByPathFunc sendFirm_WareDataByPathFunc =
+    auto sendFirmWareDataByPathFunc =
         (SendFirm_WareDataByPathFunc)m_lib.resolve("SendFirm_WareDataByPath");
-    if (!sendFirm_WareDataByPathFunc) {
+    if (!sendFirmWareDataByPathFunc) {
         emit emitLog(
             2, "FIRMWARE_CCNET", QString("Не найдена функция: %1").arg(m_lib.errorString()));
         emit emitFirmwareUpdate("cancel");
@@ -1539,7 +1546,7 @@ bool CCNetSm::fwUpdateC100(QString version) {
 
     msleep(2000);
 
-    state = sendFirm_WareDataByPathFunc(nPort, filePath);
+    state = sendFirmWareDataByPathFunc(nPort, filePath);
 
     if (state > 0) {
         emit emitFirmwareUpdate("start");
@@ -1548,7 +1555,7 @@ bool CCNetSm::fwUpdateC100(QString version) {
 
         while (true) {
 
-            GetDataStatusFunc getDataStatus = (GetDataStatusFunc)m_lib.resolve("GetDataStatus");
+            auto getDataStatus = (GetDataStatusFunc)m_lib.resolve("GetDataStatus");
             if (!getDataStatus) {
                 emit emitLog(2,
                              "FIRMWARE_CCNET",
@@ -1568,7 +1575,8 @@ bool CCNetSm::fwUpdateC100(QString version) {
                 emit emitFirmwareUpdate("success");
                 firmwareUpdating = false;
                 break;
-            } else if (downFileSize > 0) {
+            }
+            if (downFileSize > 0) {
                 emit emitLog(0,
                              "FIRMWARE_CCNET",
                              QString("Обновление прошивки %1%").arg(downFileSize * 100 / state));

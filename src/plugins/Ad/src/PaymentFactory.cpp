@@ -30,7 +30,7 @@ const QString Ad = "ad";
 namespace {
 
 /// Конструктор экземпляра плагина.
-SDK::Plugin::IPlugin *CreatePaymentFactory(SDK::Plugin::IEnvironment *aFactory,
+SDK::Plugin::IPlugin *createPaymentFactory(SDK::Plugin::IEnvironment *aFactory,
                                            const QString &aInstancePath) {
     return new PaymentFactory(aFactory, aInstancePath);
 }
@@ -39,7 +39,7 @@ SDK::Plugin::IPlugin *CreatePaymentFactory(SDK::Plugin::IEnvironment *aFactory,
 REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
                          SDK::PaymentProcessor::CComponents::PaymentFactory,
                          CPaymentFactory::PluginName),
-                &CreatePaymentFactory,
+                &createPaymentFactory,
                 &SDK::Plugin::PluginInitializer::emptyParameterList,
                 PaymentFactory);
 } // namespace
@@ -70,7 +70,7 @@ QStringList PaymentFactory::getSupportedPaymentTypes() const {
 //------------------------------------------------------------------------------
 SDK::PaymentProcessor::IPayment *PaymentFactory::createPayment(const QString &aType) {
     if (aType.toLower() == CProcessorType::Ad) {
-        AdPayment *adPayment = new AdPayment(this);
+        auto *adPayment = new AdPayment(this);
 
         adPayment->setParameter(SDK::PaymentProcessor::IPayment::SParameter(
             "AD_ID", getAdClientInstance(m_Factory)->getAd(CPaymentFactory::ContentName).id, true));
@@ -106,9 +106,8 @@ PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider
         }
 
         return provider;
-    } else {
-        return PPSDK::SProvider();
     }
+    return PPSDK::SProvider();
 }
 
 //------------------------------------------------------------------------------

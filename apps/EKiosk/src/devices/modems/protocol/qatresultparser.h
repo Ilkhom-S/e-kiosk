@@ -53,8 +53,8 @@ public:
 
     private:
         Kind _kind;
-        uint _number;
-        uint _last;
+        uint _number{};
+        uint _last{} {};
         QString _str;
         QList<QAtResultParser::Node> *_list;
     };

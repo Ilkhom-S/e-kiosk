@@ -86,7 +86,7 @@ namespace FiscalFlags {
 const char NotPrinting = '\x04';
 
 /// Данные команды начала формирования позиции продажи - выполнить операцию + 2 магических числа
-const QByteArray StartSailingData = QByteArray::from_RawData("\x00\x01\x00", 3);
+const QByteArray StartSailingData = QByteArray::fromRawData("\x00\x01\x00", 3);
 
 /// Флаги выполнения продажи - Выполнить операцию + проверить денежную наличность + налог на
 /// конкретную позицию.

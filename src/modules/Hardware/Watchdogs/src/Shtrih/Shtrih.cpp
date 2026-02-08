@@ -116,7 +116,7 @@ void Shtrih::onPing() {
 }
 
 //--------------------------------------------------------------------------------
-uchar Shtrih::calcCRC(const QByteArray &aData) const {
+uchar Shtrih::calcCRC(const QByteArray &aData) {
     Q_ASSERT(!aData.isEmpty());
 
     uchar sum = aData[1];
@@ -157,7 +157,7 @@ bool Shtrih::getCommandPacket(int aCommand,
 
         QString delay = QString("%1").arg(
             qToBigEndian(CShtrih::Constants::RelayPulseDelay), 4, 16, QChar(ASCII::Zero));
-        aCommandPacket.append(QByteArray::from_Hex(delay.toLatin1()));
+        aCommandPacket.append(QByteArray::fromHex(delay.toLatin1()));
 
         break;
     }
@@ -192,7 +192,7 @@ void Shtrih::packedData(const QByteArray &aCommandPacket, QByteArray &aPacket) {
 //--------------------------------------------------------------------------------
 bool Shtrih::unpackData(const QByteArray &aPacket,
                         const QByteArray &aAnswer,
-                        CShtrih::TAnswersBuffer &aUnpackedBuffer) const {
+                        CShtrih::TAnswersBuffer &aUnpackedBuffer) {
     int position = 0;
 
     do {
@@ -240,12 +240,8 @@ bool Shtrih::unpackData(const QByteArray &aPacket,
              (packetAddress != CShtrih::Constants::BroadcastAddress))) {
             toLog(LogLevel::Error,
                   QString("Shtrih: address unpacked error, value = 0x%1, need = 0x%2")
-                      .arg(QString("%1")
-                               .arg(uchar(answerAddress), 2, 16, QChar(ASCII::Zero))
-                               .toUpper())
-                      .arg(QString("%1")
-                               .arg(uchar(packetAddress), 2, 16, QChar(ASCII::Zero))
-                               .toUpper()));
+                      .arg(QString("%1").arg(answerAddress, 2, 16, QChar(ASCII::Zero)).toUpper())
+                      .arg(QString("%1").arg(packetAddress, 2, 16, QChar(ASCII::Zero)).toUpper()));
             return false;
         }
 
@@ -253,7 +249,7 @@ bool Shtrih::unpackData(const QByteArray &aPacket,
         int length = aAnswer[position];
         position++;
 
-        if (!length) {
+        if (length == 0) {
             toLog(LogLevel::Error, "Shtrih: no information in answer, length = 0");
             return false;
         }
@@ -270,13 +266,13 @@ bool Shtrih::unpackData(const QByteArray &aPacket,
 
         // CRC
         uchar answerCRC = aAnswer[minLength - 1];
-        uchar CRC = calcCRC(aAnswer.mid(position - 4, length + 4));
+        uchar crc = calcCRC(aAnswer.mid(position - 4, length + 4));
 
-        if (answerCRC != CRC) {
+        if (answerCRC != crc) {
             toLog(LogLevel::Error,
                   QString("Shtrih: CRC unpacked error, value = 0x%1, need = 0x%2")
-                      .arg(QString("%1").arg(uchar(answerCRC), 2, 16, QChar(ASCII::Zero)).toUpper())
-                      .arg(QString("%1").arg(uchar(CRC), 2, 16, QChar(ASCII::Zero)).toUpper()));
+                      .arg(QString("%1").arg(answerCRC, 2, 16, QChar(ASCII::Zero)).toUpper())
+                      .arg(QString("%1").arg(crc, 2, 16, QChar(ASCII::Zero)).toUpper()));
             return false;
         }
 
@@ -295,7 +291,7 @@ bool Shtrih::parseAnswer(const CShtrih::TAnswersBuffer &aAnswersBuffer,
     foreach (QByteArray answer, aAnswersBuffer) {
         char command = answer[2];
         char error = answer[3];
-        result = result && !error;
+        result = result && (error == 0);
 
         if (!result) {
             toLog(LogLevel::Error, "Shtrih: Error = " + CShtrih::Errors::Description[error]);
@@ -333,7 +329,7 @@ bool Shtrih::parseAnswer(const CShtrih::TAnswersBuffer &aAnswersBuffer,
 
                 m_DeviceData[deviceType].setData(name,
                                                  answer[0],
-                                                 answer.mid(13, 8).toHex().toULongLong(0, 16),
+                                                 answer.mid(13, 8).toHex().toULongLong(nullptr, 16),
                                                  CShtrih::Devices::SSoftInfo(version, build, date));
 
                 break;
@@ -382,7 +378,8 @@ bool Shtrih::localProcessCommand(int aCommand,
     int repeatCount = 0;
 
     do {
-        QString logIteration = repeatCount ? QString(" - iteration %1").arg(repeatCount + 1) : "";
+        QString logIteration =
+            (repeatCount != 0) ? QString(" - iteration %1").arg(repeatCount + 1) : "";
         toLog(LogLevel::Normal,
               QString("Shtrih: >> {%1}%2").arg(packet.toHex().data()).arg(logIteration));
 
@@ -468,7 +465,7 @@ bool Shtrih::isDeviceAddressExist(const QByteArray &aPacket) const {
 bool Shtrih::processCommand(int aCommandID) {
     MutexLocker lock(&m_WaitMutex);
 
-    EShtrihCommands::Enum command = static_cast<EShtrihCommands::Enum>(aCommandID);
+    auto command = static_cast<EShtrihCommands::Enum>(aCommandID);
 
     CShtrih::SUnpackedData unpackedData;
     bool result = false;
@@ -504,15 +501,14 @@ bool Shtrih::processCommand(int aCommandID) {
 void Shtrih::setDeviceDataByType(CShtrih::Devices::Type::Enum aType) {
     QString key = m_DeviceData[aType].name;
 
-    QString addressLog = QString("0x%1")
-                             .arg(uchar(m_DeviceData[aType].address), 2, 16, QChar(ASCII::Zero))
-                             .toUpper();
+    QString addressLog =
+        QString("0x%1").arg(m_DeviceData[aType].address, 2, 16, QChar(ASCII::Zero)).toUpper();
     setDeviceParameter(CDeviceData::Address, addressLog, key, true);
     setDeviceParameter(CDeviceData::SerialNumber, m_DeviceData[aType].serial, key);
 
     CShtrih::Devices::SSoftInfo &softInfo = m_DeviceData[aType].softInfo;
 
-    if (softInfo.build && softInfo.version) {
+    if ((softInfo.build != 0.0) && (softInfo.version != 0.0)) {
         QString version = QString("%1").arg(softInfo.version, 5, 'f', 2);
         QString build = QString("%1").arg(softInfo.build, 5, 'f', 2);
         QString date = softInfo.date.toString(CShtrih::Constants::DateFormatLog);

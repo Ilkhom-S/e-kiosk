@@ -395,7 +395,7 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
                     LogLevel::Fatal,
                     QString("Didn't create updater restart scheduler task '%1'. Reason: %2.")
                         .arg(commanLine)
-                        .arg(QString::from_Local8Bit(ex.what())));
+                        .arg(QString::fromLocal8Bit(ex.what())));
 
                 return CUpdaterApp::ExitCode::UnknownError;
             }
@@ -433,7 +433,7 @@ CUpdaterApp::ExitCode::Enum UpdaterApp::bitsCheckStatus(bool aAlreadyRunning) {
                 LogLevel::Fatal,
                 QString("Didn't create updater restart scheduler task '%1'. Reason: %2.")
                     .arg(commanLine)
-                    .arg(QString::from_Local8Bit(ex.what())));
+                    .arg(QString::fromLocal8Bit(ex.what())));
         }
 #endif
         return CUpdaterApp::ExitCode::NetworkError;

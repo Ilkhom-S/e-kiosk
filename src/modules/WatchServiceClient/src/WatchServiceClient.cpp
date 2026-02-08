@@ -11,6 +11,7 @@
 
 #include <WatchServiceClient/Constants.h>
 #include <boost/bind/bind.hpp>
+#include <utility>
 
 IWatchServiceClient *createWatchServiceClient(const QString &aClientName,
                                               IWatchServiceClient::PingThread aThread) {
@@ -18,7 +19,8 @@ IWatchServiceClient *createWatchServiceClient(const QString &aClientName,
 }
 
 //---------------------------------------------------------------------------
-WatchServiceClient::WatchServiceClient(const QString &aName, PingThread aThread) : m_Name(aName) {
+WatchServiceClient::WatchServiceClient(QString aName, PingThread aThread)
+    : m_Name(std::move(aName)) {
     qRegisterMetaType<WatchServiceClient::TMethod>("WatchServiceClient::TMethod");
 
     connect(this,
@@ -97,9 +99,8 @@ void WatchServiceClient::stop() {
 bool WatchServiceClient::isConnected() const {
     if (!m_Client) {
         return false;
-    } else {
-        return m_Client->isConnected();
     }
+    return m_Client->isConnected();
 }
 
 //---------------------------------------------------------------------------
@@ -118,7 +119,7 @@ void WatchServiceClient::execute(QString aCommand, QString aModule, QString aPar
         command += QString::fromLatin1("%1=%2;").arg(CWatchService::Fields::Params).arg(aParams);
     }
 
-    emit invokeMethod(boost::bind(&WatchServiceClient::sendMessage, this, command.toUtf8()));
+    emit invokeMethod([this, capture0 = command.toUtf8()] { sendMessage(capture0); });
 }
 
 //---------------------------------------------------------------------------
@@ -183,12 +184,12 @@ void WatchServiceClient::resetState() {
 //---------------------------------------------------------------------------
 bool WatchServiceClient::subscribeOnCommandReceived(QObject *aObject) {
     return aObject->connect(
-        this,
-        SIGNAL(onCommandReceived(
-            const QString &, const QString &, const QString &, const QStringList &)),
-        SLOT(onCommandReceived(
-            const QString &, const QString &, const QString &, const QStringList &)),
-        Qt::UniqueConnection);
+               this,
+               SIGNAL(onCommandReceived(
+                   const QString &, const QString &, const QString &, const QStringList &)),
+               SLOT(onCommandReceived(
+                   const QString &, const QString &, const QString &, const QStringList &)),
+               Qt::UniqueConnection) != nullptr;
 }
 
 //---------------------------------------------------------------------------
@@ -197,13 +198,16 @@ bool WatchServiceClient::subscribeOnCloseCommandReceived(QObject *aObject) {
                    SIGNAL(onCloseCommandReceived()),
                    aObject,
                    SLOT(onCloseCommandReceived()),
-                   Qt::UniqueConnection);
+                   Qt::UniqueConnection) != nullptr;
 }
 
 //---------------------------------------------------------------------------
 bool WatchServiceClient::subscribeOnDisconnected(QObject *aObject) {
-    return connect(
-        this, SIGNAL(disconnected()), aObject, SLOT(onDisconnected()), Qt::UniqueConnection);
+    return connect(this,
+                   SIGNAL(disconnected()),
+                   aObject,
+                   SLOT(onDisconnected()),
+                   Qt::UniqueConnection) != nullptr;
 }
 
 //---------------------------------------------------------------------------
@@ -212,7 +216,7 @@ bool WatchServiceClient::subscribeOnModuleClosed(QObject *aObject) {
                    SIGNAL(onModuleClosed(const QString &)),
                    aObject,
                    SLOT(onModuleClosed(const QString &)),
-                   Qt::UniqueConnection);
+                   Qt::UniqueConnection) != nullptr;
 }
 
 //---------------------------------------------------------------------------
@@ -228,7 +232,7 @@ void WatchServiceClient::sendMessage(const QByteArray &aMessage) {
 }
 
 //---------------------------------------------------------------------------
-void WatchServiceClient::onInvokeMethod(WatchServiceClient::TMethod aMethod) {
+void WatchServiceClient::onInvokeMethod(const WatchServiceClient::TMethod &aMethod) {
     aMethod();
 }
 

@@ -31,7 +31,7 @@ void DeviceConfigManager::setConfigParameter(const QString &aName, const QVarian
 //--------------------------------------------------------------------------------
 void DeviceConfigManager::setLConfigParameter(const QString &aName, const QByteArray &aData) {
     QByteArray data = ProtocolUtils::clean(aData.simplified());
-    QString value = QString::from_Utf8(data);
+    QString value = QString::fromUtf8(data);
 
     setConfigParameter(aName, value);
 }

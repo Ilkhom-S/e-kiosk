@@ -180,12 +180,15 @@ template <class T> void MetaDevice<T>::removeDeviceParameter(const QString &aNam
 template <class T> void MetaDevice<T>::logDeviceData(const SLogData &aData) const {
     toLog(LogLevel::Normal, "Plugin path: " + getConfigParameter(CHardware::PluginPath).toString());
 
-    if (!aData.plugin.isEmpty())
+    if (!aData.plugin.isEmpty()) {
         toLog(LogLevel::Normal, "Plugin data:" + aData.plugin);
-    if (!aData.device.isEmpty())
+    }
+    if (!aData.device.isEmpty()) {
         toLog(LogLevel::Normal, "Device data:" + aData.device);
-    if (!aData.config.isEmpty())
+    }
+    if (!aData.config.isEmpty()) {
         toLog(LogLevel::Normal, "Config data:" + aData.config);
+    }
 
     QReadLocker lock(&m_ConfigurationGuard);
 
@@ -199,7 +202,7 @@ template <class T> void MetaDevice<T>::logDeviceData(const SLogData &aData) cons
 template <class T> SLogData MetaDevice<T>::getDeviceData() const {
     QReadLocker lock(&m_ConfigurationGuard);
 
-    IDevice *requiredDevice =
+    auto *requiredDevice =
         m_Configuration.value(CHardwareSDK::RequiredDevice).template value<IDevice *>();
     SLogData result;
 

@@ -62,7 +62,7 @@ bool ATModem_Base::isConnected() {
     // Выводим конфигурацию модема в лог.
     if (processCommand(AT::Commands::ATandV, answer, m_Modem_ConfigTimeout)) {
         toLog(LogLevel::Normal,
-              QString("Modem configuration: %1").arg(QString::from_Latin1(answer)));
+              QString("Modem configuration: %1").arg(QString::fromLatin1(answer)));
     }
 
     QString modem_Info;
@@ -77,7 +77,7 @@ bool ATModem_Base::isConnected() {
 void ATModem_Base::setDeviceName(const QByteArray &aFullName) {
     if (!isAutoDetecting()) {
         toLog(LogLevel::Normal,
-              QString("Full modem info: %1").arg(QString::from_Latin1(aFullName)));
+              QString("Full modem info: %1").arg(QString::fromLatin1(aFullName)));
     }
 
     QString deviceName = aFullName.simplified();

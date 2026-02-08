@@ -8,11 +8,8 @@
 #include "NetworkTaskManager/NetworkTaskManager.h"
 #include "TestClass.h"
 
-TestThread::TestThread(NetworkTaskManager *aManager) {
+TestThread::TestThread(NetworkTaskManager *aManager) : m_manager(aManager), m_taskComplete(false) {
     moveToThread(this);
-
-    m_manager = aManager;
-    m_taskComplete = false;
 }
 
 //------------------------------------------------------------------------
@@ -30,7 +27,7 @@ void TestThread::run() {
 
     FileDownloadTask task(TestUrl, filePath);
 
-    if (!connect(&task, SIGNAL(onComplete()), SLOT(onTaskComplete()))) {
+    if (connect(&task, SIGNAL(onComplete()), SLOT(onTaskComplete())) == nullptr) {
         return;
     }
 
@@ -41,7 +38,7 @@ void TestThread::run() {
 
 //------------------------------------------------------------------------
 void TestThread::onTaskComplete() {
-    NetworkTask *task = dynamic_cast<NetworkTask *>(sender());
+    auto *task = dynamic_cast<NetworkTask *>(sender());
 
     m_taskComplete = (task->getError() == NetworkTask::NoError);
 

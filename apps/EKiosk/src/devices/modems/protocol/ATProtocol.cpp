@@ -827,7 +827,7 @@ QString ATProtocol::octet(QString hexString) {
 
 QString ATProtocol::encodeUcs2(QString msg) {
 
-    QByteArray encodedText = QAtUtils::codec("ucs2")->from_Unicode(msg);
+    QByteArray encodedText = QAtUtils::codec("ucs2")->fromUnicode(msg);
 
     return encodedText;
     //    QByteArray hex = QByteArray::from_Hex(msg.toLocal8Bit());

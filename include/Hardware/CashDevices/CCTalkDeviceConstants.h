@@ -309,8 +309,8 @@ public:
     }
 
     QString getDescription(QByteArray &aError) const {
-        uchar error = uchar(aError[0]);
-        uchar extraData = uchar(aError[1]);
+        auto error = uchar(aError[0]);
+        auto extraData = uchar(aError[1]);
 
         if (aError.isEmpty() || !m_Buffer.contains(error) || (aError.size() > 2)) {
             return "Unknown code";
@@ -329,7 +329,7 @@ public:
                 .arg(extraData);
         }
 
-        return QString(m_Buffer[error].description);
+        return {m_Buffer[error].description};
     }
 
 protected:

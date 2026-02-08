@@ -94,14 +94,16 @@ private:
         QSet<Currency::Nominal> allNotes(m_TerminalSettings->getCurrencySettings().notes.begin(),
                                          m_TerminalSettings->getCurrencySettings().notes.end());
         return seq2Str2(
-            allNotes.subtract(m_TerminalSettings->getCommonSettings().enabledParNotesList).values());
+            allNotes.subtract(m_TerminalSettings->getCommonSettings().enabledParNotesList)
+                .values());
     }
 
     QString getDisabledCoins() const {
         QSet<Currency::Nominal> allCoins(m_TerminalSettings->getCurrencySettings().coins.begin(),
                                          m_TerminalSettings->getCurrencySettings().coins.end());
         return seq2Str2(
-            allCoins.subtract(m_TerminalSettings->getCommonSettings().enabledParCoinsList).values());
+            allCoins.subtract(m_TerminalSettings->getCommonSettings().enabledParCoinsList)
+                .values());
     }
 
     QString getInterfacePath() const {
@@ -138,7 +140,7 @@ class DealerSettings : public QObject {
     Q_PROPERTY(QString bankContractNumber READ getBankContractNumber CONSTANT)
 
 public:
-    DealerSettings(ICore *m_Core);
+    DealerSettings(ICore *aCore);
 
 public slots:
     /// Получение разрешения на платёж.
@@ -153,7 +155,7 @@ private:
     QString getName() const { return m_PersonalSettings.name; }
     QString getAddress() const {
         return m_PersonalSettings.businessAddress.isEmpty() ? m_PersonalSettings.address
-                                                           : m_PersonalSettings.businessAddress;
+                                                            : m_PersonalSettings.businessAddress;
     }
     QString getInn() const { return m_PersonalSettings.inn; }
     QString getKbk() const { return m_PersonalSettings.kbk; }

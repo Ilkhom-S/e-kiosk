@@ -16,16 +16,10 @@ const char SetInhibits[] = "\x70\x03";
 } // namespace Commands
 } // namespace EBDSConstruct
 
-EBDS::EBDS(QObject *parent) : BaseValidatorDevices(parent) {
+EBDS::EBDS(QObject *parent)
+    : BaseValidatorDevices(parent), validatorLogEnable(false), m_ACK(false), m_Enabled(false),
+      hasDBError(false), escrowed(false), maxSum_Reject(false), nominalSum(0) {
     preDateTime = QDateTime::currentDateTime().addSecs(-1);
-
-    validatorLogEnable = false;
-    m_ACK = false;
-    m_Enabled = false;
-    hasDBError = false;
-    escrowed = false;
-    maxSum_Reject = false;
-    nominalSum = 0;
 }
 
 bool EBDS::OpenPort() {
@@ -38,7 +32,6 @@ void EBDS::sendStatusTo(int sts, QString comment) {
         status = sts;
         emit this->emitStatus(status, comment);
     }
-    return;
 }
 
 bool EBDS::openPort() {
@@ -49,19 +42,24 @@ bool EBDS::openPort() {
         if (serialPort->open(QIODevice::ReadWrite)) {
             is_open = false;
 
-            if (!serialPort->setDataBits(QSerialPort::Data7))
+            if (!serialPort->setDataBits(QSerialPort::Data7)) {
                 return false;
-            if (!serialPort->setParity(QSerialPort::EvenParity))
+            }
+            if (!serialPort->setParity(QSerialPort::EvenParity)) {
                 return false;
-            if (!serialPort->setStopBits(QSerialPort::OneStop))
+            }
+            if (!serialPort->setStopBits(QSerialPort::OneStop)) {
                 return false;
-            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl))
+            }
+            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl)) {
                 return false;
+            }
             //            if
             //            (!serialPort->setCharIntervalTimeout(ValidatorConstants::EBDS_CharTimeOut))
             //            return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud9600))
+            if (!serialPort->setBaudRate(QSerialPort::Baud9600)) {
                 return false;
+            }
 
             is_open = true;
         } else {
@@ -84,7 +82,7 @@ bool EBDS::isItYou() {
         QByteArray respData;
 
         if (execCommand(ValidatorCommands::Idintification, respData)) {
-            auto type = QString::from_Utf8(respData).trimmed();
+            auto type = QString::fromUtf8(respData).trimmed();
             if (!type.isEmpty()) {
                 parseIdentification(respData);
                 return true;
@@ -244,7 +242,7 @@ bool EBDS::execCommand(int cmdType, QByteArray &cmdResponse) {
                 return true;
             }
 
-            if (!result) {
+            if (result == 0u) {
                 qDebug() << "result " << result;
             }
 
@@ -259,8 +257,9 @@ bool EBDS::execCommand(int cmdType, QByteArray &cmdResponse) {
             return false;
         }
     } catch (std::exception &e) {
-        if (debugger)
+        if (debugger) {
             qDebug() << "Protocol CCNet: Exception : [execCommand] " << QString(e.what());
+        }
         return false;
     }
 
@@ -283,7 +282,8 @@ TResult EBDS::processCommand(QByteArray &aCommandData, QByteArray &aAnswerData, 
 
     if (!getAnswer(aAnswerData)) {
         return CommandResult::Port;
-    } else if (aAnswerData.isEmpty()) {
+    }
+    if (aAnswerData.isEmpty()) {
         return CommandResult::NoAnswer;
     } else if (!check(aCommandData, aAnswerData)) {
         return CommandResult::Protocol;
@@ -312,8 +312,9 @@ bool EBDS::getAnswer(QByteArray &aAnswer) {
         data.clear();
 
         if (!serialPort->waitForReadyRead(200)) {
-            if (debugger)
+            if (debugger) {
                 qDebug() << "waitForReadyRead false";
+            }
         }
 
         // Есть ответ
@@ -325,10 +326,11 @@ bool EBDS::getAnswer(QByteArray &aAnswer) {
             length = aAnswer[1];
         }
     } while ((clockTimer.elapsed() < EBDSConstruct::AnswerTimeout) &&
-             ((aAnswer.size() < length) || !length));
+             ((aAnswer.size() < length) || (length == 0u)));
 
-    if (debugger)
+    if (debugger) {
         qDebug() << QString("EBDS: << {%1}").arg(aAnswer.toHex().data());
+    }
 
     return true;
 }
@@ -389,21 +391,21 @@ bool EBDS::CmdRestart() {
 }
 
 void EBDS::parseIdentification(QByteArray respData) {
-    partNumber = QString::from_Utf8(respData);
+    partNumber = QString::fromUtf8(respData);
 
     respData.clear();
     QByteArray cmdRequest = this->makeCustom_Request(EBDSConstruct::Commands::GetVariantName);
     TResult result = processCommand(cmdRequest, respData, true);
 
     if (result == CommandResult::OK) {
-        partNumber += "/" + QString::from_Utf8(respData);
+        partNumber += "/" + QString::fromUtf8(respData);
     }
 
     cmdRequest = this->makeCustom_Request(EBDSConstruct::Commands::GetVariantVersion);
     result = processCommand(cmdRequest, respData, true);
 
     if (result == CommandResult::OK) {
-        partNumber += "/" + QString::from_Utf8(respData.mid(0, 9));
+        partNumber += "/" + QString::fromUtf8(respData.mid(0, 9));
     }
 
     cmdRequest = this->makeCustom_Request(EBDSConstruct::Commands::GetSerialNumber);
@@ -411,7 +413,7 @@ void EBDS::parseIdentification(QByteArray respData) {
     result = processCommand(cmdRequest, respData, true);
 
     if (result == CommandResult::OK) {
-        serialNumber = QString::from_Utf8(respData);
+        serialNumber = QString::fromUtf8(respData);
     }
 }
 
@@ -501,7 +503,7 @@ void EBDS::CmdStartPoll() {
         }
     }
 
-    this->msleep(10);
+    EBDS::msleep(10);
     this->CmdStopPoll();
 }
 
@@ -541,7 +543,7 @@ int EBDS::getNominal(QByteArray respData) {
     }
 
     int nominal = respData.mid(10, 3).toInt() * int(qPow(10, respData.mid(13, 3).toDouble()));
-    QString currency = QString::from_Utf8(respData.mid(7, 3));
+    QString currency = QString::fromUtf8(respData.mid(7, 3));
 
     if (nominal < 1000 || nominal > 200000 || !currency.startsWith("UZ", Qt::CaseInsensitive)) {
         emit emitLog(0, "EBDS", QString("Не поддерживаемая купюра %1").arg(nominal));
@@ -693,7 +695,7 @@ bool EBDS::checkBit(char bytes, int bit) {
     QBitArray bits(8);
 
     for (int b = 0; b < 8; b++) {
-        bits.setBit(b, bytes & (1 << (7 - b)));
+        bits.setBit(b, (bytes & (1 << (7 - b))) != 0);
     }
 
     int i = 7 - bit;

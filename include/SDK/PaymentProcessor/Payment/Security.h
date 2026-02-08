@@ -15,7 +15,7 @@ struct SProvider;
 //------------------------------------------------------------------------------
 class SecurityFilter {
 public:
-    SecurityFilter(const SProvider &aProvider, SProviderField::SecuritySubsystem aSubsustem);
+    SecurityFilter(const SProvider &aProvider, SProviderField::SecuritySubsystem aSubsystem);
 
     /// Проверка - подлежит ли поле маскированию
     bool haveFilter(const QString &aParameterName) const;

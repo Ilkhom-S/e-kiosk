@@ -19,9 +19,6 @@ public: // методы
 
     /// Зарегистрировать электронный ключ.
     virtual void registerKey() = 0;
-
-protected:
-    virtual ~IWatchdog() {}
 };
 
 } // namespace Driver

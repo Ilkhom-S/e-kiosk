@@ -50,21 +50,22 @@ protected:
     virtual bool processReset();
 
     /// Состояние - не Busy или PowerUp, но может быть Initialization.
-    bool isNotBusyPowerUp();
+    static bool isNotBusyPowerUp();
 
     /// Выполнить команду.
     virtual TResult execCommand(const QByteArray &aCommand,
                                 const QByteArray &aCommandData,
                                 QByteArray *aAnswer = nullptr);
     virtual TResult perform_Command(const QByteArray &aCommand,
-                                   const QByteArray &aCommandData,
-                                   QByteArray *aAnswer = nullptr);
+                                    const QByteArray &aCommandData,
+                                    QByteArray *aAnswer = nullptr);
 
     /// Обновить прошивку.
     virtual bool perform_UpdateFirmware(const QByteArray &aBuffer);
 
     /// Отправить блок данных обновления прошивки.
-    bool processBlockUpdating(uint aAddress, const QByteArray &aBuffer, int &aRepeat, int &aIndex);
+    static bool
+    processBlockUpdating(uint aAddress, const QByteArray &aBuffer, int &aRepeat, int &aIndex);
 
     /// Изменить скорость работы.
     bool changeBaudRate(bool aHigh);
@@ -76,13 +77,13 @@ protected:
     virtual bool processUpdating(const QByteArray &aBuffer, int aSectionSize);
 
     /// Получить статус процесса обновления прошивки.
-    char getUpdatingStatus();
+    static char getUpdatingStatus();
 
     /// Ждать выхода из Busy-подобных состояний.
     bool waitNotBusyPowerUp();
 
     /// Получить имя модели по ответу на запрос идентификации.
-    SBaseModelData getModelData(const QByteArray &aAnswer);
+    static SBaseModelData getModelData(const QByteArray &aAnswer);
 
     /// Запросить и сохранить параметры устройства.
     virtual void processDeviceData(QByteArray &aAnswer);

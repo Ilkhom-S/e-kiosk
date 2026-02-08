@@ -18,7 +18,7 @@ public:
 
     void setValidator(QString name);
     void setPortName(QString portName);
-    void setPortListInfo(QStringList port_list);
+    static void setPortListInfo(QStringList port_list);
     void setPartNumber(QString partNumber);
     void setDBError(bool error);
 
@@ -39,7 +39,7 @@ public:
     QString vSerialNumber;
 
     QVariantMap maxSum;
-    int status;
+    int status{};
 
     QString firmwareVersion;
 
@@ -48,8 +48,8 @@ public slots:
     void getStatusFrom_Validator(int sts, QString comment);
 
 private:
-    CCNetSm *CCNetValidator;
-    EBDS *EBDSValidator;
+    CCNetSm *CCNetValidator{};
+    EBDS *EBDSValidator{};
 
     QString com_Port;
     QStringList portList;
@@ -57,7 +57,7 @@ private:
 
     bool CIsItYou(QString &validat_name);
 
-    int cmdExec;
+    int cmdExec{};
 
     virtual void run() override;
 

@@ -31,7 +31,7 @@ ExtensionsSettings::ExtensionsSettings(TPtree &aProperties)
             }
 
             try {
-                QString extensionName = record.second.get<QString>("<xmlattr>.name");
+                auto extensionName = record.second.get<QString>("<xmlattr>.name");
 
                 QMap<QString, QString> extensionParams;
                 BOOST_FOREACH (const TPtree::value_type &parameter, record.second) {
@@ -55,7 +55,7 @@ ExtensionsSettings::ExtensionsSettings(TPtree &aProperties)
 }
 
 //---------------------------------------------------------------------------
-ExtensionsSettings::~ExtensionsSettings() {}
+ExtensionsSettings::~ExtensionsSettings() = default;
 
 //---------------------------------------------------------------------------
 bool ExtensionsSettings::isValid() const {

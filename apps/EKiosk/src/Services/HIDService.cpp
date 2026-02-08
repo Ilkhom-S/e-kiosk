@@ -21,15 +21,15 @@ const QString Name = "HID";
 
 //---------------------------------------------------------------------------
 HIDService *HIDService::instance(IApplication *aApplication) {
-    return static_cast<HIDService *>(aApplication->getCore()->getService(CServices::HIDService));
+    return dynamic_cast<HIDService *>(aApplication->getCore()->getService(CServices::HIDService));
 }
 
 //---------------------------------------------------------------------------
 HIDService::HIDService(IApplication *aApplication)
-    : m_Application(aApplication), m_DeviceService(0), ILogable(CHIDService::Name) {}
+    : m_Application(aApplication), m_DeviceService(nullptr), ILogable(CHIDService::Name) {}
 
 //---------------------------------------------------------------------------
-HIDService::~HIDService() {}
+HIDService::~HIDService() = default;
 
 //---------------------------------------------------------------------------
 bool HIDService::initialize() {
@@ -53,13 +53,13 @@ void HIDService::updateHardwareConfiguration() {
     toLog(LogLevel::Normal, "Initialize HIDs...");
 
     // Получаем список всех доступных HID-устройств.
-    PPSDK::TerminalSettings *settings =
+    auto *settings =
         SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
 
     foreach (
         const QString &configurationName,
         settings->getDeviceList().filter(QRegularExpression(SDK::Driver::CComponents::Scanner))) {
-        SDK::Driver::IHID *device =
+        auto *device =
             dynamic_cast<SDK::Driver::IHID *>(m_DeviceService->acquireDevice(configurationName));
 
         if (device) {
@@ -81,7 +81,7 @@ void HIDService::updateHardwareConfiguration() {
     foreach (const QString &configurationName,
              settings->getDeviceList().filter(
                  QRegularExpression(SDK::Driver::CComponents::CardReader))) {
-        SDK::Driver::ICardReader *device = dynamic_cast<SDK::Driver::ICardReader *>(
+        auto *device = dynamic_cast<SDK::Driver::ICardReader *>(
             m_DeviceService->acquireDevice(configurationName));
 
         if (device) {
@@ -124,8 +124,8 @@ bool HIDService::canShutdown() {
 bool HIDService::shutdown() {
     toLog(LogLevel::Normal, "Shutting down HIDs...");
 
-    foreach (SDK::Driver::IHID *HID, m_HIDs) {
-        m_DeviceService->releaseDevice(HID);
+    foreach (SDK::Driver::IHID *hid, m_HIDs) {
+        m_DeviceService->releaseDevice(hid);
     }
 
     m_HIDs.clear();
@@ -154,11 +154,11 @@ const QSet<QString> &HIDService::getRequiredServices() const {
 
 //---------------------------------------------------------------------------
 QVariantMap HIDService::getParameters() const {
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
-void HIDService::resetParameters(const QSet<QString> &) {}
+void HIDService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 bool HIDService::setEnable(bool aEnable, const QString &aDevice) {
@@ -166,12 +166,12 @@ bool HIDService::setEnable(bool aEnable, const QString &aDevice) {
 
     if (!aDevice.isEmpty()) {
         // Получаем список всех доступных HID-устройств.
-        PPSDK::TerminalSettings *settings =
+        auto *settings =
             SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
 
         foreach (const QString &configurationName,
                  settings->getDeviceList().filter(QRegularExpression(aDevice))) {
-            SDK::Driver::IHID *device = dynamic_cast<SDK::Driver::IHID *>(
+            auto *device = dynamic_cast<SDK::Driver::IHID *>(
                 m_DeviceService->acquireDevice(configurationName));
 
             if (device) {
@@ -186,8 +186,8 @@ bool HIDService::setEnable(bool aEnable, const QString &aDevice) {
         }
     } else {
         // TODO когда появится контекст - конкретизируем
-        foreach (SDK::Driver::IHID *HID, m_HIDs) {
-            if (HID->enable(aEnable)) {
+        foreach (SDK::Driver::IHID *hid, m_HIDs) {
+            if (hid->enable(aEnable)) {
                 result = true;
             }
         }
@@ -219,7 +219,7 @@ QString HIDService::valueToString(const QVariant &aData) {
 
 //------------------------------------------------------------------------------
 void HIDService::onCardInserted(SDK::Driver::ECardType::Enum aCardType, const QVariantMap &aData) {
-    SDK::Driver::ICardReader *cardReader = dynamic_cast<SDK::Driver::ICardReader *>(sender());
+    auto *cardReader = dynamic_cast<SDK::Driver::ICardReader *>(sender());
 
     if (cardReader) {
         toLog(
@@ -241,7 +241,7 @@ void HIDService::onCardInserted(SDK::Driver::ECardType::Enum aCardType, const QV
 
 //------------------------------------------------------------------------------
 void HIDService::onCardEjected() {
-    SDK::Driver::ICardReader *cardReader = dynamic_cast<SDK::Driver::ICardReader *>(sender());
+    auto *cardReader = dynamic_cast<SDK::Driver::ICardReader *>(sender());
 
     if (cardReader) {
         toLog(LogLevel::Normal, QString("Card ejected from '%1'.").arg(cardReader->getName()));

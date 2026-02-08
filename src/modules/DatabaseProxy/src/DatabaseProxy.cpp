@@ -1,7 +1,7 @@
 #include "MySqlDatabaseProxy.h"
 #include "SQLiteDatabaseProxy.h"
 
-IDatabaseProxy *g_databaseProxy = 0;
+IDatabaseProxy *g_databaseProxy = nullptr;
 
 //---------------------------------------------------------------------------
 IDatabaseProxy *IDatabaseProxy::getInstance(IDatabaseQueryChecker *aErrorChecker, Type aType) {
@@ -29,14 +29,14 @@ IDatabaseProxy *IDatabaseProxy::getInstance(IDatabaseQueryChecker *aErrorChecker
     } catch (...) {
     }
 
-    return 0;
+    return nullptr;
 }
 
 //---------------------------------------------------------------------------
 void IDatabaseProxy::freeInstance(IDatabaseProxy *aProxy) {
     if (g_databaseProxy) {
         delete aProxy;
-        g_databaseProxy = 0;
+        g_databaseProxy = nullptr;
     }
 }
 

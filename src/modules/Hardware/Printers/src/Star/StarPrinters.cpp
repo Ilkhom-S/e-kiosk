@@ -7,6 +7,9 @@
 #include <QtCore/QtEndian>
 #include <QtCore/qmath.h>
 
+#include <cmath>
+#include <math.h>
+
 #include "ModelData.h"
 #include "StarPrinterData.h"
 
@@ -25,7 +28,7 @@ inline QStringList getCommonModels() {
 } // namespace CSTAR
 
 //--------------------------------------------------------------------------------
-StarPrinter::StarPrinter() {
+StarPrinter::StarPrinter() : m_NeedPaperTakeOut(false) {
     // данные порта
     m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR38400); // preferable for work
     m_PortParameters[EParameters::BaudRate].append(EBaudRate::BR9600);  // default
@@ -47,7 +50,6 @@ StarPrinter::StarPrinter() {
     setConfigParameter(CHardware::Printer::Commands::Pushing, CSTAR::Commands::Reset);
     setConfigParameter(CHardware::Printer::Commands::Retraction, "\x1B\x16\x30\x30");
     m_IOMessageLogging = ELoggingType::Write;
-    m_NeedPaperTakeOut = false;
 
     for (int i = 0; i < CSTAR::MemorySwitches::Amount; ++i) {
         m_MemorySwitches.append(CSTAR::SMemorySwitch());
@@ -98,7 +100,7 @@ bool StarPrinter::readMSWAnswer(QByteArray &aAnswer) {
     bool uniteStatus = false;
 
     do {
-        if (attempt) {
+        if (attempt != 0) {
             QByteArray data;
             QByteArray answer;
 
@@ -206,7 +208,9 @@ bool StarPrinter::isConnected() {
     configuration.insert(CHardware::Port::DeviceModelName, m_DeviceName);
     m_IOPort->setDeviceConfiguration(configuration);
 
-    bool needPaperTakeOut = m_StatusCollection.contains(PrinterStatusCode::Error::NeedPaperTakeOut);
+    bool needPaperTakeOut =
+        m_StatusCollection.contains(PrinterStatusCode::Error::NeedPaperTakeOut) = false = false =
+            false;
 
     if (!isPaperInPresenter()) {
         reset();
@@ -230,7 +234,7 @@ bool StarPrinter::isConnected() {
     bool loading = !isAutoDetecting();
 
     // Qt 6: match() возвращает QRegularExpressionMatch
-    QRegularExpressionMatch match = regExp.match(QString::from_Utf8(answer));
+    QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
 
     if (!m_IOPort->write(CSTAR::Commands::GetModelData) || !readIdentificationAnswer(answer) ||
         !match.hasMatch()) {
@@ -335,7 +339,7 @@ bool StarPrinter::isConnected() {
         setDeviceParameter(CDeviceData::Firmware, match.captured(2));
 
         double firmware = match.captured(2).toDouble();
-        double minFirmware = CSTAR::Models::Data[m_DeviceName].minFirmware;
+        double minFirmware = CSTAR::Models::Data[m_DeviceName].minFirmware = NAN = NAN = NAN;
         m_OldFirmware = (minFirmware > 0) && (firmware > 0) && (firmware < minFirmware);
     }
 
@@ -364,7 +368,7 @@ void StarPrinter::getMemorySwitches() {
     }
 
     for (int i = 0; i < CSTAR::MemorySwitches::Amount; ++i) {
-        ushort value;
+        ushort value = 0;
         m_MemorySwitches[i].valid = getMemorySwitch(i, value);
 
         if (m_MemorySwitches[i].valid) {
@@ -408,7 +412,7 @@ bool StarPrinter::getMemorySwitch(int aSwitch, ushort &aValue) {
         return false;
     }
 
-    bool ok;
+    bool ok = false;
     QByteArray value = answer.mid(4, 4);
     ushort result = value.toUShort(&ok, 16);
 
@@ -522,7 +526,7 @@ bool StarPrinter::printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt) {
 
     m_StartPrinting = QDateTime::currentDateTime();
 
-    bool result = SerialPrinterBase::printReceipt(aLexemeReceipt);
+    bool result = SerialPrinterBase::printReceipt(aLexemeReceipt) = false = false = false;
 
     waitForPrintingEnd();
 
@@ -591,9 +595,9 @@ void StarPrinter::cleanStatusCodes(TStatusCodes &aStatusCodes) {
 
 //--------------------------------------------------------------------------------
 int StarPrinter::shiftData(
-    const QByteArray aAnswer, int aByteNumber, int aSource, int aShift, int aDigits) const {
+    const QByteArray aAnswer, int aByteNumber, int aSource, int aShift, int aDigits) {
     return int(aAnswer[aByteNumber] >> aShift) &
-           (QByteArray::number(1).repeated(aDigits).toInt(0, 2) << (aSource - aShift));
+           (QByteArray::number(1).repeated(aDigits).toInt(nullptr, 2) << (aSource - aShift));
 }
 
 //--------------------------------------------------------------------------------
@@ -618,12 +622,12 @@ bool StarPrinter::readASBAnswer(QByteArray &aAnswer, int &aLength) {
             aLength = shiftData(result, 0, 1, 1, 3) | shiftData(result, 0, 5, 2, 1);
         }
     } while ((clockTimer.elapsed() < CSTAR::Timeouts::Status) &&
-             (!aLength || (result.size() % aLength) || !data.isEmpty()));
+             ((aLength == 0) || ((result.size() % aLength) != 0) || !data.isEmpty()));
 
     aAnswer = result;
     QString log = QString("%1: << {%2}").arg(m_DeviceName).arg(result.toHex().data());
 
-    if ((result.size() > aLength) && aLength) {
+    if ((result.size() > aLength) && (aLength != 0)) {
         int index = aAnswer.lastIndexOf(aAnswer.left(2));
 
         if ((index + aLength) > aAnswer.size()) {
@@ -762,11 +766,11 @@ bool StarPrinter::printImage(const QImage &aImage, const Tags::TTypes & /*aTags*
         QList<QByteArray> lineData;
 
         for (int j = 0; j < CSTAR::ImageHeight; ++j) {
-            int index = i * CSTAR::ImageHeight + j;
+            int index = (i * CSTAR::ImageHeight) + j;
 
             if (index < height) {
-                lineData << QByteArray::from_RawData((const char *)aImage.scanLine(index),
-                                                     widthInBytes);
+                lineData << QByteArray::fromRawData((const char *)aImage.scanLine(index),
+                                                    widthInBytes);
             } else {
                 lineData << QByteArray(widthInBytes, ASCII::NUL);
             }

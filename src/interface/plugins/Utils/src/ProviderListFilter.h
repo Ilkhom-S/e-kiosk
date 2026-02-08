@@ -16,7 +16,7 @@ public:
     ProviderListFilter(QObject *aParent);
     ~ProviderListFilter();
 
-    bool getEmpty() const;
+    static bool getEmpty();
     QString getFilter() const;
     void setFilter(const QString &aFilter);
 
@@ -34,8 +34,8 @@ signals:
     void emptyChanged();
 
 private:
-    QString m_Filter;
-    QStringList m_FilterLexem_List;
+    QString m_Filter{};
+    QStringList m_FilterLexem_List{};
 };
 
 //------------------------------------------------------------------------------

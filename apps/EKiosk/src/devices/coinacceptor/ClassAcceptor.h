@@ -16,7 +16,7 @@ public:
 
     void setValidator(QString name);
     void setPortName(QString portName);
-    void setPortListInfo(QStringList port_list);
+    static void setPortListInfo(QStringList port_list);
     void setPartNumber(QString partNumber);
     bool openPort();
     bool isItYou(QStringList &com_List,
@@ -36,14 +36,14 @@ public:
 
     QString phone_number;
 
-    int status;
+    int status{};
 
 public slots:
     void execCommand(int cmd);
     void getStatusFrom_Acceptor(int sts, QString comment);
 
 private:
-    CCTalk *CCTalkAcceptor;
+    CCTalk *CCTalkAcceptor{};
 
     QString com_Port;
     QStringList portList;
@@ -51,7 +51,7 @@ private:
 
     bool CIsItYou(QString &validat_name);
 
-    int cmdExec;
+    int cmdExec{};
 
     virtual void run();
 

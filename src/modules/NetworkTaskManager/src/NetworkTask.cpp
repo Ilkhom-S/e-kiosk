@@ -19,7 +19,7 @@ NetworkTask::NetworkTask()
 }
 
 //------------------------------------------------------------------------
-NetworkTask::~NetworkTask() {}
+NetworkTask::~NetworkTask() = default;
 
 //------------------------------------------------------------------------
 NetworkTaskManager *NetworkTask::getManager() const {
@@ -124,7 +124,7 @@ void NetworkTask::setProcessing(NetworkTaskManager *aManager, bool aProcessing) 
     m_Processing = aProcessing;
 
     if (aProcessing) {
-        if (m_Timer.interval()) {
+        if (m_Timer.interval() != 0) {
             m_Timer.start();
         }
 
@@ -161,7 +161,7 @@ void NetworkTask::setProcessing(NetworkTaskManager *aManager, bool aProcessing) 
 //------------------------------------------------------------------------
 void NetworkTask::resetTimer() {
     if (m_Processing) {
-        if (m_Timer.interval()) {
+        if (m_Timer.interval() != 0) {
             m_Timer.start();
         }
     }
@@ -323,7 +323,7 @@ QDateTime NetworkTask::getServerDate() const {
     // Проверим на наличие серверной даты в ответе
     if (m_ResponseHeader.contains("Date")) {
         // Пример: Mon, 05 Sep 2011 10:43:11 GMT
-        QString dateString = QString::from_Latin1(m_ResponseHeader["Date"]);
+        QString dateString = QString::fromLatin1(m_ResponseHeader["Date"]);
         dateString.replace(0, dateString.indexOf(",") + 2, "");
         dateString.chop(4);
 
@@ -340,7 +340,7 @@ QDateTime NetworkTask::getServerDate() const {
             .replace("Nov", "11")
             .replace("Dec", "12");
 
-        date = QDateTime::from_String(dateString, "dd MM yyyy hh:mm:ss");
+        date = QDateTime::fromString(dateString, "dd MM yyyy hh:mm:ss");
         // QTimeZone::UTC is available in Qt 5.2+, which is the practical minimum
         date.setTimeZone(QTimeZone::UTC);
     }

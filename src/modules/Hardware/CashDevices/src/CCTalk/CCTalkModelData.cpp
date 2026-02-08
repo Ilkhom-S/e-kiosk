@@ -77,8 +77,8 @@ QString CModelDataBase::getData(const QByteArray &aVendorID,
     QString modelId = QString(aModelID).remove(QRegularExpression("[ \\-]+")).toLatin1();
     // TModelData modelData = ModelData[vendorID];
 
-    for (TModelDataIt it = data().begin(); it != data().end(); ++it) {
-        for (TModelData::iterator jt = it->begin(); jt != it->end(); ++jt) {
+    for (auto &it : data()) {
+        for (TModelData::iterator jt = it.begin(); jt != it.end(); ++jt) {
             if (modelId.indexOf(jt.key()) != -1) {
                 aModelData = jt.value();
                 QString model = jt->model;
@@ -102,7 +102,7 @@ QStringList CModelDataBase::getModels(bool aComplexEnabling) {
 
     for (TVendorDataIt it = vendorData.data().begin(); it != vendorData.data().end(); ++it) {
         if (it->complexEnabling == aComplexEnabling) {
-            QString vendorId = it.key();
+            const QString &vendorId = it.key();
             QString vendor = vendorData.getName(vendorId);
 
             // не будем использовать дефолтные девайсы

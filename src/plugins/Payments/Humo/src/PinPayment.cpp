@@ -23,9 +23,11 @@ bool PinPayment::canProcessOffline() const {
 Request *PinPayment::createRequest(const QString &aStep) {
     if (aStep == CPayment::Requests::FakeCheck) {
         return new PinPaymentCheckRequest(this, true);
-    } else if (aStep == CPayment::Requests::Check) {
+    }
+    if (aStep == CPayment::Requests::Check) {
         return new PinPaymentCheckRequest(this, false);
-    } else if (aStep == CPayment::Requests::Status) {
+    }
+    if (aStep == CPayment::Requests::Status) {
         return new PinPaymentStatusRequest(this);
     }
 

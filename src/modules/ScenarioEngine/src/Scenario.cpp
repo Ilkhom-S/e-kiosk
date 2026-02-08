@@ -1,11 +1,12 @@
 /* @file Базовый класс для сценариев. */
 
 #include <ScenarioEngine/Scenario.h>
+#include <utility>
 
 namespace GUI {
 
 //---------------------------------------------------------------------------
-Scenario::Scenario(const QString &aName, ILog *aLog) : m_Name(aName), m_DefaultTimeout(0) {
+Scenario::Scenario(QString aName, ILog *aLog) : m_Name(std::move(aName)), m_DefaultTimeout(0) {
     setLog(aLog);
     connect(&m_TimeoutTimer, SIGNAL(timeout()), SLOT(onTimeout()));
 
@@ -13,7 +14,7 @@ Scenario::Scenario(const QString &aName, ILog *aLog) : m_Name(aName), m_DefaultT
 }
 
 //---------------------------------------------------------------------------
-Scenario::~Scenario() {}
+Scenario::~Scenario() = default;
 
 //---------------------------------------------------------------------------
 QString Scenario::getName() const {

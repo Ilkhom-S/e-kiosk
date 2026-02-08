@@ -185,7 +185,7 @@ void IConnection::createDialupConnection(const QString &aName,
     entry.setIdleDisconnectSeconds(static_cast<size_t>(RasApi::EIdleDisconnect::Disabled));
     entry.setRedialCount(CConnection::DialTryCount);
     entry.setPhonebookEntryType(RasApi::EPhonebookEntry::Phone);
-    entry.setEncriptionType(RasApi::EEncryptionType::Optional);
+    entry.setEncryptionType(RasApi::EEncryptionType::Optional);
 
     entry.setOptions(RasApi::EConnectionOption::RemoteDefaultGateway |
                      RasApi::EConnectionOption::DisableLcpExtensions |

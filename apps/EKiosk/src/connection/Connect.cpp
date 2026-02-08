@@ -4,7 +4,9 @@
 #include <windows.h>
 #endif
 
-ConnectionPart::ConnectionPart(QObject *parent) : QObject(parent) {
+ConnectionPart::ConnectionPart(QObject *parent)
+    : QObject(parent), checkConn(new CheckConnection(this)), daemonTimer(new QTimer(this)),
+      conState(Connection::conStateDown) {
 #ifdef Q_OS_WIN
     rasConn = new RasConnection(this);
     connect(rasConn, SIGNAL(emit_ConnectionError()), this, SIGNAL(emit_ConnectionError()));
@@ -23,16 +25,12 @@ ConnectionPart::ConnectionPart(QObject *parent) : QObject(parent) {
             SIGNAL(emit_toLoging(int, QString, QString)));
 #endif
 
-    checkConn = new CheckConnection(this);
     connect(checkConn, SIGNAL(emit_Ping(bool)), this, SIGNAL(emit_Ping(bool)));
     connect(checkConn,
             SIGNAL(emit_toLoging(int, QString, QString)),
             SIGNAL(emit_toLoging(int, QString, QString)));
 
-    daemonTimer = new QTimer(this);
     connect(daemonTimer, SIGNAL(timeout()), SIGNAL(emit_checkConState()));
-
-    conState = Connection::conStateDown;
 }
 
 void ConnectionPart::nowStateDialuping(int state) {
@@ -95,7 +93,7 @@ void ConnectionPart::setDateTimeIn(QString dt) {
 #endif
 }
 
-void ConnectionPart::startCheckConnection() {
+void ConnectionPart::startCheckConnection() const {
     if (!this->daemonTimer->isActive()) {
         this->daemonTimer->start(300000);
     }
@@ -122,7 +120,7 @@ QStringList ConnectionPart::getRasConnectionList() {
 
     return list;
 #else
-    return QStringList();
+    return {};
 #endif
 }
 
@@ -167,12 +165,12 @@ int ConnectionPart::createNewDialupConnection(
 #endif
 }
 
-bool ConnectionPart::hasInstalledModems(QStringList &lstModem_List) {
+bool ConnectionPart::hasInstalledModems(QStringList &lstModemList) {
 #ifdef Q_OS_WIN
     bool result = rasConn->HasInstalledModems(lstModem_List);
     return result;
 #else
-    Q_UNUSED(lstModem_List);
+    Q_UNUSED(lstModemList);
     return false;
 #endif
 }

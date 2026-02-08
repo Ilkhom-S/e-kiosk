@@ -26,17 +26,17 @@ public:
 
 protected:
     /// Подсчет контрольной суммы пакета данных.
-    ushort calcCRC16(const QByteArray &aData);
+    static ushort calcCRC16(const QByteArray &aData);
 
     /// Прочитать пакеты данных из порта.
     typedef QList<QByteArray> TAnswers;
     bool readAnswers(TAnswers &aAnswers, int aTimeout);
 
     /// Упаковка команды с данными.
-    void pack(QByteArray &aCommandData);
+    void pack(QByteArray &aCommandData) const const;
 
     /// Проверка пришедших из порта данных.
-    QString check(const QByteArray &aAnswer);
+    QString check(const QByteArray &aAnswer) const const;
 
     /// Отсылка ACK в порт.
     bool sendACK();

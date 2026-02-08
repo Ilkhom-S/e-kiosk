@@ -164,7 +164,7 @@ bool MStarPrinters::perform_Encashment(const QStringList &aReceipt) {
     // делаем выплату
     TReceiptBuffer receiptBuffer;
     makeReceipt(aReceipt, receiptBuffer);
-    commandData.insert(CHardware::Printer::Receipt, QVariant().from_Value(&receiptBuffer));
+    commandData.insert(CHardware::Printer::Receipt, QVariant().fromValue(&receiptBuffer));
     commandData.insert(CHardware::FiscalPrinter::Amount, unpackedData.Register);
 
     return m_Protocol->processCommand(m_IOPort, FRProtocolCommands::Encashment, commandData);

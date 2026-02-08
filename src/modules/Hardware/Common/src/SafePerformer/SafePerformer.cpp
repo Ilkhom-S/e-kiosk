@@ -47,7 +47,7 @@ ETaskResult::Enum SafePerformer::process(const STaskData &aData) {
         return ETaskResult::Invalid;
     }
 
-    SafePerformerThread *workingThread = new SafePerformerThread(m_Log);
+    auto *workingThread = new SafePerformerThread(m_Log);
     connect(workingThread, SIGNAL(finished(bool)), SLOT(onFinished(bool)));
 
     moveToThread(workingThread);

@@ -5,7 +5,7 @@ QString encodeStr(const QString &str, quint32 key) {
     for (int i = 0; i < arr.size(); i++)
         arr[i] = arr[i] ^ key;
 
-    return QString::from_Latin1(arr.toBase64());
+    return QString::fromLatin1(arr.toBase64());
 }
 
 QString decodeStr(const QString &str, quint32 key) {
@@ -13,5 +13,5 @@ QString decodeStr(const QString &str, quint32 key) {
     for (int i = 0; i < arr.size(); i++)
         arr[i] = arr[i] ^ key;
 
-    return QString::from_Utf8(arr);
+    return QString::fromUtf8(arr);
 }

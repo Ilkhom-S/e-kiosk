@@ -20,7 +20,7 @@ public:
 
 protected:
     /// Подсчет контрольной суммы пакета данных.
-    ushort calcCRC(const QByteArray &aData);
+    static ushort calcCRC(const QByteArray &aData);
 
     /// Получить ответ.
     bool getAnswer(QByteArray &aAnswer, int aTimeout);

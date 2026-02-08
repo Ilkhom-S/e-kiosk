@@ -21,7 +21,7 @@ SPar::SPar(double aNominal,
            bool aEnabled,
            bool aInhibit)
     : nominal(aNominal), currencyId(Currency::NoCurrency), currency(std::move(aCurrency)),
-      enabled(aEnabled), inhibit(aInhibit || !aNominal), cashReceiver(aCashReceiver) {}
+      enabled(aEnabled), inhibit(aInhibit || (aNominal == 0.0)), cashReceiver(aCashReceiver) {}
 
 //--------------------------------------------------------------------------------
 SPar::SPar(double aNominal,
@@ -29,8 +29,8 @@ SPar::SPar(double aNominal,
            ECashReceiver::Enum aCashReceiver,
            bool aEnabled,
            bool aInhibit)
-    : nominal(aNominal), currencyId(aCurrencyId), enabled(aEnabled), inhibit(aInhibit || !aNominal),
-      cashReceiver(aCashReceiver) {}
+    : nominal(aNominal), currencyId(aCurrencyId), enabled(aEnabled),
+      inhibit(aInhibit || (aNominal == 0.0)), cashReceiver(aCashReceiver) {}
 
 //--------------------------------------------------------------------------------
 bool SPar::operator==(const SPar &aPar) const {

@@ -45,7 +45,7 @@ bool OSMP::isConnected() {
     QRegularExpression regExp(QStringLiteral("WDT.*v([0-9\\.]+)"));
 
     // 2. Выполняем сопоставление (match автоматически конвертирует QByteArray в QString)
-    QRegularExpressionMatch match = regExp.match(QString::from_Utf8(answer));
+    QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
 
     // 3. Проверяем наличие совпадения через hasMatch()
     // и сравниваем захваченную группу через captured(1)

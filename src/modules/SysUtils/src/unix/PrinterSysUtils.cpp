@@ -17,24 +17,30 @@ QVariantMap ISysUtils::getPrinterData(const QString &aPrinterName) {
     QVariantMap result;
     QString cmd = QString("lpstat -l -p %1").arg(aPrinterName);
     FILE *fp = popen(cmd.toUtf8().constData(), "r");
-    if (!fp)
+    if (!fp) {
         return result;
+    }
     char buffer[512];
     QString output;
     while (fgets(buffer, sizeof(buffer), fp)) {
         output += QString::fromLocal8Bit(buffer);
     }
     pclose(fp);
-    if (output.contains("printer "))
+    if (output.contains("printer ")) {
         result["exists"] = true;
-    if (output.contains("enabled"))
+    }
+    if (output.contains("enabled")) {
         result["enabled"] = true;
-    if (output.contains("disabled"))
+    }
+    if (output.contains("disabled")) {
         result["enabled"] = false;
-    if (output.contains("idle"))
+    }
+    if (output.contains("idle")) {
         result["state"] = "idle";
-    if (output.contains("printing"))
+    }
+    if (output.contains("printing")) {
         result["state"] = "printing";
+    }
     result["raw"] = output;
     return result;
 #else
@@ -52,8 +58,9 @@ void ISysUtils::getPrinterStatus(const QString &aPrinterName,
     aGroupNames.clear();
     QString cmd = QString("lpstat -p %1").arg(aPrinterName);
     FILE *fp = popen(cmd.toUtf8().constData(), "r");
-    if (!fp)
+    if (!fp) {
         return;
+    }
     char buffer[512];
     QString output;
     while (fgets(buffer, sizeof(buffer), fp)) {
@@ -61,14 +68,18 @@ void ISysUtils::getPrinterStatus(const QString &aPrinterName,
     }
     pclose(fp);
     // Map CUPS status to codes (see System_PrinterStatusCodes.h)
-    if (output.contains("disabled"))
+    if (output.contains("disabled")) {
         aStatusCodes.insert(1); // 1 = disabled
-    if (output.contains("enabled"))
+    }
+    if (output.contains("enabled")) {
         aStatusCodes.insert(0); // 0 = enabled
-    if (output.contains("idle"))
+    }
+    if (output.contains("idle")) {
         aStatusCodes.insert(2); // 2 = idle
-    if (output.contains("printing"))
+    }
+    if (output.contains("printing")) {
         aStatusCodes.insert(3); // 3 = printing
+    }
     aGroupNames["printer"] = TStatusNames() << aPrinterName;
 #else
     Q_UNUSED(aPrinterName);

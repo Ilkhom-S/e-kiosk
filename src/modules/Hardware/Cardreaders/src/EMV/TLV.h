@@ -57,7 +57,7 @@ protected:
     quint16 parseLen(QByteArray &aBuffer);
 
     /// Взять первый байт и вернуть его в виде quint16
-    quint16 takeByte(QByteArray &aBuffer);
+    static quint16 takeByte(QByteArray &aBuffer);
 
     QList<SItem> m_Items;
 };

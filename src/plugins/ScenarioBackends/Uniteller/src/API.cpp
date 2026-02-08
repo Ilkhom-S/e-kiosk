@@ -210,7 +210,7 @@ void API::onError(QAbstractSocket::SocketError /*unused*/) {
 
     emit error(m_Socket.errorString());
 
-    // переподсоединяемся через 5 сек.
+    // пере подсоединяемся через 5 сек.
     if (m_Enabled) {
         QTimer::singleShot(CUniteller::ReconnectTimeout, this, SLOT(doConnect()));
     }
@@ -301,7 +301,7 @@ bool API::isGetStateResponse(BaseResponsePtr aResponse) {
         if (sendStatus) {
             emit state(stateResponse->state(), stateResponse->getName(), stateResponse->isLast());
         } else if (stateResponse->isLast()) {
-            // если статус последний нужно перепослать любой
+            // если статус последний нужно пере-послать любой
             emit state(m_DeviceState.begin().value(), m_DeviceState.begin().key(), true);
         }
     }
@@ -454,7 +454,7 @@ void API::send(const QByteArray &aRequest) {
     if (!m_Socket.isOpen()) {
         toLog(LogLevel::Error, "Error write. Socket not connected.");
     } else {
-        toLog(LogLevel::Debug, QString("Send command: %1").arg(QString::from_Latin1(aRequest)));
+        toLog(LogLevel::Debug, QString("Send command: %1").arg(QString::fromLatin1(aRequest)));
 
         if (m_Socket.write(aRequest) != aRequest.size()) {
             toLog(LogLevel::Error,

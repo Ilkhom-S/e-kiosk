@@ -2,8 +2,6 @@
 
 // Stl
 
-#include "Updater.h"
-
 #include <QtCore/QCoreApplication>
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QDateTime>
@@ -15,9 +13,11 @@
 #include <QtCore/QSettings>
 #include <QtCore/QUrlQuery>
 #include <QtNetwork/QNetworkProxy>
-#include <QtXml/QDom_Document>
+#include <QtXml/QDomDocument>
 
 #include <Common/Exception.h>
+
+#include <UpdateEngine/Updater.h>
 
 //---------------------------------------------------------------------------
 namespace CUpdater {
@@ -29,6 +29,7 @@ const char Name[] = "Updater";
 #include <NetworkTaskManager/HashVerifier.h>
 #include <NetworkTaskManager/MemoryDataStream.h>
 #include <numeric>
+#include <utility>
 
 #include "Folder.h"
 #include "Misc.h"
@@ -72,17 +73,17 @@ Updater::Updater(QObject *aParent)
 }
 
 //---------------------------------------------------------------------------
-Updater::Updater(const QString &aConfigURL,
+Updater::Updater(QString aConfigURL,
                  const QString &aUpdateURL,
-                 const QString &aVersion,
+                 QString aVersion,
                  const QString &aAppId,
                  const QString &aConfiguration,
-                 const QString &aPointId)
-    : m_ConfigURL(aConfigURL), m_UpdateURL(aUpdateURL + "/" + aAppId + "/" + aConfiguration),
-      m_Version(aVersion), m_AppId(aAppId), m_Configuration(aConfiguration),
-      m_NetworkTaskManager(ILog::getInstance(CUpdater::Name)), m_CurrentTaskSize(0),
-      m_WaitUpdateServer(false), m_FailCount(0), m_AP(aPointId), m_AllTasksCount(0),
-      m_ProgressPercent(0),
+                 QString aPointId)
+    : m_ConfigURL(std::move(aConfigURL)),
+      m_UpdateURL(aUpdateURL + "/" + aAppId + "/" + aConfiguration), m_Version(std::move(aVersion)),
+      m_AppId(aAppId), m_Configuration(aConfiguration),
+      m_NetworkTaskManager(ILog::getInstance(CUpdater::Name)), , , m_FailCount(0),
+      m_AP(std::move(aPointId)), m_AllTasksCount(0), m_ProgressPercent(0),
 #ifdef Q_OS_WIN32
       m_BitsManager(ILog::getInstance(CUpdater::Name)), m_UseBITS(true), m_JobPriority(CBITS::HIGH)
 #else
@@ -123,7 +124,7 @@ CUpdaterErrors::Enum Updater::getComponents(Updater::TComponentList &aComponents
     aComponents.clear();
 
     // Получаем с сервера файл с описанием.
-    NetworkTask *task = new NetworkTask();
+    auto *task = new NetworkTask();
 
     QUrl url = m_ConfigURL;
     QUrlQuery urlQuery;
@@ -162,18 +163,18 @@ CUpdaterErrors::Enum Updater::getComponents(Updater::TComponentList &aComponents
         QByteArray statusTag = responseHeader.value(CUpdater::HumoStatusTag);
         Log(LogLevel::Warning,
             QString("Download component %1: %2")
-                .arg(QString::from_Latin1(CUpdater::HumoStatusTag))
-                .arg(QString::from_Latin1(statusTag)));
+                .arg(QString::fromLatin1(CUpdater::HumoStatusTag))
+                .arg(QString::fromLatin1(statusTag)));
 
         m_WaitUpdateServer = (statusTag == CUpdater::Wait);
 
         return CUpdaterErrors::UpdateBlocked;
     }
 
-    m_ComponentsSignature = QByteArray::from_PercentEncoding(
+    m_ComponentsSignature = QByteArray::fromPercentEncoding(
         responseHeader.value(CUpdater::HumoSignatureTag, QByteArray()));
 
-    auto dataStream = task->getDataStream();
+    auto *dataStream = task->getDataStream();
     m_ComponentsContent = dataStream->takeAll();
     dataStream->close();
 
@@ -197,7 +198,7 @@ QByteArray Updater::loadUpdateConfiguration(const QString &aRevision) {
 
     Log(LogLevel::Error,
         QString("Failed open file '%1': %2.").arg(file.fileName()).arg(file.errorString()));
-    return QByteArray();
+    return {};
 }
 
 //---------------------------------------------------------------------------
@@ -294,21 +295,19 @@ TFileList Updater::getWorkingDirStructure(const QString &aDir) const noexcept(fa
                 auto filePath = aDir + "/" + fileInfo.fileName();
 
 #if QT_VERSION >= 0x050000
-                list.insert(
-                    File(filePath.replace(QRegularExpression("^/+"), ""),
-                         QString::from_Latin1(
-                             QCryptographicHash::hash(file.readAll(), QCryptographicHash::Sha256)
-                                 .toHex()),
-                         "",
-                         fileInfo.size()));
+                list.insert(File(filePath.replace(QRegularExpression("^/+"), ""),
+                                 QString::fromLatin1(QCryptographicHash::hash(
+                                                         file.readAll(), QCryptographicHash::Sha256)
+                                                         .toHex()),
+                                 "",
+                                 fileInfo.size()));
 #else
-                list.insert(
-                    File(filePath.remove(QRegularExpression("^/+"), ""),
-                         QString::from_Latin1(
-                             CCryptographicHash::hash(file.readAll(), CCryptographicHash::Sha256)
-                                 .toHex()),
-                         "",
-                         fileInfo.size()));
+                list.insert(File(filePath.remove(QRegularExpression("^/+"), ""),
+                                 QString::fromLatin1(CCryptographicHash::hash(
+                                                         file.readAll(), CCryptographicHash::Sha256)
+                                                         .toHex()),
+                                 "",
+                                 fileInfo.size()));
 #endif
             } else {
                 throw Exception(
@@ -401,8 +400,8 @@ void Updater::download() {
 #else
     if (true) { // Always use network download on non-Windows
 #endif
-        auto task = m_ActiveTasks.front();
-        task->connect(
+        auto *task = m_ActiveTasks.front();
+        NetworkTask::connect(
             task, SIGNAL(onComplete()), this, SLOT(downloadComplete()), Qt::UniqueConnection);
 
         m_CurrentTaskSize = task->getDataStream()->size();
@@ -414,7 +413,7 @@ void Updater::download() {
 
 //---------------------------------------------------------------------------
 void closeFileTask(NetworkTask *aTask) {
-    auto fileTask = qobject_cast<FileDownloadTask *>(aTask);
+    auto *fileTask = qobject_cast<FileDownloadTask *>(aTask);
     if (fileTask) {
         fileTask->closeFile();
     }
@@ -422,7 +421,7 @@ void closeFileTask(NetworkTask *aTask) {
 
 //---------------------------------------------------------------------------
 void Updater::downloadComplete() {
-    auto task = m_ActiveTasks.front();
+    auto *task = m_ActiveTasks.front();
     task->disconnect(this, SLOT(downloadComplete()));
 
     auto goToNextFile = [&]() {
@@ -435,13 +434,14 @@ void Updater::downloadComplete() {
         QMetaObject::invokeMethod(this, "download", Qt::QueuedConnection);
     };
 
-    if (!task->getError() || task->getError() == NetworkTask::TaskFailedButVerified) {
+    if ((task->getError() == 0) || task->getError() == NetworkTask::TaskFailedButVerified) {
         Log(LogLevel::Normal,
             QString("File %1 downloaded successfully.").arg(task->getUrl().toString()));
 
         closeFileTask(task);
 
-        return goToNextFile();
+        goToNextFile();
+        return;
     }
 
     int nextTryTimeout = CUpdater::MinutesBeforeNextTry;
@@ -466,7 +466,8 @@ void Updater::downloadComplete() {
             Log(LogLevel::Normal,
                 QString("File %1 is optional. Skip it and continue to download.")
                     .arg(task->getUrl().toString()));
-            return goToNextFile();
+            goToNextFile();
+            return;
         }
     } else {
         retryCountReached = retryCountReached && !haveNewData;
@@ -495,7 +496,8 @@ void Updater::downloadComplete() {
                     .arg(task->getUrl().toString()));
 
             QMetaObject::invokeMethod(task, "resetFile", Qt::DirectConnection);
-            return goToNextFile();
+            goToNextFile();
+            return;
         }
 
         // Закачка была прервана.
@@ -509,7 +511,7 @@ void Updater::downloadComplete() {
 
 //---------------------------------------------------------------------------
 void Updater::checkTaskVerifierResult(NetworkTask *aTask) {
-    IHashVerifier *verifier = dynamic_cast<IHashVerifier *>(aTask->getVerifier());
+    auto *verifier = dynamic_cast<IHashVerifier *>(aTask->getVerifier());
 
     if (verifier) {
         Log(LogLevel::Error,
@@ -828,7 +830,7 @@ void Updater::runUpdate() {
 int Updater::removeEmptyFolders(const QString &aDir) {
     QDir current(aDir);
 
-    int num_Files = 0;
+    int numFiles = 0;
 
     foreach (auto fileInfo,
              current.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files)) {
@@ -838,14 +840,14 @@ int Updater::removeEmptyFolders(const QString &aDir) {
             if (n == 0) {
                 current.rmpath(aDir + "/" + fileInfo.fileName());
             } else {
-                num_Files++;
+                numFiles++;
             }
         } else {
-            num_Files++;
+            numFiles++;
         }
     }
 
-    return num_Files;
+    return numFiles;
 }
 
 //---------------------------------------------------------------------------
@@ -880,7 +882,7 @@ void Updater::downloadPackage() {
         QMetaObject::invokeMethod(
             this, "deployDownloadedPackage", Qt::QueuedConnection, Q_ARG(QObject *, package));
     } else {
-        auto task = tasks.at(0);
+        auto *task = tasks.at(0);
 
         m_Mapper.setMapping(task, package);
         m_Mapper.connect(task, SIGNAL(onComplete()), SLOT(map()));
@@ -899,13 +901,13 @@ void Updater::downloadPackage() {
 
 //---------------------------------------------------------------------------
 void Updater::packageDownloaded(QObject *aPackage) {
-    auto task = qobject_cast<NetworkTask *>(m_Mapper.mapping(aPackage));
-    auto package = qobject_cast<Package *>(aPackage);
+    auto *task = qobject_cast<NetworkTask *>(m_Mapper.mapping(aPackage));
+    auto *package = qobject_cast<Package *>(aPackage);
 
     bool haveNewData = (m_CurrentTaskSize != task->getDataStream()->size());
     bool retryCountReached = ++m_FailCount >= CUpdater::MaxFails;
 
-    if (!task->getError() || task->getError() == NetworkTask::TaskFailedButVerified) {
+    if ((task->getError() == 0) || task->getError() == NetworkTask::TaskFailedButVerified) {
         Log(LogLevel::Normal,
             QString("File %1.zip was downloaded successfully.").arg(package->getId()));
 
@@ -918,7 +920,7 @@ void Updater::packageDownloaded(QObject *aPackage) {
                 .arg(package->getId())
                 .arg(task->errorString()));
 
-        if (task->getError() &&
+        if ((task->getError() != 0) &&
             task->getHttpError() == 416) // 416 - Requested Range Not Satisfiable
         {
             checkTaskVerifierResult(task);
@@ -951,7 +953,7 @@ void Updater::packageDownloaded(QObject *aPackage) {
 void Updater::deployDownloadedPackage(QObject *aPackage) {
     emit deployment();
 
-    auto package = qobject_cast<Package *>(aPackage);
+    auto *package = qobject_cast<Package *>(aPackage);
 
     // Распаковываем архив.
     try {
@@ -1199,7 +1201,7 @@ QString Updater::bitsJobName() const {
 CUpdaterErrors::Enum Updater::loadComponents(const QByteArray &aContent,
                                              Updater::TComponentList &aComponents,
                                              QString &aRevision) {
-    QDom_Document description;
+    QDomDocument description;
 
     if (!description.setContent(aContent)) {
         Log(LogLevel::Error, "Failed to parse component description.");
@@ -1207,7 +1209,7 @@ CUpdaterErrors::Enum Updater::loadComponents(const QByteArray &aContent,
         return CUpdaterErrors::ParseError;
     }
 
-    QDom_Element application = description.documentElement();
+    QDomElement application = description.documentElement();
 
     QString revision = application.attribute("revision", "");
 
@@ -1224,8 +1226,8 @@ CUpdaterErrors::Enum Updater::loadComponents(const QByteArray &aContent,
     QRegularExpression leadingSlash("^[\\\\/]");
 
     // Получаем список компонент.
-    for (QDom_Node node = application.firstChild(); !node.isNull(); node = node.nextSibling()) {
-        QDom_Element component = node.toElement();
+    for (QDomNode node = application.firstChild(); !node.isNull(); node = node.nextSibling()) {
+        QDomElement component = node.toElement();
 
         if (component.tagName() == "component") {
             auto componentType = component.attribute("type");
@@ -1240,7 +1242,7 @@ CUpdaterErrors::Enum Updater::loadComponents(const QByteArray &aContent,
             TFileList files;
             QStringList actions;
 
-            for (QDom_Node node = component.firstChild(); !node.isNull();
+            for (QDomNode node = component.firstChild(); !node.isNull();
                  node = node.nextSibling()) {
                 auto record = node.toElement();
 

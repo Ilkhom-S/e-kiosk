@@ -34,7 +34,7 @@ protected:
     QMap<PID, ProcessInfo> m_Processes;
 
     /// Остановка процесса грубым способом
-    bool killInternal(PID aPid, quint32 &aErrorCode) const;
+    static bool killInternal(PID aPid, quint32 &aErrorCode);
 };
 
 //----------------------------------------------------------------------------

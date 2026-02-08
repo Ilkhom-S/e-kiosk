@@ -29,11 +29,11 @@ signals:
 
 protected slots:
     /// Обработчики сигнала invoke.
-    void onInvoke(TVoidMethod aMethod);
-    void onInvoke(TBoolMethod aMethod, bool *aResult);
-    void onInvoke(TIntMethod aMethod, int *aResult);
-    void onInvoke(TDoubleMethod aMethod, double *aResult);
-    void onInvoke(TStringMethod aMethod, QString *aResult);
+    static void onInvoke(const TVoidMethod &aMethod);
+    static void onInvoke(const TBoolMethod &aMethod, bool *aResult);
+    static void onInvoke(const TIntMethod &aMethod, int *aResult);
+    static void onInvoke(const TDoubleMethod &aMethod, double *aResult);
+    static void onInvoke(const TStringMethod &aMethod, QString *aResult);
 
     void checkThreadStarted();
 

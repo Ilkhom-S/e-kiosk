@@ -13,7 +13,7 @@ MessageQueueClient::MessageQueueClient() {
 }
 
 //----------------------------------------------------------------------------
-MessageQueueClient::~MessageQueueClient() {}
+MessageQueueClient::~MessageQueueClient() = default;
 
 //----------------------------------------------------------------------------
 bool MessageQueueClient::connect(const QString &aQueueName) {
@@ -34,7 +34,7 @@ bool MessageQueueClient::isConnected() const {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueClient::sendMessage(const QByteArray &aMessage) {
+static void MessageQueueClient::sendMessage(const QByteArray &aMessage) {
     if (m_Socket.state() == QLocalSocket::ConnectedState) {
         m_Socket.write(aMessage + '\0');
         m_Socket.flush();
@@ -68,7 +68,7 @@ bool MessageQueueClient::subscribeOnEvents(QObject *aObject) {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueClient::onSocketReadyRead() {
+static void MessageQueueClient::onSocketReadyRead() {
     QByteArray buffer = m_Socket.readAll();
     /*if (buffer.indexOf(MessageQueueConstants::PingMessage) >= 0)
     {
@@ -81,7 +81,7 @@ void MessageQueueClient::onSocketReadyRead() {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueClient::onSocketError(QLocalSocket::LocalSocketError aErrorCode) {
+static void MessageQueueClient::onSocketError(QLocalSocket::LocalSocketError aErrorCode) {
     emit onError(static_cast<CIMessageQueueClient::ErrorCode>(aErrorCode), m_Socket.errorString());
 }
 
@@ -91,7 +91,7 @@ void MessageQueueClient::onSocketDisconnected() {
 }
 
 //----------------------------------------------------------------------------
-void MessageQueueClient::parseInputBuffer(QByteArray &aBuffer) {
+static void MessageQueueClient::parseInputBuffer(QByteArray &aBuffer) {
     int messageEnd = aBuffer.indexOf('\0');
     while (messageEnd != -1) {
         QByteArray newMessageData = aBuffer.left(messageEnd);

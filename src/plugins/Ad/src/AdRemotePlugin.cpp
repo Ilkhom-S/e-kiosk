@@ -13,6 +13,7 @@
 #include <AdBackend/Campaign.h>
 #include <AdBackend/Client.h>
 #include <AdBackend/DatabaseUtils.h>
+#include <utility>
 
 namespace PPSDK = SDK::PaymentProcessor;
 
@@ -24,7 +25,7 @@ const char PluginName[] = "AdRemote";
 //------------------------------------------------------------------------------
 namespace {
 /// Конструктор экземпляра плагина.
-SDK::Plugin::IPlugin *CreateAdSourcePlugin(SDK::Plugin::IEnvironment *aFactory,
+SDK::Plugin::IPlugin *createAdSourcePlugin(SDK::Plugin::IEnvironment *aFactory,
                                            const QString &aInstancePath) {
     return new AdRemotePlugin(aFactory, aInstancePath);
 }
@@ -33,7 +34,7 @@ SDK::Plugin::IPlugin *CreateAdSourcePlugin(SDK::Plugin::IEnvironment *aFactory,
 REGISTER_PLUGIN(makePath(PPSDK::Application,
                          PPSDK::CComponents::RemoteClient,
                          CAdRemotePlugin::PluginName),
-                &CreateAdSourcePlugin,
+                &createAdSourcePlugin,
                 &SDK::Plugin::PluginInitializer::emptyParameterList,
                 AdRemotePlugin);
 } // namespace
@@ -55,9 +56,9 @@ QSharedPointer<Ad::Client> getAdClientInstance(SDK::Plugin::IEnvironment *aFacto
 
 //---------------------------------------------------------------------------
 // Конструктор плагина
-AdRemotePlugin::AdRemotePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
+AdRemotePlugin::AdRemotePlugin(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath)
     : ILogable(aFactory->getLog(Ad::CClient::LogName)), m_Factory(aFactory),
-      m_InstancePath(aInstancePath) {
+      m_InstancePath(std::move(aInstancePath)) {
     m_Client = getAdClientInstance(aFactory);
 
     m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
@@ -79,7 +80,7 @@ QString AdRemotePlugin::getPluginName() const {
 
 //------------------------------------------------------------------------------
 QVariantMap AdRemotePlugin::getConfiguration() const {
-    return QVariantMap();
+    return {};
 }
 
 //------------------------------------------------------------------------------

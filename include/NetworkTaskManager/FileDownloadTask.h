@@ -12,7 +12,7 @@ class FileDownloadTask : public NetworkTask {
     Q_OBJECT
 
 public:
-    FileDownloadTask(const QUrl &aUrl, const QString &aPath);
+    FileDownloadTask(QUrl aUrl, QString aPath);
 
     QString getPath() const;
 

@@ -517,7 +517,7 @@ bool SparkFR::printLine(const QByteArray &aString) {
 
 //--------------------------------------------------------------------------------
 void SparkFR::execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine) {
-    QByteArray data = m_Codec->from_Unicode(aTagLexeme.data);
+    QByteArray data = m_Codec->fromUnicode(aTagLexeme.data);
 
     if (aTagLexeme.tags.contains(Tags::Type::DoubleWidth)) {
         Tags::TTypes types;
@@ -640,7 +640,7 @@ bool SparkFR::setFiscalParameters(const QStringList &aReceipt) {
                                .arg(CSparkFR::TextProperties::Numbers[i], 2, 10, QChar(ASCII::Zero))
                                .right(2)
                                .toLatin1() +
-                           m_Codec->from_Unicode(aReceipt[i]);
+                           m_Codec->fromUnicode(aReceipt[i]);
 
             if (!processCommand(CSparkFR::Commands::SetTextProperty, commandData)) {
                 toLog(LogLevel::Error,
@@ -724,7 +724,7 @@ bool SparkFR::sale(const SUnitData &aUnitData) {
         QByteArray::number(qRound64(aUnitData.sum * 100.0)).rightJustified(8, ASCII::Zero) +
         QByteArray::number(1 * 1000).rightJustified(8, ASCII::Zero) +
         QByteArray::number(1).rightJustified(2, ASCII::Zero) +
-        m_Codec->from_Unicode(aUnitData.name.leftJustified(CSparkFR::LineSize, ASCII::Space, true));
+        m_Codec->fromUnicode(aUnitData.name.leftJustified(CSparkFR::LineSize, ASCII::Space, true));
 
     if (!processCommand(command, commandData)) {
         toLog(LogLevel::Error,

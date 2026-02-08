@@ -6,12 +6,12 @@
 //------------------------------------------------------------------------------
 namespace CMifareReader {
 struct SModelData : public CUSBDevice::SProductData {
-    int SAM;
-    bool CCID;
+    int sam;
+    bool ccid;
 
-    SModelData() : SAM(0), CCID(true) {}
+    SModelData() : sam(0), ccid(true) {}
     SModelData(const QString &aModel, int aSAM, bool aCCID, bool aVerified)
-        : CUSBDevice::SProductData(aModel, aVerified), SAM(aSAM), CCID(aCCID) {}
+        : CUSBDevice::SProductData(aModel, aVerified), sam(aSAM), ccid(aCCID) {}
 };
 } // namespace CMifareReader
 

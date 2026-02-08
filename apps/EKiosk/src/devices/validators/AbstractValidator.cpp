@@ -122,5 +122,5 @@ bool BaseValidatorDevices::sendCommand(QByteArray dataRequest,
 }
 
 QString BaseValidatorDevices::cmdName(ValidatorCommands::Enum cmd) {
-    return QVariant::from_Value(cmd).value<QString>();
+    return QVariant::fromValue(cmd).value<QString>();
 }

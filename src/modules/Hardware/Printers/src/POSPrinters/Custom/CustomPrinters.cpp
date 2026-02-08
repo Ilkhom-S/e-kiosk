@@ -130,7 +130,7 @@ bool Custom_Printer<T>::printImageDefault(const QImage &aImage, const Tags::TTyp
             int index = i * CCustom_Printer::LineHeight + j;
 
             if (index < height) {
-                lineData << QByteArray::from_RawData((const char *)aImage.scanLine(index),
+                lineData << QByteArray::fromRawData((const char *)aImage.scanLine(index),
                                                      widthInBytes);
             } else {
                 lineData << QByteArray(widthInBytes, ASCII::NUL);

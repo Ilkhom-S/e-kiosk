@@ -23,15 +23,15 @@ class KeysManager : public QObject, public IConfigManager {
     Q_OBJECT
 
 public:
-    KeysManager(SDK::PaymentProcessor::ICore *aCore);
-    ~KeysManager();
+    explicit KeysManager(SDK::PaymentProcessor::ICore *aCore);
+    ~KeysManager() override;
 
 public:
     /// Ключи создались?
-    virtual bool isConfigurationChanged() const;
+    virtual bool isConfigurationChanged() const override;
 
     /// Делаем текущую конфигурацию начальной
-    virtual void resetConfiguration();
+    virtual void resetConfiguration() override;
 
 public:
     /// Получение информации о eToken
@@ -62,7 +62,7 @@ public:
     QString getOP() const;
 
 private:
-    QString errorToString(EKeysUtilsError::Enum aCode) const;
+    static QString errorToString(EKeysUtilsError::Enum aCode);
 
 private:
     SDK::PaymentProcessor::ICore *m_Core;

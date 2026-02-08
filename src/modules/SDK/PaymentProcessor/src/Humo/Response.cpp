@@ -5,13 +5,15 @@
 #include <QtCore/QRegularExpression>
 #include <QtCore/QStringList>
 
+#include <utility>
+
 namespace SDK {
 namespace PaymentProcessor {
 namespace Humo {
 
 //---------------------------------------------------------------------------
-Response::Response(const Request &aRequest, const QString &aResponseString)
-    : m_ResponseString(aResponseString), m_Error(ELocalError::NetworkError),
+Response::Response(const Request &aRequest, QString aResponseString)
+    : m_ResponseString(std::move(aResponseString)), m_Error(ELocalError::NetworkError),
       m_Result(EServerResult::Empty), m_Request(aRequest) {
     QRegularExpression regexp("^(\\w+)=(.*)$");
 
@@ -26,7 +28,7 @@ Response::Response(const Request &aRequest, const QString &aResponseString)
 }
 
 //---------------------------------------------------------------------------
-Response::~Response() {}
+Response::~Response() = default;
 
 //---------------------------------------------------------------------------
 bool Response::isOk() {

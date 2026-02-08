@@ -251,7 +251,7 @@ void getDeviceDescriptorData(libusb_device *aDevice,
         deviceData.insert(DeviceUSBData::ConfigAmount, configData.size());
     }
 
-    deviceData.insert(DeviceUSBData::ConfigData, QVariant::from_Value<TLibUSBDataList>(configData));
+    deviceData.insert(DeviceUSBData::ConfigData, QVariant::fromValue<TLibUSBDataList>(configData));
 
     if (deviceHandle && (aDeviceDescriptor.bcdUSB >= CLibUSBUtils::USB2_01)) {
         deviceData.insert(DeviceUSBData::BOSData, getBOSData(deviceHandle));
@@ -384,7 +384,7 @@ TLibUSBDataList getConfigData(libusb_device *aDevice,
 
             TLibUSBDataList interfaceData = getInterfaceData(config);
             configData.insert(ConfigData::InterfaceData,
-                              QVariant::from_Value<TLibUSBDataList>(interfaceData));
+                              QVariant::fromValue<TLibUSBDataList>(interfaceData));
 
             result << configData;
 
@@ -436,7 +436,7 @@ TLibUSBDataList getInterfaceData(libusb_config_descriptor *config) {
 
             TLibUSBDataList endpointData = getEndpointData(interface);
             interfaceData.insert(InterfaceData::EndpointData,
-                                 QVariant::from_Value<TLibUSBDataList>(endpointData));
+                                 QVariant::fromValue<TLibUSBDataList>(endpointData));
 
             result << interfaceData;
         }
@@ -505,7 +505,7 @@ TLibUSBDataList getEndpointData(const libusb_interface_descriptor &aInterface) {
 
         TLibUSBDataList EPCompanionData = getEPCompanionData(endpoint);
         endpointData.insert(EndpointData::CompanionData,
-                            QVariant::from_Value<TLibUSBDataList>(EPCompanionData));
+                            QVariant::fromValue<TLibUSBDataList>(EPCompanionData));
 
         result << endpointData;
     }
@@ -562,7 +562,7 @@ TResult logAnswer(const QString &aFunctionName, int aResult, ILog *aLog) {
     }
 
     QString errorName = libusb_error_name(aResult);
-    QString errorDescription = QString::from_Utf8(libusb_strerror(libusb_error(aResult)));
+    QString errorDescription = QString::fromUtf8(libusb_strerror(libusb_error(aResult)));
     QString log = QString("Failed to call %1, error = %2 (%3, %4)")
                       .arg(aFunctionName)
                       .arg(aResult)

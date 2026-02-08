@@ -9,10 +9,11 @@
 #include <NetworkTaskManager/MemoryDataStream.h>
 #include <NetworkTaskManager/NetworkTask.h>
 #include <NetworkTaskManager/NetworkTaskManager.h>
+#include <utility>
 
 namespace CConnection {
 /// Период проверки статуса соединения.
-const int DefaultCheckPeriod = 60 * 1000; // 1 минутa
+const int DefaultCheckPeriod = 60 * 1000; // 1 минута
 
 /// Период пинга соединения.
 const int DefaultPingPeriod = 15 * 60 * 1000; // 15 минут
@@ -28,9 +29,9 @@ const QString DefaultCheckResponse = "";
 } // namespace CConnection
 
 //--------------------------------------------------------------------------------
-ConnectionBase::ConnectionBase(const QString &aName, NetworkTaskManager *aNetwork, ILog *aLog)
-    : m_Network(aNetwork), m_Name(aName), m_Connected(false), m_CheckCount(0), m_Watch(false),
-      m_Log(aLog) {
+ConnectionBase::ConnectionBase(QString aName, NetworkTaskManager *aNetwork, ILog *aLog)
+    : m_Network(aNetwork), m_Name(std::move(aName)), m_Connected(false), m_CheckCount(0),
+      m_Watch(false), m_Log(aLog) {
     // Таймер будет взводится заново после каждой удачной проверки
     m_CheckTimer.setSingleShot(true);
     m_CheckTimer.setInterval(CConnection::DefaultCheckPeriod);
@@ -206,14 +207,14 @@ bool ConnectionBase::httpCheckMethod(const IConnection::CheckUrl &aHost) {
         while (i.hasNext()) {
             i.next();
             response << QString("%1: %2")
-                            .arg(QString::from_Latin1(i.key()))
-                            .arg(QString::from_Latin1(i.value()));
+                            .arg(QString::fromLatin1(i.key()))
+                            .arg(QString::fromLatin1(i.value()));
         }
 
         toLog(LogLevel::Trace,
               QString("HEADER:\n%1\nBODY:\n%2")
                   .arg(response.join("\n"))
-                  .arg(QString::from_Latin1(answer.left(80))));
+                  .arg(QString::fromLatin1(answer.left(80))));
     };
 
     if (task->getError() != NetworkTask::NoError) {
@@ -229,7 +230,7 @@ bool ConnectionBase::httpCheckMethod(const IConnection::CheckUrl &aHost) {
         toLog(LogLevel::Error,
               QString("Server answer verify failed '%1'.\nServer response: '%2'.")
                   .arg(aHost.second)
-                  .arg(QString::from_Utf8(answer).left(1024)));
+                  .arg(QString::fromUtf8(answer).left(1024)));
 
         traceLog();
 

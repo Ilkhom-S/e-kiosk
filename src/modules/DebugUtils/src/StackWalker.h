@@ -129,10 +129,10 @@ protected:
     virtual void OnOutput(LPCSTR szText);
 
     StackWalkerInternal *m_Sw;
-    HANDLE m_HProcess;
-    DWORD m_DwProcessId;
-    BOOL m_ModulesLoaded;
-    LPSTR m_SzSym_Path;
+    HANDLE m_HProcess{};
+    DWORD m_DwProcessId{};
+    BOOL m_ModulesLoaded{};
+    LPSTR m_SzSym_Path{};
 
     int m_Options;
 

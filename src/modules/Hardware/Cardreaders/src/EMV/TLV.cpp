@@ -30,7 +30,7 @@ EMV::TLV::SItem EMV::TLV::TLVs::parseItem(QByteArray &aBuffer) {
     quint16 len = parseLen(aBuffer);
 
     if (len > aBuffer.size() || len == Len::Invalid || tag == Tag::Invalid) {
-        return SItem();
+        return {};
     }
 
     SItem it;
@@ -63,7 +63,7 @@ EMV::TLV::SItem EMV::TLV::TLVs::getTag(quint16 aTag) {
         }
     }
 
-    return SItem();
+    return {};
 }
 
 //------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ quint16 EMV::TLV::TLVs::parseLen(QByteArray &aBuffer) {
 
     quint16 l = takeByte(aBuffer);
 
-    if (!(l & Len::Long)) {
+    if ((l & Len::Long) == 0) {
         return l;
     }
 

@@ -17,7 +17,7 @@ const int MaxTryCount = 3;
 
 //---------------------------------------------------------------------------
 SQLiteDatabaseProxy::SQLiteDatabaseProxy()
-    : ILogable(CIDatabaseProxy::LogName), m_Mutex(), m_QueryChecker(nullptr) {}
+    : ILogable(CIDatabaseProxy::LogName), , m_QueryChecker(nullptr) {}
 
 //---------------------------------------------------------------------------
 SQLiteDatabaseProxy::~SQLiteDatabaseProxy() = default;

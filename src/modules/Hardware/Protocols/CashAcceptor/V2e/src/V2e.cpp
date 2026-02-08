@@ -24,9 +24,9 @@ void V2eProtocol::pack(QByteArray &aCommandData) {
     aCommandData.prepend(CV2e::ProtocolMark);
     aCommandData.prepend(CV2e::Prefix);
 
-    ushort CRC = calcCRC(aCommandData);
-    aCommandData.append(char(CRC >> 8));
-    aCommandData.append(char(CRC));
+    ushort crc = calcCRC(aCommandData);
+    aCommandData.append(char(crc >> 8));
+    aCommandData.append(char(crc));
 }
 
 //--------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ bool V2eProtocol::check(const QByteArray &aAnswer, const QByteArray &aRequest) {
     }
 
     // длина
-    int length = aAnswer.mid(2, 2).toHex().toUShort(0, 16);
+    int length = aAnswer.mid(2, 2).toHex().toUShort(nullptr, 16);
 
     if (length != aAnswer.size()) {
         toLog(LogLevel::Error,
@@ -73,12 +73,12 @@ bool V2eProtocol::check(const QByteArray &aAnswer, const QByteArray &aRequest) {
     }
 
     // CRC
-    ushort CRC = calcCRC(aAnswer.left(length - 2));
-    ushort answerCRC = aAnswer.right(2).toHex().toUShort(0, 16);
+    ushort crc = calcCRC(aAnswer.left(length - 2));
+    ushort answerCRC = aAnswer.right(2).toHex().toUShort(nullptr, 16);
 
-    if (CRC != answerCRC) {
+    if (crc != answerCRC) {
         toLog(LogLevel::Error,
-              QString("V2.2E: Invalid CRC of the message: %1, need %2").arg(CRC).arg(answerCRC));
+              QString("V2.2E: Invalid CRC of the message: %1, need %2").arg(crc).arg(answerCRC));
         return false;
     }
 
@@ -173,10 +173,10 @@ bool V2eProtocol::getAnswer(QByteArray &aAnswer) {
         aAnswer.append(data);
 
         if (aAnswer.size() > 3) {
-            length = aAnswer.mid(2, 2).toHex().toUShort(0, 16);
+            length = aAnswer.mid(2, 2).toHex().toUShort(nullptr, 16);
         }
     } while ((clockTimer.elapsed() < CV2e::AnswerTimeout) &&
-             ((aAnswer.size() < length) || (!length)));
+             ((aAnswer.size() < length) || (length == 0u)));
 
     toLog(LogLevel::Normal, QString("V2.2E: << {%1}").arg(aAnswer.toHex().data()));
 

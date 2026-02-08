@@ -120,7 +120,7 @@ QString SProvider::fields2Json(const TProviderFields &aFields) {
         jsonFields << jsonField;
     }
 
-    return QString::from_Utf8(QJsonDocument(jsonFields).toJson(QJsonDocument::Compact));
+    return QString::fromUtf8(QJsonDocument(jsonFields).toJson(QJsonDocument::Compact));
 }
 
 //------------------------------------------------------------------------------

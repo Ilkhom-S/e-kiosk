@@ -56,7 +56,7 @@ public:
     QString getReceiptType() const { return m_ReceiptType; }
 
     /// Получить параметры принтера для печати.
-    QVariantMap getPrintingParameters(SDK::Driver::IPrinter *aPrinter);
+    static QVariantMap getPrintingParameters(SDK::Driver::IPrinter *aPrinter);
 
 protected:
     QString m_ReceiptType;
@@ -112,7 +112,7 @@ private:
     /// Добавить данные платежа.
     void addFiscalPaymentData(const SDK::Driver::TFiscalPaymentData &aFPData, QStringList &aData);
 
-    bool isFiscal(SDK::Driver::IPrinter *aPrinter);
+    static bool isFiscal(SDK::Driver::IPrinter *aPrinter);
 };
 
 //---------------------------------------------------------------------------

@@ -179,7 +179,7 @@ void SendRequest::slotReadyRead() {
         if (statusCode == 200) {
             if (reply->bytesAvailable() > 0) {
                 QByteArray bytes = reply->readAll();
-                QString str(QString::from_Utf8(bytes));
+                QString str(QString::fromUtf8(bytes));
 
                 toDebug("\n===============RESPONSE===============\n");
                 toDebug(str);

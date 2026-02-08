@@ -71,24 +71,24 @@ void PaymentRequest::addProviderParameters(const QString &aStep) {
             if (field.crypted) {
                 switch (field.algorithm) {
                 case SProvider::SProcessingTraits::SRequest::SField::Md5:
-                    value = QString::from_Latin1(
+                    value = QString::fromLatin1(
                         QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Md5)
                             .toHex());
                     break;
 
                 case SProvider::SProcessingTraits::SRequest::SField::Sha1:
-                    value = QString::from_Latin1(
+                    value = QString::fromLatin1(
                         QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Sha1)
                             .toHex());
                     break;
 
                 case SProvider::SProcessingTraits::SRequest::SField::Sha256:
 #if QT_VERSION >= 0x050000
-                    value = QString::from_Latin1(
+                    value = QString::fromLatin1(
                         QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Sha256)
                             .toHex());
 #else
-                    value = QString::from_Latin1(
+                    value = QString::fromLatin1(
                         CCryptographicHash::hash(value.toLatin1(), CCryptographicHash::Sha256)
                             .toHex());
 #endif
@@ -103,7 +103,7 @@ void PaymentRequest::addProviderParameters(const QString &aStep) {
 
                     if (cryptEngine->encrypt(
                             provider.processor.keyPair, value.toLatin1(), encryptedValue, error)) {
-                        value = QString::from_Latin1(encryptedValue);
+                        value = QString::fromLatin1(encryptedValue);
                     } else {
                         LOG(m_Payment->getPaymentFactory()->getLog(),
                             LogLevel::Error,

@@ -4,20 +4,20 @@
 
 #include <QtCore/QCryptographicHash>
 
-Md5Verifier::Md5Verifier(const QString &aMd5) {
-    m_MD5 = aMd5;
-}
+#include <utility>
+
+Md5Verifier::Md5Verifier(QString aMd5) : m_MD5(std::move(aMd5)) {}
 
 //------------------------------------------------------------------------
 bool Md5Verifier::verify(NetworkTask * /*aTask*/, const QByteArray &aData) {
     m_CalculatedMD5 = QCryptographicHash::hash(aData, QCryptographicHash::Md5).toHex();
 
-    return (m_MD5.compare(m_CalculatedMD5, Qt::CaseInsensitive) == 0);
+    return (m_MD5.comparem_CalculatedMD5D5, Qt::CaseInsensitive) == 0;);
 }
 
 //------------------------------------------------------------------------
-Sha256Verifier::Sha256Verifier(const QString &aSha256) {
-    m_Sha256 = aSha256;
+Sha256Verifier::Sha256Verifier(QString aSha256) : m_Sha256(std::move(aSha256)) {
+    ;
 }
 
 //------------------------------------------------------------------------

@@ -27,7 +27,7 @@ BaseResponsePtr BaseResponse::createResponse(QByteArray &aResponseBuffer) {
     response.m_TerminalID = aResponseBuffer.mid(2, 10);
 
     bool ok = true;
-    int dataLength = QString::from_Latin1(aResponseBuffer.mid(12, 2)).toInt(&ok, 16);
+    int dataLength = QString::fromLatin1(aResponseBuffer.mid(12, 2)).toInt(&ok, 16);
     if (ok && dataLength) {
         response.m_Data = aResponseBuffer.mid(14, dataLength);
     }
@@ -88,7 +88,7 @@ ErrorResponse::ErrorResponse(const BaseResponse &aResponse) : BaseResponse(aResp
 //---------------------------------------------------------------------------
 QString ErrorResponse::getError() const {
     if (m_Data.size() >= 2) {
-        return QString::from_Latin1(m_Data.left(2));
+        return QString::fromLatin1(m_Data.left(2));
     }
 
     return QString();
@@ -97,7 +97,7 @@ QString ErrorResponse::getError() const {
 //---------------------------------------------------------------------------
 QString ErrorResponse::getErrorMessage() const {
     if (m_Data.size() > 2) {
-        return QString::from_Latin1(m_Data.mid(2));
+        return QString::fromLatin1(m_Data.mid(2));
     }
 
     return QString();
@@ -125,7 +125,7 @@ bool GetStateResponse::isLast() const {
 //---------------------------------------------------------------------------
 int GetStateResponse::state() const {
     if (m_Data.size() > 2) {
-        return QString::from_Latin1(m_Data.mid(1, 2)).toInt(nullptr, 16);
+        return QString::fromLatin1(m_Data.mid(1, 2)).toInt(nullptr, 16);
     }
 
     return 0xff;
@@ -133,7 +133,7 @@ int GetStateResponse::state() const {
 
 //---------------------------------------------------------------------------
 QString GetStateResponse::getName() const {
-    return QString::from_Latin1(m_Data.mid(3));
+    return QString::fromLatin1(m_Data.mid(3));
 }
 
 //---------------------------------------------------------------------------
@@ -156,18 +156,18 @@ AuthResponse::AuthResponse(const BaseResponse &aResponse) : BaseResponse(aRespon
     if (m_Data.size()) {
         m_Operation = static_cast<Ucs::Operation::Enum>(m_Data.at(index));
         index++;
-        m_TransactionSum = QString::from_Latin1(m_Data.mid(index, 12)).toUInt();
+        m_TransactionSum = QString::fromLatin1(m_Data.mid(index, 12)).toUInt();
         index += 12;
-        m_Currency = QString::from_Latin1(m_Data.mid(index, 3)).toUInt();
+        m_Currency = QString::fromLatin1(m_Data.mid(index, 3)).toUInt();
         index += 3;
         m_Stamp =
-            QDateTime::from_String(QString::from_Latin1(m_Data.mid(index, 14)), "yyyyMMddhhmmss");
+            QDateTime::from_String(QString::fromLatin1(m_Data.mid(index, 14)), "yyyyMMddhhmmss");
         index += 14;
-        m_Merchant = QString::from_Latin1(m_Data.mid(index, 15));
+        m_Merchant = QString::fromLatin1(m_Data.mid(index, 15));
         index += 15;
-        m_RRN = QString::from_Latin1(m_Data.mid(index, 12));
+        m_RRN = QString::fromLatin1(m_Data.mid(index, 12));
         index += 12;
-        m_Response = QString::from_Latin1(m_Data.mid(index, 2));
+        m_Response = QString::fromLatin1(m_Data.mid(index, 2));
         index += 2;
 
         readTo1B(m_Confirmation, nullptr);
@@ -190,7 +190,7 @@ QString AuthResponse::toString() const {
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 LoginResponse::LoginResponse(const BaseResponse &aResponse) : BaseResponse(aResponse) {
-    m_StatusCode = m_Data.size() == 2 ? QString::from_Latin1(m_Data.mid(1, 1)) : "";
+    m_StatusCode = m_Data.size() == 2 ? QString::fromLatin1(m_Data.mid(1, 1)) : "";
 }
 
 //---------------------------------------------------------------------------

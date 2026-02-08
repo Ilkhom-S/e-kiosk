@@ -58,7 +58,7 @@ public:
 
 private slots:
     /// Синхронизированная установка proxy.
-    void onSetProxy(QNetworkProxy aProxy);
+    void onSetProxy(const QNetworkProxy &aProxy);
 
     /// Синхронизированная установка лимита скорости загрузки.
     void onSetDownloadSpeedLimit(int aPercent);

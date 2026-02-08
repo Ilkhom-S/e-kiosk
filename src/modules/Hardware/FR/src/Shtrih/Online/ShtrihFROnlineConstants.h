@@ -37,10 +37,10 @@ extern const char FiscalTaxData[];
 /// Сервисные команды (параметры).
 namespace Service {
 /// Cофтварная перезагрузка.
-const QByteArray Reboot = QByteArray::from_RawData("\xF3\x00\x00\x00\x00", 5);
+const QByteArray Reboot = QByteArray::fromRawData("\xF3\x00\x00\x00\x00", 5);
 
 /// Прошивка загрузчика.
-const QByteArray BootFirmware = QByteArray::from_RawData("\xEC\x00\x00\x00\x00", 5);
+const QByteArray BootFirmware = QByteArray::fromRawData("\xEC\x00\x00\x00\x00", 5);
 } // namespace Service
 
 /// Минимально рекомендованная версия загрузчика.

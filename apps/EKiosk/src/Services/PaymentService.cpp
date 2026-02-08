@@ -445,15 +445,15 @@ QString PaymentService::createSignature(PPSDK::IPayment *aPayment, bool aWithCRC
 #else
 
 #if QT_VERSION < 0x050000
-        signature = QString::from_Latin1(
+        signature = QString::fromLatin1(
             CCryptographicHash::hash(signature.toUtf8(), CCryptographicHash::Sha256).toHex());
 #else
-        signature = QString::from_Latin1(
+        signature = QString::fromLatin1(
             QCryptographicHash::hash(signature.toUtf8(), QCryptographicHash::Sha256).toHex());
 #endif
     } else {
         signature =
-            QString::from_Utf8(QCryptographicHash::hash(signature.toUtf8(), QCryptographicHash::Md5)
+            QString::fromUtf8(QCryptographicHash::hash(signature.toUtf8(), QCryptographicHash::Md5)
                                    .toHex()
                                    .toUpper());
     }
@@ -476,7 +476,7 @@ QString PaymentService::createSignature(PPSDK::IPayment *aPayment, bool aWithCRC
         return QString();
     }
 
-    return QString::from_Utf8(encodedSignature);
+    return QString::fromUtf8(encodedSignature);
 #else
     return signature;
 #endif // _DEBUG

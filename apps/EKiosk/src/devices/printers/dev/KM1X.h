@@ -19,8 +19,8 @@ public:
     QString port_speed;
 
     bool OpenPrinterPort();
-    bool isEnabled();
-    bool isItYou();
+    static bool isEnabled();
+    static bool isItYou();
     void print(const QString &aCheck);
 
 protected:

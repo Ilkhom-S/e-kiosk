@@ -8,7 +8,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QStack>
 #include <QtCore/QStringList>
-#include <QtCore/QXmlStream_Reader>
+#include <QtCore/QXmlStreamReader>
 
 #include <Common/ILog.h>
 
@@ -80,14 +80,14 @@ bool DealerSettings::loadOperatorsXML(const QString &aFileName) {
 
     op.reserve(4096);
 
-    QXmlStream_Reader xmlReader(&inputFile);
+    QXmlStreamReader xmlReader(&inputFile);
 
     while (!xmlReader.atEnd()) {
-        QXmlStream_Reader::TokenType token = xmlReader.readNext();
+        QXmlStreamReader::TokenType token = xmlReader.readNext();
 
         switch (token) {
         // Встретили открывающий тег.
-        case QXmlStream_Reader::StartElement: {
+        case QXmlStreamReader::StartElement: {
             tags << xmlReader.name().toString().toLower();
 
             bool isOP = (tags.top() == "operator");
@@ -104,12 +104,12 @@ bool DealerSettings::loadOperatorsXML(const QString &aFileName) {
             }
 
             // Обрабатываем список атрибутов, если такие имеются.
-            QXmlStream_Attributes attributes = xmlReader.attributes();
+            QXmlStreamAttributes attributes = xmlReader.attributes();
 
             if (!attributes.isEmpty()) {
                 QMap<QString, QString> attrs;
 
-                foreach (const QXmlStream_Attribute &attribute, attributes) {
+                foreach (const QXmlStreamAttribute &attribute, attributes) {
                     QString value = attribute.value().toString();
                     attrs[attribute.name().toString().toLower()].swap(encodeQUOT(value));
                 }
@@ -138,7 +138,7 @@ bool DealerSettings::loadOperatorsXML(const QString &aFileName) {
         }
 
         // Текст внутри тегов.
-        case QXmlStream_Reader::Characters: {
+        case QXmlStreamReader::Characters: {
             if (!xmlReader.isWhitespace()) {
                 QString text = xmlReader.text().toString();
                 op += encodeLTGT(text).toUtf8();
@@ -162,7 +162,7 @@ bool DealerSettings::loadOperatorsXML(const QString &aFileName) {
         }
 
         // Встретили закрывающий тег.
-        case QXmlStream_Reader::EndElement: {
+        case QXmlStreamReader::EndElement: {
             QString key = xmlReader.name().toString().toLower();
 
             if (key == "operator") {
@@ -176,7 +176,7 @@ bool DealerSettings::loadOperatorsXML(const QString &aFileName) {
                         m_ProviderGateways.insert(cid, opID);
                     }
                     // operatorsProcessing[opID].swap(processing);
-                    // operatorsHash[opID].swap(QString::from_Latin1(CCryptographicHash::hash(op,
+                    // operatorsHash[opID].swap(QString::fromLatin1(CCryptographicHash::hash(op,
                     // CCryptographicHash::Sha256).toHex()));
                     m_ProvidersProcessingIndex.insert(processing, opID);
                 }
@@ -194,7 +194,7 @@ bool DealerSettings::loadOperatorsXML(const QString &aFileName) {
         }
 
         // Ошибка в формате документа.
-        case QXmlStream_Reader::Invalid: {
+        case QXmlStreamReader::Invalid: {
             toLog(LogLevel::Error,
                   QString("'%1' parsing error: %2, line %3, column %4.")
                       .arg(aFileName)
@@ -280,7 +280,7 @@ bool DealerSettings::loadProvidersFrom_Buffer(const std::string &aBuffer, SProvi
         boost::property_tree::read_xml(stream, operators);
     } catch (boost::property_tree::xml_parser_error &e) {
         toLog(LogLevel::Error,
-              QString("XML parser error: %1.").arg(QString::from_StdString(e.message())));
+              QString("XML parser error: %1.").arg(QString::fromStdString(e.message())));
 
         return false;
     }
@@ -621,7 +621,7 @@ bool DealerSettings::loadPersonalSettings() {
         BOOST_FOREACH (const TPtree::value_type &parameter,
                        m_Properties.get_child("config.printing.parameters", emptyTree)) {
             m_PersonalSettings.m_PrintingParameters.insert(
-                QString::from_StdString(parameter.first).toUpper(),
+                QString::fromStdString(parameter.first).toUpper(),
                 parameter.second.get_value(QString()).replace("\\n", "\n"));
         }
     } catch (std::runtime_error &error) {

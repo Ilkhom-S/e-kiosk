@@ -8,15 +8,16 @@
 #include <SDK/PaymentProcessor/Core/INetworkService.h>
 #include <SDK/Plugins/IExternalInterface.h>
 
+#include <utility>
+
 namespace CPaymentFactory {
 const char LogName[] = "Payments";
 } // namespace CPaymentFactory
 
 //------------------------------------------------------------------------------
-PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory,
-                                       const QString &aInstancePath)
-    : m_Initialized(false), m_Factory(aFactory), m_InstancePath(aInstancePath), m_Core(0),
-      m_CryptEngine(0) {
+PaymentFactoryBase::PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath)
+    : m_Initialized(false), m_Factory(aFactory), m_InstancePath(std::move(aInstancePath)),
+      m_Core(nullptr), m_CryptEngine(nullptr) {
     try {
         m_Core = dynamic_cast<SDK::PaymentProcessor::ICore *>(
             m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));

@@ -31,7 +31,7 @@ const char ConfigurationDirectory[] = "plugins";
 } // namespace CPluginFactory
 
 //------------------------------------------------------------------------------
-PluginFactory::PluginFactory() : m_Kernel(0), m_Initialized(false) {}
+PluginFactory::PluginFactory() : m_Kernel(nullptr), m_Initialized(false) {}
 
 //------------------------------------------------------------------------------
 PluginFactory::~PluginFactory() {
@@ -173,7 +173,7 @@ IPlugin *PluginFactory::createPlugin(const QString &aInstancePath,
                                      const QString &aConfigInstancePath) {
     m_Kernel->getLog()->write(LogLevel::Normal, QString("Creating plugin %1.").arg(aInstancePath));
 
-    IPlugin *plugin = 0;
+    IPlugin *plugin = nullptr;
 
     // Разделим на путь и конфигурацию
     QString path = aInstancePath.section(CPlugin::InstancePathSeparator, 0, 0);
@@ -223,7 +223,7 @@ IPlugin *PluginFactory::createPlugin(const QString &aInstancePath,
                     for (auto it = modifiedKeys.possibleValues.begin();
                          it != modifiedKeys.possibleValues.end();
                          ++it) {
-                        QString key = it.key();
+                        const QString &key = it.key();
                         QString newKey = it.value().toString();
 
                         if (configuration.contains(key) &&
@@ -253,12 +253,13 @@ IPlugin *PluginFactory::createPlugin(const QString &aInstancePath,
                                         !it->possibleValues.values().contains(configValue))) {
                         QString newValue = it->defaultValue.toString();
 
-                        if (pluginLoader && !notContains && (it->name != CPlugin::ModifiedValues)) {
-                            for (auto jt = parameterList.begin(); jt != parameterList.end(); ++jt) {
-                                if (jt->isValid() && (jt->name == CPlugin::ModifiedValues) &&
-                                    (jt->title.isEmpty() || (jt->title == it->name))) {
+                        if ((pluginLoader != nullptr) && !notContains &&
+                            (it->name != CPlugin::ModifiedValues)) {
+                            for (auto &jt : parameterList) {
+                                if (jt.isValid() && (jt.name == CPlugin::ModifiedValues) &&
+                                    (jt.title.isEmpty() || (jt.title == it->name))) {
                                     QString modifiedValue =
-                                        jt->possibleValues.value(configValue.toString()).toString();
+                                        jt.possibleValues.value(configValue.toString()).toString();
 
                                     if (!modifiedValue.isEmpty()) {
                                         newValue = modifiedValue;
@@ -280,7 +281,7 @@ IPlugin *PluginFactory::createPlugin(const QString &aInstancePath,
                 }
                 */
 
-                // Добаляем версию PP и устанавливаем настройки плагина
+                // Добавляем версию PP и устанавливаем настройки плагина
                 configuration.insert(CPluginParameters::PPVersion, m_Kernel->getVersion());
                 plugin->setConfiguration(configuration);
             } else {
@@ -333,7 +334,7 @@ std::weak_ptr<IPlugin> PluginFactory::createPluginPtr(const QString &aInstancePa
     IPlugin *plugin = createPlugin(aInstancePath, aConfigPath);
 
     if (!plugin) {
-        return std::weak_ptr<IPlugin>();
+        return {};
     }
 
     auto pluginPtr = std::shared_ptr<IPlugin>(plugin, SDK::Plugin::PluginDeleter());
@@ -373,11 +374,11 @@ void PluginFactory::translateParameters() {
         auto translateItem = [&](QString &aItem) {
             QStringList elements = aItem.split(" ");
 
-            for (int i = 0; i < elements.size(); ++i) {
+            for (auto &element : elements) {
                 // Контекст для перевода может содержаться в самой строке с переводом.
-                auto context = elements[i].section("#", 0, 0).toLatin1();
-                elements[i] = qApp->translate(context.isEmpty() ? pluginName : context,
-                                              elements[i].toLatin1());
+                auto context = element.section("#", 0, 0).toLatin1();
+                element =
+                    qApp->translate(context.isEmpty() ? pluginName : context, element.toLatin1());
             }
 
             aItem = elements.join(" ");
@@ -440,7 +441,7 @@ TParameterList PluginFactory::getPluginParametersDescription(const QString &aPat
                                                       : plugin->second;
     }
 
-    return TParameterList();
+    return {};
 }
 
 //------------------------------------------------------------------------------
@@ -448,10 +449,9 @@ QStringList PluginFactory::getRuntimeConfigurations(const QString &aPathFilter) 
     // Немного оптимизации
     if (aPathFilter.isEmpty()) {
         return m_CreatedPlugins.values();
-    } else {
-        QRegularExpression regex(QString("^%1").arg(QRegularExpression::escape(aPathFilter)));
-        return QStringList(m_CreatedPlugins.values()).filter(regex);
     }
+    QRegularExpression regex(QString("^%1").arg(QRegularExpression::escape(aPathFilter)));
+    return QStringList(m_CreatedPlugins.values()).filter(regex);
 }
 
 //------------------------------------------------------------------------------
@@ -459,10 +459,9 @@ QStringList PluginFactory::getPersistentConfigurations(const QString &aPathFilte
     // Немного оптимизации
     if (aPathFilter.isEmpty()) {
         return m_PersistentConfigurations.keys();
-    } else {
-        QRegularExpression regex(QString("^%1").arg(QRegularExpression::escape(aPathFilter)));
-        return QStringList(m_PersistentConfigurations.keys()).filter(regex);
     }
+    QRegularExpression regex(QString("^%1").arg(QRegularExpression::escape(aPathFilter)));
+    return QStringList(m_PersistentConfigurations.keys()).filter(regex);
 }
 
 //------------------------------------------------------------------------------
@@ -567,18 +566,17 @@ QVariantMap PluginFactory::getPluginInstanceConfiguration(const QString &aPath,
     // Если конфигурация есть у приложения, берём её
     if (m_Kernel->canConfigurePlugin(instancePath)) {
         return m_Kernel->getPluginConfiguration(instancePath);
-    } else {
-        // Иначе из конфигурационного файла
-        if (m_PersistentConfigurations.contains(instancePath)) {
-            return m_PersistentConfigurations[instancePath];
-        } else if (m_PersistentConfigurations.contains(aPath)) {
-            // Иначе из конфигурационного файла конфигурацию по умолчанию
-            return m_PersistentConfigurations[aPath];
-        }
+    } // Иначе из конфигурационного файла
+    if (m_PersistentConfigurations.contains(instancePath)) {
+        return m_PersistentConfigurations[instancePath];
+    }
+    if (m_PersistentConfigurations.contains(aPath)) {
+        // Иначе из конфигурационного файла конфигурацию по умолчанию
+        return m_PersistentConfigurations[aPath];
     }
 
     // Иначе пустую конфигурацию
-    return QVariantMap();
+    return {};
 }
 
 //------------------------------------------------------------------------------

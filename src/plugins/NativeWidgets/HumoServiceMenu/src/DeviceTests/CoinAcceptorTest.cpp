@@ -7,9 +7,8 @@ const QString TestStacked = QT_TRANSLATE_NOOP("CoinAcceptorTest", "#test_stacked
 } // namespace CCoinAcceptorTest
 
 //------------------------------------------------------------------------------
-CoinAcceptorTest::CoinAcceptorTest(SDK::Driver::IDevice *aDevice) {
-    m_CoinAcceptor = dynamic_cast<SDK::Driver::ICashAcceptor *>(aDevice);
-}
+CoinAcceptorTest::CoinAcceptorTest(SDK::Driver::IDevice *aDevice)
+    : m_CoinAcceptor(dynamic_cast<SDK::Driver::ICashAcceptor *>(aDevice)) {}
 
 //------------------------------------------------------------------------------
 QList<QPair<QString, QString>> CoinAcceptorTest::getTestNames() const {

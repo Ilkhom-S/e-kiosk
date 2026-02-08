@@ -22,7 +22,7 @@ public:
 
 private:
     /// Подсчет CRC.
-    uchar calcCRC(const QByteArray &aData) const;
+    static uchar calcCRC(const QByteArray &aData);
 
     /// Исполнить команду.
     bool

@@ -228,7 +228,7 @@ template <class T> double CCTalkDeviceBase<T>::parseFWVersion(const QByteArray &
 
     // 2. Выполняем сопоставление. Метод match() автоматически
     // интерпретирует QByteArray как UTF-8 строку.
-    QRegularExpressionMatch match = regex.match(QString::from_Utf8(aAnswer));
+    QRegularExpressionMatch match = regex.match(QString::fromUtf8(aAnswer));
 
     // 3. Проверяем наличие совпадения через hasMatch() (стандарт Qt 6)
     if (match.hasMatch()) {

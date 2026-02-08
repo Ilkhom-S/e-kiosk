@@ -33,20 +33,20 @@ WatchServiceController::WatchServiceController()
 
     // Create menu actions with direct connections instead of signal mapper
     {
-        auto settingsAction = m_Menu.addAction(
+        auto *settingsAction = m_Menu.addAction(
             createTemplateIcon(":/icons/menu-settingsTemplate.png"), tr("#start_service_menu"));
         connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(onStartServiceMenuClicked()));
         m_StartServiceActions << settingsAction;
 
-        auto setupAction = m_Menu.addAction(createTemplateIcon(":/icons/menu-setupTemplate.png"),
-                                            tr("#start_first_setup"));
+        auto *setupAction = m_Menu.addAction(createTemplateIcon(":/icons/menu-setupTemplate.png"),
+                                             tr("#start_first_setup"));
         connect(setupAction, SIGNAL(triggered(bool)), this, SLOT(onStartFirstSetupClicked()));
         m_StartServiceActions << setupAction;
 
         m_Menu.addSeparator();
     }
 
-    auto playAction =
+    auto *playAction =
         m_Menu.addAction(createTemplateIcon(":/icons/menu-playTemplate.png"), tr("#start_service"));
     connect(playAction, SIGNAL(triggered(bool)), this, SLOT(onStartServiceClickedDirect()));
     m_StartServiceActions << playAction;
@@ -91,10 +91,10 @@ QIcon WatchServiceController::createTemplateIcon(const QString &basePath) {
 
     // Load multiple sizes for better scaling on different DPI and contexts
     // Available sizes: 16, 32, 48, 64, 96, 128, 256, 512
-    static const QList<int> sizes = {16, 32, 48, 64, 96, 128, 256, 512};
+    static const QList<int> Sizes = {16, 32, 48, 64, 96, 128, 256, 512};
     QStringList loadedSizes;
 
-    for (int size : sizes) {
+    for (int size : Sizes) {
         QString sizePath;
         if (size == 48) {
             // Default size - use the base path
@@ -141,10 +141,10 @@ QIcon WatchServiceController::createAppIcon(const QString &basePath) {
 
     // Load multiple sizes for better scaling on different DPI and contexts
     // Available sizes: 16, 32, 48, 64, 96, 128, 256, 512
-    static const QList<int> sizes = {16, 32, 48, 64, 96, 128, 256, 512};
+    static const QList<int> Sizes = {16, 32, 48, 64, 96, 128, 256, 512};
     QStringList loadedSizes;
 
-    for (int size : sizes) {
+    for (int size : Sizes) {
         QString sizePath;
         if (size == 48) {
             // Default size - use the base path
@@ -177,7 +177,7 @@ QIcon WatchServiceController::createAppIcon(const QString &basePath) {
 
 //----------------------------------------------------------------------------
 // Helper to get platform-specific executable path
-QString WatchServiceController::getExecutablePath(const QString &baseName) const {
+QString WatchServiceController::getExecutablePath(const QString &baseName) {
     QString executableName = baseName;
 
     // Add platform-specific extension

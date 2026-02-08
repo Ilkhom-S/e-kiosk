@@ -35,9 +35,7 @@ void DumpCallstack(QStringList &aStack, void *aContext) {
 
         aStack.clear();
 
-        for (size_t i = 0; i < st.size(); ++i) {
-            const auto &frame = st[i];
-
+        for (auto frame : st) {
             QString frameStr;
 
             // Address
@@ -115,7 +113,7 @@ void SetUnhandledExceptionsHandler(TExceptionHandler aHandler) {
     });
 #elif defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     // For macOS and Linux, set up signal handlers for common crash signals
-    static TExceptionHandler s_originalHandler = aHandler;
+    static TExceptionHandler sOriginalHandler = aHandler;
 
     auto signalHandler = [](int sig) {
         QStringList stack;
@@ -147,8 +145,8 @@ void SetUnhandledExceptionsHandler(TExceptionHandler aHandler) {
         }
 
         // Call original handler if provided
-        if (s_originalHandler) {
-            s_originalHandler(sig);
+        if (sOriginalHandler) {
+            sOriginalHandler(sig);
         }
 
         // Re-raise the signal to ensure proper termination

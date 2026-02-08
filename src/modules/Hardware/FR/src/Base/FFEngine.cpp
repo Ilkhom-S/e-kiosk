@@ -299,7 +299,7 @@ QByteArray FFEngine::getTLVData(int aField, const QVariant &aValue, QString *aLo
                                      .arg(data));
         }
 
-        result += m_Codec->from_Unicode(data);
+        result += m_Codec->fromUnicode(data);
         log += data;
 
         break;
@@ -1023,7 +1023,7 @@ QString FFEngine::filterPhone(const QString &aData) const {
     }
 
     index =
-        result.indexOf(QRegularExpression(QString::from_Utf8("[a-zA-Zа-яА-Я\\.\\,\\;\\+]+")), 1);
+        result.indexOf(QRegularExpression(QString::fromUtf8("[a-zA-Zа-яА-Я\\.\\,\\;\\+]+")), 1);
     result = result.left(index).remove(QRegularExpression("[^0-9\\+]+"), "");
 
     if (result.size() == 10) {

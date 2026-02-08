@@ -17,7 +17,7 @@
 #include <SDK/Plugins/IExternalInterface.h>
 
 #include <Crypt/ICryptEngine.h>
-#include <math.h>
+#include <cmath>
 #include <memory>
 
 #include "AdPaymentRequest.h"
@@ -40,8 +40,8 @@ const char TemporarySession[] = "temporary_session";
 AdPayment::AdPayment(PaymentFactory *aFactory)
     : PaymentBase(aFactory, aFactory->getCore()),
       m_RequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine()) {
-    m_RequestSender.setResponseCreator(boost::bind(
-        &AdPayment::createResponse, this, boost::placeholders::_1, boost::placeholders::_2));
+    m_RequestSender.setResponseCreator(
+        [this] { return createResponse(boost::placeholders::_1, boost::placeholders::_2); });
 }
 
 //------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ void AdPayment::setProcessError() {
     int serverError = getParameter(PPSDK::CPayment::Parameters::ServerError).value.toInt();
 
     setNextTryDate(QDateTime::currentDateTime().addSecs(
-        static_cast<int>(CPayment::NextTryDateIncrement * pow(1.3f, tryCount) * 60)));
+        static_cast<int>(CPayment::NextTryDateIncrement * pow(1.3F, tryCount) * 60)));
 
     // Время установки статуса BadPayment
     if (tryCount > CPayment::TriesLimit) {
@@ -201,7 +201,7 @@ void AdPayment::setProcessError() {
         // если ошибка не связана с транспортом.
         setParameter(SParameter(PPSDK::CPayment::Parameters::NumberOfTries, ++tryCount, true));
     } else {
-        if (!tryCount) {
+        if (tryCount == 0) {
             // Для правильной отправки статусов на мониторинг
             setParameter(SParameter(PPSDK::CPayment::Parameters::NumberOfTries, 1, true));
         }

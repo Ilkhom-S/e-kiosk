@@ -35,10 +35,7 @@ QString errorToString(Enum aError);
 
 //---------------------------------------------------------------------------
 struct SKeyPair {
-    SKeyPair() {
-        id = 0;
-        engine = 0;
-    }
+    SKeyPair() : id(0), engine(0) {}
 
     int id;
 

@@ -5,9 +5,9 @@
 #include <QtCore/QString>
 
 #include <algorithm>
-#include <errno.h>
+#include <cerrno>
+#include <csignal>
 #include <libproc.h>
-#include <signal.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -27,7 +27,7 @@ void ProcessEnumerator::enumerate() {
         return;
     }
 
-    pid_t *pids = new pid_t[pidCount];
+    auto *pids = new pid_t[pidCount];
     pidCount = proc_listallpids(pids, pidCount * sizeof(pid_t));
 
     for (int i = 0; i < pidCount; ++i) {
@@ -41,7 +41,7 @@ void ProcessEnumerator::enumerate() {
         if (proc_pidpath(pid, pathBuffer, sizeof(pathBuffer)) > 0) {
             ProcessInfo info;
             info.pid = static_cast<PID>(pid);
-            info.path = QString::from_Local8Bit(pathBuffer);
+            info.path = QString::fromLocal8Bit(pathBuffer);
             m_Processes.insert(info.pid, info);
         }
     }
@@ -50,13 +50,13 @@ void ProcessEnumerator::enumerate() {
 }
 
 //----------------------------------------------------------------------------
-bool ProcessEnumerator::killInternal(PID aPid, quint32 &aErrorCode) const {
+bool ProcessEnumerator::killInternal(PID aPid, quint32 &aErrorCode) {
     aErrorCode = 0;
 
     // Send SIGTERM first for graceful termination
     if (::kill(static_cast<pid_t>(aPid), SIGTERM) == 0) {
         // Wait for the process to terminate gracefully
-        int status;
+        int status = 0;
         pid_t result = waitpid(static_cast<pid_t>(aPid), &status, WNOHANG);
 
         if (result == 0) {
@@ -71,10 +71,10 @@ bool ProcessEnumerator::killInternal(PID aPid, quint32 &aErrorCode) const {
                 // Wait for the process to be killed
                 waitpid(static_cast<pid_t>(aPid), &status, 0);
                 return true;
-            } else {
-                aErrorCode = errno;
-                return false;
             }
+            aErrorCode = errno;
+            return false;
+
         } else if (result == static_cast<pid_t>(aPid)) {
             // Process terminated gracefully
             return true;

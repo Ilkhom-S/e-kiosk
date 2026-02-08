@@ -361,7 +361,7 @@ bool Prim_OnlineFRBase::getFiscalFields(quint32 aFDNumber,
             return false;
         }
 
-        TLV.data = m_Codec->from_Unicode(capturedData[2]);
+        TLV.data = m_Codec->fromUnicode(capturedData[2]);
 
         if (TLV.field == CFR::FiscalFields::PayOffSubject) {
             aPSData << TFiscalPaymentData();
@@ -465,7 +465,7 @@ void Prim_OnlineFRBase::setFiscalData(CPrim_FR::TData &aCommandData,
                  << addGFieldToBuffer(startX + 2, timeY, m_AFDFont)           // время
                  << addGFieldToBuffer(lastX + 2, INNY, m_AFDFont)             // ИНН
                  << addGFieldToBuffer(lastX + 0, cashierY, m_AFDFont)
-                 << m_Codec->from_Unicode(operatorId)                            // ID оператора
+                 << m_Codec->fromUnicode(operatorId)                            // ID оператора
                  << addGFieldToBuffer(lastX + 2, totalY, m_AFDFont) << sum_Data; // сумма
 
     aAdditionalAFDData

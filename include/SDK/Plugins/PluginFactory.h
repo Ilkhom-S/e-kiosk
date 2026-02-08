@@ -56,7 +56,7 @@ public:
     virtual QStringList getPluginList() const;
 
     /// Создаёт плагин.
-    virtual IPlugin *createPlugin(const QString &aInstancePath, const QString &aConfigPath);
+    virtual IPlugin *createPlugin(const QString &aInstancePath, const QString &aConfigInstancePath);
 
     /// Создаёт плагин. Временное решения для работы с плагинами, обернутыми в умный указатель
     virtual std::weak_ptr<IPlugin> createPluginPtr(const QString &aInstancePath,

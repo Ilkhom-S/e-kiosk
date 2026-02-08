@@ -28,13 +28,13 @@ class ConnectionBase : public IConnection {
 
 public:
     /// Конструктор.
-    ConnectionBase(const QString &aName, NetworkTaskManager *aNetwork, ILog *aLog);
+    ConnectionBase(QString aName, NetworkTaskManager *aNetwork, ILog *aLog);
 
     /// Возвращает имя соединения.
     virtual QString getName() const;
 
     ///	Устанавливает период проверки соединения.
-    virtual void setCheckPeriod(int aMilliseconds);
+    virtual void setCheckPeriod(int aMinutes);
 
     /// Осуществить попытку поднять соединение.
     virtual void open(bool aWatch = true) noexcept(false);
@@ -69,7 +69,7 @@ protected:
     QString m_Name;
     bool m_Connected;
     bool m_Watch;
-    int m_PingPeriod;
+    int m_PingPeriod{};
     int m_CheckCount;
     QTimer m_CheckTimer;
     QList<CheckUrl> m_CheckHosts;

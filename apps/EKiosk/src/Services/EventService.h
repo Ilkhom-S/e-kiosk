@@ -22,44 +22,44 @@ public:
     static EventService *instance(IApplication *aApplication);
 
     EventService();
-    virtual ~EventService();
+    virtual ~EventService() override;
 
     /// IEventService: Генерация события aEvent.
-    virtual void sendEvent(const SDK::PaymentProcessor::Event &aEvent);
+    virtual void sendEvent(const SDK::PaymentProcessor::Event &aEvent) override;
 
     /// Генерация события типа aEventType.
     void sendEvent(SDK::PaymentProcessor::EEventType::Enum aType, const QVariant &aData);
 
     /// IEventService: Подписывает объект aObject на получение событий в слот aSlot.
     /// Сигнатура слота: void aSlot(const Event & aEvent).
-    virtual void subscribe(const QObject *aObject, const char *aSlot);
+    virtual void subscribe(const QObject *aObject, const char *aSlot) override;
 
     /// IEventService: Отписывает объект от получения событий в слот aSlot.
-    virtual void unsubscribe(const QObject *aObject, const char *aSlot);
+    virtual void unsubscribe(const QObject *aObject, const char *aSlot) override;
 
     /// IService: Инициализация сервиса.
-    virtual bool initialize();
+    virtual bool initialize() override;
 
     /// IService: Закончена инициализация всех сервисов.
-    virtual void finishInitialize();
+    virtual void finishInitialize() override;
 
     /// IService: Возвращает false, если сервис не может быть остановлен в текущий момент.
-    virtual bool canShutdown();
+    virtual bool canShutdown() override;
 
     /// IService: Завершение работы сервиса.
-    virtual bool shutdown();
+    virtual bool shutdown() override;
 
     /// IService: Возвращает имя сервиса.
-    virtual QString getName() const;
+    virtual QString getName() const override;
 
     /// IService: Список необходимых сервисов.
-    virtual const QSet<QString> &getRequiredServices() const;
+    virtual const QSet<QString> &getRequiredServices() const override;
 
     /// IService: Получить параметры сервиса.
-    virtual QVariantMap getParameters() const;
+    virtual QVariantMap getParameters() const override;
 
     /// IService: Сброс служебной информации.
-    virtual void resetParameters(const QSet<QString> &aParameters);
+    virtual void resetParameters(const QSet<QString> &aParameters) override;
 
 signals:
     void event(const SDK::PaymentProcessor::Event &aEvent);

@@ -21,7 +21,7 @@ class PaymentFactoryBase : public QObject,
 public:
     //---------------------------------------------------------------------------
     // Конструктор базовой фабрики платежей
-    PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath);
 
 #pragma region SDK::Plugin::IPlugin interface
 

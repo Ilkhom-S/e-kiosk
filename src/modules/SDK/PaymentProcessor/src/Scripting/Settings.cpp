@@ -18,12 +18,12 @@ const QString CommonSkinDirectory = "skins";
 } // namespace
 
 //------------------------------------------------------------------------------
-DealerSettings::DealerSettings(ICore *aCore) {
+DealerSettings::DealerSettings(ICore *aCore)
+    : m_PersonalSettings(m_Settings->getPersonalSettings()) {
     ISettingsService *settingsService = aCore->getSettingsService();
 
-    m_Settings = static_cast<SDK::PaymentProcessor::DealerSettings *>(
+    m_Settings = dynamic_cast<SDK::PaymentProcessor::DealerSettings *>(
         settingsService->getAdapter(CAdapterNames::DealerAdapter));
-    m_PersonalSettings = m_Settings->getPersonalSettings();
 }
 
 //------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ bool DealerSettings::isPaymentAllowed(const QVariantMap &aParameters) const {
 //------------------------------------------------------------------------------
 QObject *
 DealerSettings::getCommissions(qint64 aProvider, const QVariantMap &aParameters, double aAmount) {
-    ScriptArray *result = new ScriptArray(this);
+    auto *result = new ScriptArray(this);
 
     foreach (const Commission &commission, m_Settings->getCommissions(aProvider, aParameters)) {
         // Комиссия подходит для данной суммы если нет ограничений по сумме или выполняется условие
@@ -50,19 +50,18 @@ DealerSettings::getCommissions(qint64 aProvider, const QVariantMap &aParameters,
 }
 
 //------------------------------------------------------------------------------
-TerminalSettings::TerminalSettings(ICore *aCore) {
+TerminalSettings::TerminalSettings(ICore *aCore) : m_GuiService(aCore->getGUIService()) {
     ISettingsService *settingsService = aCore->getSettingsService();
-    m_TerminalSettings = static_cast<SDK::PaymentProcessor::TerminalSettings *>(
+    m_TerminalSettings = dynamic_cast<SDK::PaymentProcessor::TerminalSettings *>(
         settingsService->getAdapter(CAdapterNames::TerminalAdapter));
-
-    m_GuiService = aCore->getGUIService();
 }
 
 //------------------------------------------------------------------------------
 bool TerminalSettings::isItServiceProvider(qint64 aProvider, const QVariantMap &aParameters) {
     if (m_TerminalSettings->getServiceMenuPasswords().operatorId == aProvider) {
-        if (aParameters.size() && aParameters.value(aParameters.keys().first()).toString() ==
-                                      m_TerminalSettings->getServiceMenuPasswords().phone) {
+        if ((static_cast<int>(!aParameters.empty()) != 0) &&
+            aParameters.value(aParameters.keys().first()).toString() ==
+                m_TerminalSettings->getServiceMenuPasswords().phone) {
             return true;
         }
     }

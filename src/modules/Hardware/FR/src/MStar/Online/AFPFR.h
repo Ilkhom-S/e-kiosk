@@ -34,7 +34,7 @@ protected:
     virtual void processDeviceData();
 
     /// Загрузить названия отделов.
-    bool loadSectionNames();
+    static bool loadSectionNames();
 
     /// Получить дату и время ФР.
     virtual QDateTime getDateTime();
@@ -79,8 +79,8 @@ protected:
 
     /// Печать фискального чека.
     virtual bool perform_Fiscal(const QStringList &aReceipt,
-                               const SDK::Driver::SPaymentData &aPaymentData,
-                               quint32 *aFDNumber = nullptr);
+                                const SDK::Driver::SPaymentData &aPaymentData,
+                                quint32 *aFDNumber = nullptr);
 
     /// Получить фискальные теги по номеру документа.
     virtual bool getFiscalFields(quint32 aFDNumber,

@@ -64,7 +64,7 @@ void NetworkTaskManager::removeTask(NetworkTask *aTask) {
 }
 
 //------------------------------------------------------------------------
-void NetworkTaskManager::onSetProxy(QNetworkProxy aProxy) {
+void NetworkTaskManager::onSetProxy(const QNetworkProxy &aProxy) {
     m_Network->setProxy(aProxy);
 }
 
@@ -81,7 +81,7 @@ void NetworkTaskManager::onAddTask(NetworkTask *aTask) {
 
     request.setUrl(aTask->getUrl());
 
-    if (aTask->getFlags() & NetworkTask::Continue) {
+    if ((aTask->getFlags() & NetworkTask::Continue) != 0) {
         qint64 offset = aTask->getDataStream()->size();
 
         if (offset > 0) {
@@ -107,7 +107,7 @@ void NetworkTaskManager::onAddTask(NetworkTask *aTask) {
 
     aTask->getResponseHeader().clear();
 
-    QNetworkReply *reply = 0;
+    QNetworkReply *reply = nullptr;
 
     switch (aTask->getType()) {
     case NetworkTask::Head: {
@@ -166,12 +166,12 @@ void NetworkTaskManager::onAddTask(NetworkTask *aTask) {
 void NetworkTaskManager::onRemoveTask(NetworkTask *aTask) {
     for (TTaskMap::iterator it = m_Tasks.begin(); it != m_Tasks.end(); ++it) {
         if (it.value().data() == aTask && !it.value().isNull()) {
-            disconnect(it.key(), 0, this, 0);
+            disconnect(it.key(), nullptr, this, nullptr);
 
             it.key()->close();
             it.key()->abort();
 
-            if (aTask->getError()) {
+            if (aTask->getError() != 0) {
                 toLog(LogLevel::Error,
                       QString("< Error: %1. HttpError: %2. Request URL: %3.")
                           .arg(aTask->errorString())
@@ -195,7 +195,7 @@ void NetworkTaskManager::onTaskProgress(qint64 aReceived, qint64 aTotal) {
     TTaskMap::iterator it = m_Tasks.find(dynamic_cast<QNetworkReply *>(sender()));
 
     if (it != m_Tasks.end() && !it.value().isNull()) {
-        auto task = it.value().data();
+        auto *task = it.value().data();
 
         task->setSize(aReceived, aTotal);
         task->resetTimer();
@@ -203,7 +203,7 @@ void NetworkTaskManager::onTaskProgress(qint64 aReceived, qint64 aTotal) {
 }
 
 //------------------------------------------------------------------------
-void NetworkTaskManager::onTaskUploadProgress(qint64, qint64) {
+void NetworkTaskManager::onTaskUploadProgress(qint64 /*unused*/, qint64 /*unused*/) {
     TTaskMap::iterator it = m_Tasks.find(dynamic_cast<QNetworkReply *>(sender()));
 
     if (it != m_Tasks.end() && !it.value().isNull()) {
@@ -213,10 +213,10 @@ void NetworkTaskManager::onTaskUploadProgress(qint64, qint64) {
 
 //------------------------------------------------------------------------
 void NetworkTaskManager::onTaskReadyRead() {
-    QNetworkReply *reply = dynamic_cast<QNetworkReply *>(sender());
+    auto *reply = dynamic_cast<QNetworkReply *>(sender());
 
-    if (reply && m_Tasks.contains(reply) && !m_Tasks.value(reply).isNull()) {
-        auto task = m_Tasks.value(reply).data();
+    if ((reply != nullptr) && m_Tasks.contains(reply) && !m_Tasks.value(reply).isNull()) {
+        auto *task = m_Tasks.value(reply).data();
 
         if (task) {
             QVariant httpStatusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
@@ -243,7 +243,7 @@ void NetworkTaskManager::onTaskReadyRead() {
                                               // первого пакета данных
                     {
                         QString contentRange =
-                            QString::from_Latin1(reply->rawHeader("Content-Range"));
+                            QString::fromLatin1(reply->rawHeader("Content-Range"));
 
                         if (contentRange.isEmpty()) {
                             // Если запрашивали кусок данных, а пришел файл
@@ -254,7 +254,7 @@ void NetworkTaskManager::onTaskReadyRead() {
                             // Если запрашивали кусок данных, позиционируем на
                             // начало передаваемого диапазона
                             // http://tools.ietf.org/html/rfc2616#section-14.16
-                            QRegularExpression rx("(\\d+)\\-\\d+/\\d+");
+                            QRegularExpression rx(R"((\d+)\-\d+/\d+)");
 
                             auto match = rx.match(contentRange);
                             if (match.hasMatch()) {
@@ -334,8 +334,9 @@ void NetworkTaskManager::onTaskSslErrors(const QList<QSslError> &aErrors) {
     QString errorString;
 
     foreach (const QSslError &error, aErrors) {
-        if (!errorString.isEmpty())
+        if (!errorString.isEmpty()) {
             errorString += ", ";
+        }
 
         errorString += error.errorString();
     }
@@ -349,11 +350,11 @@ void NetworkTaskManager::onTaskSslErrors(const QList<QSslError> &aErrors) {
 
 //------------------------------------------------------------------------
 void NetworkTaskManager::onTaskComplete() {
-    QNetworkReply *reply = dynamic_cast<QNetworkReply *>(sender());
+    auto *reply = dynamic_cast<QNetworkReply *>(sender());
 
     for (TTaskMap::iterator it = m_Tasks.begin(); it != m_Tasks.end(); ++it) {
         if (it.key() == reply && !it.value().isNull()) {
-            auto task = it.value().data();
+            auto *task = it.value().data();
 
             int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
@@ -367,7 +368,7 @@ void NetworkTaskManager::onTaskComplete() {
 
             if (reply->error() != QNetworkReply::OperationCanceledError) {
                 task->setError(reply->error(), reply->errorString());
-                if (statusCode &&
+                if ((statusCode != 0) &&
                     ((statusCode == 301) || (statusCode == 416) || (statusCode == 404))) {
                     toLog(LogLevel::Warning,
                           QString("Set bad task error, because statusCode=%1.").arg(statusCode));
@@ -386,7 +387,7 @@ void NetworkTaskManager::onTaskComplete() {
                 }
             }
 
-            if (!task->getError()) {
+            if (task->getError() == 0) {
                 // сообщаем об успешном статусе задачи
                 emit networkTaskStatus(false);
             }

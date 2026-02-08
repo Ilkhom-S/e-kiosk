@@ -31,14 +31,14 @@ bool DatabaseUtils::isDeviceParam_Exists(const QString & /*aDeviceConfigName*/) 
 
 //---------------------------------------------------------------------------
 QVariant DatabaseUtils::getDeviceParam(const QString &aDeviceConfigName,
-                                       const QString &aParam_Name) {
+                                       const QString &aParamName) {
     QString queryMessage =
         "SELECT `value` FROM `device_param` WHERE `name` = :param_name AND "
         "`fk_device_id` = (SELECT `id` FROM `device` WHERE `name` = :config_name)";
 
     QScopedPointer<IDatabaseQuery> dbQuery(m_Database.createQuery(queryMessage));
     if (!dbQuery.isNull()) {
-        dbQuery->bindValue(":param_name", aParam_Name);
+        dbQuery->bindValue(":param_name", aParamName);
         dbQuery->bindValue(":config_name", aDeviceConfigName);
 
         if (dbQuery->exec() && dbQuery->first()) {
@@ -46,13 +46,13 @@ QVariant DatabaseUtils::getDeviceParam(const QString &aDeviceConfigName,
         }
     }
 
-    return QVariant();
+    return {};
 }
 
 //---------------------------------------------------------------------------
 bool DatabaseUtils::setDeviceParam(const QString &aDeviceConfigName,
-                                   const QString &aParam_Name,
-                                   const QVariant &aParam_Value) {
+                                   const QString &aParamName,
+                                   const QVariant &aParamValue) {
     if (!hasDevice(aDeviceConfigName)) {
         if (!addDevice(aDeviceConfigName)) {
             return false;
@@ -71,8 +71,8 @@ bool DatabaseUtils::setDeviceParam(const QString &aDeviceConfigName,
         return false;
     }
 
-    query->bindValue(":param_name", aParam_Name);
-    query->bindValue(":param_value", aParam_Value);
+    query->bindValue(":param_name", aParamName);
+    query->bindValue(":param_value", aParamValue);
     query->bindValue(":config_name", aDeviceConfigName);
 
     return query->exec();
@@ -171,9 +171,8 @@ bool DatabaseUtils::addDeviceStatus(const QString &aDeviceConfigName,
         dbQuery->bindValue(":config_name", aDeviceConfigName);
 
         return dbQuery->exec();
-    } else {
-        return true;
     }
+    return true;
 }
 
 //---------------------------------------------------------------------------
@@ -196,7 +195,7 @@ void DatabaseUtils::removeUnknownDevice(const QStringList &aCurrentDevicesList) 
         dbQuery->exec();
     }
 
-    long affected;
+    long affected = 0;
     m_Database.execDML(
         "DELETE FROM `device_param` WHERE `fk_device_id` NOT IN (select `id` from device)",
         affected);

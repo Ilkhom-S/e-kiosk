@@ -33,7 +33,7 @@ const QString Multistage = "multistage";
 namespace {
 
 /// Конструктор экземпляра плагина.
-SDK::Plugin::IPlugin *CreatePaymentFactory(SDK::Plugin::IEnvironment *aFactory,
+SDK::Plugin::IPlugin *createPaymentFactory(SDK::Plugin::IEnvironment *aFactory,
                                            const QString &aInstancePath) {
     return new PaymentFactory(aFactory, aInstancePath);
 }
@@ -42,14 +42,14 @@ SDK::Plugin::IPlugin *CreatePaymentFactory(SDK::Plugin::IEnvironment *aFactory,
 REGISTER_PLUGIN(makePath(SDK::PaymentProcessor::Application,
                          SDK::PaymentProcessor::CComponents::PaymentFactory,
                          CPaymentFactory::PluginName),
-                &CreatePaymentFactory,
+                &createPaymentFactory,
                 &SDK::Plugin::PluginInitializer::emptyParameterList,
                 HumoPaymentFactory);
 } // namespace
 
 //------------------------------------------------------------------------------
 PaymentFactory::PaymentFactory(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath)
-    : PaymentFactoryBase(aFactory, aInstancePath), m_PinLoader(0) {}
+    : PaymentFactoryBase(aFactory, aInstancePath), m_PinLoader(nullptr) {}
 
 //------------------------------------------------------------------------------
 QString PaymentFactory::getPluginName() const {
@@ -65,7 +65,7 @@ bool PaymentFactory::initialize() {
 //------------------------------------------------------------------------------
 void PaymentFactory::shutdown() {
     delete m_PinLoader;
-    m_PinLoader = 0;
+    m_PinLoader = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -78,11 +78,14 @@ QStringList PaymentFactory::getSupportedPaymentTypes() const {
 SDK::PaymentProcessor::IPayment *PaymentFactory::createPayment(const QString &aType) {
     if (aType.toLower() == CProcessorType::Humo) {
         return new Payment(this);
-    } else if (aType.toLower() == CProcessorType::HumoPin) {
+    }
+    if (aType.toLower() == CProcessorType::HumoPin) {
         return new PinPayment(this);
-    } else if (aType.toLower() == CProcessorType::Dealer) {
+    }
+    if (aType.toLower() == CProcessorType::Dealer) {
         return new DealerPayment(this);
-    } else if (aType.toLower() == CProcessorType::Multistage) {
+    }
+    if (aType.toLower() == CProcessorType::Multistage) {
         return new MultistagePayment(this);
     }
 
@@ -98,15 +101,17 @@ void PaymentFactory::releasePayment(SDK::PaymentProcessor::IPayment *aPayment) {
 PPSDK::SProvider PaymentFactory::getProviderSpecification(const PPSDK::SProvider &aProvider) {
     if (aProvider.processor.type == CProcessorType::HumoPin) {
         return m_PinLoader->getProviderSpecification(aProvider);
-    } else if (aProvider.processor.type == CProcessorType::Humo) {
-        return aProvider;
-    } else if (aProvider.processor.type == CProcessorType::Dealer) {
-        return aProvider;
-    } else if (aProvider.processor.type == CProcessorType::Multistage) {
-        return aProvider;
-    } else {
-        return PPSDK::SProvider();
     }
+    if (aProvider.processor.type == CProcessorType::Humo) {
+        return aProvider;
+    }
+    if (aProvider.processor.type == CProcessorType::Dealer) {
+        return aProvider;
+    }
+    if (aProvider.processor.type == CProcessorType::Multistage) {
+        return aProvider;
+    }
+    return PPSDK::SProvider();
 }
 
 //------------------------------------------------------------------------------

@@ -203,7 +203,7 @@ Response *RequestSender::request(NetworkTask::Type aType,
 
     if (aSignatureType == Detached) {
         responseSignature =
-            QByteArray::from_PercentEncoding(task->getResponseHeader()["X-signature"]);
+            QByteArray::fromPercentEncoding(task->getResponseHeader()["X-signature"]);
     }
 
     if (!m_ResponseVerifier(
@@ -257,7 +257,7 @@ bool RequestSender::defaultRequestEncoder(const QString &aRequest, QByteArray &a
         return false;
     }
 
-    aEncodedRequest = codec->from_Unicode(aRequest);
+    aEncodedRequest = codec->fromUnicode(aRequest);
     return true;
 #endif
 }

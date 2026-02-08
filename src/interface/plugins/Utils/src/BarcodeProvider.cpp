@@ -38,7 +38,7 @@ BarcodeProvider::requestImage(const QString &aId, QSize *aSize, const QSize &aRe
             continue;
         }
         QString name = nameValue[0].toLower();
-        QString value = QByteArray::from_PercentEncoding(nameValue[1].toLatin1());
+        QString value = QByteArray::fromPercentEncoding(nameValue[1].toLatin1());
 
         if (name == "bgcolor") {
             bgColor = QColor(value);

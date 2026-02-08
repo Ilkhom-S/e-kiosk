@@ -25,7 +25,7 @@ QString AdService::getBanner(const QString &aBanner) {
 
 //------------------------------------------------------------------------------
 QString AdService::getReceiptHeader() {
-    return QString();
+    return {};
 }
 
 //------------------------------------------------------------------------------

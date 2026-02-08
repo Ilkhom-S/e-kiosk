@@ -74,20 +74,20 @@ signals:
 
 protected slots:
     /// Изменение состояния.
-    void onStateChanged(QAbstractSocket::SocketState aSocketState);
+    void onStateChanged(QAbstractSocket::SocketState aState);
 
     /// Изменение состояния.
-    void onErrorChanged(QAbstractSocket::SocketError aSocketError);
+    void onErrorChanged(QAbstractSocket::SocketError aError);
 
     /// Данные готовы для чтения.
     void onReadyRead();
 
     /// Обработчик сигнала invoke.
-    void onInvoke(TBoolMethod aMethod, bool *aResult);
+    static void onInvoke(const TBoolMethod &aMethod, bool *aResult);
 
 protected:
     /// Вызывает метод в рабочем потоке и возвращает результат.
-    bool invokeMethod(TBoolMethod aMethod);
+    bool invokeMethod(const TBoolMethod &aMethod);
 
     /// Открыть порт.
     bool perform_Open();

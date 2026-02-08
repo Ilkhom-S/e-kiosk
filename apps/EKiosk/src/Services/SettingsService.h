@@ -16,38 +16,39 @@ class IApplication;
 class SettingsService : public SDK::PaymentProcessor::IService,
                         public SDK::PaymentProcessor::ISettingsService {
 public:
-    SettingsService(IApplication *aApplication);
-    virtual ~SettingsService();
+    explicit SettingsService(IApplication *aApplication);
+    virtual ~SettingsService() override;
 
     /// IService: инициализация сервиса.
-    virtual bool initialize();
+    virtual bool initialize() override;
 
     /// IService: Закончена инициализация всех сервисов.
-    virtual void finishInitialize();
+    virtual void finishInitialize() override;
 
     /// IService: Возвращает false, если сервис не может быть остановлен в текущий момент.
-    virtual bool canShutdown();
+    virtual bool canShutdown() override;
 
     /// IService: остановка сервиса.
-    virtual bool shutdown();
+    virtual bool shutdown() override;
 
     /// IService: имя сервиса.
-    virtual QString getName() const;
+    virtual QString getName() const override;
 
     /// IService: список зависимостей.
-    virtual const QSet<QString> &getRequiredServices() const;
+    virtual const QSet<QString> &getRequiredServices() const override;
 
     /// Получить параметры сервиса.
-    virtual QVariantMap getParameters() const;
+    virtual QVariantMap getParameters() const override;
 
     /// Сброс служебной информации.
-    virtual void resetParameters(const QSet<QString> &aParameters);
+    virtual void resetParameters(const QSet<QString> &aParameters) override;
 
-    /// ISettingsService: получить настроки.
-    virtual SDK::PaymentProcessor::ISettingsAdapter *getAdapter(const QString &aAdapterName);
+    /// ISettingsService: получить настройки.
+    virtual SDK::PaymentProcessor::ISettingsAdapter *
+    getAdapter(const QString &aAdapterName) override;
 
     /// ISettingsService: сохранить настройки.
-    virtual bool saveConfiguration();
+    virtual bool saveConfiguration() override;
 
     SettingsManager *getSettingsManager() const;
 

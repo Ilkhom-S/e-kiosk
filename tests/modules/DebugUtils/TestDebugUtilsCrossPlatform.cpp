@@ -59,7 +59,7 @@ private slots:
                 const auto &frame = st[i];
                 QString frameStr = QString("0x%1 (%2)")
                                        .arg((quintptr)frame.address(), 0, 16)
-                                       .arg(QString::from_StdString(frame.name()));
+                                       .arg(QString::fromStdString(frame.name()));
                 manualStack.append(frameStr);
             }
 

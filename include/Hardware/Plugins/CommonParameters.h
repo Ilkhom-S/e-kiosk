@@ -38,10 +38,12 @@ template <class T> inline QString makeDriverPath() {
     QString series = T::getSeries();
     QString subSeries = T::getSubSeries();
 
-    if (!series.isEmpty())
+    if (!series.isEmpty()) {
         result += "." + series;
-    if (!subSeries.isEmpty())
+    }
+    if (!subSeries.isEmpty()) {
         result += "." + subSeries;
+    }
 
     return result;
 }
@@ -334,9 +336,9 @@ inline SPluginParameter setProtocolType(const QString &aDefaultType,
     REGISTER_PLUGIN_WITH_PARAMETERS(                                                               \
         makeDriverPath<aClassName>(), aConstructor, aParameters, aClassName)
 #define COMMON_DRIVER(aClassName, aParameters)                                                     \
-    COMMON_DRIVER_WITH_PARAMETERS(aClassName, &CreatePlugin<aClassName>, aParameters)
+    COMMON_DRIVER_WITH_PARAMETERS(aClassName, &createPlugin<aClassName>, aParameters)
 #define SIMPLE_COMMON_DRIVER(aClassName, aParameters)                                              \
-    COMMON_DRIVER(aClassName, &aParameters<aClassName>)
+    COMMON_DRIVER(aClassName, &(aParameters) < aClassName >)
 
 #define BEGIN_REGISTER_PLUGIN
 #define END_REGISTER_PLUGIN

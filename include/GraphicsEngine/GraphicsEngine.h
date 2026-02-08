@@ -155,7 +155,7 @@ public:
     void addHandledKeys(const QStringList &aHandledKeyList);
 
     /// Добавляет графический движок.
-    void addBackend(SDK::GUI::IGraphicsBackend *aEngine);
+    void addBackend(SDK::GUI::IGraphicsBackend *aBackend);
 
     /// Отображает виджет.
     bool show(const QString &aWidget, const QVariantMap &aParameters);
@@ -209,7 +209,7 @@ signals:
 private: // Методы
          // Перехватываем события активности пользователя и закрытия окна.
     virtual bool eventFilter(QObject *aObject, QEvent *aEvent);
-    bool showWidget(const QString &aScene, bool aPopup, const QVariantMap &aParameters);
+    bool showWidget(const QString &aWidget, bool aPopup, const QVariantMap &aParameters);
 
     // Показать/спрятать виртуальную клавиатуру
     void showVirtualKeyboard();

@@ -49,7 +49,7 @@ private:
     void findPinProviders();
 
     /// Создаёт класс ответа по классу запроса.
-    Response *createResponse(const Request &aRequest, const QString &aResponseString);
+    static Response *createResponse(const Request &aRequest, const QString &aResponseString);
 
     /// Обновляет кэш списка пинов
     void updatePinList(qint64 aProvider, const QList<SPinCard> &aCards);

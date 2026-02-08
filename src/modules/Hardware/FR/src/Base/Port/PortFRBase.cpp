@@ -90,7 +90,7 @@ template <class T> bool PortFRBase<T>::loadSectionNames(const TLoadSectionName &
     m_LastError = 0;
 
     setConfigParameter(CHardwareSDK::FR::SectionNames,
-                       QVariant::from_Value<TSectionNames>(sectionNames));
+                       QVariant::fromValue<TSectionNames>(sectionNames));
 
     return true;
 }
@@ -148,7 +148,7 @@ void PortFRBase<T>::makeReceipt(const QStringList &aReceipt, TReceiptBuffer &aBu
     makeReceipt(aReceipt, buffer);
 
     foreach (const QString &line, buffer) {
-        aBuffer << m_Codec->from_Unicode(line);
+        aBuffer << m_Codec->fromUnicode(line);
     }
 }
 

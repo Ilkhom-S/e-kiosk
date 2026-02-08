@@ -12,7 +12,7 @@ class SkinProvider : public QObject, public QQuickImageProvider {
     Q_OBJECT
 
 public:
-    SkinProvider(const QString &aInterfacePath,
+    SkinProvider(QString aInterfacePath,
                  const QString &aLogoPath,
                  const QString &aUserLogoPath,
                  const Skin *aSkin);

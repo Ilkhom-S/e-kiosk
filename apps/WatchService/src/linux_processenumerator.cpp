@@ -43,7 +43,7 @@ void ProcessEnumerator::enumerate() {
             buffer[len] = '\0';
             ProcessInfo info;
             info.pid = static_cast<PID>(pid);
-            info.path = QString::from_Local8Bit(buffer);
+            info.path = QString::fromLocal8Bit(buffer);
             m_Processes.insert(info.pid, info);
         }
     }

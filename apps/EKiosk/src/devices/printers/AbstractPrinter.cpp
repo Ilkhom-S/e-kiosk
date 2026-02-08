@@ -220,7 +220,7 @@ QByteArray BasePrinterDevices::encodingString(const QString &text, const QByteAr
 
     QTextCodec *codec = QTextCodec::codecForName(charCode);
 
-    return codec->from_Unicode(string);
+    return codec->fromUnicode(string);
 }
 
 void BasePrinterDevices::printDataToHex(const QByteArray &data) {

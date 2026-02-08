@@ -46,8 +46,7 @@ QString DeviceUtils::getPartDeviceData(const TDeviceData &aData, bool aHideEmpty
     keys.sort();
     QString result;
 
-    for (int i = 0; i < keys.size(); ++i) {
-        QString key = keys[i];
+    for (auto key : keys) {
         QString value = aData[key];
 
         if (!aHideEmpty || !value.isEmpty()) {

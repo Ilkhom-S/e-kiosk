@@ -8,7 +8,7 @@
 #include <QtCore/QMutexLocker>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QStringDecoder>
-#include <QtCore/QXmlStream_Writer>
+#include <QtCore/QXmlStreamWriter>
 #include <QtQml/QJSEngine>
 #include <QtQml/QJSValue>
 #include <QtXML/QDom_Document>
@@ -441,7 +441,7 @@ void PrintingService::incrementReceiptCount(DSDK::IPrinter *aPrinter) const {
     // Увеличиваем количество напечатанных чеков для конкртетного принтера.
     QVariant receiptCount = m_DatabaseUtils->getDeviceParam(
         deviceConfigName, PPSDK::CDatabaseConstants::Parameters::ReceiptCount);
-    receiptCount = QVariant::from_Value(receiptCount.toInt() + 1);
+    receiptCount = QVariant::fromValue(receiptCount.toInt() + 1);
     m_DatabaseUtils->setDeviceParam(
         deviceConfigName, PPSDK::CDatabaseConstants::Parameters::ReceiptCount, receiptCount);
 
@@ -449,7 +449,7 @@ void PrintingService::incrementReceiptCount(DSDK::IPrinter *aPrinter) const {
     receiptCount =
         m_DatabaseUtils->getDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                         PPSDK::CDatabaseConstants::Parameters::ReceiptCount);
-    receiptCount = QVariant::from_Value(receiptCount.toInt() + 1);
+    receiptCount = QVariant::fromValue(receiptCount.toInt() + 1);
     m_DatabaseUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                     PPSDK::CDatabaseConstants::Parameters::ReceiptCount,
                                     receiptCount);
@@ -581,7 +581,7 @@ QString PrintingService::convertImage2base64(const QString &aString) {
 
             QFile file(match.captured(1));
             if (file.open(QIODevice::ReadOnly)) {
-                img = QString::from_Latin1(file.readAll().toBase64());
+                img = QString::fromLatin1(file.readAll().toBase64());
             } else {
                 toLog(LogLevel::Error,
                       QString("Error load image '%1': %2")
@@ -1298,7 +1298,7 @@ QString PrintingService::loadReceipt(qint64 aPaymentId) {
     while (!receipts.isEmpty()) {
         QFile f(dir.absolutePath() + QDir::separator() + receipts.takeFirst());
         if (f.open(QIODevice::ReadOnly)) {
-            receiptsBody << replaceTags(QString::from_Utf8(f.readAll()));
+            receiptsBody << replaceTags(QString::fromUtf8(f.readAll()));
         }
     }
 
@@ -1353,7 +1353,7 @@ void PrintingService::onFRSessionClosed(const QVariantMap &aParameters) {
 
     using namespace SDK::Driver;
 
-    QXmlStream_Writer stream(&file);
+    QXmlStreamWriter stream(&file);
     stream.setAutoFormatting(true);
     stream.writeStartDocument();
 

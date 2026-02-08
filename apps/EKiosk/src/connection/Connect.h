@@ -29,23 +29,23 @@ class ConnectionPart : public QObject {
 public:
     ConnectionPart(QObject *parent = 0);
 
-    QStringList getLocalConnectionList();
+    static QStringList getLocalConnectionList();
     void setConnectionConfig(QString pointName);
-    QStringList getRasConnectionList();
-    QString getActiveConnection();
-    bool getNowConnectionState(QStringList &lstCon);
-    void startCheckConnection();
+    static QStringList getRasConnectionList();
+    static QString getActiveConnection();
+    static bool getNowConnectionState(QStringList &lstCon);
+    void startCheckConnection() const;
     bool checkConnection(int type = 1);
     void connectNet();
-    bool disconnectNet();
-    bool restartNet();
+    static bool disconnectNet();
+    static bool restartNet();
     void setEndpoint(int respTime, QString serverAddress);
     void stopReconnect();
     void closeThis();
-    bool restartWindows(bool restart);
-    int createNewDialupConnection(
+    static bool restartWindows(bool restart);
+    static int createNewDialupConnection(
         QString conName, QString devName, QString phone, QString login, QString pass);
-    bool hasInstalledModems(QStringList &lstModem_List);
+    static bool hasInstalledModems(QStringList &lstModemList);
     int conState;
     QTimer *daemonTimer;
 

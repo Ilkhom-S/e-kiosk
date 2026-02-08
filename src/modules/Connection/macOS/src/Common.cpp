@@ -31,7 +31,7 @@ IConnection *IConnection::create(const QString &aName,
 /// Поиск всех установленных в системе модемов.
 /// macOS typically doesn't have traditional modems, so return empty list.
 QStringList IConnection::getModems() {
-    return QStringList();
+    return {};
 }
 
 //--------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ QStringList IConnection::getModems() {
 /// macOS doesn't have traditional modems.
 QString IConnection::getModem_Info(const QString &aName) {
     Q_UNUSED(aName)
-    return QString();
+    return {};
 }
 
 //--------------------------------------------------------------------------------
@@ -58,14 +58,14 @@ QStringList IConnection::getInterfaces() {
 /// Список всех удалённых соединений в системе.
 /// macOS doesn't have RAS-like remote connections.
 QStringList IConnection::getRemoteConnections() {
-    return QStringList();
+    return {};
 }
 
 //--------------------------------------------------------------------------------
 /// Список всех локальных соединений в системе.
 /// macOS doesn't have RAS-like local connections.
 QStringList IConnection::getLocalConnections() {
-    return QStringList();
+    return {};
 }
 
 //--------------------------------------------------------------------------------

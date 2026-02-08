@@ -9,9 +9,8 @@
 #include "LDogWDConstants.h"
 
 uchar LDogWDProtocol::calcCRC(const QByteArray &aData) {
-    int sum = std::accumulate(aData.begin(), aData.end(), 0, [](uchar arg1, uchar arg2) -> uchar {
-        return arg1 + uchar(arg2);
-    });
+    int sum = std::accumulate(
+        aData.begin(), aData.end(), 0, [](uchar arg1, uchar arg2) -> uchar { return arg1 + arg2; });
 
     return uchar(256 - sum);
 }
@@ -28,7 +27,7 @@ bool LDogWDProtocol::checkAnswer(const QByteArray &aRequest, const QByteArray &a
     }
 
     // Наличие маски адреса.
-    if (~aAnswer[0] & CLDogWD::AnswerMask) {
+    if ((~aAnswer[0] & CLDogWD::AnswerMask) != 0) {
         toLog(LogLevel::Error,
               QString("LDog: No address mask = %1 in answer.")
                   .arg(ProtocolUtils::toHexLog(CLDogWD::AnswerMask)));
@@ -48,7 +47,7 @@ bool LDogWDProtocol::checkAnswer(const QByteArray &aRequest, const QByteArray &a
     }
 
     // Наличие маски команды.
-    if (~aAnswer[1] & CLDogWD::AnswerMask) {
+    if ((~aAnswer[1] & CLDogWD::AnswerMask) != 0) {
         toLog(LogLevel::Error,
               QString("LDog: No command mask = %1 in answer.")
                   .arg(ProtocolUtils::toHexLog(CLDogWD::AnswerMask)));
@@ -80,13 +79,13 @@ bool LDogWDProtocol::checkAnswer(const QByteArray &aRequest, const QByteArray &a
 
     // Контрольная сумма.
     int answerSize = aAnswer.size() - 2;
-    uchar CRC = aAnswer[answerSize];
+    uchar crc = aAnswer[answerSize];
     uchar realCRC = calcCRC(aAnswer.left(answerSize));
 
-    if (CRC != realCRC) {
+    if (crc != realCRC) {
         toLog(LogLevel::Error,
               QString("LDog: Invalid CRC = %1, need = %2.")
-                  .arg(ProtocolUtils::toHexLog(CRC))
+                  .arg(ProtocolUtils::toHexLog(crc))
                   .arg(ProtocolUtils::toHexLog(realCRC)));
         return false;
     }
@@ -101,8 +100,8 @@ TResult LDogWDProtocol::processCommand(const QByteArray &aCommandData, QByteArra
     request.append(aCommandData);
     request.append(calcCRC(request));
 
-    for (int i = 0; i < CLDogWD::ReplaceDataList.size(); ++i) {
-        request.replace(CLDogWD::ReplaceDataList[i].first, CLDogWD::ReplaceDataList[i].second);
+    for (const auto &i : CLDogWD::ReplaceDataList) {
+        request.replace(i.first, i.second);
     }
 
     request.append(CLDogWD::Postfix);
@@ -151,8 +150,8 @@ bool LDogWDProtocol::read(QByteArray &aAnswer) {
 
         aAnswer.append(answerData);
     } while ((clockTimer.elapsed() < CLDogWD::Timeouts::Answer) &&
-             !((aAnswer.size() > 2) && (aAnswer.right(1)[0] == CLDogWD::Postfix) &&
-               (aAnswer.right(2) != CLDogWD::MaskedPostfix)));
+             ((aAnswer.size() <= 2) || (aAnswer.right(1)[0] != CLDogWD::Postfix) ||
+              !(aAnswer.right(2) != CLDogWD::MaskedPostfix)));
 
     toLog(LogLevel::Normal, QString("LDog: << {%1}").arg(aAnswer.toHex().data()));
 

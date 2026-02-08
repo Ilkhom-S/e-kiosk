@@ -54,7 +54,7 @@ const char ReadKey = '\x12';              /// Чтение ключа
 const char PCWakeUpTime = '\x15';         /// Установка/получение времени включения PC
 
 const QByteArray ResetPCWakeUpTime =
-    QByteArray::from_RawData("\x15\x00", 2); /// Сброс времени включения PC
+    QByteArray::fromRawData("\x15\x00", 2); /// Сброс времени включения PC
 } // namespace Commands
 } // namespace COSMP25
 

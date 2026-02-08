@@ -9,7 +9,7 @@ DataStream::DataStream(QIODevice *aDevice) : m_stream(aDevice) {
 }
 
 //------------------------------------------------------------------------
-DataStream::~DataStream() {}
+DataStream::~DataStream() = default;
 
 //------------------------------------------------------------------------
 bool DataStream::clear() {

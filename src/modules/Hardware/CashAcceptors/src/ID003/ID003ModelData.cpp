@@ -2,6 +2,8 @@
 
 #include "ID003ModelData.h"
 
+#include <utility>
+
 namespace CID003 {
 namespace Models {
 const char GPTAurora[] = "GPT Aurora";
@@ -29,14 +31,14 @@ using namespace CID003::ProtocolData;
 
 //--------------------------------------------------------------------------------
 CIdentification::CIdentification() {
-    append(Alias::ID003,
-           QString("^%1\\(%1\\)\\-?%1\\-?%1? *(()ID003\\-%1) *[vV](%1\\-%1) *%1 *%1 *$")
-               .arg(IdLexeme));
+    append(
+        Alias::ID003,
+        QString(R"(^%1\(%1\)\-?%1\-?%1? *(()ID003\-%1) *[vV](%1\-%1) *%1 *%1 *$)").arg(IdLexeme));
     append(Alias::ID003Ext,
-           QString("^%1\\(%1\\)\\-?%1\\-?%1? *(((ID003)))%1(((\\d{2}\\w{3}\\d{2}))) *%1 *$")
+           QString(R"(^%1\(%1\)\-?%1\-?%1? *(((ID003)))%1(((\d{2}\w{3}\d{2}))) *%1 *$)")
                .arg(IdLexeme));
     append(Alias::BDP,
-           QString("^%1\\(%1\\)\\-(%2){2}\\-?%1 *(%1?\\-?BDP%1)[vV](%1\\-?%1) *%1 *%1 *$")
+           QString(R"(^%1\(%1\)\-(%2){2}\-?%1 *(%1?\-?BDP%1)[vV](%1\-?%1) *%1 *%1 *$)")
                .arg(IdLexeme)
                .arg(Lexeme));
     append(Alias::OP003,
@@ -95,7 +97,8 @@ void CID003::ModelData::add(char aId, const QString &aName, bool aVerified) {
 }
 
 //--------------------------------------------------------------------------------
-CID003::SModelData::SModelData(const QString &aDefaultName, const QString &aType) : type(aType) {
+CID003::SModelData::SModelData(const QString &aDefaultName, QString aType)
+    : type(std::move(aType)) {
     name = aDefaultName;
     models.setDefault(SBaseModelData(aDefaultName, false));
 }

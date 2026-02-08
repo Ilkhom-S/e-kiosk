@@ -354,7 +354,7 @@ void WatchService::checkAutoStartModules() {
 
 //----------------------------------------------------------------------------
 void WatchService::messageReceived(const QByteArray &aMessage) {
-    QStringList param_List = QString::from_Utf8(aMessage.data(), aMessage.size()).split(";");
+    QStringList param_List = QString::fromUtf8(aMessage.data(), aMessage.size()).split(";");
     if (!param_List.isEmpty()) {
         QString sender;
         QString type;

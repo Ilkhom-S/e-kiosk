@@ -25,7 +25,7 @@ EMVAdapter::EMVAdapter(SDK::Driver::IMifareReader *aReader) : m_Reader(aReader) 
 
 //------------------------------------------------------------------------------
 bool EMVAdapter::selectApplication(const EMV::Application &aApp, bool aFirst) {
-    return selectApplication(QByteArray::from_Hex(aApp.aid.toLatin1()), aFirst);
+    return selectApplication(QByteArray::fromHex(aApp.aid.toLatin1()), aFirst);
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ bool EMVAdapter::selectApplication(const QByteArray &aAppID, bool aFirst) {
     QByteArray response;
 
     return m_Reader->communicate(request, response) &&
-           (response.left(2) == QByteArray::from_RawData("\x90\x00", 2) ||
+           (response.left(2) == QByteArray::fromRawData("\x90\x00", 2) ||
             response.at(0) == EMV::Tags::FCI);
 }
 
@@ -56,9 +56,9 @@ bool EMVAdapter::getTrack2(QByteArray &aData) {
     }
 
     // Пытаемся выбрать платежное средство какие знаем
-    for (int i = 0; i < sizeof(EMV::AidList) / sizeof(EMV::AidList[0]); ++i) {
-        if (selectApplication(EMV::AidList[i])) {
-            m_App = EMV::AidList[i];
+    for (const auto &i : EMV::AidList) {
+        if (selectApplication(i)) {
+            m_App = i;
 
             answer.clear();
 

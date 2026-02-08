@@ -43,9 +43,7 @@ public:
     public:
         Status();
         Status(const Status &aStatus);
-        explicit Status(SDK::Driver::EWarningLevel::Enum aLevel,
-                        const QString &aDescription,
-                        int aStatus);
+        explicit Status(SDK::Driver::EWarningLevel::Enum aLevel, QString aDescription, int aStatus);
 
     public:
         /// Уровень тревожности

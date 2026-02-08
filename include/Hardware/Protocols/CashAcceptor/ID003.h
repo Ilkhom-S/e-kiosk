@@ -18,7 +18,7 @@ protected:
     void pack(QByteArray &aCommandData);
 
     /// Подсчет контрольной суммы пакета данных.
-    ushort calcCRC16(const QByteArray &aData);
+    static ushort calcCRC16(const QByteArray &aData);
 
     /// Получить пакет данных из порта.
     bool getAnswer(QByteArray &aAnswerData);

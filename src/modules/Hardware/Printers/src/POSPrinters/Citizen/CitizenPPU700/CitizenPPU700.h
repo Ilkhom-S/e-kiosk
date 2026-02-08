@@ -13,7 +13,7 @@ extern const char GetFirmware[];     /// Получение версии про�
 extern const char GetSerialNumber[]; /// Получение серийного номера.
 
 const QByteArray GetMemorySwitch5 =
-    QByteArray::from_RawData("\x1D\x28\x45\x02\x00\x04\x05", 7); /// Получить значение мем-свича 5.
+    QByteArray::fromRawData("\x1D\x28\x45\x02\x00\x04\x05", 7); /// Получить значение мем-свича 5.
 } // namespace Command
 
 /// Мем-свичи.

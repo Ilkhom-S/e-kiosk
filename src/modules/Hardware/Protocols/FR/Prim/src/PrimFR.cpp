@@ -170,13 +170,13 @@ TResult Prim_FRProtocol::getCommandResult(char &aAnswer, bool aOnline) {
 
     QVariantMap configuration;
     configuration.insert(CHardware::Port::IOLogging,
-                         QVariant().from_Value(ELoggingType::ReadWrite));
+                         QVariant().fromValue(ELoggingType::ReadWrite));
     m_Port->setDeviceConfiguration(configuration);
 
     TResult result = m_RTProtocol.processCommand(0, aAnswer);
     m_LastCommandResult = result ? aAnswer : 0;
 
-    configuration.insert(CHardware::Port::IOLogging, QVariant().from_Value(ELoggingType::None));
+    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::None));
     m_Port->setDeviceConfiguration(configuration);
 
     return result;

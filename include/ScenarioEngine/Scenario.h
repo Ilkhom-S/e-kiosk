@@ -35,7 +35,7 @@ class Scenario : public QObject, protected ILogable {
     Q_OBJECT
 
 public:
-    Scenario(const QString &aName, ILog *aLog = 0);
+    Scenario(QString aName, ILog *aLog = 0);
     virtual ~Scenario();
 
     /// Запуск сценария.

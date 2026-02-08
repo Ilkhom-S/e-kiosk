@@ -11,17 +11,17 @@ namespace EMV {
 const QString PSE = "1PAY.SYS.DDF01";
 
 // нужный тип карты http://ludovic.rousseau.free.fr/softwares/pcsc-tools/smartcard_list.txt
-const QByteArray VisaMastercardCartType = QByteArray::from_RawData("\x3B\x68\x00\x00", 4);
+const QByteArray VisaMastercardCartType = QByteArray::fromRawData("\x3B\x68\x00\x00", 4);
 
 namespace Command {
 // ISO7816 select command (00 A4 04 00 size)
-const QByteArray SelectPSE = QByteArray::from_RawData("\x00\xa4\x04\x00", 4);
+const QByteArray SelectPSE = QByteArray::fromRawData("\x00\xa4\x04\x00", 4);
 
 // Прочитать дорожку 00 B2 01 0C nn
-const QByteArray ReadRecord = QByteArray::from_RawData("\x00\xb2\x01\x0c\x00", 5);
+const QByteArray ReadRecord = QByteArray::fromRawData("\x00\xb2\x01\x0c\x00", 5);
 
 // GET PROCESSING OPTIONS command
-const QByteArray GetProcessingOptions = QByteArray::from_RawData("\x80\xA8\x00\x00\x02\x83\x00", 7);
+const QByteArray GetProcessingOptions = QByteArray::fromRawData("\x80\xA8\x00\x00\x02\x83\x00", 7);
 } // namespace Command
 
 // EMV4.3 Book 3 Annex A

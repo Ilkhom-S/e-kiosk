@@ -20,11 +20,11 @@ namespace PaymentProcessor {
 //----------------------------------------------------------------------------
 class Directory : public ISettingsAdapter, public ILogable {
 public:
-    Directory(TPtree &aProperties);
+    explicit Directory(TPtree &aProperties);
     ~Directory();
 
     /// Валидация данных.
-    virtual bool isValid() const;
+    virtual bool isValid() const override;
 
     /// Получить имя адаптера.
     static QString getAdapterName();

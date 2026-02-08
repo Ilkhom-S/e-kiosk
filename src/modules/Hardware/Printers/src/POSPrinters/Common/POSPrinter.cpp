@@ -288,7 +288,7 @@ template <class T> QByteArray POSPrinter<T>::prepareBarcodePrinting() {
 //--------------------------------------------------------------------------------
 template <class T> bool POSPrinter<T>::printBarcode(const QString &aBarcode) {
     // В Qt 6 для отправки данных в принтер нужен ENCODER
-    // Если m_Decoder это QStringDecoder, он не сможет выполнить from_Unicode.
+    // Если m_Decoder это QStringDecoder, он не сможет выполнить fromUnicode.
 
     QByteArray data;
 
@@ -372,8 +372,8 @@ template <class T> bool POSPrinter<T>::getStatus(TStatusCodes &aStatusCodes) {
 template <class T>
 bool POSPrinter<T>::readStatusAnswer(QByteArray &aAnswer, int aTimeout, int aBytesCount) const {
     QVariantMap configuration;
-    // В Qt 6 конструкторы QVariant часто explicit, используем from_Value
-    configuration.insert(CHardware::Port::IOLogging, QVariant::from_Value(ELoggingType::Write));
+    // В Qt 6 конструкторы QVariant часто explicit, используем fromValue
+    configuration.insert(CHardware::Port::IOLogging, QVariant::fromValue(ELoggingType::Write));
     this->m_IOPort->setDeviceConfiguration(configuration);
 
     // 1. В Qt 6 методы QTime::start() и elapsed() удалены.
@@ -410,7 +410,7 @@ bool POSPrinter<T>::readStatusAnswer(QByteArray &aAnswer, int aTimeout, int aByt
     this->toLog(logLevel,
                 QStringLiteral("%1: << {%2}")
                     .arg(this->m_DeviceName)
-                    .arg(QString::from_Latin1(aAnswer.toHex())));
+                    .arg(QString::fromLatin1(aAnswer.toHex())));
 
     return true;
 }

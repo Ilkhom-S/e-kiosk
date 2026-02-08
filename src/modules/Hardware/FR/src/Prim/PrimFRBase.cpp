@@ -89,7 +89,7 @@ bool Prim_FRBase::updateParameters() {
 
     CPrim_FR::TData commandData;
     QString payment = getConfigParameter(CHardware::FR::Strings::Payment).toString();
-    commandData << m_Codec->from_Unicode(payment) << " " << " ";
+    commandData << m_Codec->fromUnicode(payment) << " " << " ";
 
     // устанавливаем названия строк фискального чека
     if (!processCommand(CPrim_FR::Commands::SetFDTypeNames, commandData)) {
@@ -260,7 +260,7 @@ bool Prim_FRBase::getTaxData(int aGroup, CPrim_FR::Taxes::SData &aData) {
 bool Prim_FRBase::setTaxData(int aGroup, const CPrim_FR::Taxes::SData &aData) {
     CPrim_FR::TData commandData =
         CPrim_FR::TData()
-        << int2ByteArray(aGroup) << m_Codec->from_Unicode(aData.description)
+        << int2ByteArray(aGroup) << m_Codec->fromUnicode(aData.description)
         << QString("%1").arg(aData.value, 5, 'f', 2, QLatin1Char(ASCII::Zero)).toLatin1()
         << aData.extraData;
 
@@ -665,12 +665,12 @@ bool Prim_FRBase::printLine(const QByteArray &aString) {
 bool Prim_FRBase::perform_Receipt(const QStringList &aReceipt, bool aProcessing) {
     QVariantMap configuration;
     configuration.insert(CHardware::Port::IOLogging,
-                         QVariant().from_Value(ELoggingType::ReadWrite));
+                         QVariant().fromValue(ELoggingType::ReadWrite));
     m_IOPort->setDeviceConfiguration(configuration);
 
     bool result = TSerialFRBase::processReceipt(aReceipt, aProcessing);
 
-    configuration.insert(CHardware::Port::IOLogging, QVariant().from_Value(m_IOMessageLogging));
+    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(m_IOMessageLogging));
     m_IOPort->setDeviceConfiguration(configuration);
 
     return result;
@@ -857,7 +857,7 @@ void Prim_FRBase::setFiscalData(CPrim_FR::TData &aCommandData,
                  << addGFieldToBuffer(aReceiptSize + 3, date.size() + 16 + time.size()) // время
                  << addGFieldToBuffer(aReceiptSize + 2, INN.size() + 2)                 // ИНН
                  << addGFieldToBuffer(aReceiptSize + 3, 7)
-                 << m_Codec->from_Unicode(operatorId)                              // ID оператора
+                 << m_Codec->fromUnicode(operatorId)                              // ID оператора
                  << addGFieldToBuffer(aReceiptSize + 4, amount.size() + 2) << sum; // сумма
 
     // произворльные G-поля
@@ -1179,7 +1179,7 @@ Prim_FRBase::addArbitraryFieldToBuffer(int aX, int aY, const QString &aData, int
            << int2String(aFont).toLatin1()  // шрифт, см. ESC !
            << "01"                          // Печать произвольного реквизита
            << "00"                          // N вывода на контрольную ленту
-           << m_Codec->from_Unicode(aData); // данные
+           << m_Codec->fromUnicode(aData); // данные
 }
 
 //--------------------------------------------------------------------------------
@@ -1229,7 +1229,7 @@ TStatusCodes Prim_FRBase::getRTStatus(int aCommand) {
 
     QVariantMap configuration;
     configuration.insert(CHardware::Port::IOLogging,
-                         QVariant().from_Value(ELoggingType::ReadWrite));
+                         QVariant().fromValue(ELoggingType::ReadWrite));
     m_IOPort->setDeviceConfiguration(configuration);
 
     char answer;
@@ -1242,7 +1242,7 @@ TStatusCodes Prim_FRBase::getRTStatus(int aCommand) {
         m_Offline = true;
     }
 
-    configuration.insert(CHardware::Port::IOLogging, QVariant().from_Value(ELoggingType::None));
+    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::None));
     m_IOPort->setDeviceConfiguration(configuration);
 
     return result;

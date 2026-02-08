@@ -151,19 +151,19 @@ class Provider : public QObject {
     Q_PROPERTY(QVariantMap receiptParameters READ getReceiptParameters CONSTANT)
 
 public:
-    Provider(const SProvider &aProvider, QObject *aParent);
+    Provider(SProvider aProvider, QObject *aParent);
 
 public slots:
     bool isNull() const { return m_Provider.id == -1 || m_Provider.fields.isEmpty(); }
 
     /// Проверить согласование проверки номера и лимитов, получаемых с сервера
-    bool isCheckStepSettingsOK();
+    bool isCheckStepSettingsOK() const;
 
     QString applySecurityFilter(const QString aId,
                                 const QString &aValueRaw,
                                 const QString &aValueDisplay) const;
 
-    QString xmlFields2Json(const QString &aXmlFields);
+    static QString xmlFields2Json(const QString &aXmlFields);
 
 private:
     QString getID() const { return QString::number(m_Provider.id); }
@@ -297,8 +297,8 @@ public slots:
     void setExternalParameter(const QString &aName, const QVariant &aValue);
 
     /// Возвращает имя алиаса, к которому привязан параметр из запроса
-    QString findAliasFrom_Request(const QString &aParam_Name,
-                                 const QString &aRequestName = QString("CHECK"));
+    QString findAliasFrom_Request(const QString &aParamName,
+                                  const QString &aRequestName = QString("CHECK"));
 
     /// Обновляет указанное свойство у платежа.
     void setParameter(const QString &aName, const QVariant &aValue, bool aCrypted = false);
@@ -383,7 +383,7 @@ public:
 #pragma endregion
 
     /// Включить возможность проведения платежей при отсутствии связи
-    void setForcePayOffline(bool aPayOffline);
+    void setForcePayOffline(bool aForcePayOffline);
 
 private slots:
     /// Получение сигнала об окончании проверки платежа
@@ -400,7 +400,7 @@ signals:
     void changeUpdated(double aAmount);
 
 public:
-    void addProviderProvider(QWeakPointer<IProviderProvider> aProvider);
+    void addProviderProvider(const QWeakPointer<IProviderProvider> &aProvider);
 
 private:
     ICore *m_Core;

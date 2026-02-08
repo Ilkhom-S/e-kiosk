@@ -59,7 +59,7 @@ QVariantMap PluginLoader::getPluginInstanceConfiguration(const QString &aInstanc
     if (!m_Plugins.contains(aInstancePath)) {
         m_Kernel->getLog()->write(LogLevel::Error,
                                   QString("No such plugin %1.").arg(aInstancePath));
-        return QVariantMap();
+        return {};
     }
 
     QString configPath = aConfigPath.section(CPlugin::InstancePathSeparator, 0, 0);
@@ -73,7 +73,7 @@ IPlugin *PluginLoader::createPlugin(const QString &aInstancePath,
                                     const QString &aConfigInstancePath) {
     QMutexLocker lock(&m_AccessMutex);
 
-    SDK::Plugin::IPlugin *plugin = 0;
+    SDK::Plugin::IPlugin *plugin = nullptr;
 
     QString path = aInstancePath.section(CPlugin::InstancePathSeparator, 0, 0);
 
@@ -113,7 +113,7 @@ std::weak_ptr<IPlugin> PluginLoader::createPluginPtr(const QString &aInstancePat
 
     m_Kernel->getLog()->write(LogLevel::Error, QString("No such plugin %1.").arg(aInstancePath));
 
-    return std::weak_ptr<IPlugin>();
+    return {};
 }
 
 //------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ bool PluginLoader::destroyPluginPtr(const std::weak_ptr<IPlugin> &aPlugin) {
     auto ptr = aPlugin.lock();
 
     if (m_CreatedPluginsPtr.find(ptr) != m_CreatedPluginsPtr.end()) {
-        auto fabric = m_CreatedPluginsPtr[ptr];
+        auto *fabric = m_CreatedPluginsPtr[ptr];
         m_CreatedPluginsPtr.erase(ptr);
         fabric->destroyPlugin(ptr);
 
@@ -213,7 +213,7 @@ int PluginLoader::addDirectory(const QString &aDirectory) {
                     QDir translations(dirEntry.fileInfo().absolutePath(),
                                       QString("%1_*.qm").arg(dirEntry.fileInfo().baseName()));
 
-                    if (translations.count()) {
+                    if (translations.count() != 0) {
                         QString translation =
                             translations.entryInfoList().first().absoluteFilePath();
                         std::unique_ptr<QTranslator> translator(new QTranslator(qApp));
@@ -281,7 +281,7 @@ TParameterList PluginLoader::getPluginParametersDescription(const QString &aPath
         return m_Plugins.value(aPath)->getPluginParametersDescription(aPath);
     }
 
-    return TParameterList();
+    return {};
 }
 
 //------------------------------------------------------------------------------

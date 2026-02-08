@@ -63,16 +63,16 @@ CUSBVendors::Data DetectingData::m_VendorData;
 void DetectingData::set(const QString &aVendor, const QString &aDeviceName, quint16 aPID) {
     data().clear();
 
-    quint16 VID = m_VendorData[aVendor];
-    data()[VID].append(aPID, SProductData(aDeviceName, true));
+    quint16 vid = m_VendorData[aVendor];
+    data()[vid].append(aPID, SProductData(aDeviceName, true));
 }
 
 //--------------------------------------------------------------------------------
 void DetectingData::set(const SDetectingData &aDetectingData) {
     data().clear();
 
-    quint16 VID = m_VendorData[aDetectingData.vendor];
-    data()[VID].append(aDetectingData.PID,
+    quint16 vid = m_VendorData[aDetectingData.vendor];
+    data()[vid].append(aDetectingData.PID,
                        SProductData(aDetectingData.vendor + " " + aDetectingData.model, true));
 }
 
@@ -80,8 +80,8 @@ void DetectingData::set(const SDetectingData &aDetectingData) {
 void DetectingData::set(const QString &aVendor, const TProductData &aProductData) {
     data().clear();
 
-    quint16 VID = m_VendorData[aVendor];
-    TProductData &productData = data()[VID].data();
+    quint16 vid = m_VendorData[aVendor];
+    TProductData &productData = data()[vid].data();
 
     for (auto it = aProductData.begin(); it != aProductData.end(); ++it) {
         productData.insert(it.key(), SProductData(aVendor + " " + it->model, it->verified));

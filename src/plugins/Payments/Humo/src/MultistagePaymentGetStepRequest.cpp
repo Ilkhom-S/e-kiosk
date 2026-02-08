@@ -13,7 +13,7 @@ MultistagePaymentGetStepRequest::MultistagePaymentGetStepRequest(Payment *aPayme
     : PaymentRequest(aPayment, CPayment::Requests::GetStep) {
     clear();
 
-    MultistagePayment *payment = dynamic_cast<MultistagePayment *>(aPayment);
+    auto *payment = dynamic_cast<MultistagePayment *>(aPayment);
 
     Q_ASSERT(payment);
 

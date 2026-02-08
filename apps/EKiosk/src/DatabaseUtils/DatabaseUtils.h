@@ -20,10 +20,10 @@ class DatabaseUtils : public IDatabaseUtils,
                       public IPaymentDatabaseUtils {
 public:
     DatabaseUtils(IDatabaseProxy &aProxy, IApplication *aApplication);
-    virtual ~DatabaseUtils();
+    virtual ~DatabaseUtils() override;
 
     /// Инициализация.
-    virtual bool initialize();
+    virtual bool initialize() override;
 
 #pragma region IDatabaseUtils interface
 
@@ -50,12 +50,12 @@ public:
 
     /// Возвращает значение конкретного параметра из список параметров устройства по имени и типу.
     virtual QVariant getDeviceParam(const QString &aDeviceConfigName,
-                                    const QString &aName) override;
+                                    const QString &aParamName) override;
 
     /// Добавить определенный параметр устройства по имени и типу.
     virtual bool setDeviceParam(const QString &aDeviceConfigName,
-                                const QString &aParam_Name,
-                                const QVariant &aParam_Value) override;
+                                const QString &aParamName,
+                                const QVariant &aParamValue) override;
 
     /// Предикат, определяющий наличие устройства по его имени и типу.
     virtual bool hasDevice(const QString &aDeviceConfigName) override;
@@ -73,7 +73,7 @@ public:
     virtual void removeUnknownDevice(const QStringList &aCurrentDevicesList) override;
 
     /// Вставить новый статус девайсов.
-    virtual bool addDeviceStatus(const QString &aDeviceConfigPath,
+    virtual bool addDeviceStatus(const QString &aDeviceConfigName,
                                  SDK::Driver::EWarningLevel::Enum aErrorLevel,
                                  const QString &aStatusString) override;
 

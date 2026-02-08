@@ -93,7 +93,7 @@ protected:
     void
     saveStatuses(const CCashAcceptor::TStatuses &aStatuses,
                  SDK::Driver::ECashAcceptorStatus::Enum aTargetStatus,
-                 const CCashAcceptor::TStatusSet aSourceStatuses = CCashAcceptor::TStatusSet());
+                 const CCashAcceptor::TStatusSet &aSourceStatuses = CCashAcceptor::TStatusSet());
 
     /// Получение последних статусов.
     CCashAcceptor::TStatuses getLastStatuses(int aLevel = 1) const;

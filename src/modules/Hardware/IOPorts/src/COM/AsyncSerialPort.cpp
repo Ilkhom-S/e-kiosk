@@ -67,10 +67,10 @@ private:
 // Linux/Unix implementation - stub for macOS and other Unix systems
 class LinuxImpl : public AsyncSerialPort::ISerialPortImpl {
 public:
-    LinuxImpl() {}
+    LinuxImpl() = default;
 
     QStringList enumerateSystem_Names() override {
-        return QStringList(); // No serial ports available
+        return {}; // No serial ports available
     }
 
     void initialize() override {
@@ -130,11 +130,11 @@ public:
     }
 };
 #endif // !Q_OS_WIN
-AsyncSerialPort::AsyncSerialPort() {
+AsyncSerialPort::AsyncSerialPort() : m_impl(new LinuxImpl()) {
 #ifdef Q_OS_WIN
     m_impl = new WindowsImpl();
 #else
-    m_impl = new LinuxImpl();
+
 #endif
 }
 
@@ -147,18 +147,20 @@ QStringList AsyncSerialPort::enumerateSystem_Names() {
 #ifdef Q_OS_WIN
     return AsyncSerialPortWin::enumerateSystem_Names();
 #else
-    return QStringList(); // No serial ports available on this platform
+    return {}; // No serial ports available on this platform
 #endif
 }
 
 void AsyncSerialPort::initialize() {
-    if (m_impl)
+    if (m_impl) {
         m_impl->initialize();
+    }
 }
 
 void AsyncSerialPort::setDeviceConfiguration(const QVariantMap &aConfiguration) {
-    if (m_impl)
+    if (m_impl) {
         m_impl->setDeviceConfiguration(aConfiguration);
+    }
 }
 
 bool AsyncSerialPort::release() {
@@ -182,8 +184,9 @@ bool AsyncSerialPort::setParameters(const SDK::Driver::TPortParameters &aParamet
 }
 
 void AsyncSerialPort::getParameters(SDK::Driver::TPortParameters &aParameters) {
-    if (m_impl)
+    if (m_impl) {
         m_impl->getParameters(aParameters);
+    }
 }
 
 bool AsyncSerialPort::read(QByteArray &aData, int aTimeout, int aMinSize) {
@@ -209,8 +212,9 @@ bool AsyncSerialPort::isExist() {
 void AsyncSerialPort::changePerformingTimeout(const QString &aContext,
                                               int aTimeout,
                                               int aPerformingTime) {
-    if (m_impl)
+    if (m_impl) {
         m_impl->changePerformingTimeout(aContext, aTimeout, aPerformingTime);
+    }
 }
 
 //--------------------------------------------------------------------------------

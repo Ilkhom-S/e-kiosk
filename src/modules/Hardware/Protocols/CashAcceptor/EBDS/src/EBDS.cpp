@@ -9,7 +9,7 @@
 EBDSProtocol::EBDSProtocol() : m_ACK(false) {}
 
 //--------------------------------------------------------------------------------
-const uchar EBDSProtocol::calcCRC(const QByteArray &aData) {
+uchar EBDSProtocol::calcCRC(const QByteArray &aData) {
     uchar sum = aData[1];
 
     for (int i = 2; i < aData.size() - 1; ++i) {
@@ -81,7 +81,8 @@ TResult EBDSProtocol::processCommand(const QByteArray &aCommandData,
 
     if (!aNeedAnswer) {
         return CommandResult::OK;
-    } else if (!getAnswer(aAnswerData)) {
+    }
+    if (!getAnswer(aAnswerData)) {
         return CommandResult::Port;
     } else if (aAnswerData.isEmpty()) {
         return CommandResult::NoAnswer;
@@ -96,7 +97,7 @@ TResult EBDSProtocol::processCommand(const QByteArray &aCommandData,
 }
 
 //--------------------------------------------------------------------------------
-const bool EBDSProtocol::getAnswer(QByteArray &aAnswer) {
+bool EBDSProtocol::getAnswer(QByteArray &aAnswer) {
     aAnswer.clear();
     QByteArray data;
     uchar length = 0;
@@ -117,7 +118,7 @@ const bool EBDSProtocol::getAnswer(QByteArray &aAnswer) {
             length = aAnswer[1];
         }
     } while ((clockTimer.elapsed() < CEBDS::AnswerTimeout) &&
-             ((aAnswer.size() < length) || !length));
+             ((aAnswer.size() < length) || (length == 0u)));
 
     toLog(LogLevel::Normal, QString("EBDS: << {%1}").arg(aAnswer.toHex().data()));
 

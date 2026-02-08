@@ -37,7 +37,7 @@ bool Creator::sendPacket(const QByteArray &aData) {
 }
 
 //--------------------------------------------------------------------------------
-bool Creator::checkUSBData(QByteArray &aData, int &aBase) const {
+bool Creator::checkUSBData(QByteArray &aData, int &aBase) {
     while (aData.size() > (aBase + 1)) {
         char prefix = aData[aBase + 1];
 
@@ -45,10 +45,10 @@ bool Creator::checkUSBData(QByteArray &aData, int &aBase) const {
             aBase += CCreator::USBPacketSize;
         } else if (prefix == CCreator::Prefix) {
             if (aData.size() >= (aBase + 4)) {
-                bool OK;
-                int length = aData.mid(aBase + 2, 2).toHex().toUShort(&OK, 16);
+                bool ok = false;
+                int length = aData.mid(aBase + 2, 2).toHex().toUShort(&ok, 16);
 
-                if (!OK || !length) {
+                if (!ok || (length == 0)) {
                     return false;
                 }
 
@@ -93,7 +93,7 @@ void Creator::trim_USBData(QByteArray &aData) {
             aData.remove(j + 1, CCreator::USBDataSize - 1);
             j++;
         } else if (aData[j] == CCreator::Prefix) {
-            int length = aData.mid(j + 1, 2).toHex().toUShort(0, 16);
+            int length = aData.mid(j + 1, 2).toHex().toUShort(nullptr, 16);
             j += length + 5;
         } else {
             aData.chop(aData.size() - j);
@@ -119,7 +119,7 @@ bool Creator::receivePacket(QByteArray &aData) {
 
         int size = answer.size();
 
-        if ((size < CCreator::USBAnswerSize) && !(size % CCreator::USBPacketSize)) {
+        if ((size < CCreator::USBAnswerSize) && ((size % CCreator::USBPacketSize) == 0)) {
             for (int i = 0; i < size; i += CCreator::USBPacketSize) {
                 logBuffer << answer.mid(i, CCreator::USBPacketSize).toHex();
             }
@@ -130,7 +130,7 @@ bool Creator::receivePacket(QByteArray &aData) {
         }
 
         int index = -1;
-        while ((++index < answer.size()) && !answer[index]) {
+        while ((++index < answer.size()) && (answer[index] == 0)) {
         }
         index = qFloor(index / CCreator::USBPacketSize) * CCreator::USBPacketSize;
         answer = answer.mid(index);
@@ -138,21 +138,22 @@ bool Creator::receivePacket(QByteArray &aData) {
         aData.append(answer);
 
         calcBaseOK = checkUSBData(aData, base);
-    } while (calcBaseOK && (!base || (aData.size() < base)) &&
+    } while (calcBaseOK && ((base == 0) || (aData.size() < base)) &&
              (clockTimer.elapsed() < CCreator::Timeouts::SeriesOfPackets));
 
-    int NULAnswerIndex = 0;
+    int nulAnswerIndex = 0;
     int i = -1;
     auto logNULCount = [&]() {
-        if (NULAnswerIndex && i)
-            logBuffer[i - 1] = QString::number(NULAnswerIndex) + logBuffer[i - 1];
+        if (nulAnswerIndex && i) {
+            logBuffer[i - 1] = QString::number(nulAnswerIndex) + logBuffer[i - 1];
+        }
     };
 
     while (++i < logBuffer.size()) {
         if (logBuffer[i] != CCreator::NULLogPostfix) {
             logNULCount();
-            NULAnswerIndex = 0;
-        } else if (NULAnswerIndex++) {
+            nulAnswerIndex = 0;
+        } else if ((nulAnswerIndex++) != 0) {
             logBuffer.removeAt(i--);
         }
     }
@@ -173,13 +174,13 @@ char Creator::calcCRC(const QByteArray &aData) {
         return 0;
     }
 
-    char CRC = aData[0];
+    char crc = aData[0];
 
     for (int i = 1; i < aData.size(); ++i) {
-        CRC ^= aData[i];
+        crc ^= aData[i];
     }
 
-    return CRC;
+    return crc;
 }
 
 //--------------------------------------------------------------------------------
@@ -206,7 +207,7 @@ TResult Creator::checkAnswer(const QByteArray &aAnswer) {
 
     // длина
     int length = aAnswer.size() - 5;
-    int dataLength = aAnswer.mid(1, 2).toHex().toUShort(0, 16);
+    int dataLength = aAnswer.mid(1, 2).toHex().toUShort(nullptr, 16);
 
     if (length != dataLength) {
         toLog(LogLevel::Error,
@@ -215,13 +216,13 @@ TResult Creator::checkAnswer(const QByteArray &aAnswer) {
     }
 
     // CRC
-    char CRC = calcCRC(aAnswer.left(aAnswer.size() - 1));
+    char crc = calcCRC(aAnswer.left(aAnswer.size() - 1));
     char dataCRC = aAnswer[aAnswer.size() - 1];
 
-    if (CRC != dataCRC) {
+    if (crc != dataCRC) {
         toLog(LogLevel::Error,
               QString("Creator: CRC = %1, need = 0x%2")
-                  .arg(ProtocolUtils::toHexLog(CRC))
+                  .arg(ProtocolUtils::toHexLog(crc))
                   .arg(ProtocolUtils::toHexLog(dataCRC)));
         return CommandResult::Protocol;
     }
@@ -244,7 +245,7 @@ TResult Creator::processCommand(const QByteArray &aCommandData,
     do {
         answer.clear();
 
-        if (commandNAKIndex) {
+        if (commandNAKIndex != 0) {
             toLog(LogLevel::Warning,
                   "Creator: Failed to send the command, trying to repeat after NAK, attempt " +
                       QString::number(commandNAKIndex + 1));
@@ -283,7 +284,7 @@ TResult Creator::receiveAnswer(QByteArray &aAnswer) {
     TResult result = CommandResult::OK;
 
     do {
-        if (answerNAKIndex) {
+        if (answerNAKIndex != 0) {
             toLog(LogLevel::Warning,
                   "Creator: Failed to check the answer, trying to repeat using NAK, attempt " +
                       QString::number(answerNAKIndex + 1));
@@ -295,7 +296,8 @@ TResult Creator::receiveAnswer(QByteArray &aAnswer) {
 
         if (!readAnswer(aAnswer)) {
             return CommandResult::Port;
-        } else if (aAnswer.isEmpty()) {
+        }
+        if (aAnswer.isEmpty()) {
             return CommandResult::NoAnswer;
         } else if (aAnswer.startsWith(ASCII::NAK)) {
             return CommandResult::OK;
@@ -319,7 +321,7 @@ TResult Creator::receiveAnswer(QByteArray &aAnswer) {
 bool Creator::readAnswer(QByteArray &aAnswer) {
     QByteArray answer;
     ushort length = 0;
-    bool ACK = false;
+    bool ack = false;
 
     QElapsedTimer clockTimer;
     clockTimer.start();
@@ -333,19 +335,19 @@ bool Creator::readAnswer(QByteArray &aAnswer) {
 
         aAnswer.append(answer);
 
-        if (!ACK && aAnswer.startsWith(ASCII::ACK)) {
+        if (!ack && aAnswer.startsWith(ASCII::ACK)) {
             aAnswer.remove(0, 1);
-            ACK = true;
+            ack = true;
         } else if (aAnswer.startsWith(ASCII::NAK)) {
             toLog(LogLevel::Warning, "Creator: Answer contains NAK");
             return true;
         }
 
         if (aAnswer.size() > 2) {
-            length = aAnswer.mid(1, 2).toHex().toUShort(0, 16);
+            length = aAnswer.mid(1, 2).toHex().toUShort(nullptr, 16);
         }
     } while ((clockTimer.elapsed() < CCreator::Timeouts::DefaultAnswer) &&
-             ((aAnswer.size() < length) || !length));
+             ((aAnswer.size() < length) || (length == 0u)));
 
     if (!aAnswer.isEmpty()) {
         LogLevel::Enum logLevel = m_IOLogsDebugMode ? LogLevel::Debug : LogLevel::Normal;

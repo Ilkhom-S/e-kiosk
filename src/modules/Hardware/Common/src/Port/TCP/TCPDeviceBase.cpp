@@ -28,7 +28,7 @@ template <class T> bool TCPDeviceBase<T>::checkConnectionAbility() {
     // dynamic_cast обеспечивает безопасность типов при передаче в QVariant.
     // Если IDevice наследует QObject, можно использовать qobject_cast.
     IDevice *deviceInterface = dynamic_cast<IDevice *>(this->m_IOPort);
-    this->setConfigParameter(CHardwareSDK::RequiredDevice, QVariant::from_Value(deviceInterface));
+    this->setConfigParameter(CHardwareSDK::RequiredDevice, QVariant::fromValue(deviceInterface));
 
     // Использование .value() вместо [] предотвращает создание пустых записей в карте конфигурации.
     // toString() корректно работает во всех версиях Qt 5.15 и 6.x.

@@ -60,13 +60,13 @@ AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, const QString &aName)
             if (field.crypted) {
                 switch (field.algorithm) {
                 case SProvider::SProcessingTraits::SRequest::SField::Md5:
-                    value = QString::from_Latin1(
+                    value = QString::fromLatin1(
                         QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Md5)
                             .toHex());
                     break;
 
                 case SProvider::SProcessingTraits::SRequest::SField::Sha1:
-                    value = QString::from_Latin1(
+                    value = QString::fromLatin1(
                         QCryptographicHash::hash(value.toLatin1(), QCryptographicHash::Sha1)
                             .toHex());
                     break;
@@ -84,7 +84,7 @@ AdPaymentRequest::AdPaymentRequest(AdPayment *aPayment, const QString &aName)
                                              error)) {
                         m_CryptedFields << field.name;
 
-                        value = QString::from_Latin1(encryptedValue);
+                        value = QString::fromLatin1(encryptedValue);
                     } else {
                         LOG(getPayment()->getPaymentFactory()->getLog(),
                             LogLevel::Error,

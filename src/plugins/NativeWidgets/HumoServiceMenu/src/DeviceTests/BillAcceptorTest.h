@@ -44,10 +44,10 @@ public:
 
 private slots:
     /// Показать номинал.
-    void onEscrow(SDK::Driver::SPar aPar);
+    void onEscrow(const SDK::Driver::SPar &aPar);
 
     /// Показать статус, если необходимо.
-    void onStatusChanged(SDK::Driver::EWarningLevel::Enum, const QString &, int aParam);
+    void onStatusChanged(SDK::Driver::EWarningLevel::Enum, const QString &, int aStatuss);
 
     /// Удалить сообщение.
     void onEraseMessage();

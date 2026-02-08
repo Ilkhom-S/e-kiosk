@@ -83,7 +83,7 @@ public:
     virtual bool isAuthorizationEnabled() const;
 
     // Изменились ли настройки
-    bool isConfigurationChanged();
+    static bool isConfigurationChanged();
 
 public:
     HardwareManager *getHardwareManager();
@@ -104,7 +104,7 @@ public:
                    const QVariantMap &aParameters);
 
     /// Сохранить полную конфигурацию
-    bool saveConfiguration();
+    static bool saveConfiguration();
     void setConfiguration(const QVariantMap &aParameters);
     QVariantMap getConfiguration() const;
 
@@ -117,7 +117,7 @@ public:
     /// Вызываем, если требуется обновить config.xml
     void needUpdateConfigs();
 
-    bool hasAnyPassword() const;
+    static bool hasAnyPassword();
 
     /// С какими правами зашли в сервисное меню
     QString getUserRole() const { return m_UserRole; }

@@ -39,7 +39,7 @@ bool GUIService::hidePopup(const QVariantMap &aParameters) {
 
 //------------------------------------------------------------------------------
 void GUIService::notify(const QString &aEvent, const QVariantMap &aParameters) {
-    return m_GUIService->notify(aEvent, aParameters);
+    m_GUIService->notify(aEvent, aParameters);
 }
 
 //------------------------------------------------------------------------------

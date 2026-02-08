@@ -27,7 +27,7 @@ bool BaseMemorySwitchUtils::update(const TMemorySwitchTypes &aSTARMemorySwitchTy
 
         ushort mask = getMask(aParameterType);
         aMemorySwitches[data.number].value &= ~mask;
-        ushort result = data.parameters.key(parameterValue).toUShort(0, 2) << data.index;
+        ushort result = data.parameters.key(parameterValue).toUShort(nullptr, 2) << data.index;
         aMemorySwitches[data.number].value |= result;
     }
 
@@ -69,7 +69,7 @@ SMSWParameter BaseMemorySwitchUtils::getMSWParameter(ESTARMemorySwitchTypes::Enu
         }
     }
 
-    return SMSWParameter();
+    return {};
 }
 
 //--------------------------------------------------------------------------------
@@ -226,7 +226,7 @@ ushort BaseMemorySwitchUtils::getMask(ESTARMemorySwitchTypes::Enum aParameterTyp
     QString mask = QString(16 - data.bitAmount - data.index, '0') + QString(data.bitAmount, '1') +
                    QString(data.index, '0');
 
-    return mask.toUShort(0, 2);
+    return mask.toUShort(nullptr, 2);
 }
 
 //--------------------------------------------------------------------------------

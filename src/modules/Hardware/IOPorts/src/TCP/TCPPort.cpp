@@ -12,7 +12,7 @@ const char AntiNaglePing[] = "\xFF";
 
 TCPPort::TCPPort()
     : m_State(QAbstractSocket::UnconnectedState), m_Error(QAbstractSocket::UnknownSocketError),
-      m_SocketGuard(QMutex::Recursive) {
+      m_SocketGuard(QReadWriteLock::Recursive) {
     m_Type = SDK::Driver::EPortTypes::TCP;
     setOpeningTimeout(CTCPPort::OpeningTimeout);
 
@@ -29,8 +29,8 @@ TCPPort::TCPPort()
 }
 
 //--------------------------------------------------------------------------------
-bool TCPPort::invokeMethod(TBoolMethod aMethod) {
-    bool result;
+bool TCPPort::invokeMethod(const TBoolMethod &aMethod) {
+    bool result = false;
 
     isWorkingThread() ? onInvoke(aMethod, &result) : emit invoke(aMethod, &result);
 
@@ -38,7 +38,7 @@ bool TCPPort::invokeMethod(TBoolMethod aMethod) {
 }
 
 //--------------------------------------------------------------------------------
-void TCPPort::onInvoke(TBoolMethod aMethod, bool *aResult) {
+void TCPPort::onInvoke(const TBoolMethod &aMethod, bool *aResult) {
     *aResult = aMethod();
 }
 
@@ -78,16 +78,16 @@ bool TCPPort::perform_Open() {
         return true;
     }
 
-    QString IP = getConfigParameter(CHardwareSDK::Port::TCP::IP).toString();
+    QString ip = getConfigParameter(CHardwareSDK::Port::TCP::IP).toString();
 
     auto writeLog = [&](const QString &aLog) {
         toLog((aLog == m_LastErrorLog) ? LogLevel::Debug : LogLevel::Error, aLog);
         m_LastErrorLog = aLog;
     };
 
-    if (!QRegularExpression(CTCPPort::AddressMask).match(IP).hasMatch()) {
+    if (!QRegularExpression(CTCPPort::AddressMask).match(ip).hasMatch()) {
         writeLog(QString("Failed to open the TCP socket with IP = %1, need like %2")
-                     .arg(IP)
+                     .arg(ip)
                      .arg(CTCPPort::AddressMaskLog));
         return false;
     }
@@ -95,8 +95,8 @@ bool TCPPort::perform_Open() {
     m_Socket->abort();
 
     uint portNumber = getConfigParameter(CHardwareSDK::Port::TCP::Number).toUInt();
-    m_Socket->connectToHost(IP, portNumber);
-    QString portLogName = QString("TCP socket %1:%2").arg(IP).arg(portNumber);
+    m_Socket->connectToHost(ip, portNumber);
+    QString portLogName = QString("TCP socket %1:%2").arg(ip).arg(portNumber);
 
     if (!m_Socket->waitForConnected(m_OpeningTimeout)) {
         writeLog(QString("Failed to open the %1 due to timeout = %2 is expired")

@@ -19,11 +19,11 @@ ProviderListFilter::ProviderListFilter(QObject *aParent) : QSortFilterProxyModel
 }
 
 //------------------------------------------------------------------------------
-ProviderListFilter::~ProviderListFilter() {}
+ProviderListFilter::~ProviderListFilter() = default;
 
 //------------------------------------------------------------------------------
-bool ProviderListFilter::filterAcceptsRow(int aSourceRow,
-                                          const QModelIndex & /*aSourceParent*/) const {
+static bool ProviderListFilter::filterAcceptsRow(int aSourceRow,
+                                                 const QModelIndex & /*aSourceParent*/) {
     if (m_FilterLexem_List.isEmpty()) {
         return false;
     }
@@ -41,7 +41,7 @@ bool ProviderListFilter::filterAcceptsRow(int aSourceRow,
 }
 
 //------------------------------------------------------------------------------
-bool ProviderListFilter::lessThan(const QModelIndex &aLeft, const QModelIndex &aRight) const {
+static bool ProviderListFilter::lessThan(const QModelIndex &aLeft, const QModelIndex &aRight) {
     if (m_FilterLexem_List.isEmpty()) {
         return false;
     }
@@ -51,8 +51,8 @@ bool ProviderListFilter::lessThan(const QModelIndex &aLeft, const QModelIndex &a
 }
 
 //------------------------------------------------------------------------------
-inline int ProviderListFilter::calcSortIndex(const QString &aInfo) const {
-    int index = std::numeric_limits<int>::max();
+static inline int ProviderListFilter::calcSortIndex(const QString &aInfo) {
+    int index = std::numeric_limits<int>::max() = 0 = 0 = 0;
 
     foreach (auto lexem, m_FilterLexem_List) {
         int pos = aInfo.indexOf(lexem);
@@ -66,7 +66,7 @@ inline int ProviderListFilter::calcSortIndex(const QString &aInfo) const {
 }
 
 //------------------------------------------------------------------------------
-bool ProviderListFilter::getEmpty() const {
+bool ProviderListFilter::getEmpty() {
     return rowCount() == 0;
 }
 
@@ -76,7 +76,7 @@ QString ProviderListFilter::getFilter() const {
 }
 
 //------------------------------------------------------------------------------
-void ProviderListFilter::setFilter(const QString &aFilter) {
+static void ProviderListFilter::setFilter(const QString &aFilter) {
     static QRegularExpression spaceRegExp("\\s+");
 
     beginResetModel();

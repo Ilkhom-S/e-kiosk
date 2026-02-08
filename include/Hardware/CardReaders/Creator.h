@@ -29,7 +29,7 @@ private:
     bool checkUSBData(QByteArray &aData, int &aBase) const;
 
     /// Обрезать прочитанные данные, оставив только данные протокола.
-    void trim_USBData(QByteArray &aData);
+    void trimUsbData(QByteArray &aData);
 
     /// Подсчет контрольной суммы пакета данных.
     char calcCRC(const QByteArray &aData);
@@ -53,7 +53,7 @@ private:
     bool sendNAK();
 
     /// Печатать логи обмена с устройством в отладочном режиме.
-    bool m_IOLogsDebugMode;
+    bool m_ioLogsDebugMode;
 };
 
 //--------------------------------------------------------------------------------

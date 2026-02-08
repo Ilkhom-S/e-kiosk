@@ -35,7 +35,7 @@ const char BaseScenarioKey[] = "base"; /// Базовый сценарий.
 ScenarioEngine::ScenarioEngine() : ILogable(CScenarioEngine::LogName), m_LogPadding(0) {}
 
 //---------------------------------------------------------------------------
-ScenarioEngine::~ScenarioEngine() {}
+ScenarioEngine::~ScenarioEngine() = default;
 
 //---------------------------------------------------------------------------
 void ScenarioEngine::addDirectory(const QString &aDirectory) {
@@ -141,7 +141,7 @@ bool ScenarioEngine::startScenario(const QString &aScenario, const QVariantMap &
 
     if (sc != m_Scenarios.end()) {
         if (!m_ScenarioStack.isEmpty()) {
-            auto prevScenario = m_ScenarioStack.top();
+            auto *prevScenario = m_ScenarioStack.top();
 
             if (prevScenario->getName() == aScenario) {
                 return true;
@@ -152,12 +152,12 @@ bool ScenarioEngine::startScenario(const QString &aScenario, const QVariantMap &
             prevScenario->pause();
         }
 
-        Scenario *scenario;
+        Scenario *scenario = nullptr;
 
         // В стеке уже есть такой запущенный сценарий или
         // Сценарий еще не создан
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        if (!sc->instance ||
+        if ((sc->instance == nullptr) ||
             std::find(m_ScenarioStack.begin(), m_ScenarioStack.end(), sc->instance) !=
                 m_ScenarioStack.end()) {
 #else
@@ -230,8 +230,9 @@ void ScenarioEngine::finished(const QVariantMap &aResult) {
 
     getLog()->adjustPadding(-1);
 
-    auto sourceScenario = dynamic_cast<GUI::Scenario *>(sender());
-    if (sourceScenario && sourceScenario->getName() != m_ScenarioStack.top()->getName()) {
+    auto *sourceScenario = dynamic_cast<GUI::Scenario *>(sender());
+    if ((sourceScenario != nullptr) &&
+        sourceScenario->getName() != m_ScenarioStack.top()->getName()) {
         toLog(LogLevel::Warning,
               QString("Received a signal from the scenario '%1', but '%2' is active.")
                   .arg(sourceScenario->getName())

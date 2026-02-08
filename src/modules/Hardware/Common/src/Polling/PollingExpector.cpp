@@ -2,6 +2,8 @@
 
 #include "Hardware/Common/PollingExpector.h"
 
+#include <utility>
+
 #include "Hardware/Common/MutexLocker.h"
 
 template bool PollingExpector::wait<void>(TVoidMethod aOnPoll,
@@ -29,11 +31,10 @@ template bool PollingExpector::wait<bool>(TBoolMethod aOnPoll,
                                           bool aPollingSensible);
 
 //--------------------------------------------------------------------------------
-ExpectorWorkingThread::ExpectorWorkingThread() {
+ExpectorWorkingThread::ExpectorWorkingThread()
+    : m_Owner(QThread::currentThread()), m_PollingSensible(false) {
     moveToThread(this);
     m_Polling.moveToThread(this);
-    m_Owner = QThread::currentThread();
-    m_PollingSensible = false;
 
     connect(&m_Polling, SIGNAL(timeout()), SLOT(onPoll()), Qt::QueuedConnection);
 }
@@ -53,10 +54,10 @@ void ExpectorWorkingThread::process(TBoolMethod aOnPoll,
                                     TBoolMethod aErrorCondition,
                                     int aPollingInterval,
                                     bool aPollingSensible) {
-    m_OnPoll = aOnPoll;
+    m_OnPoll = std::move(aOnPoll);
     m_PollingSensible = aPollingSensible;
-    m_Condition = aCondition;
-    m_ErrorCondition = aErrorCondition;
+    m_Condition = std::move(aCondition);
+    m_ErrorCondition = std::move(aErrorCondition);
     m_Polling.setInterval(aPollingInterval);
 
     if (!isRunning()) {
@@ -94,12 +95,12 @@ bool PollingExpector::wait(TBoolMethod aCondition,
                            int aPollingInterval,
                            int aTimeout,
                            bool aPollingSensible) {
-    return wait(aCondition, SWaitingData(aPollingInterval, aTimeout, aPollingSensible));
+    return wait(std::move(aCondition), SWaitingData(aPollingInterval, aTimeout, aPollingSensible));
 }
 
 //--------------------------------------------------------------------------------
 bool PollingExpector::wait(TBoolMethod aCondition, const SWaitingData &aWaitingData) {
-    return wait(TBoolMethod(), aCondition, aWaitingData);
+    return wait(TBoolMethod(), std::move(aCondition), aWaitingData);
 }
 
 //--------------------------------------------------------------------------------
@@ -109,7 +110,9 @@ bool PollingExpector::wait(std::function<T()> aOnPoll,
                            int aPollingInterval,
                            int aTimeout,
                            bool aPollingSensible) {
-    return wait(aOnPoll, aCondition, SWaitingData(aPollingInterval, aTimeout, aPollingSensible));
+    return wait(std::move(aOnPoll),
+                std::move(aCondition),
+                SWaitingData(aPollingInterval, aTimeout, aPollingSensible));
 }
 
 //--------------------------------------------------------------------------------
@@ -117,7 +120,7 @@ template <class T>
 bool PollingExpector::wait(std::function<T()> aOnPoll,
                            TBoolMethod aCondition,
                            const SWaitingData &aWaitingData) {
-    return wait(aOnPoll, aCondition, TBoolMethod(), aWaitingData);
+    return wait(std::move(aOnPoll), std::move(aCondition), TBoolMethod(), aWaitingData);
 }
 
 //--------------------------------------------------------------------------------
@@ -128,9 +131,9 @@ bool PollingExpector::wait(std::function<T()> aOnPoll,
                            int aPollingInterval,
                            int aTimeout,
                            bool aPollingSensible) {
-    return wait(aOnPoll,
-                aCondition,
-                aErrorCondition,
+    return wait(std::move(aOnPoll),
+                std::move(aCondition),
+                std::move(aErrorCondition),
                 SWaitingData(aPollingInterval, aTimeout, aPollingSensible));
 }
 
@@ -145,8 +148,8 @@ bool PollingExpector::wait(std::function<T()> aOnPoll,
             aOnPoll();
             return true;
         },
-        aCondition,
-        aErrorCondition,
+        std::move(aCondition),
+        std::move(aErrorCondition),
         aWaitingData);
 }
 
@@ -162,22 +165,22 @@ bool PollingExpector::wait(std::function<bool()> aOnPoll,
         return false;
     }
 
-    bool OK = aCondition();
+    bool ok = aCondition();
     bool error = aErrorCondition && aErrorCondition();
 
-    if (OK || error) {
-        return OK && !error;
+    if (ok || error) {
+        return ok && !error;
     }
 
     if (aOnPoll && !aOnPoll() && aWaitingData.pollingSensible) {
         return false;
     }
 
-    OK = aCondition();
+    ok = aCondition();
     error = aErrorCondition && aErrorCondition();
 
-    if (OK || error) {
-        return OK && !error;
+    if (ok || error) {
+        return ok && !error;
     }
 
     {

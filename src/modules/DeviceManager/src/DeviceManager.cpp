@@ -153,7 +153,7 @@ IDevice *DeviceManager::acquireDevice(const QString &aInstancePath,
             return nullptr;
         }
 
-        config[CHardwareSDK::RequiredDevice] = QVariant::from_Value(requiredDevice);
+        config[CHardwareSDK::RequiredDevice] = QVariant::fromValue(requiredDevice);
         device->setDeviceConfiguration(config);
 
         m_DeviceDependencyMap.insert(device, requiredDevice);
@@ -272,7 +272,7 @@ TNamedDevice DeviceManager::createDevice(const QString &aDriverPath,
         }
 
         config[CHardwareSDK::RequiredResource] = requiredDevice.first;
-        config[CHardwareSDK::RequiredDevice] = QVariant::from_Value(requiredDevice.second);
+        config[CHardwareSDK::RequiredDevice] = QVariant::fromValue(requiredDevice.second);
         m_DeviceDependencyMap.insert(device, requiredDevice.second);
     }
 
@@ -332,7 +332,7 @@ TNamedDevice DeviceManager::findDevice(IDevice *aRequired, const QStringList &aD
         }
 
         config[CHardwareSDK::SearchingType] = CHardwareSDK::SearchingTypes::AutoDetecting;
-        config[CHardwareSDK::RequiredDevice] = QVariant::from_Value(aRequired);
+        config[CHardwareSDK::RequiredDevice] = QVariant::fromValue(aRequired);
         config[CHardwareSDK::RequiredResource] =
             dynamic_cast<IPlugin *>(aRequired)->getConfigurationName();
 

@@ -565,7 +565,7 @@ bool ProtoShtrihFR<T>::sale(const SUnitData &aUnitData, EPayOffTypes::Enum aPayO
     commandData.append(getHexReverted(aUnitData.sum, 5, 2)); // сумма
     commandData.append(section);                             // отдел
     commandData.append(getHexReverted(taxIndex, 4));         // налоги
-    commandData.append(m_Codec->from_Unicode(name));         // текст продажи
+    commandData.append(m_Codec->fromUnicode(name));         // текст продажи
 
     char command = CShtrihFR::PayOffType::Data[aPayOffType].command;
 
@@ -744,7 +744,7 @@ bool ProtoShtrihFR<T>::setFRParameter(const CShtrihFR::FRParameters::SData &aDat
     if (aValue.typeId() == QMetaType::QByteArray)
         commandData.append(aValue.toByteArray());
     else if (aValue.typeId() == QMetaType::QString)
-        commandData.append(m_Codec->from_Unicode(aValue.toString()));
+        commandData.append(m_Codec->fromUnicode(aValue.toString()));
     else
         commandData.append(char(aValue.toInt()));
 

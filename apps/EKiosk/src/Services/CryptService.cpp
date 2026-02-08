@@ -69,7 +69,7 @@ bool CryptService::initialize() {
 
     // Перебираем все возможные пароли для ключей терминала.
     foreach (const QByteArray &password, passwords) {
-        terminalKey.secretPassword = QString::from_Latin1(password.data(), password.size());
+        terminalKey.secretPassword = QString::fromLatin1(password.data(), password.size());
 
         QString error;
         result = crypt.loadKeyPair(-1,
@@ -192,7 +192,7 @@ void CryptService::loadKey(SDK::PaymentProcessor::SKeySettings &aKey) {
     // Для Token не нужен шифрованный пароль
     if (aKey.engine == CCrypt::ETypeEngine::RuToken ||
         crypt.decrypt(-1, secretPassword, decryptedSecretPassword, error)) {
-        aKey.secretPassword = QString::from_Latin1(decryptedSecretPassword.data());
+        aKey.secretPassword = QString::fromLatin1(decryptedSecretPassword.data());
 
         if (!crypt.loadKeyPair(aKey.id,
                                static_cast<CCrypt::ETypeEngine>(aKey.engine),
@@ -215,7 +215,7 @@ void CryptService::loadKey(SDK::PaymentProcessor::SKeySettings &aKey) {
         if (!crypt.loadKeyPair(aKey.id,
                                static_cast<CCrypt::ETypeEngine>(aKey.engine),
                                secretKeyPath,
-                               QString::from_Latin1(secretPassword.data()),
+                               QString::fromLatin1(secretPassword.data()),
                                publicKeyPath,
                                aKey.serialNumber,
                                aKey.bankSerialNumber,
@@ -310,7 +310,7 @@ bool CryptService::addKey(const PP::SKeySettings &aKey) {
                 return false;
             }
 
-            key.secretPassword = QString::from_Latin1(encryptedPhrase);
+            key.secretPassword = QString::fromLatin1(encryptedPhrase);
         }
 
         // Добавляем запись в дерево настроек.
@@ -518,7 +518,7 @@ bool CryptService::saveKey() {
     key.publicKeyPath = shortPublicKeyPath;
 
     if (key.engine == CCrypt::ETypeEngine::File) {
-        key.secretPassword = QString::from_Latin1(crypt->generatePassword());
+        key.secretPassword = QString::fromLatin1(crypt->generatePassword());
         key.secretKeyPath = shortSecretKeyPath;
 
         if (!crypt->exportSecretKeyToFile(

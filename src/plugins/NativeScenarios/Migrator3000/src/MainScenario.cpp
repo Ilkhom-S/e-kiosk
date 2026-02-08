@@ -109,17 +109,17 @@ void MainScenario::start(const QVariantMap &aContext) {
 
         BOOST_FOREACH (ptree::value_type const &v, pt.get_child("terminal")) {
             if (v.first == "connection") {
-                connection.type = QString::from_StdString(
+                connection.type = QString::fromStdString(
                                       v.second.get<std::string>("<xmlattr>.type", "")) == "local"
                                       ? EConnectionTypes::Unmanaged
                                       : EConnectionTypes::Dialup;
                 connection.name =
-                    QString::from_StdString(v.second.get<std::string>("<xmlattr>.name", ""));
+                    QString::fromStdString(v.second.get<std::string>("<xmlattr>.name", ""));
 
                 QNetworkProxy proxy;
 
                 auto proxyType =
-                    QString::from_StdString(v.second.get<std::string>("proxy.<xmlattr>.type", ""));
+                    QString::fromStdString(v.second.get<std::string>("proxy.<xmlattr>.type", ""));
 
                 if (proxyType == "http") {
                     proxy.setType(QNetworkProxy::HttpProxy);
@@ -132,13 +132,13 @@ void MainScenario::start(const QVariantMap &aContext) {
                 }
 
                 if (proxy.type() != QNetworkProxy::NoProxy) {
-                    proxy.setUser(QString::from_StdString(
+                    proxy.setUser(QString::fromStdString(
                         v.second.get<std::string>("proxy.<xmlattr>.username", "")));
-                    proxy.setPassword(QString::from_StdString(
+                    proxy.setPassword(QString::fromStdString(
                         v.second.get<std::string>("proxy.<xmlattr>.password", "")));
-                    proxy.setHostName(QString::from_StdString(
+                    proxy.setHostName(QString::fromStdString(
                         v.second.get<std::string>("proxy.<xmlattr>.host", "")));
-                    proxy.setPort(QString::from_StdString(
+                    proxy.setPort(QString::fromStdString(
                                       v.second.get<std::string>("proxy.<xmlattr>.port", "0"))
                                       .toUShort());
                 }
@@ -150,7 +150,7 @@ void MainScenario::start(const QVariantMap &aContext) {
         toLog(LogLevel::Error,
               QString("PARSING '%1' error, %2")
                   .arg(terminalConfig)
-                  .arg(QString::from_StdString(e.message())));
+                  .arg(QString::fromStdString(e.message())));
         signalTriggered("abort", QVariantMap());
         return;
     }

@@ -78,7 +78,7 @@ Utils::Utils(QQmlEngine *aEngine, const QString &aInterfacePath, const QString &
 }
 
 //------------------------------------------------------------------------------
-void Utils::generateKeyEvent(int aKey, int aModifiers, const QString &aText) const {
+static void Utils::generateKeyEvent(int aKey, int aModifiers, const QString &aText) {
     const QGuiApplication *app = qApp;
     QWindow *focusWindow = app ? app->focusWindow() : 0;
     if (focusWindow) {
@@ -108,7 +108,7 @@ int maskLength(QString mask) {
 }
 
 //------------------------------------------------------------------------------
-QString Utils::stripMask(const QString &aSource, const QString &aMask) const {
+static QString Utils::stripMask(const QString &aSource, const QString &aMask) {
     int pos = 0;
     bool escaped = false;
     QString result;
@@ -148,19 +148,19 @@ QString Utils::stripMask(const QString &aSource, const QString &aMask) const {
 // Позиция первого различия справа       :       ^
 // Нужная позиция курсора                :          ^  (1-й placeholder справа от различия)
 
-int Utils::getCursorPosition(const QString &aMask,
-                             const QString &aBefore,
-                             const QString &aAfter) const {
+static int
+Utils::getCursorPosition(const QString &aMask, const QString &aBefore, const QString &aAfter) {
     if (aMask.isEmpty()) {
         return aAfter.length();
-    } else if (aBefore.length() != aAfter.length()) {
+    }
+    if (aBefore.length() != aAfter.length()) {
         Log(Log::Error) << "Utils::getCursorPosition(): string lengths differ.";
 
         return 0;
     }
 
     // Находим первое справа отличие пустого displayValue от заполненного
-    int mismatchIndex;
+    int mismatchIndex = 0;
 
     for (mismatchIndex = aBefore.length() - 1; mismatchIndex >= 0; --mismatchIndex) {
         if (aBefore[mismatchIndex] != aAfter[mismatchIndex]) {
@@ -197,11 +197,11 @@ int Utils::getCursorPosition(const QString &aMask,
 }
 
 //------------------------------------------------------------------------------
-QString Utils::format(const QString &aSource, const QString &aFormat) const {
+static QString Utils::format(const QString &aSource, const QString &aFormat) {
     QString result = aFormat;
 
     if (!result.isEmpty()) {
-        QRegularExpression rx("\\[(\\d+)\\]");
+        QRegularExpression rx(R"(\[(\d+)\])");
         QList<QPair<int, QString>> replacements;
 
         // Find all matches
@@ -229,8 +229,8 @@ QString Utils::format(const QString &aSource, const QString &aFormat) const {
 }
 
 //------------------------------------------------------------------------------
-QString Utils::readFile(const QString &aPath) const {
-    // TODO если путь отнсительный, то считать от каталога скина
+static QString Utils::readFile(const QString &aPath) {
+    // TODO если путь относительный, то считать от каталога скина
     QFile file(aPath);
     QString result;
 
@@ -251,24 +251,24 @@ QString Utils::readFile(const QString &aPath) const {
 }
 
 //------------------------------------------------------------------------------
-bool Utils::fileExist(const QString &aPath) const {
+static bool Utils::fileExist(const QString &aPath) {
     return QFileInfo(aPath).exists();
 }
 
 //------------------------------------------------------------------------------
-QString Utils::toHtml(const QString &aSource) const {
+static QString Utils::toHtml(const QString &aSource) {
     return QString(aSource)
         .replace("[br]", " ")
         .replace(QRegularExpression("\\s+"), " ")
-        .replace(QRegularExpression("\\[(/*\\w+)\\]"), "<" + QString("\\1") + ">");
+        .replace(QRegularExpression(R"(\[(/*\w+)\])"), "<" + QString("\\1") + ">");
 }
 
 //------------------------------------------------------------------------------
-QString Utils::toPlain(const QString &aSource) const {
+static QString Utils::toPlain(const QString &aSource) {
     return QString(aSource)
         .replace("[br]", "")
         .replace(QRegularExpression("\\s+"), " ")
-        .replace(QRegularExpression("\\[(/*\\w+)\\]"), "")
+        .replace(QRegularExpression(R"(\[(/*\w+)\])"), "")
         .replace(QRegularExpression("<(/*\\w+)>"), "");
 }
 
@@ -326,15 +326,15 @@ void Utils::playSound(const QString &aFileName) const {
 }
 
 //------------------------------------------------------------------------------
-QString Utils::from_Base64(const QString &aSource) const {
+QString Utils::fromBase64(const QString &aSource) const {
     return QTextCodec::codecForName("UTF-8")->toUnicode(
         QByteArray::from_Base64(aSource.toLatin1()));
 }
 
 //------------------------------------------------------------------------------
-QString Utils::from_UrlEncoding(const QString &aSource) const {
+QString Utils::fromUrlEncoding(const QString &aSource) const {
     return QTextCodec::codecForName("windows-1251")
-        ->toUnicode(QByteArray::from_PercentEncoding(aSource.toLatin1()));
+        ->toUnicode(QByteArray::fromPercentEncoding(aSource.toLatin1()));
 }
 
 //------------------------------------------------------------------------------
@@ -343,12 +343,12 @@ void Utils::click() {
 }
 
 //------------------------------------------------------------------------------
-void Utils::onClicked() {
+static void Utils::onClicked() {
     emit clicked();
 }
 
 //------------------------------------------------------------------------------
-QVariantMap Utils::str2json(const QString &aString) const {
+static QVariantMap Utils::str2json(const QString &aString) {
     if (aString.isEmpty()) {
         return QVariantMap();
     }
@@ -367,7 +367,7 @@ QVariantMap Utils::str2json(const QString &aString) const {
 }
 
 //------------------------------------------------------------------------------
-void Utils::onReloadSkin(const QVariantMap &aParams) {
+static void Utils::onReloadSkin(const QVariantMap &aParams) {
     if (m_Skin->needReload(aParams)) {
         QMetaObject::invokeMethod(m_GuiService, "reset", Qt::DirectConnection);
         m_Skin->reload(aParams);
@@ -375,7 +375,7 @@ void Utils::onReloadSkin(const QVariantMap &aParams) {
 }
 
 //------------------------------------------------------------------------------
-QMap<qint64, quint32> Utils::getStatistic() {
+QMap<qint64, quint32> Utils::getStatistic() const {
     QMap<qint64, quint32> result;
 
     if (m_UseAutoOrderProviders) {

@@ -9,10 +9,10 @@ namespace PaymentProcessor {
 
 // Dummy implementation of pure virtual methods
 QList<QPair<QString, QString>> IDeviceTest::getTestNames() const {
-    return QList<QPair<QString, QString>>();
+    return {};
 }
 
-bool IDeviceTest::run(const QString &) {
+bool IDeviceTest::run(const QString & /*unused*/) {
     return false;
 }
 

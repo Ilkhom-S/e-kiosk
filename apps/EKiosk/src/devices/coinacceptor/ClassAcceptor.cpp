@@ -59,8 +59,8 @@ void ClassAcceptor::setPartNumber(QString partNumber) {
     }
 }
 
-void ClassAcceptor::setPortListInfo(QStringList port_list) {
-    portList = port_list;
+void ClassAcceptor::setPortListInfo(QStringList portList) {
+    portList = portList;
 }
 
 bool ClassAcceptor::openPort() {
@@ -87,22 +87,22 @@ void ClassAcceptor::execCommand(int cmd) {
 }
 
 bool ClassAcceptor::pollState() {
-    bool pollState_in = false;
+    bool pollStateIn = false;
 
     if (validatorName == AcceptorModel::CCTalk) {
         if (!CCTalkAcceptor->stopPoll) {
-            pollState_in = true;
+            pollStateIn = true;
         }
     }
 
-    return pollState_in;
+    return pollStateIn;
 }
 
 void ClassAcceptor::run() {
     switch (cmdExec) {
     case AcceptorCommands::Restart:
         if (validatorName == AcceptorModel::CCTalk) {
-            CCTalkAcceptor->CmdRestart();
+            CCTalk::CmdRestart();
         }
         break;
 
@@ -114,7 +114,7 @@ void ClassAcceptor::run() {
 
     case AcceptorCommands::StopPolling:
         if (validatorName == AcceptorModel::CCTalk) {
-            this->msleep(100);
+            ClassAcceptor::msleep(100);
             CCTalkAcceptor->CmdStopPoll();
         }
         break;
@@ -134,23 +134,21 @@ void ClassAcceptor::run() {
     case AcceptorCommands::Com_Clear:
         break;
     }
-
-    return;
 }
 
-bool ClassAcceptor::isItYou(QStringList &com_List,
-                            QString &validator_name,
-                            QString &com_str,
-                            QString &validator_coment) {
-    if ((validator_name != "") && (com_str != "") && (com_str.contains("COM"))) {
-        this->setValidator(validator_name);
-        this->setPortName(com_str);
+bool ClassAcceptor::isItYou(QStringList &comList,
+                            QString &validatorName,
+                            QString &comStr,
+                            QString &validatorComent) {
+    if ((validatorName != "") && (comStr != "") && (comStr.contains("COM"))) {
+        this->setValidator(validatorName);
+        this->setPortName(comStr);
 
-        if (validator_name == AcceptorModel::CCTalk) {
+        if (validatorName == AcceptorModel::CCTalk) {
             if (CCTalkAcceptor->isItYou()) {
-                nowValidatorName = validator_name;
-                nowPortName = com_str;
-                nowComent = validator_coment = CCTalkAcceptor->PartNumber;
+                nowValidatorName = validatorName;
+                nowPortName = comStr;
+                nowComent = validatorComent = CCTalkAcceptor->PartNumber;
                 this->v_PartNumber = CCTalkAcceptor->PartNumber;
                 this->v_SerialNumber = CCTalkAcceptor->SerialNumber;
                 CCTalkAcceptor->closePort();
@@ -159,18 +157,18 @@ bool ClassAcceptor::isItYou(QStringList &com_List,
         }
     }
 
-    for (int dev_count = 0; dev_count < acceptorList.count(); dev_count++) {
+    for (int devCount = 0; devCount < acceptorList.count(); devCount++) {
 
-        this->setValidator(acceptorList.at(dev_count));
+        this->setValidator(acceptorList.at(devCount));
 
-        for (int com_count = 0; com_count < com_List.count(); com_count++) {
-            this->setPortName(com_List.at(com_count));
+        for (int comCount = 0; comCount < comList.count(); comCount++) {
+            this->setPortName(comList.at(comCount));
 
             if (validatorName == AcceptorModel::CCTalk) {
                 if (CCTalkAcceptor->isItYou()) {
-                    nowValidatorName = validator_name = acceptorList.at(dev_count);
-                    nowPortName = com_str = com_List.at(com_count);
-                    nowComent = validator_coment = CCTalkAcceptor->PartNumber;
+                    nowValidatorName = validatorName = acceptorList.at(devCount);
+                    nowPortName = comStr = comList.at(comCount);
+                    nowComent = validatorComent = CCTalkAcceptor->PartNumber;
                     this->v_PartNumber = CCTalkAcceptor->PartNumber;
                     this->v_SerialNumber = CCTalkAcceptor->SerialNumber;
                     CCTalkAcceptor->closePort();
@@ -183,16 +181,15 @@ bool ClassAcceptor::isItYou(QStringList &com_List,
     return false;
 }
 
-bool ClassAcceptor::CIsItYou(QString &validat_name) {
-    if (validat_name == AcceptorModel::CCTalk) {
+bool ClassAcceptor::CIsItYou(QString &validatName) {
+    if (validatName == AcceptorModel::CCTalk) {
         if (CCTalkAcceptor->isItYou()) {
             this->v_PartNumber = CCTalkAcceptor->PartNumber;
             this->v_SerialNumber = CCTalkAcceptor->SerialNumber;
             CCTalkAcceptor->closePort();
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     return false;

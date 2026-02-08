@@ -11,21 +11,21 @@ FileDataStream::FileDataStream(const QString &aPath) : DataStream(nullptr) {
 
 //------------------------------------------------------------------------
 bool FileDataStream::clear() {
-    QFile *file = dynamic_cast<QFile *>(m_stream.data());
+    auto *file = dynamic_cast<QFile *>(m_stream.data());
 
     return file->resize(0) && file->seek(0);
 }
 
 //------------------------------------------------------------------------
 bool FileDataStream::write(const QByteArray &aData) {
-    QFile *file = dynamic_cast<QFile *>(m_stream.data());
+    auto *file = dynamic_cast<QFile *>(m_stream.data());
 
     return (file->write(aData) == aData.size() && file->flush());
 }
 
 //------------------------------------------------------------------------
 qint64 FileDataStream::size() const {
-    QFile *file = dynamic_cast<QFile *>(m_stream.data());
+    auto *file = dynamic_cast<QFile *>(m_stream.data());
 
     return file->size();
 }

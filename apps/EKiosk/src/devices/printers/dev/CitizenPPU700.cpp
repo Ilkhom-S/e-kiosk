@@ -26,16 +26,21 @@ bool CitizenPPU700_PRINTER::openPort() {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
-            if (!serialPort->setDataBits(QSerialPort::Data8))
+            if (!serialPort->setDataBits(QSerialPort::Data8)) {
                 return false;
-            if (!serialPort->setParity(QSerialPort::NoParity))
+            }
+            if (!serialPort->setParity(QSerialPort::NoParity)) {
                 return false;
-            if (!serialPort->setStopBits(QSerialPort::OneStop))
+            }
+            if (!serialPort->setStopBits(QSerialPort::OneStop)) {
                 return false;
-            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl))
+            }
+            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl)) {
                 return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud19200))
+            }
+            if (!serialPort->setBaudRate(QSerialPort::Baud19200)) {
                 return false;
+            }
 
             is_open = true;
         } else {
@@ -48,49 +53,49 @@ bool CitizenPPU700_PRINTER::openPort() {
     return is_open;
 }
 
-bool CitizenPPU700_PRINTER::isEnabled(CMDCitizenPPU700::SStatus &s_status, int &status) {
+bool CitizenPPU700_PRINTER::isEnabled(CMDCitizenPPU700::SStatus &sStatus, int &status) {
     //    int status = 0;
-    if (!this->getStatus(status, s_status)) {
+    if (!this->getStatus(status, sStatus)) {
         return false;
     }
 
     return (status != PrinterState::PrinterNotAvailable);
 }
 
-bool CitizenPPU700_PRINTER::getStatus(int &aStatus, CMDCitizenPPU700::SStatus &s_status) {
+bool CitizenPPU700_PRINTER::getStatus(int &aStatus, CMDCitizenPPU700::SStatus &sStatus) {
     // смотрим оффлайн
-    if (!getState(CMDCitizenPPU700::Constants::Status::Printer, s_status)) {
+    if (!getState(CMDCitizenPPU700::Constants::Status::Printer, sStatus)) {
         // if(Debugger) qDebug() <<  "Unable to get status, type Printer!";
         return false;
     }
 
     // если в оффлайне - смотрим причину
-    if (s_status.Offline) {
-        if (!getState(CMDCitizenPPU700::Constants::Status::Offline, s_status)) {
+    if (sStatus.Offline) {
+        if (!getState(CMDCitizenPPU700::Constants::Status::Offline, sStatus)) {
             // if(Debugger) qDebug() << "Unable to get status, type Offline!";
             return false;
         }
     }
 
     // статус ошибки смотрим всегда
-    if (!getState(CMDCitizenPPU700::Constants::Status::Errors, s_status)) {
+    if (!getState(CMDCitizenPPU700::Constants::Status::Errors, sStatus)) {
         // if(Debugger) qDebug() << "Unable to get status, type Errors!";
         return false;
     }
 
-    if (!getState(CMDCitizenPPU700::Constants::Status::ErrorDetails1, s_status)) {
+    if (!getState(CMDCitizenPPU700::Constants::Status::ErrorDetails1, sStatus)) {
         // if(Debugger) qDebug() << "Unable to get status, type ErrorDetails1!";
         return false;
     }
 
-    if (!getState(CMDCitizenPPU700::Constants::Status::ErrorDetails2, s_status)) {
+    if (!getState(CMDCitizenPPU700::Constants::Status::ErrorDetails2, sStatus)) {
         // if(Debugger) qDebug() << "Unable to get status, type ErrorDetails2!";
         return false;
     }
 
     // статус бумаги смотрим только если не в оффлайне из-за конца бумаги
-    if (!s_status.PaperOut) {
-        if (!getState(CMDCitizenPPU700::Constants::Status::Paper, s_status)) {
+    if (!sStatus.PaperOut) {
+        if (!getState(CMDCitizenPPU700::Constants::Status::Paper, sStatus)) {
             // if(Debugger) qDebug() << "Unable to get status, type paper!";
             return false;
         }
@@ -100,26 +105,26 @@ bool CitizenPPU700_PRINTER::getStatus(int &aStatus, CMDCitizenPPU700::SStatus &s
     aStatus = PrinterState::PrinterOK;
 
     // ошибки
-    if (s_status.NotAvailabled) {
+    if (sStatus.NotAvailabled) {
         aStatus |= PrinterState::PrinterNotAvailable;
     }
 
-    if (s_status.Failures.HighVoltage || s_status.Failures.HighVoltage) {
+    if (sStatus.Failures.HighVoltage || sStatus.Failures.HighVoltage) {
         aStatus |= PrinterState::PowerSupplyError;
-    } else if (s_status.Failures.Presentor) {
+    } else if (sStatus.Failures.Presentor) {
         aStatus |= PrinterState::Mechanism_PositionError;
-    } else if (s_status.Failures.Memory || s_status.Failures.CPU) {
+    } else if (sStatus.Failures.Memory || sStatus.Failures.CPU) {
         aStatus |= PrinterState::ElectronicError;
-    } else if (s_status.Failures.CoverOpen || s_status.CoverOpen) {
+    } else if (sStatus.Failures.CoverOpen || sStatus.CoverOpen) {
         aStatus |= PrinterState::CoverIsOpened;
-    } else if (s_status.Failures.Cutter) {
+    } else if (sStatus.Failures.Cutter) {
         aStatus |= PrinterState::CutterError;
-    } else if (s_status.Failures.Unrecoverable || s_status.Failures.CRC ||
-               s_status.Failures.DetectionPresenter || s_status.Error) {
+    } else if (sStatus.Failures.Unrecoverable || sStatus.Failures.CRC ||
+               sStatus.Failures.DetectionPresenter || sStatus.Error) {
         aStatus |= PrinterState::PrinterError;
-    } else if (s_status.PaperOut || s_status.Paper.End) {
+    } else if (sStatus.PaperOut || sStatus.Paper.End) {
         aStatus |= PrinterState::PaperEnd;
-    } else if (s_status.Paper.NearEndSensor1 || s_status.Paper.NearEndSensor2) {
+    } else if (sStatus.Paper.NearEndSensor1 || sStatus.Paper.NearEndSensor2) {
         // Если в админки включен индикатор толщины рулона
         if (this->counterIndicate) {
             // Paper near end
@@ -226,7 +231,7 @@ bool CitizenPPU700_PRINTER::isItYou() {
     //    QByteArray data;
     //    QByteArray packet;
     QByteArray answer;
-    bool resp_data = false;
+    bool respData = false;
     // Citizen
 
     // Сначала проверим, что это наша модель принтера
@@ -234,7 +239,7 @@ bool CitizenPPU700_PRINTER::isItYou() {
     cmd.push_back(CMDCitizenPPU700::PrinterCommandGetIDSecondByte);
     cmd.push_back(CMDCitizenPPU700::PrinterCommandModelParam); // Узнаем модель принтера
 
-    if (!this->sendCommand(cmd, true, 100, resp_data, answer, 0)) {
+    if (!this->sendCommand(cmd, true, 100, respData, answer, 0)) {
         // if(Debugger) qDebug() << "CitizenPPU700::isItYou(): error in
         // sendPacketInPort()";
         return false;
@@ -243,10 +248,11 @@ bool CitizenPPU700_PRINTER::isItYou() {
     bool result = false;
 
     if (answer.lastIndexOf(CMDCitizenPPU700::PrinterPPU700.toLatin1()) >= 0) {
-        if (answer.contains(CMDCitizenPPU700::Response_d::Resp_Mod_Name))
+        if (answer.contains(CMDCitizenPPU700::Response_d::Resp_Mod_Name)) {
             // if(Debugger) qDebug() << "CitizenPPU700::isItYou(): response - " <<
             // CMDCitizenPPU700::Response_d::Resp_Mod_Name;
             result = true;
+        }
     } else if (answer.isEmpty()) {
         //            if (this->isEnabled())
         //            {
@@ -261,58 +267,58 @@ bool CitizenPPU700_PRINTER::isItYou() {
 }
 
 void CitizenPPU700_PRINTER::getSpecialCharacters(QByteArray &printText) {
-    QByteArray fontTypeBold_start;
-    fontTypeBold_start.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
-    fontTypeBold_start.push_back(CMDCitizenPPU700::PrinterFontBold);
-    fontTypeBold_start.push_back(1);
-    QByteArray fontTypeBold_end;
-    fontTypeBold_end.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
-    fontTypeBold_end.push_back(CMDCitizenPPU700::PrinterFontBold);
-    fontTypeBold_end.push_back(48);
+    QByteArray fontTypeBoldStart;
+    fontTypeBoldStart.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
+    fontTypeBoldStart.push_back(CMDCitizenPPU700::PrinterFontBold);
+    fontTypeBoldStart.push_back(1);
+    QByteArray fontTypeBoldEnd;
+    fontTypeBoldEnd.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
+    fontTypeBoldEnd.push_back(CMDCitizenPPU700::PrinterFontBold);
+    fontTypeBoldEnd.push_back(48);
 
-    QByteArray fontTypeUnderLine_start;
-    fontTypeUnderLine_start.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
-    fontTypeUnderLine_start.push_back(CMDCitizenPPU700::PrinterFontUnderline);
-    fontTypeUnderLine_start.push_back(1);
-    QByteArray fontTypeUnderLine_end;
-    fontTypeUnderLine_end.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
-    fontTypeUnderLine_end.push_back(CMDCitizenPPU700::PrinterFontUnderline);
-    fontTypeUnderLine_end.push_back(48);
+    QByteArray fontTypeUnderLineStart;
+    fontTypeUnderLineStart.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
+    fontTypeUnderLineStart.push_back(CMDCitizenPPU700::PrinterFontUnderline);
+    fontTypeUnderLineStart.push_back(1);
+    QByteArray fontTypeUnderLineEnd;
+    fontTypeUnderLineEnd.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
+    fontTypeUnderLineEnd.push_back(CMDCitizenPPU700::PrinterFontUnderline);
+    fontTypeUnderLineEnd.push_back(48);
 
-    QByteArray fontTypeDoubleWidth_start;
+    QByteArray fontTypeDoubleWidthStart;
     if (smallCheck) {
-        fontTypeDoubleWidth_start.push_back(ASCII::NUL);
+        fontTypeDoubleWidthStart.push_back(ASCII::NUL);
     } else {
-        fontTypeDoubleWidth_start.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
-        fontTypeDoubleWidth_start.push_back(CMDCitizenPPU700::PrinterFontCommandSecondByte);
-        fontTypeDoubleWidth_start.push_back(0x20);
+        fontTypeDoubleWidthStart.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
+        fontTypeDoubleWidthStart.push_back(CMDCitizenPPU700::PrinterFontCommandSecondByte);
+        fontTypeDoubleWidthStart.push_back(0x20);
     }
 
-    QByteArray fontTypeDoubleWidth_end;
+    QByteArray fontTypeDoubleWidthEnd;
     if (smallCheck) {
-        fontTypeDoubleWidth_end.push_back(ASCII::NUL);
+        fontTypeDoubleWidthEnd.push_back(ASCII::NUL);
     } else {
-        fontTypeDoubleWidth_end.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
-        fontTypeDoubleWidth_end.push_back(CMDCitizenPPU700::PrinterFontCommandSecondByte);
-        fontTypeDoubleWidth_end.push_back(ASCII::NUL);
+        fontTypeDoubleWidthEnd.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
+        fontTypeDoubleWidthEnd.push_back(CMDCitizenPPU700::PrinterFontCommandSecondByte);
+        fontTypeDoubleWidthEnd.push_back(ASCII::NUL);
     }
 
-    QByteArray fontTypeDoubleHeight_start;
+    QByteArray fontTypeDoubleHeightStart;
     if (smallCheck) {
-        fontTypeDoubleHeight_start.push_back(ASCII::NUL);
+        fontTypeDoubleHeightStart.push_back(ASCII::NUL);
     } else {
-        fontTypeDoubleHeight_start.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
-        fontTypeDoubleHeight_start.push_back(CMDCitizenPPU700::PrinterFontCommandSecondByte);
-        fontTypeDoubleHeight_start.push_back(0x10);
+        fontTypeDoubleHeightStart.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
+        fontTypeDoubleHeightStart.push_back(CMDCitizenPPU700::PrinterFontCommandSecondByte);
+        fontTypeDoubleHeightStart.push_back(0x10);
     }
 
-    QByteArray fontTypeDoubleHeight_end;
+    QByteArray fontTypeDoubleHeightEnd;
     if (smallCheck) {
-        fontTypeDoubleHeight_end.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
-        fontTypeDoubleHeight_end.push_back(CMDCitizenPPU700::PrinterFontCommandSecondByte);
-        fontTypeDoubleHeight_end.push_back(ASCII::NUL);
+        fontTypeDoubleHeightEnd.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
+        fontTypeDoubleHeightEnd.push_back(CMDCitizenPPU700::PrinterFontCommandSecondByte);
+        fontTypeDoubleHeightEnd.push_back(ASCII::NUL);
     } else {
-        fontTypeDoubleHeight_end.push_back(ASCII::NUL);
+        fontTypeDoubleHeightEnd.push_back(ASCII::NUL);
     }
 
     // Устанавливаем если есть двойной высоты фонт
@@ -320,24 +326,24 @@ void CitizenPPU700_PRINTER::getSpecialCharacters(QByteArray &printText) {
                               CScharsetParam::FontTypeDoubleHeight +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeDoubleHeight_start);
+                      fontTypeDoubleHeightStart);
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeDoubleHeight +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeDoubleHeight_end);
+                      fontTypeDoubleHeightEnd);
 
     // Устанавливаем если есть двойной ширины фонт
     printText.replace(QString(CScharsetParam::OpenTagDelimiter +
                               CScharsetParam::FontTypeDoubleWidth +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeDoubleWidth_start);
+                      fontTypeDoubleWidthStart);
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeDoubleWidth +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeDoubleWidth_end);
+                      fontTypeDoubleWidthEnd);
 
     // Устанавливаем если есть курсивный фонт
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeItalic +
@@ -353,22 +359,22 @@ void CitizenPPU700_PRINTER::getSpecialCharacters(QByteArray &printText) {
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeBold +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeBold_start);
+                      fontTypeBoldStart);
 
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeBold + CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeBold_end);
+                      fontTypeBoldEnd);
 
     // Устанавливаем если есть подчеркнутый фонт
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeUnderLine +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeUnderLine_start);
+                      fontTypeUnderLineStart);
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeUnderLine + CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeUnderLine_end);
+                      fontTypeUnderLineEnd);
 
     // Если надо добавить проабел
     QByteArray probel;
@@ -406,11 +412,7 @@ bool CitizenPPU700_PRINTER::printCheck(const QString &aCheck) {
     //    cmd.push_back(CMDCustom_VKP80::PrinterCommandPaperSizeThirdByteSmall);
     //    cmd.push_back(0x0A);
 
-    if (!this->sendCommand(printText, true, 200, respData, answer, 50)) {
-        return false;
-    }
-
-    return true;
+    return this->sendCommand(printText, true, 200, respData, answer, 50);
 }
 
 QString CitizenPPU700_PRINTER::getImage(QString fileName) {
@@ -426,16 +428,16 @@ QString CitizenPPU700_PRINTER::getImage(QString fileName) {
     qDebug() << "ba.size(); - " << ba.size();
     ////    QByteArray compressed = qCompress(ba, 1);
 
-    QFile vrm_file("img_cont.txt");
-    if (vrm_file.open(QFile::WriteOnly)) {
-        vrm_file.write(ba);
-        vrm_file.close();
+    QFile vrmFile("img_cont.txt");
+    if (vrmFile.open(QFile::WriteOnly)) {
+        vrmFile.write(ba);
+        vrmFile.close();
     }
 
     QString data = "";
-    if (vrm_file.open(QFile::ReadOnly)) {
-        data = vrm_file.readAll();
-        vrm_file.close();
+    if (vrmFile.open(QFile::ReadOnly)) {
+        data = vrmFile.readAll();
+        vrmFile.close();
     }
 
     buffer.close();
@@ -477,8 +479,9 @@ void CitizenPPU700_PRINTER::dispense() {
     //    cmd.push_back(CMDCustom_VKP80::PrinterCommandDispenseThirdByte);
     //    cmd.push_back(CMDCustom_VKP80::PrinterCommandDispenseForthByte);
 
-    if (!this->sendCommand(cmd, false, 0, respData, answer, 50))
+    if (!this->sendCommand(cmd, false, 0, respData, answer, 50)) {
         return;
+    }
 }
 
 bool CitizenPPU700_PRINTER::initialize() {
@@ -491,8 +494,9 @@ bool CitizenPPU700_PRINTER::initialize() {
     cmd.push_back(CMDCitizenPPU700::PrinterCommandFirstByte);
     cmd.push_back(CMDCitizenPPU700::PrinterCommandInitSecondByte);
 
-    if (!this->sendCommand(cmd, false, 0, respData, answer, 0))
+    if (!this->sendCommand(cmd, false, 0, respData, answer, 0)) {
         return false;
+    }
 
     cmd.clear();
 
@@ -546,11 +550,7 @@ bool CitizenPPU700_PRINTER::cut() {
     cmd.push_back(0x56);
     cmd.push_back(0x01);
 
-    if (!this->sendCommand(cmd, true, 50, respData, answer, 0)) {
-        return false;
-    }
-
-    return true;
+    return this->sendCommand(cmd, true, 50, respData, answer, 0);
 }
 
 bool CitizenPPU700_PRINTER::feed(int aCount) {
@@ -583,19 +583,15 @@ bool CitizenPPU700_PRINTER::printImage() {
     //    cmd.push_back(ASCII::NUL);
     //    cmd.push_back(CMDCustom_VKP80::PrinterCommandLogoPrintFothByte);
 
-    if (!this->sendCommand(cmd, false, 0, respData, answer, 50)) {
-        return false;
-    }
-
-    return true;
+    return this->sendCommand(cmd, false, 0, respData, answer, 50);
 }
 
 bool CitizenPPU700_PRINTER::printImageI(const QString &aPixelString,
                                         uchar aWidth,
                                         bool aNeedRegisterLogo) {
     QByteArray cmd;
-    QByteArray resp_data;
-    bool resp_ok = false;
+    QByteArray respData;
+    bool respOk = false;
 
     if (aNeedRegisterLogo) {
         if (!registerLogo(aPixelString, aWidth)) {
@@ -610,19 +606,19 @@ bool CitizenPPU700_PRINTER::printImageI(const QString &aPixelString,
     //        cmd.append(CMDCustom_VKP80::PrinterCommandAnotherFeedSecondByte);
     //        cmd.append(nil);
 
-    return this->sendCommand(cmd, true, 100, resp_ok, resp_data, 0);
+    return this->sendCommand(cmd, true, 100, respOk, respData, 0);
 }
 
 bool CitizenPPU700_PRINTER::registerLogo(const QString &aPixelString, uchar aWidth) {
     Q_UNUSED(aPixelString)
 
-    if (!aWidth) {
+    if (aWidth == 0U) {
         return true;
     }
 
     QByteArray cmd;
     QByteArray response;
-    bool resp_data = false;
+    bool respData = false;
 
     //    uchar height = 0;
     //    if (aWidth){
@@ -647,5 +643,5 @@ bool CitizenPPU700_PRINTER::registerLogo(const QString &aPixelString, uchar aWid
     ////        this->printDataToHex(imageData);
     //        cmd.append(imageData);
 
-    return sendCommand(cmd, true, 3000, resp_data, response, 3000);
+    return sendCommand(cmd, true, 3000, respData, response, 3000);
 }

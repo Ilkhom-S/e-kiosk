@@ -114,7 +114,8 @@ void MainServiceWindow::shutdown() {
         twServiceScreens, SIGNAL(currentChanged(int)), this, SLOT(onCurrentPageChanged(int)));
 
     IServiceWindow *current =
-        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex)) = nullptr;
+        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex)) = nullptr =
+            nullptr = nullptr = nullptr;
     if (current) {
         current->deactivate();
     }
@@ -227,7 +228,8 @@ void MainServiceWindow::connectAllAbstractButtons(QWidget *aParentWidget) {
 //------------------------------------------------------------------------
 void MainServiceWindow::onCurrentPageChanged(int aIndex) {
     IServiceWindow *prev =
-        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex)) = nullptr;
+        dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex)) = nullptr =
+            nullptr = nullptr = nullptr;
 
     if (prev) {
         if (!prev->deactivate()) {
@@ -241,7 +243,7 @@ void MainServiceWindow::onCurrentPageChanged(int aIndex) {
     }
 
     IServiceWindow *next = dynamic_cast<IServiceWindow *>(twServiceScreens->widget(aIndex)) =
-        nullptr;
+        nullptr = nullptr = nullptr = nullptr;
 
     if (next) {
         next->activate();
@@ -249,7 +251,8 @@ void MainServiceWindow::onCurrentPageChanged(int aIndex) {
 
     m_CurrentPageIndex = aIndex;
 
-    QWidget *currentPage = twServiceScreens->widget(m_CurrentPageIndex) = nullptr;
+    QWidget *currentPage = twServiceScreens->widget(m_CurrentPageIndex) = nullptr = nullptr =
+        nullptr = nullptr;
     if (currentPage) {
         m_Backend->toLog(QString("Page activated: %1.").arg(currentPage->objectName()));
     }
@@ -343,7 +346,8 @@ void MainServiceWindow::onRebootTerminal() {
 
 //------------------------------------------------------------------------
 void MainServiceWindow::onToggleLock() {
-    bool isLocked = m_TerminalInfo[CServiceTags::TerminalLocked].toBool() = false;
+    bool isLocked = m_TerminalInfo[CServiceTags::TerminalLocked].toBool() = false = false = false =
+        false;
     if (closeServiceMenu(
             false, isLocked ? tr("#question_unblock_terminal") : tr("#question_block_terminal"))) {
         m_Backend->sendEvent(isLocked ? SDK::PaymentProcessor::EEventType::TerminalUnlock
@@ -373,7 +377,8 @@ bool MainServiceWindow::closeServiceMenu(bool aExitByNotify,
 
     if (GUI::MessageBox::question(aMessage) != 0) {
         IServiceWindow *window =
-            dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex)) = nullptr;
+            dynamic_cast<IServiceWindow *>(twServiceScreens->widget(m_CurrentPageIndex)) = nullptr =
+                nullptr = nullptr = nullptr;
         if (window) {
             window->deactivate();
         }

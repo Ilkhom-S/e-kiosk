@@ -40,7 +40,7 @@ public slots:
 
 private:
     /// Рекламный текст для шапки на чеке.
-    QString getReceiptHeader();
+    static QString getReceiptHeader();
     /// Рекламный текст для подвала на чеке.
     QString getReceiptFooter();
 

@@ -7,22 +7,22 @@
 #include "ID003Constants.h"
 
 ushort ID003Protocol::calcCRC16(const QByteArray &aData) {
-    ushort CRC = 0;
+    ushort crc = 0;
 
-    for (int i = 0; i < aData.size(); ++i) {
+    for (char i : aData) {
         ushort byteCRC = 0;
-        ushort value = uchar(CRC ^ aData[i]);
+        ushort value = uchar(crc ^ i);
 
         for (int j = 0; j < 8; ++j) {
             ushort data = byteCRC >> 1;
-            byteCRC = ((byteCRC ^ value) & 1) ? (data ^ CID003::Polynominal) : data;
+            byteCRC = (((byteCRC ^ value) & 1) != 0) ? (data ^ CID003::Polynominal) : data;
             value = value >> 1;
         }
 
-        CRC = byteCRC ^ (CRC >> 8);
+        crc = byteCRC ^ (crc >> 8);
     }
 
-    return CRC;
+    return crc;
 }
 
 //--------------------------------------------------------------------------------
@@ -30,9 +30,9 @@ void ID003Protocol::pack(QByteArray &aCommandData) {
     aCommandData.prepend(uchar(aCommandData.size() + 4));
     aCommandData.prepend(CID003::Prefix);
 
-    uint CRC = calcCRC16(aCommandData);
-    aCommandData.append(uchar(CRC));
-    aCommandData.append(uchar(CRC >> 8));
+    uint crc = calcCRC16(aCommandData);
+    aCommandData.append(uchar(crc));
+    aCommandData.append(uchar(crc >> 8));
 }
 
 //--------------------------------------------------------------------------------
@@ -68,12 +68,12 @@ bool ID003Protocol::check(const QByteArray &aAnswer) {
 
     // CRC
     ushort answerCRC = calcCRC16(aAnswer.mid(0, length - 2));
-    ushort CRC = qToBigEndian(aAnswer.right(2).toHex().toUShort(0, 16));
+    ushort crc = qToBigEndian(aAnswer.right(2).toHex().toUShort(nullptr, 16));
 
-    if (CRC != answerCRC) {
+    if (crc != answerCRC) {
         toLog(LogLevel::Error,
               QString("ID003: Invalid CRC = %1, need %2")
-                  .arg(ProtocolUtils::toHexLog(CRC))
+                  .arg(ProtocolUtils::toHexLog(crc))
                   .arg(ProtocolUtils::toHexLog(answerCRC)));
         return false;
     }
@@ -127,7 +127,7 @@ bool ID003Protocol::getAnswer(QByteArray &aAnswerData) {
             length = aAnswerData[1];
         }
     } while ((clockTimer.elapsed() < CID003::AnswerTimeout) &&
-             ((aAnswerData.size() < length) || (!length)));
+             ((aAnswerData.size() < length) || (length == 0u)));
 
     toLog(LogLevel::Normal, QString("ID003: << {%1}").arg(aAnswerData.toHex().data()));
 

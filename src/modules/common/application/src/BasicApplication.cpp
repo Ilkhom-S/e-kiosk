@@ -215,7 +215,7 @@ QString BasicApplication::getFileName() const {
     if (m_ArgumentCount > 0) {
         return QFileInfo(QString::fromLocal8Bit(m_Arguments[0])).fileName();
     }
-    return QString(); // Empty string if no arguments
+    return {}; // Empty string if no arguments
 }
 
 //---------------------------------------------------------------------------

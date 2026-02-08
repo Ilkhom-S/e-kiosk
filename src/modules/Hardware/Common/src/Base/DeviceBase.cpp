@@ -30,14 +30,16 @@ const char UnknownDeviceCodeDescription[] = "unknown device code";
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
-template <class T> DeviceBase<T>::DeviceBase() : m_ExternalMutex(), m_ResourceMutex() {
+template <class T>
+DeviceBase<T>::DeviceBase()
+    : m_BadAnswerCounter(0), m_MaxBadAnswers(0), m_ModelCompatibility(true),
+      m_ForceStatusBufferEnabled(false), {
     this->moveToThread(&this->m_Thread);
 
     this->m_DeviceName = CDevice::DefaultName;
-    this->m_BadAnswerCounter = 0;
-    this->m_MaxBadAnswers = 0;
+
     this->m_PostPollingAction = true, this->m_Verified = true;
-    this->m_ModelCompatibility = true;
+
     this->m_LastWarningLevel = static_cast<EWarningLevel::Enum>(-1);
     this->m_Connected = false;
     this->m_Initialized = ERequestStatus::Fail;
@@ -46,7 +48,6 @@ template <class T> DeviceBase<T>::DeviceBase() : m_ExternalMutex(), m_ResourceMu
     this->m_InitializeRepeatCount = 1;
     this->m_AutoDetectable = true;
     this->m_NeedReboot = false;
-    this->m_ForceStatusBufferEnabled = false;
 
     this->m_StatusCodesSpecification =
         DeviceStatusCode::PSpecifications(new DeviceStatusCode::CSpecifications());
@@ -143,7 +144,8 @@ template <class T> bool DeviceBase<T>::checkExistence() {
                         " can not be found via autodetecting as unsupported by plugin " +
                         this->getConfigParameter(CHardware::PluginPath).toString());
         return false;
-    } else if (!this->m_Connected) {
+    }
+    if (!this->m_Connected) {
         this->toLog(LogLevel::Error, QString("Failed to identify %1.").arg(this->m_DeviceName));
         return false;
     }
@@ -291,11 +293,11 @@ template <class T> bool DeviceBase<T>::isPluginMismatch() {
     }
 
     QString version = this->getConfigParameter(CPluginParameters::PPVersion).toString();
-    auto trim_Build = [&](const QString &aVersion) -> QString {
+    auto trimBuild = [&](const QString &aVersion) -> QString {
         return aVersion.split(" build ").first().simplified();
     };
 
-    return trim_Build(version) != trim_Build(this->m_Version);
+    return trimBuild(version) != trimBuild(this->m_Version);
 }
 
 //---------------------------------------------------------------------------
@@ -607,7 +609,7 @@ void DeviceBase<T>::sendStatuses(const TStatusCollection &aNewStatusCollection,
 
     auto removeExcessStatusCodes = [&](TStatusCollection &aStatusCollection) {
         for (int level = EWarningLevel::OK; level <= EWarningLevel::Error; ++level) {
-            EWarningLevel::Enum warningLevel = static_cast<EWarningLevel::Enum>(level);
+            auto warningLevel = static_cast<EWarningLevel::Enum>(level);
             aStatusCollection[warningLevel] =
                 aStatusCollection[warningLevel] - this->m_ExcessStatusCollection[warningLevel];
         }
@@ -674,10 +676,10 @@ void DeviceBase<T>::emitStatusCodes(TStatusCollection &aStatusCollection, int aE
 //--------------------------------------------------------------------------------
 template <class T>
 EWarningLevel::Enum DeviceBase<T>::getWarningLevel(const TStatusCollection &aStatusCollection) {
-    return aStatusCollection[EWarningLevel::Error].size()
+    return (!aStatusCollection[EWarningLevel::Error].empty() != 0)
                ? EWarningLevel::Error
-               : (aStatusCollection[EWarningLevel::Warning].size() ? EWarningLevel::Warning
-                                                                   : EWarningLevel::OK);
+               : ((!aStatusCollection[EWarningLevel::Warning].empty() != 0) ? EWarningLevel::Warning
+                                                                            : EWarningLevel::OK);
 }
 
 //--------------------------------------------------------------------------------
@@ -703,8 +705,8 @@ void DeviceBase<T>::postPollingAction(const TStatusCollection &aNewStatusCollect
                                       const TStatusCollection &aOldStatusCollection) {
     bool powerTurnOn = aOldStatusCollection.contains(DeviceStatusCode::Error::NotAvailable) &&
                        !aNewStatusCollection.contains(DeviceStatusCode::Error::NotAvailable);
-    bool containsNewErrors = !aNewStatusCollection.isEmpty(EWarningLevel::Error);
-    bool containsOldErrors = !aOldStatusCollection.isEmpty(EWarningLevel::Error);
+    bool containsNewErrors = aNewStatusCollection.isEmpty(EWarningLevel::Error) == 0;
+    bool containsOldErrors = aOldStatusCollection.isEmpty(EWarningLevel::Error) == 0;
 
     if ((powerTurnOn && containsNewErrors) || (containsOldErrors && !containsNewErrors)) {
         QString log = QString("Exit from %1, trying to re-identify")
@@ -746,18 +748,21 @@ template <class T> void DeviceBase<T>::processStatusCodes(const TStatusCodes &aS
             this->getTrOfNewProcessed(newStatusCollection, EWarningLevel::Warning);
         QString normalsLog = this->getTrOfNewProcessed(newStatusCollection, EWarningLevel::OK);
 
-        if ((errorsLog + warningsLog + normalsLog).size()) {
+        if ((errorsLog + warningsLog + normalsLog).size() != 0) {
             this->toLog(LogLevel::Normal, "Status changed:");
         }
 
         this->m_Log->adjustPadding(1);
 
-        if (!errorsLog.isEmpty())
+        if (!errorsLog.isEmpty()) {
             this->toLog(LogLevel::Error, "Errors   : " + errorsLog);
-        if (!warningsLog.isEmpty())
+        }
+        if (!warningsLog.isEmpty()) {
             this->toLog(LogLevel::Warning, "Warnings : " + warningsLog);
-        if (!normalsLog.isEmpty())
+        }
+        if (!normalsLog.isEmpty()) {
             this->toLog(LogLevel::Normal, "Normal   : " + normalsLog);
+        }
 
         this->m_Log->adjustPadding(-1);
         TStatusCollection lastStatusCollection = this->m_StatusCollectionHistory.lastValue();

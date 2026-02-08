@@ -23,7 +23,7 @@ namespace Scripting {
 HIDService::HIDService(ICore *aCore) : m_Core(aCore), m_Service(m_Core->getHIDService()) {
     connect(m_Service, SIGNAL(error()), SIGNAL(error()));
 
-    // Сигналы из ядра завернем в общий скртптовый сигнал hiddata
+    // Сигналы из ядра завернем в общий скриптовый сигнал hiddata
     connect(m_Service, SIGNAL(ejected()), this, SLOT(onEjected()));
     connect(m_Service, SIGNAL(inserted(QVariantMap)), this, SLOT(onInserted(QVariantMap)));
 
@@ -115,7 +115,7 @@ void HIDService::onData(const QVariantMap &aDataMap) {
     if (aDataMap.contains(CHardwareSDK::HID::Image)) {
         bool faceDetected = aDataMap.value(CHardwareSDK::HID::FaceDetected, false).value<bool>();
 
-        QImage image = aDataMap.value(CHardwareSDK::HID::Image).value<QImage>();
+        automage = aDataMap.value(CHardwareSDK::HID::Image).value<QImage>();
         QBuffer buffer;
         buffer.open(QIODevice::WriteOnly);
         image.convertToFormat(QImage::Format_RGB16).save(&buffer, "jpg");

@@ -41,22 +41,18 @@
 
 class QAtResultPrivate {
 public:
-    QAtResultPrivate() {
-        result = "OK";
-        resultCode = QAtResult::OK;
-        verbose = true;
-        userData = 0;
-    }
+    QAtResultPrivate() : result("OK"), {}
     ~QAtResultPrivate() {
-        if (userData)
+        {
             delete userData;
+        }
     }
 
     QString result;
     QString content;
-    QAtResult::ResultCode resultCode;
-    bool verbose;
-    QAtResult::UserData *userData;
+    QAtResult::ResultCode resultCode{QAtResult::OK};
+    bool verbose{true};
+    QAtResult::UserData *userData{0};
 };
 
 /*!
@@ -210,15 +206,13 @@ public:
     Construct a new QAtResult object.  The result() will be \c{OK},
     and the content() empty.
 */
-QAtResult::QAtResult() {
-    d = new QAtResultPrivate();
-}
+QAtResult::QAtResult() : d(new QAtResultPrivate()) {}
 
 /*!
     Construct a copy of \a other.
 */
-QAtResult::QAtResult(const QAtResult &other) {
-    d = new QAtResultPrivate();
+QAtResult::QAtResult(const QAtResult &other) : d(new QAtResultPrivate()) {
+
     *this = other;
 }
 
@@ -292,10 +286,11 @@ void QAtResult::setContent(const QString &value) {
     \sa content(), setContent()
 */
 void QAtResult::append(const QString &value) {
-    if (d->content.isEmpty())
+    if (d->content.isEmpty()) {
         d->content = value;
-    else
+    } else {
         d->content = d->content + "\n" + value;
+    }
 }
 
 /*!
@@ -345,10 +340,10 @@ bool QAtResult::ok() const {
     \sa result()
 */
 QString QAtResult::verboseResult() const {
-    if (d->verbose)
+    if (d->verbose) {
         return d->result;
-    else
-        return codeToResult(d->result);
+    }
+    return codeToResult(d->result);
 }
 
 /*!
@@ -366,8 +361,9 @@ QAtResult::UserData *QAtResult::userData() const {
     \sa userData()
 */
 void QAtResult::setUserData(QAtResult::UserData *value) {
-    if (d->userData && d->userData != value)
+    if (d->userData && d->userData != value) {
         delete d->userData;
+    }
     d->userData = value;
 }
 
@@ -484,17 +480,19 @@ static QAtCodeInfo const ext_codes[] = {
     {QAtResult::NoCNMAAckExpected, "no +CNMA acknowledgement expected"},  // no tr
     {QAtResult::UnknownError, "unknown error"}                            // no tr
 };
-#define num_basic_codes ((int)(sizeof(basic_codes) / sizeof(QAtCodeInfo)))
-#define num_ext_codes ((int)(sizeof(ext_codes) / sizeof(QAtCodeInfo)))
+#define NUM_BASIC_CODES ((int)(sizeof(basic_codes) / sizeof(QAtCodeInfo)))
+#define NUM_EXT_CODES ((int)(sizeof(ext_codes) / sizeof(QAtCodeInfo)))
 
 // Extract a numeric error code from the front of "value", or -1 if not.
 static int numeric(const QString &value) {
     int posn = 0;
-    if (posn >= value.length() || value[posn] < '0' || value[posn] > '9')
+    if (posn >= value.length() || value[posn] < '0' || value[posn] > '9') {
         return -1;
+    }
     int number = 0;
-    while (posn < value.length() && value[posn] >= '0' && value[posn] <= '9')
-        number = number * 10 + (int)(value[posn++].unicode() - '0');
+    while (posn < value.length() && value[posn] >= '0' && value[posn] <= '9') {
+        number = (number * 10) + (int)(value[posn++].unicode() - '0');
+    }
     return number;
 }
 
@@ -504,21 +502,25 @@ static bool match(const QString &value, const char *prefix) {
     while (posn < value.length() && *prefix != '\0') {
         int ch1 = value[posn++].unicode();
         int ch2 = *prefix++;
-        if (ch1 >= 'A' && ch1 <= 'Z')
+        if (ch1 >= 'A' && ch1 <= 'Z') {
             ch1 = ch1 - 'A' + 'a';
-        if (ch2 >= 'A' && ch2 <= 'Z')
+        }
+        if (ch2 >= 'A' && ch2 <= 'Z') {
             ch2 = ch2 - 'A' + 'a';
-        if (ch1 != ch2)
+        }
+        if (ch1 != ch2) {
             return false;
+        }
     }
-    if (*prefix != '\0')
+    if (*prefix != '\0') {
         return false;
+    }
     return (posn >= value.length() || value[posn] == ' ');
 }
 
 void QAtResult::resultToCode(const QString &value) {
     QString val;
-    int index;
+    int index = 0;
 
     // Determine what kind of error report we have.
     if (value.startsWith("+CME ERROR:", Qt::CaseInsensitive) ||
@@ -544,9 +546,10 @@ void QAtResult::resultToCode(const QString &value) {
             return;
         }
         index = 0;
-        while (ext_codes[index].code != QAtResult::MEFailure)
+        while (ext_codes[index].code != QAtResult::MEFailure) {
             ++index;
-        while (index < num_ext_codes) {
+        }
+        while (index < NUM_EXT_CODES) {
             if (match(val, ext_codes[index].name)) {
                 d->resultCode = ext_codes[index].code;
                 d->verbose = true;
@@ -557,7 +560,7 @@ void QAtResult::resultToCode(const QString &value) {
     } else {
 
         // Probably something like OK, ERROR, etc.  Scan the basic codes only.
-        for (index = 0; index < num_basic_codes; ++index) {
+        for (index = 0; index < NUM_BASIC_CODES; ++index) {
             if (match(value, basic_codes[index].name)) {
                 d->resultCode = basic_codes[index].code;
                 d->verbose = true;
@@ -569,7 +572,7 @@ void QAtResult::resultToCode(const QString &value) {
     }
 
     // Scan the extended code list for a match.
-    for (index = 0; index < num_ext_codes; ++index) {
+    for (index = 0; index < NUM_EXT_CODES; ++index) {
         if (match(val, ext_codes[index].name)) {
             d->resultCode = ext_codes[index].code;
             d->verbose = true;
@@ -581,27 +584,26 @@ void QAtResult::resultToCode(const QString &value) {
 }
 
 QString QAtResult::codeToResult(const QString &defaultValue) const {
-    int index;
-    for (index = 0; index < num_basic_codes; ++index) {
+    int index = 0;
+    for (index = 0; index < NUM_BASIC_CODES; ++index) {
         if (basic_codes[index].code == d->resultCode) {
             return basic_codes[index].name;
         }
     }
-    for (index = 0; index < num_ext_codes; ++index) {
+    for (index = 0; index < NUM_EXT_CODES; ++index) {
         if (ext_codes[index].code == d->resultCode) {
-            if (d->resultCode >= 300 && d->resultCode <= 500)
+            if (d->resultCode >= 300 && d->resultCode <= 500) {
                 return QString("+CMS ERROR: ") + ext_codes[index].name;
-            else
-                return QString("+CME ERROR: ") + ext_codes[index].name;
+            }
+            return QString("+CME ERROR: ") + ext_codes[index].name;
         }
     }
     if (defaultValue.isEmpty()) {
         if (((int)d->resultCode) >= 300 && ((int)d->resultCode) <= 500) {
             return "+CMS ERROR: " + QString::number(d->resultCode);
-        } else {
-            return "+CME ERROR: " + QString::number(d->resultCode);
         }
-    } else {
-        return defaultValue;
+        return "+CME ERROR: " + QString::number(d->resultCode);
+
     }
+    return defaultValue;
 }

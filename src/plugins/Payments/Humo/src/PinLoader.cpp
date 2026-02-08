@@ -51,12 +51,11 @@ PinLoader::PinLoader(PaymentFactoryBase *aPaymentFactoryBase)
 
     connect(&m_PinTimer, SIGNAL(timeout()), SLOT(onLoadPinList()), Qt::DirectConnection);
 
-    m_IsStopping = false;
     m_PinThread.start();
 }
 
 //------------------------------------------------------------------------------
-PinLoader::~PinLoader(void) {
+PinLoader::~PinLoader() {
     m_IsStopping = true;
 
     m_PinThread.quit();
@@ -75,7 +74,7 @@ PPSDK::SProvider PinLoader::getProviderSpecification(const PPSDK::SProvider &aPr
         return m_PinProviders[aProvider.id].provider;
     }
 
-    return PPSDK::SProvider();
+    return {};
 }
 
 //------------------------------------------------------------------------------
@@ -150,8 +149,8 @@ void PinLoader::onLoadPinList() {
 
     SDK::PaymentProcessor::Humo::RequestSender http(m_PaymentFactoryBase->getNetworkTaskManager(),
                                                     m_PaymentFactoryBase->getCryptEngine());
-    http.setResponseCreator(boost::bind(
-        &PinLoader::createResponse, this, boost::placeholders::_1, boost::placeholders::_2));
+    http.setResponseCreator(
+        [this] { return createResponse(boost::placeholders::_1, boost::placeholders::_2); });
 
     int failedCount = 0;
 
@@ -214,7 +213,7 @@ void PinLoader::onLoadPinList() {
         updatePinList(id, dynamic_cast<PinGetCardListResponse *>(response.data())->getCards());
     }
 
-    if (failedCount) {
+    if (failedCount != 0) {
         toLog(LogLevel::Error,
               QString("Pin nominals update failed for %1 in %2 providers. Retry after %3 min.")
                   .arg(failedCount)
@@ -225,8 +224,8 @@ void PinLoader::onLoadPinList() {
     }
 
     // меняем таймаут в зависимости от результата.
-    m_PinTimer.start((failedCount ? CPinLoader::ErrorRetryTimeout : CPinLoader::NextLoadTimeout) *
-                     1000);
+    m_PinTimer.start(
+        ((failedCount != 0) ? CPinLoader::ErrorRetryTimeout : CPinLoader::NextLoadTimeout) * 1000);
 }
 
 //------------------------------------------------------------------------------
@@ -267,7 +266,7 @@ QList<SPinCard> PinLoader::getPinCardList(qint64 aProvider) {
         return m_PinProviders[aProvider].pins;
     }
 
-    return QList<SPinCard>();
+    return {};
 }
 
 //------------------------------------------------------------------------------

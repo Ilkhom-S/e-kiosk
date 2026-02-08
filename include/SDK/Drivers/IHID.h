@@ -19,9 +19,6 @@ public: // методы
 
     /// Готов ли к работе (инициализировался успешно, ошибок нет).
     virtual bool isDeviceReady() = 0;
-
-protected:
-    virtual ~IHID() {}
 };
 
 } // namespace Driver

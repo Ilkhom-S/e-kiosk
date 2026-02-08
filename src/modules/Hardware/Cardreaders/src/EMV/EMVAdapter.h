@@ -23,7 +23,7 @@ struct Application {
 class EMVAdapter {
 public:
     EMVAdapter();
-    EMVAdapter(SDK::Driver::IMifareReader *aReader);
+    explicit EMVAdapter(SDK::Driver::IMifareReader *aReader);
 
     /// Получить track 2 из EMV карты.
     bool getTrack2(QByteArray &aData);

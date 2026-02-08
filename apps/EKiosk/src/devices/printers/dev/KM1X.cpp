@@ -20,38 +20,49 @@ bool KM1X_PRINTER::openPort() {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
-            if (!serialPort->setDataBits(QSerialPort::Data8))
+            if (!serialPort->setDataBits(QSerialPort::Data8)) {
                 return false;
-            if (!serialPort->setParity(QSerialPort::NoParity))
+            }
+            if (!serialPort->setParity(QSerialPort::NoParity)) {
                 return false;
-            if (!serialPort->setStopBits(QSerialPort::OneStop))
+            }
+            if (!serialPort->setStopBits(QSerialPort::OneStop)) {
                 return false;
-            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl))
+            }
+            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl)) {
                 return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud19200))
+            }
+            if (!serialPort->setBaudRate(QSerialPort::Baud19200)) {
                 return false;
+            }
 
             if (port_speed.toInt() == 0) {
-                if (!serialPort->setBaudRate(QSerialPort::Baud115200))
+                if (!serialPort->setBaudRate(QSerialPort::Baud115200)) {
                     return false;
+                }
             } else if (port_speed == "1") {
-                if (!serialPort->setBaudRate(QSerialPort::Baud9600))
+                if (!serialPort->setBaudRate(QSerialPort::Baud9600)) {
                     return false;
+                }
             } else if (port_speed == "2") {
                 //                if (!serialPort->setBaudRate(QSerialPort::Baud14400))
                 //                return false;
             } else if (port_speed == "3") {
-                if (!serialPort->setBaudRate(QSerialPort::Baud19200))
+                if (!serialPort->setBaudRate(QSerialPort::Baud19200)) {
                     return false;
+                }
             } else if (port_speed == "4") {
-                if (!serialPort->setBaudRate(QSerialPort::Baud38400))
+                if (!serialPort->setBaudRate(QSerialPort::Baud38400)) {
                     return false;
+                }
             } else if (port_speed == "5") {
-                if (!serialPort->setBaudRate(QSerialPort::Baud57600))
+                if (!serialPort->setBaudRate(QSerialPort::Baud57600)) {
                     return false;
+                }
             } else if (port_speed == "6") {
-                if (!serialPort->setBaudRate(QSerialPort::Baud115200))
+                if (!serialPort->setBaudRate(QSerialPort::Baud115200)) {
                     return false;
+                }
             } /*else if(port_speed == "7"){
                  if (!serialPort->setBaudRate(QSerialPort::UnknownBaud)) return false;
              }*/
@@ -94,10 +105,7 @@ bool KM1X_PRINTER::printCheck(const QString &aCheck) {
     cmd.push_back(0x42);
     cmd.push_back('\0');
 
-    if (!this->sendCommand(cmd, false, 0, respData, answer, 0))
-        return false;
-
-    return true;
+    return this->sendCommand(cmd, false, 0, respData, answer, 0);
 }
 
 void KM1X_PRINTER::print(const QString &aCheck) {

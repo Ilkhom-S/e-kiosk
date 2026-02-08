@@ -16,13 +16,13 @@ public:
     UscEncashTask(const QString &aName, const QString &aLogName, const QString &aParams);
 
     /// выполнить задачу
-    virtual void execute();
+    virtual void execute() override;
 
     /// остановить выполнение задачи
-    virtual bool cancel() { return true; };
+    virtual bool cancel() override { return true; };
 
     /// подписаться на сигнал окончания задания
-    virtual bool subscribeOnComplete(QObject *aReceiver, const char *aSlot);
+    virtual bool subscribeOnComplete(QObject *aReceiver, const char *aSlot) override;
 
 signals:
     void finished(const QString &aName, bool aComplete);

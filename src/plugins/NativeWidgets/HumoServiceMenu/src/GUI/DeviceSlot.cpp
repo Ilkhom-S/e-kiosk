@@ -191,7 +191,7 @@ void DeviceSlot::onTestResult(const QString &aTestName, const QVariant &aTestRes
             data.insert(0, "data:image/jpeg;base64,");
             data.squeeze();
 
-            params[SDK::GUI::CMessageBox::Image] = QString::from_Latin1(data);
+            params[SDK::GUI::CMessageBox::Image] = QString::fromLatin1(data);
         }
     } break;
 

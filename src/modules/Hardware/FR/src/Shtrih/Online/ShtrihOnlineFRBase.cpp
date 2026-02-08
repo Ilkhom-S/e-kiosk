@@ -491,7 +491,7 @@ bool ShtrihOnlineFRBase<T>::sale(const SUnitData &aUnitData, EPayOffTypes::Enum 
     commandData.append(section);                                 // отдел
     commandData.append(char(aUnitData.payOffSubjectMethodType)); // признак способа расчета (1214)
     commandData.append(char(aUnitData.payOffSubjectType));       // признак предмета расчета (1212)
-    commandData.append(m_Codec->from_Unicode(name));             // наименование товара (1030)
+    commandData.append(m_Codec->fromUnicode(name));             // наименование товара (1030)
 
     if (!processCommand(CShtrihOnlineFR::Commands::FS::Sale, commandData)) {
         toLog(LogLevel::Error,

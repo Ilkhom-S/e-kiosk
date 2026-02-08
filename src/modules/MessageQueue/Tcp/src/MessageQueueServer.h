@@ -17,8 +17,8 @@ class MessageQueueServer : public QTcpServer, public IMessageQueueServer {
     Q_OBJECT
 
 public:
-    MessageQueueServer(const QString &aName);
-    MessageQueueServer(const QString &aName, ILog *aLog);
+    MessageQueueServer(QString aQueueName);
+    MessageQueueServer(QString aQueueName, ILog *aLog);
     virtual ~MessageQueueServer();
 
     /// Активировать очередь сообщений.

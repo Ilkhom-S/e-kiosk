@@ -46,7 +46,7 @@ public:
     static void runScreenSaver();
 
     /// Установить локальное время системы
-    static void setSystem_Time(QDateTime aDateTime) noexcept(false);
+    static void setSystem_Time(const QDateTime &aDateTime) noexcept(false);
 
     /// Suspends the execution of the current thread until the time-out interval
     /// elapses.

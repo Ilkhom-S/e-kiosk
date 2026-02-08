@@ -71,13 +71,13 @@ SPluginParameter setWeightSensorsEnabled() {
 //------------------------------------------------------------------------------
 SPluginParameter setFontSize(int aMin, int aMax, int aDefault, int aInterval) {
     QStringList values;
-    int steps = 2 + (aMax - aMin) / aInterval;
+    int steps = 2 + ((aMax - aMin) / aInterval);
 
     for (int i = 0; i < steps; ++i) {
-        int digit = qMin(aMin + i * aInterval, aMax);
+        int digit = qMin(aMin + (i * aInterval), aMax);
         QString value = QString::number(digit);
 
-        if (!i || (values[i - 1] != value)) {
+        if ((i == 0) || (values[i - 1] != value)) {
             values << value;
         }
     }
@@ -96,7 +96,7 @@ SPluginParameter setLineSpacing(
     }
 
     for (int i = 0; i < (aMax - aMin) / aInterval; ++i) {
-        int digit = qMin(aMin + (i + 1) * aInterval, aMax);
+        int digit = qMin(aMin + ((i + 1) * aInterval), aMax);
         values << QString::number(digit);
     }
 
@@ -181,12 +181,13 @@ SPluginParameter setLeftReceiptAction(const QString &aParameter,
 
     QString title;
 
-    if (aParameter == PrinterSettings::PreviousAndNotTakenReceipts)
+    if (aParameter == PrinterSettings::PreviousAndNotTakenReceipts) {
         title = PPT::PreviousAndNotTakenReceipts;
-    else if (aParameter == PrinterSettings::PreviousReceipt)
+    } else if (aParameter == PrinterSettings::PreviousReceipt) {
         title = PPT::PreviousReceipt;
-    else if (aParameter == PrinterSettings::NotTakenReceipt)
+    } else if (aParameter == PrinterSettings::NotTakenReceipt) {
         title = PPT::NotTakenReceipt;
+    }
 
     if (!aOptionalTranslation.isEmpty()) {
         title += " " + aOptionalTranslation;

@@ -16,12 +16,12 @@ using namespace SDK::Plugin;
 using namespace SDK::Driver;
 
 //------------------------------------------------------------------------------
-template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
+template <class T> IPlugin *createPlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
     return new DevicePluginBase<T>("Card readers", aEnvironment, aInstancePath);
 }
 
 //------------------------------------------------------------------------------
-template <class T> TParameterList Enum_Parameters() {
+template <class T> TParameterList enumParameters;) {
     return createNamedList<T>(T::getModelList(), CComponents::CardReader);
 }
 

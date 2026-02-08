@@ -22,16 +22,21 @@ bool StarTUP900_PRINTER::openPort() {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
-            if (!serialPort->setDataBits(QSerialPort::Data8))
+            if (!serialPort->setDataBits(QSerialPort::Data8)) {
                 return false;
-            if (!serialPort->setParity(QSerialPort::NoParity))
+            }
+            if (!serialPort->setParity(QSerialPort::NoParity)) {
                 return false;
-            if (!serialPort->setStopBits(QSerialPort::OneStop))
+            }
+            if (!serialPort->setStopBits(QSerialPort::OneStop)) {
                 return false;
-            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl))
+            }
+            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl)) {
                 return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud19200))
+            }
+            if (!serialPort->setBaudRate(QSerialPort::Baud19200)) {
                 return false;
+            }
 
             is_open = true;
         } else {
@@ -47,8 +52,9 @@ bool StarTUP900_PRINTER::openPort() {
 bool StarTUP900_PRINTER::isEnabled() {
     int status = 0;
     //    CMDCustom_VKP80::SStatus s_status;
-    if (!this->getStatus(status))
+    if (!this->getStatus(status)) {
         return false;
+    }
     return (status != PrinterState::PrinterNotAvailable);
 }
 
@@ -62,7 +68,7 @@ bool StarTUP900_PRINTER::isItYou() {
 bool StarTUP900_PRINTER::cut() {
     QByteArray cmd;
     QByteArray answer;
-    bool respData;
+    bool respData = false;
 
     cmd.push_back(CMDStarTUP900::PrinterCommandCutFirstByte);
     cmd.push_back(CMDStarTUP900::PrinterCommandCutSecondByte);
@@ -75,20 +81,22 @@ bool StarTUP900_PRINTER::cut() {
 bool StarTUP900_PRINTER::initialize() {
     QByteArray cmd;
     QByteArray answer;
-    bool respData;
+    bool respData = false;
 
     cmd.push_back(CMDStarTUP900::PrinterCommandInitFirstByte);
     cmd.push_back(CMDStarTUP900::PrinterCommandInitSecondByte);
-    if (!this->sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, respData, answer, 0))
+    if (!this->sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, respData, answer, 0)) {
         return false;
+    }
 
     // Устанавливаем левую границу
     cmd.clear();
     cmd.push_back(CMDStarTUP900::PrinterCommandInitFirstByte);
     cmd.push_back(CMDStarTUP900::PrinterCommandSetLeftMarginSecondByte);
     cmd.push_back(0x02 /*0x09*/); // Смещение от левой границы
-    if (!this->sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, respData, answer, 0))
+    if (!this->sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, respData, answer, 0)) {
         return false;
+    }
 
     // PresenterAutoPush
     cmd.clear();
@@ -96,8 +104,9 @@ bool StarTUP900_PRINTER::initialize() {
     cmd.push_back(CMDStarTUP900::PresenterAutoPushCmdSecondByte);
     cmd.push_back(CMDStarTUP900::PresenterAutoPushCmdThirdByte);
     cmd.push_back(60);
-    if (!this->sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, respData, answer, 0))
+    if (!this->sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, respData, answer, 0)) {
         return false;
+    }
 
     // Code page
     cmd.clear();
@@ -105,8 +114,9 @@ bool StarTUP900_PRINTER::initialize() {
     cmd.push_back(0x1D);
     cmd.push_back(0x74);
     cmd.push_back(10);
-    if (!this->sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, respData, answer, 0))
+    if (!this->sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, respData, answer, 0)) {
         return false; /**/
+    }
 
     // Set font
     cmd.clear();
@@ -122,8 +132,9 @@ bool StarTUP900_PRINTER::print(const QString &aCheck) {
 
     this->printCheck(aCheck);
 
-    if (!feed(4))
+    if (!feed(4)) {
         return false;
+    }
 
     return cut();
 }
@@ -135,8 +146,9 @@ bool StarTUP900_PRINTER::feed(int aCount) {
     cmd.push_back(CMDStarTUP900::PrinterCommandFeedFirstByte);
     cmd.push_back(CMDStarTUP900::PrinterCommandFeedSecondByte);
     for (int i = 0; i < aCount; ++i) {
-        if (!sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, result, answer, 0))
+        if (!sendCommand(cmd, true, CMDStarTUP900::TimeOutAfterWriting, result, answer, 0)) {
             return false;
+        }
     }
     return true;
 }
@@ -224,10 +236,11 @@ void StarTUP900_PRINTER::getSpecialCharacters(QByteArray &printText) {
                       probel);
 
     // Добавляем звезды
-    int col_z = (checkWidth - 11 - leftMargin) / 2;
+    int colZ = (checkWidth - 11 - leftMargin) / 2;
     QByteArray star;
-    for (int j = 1; j <= col_z; j++)
+    for (int j = 1; j <= colZ; j++) {
         star.append("*");
+    }
 
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::StarCount +
                               CScharsetParam::CloseTagDelimiter)
@@ -246,7 +259,7 @@ bool StarTUP900_PRINTER::getStatus(int &aStatus) {
 
     // проверка фиксированных битов
     uchar stateByte = status[0];
-    if ((stateByte & 0x80) || !(stateByte & 0x10) || (stateByte & 0x01)) {
+    if (((stateByte & 0x80) != 0) || ((stateByte & 0x10) == 0) || ((stateByte & 0x01) != 0)) {
         // не его статус
         result |= PrinterState::PrinterNotAvailable;
         aStatus = result;
@@ -291,7 +304,7 @@ bool StarTUP900_PRINTER::getStatus(int &aStatus) {
 QByteArray StarTUP900_PRINTER::getState() {
     // засылаем в порт команду получения статуса
     QByteArray cmd;
-    bool respData;
+    bool respData = false;
     QByteArray answer;
 
     cmd.push_back(CMDStarTUP900::PrinterStatusCommand);

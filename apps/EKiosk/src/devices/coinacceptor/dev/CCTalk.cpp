@@ -4,12 +4,9 @@
 #include <QtCore/QDebug>
 #include <QtCore/QElapsedTimer>
 
-CCTalk::CCTalk() : BaseAcceptorDevices() {
-    debugger = false;
-    preDate = 0;
+#include <algorithm>
 
-    checkCoin = true;
-    coinAcceptorLogEnable = false;
+CCTalk::CCTalk() : debugger(false), preDate(0), checkCoin(true), coinAcceptorLogEnable(false) : {
 
     setBillConstData();
 }
@@ -57,8 +54,6 @@ void CCTalk::sendStatusTo(int sts, QString comment) {
         status = sts;
         emit emitStatus(status, comment);
     }
-
-    return;
 }
 
 bool CCTalk::openPort() {
@@ -73,19 +68,24 @@ bool CCTalk::openPort() {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
-            if (!serialPort->setDataBits(QSerialPort::Data8))
+            if (!serialPort->setDataBits(QSerialPort::Data8)) {
                 return false;
-            if (!serialPort->setParity(QSerialPort::NoParity))
+            }
+            if (!serialPort->setParity(QSerialPort::NoParity)) {
                 return false;
-            if (!serialPort->setStopBits(QSerialPort::OneStop))
+            }
+            if (!serialPort->setStopBits(QSerialPort::OneStop)) {
                 return false;
-            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl))
+            }
+            if (!serialPort->setFlowControl(QSerialPort::NoFlowControl)) {
                 return false;
+            }
             //            if
             //            (!serialPort->setCharIntervalTimeout(AcceptorConstants::Microcoin_CharTimeOut))
             //            return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud9600))
+            if (!serialPort->setBaudRate(QSerialPort::Baud9600)) {
                 return false;
+            }
 
             is_open = true;
         } else {
@@ -133,7 +133,7 @@ bool CCTalk::isItYou() {
                 serNum.append(respData[5]);
                 serNum.append(respData[4]);
 
-                bool ok;
+                bool ok = false;
 
                 PartNumber = "";
                 SerialNumber = "";
@@ -201,7 +201,7 @@ QByteArray CCTalk::makeCustom_Request(int cmd, const QByteArray &data) {
     aCommandData.append(data);
 
     QByteArray request = aCommandData;
-    uchar size = uchar(aCommandData.size() - 1);
+    auto size = uchar(aCommandData.size() - 1);
 
     request.prepend(CCTalkConstruct::Address::Host);
     request.prepend(size);
@@ -220,7 +220,7 @@ bool CCTalk::execCommand(int cmdType, QByteArray &cmdResponse, QByteArray data) 
 
             // перезагрузка купюроприёмника
             case AcceptorCommands::Reset:
-                cmdRequest = makeCustom_Request(CCTalkConstruct::ApReset, 0);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApReset, nullptr);
                 break;
 
             case AcceptorCommands::GetNominalTable:
@@ -241,20 +241,20 @@ bool CCTalk::execCommand(int cmdType, QByteArray &cmdResponse, QByteArray data) 
             } break;
 
             case AcceptorCommands::Poll:
-                cmdRequest = makeCustom_Request(CCTalkConstruct::ApReadBufferedBillEvents, 0);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApReadBufferedBillEvents, nullptr);
                 toCoinAcceptorLog(0, cmdRequest, "Poll");
                 break;
 
             case AcceptorCommands::RequestProductCode:
-                cmdRequest = makeCustom_Request(CCTalkConstruct::ApRequestProductCode, 0);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApRequestProductCode, nullptr);
                 break;
 
             case AcceptorCommands::RequestSerialNumber:
-                cmdRequest = makeCustom_Request(CCTalkConstruct::ApRequestSerialNumber, 0);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApRequestSerialNumber, nullptr);
                 break;
 
             case AcceptorCommands::Idintification:
-                cmdRequest = makeCustom_Request(CCTalkConstruct::ApRequestManufactureId, 0);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApRequestManufactureId, nullptr);
                 break;
 
             case AcceptorCommands::SetSecurity: {
@@ -265,7 +265,7 @@ bool CCTalk::execCommand(int cmdType, QByteArray &cmdResponse, QByteArray data) 
             } break;
 
             case AcceptorCommands::ACK:
-                cmdRequest = makeCustom_Request(CCTalkConstruct::ApSimplePoll, 0);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::ApSimplePoll, nullptr);
                 toCoinAcceptorLog(0, cmdRequest, "SimplePoll");
                 break;
 
@@ -288,7 +288,7 @@ bool CCTalk::execCommand(int cmdType, QByteArray &cmdResponse, QByteArray data) 
             } break;
 
             case AcceptorCommands::Perform_SelfCheck:
-                cmdRequest = makeCustom_Request(CCTalkConstruct::APPerform_SelfCheck, 0);
+                cmdRequest = makeCustom_Request(CCTalkConstruct::APPerform_SelfCheck, nullptr);
                 break;
             }
 
@@ -301,9 +301,10 @@ bool CCTalk::execCommand(int cmdType, QByteArray &cmdResponse, QByteArray data) 
                 return true;
             }
 
-            if (!result) {
-                if (debugger)
+            if (result == 0U) {
+                if (debugger) {
                     qDebug() << "result " << result;
+                }
             }
 
             if (result == CommandResult::Port) {
@@ -337,19 +338,20 @@ TResult CCTalk::processCommand(const QByteArray &aCommandData, QByteArray &aAnsw
     int busyNAKRepeat = 0;
 
     do {
-        if (busyNAKRepeat) {
+        if (busyNAKRepeat != 0) {
             msleep(CCTalkConstruct::Timeouts::NAKBusy);
         }
 
         toDebug(QString("ccTalk: >> {%2}").arg(aCommandData.toHex().data()));
 
-        if (!serialPort->write(aCommandData) || !getAnswer(aAnswerData, aCommandData)) {
+        if ((serialPort->write(aCommandData) == 0) || !getAnswer(aAnswerData, aCommandData)) {
             return CommandResult::Port;
         }
 
         if (aAnswerData.isEmpty()) {
             return CommandResult::NoAnswer;
-        } else if (!check(aAnswerData)) {
+        }
+        if (!check(aAnswerData)) {
             return CommandResult::Protocol;
         }
 
@@ -431,16 +433,16 @@ bool CCTalk::check(QByteArray &aAnswer) {
         return false;
     }
 
-    uchar header = uchar(aAnswer[3]);
+    auto header = uchar(aAnswer[3]);
 
-    if (header && (header != CCTalkConstruct::NAK)) {
+    if ((header != 0U) && (header != CCTalkConstruct::NAK)) {
         toDebug(QString("ccTalk: Wrong header = %1, need = 0").arg(header));
         return false;
     }
 
     QByteArray answer = aAnswer.left(aAnswer.size() - 1);
     uchar dataCRC = calcCRC8(answer);
-    uchar answerCRC = uchar(aAnswer[aAnswer.size() - 1]);
+    auto answerCRC = uchar(aAnswer[aAnswer.size() - 1]);
 
     if (dataCRC != answerCRC) {
         toDebug(QString("ccTalk: Wrong CRC = %1, need = %2")
@@ -482,7 +484,7 @@ void CCTalk::CmdInit() {
 
     billTable.clear();
 
-    QString bill_table = "";
+    QString billTable = "";
 
     for (int i = 1; i <= 16; i++) {
 
@@ -497,30 +499,31 @@ void CCTalk::CmdInit() {
             }
         }
 
-        QString bill_value = "";
-        bill_value.append(nominal);
+        QString billValue = "";
+        billValue.append(nominal);
 
-        if (i == 5 && bill_value == "TJ50KA") {
-            bill_value = "TJ500KA";
+        if (i == 5 && billValue == "TJ50KA") {
+            billValue = "TJ500KA";
         }
 
-        billTable[i] = bill_value.replace("......", "").trimmed();
+        billTable[i] = billValue.replace("......", "").trimmed();
 
         if (billTable[i] != "") {
-            bill_table += QString("%1:%2  ").arg(i).arg(billTable[i]);
+            billTable += QString("%1:%2  ").arg(i).arg(billTable[i]);
         } else {
-            bill_table += QString("%1:--  ").arg(i);
+            billTable += QString("%1:--  ").arg(i);
         }
 
-        if (i == 8)
-            bill_table += "\n";
+        if (i == 8) {
+            billTable += "\n";
+        }
     }
 
-    billTableResp = bill_table;
+    billTableResp = billTable;
 
     msleep(500);
 
-    emit emitBillTable(bill_table);
+    emit emitBillTable(billTable);
 
     QCoreApplication::processEvents();
 }
@@ -549,9 +552,9 @@ void CCTalk::CmdStartPoll() {
 
             // Проверяем есть ли номинал и нет ли повторений
             if (nominal > 0) {
-                QString vrm_D = QDateTime::currentDateTime().toString("ddHHmmsszzz");
+                QString vrmD = QDateTime::currentDateTime().toString("ddHHmmsszzz");
 
-                double nowD = vrm_D.toDouble();
+                double nowD = vrmD.toDouble();
                 double sicPointDoublle = nowD - preDate;
 
                 if (sicPointDoublle < 0) {
@@ -570,7 +573,7 @@ void CCTalk::CmdStartPoll() {
         }
     }
 
-    this->msleep(10);
+    CCTalk::msleep(10);
     this->CmdStopPoll();
 }
 
@@ -600,223 +603,221 @@ void CCTalk::CmdStopPoll() {
 int CCTalk::readPollInfo(QByteArray byte) {
     setBoolingDlgState(false);
 
-    int vrm_RespData = byte[4];
+    int vrmRespData = byte[4];
     int nominal = 0;
 
     if (byte[4] == '\x00') {
         coin_ev_counter = byte[4];
     }
 
-    if (coin_ev_counter <= vrm_RespData) {
-        events_in_queue = vrm_RespData - coin_ev_counter;
+    if (coin_ev_counter <= vrmRespData) {
+        events_in_queue = vrmRespData - coin_ev_counter;
     } else {
-        events_in_queue = 255 + vrm_RespData - coin_ev_counter;
+        events_in_queue = 255 + vrmRespData - coin_ev_counter;
     }
 
-    if (events_in_queue > 5) {
-        events_in_queue = 5;
-    }
+    events_in_queue = std::min(events_in_queue, 5);
 
     while (events_in_queue > 0) {
 
-        if (byte[events_in_queue * 2 + 3] > '\x00') {
-            nominal = billValue[billTable[byte[events_in_queue * 2 + 3]]];
+        if (byte[(events_in_queue * 2) + 3] > '\x00') {
+            nominal = billValue[billTable[byte[(events_in_queue * 2) + 3]]];
 
             this->sendStatusTo(CCtalkStatus::Success::Ok, QString("0"));
-            this->setBoolingDlgState(false);
+            CCTalk::setBoolingDlgState(false);
         } else {
 
-            switch (byte[events_in_queue * 2 + 4]) {
+            switch (byte[(events_in_queue * 2) + 4]) {
             case CCTalkConstruct::States::Accepting:
                 this->sendStatusTo(CCtalkStatus::Success::Ok, QString("0"));
-                this->setBoolingDlgState(false);
+                CCTalk::setBoolingDlgState(false);
                 break;
 
             case CCTalkConstruct::States::RejectCoin:
                 this->sendStatusTo(CCtalkStatus::Errors::RejectCoin, QString("RejectCoin"));
-                this->setBoolingDlgState(false);
+                CCTalk::setBoolingDlgState(false);
                 break;
 
             case CCTalkConstruct::States::InhibitedCoin:
                 this->sendStatusTo(CCtalkStatus::Errors::InhibitedCoin, QString("InhibitedCoin"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::MultipleWindow:
                 this->sendStatusTo(CCtalkStatus::Errors::MultipleWindow, QString("MultipleWindow"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::WakeUpTimeout:
                 this->sendStatusTo(CCtalkStatus::Errors::WakeUpTimeout, QString("WakeUpTimeout"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::ValidationTimeout:
                 this->sendStatusTo(CCtalkStatus::Errors::ValidationTimeout,
                                    QString("ValidationTimeout"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::CreditSensorTimeout:
                 this->sendStatusTo(CCtalkStatus::Errors::CreditSensorTimeout,
                                    QString("CreditSensorTimeout"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::SorterOptoTimeout:
                 this->sendStatusTo(CCtalkStatus::Errors::SorterOptoTimeout,
                                    QString("SorterOptoTimeout"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::SecondCloseCoinError:
                 this->sendStatusTo(CCtalkStatus::Errors::SecondCloseCoinError,
                                    QString("SecondCloseCoinError"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::AcceptGateNotReady:
                 this->sendStatusTo(CCtalkStatus::Errors::AcceptGateNotReady,
                                    QString("AcceptGateNotReady"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::CreditSensorNotReady:
                 this->sendStatusTo(CCtalkStatus::Errors::CreditSensorNotReady,
                                    QString("CreditSensorNotReady"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::SorterNotReady:
                 this->sendStatusTo(CCtalkStatus::Errors::SorterNotReady, QString("SorterNotReady"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::RejectCoinNotCleared:
                 this->sendStatusTo(CCtalkStatus::Errors::RejectCoinNotCleared,
                                    QString("RejectCoinNotCleared"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::ValidationSensorNotReady:
                 this->sendStatusTo(CCtalkStatus::Errors::ValidationSensorNotReady,
                                    QString("ValidationSensorNotReady"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::CreditSensorBlocked:
                 this->sendStatusTo(CCtalkStatus::Errors::CreditSensorBlocked,
                                    QString("CreditSensorBlocked"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::SorterOptoBlocked:
                 this->sendStatusTo(CCtalkStatus::Errors::SorterOptoBlocked,
                                    QString("SorterOptoBlocked"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::CreditSequenceError:
                 this->sendStatusTo(CCtalkStatus::Errors::CreditSequenceError,
                                    QString("CreditSequenceError"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::CoinGoingBackwards:
                 this->sendStatusTo(CCtalkStatus::Errors::CoinGoingBackwards,
                                    QString("CoinGoingBackwards"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::CoinTooFast:
                 this->sendStatusTo(CCtalkStatus::Errors::CoinTooFast, QString("CoinTooFast"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::CoinTooSlow:
                 this->sendStatusTo(CCtalkStatus::Errors::CoinTooSlow, QString("CoinTooSlow"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::CoinOnStringMechanism_Activated:
                 this->sendStatusTo(CCtalkStatus::Errors::CoinOnStringMechanism_Activated,
                                    QString("CoinOnStringMechanism_Activated"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::DCEOptoTimeout:
                 this->sendStatusTo(CCtalkStatus::Errors::DCEOptoTimeout, QString("DCEOptoTimeout"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::DCEOptoNotSeen:
                 this->sendStatusTo(CCtalkStatus::Errors::DCEOptoNotSeen, QString("DCEOptoNotSeen"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::CreditSensorReachedTooEarly:
                 this->sendStatusTo(CCtalkStatus::Errors::CreditSensorReachedTooEarly,
                                    QString("CreditSensorReachedTooEarly"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::RejectCoinRepeatedSequentialTrip:
                 this->sendStatusTo(CCtalkStatus::Errors::RejectCoinRepeatedSequentialTrip,
                                    QString("RejectCoinRepeatedSequentialTrip"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::RejectSlug:
                 this->sendStatusTo(CCtalkStatus::Errors::RejectSlug, QString("RejectSlug"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::RejectSensorBlocked:
                 this->sendStatusTo(CCtalkStatus::Errors::RejectSensorBlocked,
                                    QString("RejectSensorBlocked"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::GamesOverload:
                 this->sendStatusTo(CCtalkStatus::Errors::GamesOverload, QString("GamesOverload"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::MaxCoinMeterPulsesExceeded:
                 this->sendStatusTo(CCtalkStatus::Errors::MaxCoinMeterPulsesExceeded,
                                    QString("MaxCoinMeterPulsesExceeded"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::AcceptGateOpenNotClosed:
                 this->sendStatusTo(CCtalkStatus::Errors::AcceptGateOpenNotClosed,
                                    QString("AcceptGateOpenNotClosed"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::AcceptGateClosedNotOpen:
                 this->sendStatusTo(CCtalkStatus::Errors::AcceptGateClosedNotOpen,
                                    QString("AcceptGateClosedNotOpen"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::DataBlockRequest:
                 this->sendStatusTo(CCtalkStatus::Errors::DataBlockRequest,
                                    QString("DataBlockRequest"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::CoinReturnMechanism_Activated:
                 this->sendStatusTo(CCtalkStatus::Errors::CoinReturnMechanism_Activated,
                                    QString("CoinReturnMechanism_Activated"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
 
             case CCTalkConstruct::States::UnspecifiedAlarm_Code:
                 this->sendStatusTo(CCtalkStatus::Errors::UnspecifiedAlarm_Code,
                                    QString("UnspecifiedAlarm_Code"));
-                this->setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
+                CCTalk::setBoolingDlgState(false); /*qDebug() << "----Returning----"; return 0;*/
                 break;
             }
         }
@@ -827,7 +828,7 @@ int CCTalk::readPollInfo(QByteArray byte) {
     coin_ev_counter = byte[4];
 
     if (nominal > 0) {
-        this->setBoolingDlgState(true);
+        CCTalk::setBoolingDlgState(true);
         return nominal;
     }
 
@@ -849,7 +850,7 @@ void CCTalk::toCoinAcceptorLog(int state, QByteArray data, QString text) {
     }
 }
 
-void CCTalk::toDebug(QString data) {
+void CCTalk::toDebug(QString data) const {
     if (debugger) {
         qDebug() << data;
     }

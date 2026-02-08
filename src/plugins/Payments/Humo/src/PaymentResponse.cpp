@@ -47,7 +47,7 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
                 switch (aField.encoding) {
                 case SProvider::SProcessingTraits::SRequest::SResponseField::Url:
                     return QString(decoder.decode(
-                        QByteArray::from_PercentEncoding(aValue.toString().toLatin1())));
+                        QByteArray::fromPercentEncoding(aValue.toString().toLatin1())));
 
                 case SProvider::SProcessingTraits::SRequest::SResponseField::Base64:
                     return QString(
@@ -112,7 +112,7 @@ PaymentResponse::PaymentResponse(const Request &aRequest, const QString &aRespon
                             error)) {
                         m_CryptedFields << field.name;
 
-                        valueString = QString::from_Latin1(decryptedValue);
+                        valueString = QString::fromLatin1(decryptedValue);
                     } else {
                         toLog(LogLevel::Error,
                               QString("Payment %1. Failed to decrypt parameter %2. Error: %3.")

@@ -105,9 +105,9 @@ private:
     TItem_DataSet getItem_DataSet(SDK::PaymentProcessor::TPaymentAmount aAmount);
 
     /// Получить данные объекта для выдачи
-    bool getItem_Data(SDK::PaymentProcessor::TPaymentAmount aAmount,
-                     TItem_DataSet &aItem_Data,
-                     TItem_DataSetIt &aItem_DataSetIt);
+    static bool getItem_Data(SDK::PaymentProcessor::TPaymentAmount aAmount,
+                             TItem_DataSet &aItem_Data,
+                             TItem_DataSetIt &aItem_DataSetIt);
 
     /// Проверить сигнал о результате выдачи денег
     SDK::PaymentProcessor::SCashUnit *

@@ -23,16 +23,16 @@ public:
     ~WatchServiceController();
 
 private:
-    ILog *getLog();
+    static ILog *getLog();
 
     // Helper to create template icons for macOS
-    QIcon createTemplateIcon(const QString &path);
+    static QIcon createTemplateIcon(const QString &path);
 
     // Helper to create app icons with multiple sizes for better scaling
-    QIcon createAppIcon(const QString &path);
+    static QIcon createAppIcon(const QString &path);
 
     // Helper to get platform-specific executable path
-    QString getExecutablePath(const QString &baseName) const;
+    static QString getExecutablePath(const QString &baseName);
 
 private slots:
     // Попытка соединения со сторожевым сервисом.
@@ -51,7 +51,7 @@ private slots:
 
     void onStartServiceClicked(const QString &aArguments);
     void onStopServiceClicked();
-    void onCloseIconClicked();
+    static void onCloseIconClicked();
 
     // Direct action slots
     void onStartServiceMenuClicked();
@@ -62,8 +62,8 @@ private:
     QSharedPointer<IWatchServiceClient> m_Client;
 
     LastCommand m_LastCommand;
-    bool
-        m_PreviousConnectionState; // Track previous connection state to avoid unnecessary UI updates
+    bool m_PreviousConnectionState; // Track previous connection state to avoid unnecessary UI
+                                    // updates
 
     QTimer m_Timer;
 

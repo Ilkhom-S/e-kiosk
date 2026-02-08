@@ -43,7 +43,7 @@ const QString ContendPath = "ad/path";
 
 //---------------------------------------------------------------------------
 AdService *AdService::instance(IApplication *aApplication) {
-    return static_cast<AdService *>(aApplication->getCore()->getService(CServices::AdService));
+    return dynamic_cast<AdService *>(aApplication->getCore()->getService(CServices::AdService));
 }
 
 //---------------------------------------------------------------------------
@@ -63,7 +63,7 @@ AdService::AdService(IApplication *aApplication)
 }
 
 //---------------------------------------------------------------------------
-AdService::~AdService() {}
+AdService::~AdService() = default;
 
 //---------------------------------------------------------------------------
 bool AdService::initialize() {
@@ -112,11 +112,11 @@ const QSet<QString> &AdService::getRequiredServices() const {
 
 //---------------------------------------------------------------------------
 QVariantMap AdService::getParameters() const {
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
-void AdService::resetParameters(const QSet<QString> &) {}
+void AdService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 QVariant AdService::getContent(const QString &aName) const {

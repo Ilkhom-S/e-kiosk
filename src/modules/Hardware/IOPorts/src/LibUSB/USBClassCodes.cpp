@@ -18,7 +18,7 @@ CClassData::CClassData() {
 
     // https://www.usb.org/defined-class-codes
 
-    QString DVBCommonInterfaceDescription = "\n\
+    QString dvbCommonInterfaceDescription = "\n\
 		The DVB Common Interface (DVB-CI) specification describes a system\n\
 		whereby a removable CI Conditional Access Module (CICAM), given the appropriate usage rights,\n\
 		unscrambles protected pay-TV content and routes it over the same interface back to a TV receiver for display.\n\
@@ -118,12 +118,12 @@ CClassData::CClassData() {
         .addData(0x06, 0x01, "STEP. Stream Transport Efficient Protocol for content protection.e")
         .addData(
             0x06, 0x02, "STEP RAW. Stream Transport Efficient Protocol for Raw content protection.")
-        .addData(0x07, 0x00, "Command Interface in IAD." + DVBCommonInterfaceDescription)
+        .addData(0x07, 0x00, "Command Interface in IAD." + dvbCommonInterfaceDescription)
         .addData(0x07,
                  0x01,
-                 "Command Interface in Interface Descriptor." + DVBCommonInterfaceDescription)
+                 "Command Interface in Interface Descriptor." + dvbCommonInterfaceDescription)
         .addData(
-            0x07, 0x02, "Media Interface in Interface Descriptor." + DVBCommonInterfaceDescription);
+            0x07, 0x02, "Media Interface in Interface Descriptor." + dvbCommonInterfaceDescription);
     add(0xFE, Interface, "Application specific")
         .addData(0x01, 0x01, "Device Firmware Upgrade")
         .addData(0x02, 0x00, "IRDA Bridge device")

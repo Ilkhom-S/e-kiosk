@@ -5,7 +5,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 #include <QtCore/QMutexLocker>
-#include <QtCore/QRandom_Generator>
+#include <QtCore/QRandomGenerator>
 #include <QtCore/QString>
 #include <QtCore/QTime>
 #include <QtCore/QtGlobal>
@@ -111,7 +111,7 @@ CCrypt::TokenStatus CryptEngine::getTokenStatus(CCrypt::ETypeEngine aEngine) {
         char tmp[80] = {0};
         int len = Crypt_Ctrl(aEngine, IPRIV_ENGCMD_GET_PKCS11_SLOT_NAME, 0, tmp, sizeof(tmp) - 1);
         if (len > 0) {
-            result.name = QString::from_Local8Bit(tmp);
+            result.name = QString::fromLocal8Bit(tmp);
         }
 
         IPRIV_KEY keys[16];
@@ -189,10 +189,10 @@ QByteArray CryptEngine::generatePassword() const {
     QByteArray phrase;
     phrase.resize(32);
 
-    // QRandom_Generator::global() is thread-safe and
+    // QRandomGenerator::global() is thread-safe and
     // automatically seeded with high-quality system entropy.
     // fillRange() is the most efficient way to fill a buffer.
-    QRandom_Generator::global()->fillRange(reinterpret_cast<uint *>(phrase.data()),
+    QRandomGenerator::global()->fillRange(reinterpret_cast<uint *>(phrase.data()),
                                            phrase.size() / sizeof(uint));
 
     return phrase;

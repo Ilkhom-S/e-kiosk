@@ -12,7 +12,7 @@
 namespace RasApi {
 
 //------------------------------------------------------------------------------
-EOSVersion::Enum GetOSVersion() {
+EOSVersion::Enum getOsVersion() {
     static EOSVersion::Enum version = EOSVersion::Unknown;
 
     if (version == EOSVersion::Unknown) {
@@ -132,14 +132,13 @@ EDeviceType::Enum EDeviceType::ToEnum(const std::wstring &type) {
 }
 
 //------------------------------------------------------------------------------
-std::wstring EErrorCode::ToString(DWORD aCode) {
+std::wstring EErrorCode::toString(DWORD aCode) {
     wchar_t buf[256];
 
     if (RasGetErrorString(aCode, buf, sizeof(buf)) == EErrorCode::NoError) {
         return buf;
-    } else {
-        return L"Unknown RAS error";
     }
+    return L"Unknown RAS error";
 }
 
 //------------------------------------------------------------------------------
@@ -163,7 +162,7 @@ IpAddress::operator const RASIPADDR *() const {
 }
 
 //--------------------------------------------------------------------------------
-char IpAddress::byte(size_t index) const {
+char IpAddress::byte(size_t index) {
     switch (index) {
     case 0:
         return m_Address.a;
@@ -416,7 +415,7 @@ void PhonebookEntry::setScript(const std::wstring &aScript) {
 }
 
 //--------------------------------------------------------------------------------
-EDeviceType::Enum PhonebookEntry::deviceType() const {
+EDeviceType::Enum PhonebookEntry::deviceType() {
     return EDeviceType::ToEnum(m_Entry->szDeviceType);
 }
 
@@ -519,12 +518,12 @@ void PhonebookEntry::setPhonebookEntryType(EPhonebookEntry::TypeEnum aType) {
 }
 
 //--------------------------------------------------------------------------------
-EEncryptionType::Enum PhonebookEntry::encriptionType() const {
+EEncryptionType::Enum PhonebookEntry::encryptionType() const {
     return EEncryptionType::Enum(m_Entry->dwEncryptionType);
 }
 
 //--------------------------------------------------------------------------------
-void PhonebookEntry::setEncriptionType(EEncryptionType::Enum aType) {
+void PhonebookEntry::setEncryptionType(EEncryptionType::Enum aType) {
     m_Entry->dwEncryptionType = aType;
 }
 
@@ -685,7 +684,7 @@ void Connection::setEntryName(const std::wstring &aName) {
 }
 
 //--------------------------------------------------------------------------------
-EDeviceType::Enum Connection::deviceType() const {
+EDeviceType::Enum Connection::deviceType() {
     return EDeviceType::ToEnum(m_Connection.szDeviceType);
 }
 
@@ -815,18 +814,15 @@ void Device::setName(const std::wstring &aName) {
 }
 
 //------------------------------------------------------------------------------
-DialParams::DialParams() {
+DialParams::DialParams() : m_HasSavedPassword(false), m_RemovePassword(false) {
     std::memset(&m_Params, 0, sizeof(m_Params));
     m_Params.dwSize = sizeof(m_Params);
-    m_HasSavedPassword = false;
-    m_RemovePassword = false;
 }
 
 //--------------------------------------------------------------------------------
-DialParams::DialParams(const RASDIALPARAMS &aParams) {
+DialParams::DialParams(const RASDIALPARAMS &aParams)
+    : m_HasSavedPassword(false), m_RemovePassword(false) {
     m_Params = aParams;
-    m_HasSavedPassword = false;
-    m_RemovePassword = false;
 }
 
 //--------------------------------------------------------------------------------
@@ -953,12 +949,7 @@ PhonebookEntryEnumerator::~PhonebookEntryEnumerator() {
 
 //------------------------------------------------------------------------------
 bool PhonebookEntryEnumerator::getEntry(PhonebookEntryName &aEntry) {
-    if (m_CurrentIndex < m_EntryCount) {
-        aEntry = m_Entries[m_CurrentIndex++];
-        return true;
-    }
-
-    return false;
+    return m_CurrentIndex < m_EntryCount;
 }
 
 //------------------------------------------------------------------------------
@@ -1046,13 +1037,7 @@ DeviceEnumerator::~DeviceEnumerator() {
 
 //--------------------------------------------------------------------------------
 bool DeviceEnumerator::getDevice(Device &aDevice) {
-    if (m_CurrentIndex < m_DeviceCount) {
-        aDevice = m_Devices[m_CurrentIndex++];
-
-        return true;
-    }
-
-    return false;
+    return m_CurrentIndex < m_DeviceCount;
 }
 
 //--------------------------------------------------------------------------------
@@ -1071,7 +1056,7 @@ void DeviceEnumerator::reset() {
 }
 
 //------------------------------------------------------------------------------
-DWORD ValidatePhonebookEntryName(PhonebookEntryName &aEntry) {
+DWORD validatePhonebookEntryName(PhonebookEntryName &aEntry) {
     DWORD error = RasValidateEntryName(
         aEntry.phonebookPath().empty() ? 0 : aEntry.phonebookPath().data(), aEntry.name().data());
 
@@ -1079,7 +1064,7 @@ DWORD ValidatePhonebookEntryName(PhonebookEntryName &aEntry) {
 }
 
 //------------------------------------------------------------------------------
-DWORD CreateNewPhonebookEntry(const PhonebookEntryName &aEntryName, PhonebookEntry &aEntry) {
+DWORD createNewPhonebookEntry(const PhonebookEntryName &aEntryName, PhonebookEntry &aEntry) {
     DWORD size = 0;
 
     DWORD error = RasGetEntryProperties(0, 0, 0, &size, 0, 0);
@@ -1098,7 +1083,7 @@ DWORD CreateNewPhonebookEntry(const PhonebookEntryName &aEntryName, PhonebookEnt
 }
 
 //------------------------------------------------------------------------------
-DWORD RemovePhonebookEntry(const PhonebookEntryName &aEntryName) {
+DWORD removePhonebookEntry(const PhonebookEntryName &aEntryName) {
     DWORD size = 0;
 
     DWORD error = RasGetEntryProperties(0, 0, 0, &size, 0, 0);
@@ -1113,7 +1098,7 @@ DWORD RemovePhonebookEntry(const PhonebookEntryName &aEntryName) {
 }
 
 //------------------------------------------------------------------------------
-DWORD GetConnectionStatus(const std::wstring &aConnectionName, EConnectionStatus::Enum &aStatus) {
+DWORD getConnectionStatus(const std::wstring &aConnectionName, EConnectionStatus::Enum &aStatus) {
     DWORD error = ERROR_SUCCESS;
     Connection conn;
     ConnectionEnumerator enumerator;
@@ -1121,7 +1106,7 @@ DWORD GetConnectionStatus(const std::wstring &aConnectionName, EConnectionStatus
     if (enumerator.isValid()) {
         bool found = false;
 
-        while (enumerator.getConnection(conn)) {
+        while (RasApi::ConnectionEnumerator::getConnection(conn)) {
             if (conn.entryName() == aConnectionName) {
                 found = true;
                 break;
@@ -1147,7 +1132,7 @@ DWORD GetConnectionStatus(const std::wstring &aConnectionName, EConnectionStatus
 }
 
 //------------------------------------------------------------------------------
-DWORD GetEntryProperties(const PhonebookEntryName &aEntryName, PhonebookEntry &aEntry) {
+DWORD getEntryProperties(const PhonebookEntryName &aEntryName, PhonebookEntry &aEntry) {
     DWORD size = sizeof(*(RASENTRY *)aEntry);
 
     DWORD error = RasGetEntryProperties(
@@ -1162,8 +1147,8 @@ DWORD GetEntryProperties(const PhonebookEntryName &aEntryName, PhonebookEntry &a
 }
 
 //------------------------------------------------------------------------------
-DWORD GetEntryDialParams(const PhonebookEntryName &aEntryName, DialParams &aParameters) {
-    aParameters.setEntryName(aEntryName.name());
+DWORD getEntryDialParams(const PhonebookEntryName &aEntryName, DialParams &aParameters) {
+    RasApi::DialParams::setEntryName(aEntryName.name());
 
     BOOL hasSavedPassword = FALSE;
 
@@ -1180,8 +1165,8 @@ DWORD GetEntryDialParams(const PhonebookEntryName &aEntryName, DialParams &aPara
 }
 
 //------------------------------------------------------------------------------
-DWORD SetEntryDialParams(const PhonebookEntryName &aEntryName, DialParams &aParams) {
-    aParams.setEntryName(aEntryName.name());
+DWORD setEntryDialParams(const PhonebookEntryName &aEntryName, DialParams &aParams) {
+    RasApi::DialParams::setEntryName(aEntryName.name());
 
     DWORD error = RasSetEntryDialParams(
         aEntryName.phonebookPath().empty() ? 0 : aEntryName.phonebookPath().data(),
@@ -1192,7 +1177,7 @@ DWORD SetEntryDialParams(const PhonebookEntryName &aEntryName, DialParams &aPara
 }
 
 //------------------------------------------------------------------------------
-DWORD Dial(const PhonebookEntryName &aEntryName) {
+DWORD dial(const PhonebookEntryName &aEntryName) {
     DWORD error = ERROR_SUCCESS;
 
     // Проверяем наличие соединения
@@ -1202,7 +1187,7 @@ DWORD Dial(const PhonebookEntryName &aEntryName) {
     if (pbenum.isValid()) {
         bool found = false;
 
-        while (pbenum.getEntry(pbentry)) {
+        while (RasApi::PhonebookEntryEnumerator::getEntry(pbentry)) {
             if (pbentry.name() == aEntryName.name()) {
                 found = true;
                 break;
@@ -1220,7 +1205,7 @@ DWORD Dial(const PhonebookEntryName &aEntryName) {
                 error = GetEntryProperties(pbentry, entry);
 
                 if (error == ERROR_SUCCESS) {
-                    dialParams.setPhoneNumber(entry.localPhoneNumber());
+                    RasApi::DialParams::setPhoneNumber(entry.localPhoneNumber());
 
                     HRASCONN handle = 0;
 
@@ -1249,7 +1234,7 @@ DWORD Dial(const PhonebookEntryName &aEntryName) {
 }
 
 //------------------------------------------------------------------------------
-DWORD HangUp(const std::wstring &aConnectionName) {
+DWORD hangUp(const std::wstring &aConnectionName) {
     DWORD error;
     Connection conn;
     ConnectionEnumerator enumerator;
@@ -1257,7 +1242,7 @@ DWORD HangUp(const std::wstring &aConnectionName) {
     if (enumerator.isValid()) {
         bool found = false;
 
-        while (enumerator.getConnection(conn)) {
+        while (RasApi::ConnectionEnumerator::getConnection(conn)) {
             if (conn.entryName() == aConnectionName) {
                 found = true;
                 break;

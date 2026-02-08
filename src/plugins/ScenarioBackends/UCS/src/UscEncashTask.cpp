@@ -15,7 +15,7 @@ void UscEncashTask::execute() {
 
 //---------------------------------------------------------------------------
 bool UscEncashTask::subscribeOnComplete(QObject *aReceiver, const char *aSlot) {
-    return connect(this, SIGNAL(finished(const QString &, bool)), aReceiver, aSlot);
+    return connect(this, SIGNAL(finished(const QString &, bool)), aReceiver, aSlot) != nullptr;
 }
 
 } // namespace Ucs

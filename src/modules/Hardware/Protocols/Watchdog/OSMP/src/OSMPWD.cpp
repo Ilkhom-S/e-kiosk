@@ -11,10 +11,9 @@
 using namespace ProtocolUtils;
 
 //--------------------------------------------------------------------------------
-const uchar OSMPWDProtocol::calcCRC(const QByteArray &aData) {
-    int sum = std::accumulate(aData.begin(), aData.end(), 0, [](uchar arg1, uchar arg2) -> uchar {
-        return arg1 + uchar(arg2);
-    });
+uchar OSMPWDProtocol::calcCRC(const QByteArray &aData) {
+    int sum = std::accumulate(
+        aData.begin(), aData.end(), 0, [](uchar arg1, uchar arg2) -> uchar { return arg1 + arg2; });
 
     return uchar(256 - sum);
 }
@@ -53,12 +52,12 @@ bool OSMPWDProtocol::checkAnswer(const QByteArray &aAnswerData) {
     // CRC
     int index = aAnswerData.size() - 1;
     char answerCRC = calcCRC(aAnswerData.left(index));
-    char CRC = aAnswerData[index];
+    char crc = aAnswerData[index];
 
-    if (CRC != answerCRC) {
+    if (crc != answerCRC) {
         toLog(LogLevel::Error,
               QString("OSMPWD: Invalid CRC = %1, need %2")
-                  .arg(toHexLog(CRC))
+                  .arg(toHexLog(crc))
                   .arg(toHexLog(answerCRC)));
         return false;
     }
@@ -71,7 +70,7 @@ TResult OSMPWDProtocol::processCommand(const QByteArray &aCommandData, QByteArra
     QByteArray packet;
     packet.append(COSMPWD::Prefix);
     packet.append(aCommandData[0]);
-    uchar length = uchar(aCommandData.size() - 1);
+    auto length = uchar(aCommandData.size() - 1);
     packet.append(length);
     packet.append(aCommandData.mid(1));
     packet.append(calcCRC(packet));

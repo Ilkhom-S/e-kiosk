@@ -28,7 +28,7 @@ HumoServiceBackend::HumoServiceBackend(SDK::Plugin::IEnvironment *aFactory, ILog
         m_Factory->getInterface(SDK::PaymentProcessor::CInterfaces::ICore));
 
     if (m_Core) {
-        m_TerminalSettings = static_cast<SDK::PaymentProcessor::TerminalSettings *>(
+        m_TerminalSettings = dynamic_cast<SDK::PaymentProcessor::TerminalSettings *>(
             m_Core->getSettingsService()->getAdapter(
                 SDK::PaymentProcessor::CAdapterNames::TerminalAdapter));
     }
@@ -159,7 +159,7 @@ void HumoServiceBackend::needUpdateConfigs() {
 }
 
 //--------------------------------------------------------------------------
-bool HumoServiceBackend::hasAnyPassword() const {
+bool HumoServiceBackend::hasAnyPassword() {
     // TODO: Implement password checking
     return false;
 }
@@ -167,7 +167,7 @@ bool HumoServiceBackend::hasAnyPassword() const {
 //--------------------------------------------------------------------------
 QList<QWidget *> HumoServiceBackend::getExternalWidgets(bool aReset) {
     QStringList plugins = m_Factory->getPluginLoader()->getPluginList(
-        QRegularExpression("PaymentProcessor\\.Application\\.ServiceMenu\\..*"));
+        QRegularExpression(R"(PaymentProcessor\.Application\.ServiceMenu\..*)"));
 
     if (m_WidgetPluginList.isEmpty()) {
         foreach (const QString &widget, plugins) {
@@ -181,13 +181,13 @@ QList<QWidget *> HumoServiceBackend::getExternalWidgets(bool aReset) {
     QList<QWidget *> widgetList;
 
     foreach (SDK::Plugin::IPlugin *plugin, m_WidgetPluginList) {
-        SDK::GUI::IGraphicsItem *item_Object = dynamic_cast<SDK::GUI::IGraphicsItem *>(plugin);
-        if (item_Object) {
+        auto *itemObject = dynamic_cast<SDK::GUI::IGraphicsItem *>(plugin);
+        if (itemObject) {
             if (aReset) {
-                item_Object->reset(QVariantMap());
+                itemObject->reset(QVariantMap());
             }
 
-            QWidget *widget = item_Object->getNativeWidget();
+            QWidget *widget = itemObject->getNativeWidget();
             if (widget) {
                 widgetList << widget;
             }

@@ -18,7 +18,7 @@
 #include <SDK/Plugins/IExternalInterface.h>
 
 #include <boost/bind/bind.hpp>
-#include <math.h>
+#include <cmath>
 #include <memory>
 
 #include "PaymentCheckRequest.h"
@@ -43,8 +43,8 @@ const char TemporarySession[] = "temporary_session";
 Payment::Payment(PaymentFactory *aFactory)
     : PaymentBase(aFactory, aFactory->getCore()),
       m_RequestSender(aFactory->getNetworkTaskManager(), aFactory->getCryptEngine()) {
-    m_RequestSender.setResponseCreator(boost::bind(
-        &Payment::createResponse, this, boost::placeholders::_1, boost::placeholders::_2));
+    m_RequestSender.setResponseCreator(
+        [this] { return createResponse(boost::placeholders::_1, boost::placeholders::_2); });
 }
 
 //------------------------------------------------------------------------------
@@ -56,24 +56,26 @@ PaymentFactory *Payment::getPaymentFactory() const {
 Request *Payment::createRequest(const QString &aStep) {
     if (aStep == CPayment::Requests::FakeCheck) {
         return new PaymentCheckRequest(this, true);
-    } else if (aStep == CPayment::Requests::Check) {
+    }
+    if (aStep == CPayment::Requests::Check) {
         return new PaymentCheckRequest(this, false);
-    } else if (aStep == CPayment::Requests::Pay) {
+    }
+    if (aStep == CPayment::Requests::Pay) {
         return new PaymentPayRequest(this);
-    } else if (aStep == CPayment::Requests::Status) {
+    }
+    if (aStep == CPayment::Requests::Status) {
         return new PaymentStatusRequest(this);
     }
 
-    return 0;
+    return nullptr;
 }
 
 //------------------------------------------------------------------------------
 Response *Payment::createResponse(const Request &aRequest, const QString &aResponseString) {
     if (dynamic_cast<const PaymentStatusRequest *>(&aRequest)) {
         return new PaymentStatusResponse(aRequest, aResponseString);
-    } else {
-        return new PaymentResponse(aRequest, aResponseString);
     }
+    return new PaymentResponse(aRequest, aResponseString);
 }
 
 //------------------------------------------------------------------------------
@@ -281,12 +283,11 @@ bool Payment::status() {
         toLog(LogLevel::Normal, QString("Payment %1. Status retrieved.").arg(getID()));
 
         return true;
-    } else {
-        setParameter(
-            SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::NetworkError, true));
-
-        return false;
     }
+    setParameter(
+        SParameter(PPSDK::CPayment::Parameters::ServerError, ELocalError::NetworkError, true));
+
+    return false;
 }
 
 //------------------------------------------------------------------------------
@@ -295,7 +296,7 @@ void Payment::setProcessError() {
     int serverError = getParameter(PPSDK::CPayment::Parameters::ServerError).value.toInt();
 
     setNextTryDate(QDateTime::currentDateTime().addSecs(
-        static_cast<int>(CPayment::NextTryDateIncrement * pow(1.3f, tryCount) * 60)));
+        static_cast<int>(CPayment::NextTryDateIncrement * pow(1.3F, tryCount) * 60)));
 
     // Время установки статуса BadPayment
     if (tryCount > CPayment::TriesLimit) {
@@ -316,7 +317,7 @@ void Payment::setProcessError() {
         // если ошибка не связана с транспортом.
         setParameter(SParameter(PPSDK::CPayment::Parameters::NumberOfTries, ++tryCount, true));
     } else {
-        if (!tryCount) {
+        if (tryCount == 0) {
             // Для правильной отправки статусов на мониторинг
             setParameter(SParameter(PPSDK::CPayment::Parameters::NumberOfTries, 1, true));
         }
@@ -598,7 +599,7 @@ bool Payment::remove() {
         return true;
 
     case EServerResult::StatusCheckOk:
-        if (serverError) {
+        if (serverError != 0) {
             setStatus(PPSDK::EPaymentStatus::Deleted);
             toLog(LogLevel::Normal,
                   QString("Payment %1. Deleted. (server result:%2, server error:%3)")

@@ -189,7 +189,7 @@ bool System_Printer::getStatus(TStatusCodes &aStatusCodes) {
 
         for (auto it = m_LastStatusesNames.begin(); it != m_LastStatusesNames.end(); ++it) {
             // Явно упаковываем значение в QVariant через статический метод
-            QVariant val = QVariant::from_Value(it.value());
+            QVariant val = QVariant::fromValue(it.value());
             QStringList statusNames;
 
             // 2. Явное извлечение данных (Qt 6 стиль)

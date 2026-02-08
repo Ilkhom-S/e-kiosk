@@ -33,7 +33,7 @@ using namespace SDK::Plugin;
 
 //------------------------------------------------------------------------------
 /// Конструкторы плагинов.
-template <class T> IPlugin *CreatePlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
+template <class T> IPlugin *createPlugin(IEnvironment *aEnvironment, const QString &aInstancePath) {
     return new DevicePluginBase<T>("COM (RS232) asynchronous port", aEnvironment, aInstancePath);
 }
 
@@ -52,7 +52,7 @@ IPlugin *CreatePlugin<TCPPort>(IEnvironment *aEnvironment, const QString &aInsta
 #endif
 
 //------------------------------------------------------------------------------
-TParameterList TCPParameters() {
+TParameterList tcpParameters() {
     QVariantMap addressMask;
     addressMask.insert(CHardwareSDK::Mask, "999.999.999.999;_");
 
@@ -76,7 +76,7 @@ TParameterList TCPParameters() {
 }
 
 //------------------------------------------------------------------------------
-TParameterList COMParameters() {
+TParameterList comParameters() {
     // TODO: сделать отображаемые в сервисном меню параметры понятными пользователю
     return TParameterList() << SPluginParameter(CHardwareSDK::System_Name,
                                                 false,
@@ -121,7 +121,7 @@ TParameterList COMParameters() {
 
 //------------------------------------------------------------------------------
 BEGIN_REGISTER_PLUGIN
-COMMON_DRIVER(AsyncSerialPort, &COMParameters)
+COMMON_DRIVER(AsyncSerialPort, &comParameters)
 #ifdef Q_OS_WIN32
 COMMON_DRIVER(USBPort, &PluginInitializer::emptyParameterList)
 // COMMON_DRIVER(LibUSBPort, &PluginInitializer::emptyParameterList)

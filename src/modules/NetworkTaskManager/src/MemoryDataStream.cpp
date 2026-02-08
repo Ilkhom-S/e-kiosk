@@ -8,7 +8,7 @@ MemoryDataStream::MemoryDataStream() : DataStream(new QBuffer()) {}
 
 //------------------------------------------------------------------------
 bool MemoryDataStream::clear() {
-    QBuffer *buf = dynamic_cast<QBuffer *>(m_stream.data());
+    auto *buf = dynamic_cast<QBuffer *>(m_stream.data());
 
     buf->close();
     buf->setData(QByteArray());

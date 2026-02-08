@@ -6,15 +6,15 @@
 
 #include "PuloonConstants.h"
 
-uchar Puloon::calcCRC(const QByteArray &aData) const {
-    if (!aData.size()) {
+uchar Puloon::calcCRC(const QByteArray &aData) {
+    if (aData.size() == 0) {
         return 0;
     }
 
     uchar sum = 0;
 
-    for (int i = 0; i < aData.size(); ++i) {
-        sum ^= static_cast<uchar>(aData[i]);
+    for (char i : aData) {
+        sum ^= static_cast<uchar>(i);
     }
 
     return sum;
@@ -71,13 +71,13 @@ bool Puloon::check(const QByteArray &aAnswer, const QByteArray &aRequest) const 
     }
 
     uchar answerCRC = calcCRC(aAnswer.left(aAnswer.size() - 1));
-    uchar CRC = aAnswer[aAnswer.size() - 1];
+    uchar crc = aAnswer[aAnswer.size() - 1];
 
-    if (answerCRC != CRC) {
+    if (answerCRC != crc) {
         toLog(LogLevel::Error,
               QString("Puloon: Invalid CRC = %1, need %2")
                   .arg(ProtocolUtils::toHexLog(answerCRC))
-                  .arg(ProtocolUtils::toHexLog(CRC)));
+                  .arg(ProtocolUtils::toHexLog(crc)));
         return false;
     }
 
@@ -99,13 +99,14 @@ TResult Puloon::processCommand(const QByteArray &aCommandData,
     int repeatCount = 0;
 
     do {
-        QString logIteration = repeatCount ? QString(" - iteration %1").arg(repeatCount + 1) : "";
+        QString logIteration =
+            (repeatCount != 0) ? QString(" - iteration %1").arg(repeatCount + 1) : "";
         toLog(LogLevel::Normal,
               QString("Puloon: >> {%1}%2").arg(request.toHex().data()).arg(logIteration));
 
         TAnswerList answerList;
 
-        if (!repeatCount) {
+        if (repeatCount == 0) {
             if (!execCommand(request, answerList, aTimeout)) {
                 toLog(LogLevel::Error, "Puloon: Failed to execute command");
                 return CommandResult::Transport;
@@ -190,7 +191,7 @@ bool Puloon::regetAnswer(TAnswerList &aAnswerList) const {
 bool Puloon::getAnswer(TAnswerList &aAnswerList, int aTimeout) const {
     QByteArray answerData;
 
-    bool ACKreceived = false;
+    bool acKreceived = false;
 
     QElapsedTimer clockTimer;
     clockTimer.start();
@@ -203,10 +204,10 @@ bool Puloon::getAnswer(TAnswerList &aAnswerList, int aTimeout) const {
         }
 
         if (!answerData.isEmpty()) {
-            if (!ACKreceived) {
+            if (!acKreceived) {
                 if (answerData[0] == ASCII::ACK) {
                     answerData.remove(0, 1);
-                    ACKreceived = true;
+                    acKreceived = true;
                 } else if (answerData[0] == ASCII::NAK) {
                     answerData = answerData.left(1);
                     aAnswerList.clear();

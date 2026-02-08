@@ -3,7 +3,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QTextStream>
 
-DealerLocalData::DealerLocalData() {}
+DealerLocalData::DealerLocalData() = default;
 
 //------------------------------------------------------------------------------
 bool DealerLocalData::loadInfo(const QString &aFileName) {
@@ -27,7 +27,7 @@ bool DealerLocalData::loadInfo(const QString &aFileName) {
         }
     }
 
-    if (m_Columns.size() > 0) {
+    if (!m_Columns.empty()) {
         m_FilePath = aFileName;
 
         return true;
@@ -38,7 +38,7 @@ bool DealerLocalData::loadInfo(const QString &aFileName) {
 
 //------------------------------------------------------------------------------
 QString DealerLocalData::getFirstField() const {
-    if (m_Columns.size()) {
+    if (static_cast<int>(!m_Columns.empty()) != 0) {
         return m_Columns.first().first;
     }
 
@@ -81,7 +81,7 @@ bool DealerLocalData::findNumber(const QString &aFirstColumnValue,
                 aParameters.insert(m_Columns[i].first, columns[i]);
             }
 
-            return aParameters.size() > 0;
+            return !aParameters.empty();
         }
     }
 

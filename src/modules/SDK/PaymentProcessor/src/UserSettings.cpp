@@ -16,7 +16,7 @@ UserSettings::UserSettings(TPtree &aProperties)
     : m_Properties(aProperties.get_child(CAdapterNames::UserAdapter, aProperties)) {}
 
 //---------------------------------------------------------------------------
-UserSettings::~UserSettings() {}
+UserSettings::~UserSettings() = default;
 
 //---------------------------------------------------------------------------
 bool UserSettings::isValid() const {

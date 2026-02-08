@@ -261,16 +261,16 @@ protected:
 class IpAddress {
 public:
     IpAddress();
-    IpAddress(const RASIPADDR &aIpAddress);
+    explicit IpAddress(const RASIPADDR &aIpAddress);
 
     operator RASIPADDR *();
     operator const RASIPADDR *() const;
 
-    char byte(size_t size_t) const;
-    void setByte(size_t size_t, char byte);
+    static char byte(size_t index);
+    static void setByte(size_t index, char byte);
 
 private:
-    RASIPADDR m_Address;
+    RASIPADDR m_Address{};
 };
 
 //------------------------------------------------------------------------------
@@ -278,21 +278,21 @@ private:
 class PhonebookEntryName {
 public:
     PhonebookEntryName();
-    PhonebookEntryName(const RASENTRYNAME &aEntry);
+    explicit PhonebookEntryName(const RASENTRYNAME &aEntry);
 
     operator RASENTRYNAME *();
 
     std::wstring name() const;
-    void setName(const std::wstring &aName);
+    static void setName(const std::wstring &aName);
 
     std::wstring phonebookPath() const;
-    void setPhonebookPath(const std::wstring &aPath);
+    static void setPhonebookPath(const std::wstring &aPath);
 
     bool isSystem() const;
     void setIsSystem(bool aIsSystem);
 
 private:
-    RASENTRYNAME m_Entry;
+    RASENTRYNAME m_Entry{};
 };
 
 //------------------------------------------------------------------------------
@@ -316,10 +316,10 @@ public:
     void setCountryCode(size_t aCode);
 
     std::wstring areaCode() const;
-    void setAreaCode(const std::wstring &aCode);
+    static void setAreaCode(const std::wstring &aCode);
 
     std::wstring localPhoneNumber() const;
-    void setLocalPhoneNumber(const std::wstring &aNumber);
+    static void setLocalPhoneNumber(const std::wstring &aNumber);
 
     // PPP/Ip
     IpAddress ip() const;
@@ -349,14 +349,14 @@ public:
 
     // Scripting
     std::wstring script() const;
-    void setScript(const std::wstring &aScript);
+    static void setScript(const std::wstring &aScript);
 
     // Device
-    EDeviceType::Enum deviceType() const;
-    void setDeviceType(EDeviceType::Enum aType);
+    static EDeviceType::Enum deviceType();
+    static void setDeviceType(EDeviceType::Enum aType);
 
     std::wstring deviceName() const;
-    void setDeviceName(const std::wstring &aName);
+    static void setDeviceName(const std::wstring &aName);
 
     // Multilink and BAP
     size_t subEntries() const;
@@ -384,8 +384,8 @@ public:
     EPhonebookEntry::TypeEnum phonebookEntryType() const;
     void setPhonebookEntryType(EPhonebookEntry::TypeEnum aType);
 
-    EEncryptionType::Enum encriptionType() const;
-    void setEncriptionType(EEncryptionType::Enum aType);
+    EEncryptionType::Enum encryptionType() const;
+    void setEncryptionType(EEncryptionType::Enum aType);
 
     size_t custom_AuthKey() const;
     void setCustom_AuthKey(size_t aKey);
@@ -394,7 +394,7 @@ public:
     void setBookEntryGuid(const GUID &aGuid);
 
     std::wstring custom_DialDll() const;
-    void setCustom_DialDll(const std::wstring &aDll);
+    static void setCustom_DialDll(const std::wstring &aDll);
 
     EVpnStrategy::Enum vpnStrategy() const;
     void setVpnStrategy(EVpnStrategy::Enum aStrategy);
@@ -403,16 +403,16 @@ public:
     void setOptions2(EConnectionOption2::OptionSet aOptions);
 
     std::wstring dnsSuffix() const;
-    void setDnsSuffix(const std::wstring &aSuffix);
+    static void setDnsSuffix(const std::wstring &aSuffix);
 
     size_t tcpWindowSize() const;
     void setTcpWindowSize(size_t aSize);
 
     std::wstring prerequisitePhonebook() const;
-    void setPrerequisitePhonebook(const std::wstring &aPhonebook);
+    static void setPrerequisitePhonebook(const std::wstring &aPhonebook);
 
     std::wstring prerequisiteEntry() const;
-    void setPrerequisiteEntry(const std::wstring &aEntry);
+    static void setPrerequisiteEntry(const std::wstring &aEntry);
 
     size_t redialCount() const;
     void setRedialCount(size_t aCount);
@@ -421,7 +421,7 @@ public:
     void setRedialPause(size_t aPause);
 
 private:
-    LPRASENTRY m_Entry;
+    LPRASENTRY m_Entry{};
 };
 
 //------------------------------------------------------------------------------
@@ -429,7 +429,7 @@ private:
 class Connection {
 public:
     Connection();
-    Connection(const RASCONN &aConnection);
+    explicit Connection(const RASCONN &aConnection);
 
     void reset(const RASCONN &aConnection);
     operator RASCONN *();
@@ -438,16 +438,16 @@ public:
     void setHandle(HRASCONN aHandle);
 
     std::wstring entryName() const;
-    void setEntryName(const std::wstring &aName);
+    static void setEntryName(const std::wstring &aName);
 
-    EDeviceType::Enum deviceType() const;
-    void setDeviceType(EDeviceType::Enum aType);
+    static EDeviceType::Enum deviceType();
+    static void setDeviceType(EDeviceType::Enum aType);
 
     std::wstring deviceName() const;
-    void setDeviceName(const std::wstring &aName);
+    static void setDeviceName(const std::wstring &aName);
 
     std::wstring phonebookPath() const;
-    void setPhonebookPath(const std::wstring &aPath);
+    static void setPhonebookPath(const std::wstring &aPath);
 
     size_t subEntryIndex() const;
     void setSubEntryIndex(size_t aIndex);
@@ -456,16 +456,16 @@ public:
     void setEntryGuid(const GUID &aGuid);
 
     bool isSystem() const;
-    void setIsSystem(bool aIsSystem);
+    static void setIsSystem(bool aIsSystem);
 
     bool isGlobalCredsUsed() const;
-    void setIsGlobalCredsUsed(bool aIsGlobalCredsUsed);
+    static void setIsGlobalCredsUsed(bool aIsGlobalCredsUsed);
 
     LUID localSessionId() const;
     void setLocalSessionId(const LUID &aId);
 
 private:
-    RASCONN m_Connection;
+    RASCONN m_Connection{};
 };
 
 //------------------------------------------------------------------------------
@@ -473,18 +473,18 @@ private:
 class Device {
 public:
     Device();
-    Device(const RASDEVINFO &aDevice);
+    explicit Device(const RASDEVINFO &aDevice);
 
     operator RASDEVINFO *();
 
     std::wstring type() const;
-    void setType(const std::wstring &aType);
+    static void setType(const std::wstring &aType);
 
     std::wstring name() const;
-    void setName(const std::wstring &aName);
+    static void setName(const std::wstring &aName);
 
 private:
-    RASDEVINFO m_Device;
+    RASDEVINFO m_Device{};
 };
 
 //------------------------------------------------------------------------------
@@ -497,22 +497,22 @@ public:
     operator RASDIALPARAMS *();
 
     std::wstring entryName() const;
-    void setEntryName(const std::wstring &aName);
+    static void setEntryName(const std::wstring &aName);
 
     std::wstring phoneNumber() const;
-    void setPhoneNumber(const std::wstring &aNumber);
+    static void setPhoneNumber(const std::wstring &aNumber);
 
     std::wstring callbackNumber() const;
-    void setCallbackNumber(const std::wstring &aNumber);
+    static void setCallbackNumber(const std::wstring &aNumber);
 
     std::wstring userName() const;
-    void setUserName(const std::wstring &aName);
+    static void setUserName(const std::wstring &aName);
 
     std::wstring password() const;
-    void setPassword(const std::wstring &aPassword);
+    static void setPassword(const std::wstring &aPassword);
 
     std::wstring domain() const;
-    void setDomain(const std::wstring &aDomain);
+    static void setDomain(const std::wstring &aDomain);
 
     unsigned int subEntry() const;
     void setSubEntry(unsigned int aIndex);
@@ -527,7 +527,7 @@ public:
     void setRemovePassword(bool aRemove);
 
 private:
-    RASDIALPARAMS m_Params;
+    RASDIALPARAMS m_Params{};
     bool m_HasSavedPassword;
     bool m_RemovePassword;
 };
@@ -536,17 +536,17 @@ private:
 /// Перечислитель элементов телефонной книги.
 class PhonebookEntryEnumerator : public RasBase {
 public:
-    PhonebookEntryEnumerator(const std::wstring &aPhonebookPath = L"");
+    explicit PhonebookEntryEnumerator(const std::wstring &aPhonebookPath = L"");
     ~PhonebookEntryEnumerator();
 
-    bool getEntry(PhonebookEntryName &aEntry);
+    static bool getEntry(PhonebookEntryName &aEntry);
     void reset(const std::wstring &aPhonebookPath = L"");
 
 private:
-    DWORD m_EntryCount;
-    size_t m_CurrentIndex;
-    DWORD m_RequestedBufSize;
-    LPRASENTRYNAME m_Entries;
+    DWORD m_EntryCount{};
+    size_t m_CurrentIndex{};
+    DWORD m_RequestedBufSize{};
+    LPRASENTRYNAME m_Entries{};
 };
 
 //------------------------------------------------------------------------------
@@ -556,14 +556,14 @@ public:
     ConnectionEnumerator();
     ~ConnectionEnumerator();
 
-    bool getConnection(Connection &aConnection);
+    static bool getConnection(Connection &aConnection);
     void reset();
 
 private:
-    DWORD m_ConnectionCount;
-    size_t m_CurrentIndex;
-    DWORD m_RequestedBufSize;
-    LPRASCONN m_Connections;
+    DWORD m_ConnectionCount{};
+    size_t m_CurrentIndex{};
+    DWORD m_RequestedBufSize{};
+    LPRASCONN m_Connections{};
 };
 
 //------------------------------------------------------------------------------
@@ -573,14 +573,14 @@ public:
     DeviceEnumerator();
     ~DeviceEnumerator();
 
-    bool getDevice(Device &aDevice);
+    static bool getDevice(Device &aDevice);
     void reset();
 
 private:
-    DWORD m_DeviceCount;
-    size_t m_CurrentIndex;
-    DWORD m_RequestedBufSize;
-    LPRASDEVINFO m_Devices;
+    DWORD m_DeviceCount{};
+    size_t m_CurrentIndex{};
+    DWORD m_RequestedBufSize{};
+    LPRASDEVINFO m_Devices{};
 };
 
 //------------------------------------------------------------------------------

@@ -19,10 +19,7 @@ class JSScenario : public Scenario {
     Q_OBJECT
 
 public:
-    JSScenario(const QString &aName,
-               const QString &aPath,
-               const QString &aBasePath,
-               ILog *aLog = 0);
+    JSScenario(const QString &aName, QString aPath, QString aBasePath, ILog *aLog = 0);
     virtual ~JSScenario();
 
     /// Запуск сценария.

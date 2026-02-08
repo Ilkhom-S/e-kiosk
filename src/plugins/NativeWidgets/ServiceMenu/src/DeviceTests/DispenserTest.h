@@ -25,7 +25,7 @@ class DispenserTest : public SDK::PaymentProcessor::IDeviceTest {
 
 public:
     DispenserTest(SDK::Driver::IDevice *aDevice,
-                  const QString &aConfigurationName,
+                  QString aConfigurationName,
                   SDK::PaymentProcessor::ICore *aCore);
 
     /// Возвращает имена и описания тестов.

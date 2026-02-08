@@ -7,9 +7,11 @@
 
 #include <Common/ILog.h>
 
-AdPluginImpl::AdPluginImpl(SDK::Plugin::IEnvironment *environment, const QString &instancePath)
-    : QObject(nullptr), m_instancePath(instancePath), m_environment(environment), m_kernel(nullptr),
-      m_log(nullptr), m_adService(nullptr), m_adTimer(nullptr) {}
+#include <utility>
+
+AdPluginImpl::AdPluginImpl(SDK::Plugin::IEnvironment *environment, QString instancePath)
+    : QObject(nullptr), m_instancePath(std::move(instancePath)), m_environment(environment),
+      m_kernel(nullptr), m_log(nullptr), m_adService(nullptr), m_adTimer(nullptr) {}
 
 //---------------------------------------------------------------------------
 // Деструктор плагина
@@ -140,7 +142,7 @@ QString AdPluginImpl::getConfigurationName() const {
 // Возвращает текущую конфигурацию
 QVariantMap AdPluginImpl::getConfiguration() const {
     // TODO: Implement configuration retrieval
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------

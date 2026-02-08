@@ -6,7 +6,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QMutexLocker>
 #include <QtCore/QStringList>
-#include <QtXml/QDom_Document>
+#include <QtXml/QDomDocument>
 
 #include <SDK/PaymentProcessor/Payment/Parameters.h>
 #include <SDK/PaymentProcessor/Payment/Step.h>
@@ -174,8 +174,8 @@ QMap<qint64, TPaymentParameters> DatabaseUtils::getPaymentParameters(const QList
             << PPSDK::IPayment::SParameter(query->value(0).toString(),
                                            query->value(1),
                                            false,
-                                           query->value(2).toInt() ? true : false,
-                                           query->value(4).toInt() ? true : false);
+                                           query->value(2).toInt() != 0,
+                                           query->value(4).toInt() != 0);
     }
 
     return result;
@@ -1263,11 +1263,11 @@ bool DatabaseUtils::backupOldPayments() {
         return true;
     }
 
-    QDom_Document xml;
+    QDomDocument xml;
     xml.appendChild(xml.createElement("payments"));
 
     for (query->first(); query->isValid(); query->next()) {
-        QDom_Element element(xml.createElement("payment"));
+        QDomElement element = xml.createElement("payment");
 
         element.setAttribute("id", query->value(0).toString());
         element.setAttribute("create_date", query->value(1).toString());
@@ -1303,7 +1303,7 @@ bool DatabaseUtils::backupOldPayments() {
 
         if (paramsQuery->exec()) {
             for (paramsQuery->first(); paramsQuery->isValid(); paramsQuery->next()) {
-                QDom_Element param = xml.createElement("param");
+                QDomElement param = xml.createElement("param");
 
                 param.setAttribute("name", paramsQuery->value(0).toString());
                 param.setAttribute("value", paramsQuery->value(1).toString());

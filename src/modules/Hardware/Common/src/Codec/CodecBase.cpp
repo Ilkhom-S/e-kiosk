@@ -31,8 +31,8 @@ int CodecBase::mibEnum() const {
 QString CodecBase::convertToUnicode(const char *aBuffer, int aLength) const {
     QReadLocker lock(&m_DataGuard);
 
-    QByteArray buffer = QByteArray::from_RawData(aBuffer, aLength);
-    CharacterData &characterData = const_cast<CharacterData &>(m_Data);
+    QByteArray buffer = QByteArray::fromRawData(aBuffer, aLength);
+    auto &characterData = const_cast<CharacterData &>(m_Data);
     QByteArray defaultBuffer = characterData.getDefault().character.toLatin1();
     bool dataEmpty = characterData.data().isEmpty();
 
@@ -50,15 +50,15 @@ QString CodecBase::convertToUnicode(const char *aBuffer, int aLength) const {
 
     QString result;
 
-    for (int i = 0; i < buffer.size(); ++i) {
-        if (!buffer[i] && m_MinValueActive) {
+    for (char i : buffer) {
+        if ((i == 0) && (m_MinValueActive != 0u)) {
             break;
         }
 
-        if (uchar(buffer[i]) < uchar(m_MinValueActive)) {
-            result += buffer[i];
+        if (uchar(i) < uchar(m_MinValueActive)) {
+            result += i;
         } else {
-            result += m_Data[buffer[i]].character;
+            result += m_Data[i].character;
         }
     }
 
@@ -70,7 +70,7 @@ QByteArray CodecBase::convertFrom_Unicode(const QChar *aBuffer, int aLength) con
     QReadLocker lock(&m_DataGuard);
 
     QByteArray result;
-    CharacterData &characterData = const_cast<CharacterData &>(m_Data);
+    auto &characterData = const_cast<CharacterData &>(m_Data);
     QString data(aBuffer, aLength);
 
     for (int i = 0; i < aLength; ++i) {

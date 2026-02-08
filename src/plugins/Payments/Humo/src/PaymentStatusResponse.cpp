@@ -9,9 +9,7 @@ PaymentStatusResponse::PaymentStatusResponse(const Request &aRequest,
 
 //---------------------------------------------------------------------------
 bool PaymentStatusResponse::isOk() {
-    return ((getError() == EServerError::Ok) && (getResult() == EServerResult::StatusCheckOk))
-               ? true
-               : false;
+    return (getError() == EServerError::Ok) && (getResult() == EServerResult::StatusCheckOk);
 }
 
 //---------------------------------------------------------------------------

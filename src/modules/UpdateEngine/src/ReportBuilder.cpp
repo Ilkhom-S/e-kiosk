@@ -1,21 +1,22 @@
 /* @file Генератор отчётов обновления. */
 
-#include "ReportBuilder.h"
-
 #include <QtCore/QDateTime>
 #include <QtCore/QFileInfo>
 
 #include <Common/BasicApplication.h>
 
+#include <UpdateEngine/ReportBuilder.h>
+#include <utility>
+
 ReportBuilder::ReportBuilder(QString aWorkDirectory /*= ""*/)
-    : ILogable(CReportBuilder::LogName), m_WorkDirectory(aWorkDirectory) {}
+    : ILogable(CReportBuilder::LogName), m_WorkDirectory(std::move(aWorkDirectory)) {}
 
 //------------------------------------------------------------------------
 void ReportBuilder::open(const QString &aCommand, const QString &aUrl, const QString &aMd5) {
     QString fileName = (m_WorkDirectory.isEmpty() ? QDir::currentPath() : m_WorkDirectory) +
                        "/update/" + QString("update_%1.rpt").arg(aCommand);
 
-    bool writeCreateDate = QFile::exists(fileName) ? false : true;
+    bool writeCreateDate = !QFile::exists(fileName);
 
     QFileInfo fileInfo(fileName);
 

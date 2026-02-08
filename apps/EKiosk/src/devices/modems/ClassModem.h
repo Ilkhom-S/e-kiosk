@@ -25,12 +25,12 @@ public:
     QString nowProviderSim;
     QString nowNumberSim;
     QString nowBalanceSim;
-    bool nowSim_Present;
+    bool nowSim_Present{};
     QString nowModem_Quality;
 
     QString ussdRequestBalanseSim;
     QString ussdRequestNumberSim;
-    int indexBalanceParse;
+    int indexBalanceParse{};
 
     QString SMSTEXT_TO;
     void setBalanceRequest(QString text1, QString text2, int position);

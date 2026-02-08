@@ -38,16 +38,16 @@ protected:
     virtual bool printReceipt(const Tags::TLexemeReceipt &aLexemeReceipt);
 
     /// После подачи команды, связанной с печатью ждем окончания печати.
-    bool waitForPrintingEnd();
+    static bool waitForPrintingEnd();
 
     /// Сброс.
-    bool reset();
+    static bool reset();
 
     /// Установить параметры мем-свича.
-    bool setMemorySwitch(int aSwitch, ushort aValue);
+    static bool setMemorySwitch(int aSwitch, ushort aValue);
 
     /// Получить параметры мем-свича.
-    bool getMemorySwitch(int aSwitch, ushort &aValue);
+    static bool getMemorySwitch(int aSwitch, ushort &aValue);
 
     /// Прочитать мем-свичей.
     void getMemorySwitches();
@@ -59,10 +59,10 @@ protected:
     bool readMSWAnswer(QByteArray &aAnswer);
 
     /// Получить ответ на ASB статус.
-    bool readASBAnswer(QByteArray &aAnswer, int &aLength);
+    static bool readASBAnswer(QByteArray &aAnswer, int &aLength);
 
     /// Получить ответ на запрос идентификации.
-    bool readIdentificationAnswer(QByteArray &aAnswer);
+    static bool readIdentificationAnswer(QByteArray &aAnswer);
 
     /// Напечатать картинку.
     virtual bool printImage(const QImage &aImage, const Tags::TTypes &aTags);
@@ -74,11 +74,11 @@ protected:
     bool isPaperInPresenter();
 
     /// Наложить маску на 1 байт и сдвинуть.
-    inline int shiftData(
-        const QByteArray aAnswer, int aByteNumber, int aSource, int aShift, int aDigits) const;
+    static inline int
+    shiftData(const QByteArray aAnswer, int aByteNumber, int aSource, int aShift, int aDigits);
 
     /// Мем-свичи.
-    CSTAR::TMemorySwitches m_MemorySwitches;
+    CSTAR::TMemorySwitches m_MemorySwitches{};
 
     /// Экземпляр утилитного класса для работы с мем-свичами.
     CSTAR::MemorySwitches::Utils m_MemorySwitchUtils;

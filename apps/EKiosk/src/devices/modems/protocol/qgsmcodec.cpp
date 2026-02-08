@@ -33,7 +33,7 @@ static const unsigned short latin1GSMTable[256] = {
 
 // Same as above, but with no loss of information due to two
 // Latin1 characters mapping to the same thing.
-static const unsigned short latin1GSMNoLossTable[256] = {
+static const unsigned short Latin1GsmNoLossTable[256] = {
     //     0      1     2     3     4     5     6     7
     GUC,    GUC,  GUC,  GUC,    GUC,    GUC,    GUC,    GUC, // 0x07
     GUC,    GUC,  0x0a, GUC,    GUC,    0x0d,   GUC,    GUC, // 0x0f
@@ -138,7 +138,7 @@ static const unsigned short extensionLatin1Table[256] = {
 
         \code
         QString input = "...";
-        QByteArray output = QAtUtils::codec("gsm")->from_Unicode(input);
+        QByteArray output = QAtUtils::codec("gsm")->fromUnicode(input);
         \endcode
 
         This codec implementation conforms to 3GPP TS 03.38 and 3GPP TS 07.05,
@@ -160,34 +160,32 @@ static const unsigned short extensionLatin1Table[256] = {
 
         \sa QAtUtils::codec()
 */
-QGsm_Codec::QGsm_Codec(bool noLoss) {
-    this->noLoss = noLoss;
-}
+QGsm_Codec::QGsm_Codec(bool noLoss) : noLoss(noLoss) {}
 
 /*!
         Destruct a GSM text codec.  This should not be used directly by
         application programs.
 */
-QGsm_Codec::~QGsm_Codec() {}
+QGsm_Codec::~QGsm_Codec() = default;
 
 /*!
         Returns the name of this codec.
 */
 QByteArray QGsm_Codec::name() const {
-    if (noLoss)
-        return QByteArray("gsm-noloss");
-    else
-        return QByteArray("gsm");
+    if (noLoss) {
+        return {"gsm-noloss"};
+    }
+    return QByteArray("gsm");
 }
 
 /*!
         Returns the MIB value associated with this codec.
 */
 int QGsm_Codec::mibEnum() const {
-    if (noLoss)
+    if (noLoss) {
         return 61237;
-    else
-        return 61238;
+    }
+    return 61238;
 }
 
 /*!
@@ -202,9 +200,10 @@ int QGsm_Codec::mibEnum() const {
 */
 char QGsm_Codec::singleFrom_Unicode(QChar c) {
     unsigned int ch = c.unicode();
-    if (ch < 256)
+    if (ch < 256) {
         return (char)(latin1GSMTable[ch]);
-    else if (ch >= 0x0390 && ch <= 0x03AF)
+    }
+    if (ch >= 0x0390 && ch <= 0x03AF)
         return (char)(greekGSMTable[ch - 0x0390]);
     else
         return (char)GUC;
@@ -232,9 +231,10 @@ QChar QGsm_Codec::singleToUnicode(char ch) {
 */
 unsigned short QGsm_Codec::twoByteFrom_Unicode(QChar ch) {
     unsigned short c = ch.unicode();
-    if (c == 0x20AC) // Euro
+    if (c == 0x20AC) { // Euro
         return 0x1b65;
-    else if (c < 256)
+    }
+    if (c < 256)
         return latin1GSMTable[c];
     else if (c >= 0x0390 && c <= 0x03AF)
         return (char)(greekGSMTable[c - 0x0390]);
@@ -249,9 +249,10 @@ unsigned short QGsm_Codec::twoByteFrom_Unicode(QChar ch) {
         \sa twoByteFrom_Unicode()
 */
 QChar QGsm_Codec::twoByteToUnicode(unsigned short ch) {
-    if (ch < 256)
+    if (ch < 256) {
         return QChar(gsm_Latin1Table[ch]);
-    else if ((ch & 0xFF00) != 0x1B00)
+    }
+    if ((ch & 0xFF00) != 0x1B00)
         return QChar(0);
     else {
         unsigned short mapping = extensionLatin1Table[ch & 0xFF];
@@ -271,15 +272,16 @@ QChar QGsm_Codec::twoByteToUnicode(unsigned short ch) {
 */
 QString QGsm_Codec::convertToUnicode(const char *in, int length, ConverterState *state) const {
     QString str;
-    unsigned short ch;
+    unsigned short ch = 0;
     while (length > 0) {
         if (*in == 0x1B) {
             // Two-byte GSM sequence.
             ++in;
             --length;
             if (length <= 0) {
-                if (state)
+                if (state) {
                     (state->invalidChars)++;
+                }
                 break;
             }
             ch = extensionLatin1Table[((int)(*in)) & 0xFF];
@@ -287,15 +289,17 @@ QString QGsm_Codec::convertToUnicode(const char *in, int length, ConverterState 
                 str += QChar((unsigned int)ch);
             } else {
                 str += QChar(gsm_Latin1Table[((int)(*in)) & 0xFF]);
-                if (state)
+                if (state) {
                     (state->invalidChars)++;
+                }
             }
         } else {
             ch = gsm_Latin1Table[((int)(*in)) & 0xFF];
-            if (ch != UUC)
+            if (ch != UUC) {
                 str += QChar((unsigned int)ch);
-            else if (state)
+            } else if (state) {
                 (state->invalidChars)++;
+            }
         }
         ++in;
         --length;
@@ -311,9 +315,9 @@ QString QGsm_Codec::convertToUnicode(const char *in, int length, ConverterState 
         \sa convertToUnicode()
 */
 QByteArray
-QGsm_Codec::convertFrom_Unicode(const QChar *in, int length, ConverterState *state) const {
+QGsm_Codec::convertFromUnicode(const QChar *in, int length, ConverterState *state) const {
     QByteArray result;
-    unsigned int unicode;
+    unsigned int unicode = 0;
     if (noLoss) {
         while (length > 0) {
             unicode = (*in).unicode();
@@ -321,10 +325,11 @@ QGsm_Codec::convertFrom_Unicode(const QChar *in, int length, ConverterState *sta
                 result += (char)0x1B;
                 result += (char)0x65;
             } else if (unicode < 256) {
-                unsigned short code = latin1GSMNoLossTable[unicode];
+                unsigned short code = Latin1GsmNoLossTable[unicode];
                 if (code < 256) {
-                    if (((char)code == GUC) && state)
+                    if (((char)code == GUC) && state) {
                         (state->invalidChars)++;
+                    }
                     result += (char)code;
                 } else {
                     result += (char)(code >> 8);
@@ -333,12 +338,14 @@ QGsm_Codec::convertFrom_Unicode(const QChar *in, int length, ConverterState *sta
             } else if (unicode >= 0x0390 && unicode <= 0x03AF) {
                 char c = (char)(greekGSMTable[unicode - 0x0390]);
                 result += c;
-                if (c == (char)GUC && unicode != 0x0394 && state)
+                if (c == (char)GUC && unicode != 0x0394 && state) {
                     (state->invalidChars)++;
+                }
             } else {
                 result += (char)GUC;
-                if (state)
+                if (state) {
                     (state->invalidChars)++;
+                }
             }
             ++in;
             --length;
@@ -360,12 +367,14 @@ QGsm_Codec::convertFrom_Unicode(const QChar *in, int length, ConverterState *sta
             } else if (unicode >= 0x0390 && unicode <= 0x03AF) {
                 char c = (char)(greekGSMTable[unicode - 0x0390]);
                 result += c;
-                if (c == (char)GUC && unicode != 0x0394 && state)
+                if (c == (char)GUC && unicode != 0x0394 && state) {
                     (state->invalidChars)++;
+                }
             } else {
                 result += (char)GUC;
-                if (state)
+                if (state) {
                     (state->invalidChars)++;
+                }
             }
             ++in;
             --length;

@@ -8,15 +8,18 @@
 #include <QtGui/QTextLayout>
 #include <QtQuick/QQuickImageProvider>
 
+#include <utility>
+
 #include "Log.h"
 #include "Skin.h"
 
-SkinProvider::SkinProvider(const QString &aInterfacePath,
+SkinProvider::SkinProvider(QString aInterfacePath,
                            const QString &aContentPath,
                            const QString &aUserPath,
                            const Skin *aSkin)
     : QQuickImageProvider(QQmlImageProviderBase::Image), m_LogoPath(aContentPath + "/logo"),
-      m_UserLogoPath(aUserPath + "/logo"), m_InterfacePath(aInterfacePath), m_Skin(aSkin) {}
+      m_UserLogoPath(aUserPath + "/logo"), m_InterfacePath(std::move(aInterfacePath)),
+      m_Skin(aSkin) {}
 
 //------------------------------------------------------------------------------
 QImage SkinProvider::requestImage(const QString &aId, QSize *aSize, const QSize &aRequestedSize) {
@@ -38,10 +41,10 @@ QImage SkinProvider::requestImage(const QString &aId, QSize *aSize, const QSize 
             *aSize = image.size();
 
             return image;
-        } else {
-            Log(Log::Error)
-                << QString("SkinProvider: failed to load texture %1 from '%2'.").arg(aId).arg(path);
         }
+        Log(Log::Error)
+            << QString("SkinProvider: failed to load texture %1 from '%2'.").arg(aId).arg(path);
+
     }
     // Логотипы предварительно обработаем перед выдачей
     else {
@@ -140,7 +143,7 @@ QImage SkinProvider::requestImage(const QString &aId, QSize *aSize, const QSize 
         return image;
     }
 
-    return QImage();
+    return {};
 }
 
 //------------------------------------------------------------------------------

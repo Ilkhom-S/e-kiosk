@@ -54,7 +54,7 @@ template <class T> bool PortPrinterBase<T>::print(const QStringList &aReceipt) {
 //--------------------------------------------------------------------------------
 template <class T> bool PortPrinterBase<T>::getAnswer(QByteArray &aAnswer, int aTimeout) const {
     QVariantMap configuration;
-    configuration.insert(CHardware::Port::IOLogging, QVariant().from_Value(ELoggingType::Write));
+    configuration.insert(CHardware::Port::IOLogging, QVariant().fromValue(ELoggingType::Write));
     this->m_IOPort->setDeviceConfiguration(configuration);
 
     if (!this->m_IOPort->read(aAnswer, aTimeout)) {
@@ -120,7 +120,7 @@ template <class T> bool PortPrinterBase<T>::printOut(const SPrintingOutData &aPr
 
     QVariantMap configuration;
     configuration.insert(CHardware::Port::IOLogging,
-                         QVariant().from_Value(ELoggingType::ReadWrite));
+                         QVariant().fromValue(ELoggingType::ReadWrite));
     this->m_IOPort->setDeviceConfiguration(configuration);
     int feeding = this->getConfigParameter(CHardware::Printer::FeedingAmount).toInt();
 
@@ -130,7 +130,7 @@ template <class T> bool PortPrinterBase<T>::printOut(const SPrintingOutData &aPr
 
     this->setConfigParameter(CHardware::Printer::FeedingAmount, feeding);
     configuration.insert(CHardware::Port::IOLogging,
-                         QVariant().from_Value(aPrintingOutData.IOMessageLogging));
+                         QVariant().fromValue(aPrintingOutData.IOMessageLogging));
     this->m_IOPort->setDeviceConfiguration(configuration);
 
     return result;

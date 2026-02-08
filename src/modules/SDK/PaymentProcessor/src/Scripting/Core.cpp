@@ -17,7 +17,7 @@ Core::Core(ICore *aCore)
       m_FundsService(aCore), m_PrinterService(aCore), m_NetworkService(aCore), m_GUIService(aCore),
       m_AdService(aCore), m_DeviceService(aCore), m_Settings(aCore), m_HID(aCore) {
     ISettingsService *settingsService = aCore->getSettingsService();
-    auto terminalSettings = static_cast<SDK::PaymentProcessor::TerminalSettings *>(
+    auto *terminalSettings = dynamic_cast<SDK::PaymentProcessor::TerminalSettings *>(
         settingsService->getAdapter(CAdapterNames::TerminalAdapter));
 
     m_PaymentService.setForcePayOffline(
@@ -46,9 +46,8 @@ ICore *Core::getCore() const {
 QObject *Core::getService(const QString &aName) {
     if (m_Services.contains(aName)) {
         return m_Services[aName];
-    } else {
-        return 0;
     }
+    return 0;
 }
 
 //------------------------------------------------------------------------------

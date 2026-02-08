@@ -14,6 +14,7 @@
 #endif
 
 // Standard C/C++
+#include <algorithm>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -39,7 +40,7 @@ const unsigned MaxReasonableCpuSpeedMHz = 10000; // 10 GHz maximum
  *
  * @return CPU speed in MHz, or default value if detection fails
  */
-unsigned CPUSpeed() {
+unsigned cpuSpeed() {
     static unsigned speed = 0;
 
     if (speed == 0) {
@@ -78,28 +79,26 @@ unsigned CPUSpeed() {
             // Calculate CPU utilization as a percentage
             // cpuinfo.cpu_ticks[CPU_STATE_IDLE] gives idle time
             // Total ticks = user + system + idle + nice
-            unsigned long long total_ticks =
+            unsigned long long totalTicks =
                 cpuinfo.cpu_ticks[CPU_STATE_USER] + cpuinfo.cpu_ticks[CPU_STATE_SYSTEM] +
                 cpuinfo.cpu_ticks[CPU_STATE_IDLE] + cpuinfo.cpu_ticks[CPU_STATE_NICE];
 
-            if (total_ticks > 0) {
+            if (totalTicks > 0) {
                 // CPU utilization = (total - idle) / total * 100
                 // But we want to return it as MHz equivalent for compatibility
                 // Higher utilization = higher "speed" value
-                unsigned utilization_percent =
-                    ((total_ticks - cpuinfo.cpu_ticks[CPU_STATE_IDLE]) * 100) / total_ticks;
+                unsigned utilizationPercent =
+                    ((totalTicks - cpuinfo.cpu_ticks[CPU_STATE_IDLE]) * 100) / totalTicks;
 
                 // Convert utilization percentage to MHz equivalent
                 // 0% utilization = 500 MHz (very low)
                 // 100% utilization = 4000 MHz (very high)
                 speed =
-                    500 + (utilization_percent * 35); // 500 + (percent * 35) gives 500-4000 range
+                    500 + (utilizationPercent * 35); // 500 + (percent * 35) gives 500-4000 range
 
                 // Ensure minimum reasonable speed for modern systems
                 // Even at low utilization, modern CPUs should report reasonable speeds
-                if (speed < 1500) {
-                    speed = 1500; // Minimum 1500 MHz for modern systems
-                }
+                speed = std::max<unsigned int>(speed, 1500);
             } else {
                 speed = DefaultCpuSpeedMHz;
             }
@@ -108,7 +107,7 @@ unsigned CPUSpeed() {
             mach_timebase_info_data_t timebase;
             mach_timebase_info(&timebase);
 
-            uint64_t start_time = mach_absolute_time();
+            uint64_t startTime = mach_absolute_time();
             volatile uint64_t dummy = 0;
 
             // Perform some CPU-intensive work
@@ -116,15 +115,15 @@ unsigned CPUSpeed() {
                 dummy += i * i;
             }
 
-            uint64_t end_time = mach_absolute_time();
-            uint64_t elapsed_ns = (end_time - start_time) * timebase.numer / timebase.denom;
+            uint64_t endTime = mach_absolute_time();
+            uint64_t elapsedNs = (endTime - startTime) * timebase.numer / timebase.denom;
 
             // Estimate based on execution time
-            if (elapsed_ns < 500000) { // Very fast
+            if (elapsedNs < 500000) { // Very fast
                 speed = 4000;
-            } else if (elapsed_ns < 1000000) {
+            } else if (elapsedNs < 1000000) {
                 speed = 3500;
-            } else if (elapsed_ns < 2000000) {
+            } else if (elapsedNs < 2000000) {
                 speed = 3000;
             } else {
                 speed = 2500;

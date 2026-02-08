@@ -4,7 +4,7 @@
 #include <QtCore/QFuture>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
-#include <QtCore/QRandom_Generator>
+#include <QtCore/QRandomGenerator>
 #include <QtCore/QUrl>
 
 #include <SDK/PaymentProcessor/Core/ICore.h>
@@ -150,7 +150,7 @@ bool NetworkService::post(const QString &aUrl, const QString &aData) {
 //------------------------------------------------------------------------------
 void NetworkService::taskComplete() {
     if (m_CurrentTask && (m_CurrentTask->getError() == NetworkTask::NoError)) {
-        emit complete(false, QString::from_Utf8(m_CurrentTask->getDataStream()->takeAll()));
+        emit complete(false, QString::fromUtf8(m_CurrentTask->getDataStream()->takeAll()));
 
         m_CurrentTask->deleteLater();
     } else {
@@ -284,7 +284,7 @@ NetworkService::postRequest(const QString &aUrl, QVariantMap &aRequestParameters
     aRequestParameters.insert(
         CRequest::SESSION,
         QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz") +
-            QString("%1").arg(QRandom_Generator::global()->bounded(1000), 3, 10, QChar('0')));
+            QString("%1").arg(QRandomGenerator::global()->bounded(1000), 3, 10, QChar('0')));
 
     Request request(aRequestParameters);
 

@@ -20,10 +20,12 @@ bool AV268_PRINTER::openPort() {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
-            if (!serialPort->setDataBits(QSerialPort::Data8))
+            if (!serialPort->setDataBits(QSerialPort::Data8)) {
                 return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud115200))
+            }
+            if (!serialPort->setBaudRate(QSerialPort::Baud115200)) {
                 return false;
+            }
 
             is_open = true;
         } else {
@@ -45,8 +47,9 @@ bool AV268_PRINTER::isItYou() {
 
 bool AV268_PRINTER::isEnabled(int status) {
     //        int status = 0;
-    if (!getStatus(status))
+    if (!getStatus(status)) {
         return false;
+    }
     return (status != PrinterState::PrinterNotAvailable);
 }
 
@@ -55,12 +58,12 @@ bool AV268_PRINTER::getStatus(int &aStatus) {
     // засылаем в порт команду самоидентификации
     QByteArray cmd;
     QByteArray answer;
-    bool resp_data = false;
+    bool respData = false;
 
     cmd.push_back(CMDAV268::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDAV268::PrinterStatusCommandSecondByte);
 
-    if (!this->sendCommand(cmd, true, 200, resp_data, answer, 0)) {
+    if (!this->sendCommand(cmd, true, 200, respData, answer, 0)) {
         // if(Debugger) qDebug() << "AV268::getStatus(): error in
         // sendPacketInPort()";
         return false;
@@ -75,12 +78,13 @@ bool AV268_PRINTER::getStatus(int &aStatus) {
     uchar status = 0;
     // В некоторых случаях присылается больше 1 байта
     // тогда наш байт - второй
-    if (answer.size() > 1)
+    if (answer.size() > 1) {
         status = answer[1];
-    else
+    } else {
         status = answer[0];
+    }
     // Проверим, что это наш статус
-    if ((status & 0x10) || (status & 0x80)) {
+    if (((status & 0x10) != 0) || ((status & 0x80) != 0)) {
         // Не наш принтер
         // if(Debugger) qDebug() << QString("AV268::getStatus(): wrong byte returned:
         // %1").arg(status);
@@ -129,10 +133,10 @@ bool AV268_PRINTER::initialize() {
     QByteArray cmd;
     cmd.push_back(CMDAV268::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDAV268::PrinterInitCommandSecondByte);
-    bool resp_data = false;
+    bool respData = false;
     QByteArray response;
 
-    bool res = this->sendCommand(cmd, true, 200, resp_data, response, 290);
+    bool res = this->sendCommand(cmd, true, 200, respData, response, 290);
 
     return res;
 }
@@ -143,9 +147,9 @@ bool AV268_PRINTER::cut() {
     cmd.push_back(CMDAV268::PrinterStatusCommandFirstByte);
     cmd.push_back(CMDAV268::PrinterCutCommandSecondByte);
 
-    bool resp_data = false;
+    bool respData = false;
     QByteArray response;
-    bool res = this->sendCommand(cmd, true, 200, resp_data, response, 50);
+    bool res = this->sendCommand(cmd, true, 200, respData, response, 50);
 
     return res;
 }
@@ -240,10 +244,10 @@ void AV268_PRINTER::getSpecialCharacters(QByteArray &printText) {
                       probel);
 
     // Добавляем звезды
-    int col_z = (checkWidth - 11 - leftMargin) / 2;
+    int colZ = (checkWidth - 11 - leftMargin) / 2;
     QByteArray star;
 
-    for (int j = 1; j <= col_z; j++) {
+    for (int j = 1; j <= colZ; j++) {
         star.append("*");
     }
 

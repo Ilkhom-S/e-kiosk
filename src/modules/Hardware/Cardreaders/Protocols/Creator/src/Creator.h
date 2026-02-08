@@ -26,13 +26,13 @@ private:
 
     /// Пересчитать базовый индекс пакета в прочитанных из USB порта данных и обрезать USB данные
     /// справа в пределах прочитанного пакета.
-    bool checkUSBData(QByteArray &aData, int &aBase) const;
+    static bool checkUSBData(QByteArray &aData, int &aBase);
 
     /// Обрезать прочитанные данные, оставив только данные протокола.
-    void trim_USBData(QByteArray &aData);
+    static void trim_USBData(QByteArray &aData);
 
     /// Подсчет контрольной суммы пакета данных.
-    char calcCRC(const QByteArray &aData);
+    static char calcCRC(const QByteArray &aData);
 
     /// Упаковать команду.
     void packData(const QByteArray &aCommandPacket, QByteArray &aPacket);

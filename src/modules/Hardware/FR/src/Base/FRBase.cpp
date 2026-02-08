@@ -181,7 +181,7 @@ template <class T> void FRBase<T>::finaliseOnlineInitialization() {
         agentFlagsData.insert(EAgentFlags::Enum(it.key()), it.value());
     }
 
-    setConfigParameter(CHardwareSDK::FR::AgentFlagsData, QVariant().from_Value(agentFlagsData));
+    setConfigParameter(CHardwareSDK::FR::AgentFlagsData, QVariant().fromValue(agentFlagsData));
 
     if (!m_AgentFlags.isEmpty()) {
         agentFlagsData.clear();
@@ -193,7 +193,7 @@ template <class T> void FRBase<T>::finaliseOnlineInitialization() {
         setDeviceParameter(CDeviceData::FR::AgentFlags,
                            QStringList(agentFlagsData.values()).join(", "));
         setConfigParameter(CHardwareSDK::FR::AgentFlags,
-                           QVariant().from_Value(agentFlagsData.keys()));
+                           QVariant().fromValue(agentFlagsData.keys()));
     }
 
     CFR::FiscalFields::TFields operationModeFields = CFR::OperationModeData.data().values();
@@ -249,7 +249,7 @@ template <class T> void FRBase<T>::finaliseOnlineInitialization() {
     setDeviceParameter(CDeviceData::FR::FFDFS, CFR::FFD[m_FFDFS].description);
 
     setConfigParameter(CHardwareSDK::FR::FSSerialNumber, m_FSSerialNumber);
-    setConfigParameter(CHardwareSDK::FR::TaxSystems, QVariant().from_Value(taxSystem_Data));
+    setConfigParameter(CHardwareSDK::FR::TaxSystems, QVariant().fromValue(taxSystem_Data));
 
     if (!containsConfigParameter(CHardwareSDK::FR::FiscalFieldData)) {
         QList<CFR::FiscalFields::SData> fiscalFieldValues = m_FFData.data().values();
@@ -262,7 +262,7 @@ template <class T> void FRBase<T>::finaliseOnlineInitialization() {
         }
 
         setConfigParameter(CHardwareSDK::FR::FiscalFieldData,
-                           QVariant::from_Value(fiscalFieldData));
+                           QVariant::fromValue(fiscalFieldData));
 
         m_FFEngine.setConfigParameter(CFiscalSDK::SerialFSNumber,
                                       getDeviceParameter(CDeviceData::FS::SerialNumber));
@@ -1527,7 +1527,7 @@ template <class T> void FRBase<T>::addFiscalFieldsOnPayment(const SPaymentData &
     addConfigFFData(CFiscalSDK::TransferOperatorName,
                     aPaymentData.fiscalParameters.value(CPrintConstants::BankName));
 
-    QString agentOperation = QString::from_Utf8(aPaymentData.back() ? CFR::AgentOperation::Payout
+    QString agentOperation = QString::fromUtf8(aPaymentData.back() ? CFR::AgentOperation::Payout
                                                                     : CFR::AgentOperation::Payment);
     m_FFEngine.setConfigParameter(CFiscalSDK::AgentOperation, agentOperation);
 

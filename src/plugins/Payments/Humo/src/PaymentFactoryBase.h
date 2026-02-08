@@ -19,25 +19,25 @@ class PaymentFactoryBase : public QObject,
     Q_OBJECT
 
 public:
-    PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    PaymentFactoryBase(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath);
 
 #pragma region SDK::Plugin::IPlugin interface
 
     /// Возвращает параметры плагина.
-    virtual QVariantMap getConfiguration() const;
+    QVariantMap getConfiguration() const override;
 
     /// Настраивает плагин.
-    virtual void setConfiguration(const QVariantMap &aParameters);
+    virtual void setConfiguration(const QVariantMap &aParameters) override;
 
     /// Возвращает имя файла конфигурации без расширения (ключ + идентификатор).
-    virtual QString getConfigurationName() const;
+    virtual QString getConfigurationName() const override;
 
     /// Сохраняет конфигурацию плагина в постоянное хранилище (.ini файл или хранилище прикладной
     /// программы).
-    virtual bool saveConfiguration();
+    virtual bool saveConfiguration() override;
 
     /// Проверяет успешно ли инициализировался плагин при создании.
-    virtual bool isReady() const;
+    virtual bool isReady() const override;
 
 #pragma endregion
 
@@ -51,7 +51,7 @@ public:
     /// Установка метода-сериализатора для сохранения платежей.
     virtual void setSerializer(TSerializer aSerializer);
 
-    /// Конвертация переданного платежа к типу aTargetType, поддерживаему этой фабрикой. В случае
+    /// Конвертация переданного платежа к типу aTargetType, поддерживаемую этой фабрикой. В случае
     /// ошибка возвращает false.
     virtual bool convertPayment(const QString &aTargetType,
                                 SDK::PaymentProcessor::IPayment *aPayment);
@@ -63,7 +63,7 @@ public:
 #pragma endregion
 
     /// Возвращает лог.
-    virtual ILog *getLog(const char *aLogName = nullptr) const;
+    virtual ILog *getLog(const char *aLogName = nullptr) const override;
 
     /// Возвращает ядро модуля проведения платежей.
     SDK::PaymentProcessor::ICore *getCore() const;

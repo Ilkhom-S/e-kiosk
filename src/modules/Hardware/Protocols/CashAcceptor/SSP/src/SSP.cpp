@@ -20,21 +20,21 @@ void SSPProtocol::setAddress(char aAddress) {
 
 //--------------------------------------------------------------------------------
 ushort SSPProtocol::calcCRC(const QByteArray &aData) {
-    ushort CRC = 0xFFFF;
+    ushort crc = 0xFFFF;
 
-    for (int i = 0; i < aData.size(); ++i) {
-        CRC ^= (aData[i] << 8);
+    for (char i : aData) {
+        crc ^= (i << 8);
 
         for (int j = 0; j < 8; ++j) {
-            if (CRC & 0x8000) {
-                CRC = (CRC << 1) ^ CSSP::Polynominal;
+            if ((crc & 0x8000) != 0) {
+                crc = (crc << 1) ^ CSSP::Polynominal;
             } else {
-                CRC <<= 1;
+                crc <<= 1;
             }
         }
     }
 
-    return CRC;
+    return crc;
 }
 
 //--------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ TResult SSPProtocol::check(const QByteArray &aAnswer) {
     }
 
     // флаг последовательности
-    bool sequenceFlag = aAnswer[1] & CSSP::SequenceFlag;
+    bool sequenceFlag = (aAnswer[1] & CSSP::SequenceFlag) != 0;
 
     if (sequenceFlag != m_SequenceFlag) {
         toLog(LogLevel::Error,
@@ -93,12 +93,12 @@ TResult SSPProtocol::check(const QByteArray &aAnswer) {
 
     // CRC
     ushort answerCRC = calcCRC(aAnswer.mid(1, aAnswer.size() - 3));
-    ushort CRC = qToBigEndian(aAnswer.right(2).toHex().toUShort(0, 16));
+    ushort crc = qToBigEndian(aAnswer.right(2).toHex().toUShort(nullptr, 16));
 
-    if (CRC != answerCRC) {
+    if (crc != answerCRC) {
         toLog(
             LogLevel::Error,
-            QString("SSP: Invalid CRC = %1, need %2").arg(toHexLog(CRC)).arg(toHexLog(answerCRC)));
+            QString("SSP: Invalid CRC = %1, need %2").arg(toHexLog(crc)).arg(toHexLog(answerCRC)));
         return CommandResult::CRC;
     }
 
@@ -117,9 +117,9 @@ TResult SSPProtocol::processCommand(const QByteArray &aCommandData,
     request.append(uchar(aCommandData.size()));
     request.append(aCommandData);
 
-    ushort CRC = calcCRC(request);
-    request.append(uchar(CRC));
-    request.append(uchar(CRC >> 8));
+    ushort crc = calcCRC(request);
+    request.append(uchar(crc));
+    request.append(uchar(crc >> 8));
 
     request.replace(CSSP::Prefix, CSSP::MaskedPrefix);
     request.prepend(CSSP::Prefix);
@@ -149,7 +149,8 @@ TResult SSPProtocol::processCommand(const QByteArray &aCommandData,
             aAnswerData = answer.mid(3, answer.size() - 5);
 
             return CommandResult::OK;
-        } else if (result == CommandResult::Protocol) {
+        }
+        if (result == CommandResult::Protocol) {
             break;
         }
     } while (checkingCounter++ <= CSSP::MaxRepeatPacket);
@@ -179,7 +180,8 @@ bool SSPProtocol::getAnswer(QByteArray &aAnswer, int aTimeout) {
         if (aAnswer.size() > 2) {
             length = aAnswer[2];
         }
-    } while ((clockTimer.elapsed() < aTimeout) && ((aAnswer.size() < (length + 5)) || !length));
+    } while ((clockTimer.elapsed() < aTimeout) &&
+             ((aAnswer.size() < (length + 5)) || (length == 0u)));
 
     return true;
 }

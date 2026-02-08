@@ -19,7 +19,7 @@ using namespace DispenserStatusCode::Error;
 const TStatusCodes AllOpened = TStatusCodes()
                                << Unit0Opened << Unit1Opened << Unit2Opened << Unit3Opened;
 
-typedef QList<int> TUnitGroup;
+using TUnitGroup = QList<int>;
 const TUnitGroup AllEmpty = TUnitGroup() << Unit0Empty << Unit1Empty << Unit2Empty << Unit3Empty;
 const TUnitGroup AllNearEmpty = TUnitGroup() << Unit0NearEmpty << Unit1NearEmpty << Unit2NearEmpty
                                              << Unit3NearEmpty;

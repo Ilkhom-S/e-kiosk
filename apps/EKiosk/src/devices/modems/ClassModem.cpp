@@ -5,8 +5,7 @@
 
 QStringList Modem_List;
 
-ClassModem::ClassModem(QObject *parent) : QThread(parent) {
-    ATDevice = new ATProtocol();
+ClassModem::ClassModem(QObject *parent) : QThread(parent), ATDevice(new ATProtocol()) {
 
     Modem_List << "AT-Modem";
 }
@@ -15,8 +14,8 @@ void ClassModem::sendSmsToAgentFew(QStringList smsId) {
     smsIdIn = smsId;
 }
 
-void ClassModem::setPort(QString port_name) {
-    ATDevice->setPortName(port_name);
+void ClassModem::setPort(QString portName) {
+    ATDevice->setPortName(portName);
 }
 
 void ClassModem::close() {
@@ -102,9 +101,9 @@ bool ClassModem::e_Data_Execute() {
         //                           HH:mm:ss") + "\n" + vrm_Inf;
 
         // qDebug() << text;
-        if (this->ATDevice->sendSMSParam(this->SMSTEXT_TO))
+        if (this->ATDevice->sendSMSParam(this->SMSTEXT_TO)) {
             emit this->emit_statusSmsSend(true, this->smsIdIn);
-        else {
+        } else {
             emit this->emit_statusSmsSend(false, this->smsIdIn);
         }
     }
@@ -121,15 +120,15 @@ void ClassModem::run() {
     this->e_Data_Execute();
 }
 
-bool ClassModem::isItYou(QStringList &com_List,
-                         QString &modem_name,
-                         QString &com_str,
-                         QString &modem_coment) {
-    modem_name = Modem_List.at(0);
+bool ClassModem::isItYou(QStringList &comList,
+                         QString &modemName,
+                         QString &comStr,
+                         QString &modemComent) {
+    modemName = Modem_List.at(0);
 
-    if ((modem_name != "") && (com_str != "") && (com_str.contains("COM"))) {
-        this->setPort(com_str);
-        if (this->isItYou(modem_coment)) {
+    if ((modemName != "") && (comStr != "") && (comStr.contains("COM"))) {
+        this->setPort(comStr);
+        if (this->isItYou(modemComent)) {
             return true;
         }
     } else {
@@ -137,21 +136,20 @@ bool ClassModem::isItYou(QStringList &com_List,
         //         return false;
     }
 
-    int com_lst_c = com_List.count();
-    for (int com_count = 0; com_count < com_lst_c; com_count++) {
+    int comLstC = comList.count();
+    for (int comCount = 0; comCount < comLstC; comCount++) {
 
-        QString vrm_Port = com_List.at(com_count);
+        const QString &vrmPort = comList.at(comCount);
         // qDebug() << "--- com_count  - " << com_count;
         // qDebug() << "--- vrm_Port    - " << vrm_Port;
 
-        this->setPort(vrm_Port);
+        this->setPort(vrmPort);
 
-        if (this->isItYou(modem_coment)) {
-            com_str = vrm_Port;
+        if (this->isItYou(modemComent)) {
+            comStr = vrmPort;
             return true;
-        } else {
-            ATDevice->closePort();
         }
+        ATDevice->closePort();
     }
 
     return false;
@@ -167,14 +165,15 @@ void ClassModem::setSim_NumberRequest(QString text1, QString text2) {
     ATDevice->regExpSim_Number = text2;
 }
 
-bool ClassModem::isItYou(QString &modem_coment) {
+bool ClassModem::isItYou(QString &modemComent) {
     // открываем модем для записи
     if (ATDevice->openPort()) {
         qDebug() << "modem open  port";
 
         nowSim_Present = true;
 
-        QByteArray cmdData, answerData;
+        QByteArray cmdData;
+        QByteArray answerData;
 
         Modem_ProtocolCommands::Enum protocolCommand = Modem_ProtocolCommands::Reset;
         // 1) Сброс настроек
@@ -252,22 +251,22 @@ bool ClassModem::isItYou(QString &modem_coment) {
         }
 
         //    modem_coment = QString("");
-        if (nowProviderSim != "")
-            modem_coment = QString("( %1 )").arg(nowProviderSim);
-        else
-            modem_coment = QString("( ---NO--- )");
+        if (nowProviderSim != "") {
+            modemComent = QString("( %1 )").arg(nowProviderSim);
+        } else {
+            modemComent = QString("( ---NO--- )");
+        }
 
-        QString vrm = modem_coment;
+        QString vrm = modemComent;
         if (nowModem_Comment != "") {
-            modem_coment = QString("(%1 %2)").arg(nowModem_Comment, vrm);
+            modemComent = QString("(%1 %2)").arg(nowModem_Comment, vrm);
         }
 
         ATDevice->closePort();
         return true;
-    } else {
-        ATDevice->closePort();
-        return false;
     }
+    ATDevice->closePort();
+    return false;
 }
 
 bool ClassModem::execCommand(Modem_ProtocolCommands::Enum aCommand, bool thread) {
@@ -310,7 +309,7 @@ bool ClassModem::execCommand(Modem_ProtocolCommands::Enum aCommand, bool thread)
         this->start();
         return true;
     } else {
-        bool respData;
+        bool respData = false;
         respData = this->e_Data_Execute();
         return respData;
     }

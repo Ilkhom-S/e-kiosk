@@ -20,14 +20,14 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
 HookService *HookService::instance(IApplication *aApplication) {
-    return static_cast<HookService *>(aApplication->getCore()->getService(CServices::HookService));
+    return dynamic_cast<HookService *>(aApplication->getCore()->getService(CServices::HookService));
 }
 
 //---------------------------------------------------------------------------
 HookService::HookService(IApplication *aApplication) : m_Application(aApplication) {}
 
 //---------------------------------------------------------------------------
-HookService::~HookService() {}
+HookService::~HookService() = default;
 
 //---------------------------------------------------------------------------
 bool HookService::initialize() {
@@ -84,11 +84,11 @@ const QSet<QString> &HookService::getRequiredServices() const {
 
 //---------------------------------------------------------------------------
 QVariantMap HookService::getParameters() const {
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
-void HookService::resetParameters(const QSet<QString> &) {}
+void HookService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 bool HookService::invokeHook(const QString &aMetodName,
@@ -105,7 +105,7 @@ bool HookService::invokeHook(const QString &aMetodName,
     bool result = false;
 
     foreach (SDK::Plugin::IPlugin *plugin, m_Hooks) {
-        QObject *pluginObject = dynamic_cast<QObject *>(plugin);
+        auto *pluginObject = dynamic_cast<QObject *>(plugin);
 
         if (pluginObject != nullptr) {
             // Всегда делаем Qt::DirectConnection независимо от того в каком процессе находится

@@ -17,18 +17,18 @@ extern const char GetOptions[];    /// Получение списка допо�
 extern const char Cut[];           /// Отрезка без возможности обратной промотки.
 extern const char CutBackFeed[];    /// Промотка и отрезка с возможностью обратной промотки.
 const QByteArray LoopEnable =
-    QByteArray::from_RawData("\x1C\x28\x7A\x02\x00\x01\x00", 7); /// Включение петли
+    QByteArray::fromRawData("\x1C\x28\x7A\x02\x00\x01\x00", 7); /// Включение петли
 const QByteArray LoopDisable =
-    QByteArray::from_RawData("\x1C\x28\x7A\x02\x00\x01\x01", 9);           /// Выключение петли
-const QByteArray ASBDisable = QByteArray::from_RawData("\x1D\x61\x00", 3); /// Выключение ASB
+    QByteArray::fromRawData("\x1C\x28\x7A\x02\x00\x01\x01", 9);           /// Выключение петли
+const QByteArray ASBDisable = QByteArray::fromRawData("\x1D\x61\x00", 3); /// Выключение ASB
 
 const QByteArray EnterUserMode =
-    QByteArray::from_RawData("\x1D\x28\x45\x03\x00\x01\x49\x4E", 8); /// Вход в user-режим.
+    QByteArray::fromRawData("\x1D\x28\x45\x03\x00\x01\x49\x4E", 8); /// Вход в user-режим.
 const QByteArray ExitUserMode =
-    QByteArray::from_RawData("\x1D\x28\x45\x04\x00\x02\x4F\x55\x54", 9); /// Выход из user-режима.
-const QByteArray GetMemorySwitch = QByteArray::from_RawData(
+    QByteArray::fromRawData("\x1D\x28\x45\x04\x00\x02\x4F\x55\x54", 9); /// Выход из user-режима.
+const QByteArray GetMemorySwitch = QByteArray::fromRawData(
     "\x1D\x28\x45\x02\x00\x04", 6); /// Получение memory-switch-а, основная часть
-const QByteArray SetMemorySwitch = QByteArray::from_RawData(
+const QByteArray SetMemorySwitch = QByteArray::fromRawData(
     "\x1D\x28\x45\x0A\x00\x03", 6); /// Установка memory-switch-а, основная часть
 } // namespace Command
 
@@ -56,7 +56,7 @@ extern const char BackFeedMask[];
 extern const char NoBackFeedMask[];
 
 /// Маска правильных значений
-const QByteArray AnswerForEnter = QByteArray::from_RawData("\x37\x20\x00", 3);
+const QByteArray AnswerForEnter = QByteArray::fromRawData("\x37\x20\x00", 3);
 
 /// Пауза после выполнения операций, [мс]
 const int Pause = 500;

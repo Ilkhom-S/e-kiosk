@@ -72,7 +72,7 @@ QDateTime TimeChangeListener::checkTimeOffset() {
 
 //------------------------------------------------------------------------
 void TimeChangeListener::emitTimeChanged() {
-    if (m_TimeOffset) {
+    if (m_TimeOffset != 0) {
         QMutexLocker locker(&m_HookMutex);
 
         emit timeChanged(m_TimeOffset);

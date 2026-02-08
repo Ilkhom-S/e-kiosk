@@ -10,8 +10,8 @@ const QString TestEscrow = QT_TRANSLATE_NOOP("BillAcceptorTest", "#test_escrow")
 } // namespace CBillAcceptorTest
 
 //------------------------------------------------------------------------------
-BillAcceptorTest::BillAcceptorTest(IDevice *aDevice) {
-    m_BillAcceptor = dynamic_cast<ICashAcceptor *>(aDevice);
+BillAcceptorTest::BillAcceptorTest(IDevice *aDevice)
+    : m_BillAcceptor(dynamic_cast<ICashAcceptor *>(aDevice)) {
 
     connect(&m_ErasingTimer, SIGNAL(timeout()), this, SLOT(onEraseMessage()));
 }
@@ -38,8 +38,8 @@ bool BillAcceptorTest::run(const QString &aName) {
     m_WorkingParList = m_BillAcceptor->getParList();
     TParList testParList(m_WorkingParList);
 
-    for (int i = 0; i < testParList.size(); ++i) {
-        testParList[i].enabled = true;
+    for (auto &i : testParList) {
+        i.enabled = true;
     }
 
     if (!isParListEqual(testParList, m_WorkingParList)) {
@@ -74,11 +74,11 @@ bool BillAcceptorTest::hasResult() {
 }
 
 //------------------------------------------------------------------------------
-void BillAcceptorTest::onEscrow(SPar aPar) {
+void BillAcceptorTest::onEscrow(const SPar &aPar) {
     QString message = QString("%1 %2").arg(tr("#bill_is_escrowed")).arg(aPar.nominal);
 
-    for (int i = 0; i < m_WorkingParList.size(); ++i) {
-        if ((m_WorkingParList[i] == aPar) && !m_WorkingParList[i].enabled) {
+    for (auto &i : m_WorkingParList) {
+        if ((i == aPar) && !i.enabled) {
             message += QString(" (%1)").arg(tr("#disabled"));
         }
     }

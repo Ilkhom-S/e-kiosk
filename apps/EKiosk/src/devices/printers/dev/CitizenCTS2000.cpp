@@ -20,16 +20,21 @@ bool CitizenCTS2000_PRINTER::openPort() {
             // Устанавливаем параметры открытия порта
             is_open = false;
 
-            if (!serialPort->setDataBits(QSerialPort::Data8))
+            if (!serialPort->setDataBits(QSerialPort::Data8)) {
                 return false;
-            if (!serialPort->setParity(QSerialPort::NoParity))
+            }
+            if (!serialPort->setParity(QSerialPort::NoParity)) {
                 return false;
-            if (!serialPort->setStopBits(QSerialPort::OneStop))
+            }
+            if (!serialPort->setStopBits(QSerialPort::OneStop)) {
                 return false;
-            if (!serialPort->setFlowControl(QSerialPort::SoftwareControl))
+            }
+            if (!serialPort->setFlowControl(QSerialPort::SoftwareControl)) {
                 return false;
-            if (!serialPort->setBaudRate(QSerialPort::Baud19200))
+            }
+            if (!serialPort->setBaudRate(QSerialPort::Baud19200)) {
                 return false;
+            }
 
             is_open = true;
         } else {
@@ -53,14 +58,14 @@ bool CitizenCTS2000_PRINTER::isEnabled(int &status) {
 bool CitizenCTS2000_PRINTER::isItYou() {
     QByteArray cmd;
     QByteArray answer;
-    bool resp_data = false;
+    bool respData = false;
 
     // Сначала проверим, что это наша модель принтера
     cmd.push_back(CMDCitizenCTS2000::PrinterCommandCutFirstByte);
     cmd.push_back(CMDCitizenCTS2000::PrinterCommandGetIDSecondByte);
     cmd.push_back(CMDCitizenCTS2000::PrinterCommandModelParam); // Узнаем модель принтера
 
-    if (!this->sendCommand(cmd, true, 100, resp_data, answer, 0)) {
+    if (!this->sendCommand(cmd, true, 100, respData, answer, 0)) {
         // if(Debugger) qDebug() << "CitizenPPU700::isItYou(): error in
         // sendPacketInPort()";
         this->closePort();
@@ -75,7 +80,7 @@ bool CitizenCTS2000_PRINTER::isItYou() {
     } else if (answer.isEmpty()) {
         // В ошибочном состоянии этот принтер не возвращает свой id. Проверим на
         // известные ошибки.
-        int status;
+        int status = 0;
 
         if (getStatus(status)) {
             if (status == PrinterState::PrinterNotAvailable) {
@@ -89,7 +94,8 @@ bool CitizenCTS2000_PRINTER::isItYou() {
 
                 this->closePort();
                 return true;
-            } else if (status & PrinterState::PrinterError) {
+            }
+            if ((status & PrinterState::PrinterError) != 0) {
                 // if(Debugger) qDebug() << "Printer detected and is in an error state.";
                 this->closePort();
                 return true;
@@ -139,10 +145,10 @@ bool CitizenCTS2000_PRINTER::getStatus(int &aStatus) {
     }
 
     if (offlineError != CMDCitizenCTS2000::PrinterIsOK) {
-        if (offlineError & CMDCitizenCTS2000::CoverOpen) {
+        if ((offlineError & CMDCitizenCTS2000::CoverOpen) != 0) {
             // if(Debugger) qDebug() << "Printer cover is open.";
             result |= PrinterState::PrinterError;
-        } else if (offlineError & CMDCitizenCTS2000::PrinterError) {
+        } else if ((offlineError & CMDCitizenCTS2000::PrinterError) != 0) {
             // if(Debugger) qDebug() << "Offline printer error occured.";
             result |= PrinterState::PrinterError;
         }
@@ -201,21 +207,24 @@ bool CitizenCTS2000_PRINTER::getStatus(int &aStatus) {
 QByteArray CitizenCTS2000_PRINTER::getState() {
     // засылаем в порт команду получения статуса
     QByteArray cmd;
-    bool resp_data = false;
-    QByteArray answer, answer_1, answer_2, answer_3;
+    bool respData = false;
+    QByteArray answer;
+    QByteArray answer1;
+    QByteArray answer2;
+    QByteArray answer3;
 
     cmd.push_back(CMDCitizenCTS2000::PrinterCommandStatusFirstByte);
     cmd.push_back(CMDCitizenCTS2000::PrinterCommandStatusSecondByte);
     cmd.push_back(2);
 
     if (!this->sendCommand(
-            cmd, true, CMDCitizenCTS2000::TimeOutAfterWriting, resp_data, answer_1, 0)) {
+            cmd, true, CMDCitizenCTS2000::TimeOutAfterWriting, respData, answer1, 0)) {
         // if(Debugger) qDebug() << "CitizenCTS2000::getState(): error in
         // sendPacketInPort()";
         return answer;
     }
 
-    answer.push_back(answer_1);
+    answer.push_back(answer1);
     cmd.clear();
 
     cmd.push_back(CMDCitizenCTS2000::PrinterCommandStatusFirstByte);
@@ -223,13 +232,13 @@ QByteArray CitizenCTS2000_PRINTER::getState() {
     cmd.push_back(3);
 
     if (!this->sendCommand(
-            cmd, true, CMDCitizenCTS2000::TimeOutAfterWriting, resp_data, answer_2, 0)) {
+            cmd, true, CMDCitizenCTS2000::TimeOutAfterWriting, respData, answer2, 0)) {
         // if(Debugger) qDebug() << "CitizenCTS2000::getState(): error in
         // sendPacketInPort()";
         return answer;
     }
 
-    answer.push_back(answer_2);
+    answer.push_back(answer2);
     cmd.clear();
 
     cmd.push_back(CMDCitizenCTS2000::PrinterCommandStatusFirstByte);
@@ -237,13 +246,13 @@ QByteArray CitizenCTS2000_PRINTER::getState() {
     cmd.push_back(4);
 
     if (!this->sendCommand(
-            cmd, true, CMDCitizenCTS2000::TimeOutAfterWriting, resp_data, answer_3, 0)) {
+            cmd, true, CMDCitizenCTS2000::TimeOutAfterWriting, respData, answer3, 0)) {
         // if(Debugger) qDebug() << "CitizenCTS2000::getState(): error in
         // sendPacketInPort()";
         return answer;
     }
 
-    answer.push_back(answer_3);
+    answer.push_back(answer3);
     return answer;
 }
 
@@ -251,7 +260,7 @@ bool CitizenCTS2000_PRINTER::print(const QString &aCheck) {
     this->initialize();
     this->printCheck(aCheck);
     this->feed(3);
-    this->msleep(100);
+    CitizenCTS2000_PRINTER::msleep(100);
 
     return cut();
 }
@@ -270,65 +279,65 @@ bool CitizenCTS2000_PRINTER::printCheck(const QString &aCheck) {
 }
 
 void CitizenCTS2000_PRINTER::getSpecialCharacters(QByteArray &printText) {
-    QByteArray fontTypeBold_start;
-    fontTypeBold_start.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
-    fontTypeBold_start.push_back(CMDCitizenCTS2000::PrinterFontBold);
-    fontTypeBold_start.push_back(1);
+    QByteArray fontTypeBoldStart;
+    fontTypeBoldStart.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
+    fontTypeBoldStart.push_back(CMDCitizenCTS2000::PrinterFontBold);
+    fontTypeBoldStart.push_back(1);
 
-    QByteArray fontTypeBold_end;
-    fontTypeBold_end.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
-    fontTypeBold_end.push_back(CMDCitizenCTS2000::PrinterFontBold);
-    fontTypeBold_end.push_back(48);
+    QByteArray fontTypeBoldEnd;
+    fontTypeBoldEnd.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
+    fontTypeBoldEnd.push_back(CMDCitizenCTS2000::PrinterFontBold);
+    fontTypeBoldEnd.push_back(48);
 
-    QByteArray fontTypeUnderLine_start;
-    fontTypeUnderLine_start.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
-    fontTypeUnderLine_start.push_back(CMDCitizenCTS2000::PrinterFontUnderline);
-    fontTypeUnderLine_start.push_back(1);
+    QByteArray fontTypeUnderLineStart;
+    fontTypeUnderLineStart.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
+    fontTypeUnderLineStart.push_back(CMDCitizenCTS2000::PrinterFontUnderline);
+    fontTypeUnderLineStart.push_back(1);
 
-    QByteArray fontTypeUnderLine_end;
-    fontTypeUnderLine_end.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
-    fontTypeUnderLine_end.push_back(CMDCitizenCTS2000::PrinterFontUnderline);
-    fontTypeUnderLine_end.push_back(48);
+    QByteArray fontTypeUnderLineEnd;
+    fontTypeUnderLineEnd.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
+    fontTypeUnderLineEnd.push_back(CMDCitizenCTS2000::PrinterFontUnderline);
+    fontTypeUnderLineEnd.push_back(48);
 
-    QByteArray fontTypeDoubleWidth_start;
+    QByteArray fontTypeDoubleWidthStart;
 
     if (smallCheck) {
-        fontTypeDoubleWidth_start.push_back(ASCII::NUL);
+        fontTypeDoubleWidthStart.push_back(ASCII::NUL);
     } else {
-        fontTypeDoubleWidth_start.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
-        fontTypeDoubleWidth_start.push_back(CMDCitizenCTS2000::PrinterFontCommandSecondByte);
-        fontTypeDoubleWidth_start.push_back(0x20);
+        fontTypeDoubleWidthStart.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
+        fontTypeDoubleWidthStart.push_back(CMDCitizenCTS2000::PrinterFontCommandSecondByte);
+        fontTypeDoubleWidthStart.push_back(0x20);
     }
 
-    QByteArray fontTypeDoubleWidth_end;
+    QByteArray fontTypeDoubleWidthEnd;
 
     if (smallCheck) {
-        fontTypeDoubleWidth_end.push_back(ASCII::NUL);
+        fontTypeDoubleWidthEnd.push_back(ASCII::NUL);
     } else {
 
-        fontTypeDoubleWidth_end.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
-        fontTypeDoubleWidth_end.push_back(CMDCitizenCTS2000::PrinterFontCommandSecondByte);
-        fontTypeDoubleWidth_end.push_back(ASCII::NUL);
+        fontTypeDoubleWidthEnd.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
+        fontTypeDoubleWidthEnd.push_back(CMDCitizenCTS2000::PrinterFontCommandSecondByte);
+        fontTypeDoubleWidthEnd.push_back(ASCII::NUL);
     }
 
-    QByteArray fontTypeDoubleHeight_start;
+    QByteArray fontTypeDoubleHeightStart;
 
     if (smallCheck) {
-        fontTypeDoubleHeight_start.push_back(ASCII::NUL);
+        fontTypeDoubleHeightStart.push_back(ASCII::NUL);
     } else {
-        fontTypeDoubleHeight_start.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
-        fontTypeDoubleHeight_start.push_back(CMDCitizenCTS2000::PrinterFontCommandSecondByte);
-        fontTypeDoubleHeight_start.push_back(0x10);
+        fontTypeDoubleHeightStart.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
+        fontTypeDoubleHeightStart.push_back(CMDCitizenCTS2000::PrinterFontCommandSecondByte);
+        fontTypeDoubleHeightStart.push_back(0x10);
     }
 
-    QByteArray fontTypeDoubleHeight_end;
+    QByteArray fontTypeDoubleHeightEnd;
 
     if (smallCheck) {
-        fontTypeDoubleHeight_end.push_back(ASCII::NUL);
+        fontTypeDoubleHeightEnd.push_back(ASCII::NUL);
     } else {
-        fontTypeDoubleHeight_end.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
-        fontTypeDoubleHeight_end.push_back(CMDCitizenCTS2000::PrinterFontCommandSecondByte);
-        fontTypeDoubleHeight_end.push_back(ASCII::NUL);
+        fontTypeDoubleHeightEnd.push_back(CMDCitizenCTS2000::PrinterCommandFirstByte);
+        fontTypeDoubleHeightEnd.push_back(CMDCitizenCTS2000::PrinterFontCommandSecondByte);
+        fontTypeDoubleHeightEnd.push_back(ASCII::NUL);
     }
 
     // Устанавливаем если есть двойной высоты фонт
@@ -336,24 +345,24 @@ void CitizenCTS2000_PRINTER::getSpecialCharacters(QByteArray &printText) {
                               CScharsetParam::FontTypeDoubleHeight +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeDoubleHeight_start);
+                      fontTypeDoubleHeightStart);
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeDoubleHeight +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeDoubleHeight_end);
+                      fontTypeDoubleHeightEnd);
 
     // Устанавливаем если есть двойной ширины фонт
     printText.replace(QString(CScharsetParam::OpenTagDelimiter +
                               CScharsetParam::FontTypeDoubleWidth +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeDoubleWidth_start);
+                      fontTypeDoubleWidthStart);
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeDoubleWidth +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeDoubleWidth_end);
+                      fontTypeDoubleWidthEnd);
 
     // Устанавливаем если есть курсивный фонт
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeItalic +
@@ -369,22 +378,22 @@ void CitizenCTS2000_PRINTER::getSpecialCharacters(QByteArray &printText) {
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeBold +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeBold_start);
+                      fontTypeBoldStart);
 
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeBold + CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeBold_end);
+                      fontTypeBoldEnd);
 
     // Устанавливаем если есть подчеркнутый фонт
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::FontTypeUnderLine +
                               CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeUnderLine_start);
+                      fontTypeUnderLineStart);
     printText.replace(QString(CScharsetParam::OpenTagDelimiter + CScharsetParam::CloseTagSymbol +
                               CScharsetParam::FontTypeUnderLine + CScharsetParam::CloseTagDelimiter)
                           .toUtf8(),
-                      fontTypeUnderLine_end);
+                      fontTypeUnderLineEnd);
 
     // Если надо добавить проабел
     QByteArray probel;
@@ -470,8 +479,9 @@ bool CitizenCTS2000_PRINTER::feed(int aCount) {
     QByteArray answer;
     cmd.push_back(CMDCitizenCTS2000::PrinterCommandFeedByte);
 
-    if (SmallBetweenString)
+    if (SmallBetweenString) {
         aCount *= 3;
+    }
 
     for (int i = 0; i < aCount; ++i) {
         cmd.push_back(CMDCitizenCTS2000::PrinterCommandFeedByte);

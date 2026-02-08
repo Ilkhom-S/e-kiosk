@@ -6,6 +6,8 @@
 
 #include <SDK/PaymentProcessor/Core/ICore.h>
 
+#include <utility>
+
 //------------------------------------------------------------------------------
 namespace CDispenserTest {
 const QString TestDispense = QT_TRANSLATE_NOOP("DispenserTest", "#dispense");
@@ -13,11 +15,10 @@ const QString TestDispense = QT_TRANSLATE_NOOP("DispenserTest", "#dispense");
 
 //------------------------------------------------------------------------------
 DispenserTest::DispenserTest(SDK::Driver::IDevice *aDevice,
-                             const QString &aConfigurationName,
+                             QString aConfigurationName,
                              SDK::PaymentProcessor::ICore *aCore)
-    : m_ConfigurationName(aConfigurationName), m_Core(aCore) {
-    m_Dispenser = dynamic_cast<SDK::Driver::IDispenser *>(aDevice);
-}
+    : m_Dispenser(dynamic_cast<SDK::Driver::IDispenser *>(aDevice)),
+      m_ConfigurationName(std::move(aConfigurationName)), m_Core(aCore) {}
 
 //------------------------------------------------------------------------------
 QList<QPair<QString, QString>> DispenserTest::getTestNames() const {

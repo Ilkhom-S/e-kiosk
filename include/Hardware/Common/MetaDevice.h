@@ -81,47 +81,47 @@ public:
 
 #pragma region SDK::Driver::IDevice interface
     /// Возвращает название устройства.
-    virtual QString getName() const;
+    virtual QString getName() const override;
 
     /// Переформировывает список параметров для авто поиска и устанавливает 1-й набор параметров из
     /// этого списка.
-    virtual SDK::Driver::IDevice::IDetectingIterator *getDetectingIterator();
+    virtual SDK::Driver::IDevice::IDetectingIterator *getDetectingIterator() override;
 
     /// Подключает и инициализирует устройство. Обертка для вызова функционала в рабочем потоке.
-    virtual void initialize();
+    virtual void initialize() override;
 
     /// Освобождает ресурсы, связанные с устройством, возвращается в состояние до вызова
     /// initialize().
-    virtual bool release();
+    virtual bool release() override;
 
     /// Соединяет сигнал данного интерфейса со слотом приёмника.
-    virtual bool subscribe(const char *aSignal, QObject *aReceiver, const char *aSlot);
+    virtual bool subscribe(const char *aSignal, QObject *aReceiver, const char *aSlot) override;
 
     /// Отсоединяет сигнал данного интерфейса от слота приёмника.
-    virtual bool unsubscribe(const char *aSignal, QObject *aReceiver);
+    virtual bool unsubscribe(const char *aSignal, QObject *aReceiver) override;
 
     /// Возвращает конфигурацию устройства.
-    virtual QVariantMap getDeviceConfiguration() const;
+    virtual QVariantMap getDeviceConfiguration() const override;
 
     /// Устанавливает конфигурацию устройству.
-    virtual void setDeviceConfiguration(const QVariantMap &aConfiguration);
+    virtual void setDeviceConfiguration(const QVariantMap &aConfiguration) override;
 
     /// Обновить прошивку.
-    virtual void updateFirmware(const QByteArray &aBuffer);
+    virtual void updateFirmware(const QByteArray &aBuffer) override;
 
     /// Можно ли обновлять прошивку.
-    virtual bool canUpdateFirmware();
+    virtual bool canUpdateFirmware() override;
 
     /// Установить лог.
-    virtual void setLog(ILog *aLog);
+    virtual void setLog(ILog *aLog) override;
 #pragma endregion
 
 #pragma region SDK::Driver::IDetectingIterator interface
     /// Переход к следующим параметрам устройства.
-    virtual bool moveNext();
+    virtual bool moveNext() override;
 
     /// Поиск устройства на текущих параметрам.
-    virtual bool find();
+    virtual bool find() override;
 #pragma endregion
 
 protected:

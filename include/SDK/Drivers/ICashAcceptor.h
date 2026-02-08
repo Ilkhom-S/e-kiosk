@@ -36,9 +36,6 @@ public:
 
     /// Вернуть купюру. Правильный термин - return (ключевое слово).
     virtual bool reject() = 0;
-
-protected:
-    virtual ~ICashAcceptor() {}
 };
 
 } // namespace Driver

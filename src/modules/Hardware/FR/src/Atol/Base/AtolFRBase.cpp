@@ -554,7 +554,7 @@ bool AtolFRBase::getStatus(TStatusCodes &aStatusCodes) {
 
 //--------------------------------------------------------------------------------
 void AtolFRBase::execTags(Tags::SLexeme &aTagLexeme, QVariant &aLine) {
-    QByteArray data = m_Codec->from_Unicode(aTagLexeme.data);
+    QByteArray data = m_Codec->fromUnicode(aTagLexeme.data);
 
     if (aTagLexeme.tags.contains(Tags::Type::DoubleWidth)) {
         Tags::TTypes types;
@@ -765,12 +765,12 @@ bool AtolFRBase::closeDocument(EPayTypes::Enum aPayType) {
 //--------------------------------------------------------------------------------
 bool AtolFRBase::sale(const SUnitData &aUnitData) {
     if (!aUnitData.name.isEmpty()) {
-        printLine(m_Codec->from_Unicode(aUnitData.name));
+        printLine(m_Codec->fromUnicode(aUnitData.name));
     }
 
     if (!aUnitData.VAT) {
         QString withoutTaxes = getConfigParameter(CHardware::FR::Strings::WithoutTaxes).toString();
-        printLine(m_Codec->from_Unicode(withoutTaxes));
+        printLine(m_Codec->fromUnicode(withoutTaxes));
     }
 
     int taxGroup = (aUnitData.section == -1) ? m_TaxData[aUnitData.VAT].group : aUnitData.section;
@@ -918,7 +918,7 @@ bool AtolFRBase::setFRParameter(const CAtolFR::FRParameters::SData &aData, const
     if (aValue.typeId() == QMetaType::QByteArray)
         commandData.append(aValue.toByteArray());
     else if (aValue.typeId() == QMetaType::QString)
-        commandData.append(m_Codec->from_Unicode(aValue.toString()));
+        commandData.append(m_Codec->fromUnicode(aValue.toString()));
     else
         commandData.append(char(aValue.toInt()));
 

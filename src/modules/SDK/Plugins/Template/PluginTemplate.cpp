@@ -4,8 +4,10 @@
 
 #include <QtCore/QDebug>
 
-Plugin::Plugin(SDK::Plugin::IEnvironment *aEnvironment, const QString &aInstancePath)
-    : m_Environment(aEnvironment), m_InstancePath(aInstancePath),
+#include <utility>
+
+Plugin::Plugin(SDK::Plugin::IEnvironment *aEnvironment, QString aInstancePath)
+    : m_Environment(aEnvironment), m_InstancePath(std::move(aInstancePath)),
       m_HelloMessage("Hello World from Plugin Template!") {
     setLog(m_Environment->getLog("PluginTemplate"));
     toLog(LogLevel::Normal, "Plugin template initialized");

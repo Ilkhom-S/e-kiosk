@@ -36,7 +36,7 @@ extern const char InitData[];
 extern const char ClearCounterData[];
 
 /// Данные команды обнуления счетчика байтов.
-const QByteArray WriteData = QByteArray::from_RawData("\x8F\x1D\x2F\x00", 4);
+const QByteArray WriteData = QByteArray::fromRawData("\x8F\x1D\x2F\x00", 4);
 } // namespace ImageProcessing
 } // namespace CAtolEjectorFR
 

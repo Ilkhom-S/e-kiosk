@@ -29,7 +29,7 @@ class Response {
     Q_DISABLE_COPY(Response)
 
 public:
-    Response(const Request &aRequest, const QString &aResponseString);
+    Response(const Request &aRequest, QString aResponseString);
     virtual ~Response();
 
     /// Предикат истинен, если ответ сервера не содержит ошибок.

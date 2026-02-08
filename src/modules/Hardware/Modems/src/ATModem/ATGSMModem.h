@@ -57,10 +57,10 @@ protected:
     virtual bool getStatus(TStatusCodes &aStatusCodes);
 
     /// Получить состояние регистрации в сети
-    bool getNetworkAccessability(ENetworkAccessability::Enum &aNetworkAccessability);
+    static bool getNetworkAccessability(ENetworkAccessability::Enum &aNetworkAccessability);
 
     /// Функция ожидания доступности GSM сети
-    bool waitNetworkAccessability(int aTimeout);
+    static bool waitNetworkAccessability(int aTimeout);
 
     /// Декодирование ответа +CUSD команды
     bool getCUSDMessage(const QByteArray &aBuffer, QString &aMessage);
@@ -69,11 +69,12 @@ protected:
     virtual void setDeviceName(const QByteArray &aFullName);
 
     /// Получить инфо о SIM-карте
-    void getSIMData(const QByteArray &aCommand);
+    static void getSIMData(const QByteArray &aCommand);
 
-    bool parseFieldInternal(const QByteArray &aBuffer, const QString &aFieldName, QString &aValue);
-    bool getSiemensCellList(QString &aValue);
-    bool getSim_COMCellList(QString &aValue);
+    static bool
+    parseFieldInternal(const QByteArray &aBuffer, const QString &aFieldName, QString &aValue);
+    static bool getSiemensCellList(QString &aValue);
+    static bool getSim_COMCellList(QString &aValue);
 
     /// Определение диалекта модема
     AT::EModem_Dialect::Enum m_Gsm_Dialect;

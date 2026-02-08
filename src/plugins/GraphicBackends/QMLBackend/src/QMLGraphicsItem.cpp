@@ -69,7 +69,7 @@ void QMLGraphicsItem::reset(const QVariantMap &aParameters) {
                                   CQMLGraphicsItem::ResetHandlerName,
                                   Qt::DirectConnection,
                                   Q_RETURN_ARG(QVariant, error),
-                                  Q_ARG(const QVariant &, QVariant::from_Value(aParameters)));
+                                  Q_ARG(const QVariant &, QVariant::fromValue(aParameters)));
 
         if (!error.isNull()) {
             m_Log->write(LogLevel::Error, translateError(error));
@@ -86,8 +86,8 @@ void QMLGraphicsItem::notify(const QString &aEvent, const QVariantMap &aParamete
                                   CQMLGraphicsItem::NotifyHandlerName,
                                   Qt::DirectConnection,
                                   Q_RETURN_ARG(QVariant, error),
-                                  Q_ARG(const QVariant &, QVariant::from_Value(aEvent)),
-                                  Q_ARG(const QVariant &, QVariant::from_Value(aParameters)));
+                                  Q_ARG(const QVariant &, QVariant::fromValue(aEvent)),
+                                  Q_ARG(const QVariant &, QVariant::fromValue(aParameters)));
 
         if (!error.isNull()) {
             m_Log->write(LogLevel::Error, translateError(error));

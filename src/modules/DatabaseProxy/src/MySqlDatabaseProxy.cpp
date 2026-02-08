@@ -12,7 +12,7 @@
 #include "DatabaseQuery.h"
 
 MySqlDatabaseProxy::MySqlDatabaseProxy()
-    : m_Mutex(), m_Db(nullptr), m_Log(ILog::getInstance(CMySqlDatabaseProxy::DefaultLog)),
+    :, m_Db(nullptr), m_Log(ILog::getInstance(CMySqlDatabaseProxy::DefaultLog)),
       m_QueryChecker(nullptr) {}
 
 //---------------------------------------------------------------------------

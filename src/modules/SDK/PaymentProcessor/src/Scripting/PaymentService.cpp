@@ -31,10 +31,11 @@
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+#include <utility>
 
 namespace PPSDK = SDK::PaymentProcessor;
 
-typedef boost::property_tree::basic_ptree<std::string, std::string> TPtreeOperators;
+using TPtreeOperators = boost::property_tree::basic_ptree<std::string, std::string>;
 
 //---------------------------------------------------------------------------
 namespace EncashmentParameter {
@@ -56,7 +57,7 @@ namespace Scripting {
 
 //------------------------------------------------------------------------------
 ScriptArray *ProviderField::getEnum_Items() {
-    ScriptArray *list = new ScriptArray(this);
+    auto *list = new ScriptArray(this);
 
     foreach (const SProviderField::SEnum_Item &item, m_Field.enum_Items) {
         list->append(new Enum_Item(item, list));
@@ -66,8 +67,8 @@ ScriptArray *ProviderField::getEnum_Items() {
 }
 
 //------------------------------------------------------------------------------
-Provider::Provider(const SProvider &aProvider, QObject *aParent)
-    : QObject(aParent), m_Provider(aProvider) {
+Provider::Provider(SProvider aProvider, QObject *aParent)
+    : QObject(aParent), m_Provider(std::move(aProvider)) {
     QObjectList fields;
 
     foreach (const SProviderField &field, m_Provider.fields) {
@@ -78,7 +79,7 @@ Provider::Provider(const SProvider &aProvider, QObject *aParent)
 }
 
 //------------------------------------------------------------------------------
-bool Provider::isCheckStepSettingsOK() {
+bool Provider::isCheckStepSettingsOK() const {
     QStringList limits;
     limits << m_Provider.limits.min << m_Provider.limits.max << m_Provider.limits.externalMin
            << m_Provider.limits.externalMax;
@@ -107,8 +108,7 @@ bool Provider::isCheckStepSettingsOK() {
     QSet<QString> responseFieldsSet(responseFields.begin(), responseFields.end());
     return limitsSet.intersect(responseFieldsSet).isEmpty()
                ? true
-               : (m_Provider.processor.showAddInfo ? true
-                                                   : m_Provider.processor.skipCheck == false);
+               : (m_Provider.processor.showAddInfo ? true : !m_Provider.processor.skipCheck);
 }
 
 //------------------------------------------------------------------------------
@@ -141,34 +141,34 @@ QString Provider::xmlFields2Json(const QString &aXmlFields) {
         boost::property_tree::read_xml(stream, ptFields);
     } catch (boost::property_tree::xml_parser_error &e) {
         qDebug() << QString("xmlFields2Json: XML parser error: %1.")
-                        .arg(QString::from_StdString(e.message()));
+                        .arg(QString::fromStdString(e.message()));
 
-        return QString();
+        return {};
     }
 
     std::function<void(SProviderField::TEnum_Items &, const TPtreeOperators &)>
-        loadProviderEnum_Items;
-    loadProviderEnum_Items = [&](SProviderField::TEnum_Items &aItem_List,
-                                 const TPtreeOperators &aTree) {
+        loadProviderEnumItems;
+    loadProviderEnumItems = [&](SProviderField::TEnum_Items &aItemList,
+                                const TPtreeOperators &aTree) {
         auto searchBounds = aTree.equal_range("item");
 
-        for (auto item_It = searchBounds.first; item_It != searchBounds.second; ++item_It) {
+        for (auto itemIt = searchBounds.first; itemIt != searchBounds.second; ++itemIt) {
             SProviderField::SEnum_Item item;
 
-            auto attr = item_It->second.get_child("<xmlattr>");
+            auto attr = itemIt->second.get_child("<xmlattr>");
 
             item.title = attr.get<QString>("name");
             item.value = attr.get<QString>("value", QString());
             item.id = attr.get<QString>("id", QString());
             item.sort = attr.get<int>("sort", 65535);
 
-            loadProviderEnum_Items(item.subItems, item_It->second);
+            loadProviderEnumItems(item.subItems, itemIt->second);
 
-            aItem_List << item;
+            aItemList << item;
         }
 
-        std::stable_sort(aItem_List.begin(),
-                         aItem_List.end(),
+        std::stable_sort(aItemList.begin(),
+                         aItemList.end(),
                          [](const SProviderField::SEnum_Item &a,
                             const SProviderField::SEnum_Item &b) { return a.sort < b.sort; });
     };
@@ -206,8 +206,8 @@ QString Provider::xmlFields2Json(const QString &aXmlFields) {
 
                 field.dependency = fieldIt.second.get<QString>("dependency", QString());
 
-                loadProviderEnum_Items(field.enum_Items,
-                                       fieldIt.second.get_child("enum", emptyTree));
+                loadProviderEnumItems(field.enum_Items,
+                                      fieldIt.second.get_child("enum", emptyTree));
 
                 fields << field;
             }
@@ -221,10 +221,10 @@ QString Provider::xmlFields2Json(const QString &aXmlFields) {
 
 //------------------------------------------------------------------------------
 QVariant Provider::getFields() {
-    PaymentService *paymentService = qobject_cast<PaymentService *>(parent());
+    auto *paymentService = qobject_cast<PaymentService *>(parent());
 
     if (!paymentService) {
-        return QVariant::from_Value(m_Fields["0"]);
+        return QVariant::fromValue(m_Fields["0"]);
     }
 
     QString currentStep = paymentService->currentStep();
@@ -242,7 +242,7 @@ QVariant Provider::getFields() {
         }
     }
 
-    return QVariant::from_Value(m_Fields[currentStep]);
+    return QVariant::fromValue(m_Fields[currentStep]);
 }
 
 //------------------------------------------------------------------------------
@@ -255,11 +255,11 @@ PaymentService::PaymentService(ICore *aCore)
     connect(m_PaymentService, SIGNAL(amountUpdated(qint64)), SIGNAL(amountUpdated(qint64)));
     connect(m_PaymentService, SIGNAL(changeUpdated(double)), SIGNAL(changeUpdated(double)));
 
-    m_Directory = static_cast<PPSDK::Directory *>(
+    m_Directory = dynamic_cast<PPSDK::Directory *>(
         aCore->getSettingsService()->getAdapter(CAdapterNames::Directory));
-    m_DealerSettings = static_cast<PPSDK::DealerSettings *>(
+    m_DealerSettings = dynamic_cast<PPSDK::DealerSettings *>(
         aCore->getSettingsService()->getAdapter(CAdapterNames::DealerAdapter));
-    m_CommonSettings = static_cast<PPSDK::TerminalSettings *>(
+    m_CommonSettings = dynamic_cast<PPSDK::TerminalSettings *>(
                            aCore->getSettingsService()->getAdapter(CAdapterNames::TerminalAdapter))
                            ->getCommonSettings();
 }
@@ -319,7 +319,7 @@ QVariantMap PaymentService::calculateCommission(const QVariantMap &aParameters) 
         return result;
     }
 
-    return QVariantMap();
+    return {};
 }
 
 //------------------------------------------------------------------------------
@@ -334,23 +334,23 @@ QVariantMap PaymentService::calculateLimits(const QString &aAmount, bool aFixedA
 
     const qint64 providerID = getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong();
     const auto provider = m_PaymentService->getProvider(providerID);
-    double system_Max = provider.limits.system.toDouble();
-    system_Max = maxAmount > system_Max ? system_Max : maxAmount;
+    double systemMax = provider.limits.system.toDouble();
+    systemMax = maxAmount > systemMax ? systemMax : maxAmount;
 
     if (!aFixedAmount) {
         // Корректируем максимальный платеж в зависимости от системного лимита
-        if (qFuzzyIsNull(maxAmount) || qFuzzyIsNull(system_Max)) {
+        if (qFuzzyIsNull(maxAmount) || qFuzzyIsNull(systemMax)) {
             // Если какой-либо из лимитов не задан, то берем тот, который задан.
-            maxAmount = qMax(system_Max, maxAmount);
+            maxAmount = qMax(systemMax, maxAmount);
         } else {
             // Иначе берем нижнюю границу.
-            maxAmount = qMin(system_Max, maxAmount);
+            maxAmount = qMin(systemMax, maxAmount);
         }
     }
 
     // Проверяем значение системного лимита
-    if (qFuzzyIsNull(system_Max)) {
-        system_Max = maxAmount;
+    if (qFuzzyIsNull(systemMax)) {
+        systemMax = maxAmount;
     }
 
     // Если провайдер требует округления - применим округление к пограничным значениям
@@ -440,8 +440,8 @@ QVariantMap PaymentService::calculateLimits(const QString &aAmount, bool aFixedA
     if (aFixedAmount) {
         // если лимиты равны и комиссия больше системного лимита, то пропускаем эти лимиты дальше.
         maxAmountAll = localAmountAllLimit;
-    } else if (localAmountAllLimit > system_Max) {
-        maxAmountAll = system_Max;
+    } else if (localAmountAllLimit > systemMax) {
+        maxAmountAll = systemMax;
         maxAmount = calcAmountAllByAmountAll(maxAmount);
     } else {
         maxAmountAll = qMax(localAmountAllLimit, maxAmount);
@@ -512,7 +512,7 @@ QObject *PaymentService::getProviderByGateway(qint64 aCID) {
 
 //------------------------------------------------------------------------------
 QObject *PaymentService::getProviderForNumber(qint64 aNumber) {
-    ScriptArray *result = new ScriptArray(this);
+    auto *result = new ScriptArray(this);
 
     foreach (const SProvider &p,
              m_DealerSettings->getProvidersByRange(m_Directory->getRangesForNumber(aNumber),
@@ -530,14 +530,14 @@ void PaymentService::setExternalParameter(const QString &aName, const QVariant &
 }
 
 //------------------------------------------------------------------------------
-QString PaymentService::findAliasFrom_Request(const QString &aParam_Name,
+QString PaymentService::findAliasFrom_Request(const QString &aParamName,
                                               const QString &aRequestName) {
     auto provider = m_PaymentService->getProvider(
         getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong());
 
     auto fields = provider.processor.requests.value(aRequestName).requestFields;
     foreach (auto field, fields) {
-        if (field.name == aParam_Name) {
+        if (field.name == aParamName) {
             QRegularExpression macroPattern("\\{(.+)\\}");
 
             QString result = field.value;
@@ -551,7 +551,7 @@ QString PaymentService::findAliasFrom_Request(const QString &aParam_Name,
         }
     }
 
-    return QString();
+    return {};
 }
 
 //------------------------------------------------------------------------------
@@ -568,9 +568,9 @@ void PaymentService::setParameters(const QVariantMap &aParameters) {
         getParameter(PPSDK::CPayment::Parameters::Provider).toLongLong());
 
     // функция проверки - является ли параметр значением поля, содержащим пароль
-    auto keepEncrypted = [&provider](const QString &aParam_Name) -> bool {
+    auto keepEncrypted = [&provider](const QString &aParamName) -> bool {
         foreach (auto field, provider.fields) {
-            if (aParam_Name.contains(field.id)) {
+            if (aParamName.contains(field.id)) {
                 return field.keepEncrypted();
             }
         }
@@ -602,12 +602,12 @@ bool PaymentService::canProcessOffline() {
 
 //------------------------------------------------------------------------------
 void PaymentService::check() {
-    return processStep(EPaymentStep::DataCheck);
+    processStep(EPaymentStep::DataCheck);
 }
 
 //------------------------------------------------------------------------------
 void PaymentService::stepForward() {
-    return processStep(EPaymentStep::GetStep);
+    processStep(EPaymentStep::GetStep);
 }
 
 //------------------------------------------------------------------------------
@@ -634,7 +634,7 @@ PaymentService::EProcessResult PaymentService::process(bool aOnline) {
     }
 
     if (!aOnline && m_CommonSettings.blockCheatedPayment &&
-        getParameter(PPSDK::CPayment::Parameters::Cheated).toInt()) {
+        (getParameter(PPSDK::CPayment::Parameters::Cheated).toInt() != 0)) {
         stop(PPSDK::Humo::EServerError::Cheated, "Cheated");
 
         resetChange();
@@ -679,7 +679,7 @@ void PaymentService::resetChange() {
 
 //------------------------------------------------------------------------------
 QObject *PaymentService::getPaymentNotes() {
-    ScriptArray *notes = new ScriptArray(this);
+    auto *notes = new ScriptArray(this);
 
     foreach (const SNote &note, m_PaymentService->getPaymentNotes(getActivePaymentID())) {
         notes->append(new Note(note, notes));
@@ -690,7 +690,7 @@ QObject *PaymentService::getPaymentNotes() {
 
 //------------------------------------------------------------------------------
 QObject *PaymentService::notesFrom_Balance(const PPSDK::SBalance &aBalance) {
-    ScriptArray *notes = new ScriptArray(this);
+    auto *notes = new ScriptArray(this);
 
     foreach (const SBalance::SAmounts &amounts, aBalance.detailedSums) {
         foreach (const SBalance::SAmounts::SAmount &amount, amounts.amounts) {
@@ -851,7 +851,7 @@ void PaymentService::onStepCompleted(qint64 aPayment, int aStep, bool aError) {
 }
 
 //------------------------------------------------------------------------------
-void PaymentService::addProviderProvider(QWeakPointer<IProviderProvider> aProvider) {
+void PaymentService::addProviderProvider(const QWeakPointer<IProviderProvider> &aProvider) {
     m_ProviderProviders << aProvider;
 }
 
@@ -870,7 +870,7 @@ QVariantMap PaymentService::getStatistic() {
 
 //------------------------------------------------------------------------------
 void PaymentService::checkStatus() {
-    PPSDK::TerminalSettings *terminalSettings = static_cast<PPSDK::TerminalSettings *>(
+    PPSDK::TerminalSettings *terminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
         m_Core->getSettingsService()->getAdapter(CAdapterNames::TerminalAdapter));
 
     QList<SDK::PaymentProcessor::SBlockByNote> notes =
@@ -892,12 +892,13 @@ void PaymentService::checkStatus() {
     }
 
     foreach (SDK::PaymentProcessor::SBlockByNote note, notes) {
-        QString queryStr = QString("SELECT COUNT(*) FROM `payment_note` WHERE ((NOT `ejection`) OR "
-                                   "(`ejection` IS NULL)) AND "
-                                   "`type` <> 2 AND `nominal` = %1 AND `date` >= DATETIME('now', "
-                                   "'localtime', '-%2 seconds')")
-                               .arg(note.nominal)
-                               .arg(deltaTime ? qMin(deltaTime, note.interval) : note.interval);
+        QString queryStr =
+            QString("SELECT COUNT(*) FROM `payment_note` WHERE ((NOT `ejection`) OR "
+                    "(`ejection` IS NULL)) AND "
+                    "`type` <> 2 AND `nominal` = %1 AND `date` >= DATETIME('now', "
+                    "'localtime', '-%2 seconds')")
+                .arg(note.nominal)
+                .arg((deltaTime != 0U) ? qMin(deltaTime, note.interval) : note.interval);
 
         QSharedPointer<IDatabaseQuery> query(db->createAndExecQuery(queryStr));
 

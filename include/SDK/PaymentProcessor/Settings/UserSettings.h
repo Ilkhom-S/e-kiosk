@@ -13,11 +13,11 @@ namespace PaymentProcessor {
 //----------------------------------------------------------------------------
 class UserSettings : public ISettingsAdapter, public ILogable {
 public:
-    UserSettings(TPtree &aProperties);
-    virtual ~UserSettings();
+    explicit UserSettings(TPtree &aProperties);
+    ~UserSettings() override;
 
     /// Валидация данных.
-    virtual bool isValid() const;
+    virtual bool isValid() const override;
 
     /// Получить имя адаптера.
     static QString getAdapterName();

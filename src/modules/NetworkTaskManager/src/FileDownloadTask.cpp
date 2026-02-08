@@ -4,10 +4,12 @@
 
 #include <QtCore/QFile>
 
+#include <utility>
+
 #include "FileDataStream.h"
 
-FileDownloadTask::FileDownloadTask(const QUrl &aUrl, const QString &aPath)
-    : m_Url(aUrl), m_Path(aPath) {
+FileDownloadTask::FileDownloadTask(QUrl aUrl, QString aPath)
+    : m_Url(std::move(aUrl)), m_Path(std::move(aPath)) {
     setUrl(m_Url);
     setDataStream(new FileDataStream(m_Path));
     setFlags(NetworkTask::Continue);

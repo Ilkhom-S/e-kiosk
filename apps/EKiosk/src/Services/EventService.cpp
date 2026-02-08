@@ -15,7 +15,7 @@ namespace PP = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
 EventService *EventService::instance(IApplication *aApplication) {
-    return static_cast<EventService *>(
+    return dynamic_cast<EventService *>(
         aApplication->getCore()->getService(CServices::EventService));
 }
 
@@ -25,7 +25,7 @@ EventService::EventService() {
 }
 
 //---------------------------------------------------------------------------
-EventService::~EventService() {}
+EventService::~EventService() = default;
 
 //---------------------------------------------------------------------------
 bool EventService::initialize() {
@@ -58,11 +58,11 @@ const QSet<QString> &EventService::getRequiredServices() const {
 
 //---------------------------------------------------------------------------
 QVariantMap EventService::getParameters() const {
-    return QVariantMap();
+    return {};
 }
 
 //---------------------------------------------------------------------------
-void EventService::resetParameters(const QSet<QString> &) {}
+void EventService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //---------------------------------------------------------------------------
 void EventService::sendEvent(const SDK::PaymentProcessor::Event &aEvent) {

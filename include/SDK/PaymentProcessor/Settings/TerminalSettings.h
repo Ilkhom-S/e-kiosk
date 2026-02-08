@@ -26,38 +26,38 @@ struct SDatabaseSettings {
     QString name;
     QString user;
     QString password;
-    int port;
+    int port{0};
 
-    SDatabaseSettings() : port(0) {}
+    SDatabaseSettings() : {}
 };
 
 //---------------------------------------------------------------------------
 struct SKeySettings {
-    bool isValid;
-    int id; /// -1 - root key, -100 - invalid value
-    int engine;
-    QString sd;             /// Код дилера.
-    QString ap;             /// Код точки.
-    QString op;             /// Код оператора.
-    ulong serialNumber;     /// Серийник ключа.
-    ulong bankSerialNumber; /// Серийник банковского ключа.
-    QString publicKeyPath;  /// Путь к открытому ключу терминала.
-    QString secretKeyPath;  /// Путь к закрытому ключу терминала.
-    QString secretPassword; /// Кодовая фраза.
-    QString description;    /// Поле для заметок
+    bool isValid{false};
+    int id{-100}; /// -1 - root key, -100 - invalid value
+    int engine{0};
+    QString sd;                /// Код дилера.
+    QString ap;                /// Код точки.
+    QString op;                /// Код оператора.
+    ulong serialNumber{0};     /// Серийник ключа.
+    ulong bankSerialNumber{0}; /// Серийник банковского ключа.
+    QString publicKeyPath;     /// Путь к открытому ключу терминала.
+    QString secretKeyPath;     /// Путь к закрытому ключу терминала.
+    QString secretPassword;    /// Кодовая фраза.
+    QString description;       /// Поле для заметок
 
-    SKeySettings() : isValid(false), id(-100), engine(0), serialNumber(0), bankSerialNumber(0) {}
+    SKeySettings() : {}
 };
 
 //----------------------------------------------------------------------------
 struct SCurrencySettings {
-    int id;                         /// Идентификатор валюты по ISO.
+    int id{-1};                     /// Идентификатор валюты по ISO.
     QString code;                   /// Международное имя валюты ISO.
     QString name;                   /// Имя валюты в текущей локализации.
     QList<Currency::Nominal> coins; /// Список всех существующих номиналов монет
     QList<Currency::Nominal> notes; /// Список всех существующих номиналов купюр
 
-    SCurrencySettings() : id(-1) {}
+    SCurrencySettings() : {}
 };
 
 //----------------------------------------------------------------------------
@@ -82,83 +82,81 @@ struct SBlockByNote {
 
 //----------------------------------------------------------------------------
 struct SCommonSettings {
-    typedef enum {
+    using BlockReason = enum {
         ValidatorError = 1,
         PrinterError,
         CardReaderError,
         AccountBalance,
         Penetration
-    } BlockReason;
+    };
 
-    QSet<BlockReason> _blockOn;
-    QList<SBlockByNote> blockNotes; /// Блокировка по номиналам
-    bool blockCheatedPayment;       /// Блокировка при подозрении на манипуляции с устройством
-    bool autoEncashment;
+    QSet<BlockReason> blockOn;
+    QList<SBlockByNote> blockNotes;  /// Блокировка по номиналам
+    bool blockCheatedPayment{false}; /// Блокировка при подозрении на манипуляции с устройством
+    bool autoEncashment{false};
     Currency::Nominal minPar;
     QSet<Currency::Nominal> enabledParNotesList; /// Список разрешенных купюр.
     QSet<Currency::Nominal> enabledParCoinsList; /// Список разрешенных монет.
     boost::optional<int> timeZoneOffset;
-    bool skipCheckWhileNetworkError; /// Принимать платежи offline, до блокировки по связи
-    bool isValid;
-    bool
-        disableAmountOverflow; /// Не допускать появление сдачи путем отбраковки купюр сверх лимита.
-    EEventType::Enum penetrationEventLevel;
+    bool skipCheckWhileNetworkError{false}; /// Принимать платежи offline, до блокировки по связи
+    bool isValid{true};
+    bool disableAmountOverflow{
+        false}; /// Не допускать появление сдачи путем отбраковки купюр сверх лимита.
+    EEventType::Enum penetrationEventLevel{EEventType::OK};
 
     // Printer
-    bool printFailedReceipts;   /// Распечатывать не напечатанные фискальные чеки при инкассации
-    bool random_ReceiptsID;      /// Номера чеков в рандомном порядке
-    QTime autoZReportTime;      /// Автоматическое закрытие смены ККТ в определенное время
-    bool enableBlankFiscalData; /// Разрешать печатать фискальные чеки без фискальных данных
+    bool printFailedReceipts{true}; /// Распечатывать не напечатанные фискальные чеки при инкассации
+    bool random_ReceiptsID{false};  /// Номера чеков в рандомном порядке
+    QTime autoZReportTime;          /// Автоматическое закрытие смены ККТ в определенное время
+    bool enableBlankFiscalData{false}; /// Разрешать печатать фискальные чеки без фискальных данных
 
-    SCommonSettings()
-        : blockCheatedPayment(false), autoEncashment(false), minPar(10),
-          skipCheckWhileNetworkError(false), isValid(true), disableAmountOverflow(false),
-          penetrationEventLevel(EEventType::OK), printFailedReceipts(true), random_ReceiptsID(false),
-          enableBlankFiscalData(false) {
-        _blockOn << ValidatorError << PrinterError << CardReaderError;
+    SCommonSettings() : minPar(10), {
+        blockOn << ValidatorError << PrinterError << CardReaderError;
     }
 
     void setBlockOn(BlockReason aReason, bool aBlock) {
         if (aBlock) {
-            _blockOn << aReason;
+            blockOn << aReason;
         } else {
-            _blockOn.remove(aReason);
+            blockOn.remove(aReason);
         }
     }
 
-    bool blockOn(BlockReason aReason) const { return _blockOn.contains(aReason); }
+    [[nodiscard]] bool blockOn(BlockReason aReason) const { return blockOn.contains(aReason); }
 };
 
 //----------------------------------------------------------------------------
 struct SMonitoringSettings {
     QUrl url;
     QUrl restUrl;
-    int heartbeatTimeout;
-    int restCheckTimeout;
-    int restLimit;
+    int heartbeatTimeout{10};
+    int restCheckTimeout{30};
+    int restLimit{0};
 
     QStringList cleanupItems;
     QStringList cleanupExclude;
 
-    SMonitoringSettings() : heartbeatTimeout(10), restCheckTimeout(30), restLimit(0) {}
+    SMonitoringSettings() : {}
 
-    bool isBlockByAccountBalance() const { return restLimit > 0 && restUrl.isValid(); }
+    [[nodiscard]] bool isBlockByAccountBalance() const {
+        return restLimit > 0 && restUrl.isValid();
+    }
 };
 
 //----------------------------------------------------------------------------
 struct SServiceMenuPasswords {
-    SServiceMenuPasswords() : operatorId(0) {}
+    SServiceMenuPasswords() : {}
 
-    int operatorId;
+    int operatorId{0};
     QString phone;
     QMap<QString, QString> passwords;
 };
 
 //----------------------------------------------------------------------------
 struct SServiceMenuSettings {
-    bool allowAnyKeyPair; // Разрешаем генерировать ключи с произвольным номером пары
+    bool allowAnyKeyPair{false}; // Разрешаем генерировать ключи с произвольным номером пары
 
-    SServiceMenuSettings() : allowAnyKeyPair(false) {}
+    SServiceMenuSettings() : {}
 };
 
 //----------------------------------------------------------------------------
@@ -173,31 +171,31 @@ extern const char Technician[];
 class TerminalSettings : public ISettingsAdapter, public ILogable {
 public:
     TerminalSettings(TPtree &aProperties);
-    ~TerminalSettings();
+    ~TerminalSettings() override;
 
     /// Инициализация настроек.
     void initialize();
 
     /// Проверка настроек.
-    virtual bool isValid() const;
+    [[nodiscard]] bool isValid() const override;
 
     /// Получить имя адаптера.
     static QString getAdapterName();
 
     /// Получить настройки соединения.
-    SConnection getConnection() const;
+    [[nodiscard]] SConnection getConnection() const;
 
     /// Сохранить настройки соединения.
     void setConnection(const SConnection &aConnection);
 
     /// Получить список хостов для проверки соединения.
-    QList<IConnection::CheckUrl> getCheckHosts() const;
+    [[nodiscard]] QList<IConnection::CheckUrl> getCheckHosts() const;
 
     /// Получить настройки БД.
-    SDatabaseSettings getDatabaseSettings() const;
+    [[nodiscard]] SDatabaseSettings getDatabaseSettings() const;
 
     /// Получить список устройств.
-    QStringList getDeviceList() const;
+    [[nodiscard]] QStringList getDeviceList() const;
 
     /// Получить имя конфигурации принтера, настроенного для печати заданного типа чеков.
     QString getPrinterForReceipt(const QString &aReceiptType);
@@ -206,68 +204,67 @@ public:
     void setDeviceList(const QStringList &aHardware);
 
     /// Мониторинг.
-    SMonitoringSettings getMonitoringSettings() const;
+    [[nodiscard]] SMonitoringSettings getMonitoringSettings() const;
 
     /// Ключи.
-    QMap<int, SKeySettings> getKeys() const;
+    [[nodiscard]] QMap<int, SKeySettings> getKeys() const;
     void setKey(const SKeySettings &aKey, bool aReplaceIfExists = true);
     void cleanKeys();
 
     /// Валюта.
-    SCurrencySettings getCurrencySettings() const;
+    [[nodiscard]] SCurrencySettings getCurrencySettings() const;
 
     /// URL для генерации ключей.
-    QString getKeygenURL() const;
+    [[nodiscard]] QString getKeygenURL() const;
 
     /// URL для генерации письма с электронной копией чека
-    QString getReceiptMailURL() const;
+    [[nodiscard]] QString getReceiptMailURL() const;
 
     /// URL для отправки feedback в Хумо
-    QString getFeedbackURL() const;
+    [[nodiscard]] QString getFeedbackURL() const;
 
     /// Возвращает мапу из типов процессинга и разрешенных ChargeProvider для каждого
     /// соответственно.
-    QVariantMap getChargeProviderAccess() const;
+    [[nodiscard]] QVariantMap getChargeProviderAccess() const;
 
     /// Общие настройки.
-    virtual SCommonSettings getCommonSettings() const;
+    [[nodiscard]] virtual SCommonSettings getCommonSettings() const;
 
     /// Пароли для доступа к сервисному меню.
-    SServiceMenuPasswords getServiceMenuPasswords() const;
+    [[nodiscard]] SServiceMenuPasswords getServiceMenuPasswords() const;
 
     /// Обобщенные настройки для сервисного меню.
-    SServiceMenuSettings getServiceMenuSettings() const;
+    [[nodiscard]] SServiceMenuSettings getServiceMenuSettings() const;
 
     /// Пути к данным.
-    SAppEnvironment getAppEnvironment() const;
+    [[nodiscard]] SAppEnvironment getAppEnvironment() const;
     void setAppEnvironment(const SAppEnvironment &aEnv);
 
     /// Максимальный размер log файлов
-    int getLogsMaxSize() const;
+    [[nodiscard]] int getLogsMaxSize() const;
 
     /// Updater urls
-    QStringList getUpdaterUrls() const;
+    [[nodiscard]] QStringList getUpdaterUrls() const;
 
     /// Реклама.
-    QString getAdProfile() const;
+    [[nodiscard]] QString getAdProfile() const;
 
     /// возвращает валидное время если необходимо проверять обновление ПО терминала
-    QTime autoUpdate() const;
+    [[nodiscard]] QTime autoUpdate() const;
 
     /// возвращает диапазон времени с какого по какое мы держим монитор в выключенном состоянии
-    QString energySave() const;
+    [[nodiscard]] QString energySave() const;
 
     /// Получить список критичных ошибок процессинга
-    const QSet<int> &getCriticalErrors() const;
+    [[nodiscard]] const QSet<int> &getCriticalErrors() const;
 
 private:
     Q_DISABLE_COPY(TerminalSettings)
 
-private:
-    TPtree &m_Properties;
+    TPtree &m_properties;
 
     /// Список критичных ошибок процессинга
-    QSet<int> m_CriticalErrors;
+    QSet<int> m_criticalErrors;
 };
 
 } // namespace PaymentProcessor

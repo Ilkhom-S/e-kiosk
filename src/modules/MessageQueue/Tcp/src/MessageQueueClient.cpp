@@ -20,7 +20,7 @@ MessageQueueClient::MessageQueueClient() : ILogable(CIMessageQueueClient::Defaul
 }
 
 //----------------------------------------------------------------------------
-MessageQueueClient::~MessageQueueClient() {}
+MessageQueueClient::~MessageQueueClient() = default;
 
 //----------------------------------------------------------------------------
 bool MessageQueueClient::connect(const QString &aQueueName) {
@@ -50,26 +50,31 @@ void MessageQueueClient::sendMessage(const QByteArray &aMessage) {
 
 //----------------------------------------------------------------------------
 bool MessageQueueClient::subscribeOnMessageReceived(QObject *aObject) {
-    return QObject::connect(
-        this, SIGNAL(onMessageReceived(QByteArray)), aObject, SLOT(onMessageReceived(QByteArray)));
+    return QObject::connect(this,
+                            SIGNAL(onMessageReceived(QByteArray)),
+                            aObject,
+                            SLOT(onMessageReceived(QByteArray))) != nullptr;
 }
 
 //----------------------------------------------------------------------------
 bool MessageQueueClient::subscribeOnDisconnected(QObject *aObject) {
-    return QObject::connect(this, SIGNAL(onDisconnected()), aObject, SLOT(onDisconnected()));
+    return QObject::connect(this, SIGNAL(onDisconnected()), aObject, SLOT(onDisconnected())) !=
+           nullptr;
 }
 
 //----------------------------------------------------------------------------
 bool MessageQueueClient::subscribeOnEvents(QObject *aObject) {
-    return QObject::connect(this,
-                            SIGNAL(onMessageReceived(QByteArray)),
-                            aObject,
-                            SLOT(onMessageReceived(QByteArray))) &&
-           QObject::connect(this,
-                            SIGNAL(onError(CIMessageQueueClient::ErrorCode, const QString &)),
-                            aObject,
-                            SLOT(onError(CIMessageQueueClient::ErrorCode, const QString &))) &&
-           QObject::connect(this, SIGNAL(onDisconnected()), aObject, SLOT(onDisconnected()));
+    return (QObject::connect(this,
+                             SIGNAL(onMessageReceived(QByteArray)),
+                             aObject,
+                             SLOT(onMessageReceived(QByteArray))) != nullptr) &&
+           (QObject::connect(this,
+                             SIGNAL(onError(CIMessageQueueClient::ErrorCode, const QString &)),
+                             aObject,
+                             SLOT(onError(CIMessageQueueClient::ErrorCode, const QString &))) !=
+            nullptr) &&
+           (QObject::connect(this, SIGNAL(onDisconnected()), aObject, SLOT(onDisconnected())) !=
+            nullptr);
 }
 
 //----------------------------------------------------------------------------

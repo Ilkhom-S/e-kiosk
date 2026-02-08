@@ -85,7 +85,7 @@ void FundsService::onEvent(const SDK::PaymentProcessor::Event &aEvent) {
     if (aEvent.getType() == SDK::PaymentProcessor::EEventType::Critical) {
         auto paymentId = m_Core->getPaymentService()->getActivePayment();
 
-        if (paymentId) {
+        if (paymentId != 0) {
             emit error(paymentId, aEvent.getData().toString());
         }
     }

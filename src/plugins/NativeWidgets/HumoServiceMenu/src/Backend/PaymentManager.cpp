@@ -125,7 +125,7 @@ QString PaymentManager::decryptParameter(const QString &aValue) {
     QString error;
 
     if (cryptEngine->decryptLong(-1, aValue.toLatin1(), decryptedValue, error)) {
-        return QString::from_Utf8(decryptedValue);
+        return QString::fromUtf8(decryptedValue);
     }
 
     return "**DECRYPT ERROR**";

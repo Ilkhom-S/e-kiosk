@@ -15,10 +15,10 @@ public:
 
 private:
     /// Подсчет контрольной суммы пакета данных.
-    const uchar calcCRC(const QByteArray &aData);
+    static uchar calcCRC(const QByteArray &aData);
 
     /// Получить пакет данных из порта.
-    const bool getAnswer(QByteArray &aAnswer);
+    bool getAnswer(QByteArray &aAnswer);
 
     /// Проверка пришедших из порта данных.
     bool check(const QByteArray &aCommandPacket, const QByteArray &aAnswerPacket);

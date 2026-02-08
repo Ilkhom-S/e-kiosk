@@ -12,7 +12,7 @@ public:
 
 protected:
     /// Подсчет контрольной суммы пакета данных.
-    ushort calcCRC(const QByteArray &aData);
+    static ushort calcCRC(const QByteArray &aData);
 
     /// Обработать ошибку в ответе купюроприемника.
     TResult handleError(const QByteArray &aRequest, QByteArray &aAnswer);

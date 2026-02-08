@@ -68,7 +68,7 @@ extern const char ETBMark[];               /// Метка (ETB) для ASB ст�
 extern const char SetASB[];    /// Установить ASB.
 extern const char PrintImage[];        /// Печать изображения.
 extern const char FeedImageLine[]; /// Промотка линии изображения.
-const QByteArray WaitForPrintingEnd = QByteArray::from_RawData(
+const QByteArray WaitForPrintingEnd = QByteArray::fromRawData(
     "\x1B\x1D\x03\x01\x00\x00", 6); /// Дождаться окончания печати и получить счетчик чеков.
 
 /// Команды работы с мем-свичами
@@ -91,10 +91,10 @@ inline QByteArray setMemorySwitch(char aNumber, ushort aValue) {
                                                   .arg(int2ASCII(aValue, 4)));
 } /// Установить значение memory switch-а.
 
-const QByteArray WriteMemorySwitches = QByteArray::from_RawData(
+const QByteArray WriteMemorySwitches = QByteArray::fromRawData(
     "\x1B\x1D\x23\x57\x30\x30\x30\x30\x30\x0A\x00", 11); /// Записать мем-свичи.
 const QByteArray GetModelData =
-    QByteArray::from_RawData("\x1B\x23\x2A\x0A\x00", 5); /// Получить Id модели.
+    QByteArray::fromRawData("\x1B\x23\x2A\x0A\x00", 5); /// Получить Id модели.
 } // namespace Commands
 
 //----------------------------------------------------------------------------

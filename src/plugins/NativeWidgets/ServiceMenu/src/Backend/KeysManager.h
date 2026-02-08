@@ -62,7 +62,7 @@ public:
     QString getOP() const;
 
 private:
-    QString errorToString(EKeysUtilsError::Enum aCode) const;
+    static QString errorToString(EKeysUtilsError::Enum aCode);
 
 private:
     SDK::PaymentProcessor::ICore *m_Core;

@@ -35,7 +35,7 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
 FundsService *FundsService::instance(IApplication *aApplication) {
-    return static_cast<FundsService *>(
+    return dynamic_cast<FundsService *>(
         aApplication->getCore()->getService(CServices::FundsService));
 }
 
@@ -45,7 +45,7 @@ FundsService::FundsService(IApplication *aApplication)
       m_CashDispenserManager(nullptr), m_CashAcceptorManager(nullptr) {}
 
 //---------------------------------------------------------------------------
-FundsService::~FundsService() {}
+FundsService::~FundsService() = default;
 
 //---------------------------------------------------------------------------
 bool FundsService::initialize() {
@@ -59,7 +59,7 @@ bool FundsService::initialize() {
         m_CashDispenserManager->setParent(this);
     }
 
-    auto database =
+    auto *database =
         DatabaseService::instance(m_Application)->getDatabaseUtils<IPaymentDatabaseUtils>();
 
     return m_CashAcceptorManager->initialize(database) &&
@@ -118,7 +118,7 @@ QVariantMap FundsService::getParameters() const {
 //---------------------------------------------------------------------------
 void FundsService::resetParameters(const QSet<QString> &aParameters) {
     if (aParameters.contains(PPSDK::CServiceParameters::Funds::RejectCount)) {
-        auto dbUtils =
+        auto *dbUtils =
             DatabaseService::instance(m_Application)->getDatabaseUtils<IHardwareDatabaseUtils>();
         dbUtils->setDeviceParam(PPSDK::CDatabaseConstants::Devices::Terminal,
                                 PPSDK::CDatabaseConstants::Parameters::RejectCount,
@@ -129,7 +129,7 @@ void FundsService::resetParameters(const QSet<QString> &aParameters) {
 //------------------------------------------------------------------------------
 QString FundsService::getState() const {
     // Получаем список всех доступных устройств.
-    PPSDK::TerminalSettings *settings =
+    auto *settings =
         SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
     QStringList deviceList = settings->getDeviceList().filter(
         QRegularExpression(QString("(%1|%2)")
@@ -149,8 +149,9 @@ QString FundsService::getState() const {
             if (!dd.isEmpty()) {
                 QVariantMap ddMap;
                 foreach (QString param, dd) {
-                    if (param.isEmpty())
+                    if (param.isEmpty()) {
                         continue;
+                    }
 
                     QStringList pp = param.split(":");
                     if (!pp.isEmpty()) {

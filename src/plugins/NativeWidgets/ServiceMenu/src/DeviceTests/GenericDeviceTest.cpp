@@ -29,7 +29,7 @@ bool GenericDeviceTest::run(const QString &aTestName) {
     }
 
     QFuture<void> future =
-        QtConcurrent::run(boost::bind(&SDK::Driver::IDevice::initialize, m_Device.data()));
+        QtConcurrent::run([capture0 = m_Device.data()] { capture0->initialize(); });
     m_Result.setFuture(future);
 
     return true;

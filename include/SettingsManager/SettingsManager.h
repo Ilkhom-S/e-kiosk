@@ -40,8 +40,8 @@ struct SSettingsSource {
 //---------------------------------------------------------------------------
 class SettingsManager : public ILogable {
 public:
-    SettingsManager(const QString &aConfigPath);
-    ~SettingsManager();
+    explicit SettingsManager(const QString &aConfigPath);
+    ~SettingsManager() override;
 
     /// Загружает все указанные конфиги.
     bool loadSettings(const QList<SSettingsSource> &aSettingSources);

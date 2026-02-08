@@ -118,12 +118,12 @@ public:
     bool OpenPort();
     bool isItYou();
     bool CmdGetStatus();
-    bool CmdRestart();
+    static bool CmdRestart();
     void CmdStartPoll();
     void CmdStopPoll();
     void CmdInit();
 
-    bool stopPoll;
+    bool stopPoll{};
 
     QString PartNumber;
     QString SerialNumber;
@@ -131,24 +131,24 @@ public:
 
 private:
     bool debugger;
-    void toDebug(QString data);
+    void toDebug(QString data) const;
 
-    int coin_ev_counter;
-    int events_in_queue;
+    int coin_ev_counter{};
+    int events_in_queue{};
 
-    int coin_status;
+    int coin_status{};
 
-    bool sts_animate_dlg;
-    int status;
+    bool sts_animate_dlg{};
+    int status{};
     double preDate;
-    int preNominal;
+    int preNominal{};
     bool execCommand(int cmdType, QByteArray &cmdResponse, QByteArray data = QByteArray());
     bool openPort();
 
-    QByteArray makeCustom_Request(int cmd, const QByteArray &cmdResponse);
+    static QByteArray makeCustom_Request(int cmd, const QByteArray &data);
 
     int readPollInfo(QByteArray byte);
-    void setBoolingDlgState(bool sts);
+    static void setBoolingDlgState(bool sts);
 
     bool checkCoin;
     bool coinAcceptorLogEnable;
@@ -163,13 +163,13 @@ private:
     TResult processCommand(const QByteArray &aCommandData, QByteArray &aAnswerData);
 
 protected:
-    ushort calcCRC8(const QByteArray &aData);
+    static ushort calcCRC8(const QByteArray &aData);
     bool check(QByteArray &aAnswer);
     bool getAnswer(QByteArray &aAnswer, const QByteArray &aCommandData);
 
 private slots:
     void sendStatusTo(int sts, QString comment);
-    void toCoinAcceptorLog(int status, QByteArray data, QString text);
+    void toCoinAcceptorLog(int state, QByteArray data, QString text);
     void clearCoin();
 
 signals:

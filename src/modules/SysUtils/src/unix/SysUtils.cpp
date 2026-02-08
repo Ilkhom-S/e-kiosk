@@ -1,8 +1,9 @@
 
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
 #include <AvailabilityMacros.h>
 #include <TargetConditionals.h>
+#include <cstring> // strerror
 #include <mach/error.h>
 #include <mach/mach.h>
 #include <mach/mach_init.h>
@@ -11,7 +12,6 @@
 #include <mach/task.h>
 #include <mach/task_info.h>
 #include <mach/vm_map.h>
-#include <string.h> // strerror
 #include <sys/sysctl.h>
 #include <sys/types.h>
 #include <unistd.h> // getpid, sysconf
@@ -36,7 +36,7 @@
 #endif
 #endif
 
-#if defined(__linux__)
+#ifdef __linux__
 #include <string.h> // strerror
 #include <sys/sysinfo.h>
 #include <sys/types.h>
@@ -54,7 +54,7 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QThread>
 
-#if defined(__linux__)
+#ifdef __linux__
 #include <sys/sysinfo.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -64,12 +64,11 @@
 #include <sys/utsname.h>
 
 QString ISysUtils::getOSVersionInfo() {
-    struct utsname uts;
+    struct utsname uts{};
     if (uname(&uts) == 0) {
         return QString("%1 %2 (%3)").arg(uts.sysname).arg(uts.release).arg(uts.machine);
-    } else {
-        return QSysInfo::prettyProductName();
     }
+    return QSysInfo::prettyProductName();
 }
 
 //---------------------------------------------------------------------------
@@ -82,8 +81,8 @@ QString ISysUtils::rm_BOM(const QString &aFile) {
     QByteArray data = file.readAll();
     file.close();
 
-    static const QByteArray utf8BOM = QByteArray::fromHex("efbbbf");
-    if (data.startsWith(utf8BOM)) {
+    static const QByteArray Utf8Bom = QByteArray::fromHex("efbbbf");
+    if (data.startsWith(Utf8Bom)) {
         data = data.mid(3);
         if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
             file.write(data);
@@ -96,7 +95,7 @@ QString ISysUtils::rm_BOM(const QString &aFile) {
 //---------------------------------------------------------------------------
 // Перезагрузка системы (Linux: reboot syscall, macOS: shutdown command)
 int ISysUtils::system_Reboot() {
-#if defined(__linux__)
+#ifdef __linux__
     sync();
     int ret = reboot(RB_AUTOBOOT);
     return ret;
@@ -115,7 +114,7 @@ int ISysUtils::system_Reboot() {
 //---------------------------------------------------------------------------
 // Выключение системы (Linux: reboot syscall with poweroff, macOS: shutdown command)
 int ISysUtils::system_Shutdown() {
-#if defined(__linux__)
+#ifdef __linux__
 // Try to use the reboot syscall with RB_POWER_OFF (requires root)
 #include <sys/reboot.h>
 #include <unistd.h>
@@ -136,7 +135,7 @@ int ISysUtils::system_Shutdown() {
 //---------------------------------------------------------------------------
 // Отключение скринсейвера для Linux (X11) и macOS
 void ISysUtils::disableScreenSaver() {
-#if defined(__APPLE__)
+#ifdef __APPLE__
     // On macOS, use caffeinate to prevent sleep/screensaver
     // This will keep the system awake while the app is running
     int ret = system("caffeinate -dimsu &");
@@ -158,7 +157,7 @@ void ISysUtils::disableScreenSaver() {
 //---------------------------------------------------------------------------
 // Включение/выключение дисплея (имитация активности для пробуждения)
 void ISysUtils::displayOn(bool aOn) {
-#if defined(__APPLE__)
+#ifdef __APPLE__
     if (aOn) {
         // Prevent display sleep (caffeinate)
         int ret = system("caffeinate -u -t 2"); // -u: user activity, -t: seconds
@@ -192,7 +191,7 @@ void ISysUtils::displayOn(bool aOn) {
 //---------------------------------------------------------------------------
 // Принудительный запуск скринсейвера
 void ISysUtils::runScreenSaver() {
-#if defined(__APPLE__)
+#ifdef __APPLE__
     // On macOS, use AppleScript to start the screensaver
     int ret =
         system("osascript -e 'tell application \"System Events\" to start current screen saver'");
@@ -208,8 +207,8 @@ void ISysUtils::runScreenSaver() {
 
 //---------------------------------------------------------------------------
 // Установка системного времени (Linux: date, macOS: systemsetup)
-void ISysUtils::setSystem_Time(QDateTime aDateTime) noexcept(false) {
-#if defined(__linux__)
+void ISysUtils::setSystem_Time(const QDateTime &aDateTime) noexcept(false) {
+#ifdef __linux__
     // Format: date MMDDhhmm_YYYY.SS
     QDateTime dt = aDateTime.toLocalTime();
     QString cmd = QString("sudo date %1%2%3%4%5.%6")
@@ -264,7 +263,7 @@ QString ISysUtils::getErrorMessage(ulong aError, bool aNativeLanguage) {
     Q_UNUSED(aNativeLanguage);
     QString result = QString("error: %1").arg(aError);
     const char *msg = strerror(static_cast<int>(aError));
-    if (msg && *msg) {
+    if (msg && (*msg != 0)) {
         result += QString(" (%1)").arg(QString::fromLocal8Bit(msg));
     }
     return result;
@@ -273,7 +272,7 @@ QString ISysUtils::getErrorMessage(ulong aError, bool aNativeLanguage) {
 //---------------------------------------------------------------------------
 // Получить количество памяти, используемое процессом (Unix/macOS)
 bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *aProcess) {
-#if defined(__linux__)
+#ifdef __linux__
     aMemoryInfo = MemoryInfo();
     qint64 pid = 0;
     if (aProcess) {
@@ -304,7 +303,7 @@ bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *a
     } else {
         pid = getpid();
     }
-    mach_port_t task;
+    mach_port_t task = 0;
     kern_return_t kr = KERN_FAILURE;
     if (pid == getpid()) {
         task = mach_task_self();
@@ -313,7 +312,7 @@ bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *a
         kr = task_for_pid(mach_task_self(), pid, &task);
     }
     if (kr == KERN_SUCCESS) {
-        struct task_basic_info info;
+        struct task_basic_info info{};
         mach_msg_type_number_t infoCount = TASK_BASIC_INFO_COUNT;
         if (task_info(task, TASK_BASIC_INFO, (task_info_t)&info, &infoCount) == KERN_SUCCESS) {
             aMemoryInfo.processUsed = info.resident_size;
@@ -321,7 +320,7 @@ bool ISysUtils::getProcessMemoryUsage(MemoryInfo &aMemoryInfo, const QProcess *a
             int mib[2] = {CTL_HW, HW_MEMSIZE};
             int64_t memsize = 0;
             size_t len = sizeof(memsize);
-            if (sysctl(mib, 2, &memsize, &len, NULL, 0) == 0) {
+            if (sysctl(mib, 2, &memsize, &len, nullptr, 0) == 0) {
                 aMemoryInfo.total = memsize;
             }
             // Used memory: not trivial, so leave as 0

@@ -31,7 +31,7 @@ QString SecurityFilter::apply(const QString &aParameterName, const QString &aVal
 
             QStringList capturedTexts = match.capturedTexts();
             for (int i = 1; i < capturedTexts.size(); i++) {
-                QString captured = capturedTexts[i];
+                const QString &captured = capturedTexts[i];
                 if (!captured.isEmpty()) {
                     int pos = match.capturedStart(i);
                     value.replace(pos, captured.size(), QString("*").repeated(captured.size()));
@@ -39,10 +39,8 @@ QString SecurityFilter::apply(const QString &aParameterName, const QString &aVal
             }
 
             return value;
-        } else {
-            qDebug()
-                << QString("RegExp '%1' not found value in: %2").arg(regExp.pattern()).arg(aValue);
         }
+        qDebug() << QString("RegExp '%1' not found value in: %2").arg(regExp.pattern()).arg(aValue);
     }
 
     return aValue;
@@ -68,7 +66,7 @@ QRegularExpression SecurityFilter::getMask(const QString &aParameterName) const 
         }
     }
 
-    return QRegularExpression();
+    return {};
 }
 
 //------------------------------------------------------------------------------

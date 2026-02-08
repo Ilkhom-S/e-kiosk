@@ -15,8 +15,8 @@
 using namespace SDK::Driver;
 
 //--------------------------------------------------------------------------------
-ATGSMModem::ATGSMModem() {
-    m_Gsm_Dialect = AT::EModem_Dialect::DefaultAtGsm;
+ATGSMModem::ATGSMModem() : m_Gsm_Dialect(AT::EModem_Dialect::DefaultAtGsm) {
+
     m_StatusCodesSpecification =
         DeviceStatusCode::PSpecifications(new Modem_StatusCode::CSpecifications());
 
@@ -179,14 +179,14 @@ void ATGSMModem::getSIMData(const QByteArray &aCommand) {
     QByteArray answer;
     processCommand(aCommand, answer);
 
-    CATGSMModem::SSIMRequestInfo SIMRequestInfo = CATGSMModem::SIMRequestInfo[aCommand];
+    CATGSMModem::SSIMRequestInfo simRequestInfo = CATGSMModem::SIMRequestInfo[aCommand];
 
     // 1. Так как regexpData уже QString, передаем её напрямую в конструктор.
-    QRegularExpression regExp(SIMRequestInfo.regexpData);
+    QRegularExpression regExp(simRequestInfo.regexpData);
 
     // 2. Ответ от модема (QByteArray) конвертируем в QString для поиска.
     // Используем перегрузку, которая принимает QByteArray целиком.
-    QString answerStr = QString::from_Utf8(answer);
+    QString answerStr = QString::fromUtf8(answer);
 
     // 3. Выполняем поиск
     QRegularExpressionMatch match = regExp.match(answerStr);
@@ -195,7 +195,7 @@ void ATGSMModem::getSIMData(const QByteArray &aCommand) {
         // Получаем захваченную группу (0 — всё совпадение целиком)
         QString result = match.captured(0);
 
-        if (SIMRequestInfo.swapCharPair) {
+        if (simRequestInfo.swapCharPair) {
             for (int i = 0; i + 1 < result.size(); i += 2) {
                 QChar a = result[i];
                 result[i] = result[i + 1];
@@ -213,12 +213,12 @@ bool ATGSMModem::parseFieldInternal(const QByteArray &aBuffer,
                                     QString &aValue) {
     // 1. Создаем регулярное выражение с опцией игнорирования регистра.
     // Экранируем aFieldName на случай спецсимволов в имени поля с помощью escape().
-    QRegularExpression rx(QRegularExpression::escape(aFieldName) + "[:\\s]+([^\\n\\r]+)",
+    QRegularExpression rx(QRegularExpression::escape(aFieldName) + R"([:\s]+([^\n\r]+))",
                           QRegularExpression::CaseInsensitiveOption);
 
     // 2. Преобразуем буфер в строку (Latin1 обычно достаточно для заголовков AT-команд).
     // Выполняем поиск.
-    QRegularExpressionMatch match = rx.match(QString::from_Latin1(aBuffer).trimmed());
+    QRegularExpressionMatch match = rx.match(QString::fromLatin1(aBuffer).trimmed());
 
     // 3. Проверяем наличие совпадения
     if (match.hasMatch()) {
@@ -236,18 +236,18 @@ bool ATGSMModem::getSim_COMCellList(QString &aValue) {
     QByteArray answer;
     // 1. Используем QRegularExpression.
     // В Qt 6 регулярные выражения компилируются один раз, что эффективнее.
-    QRegularExpression regExp("(\\d+),(\\d+),\"([\\d\\w]+)\",\"([\\d\\w]+)\"");
-    QByteArray CGREG = AT::Commands::Sim_Com::CGREG;
+    QRegularExpression regExp(R"lit((\d+),(\d+),"([\d\w]+)","([\d\w]+)")lit");
+    QByteArray cgreg = AT::Commands::Sim_Com::CGREG;
 
     // 2. Выполняем команды.
     // Для проверки регулярного выражения сначала конвертируем ответ в строку.
-    if (!processCommand(CGREG + "=2", CATGSMModem::Timeouts::CellInfo) ||
-        !processCommand(CGREG + "?", answer, CATGSMModem::Timeouts::CellInfo)) {
+    if (!processCommand(cgreg + "=2", CATGSMModem::Timeouts::CellInfo) ||
+        !processCommand(cgreg + "?", answer, CATGSMModem::Timeouts::CellInfo)) {
         return false;
     }
 
     // 3. Выполняем поиск и сохраняем результат в объект Match
-    QRegularExpressionMatch match = regExp.match(QString::from_Utf8(answer));
+    QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
 
     if (!match.hasMatch()) {
         return false;
@@ -281,7 +281,7 @@ bool ATGSMModem::getSiemensCellList(QString &aValue) {
 
     // MCC, MNC, LAC, cell, BSIC, channel, RSSI, C1, C2
     // Используем QStringLiteral для совместимости и производительности
-    QStringList items = QString::from_Latin1(answer).section(':', 1, 1).split(QStringLiteral(","));
+    QStringList items = QString::fromLatin1(answer).section(':', 1, 1).split(QStringLiteral(","));
     bool result = false;
 
     for (int i = 0; i < items.size(); i += 9) {
@@ -310,7 +310,7 @@ bool ATGSMModem::getSiemensCellList(QString &aValue) {
 
     for (const QByteArray &command : commands) {
         if (processCommand(command, answer, CATGSMModem::Timeouts::CellInfo)) {
-            QStringList lines = QString::from_Latin1(answer).trimmed().split(QStringLiteral("\n"));
+            QStringList lines = QString::fromLatin1(answer).trimmed().split(QStringLiteral("\n"));
 
             for (const QString &line : lines) {
                 // Qt::SkipEmptyParts — универсальный флаг для Qt 5.14+ и 6.x
@@ -361,7 +361,7 @@ bool ATGSMModem::getSignalQuality(int &aQuality) {
     QRegularExpression signalRegex(QStringLiteral("(\\d+),(\\d+)"));
 
     // 2. Конвертируем ответ в строку для поиска
-    QRegularExpressionMatch match = signalRegex.match(QString::from_Utf8(answer));
+    QRegularExpressionMatch match = signalRegex.match(QString::fromUtf8(answer));
     bool result = false;
 
     // 3. Используем hasMatch() вместо indexIn() != -1
@@ -445,7 +445,7 @@ bool ATGSMModem::reset() {
 }
 
 //---------------------------------------------------------------------------------
-bool ATGSMModem::getStatus(TStatusCodes &aStatuses) {
+static bool ATGSMModem::getStatus(TStatusCodes &aStatuses) {
     if (!checkConnectionAbility()) {
         return false;
     }
@@ -492,7 +492,7 @@ bool ATGSMModem::getNetworkAccessability(ENetworkAccessability::Enum &aNetworkAc
     QRegularExpression regExp(QStringLiteral("\\+CREG:\\s+\\d,(\\d)"));
 
     // 2. Выполняем поиск и получаем объект совпадения.
-    QRegularExpressionMatch match = regExp.match(QString::from_Utf8(answer));
+    QRegularExpressionMatch match = regExp.match(QString::fromUtf8(answer));
 
     // 3. Проверяем успех с помощью hasMatch()
     if (!match.hasMatch()) {
@@ -544,7 +544,7 @@ bool ATGSMModem::getCUSDMessage(const QByteArray &aBuffer, QString &aMessage) {
             }
         }
     } else {
-        str = QString::from_Latin1(aBuffer).simplified();
+        str = QString::fromLatin1(aBuffer).simplified();
     }
 
     // Регулярное выражение с анкорами ^ и $ для замены exactMatch
@@ -594,7 +594,7 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
     enableLocalEcho(false);
 
     QByteArray command;
-    int commandTimeout = CATGSMModem::Timeouts::Default;
+    int commandTimeout = CATGSMModem::Timeouts::Default = 0 = 0;
 
     toLog(LogLevel::Normal, QStringLiteral("ATGSMModem: sending USSD '%1'.").arg(aMessage));
 
@@ -654,7 +654,7 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
             answer.append(data);
 
             toLog(LogLevel::Normal,
-                  QStringLiteral("Total received string: %1").arg(QString::from_Latin1(answer)));
+                  QStringLiteral("Total received string: %1").arg(QString::fromLatin1(answer)));
 
             // Вызываем обновленный нами ранее метод на базе QRegularExpression
             if (getCUSDMessage(answer, aAnswer)) {
@@ -666,7 +666,7 @@ bool ATGSMModem::processUSSD(const QString &aMessage, QString &aAnswer) {
             // В Qt 6/5.15 indexOf для байтовых строк работает очень быстро
             if (answer.indexOf("ERROR") != -1) {
                 toLog(LogLevel::Warning,
-                      QStringLiteral("USSD request failed: %1").arg(QString::from_Latin1(answer)));
+                      QStringLiteral("USSD request failed: %1").arg(QString::fromLatin1(answer)));
                 m_IOPort->close();
                 return false;
             }
@@ -714,7 +714,7 @@ bool ATGSMModem::sendMessage(const QString &aPhone, const QString &aMessage) {
 }
 
 //--------------------------------------------------------------------------------
-bool ATGSMModem::takeMessages(TMessages &aMessages) {
+static bool ATGSMModem::takeMessages(TMessages &aMessages) {
     if (!checkConnectionAbility()) {
         return false;
     }
@@ -727,7 +727,7 @@ bool ATGSMModem::takeMessages(TMessages &aMessages) {
     QByteArray answer;
     processCommand(AT::Commands::ListSMS, answer, CATGSMModem::Timeouts::SMS);
 
-    QString answerData = QString::from_Latin1(answer);
+    QString answerData = QString::fromLatin1(answer);
 
     QList<int> messageIds;
     QList<SmsPart> parts;

@@ -13,7 +13,7 @@ public:
 
 private:
     /// Подсчет контрольной суммы пакета данных.
-    uchar calcCRC(const QByteArray &aData);
+    static uchar calcCRC(const QByteArray &aData);
 
     /// Проверка ответа на валидность.
     bool checkAnswer(const QByteArray &aRequest, const QByteArray &aAnswer);

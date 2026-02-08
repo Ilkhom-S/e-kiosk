@@ -14,6 +14,7 @@
 #include <SDK/PaymentProcessor/Settings/TerminalSettings.h>
 
 #include <algorithm>
+#include <utility>
 
 #include "DatabaseUtils/IHardwareDatabaseUtils.h"
 #include "DeviceManager/DeviceManager.h"
@@ -27,7 +28,7 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //---------------------------------------------------------------------------
 DeviceService *DeviceService::instance(IApplication *aApplication) {
-    return static_cast<DeviceService *>(
+    return dynamic_cast<DeviceService *>(
         aApplication->getCore()->getService(CServices::DeviceService));
 }
 
@@ -38,9 +39,9 @@ DeviceService::Status::Status()
 
 //------------------------------------------------------------------------------
 DeviceService::Status::Status(SDK::Driver::EWarningLevel::Enum aLevel,
-                              const QString &aDescription,
+                              QString aDescription,
                               int aStatus)
-    : m_Level(aLevel), m_Description(aDescription), m_Status(aStatus) {}
+    : m_Level(aLevel), m_Description(std::move(aDescription)), m_Status(aStatus) {}
 
 //------------------------------------------------------------------------------
 DeviceService::Status::Status(const Status &aStatus)
@@ -63,8 +64,8 @@ bool DeviceService::Status::isMatched(SDK::Driver::EWarningLevel::Enum aLevel) c
 
 //------------------------------------------------------------------------------
 DeviceService::DeviceService(IApplication *aApplication)
-    : m_DeviceManager(nullptr), m_AccessMutex(QRecursiveMutex()), m_Application(aApplication),
-      m_Log(aApplication->getLog()), m_DatabaseUtils(nullptr) {
+    : m_DeviceManager(nullptr), m_Application(aApplication), m_Log(aApplication->getLog()),
+      m_DatabaseUtils(nullptr) {
     connect(&m_DetectionResult, SIGNAL(finished()), this, SLOT(onDetectionFinished()));
 
     m_DeviceCreationOrder[DSDK::CComponents::Watchdog] = EDeviceCreationOrder::AtStart;
@@ -153,11 +154,11 @@ QString DeviceService::getName() const {
 
 //------------------------------------------------------------------------------
 QVariantMap DeviceService::getParameters() const {
-    return QVariantMap();
+    return {};
 }
 
 //------------------------------------------------------------------------------
-void DeviceService::resetParameters(const QSet<QString> &) {}
+void DeviceService::resetParameters(const QSet<QString> & /*aParameters*/) {}
 
 //------------------------------------------------------------------------------
 const QSet<QString> &DeviceService::getRequiredServices() const {
@@ -168,7 +169,7 @@ const QSet<QString> &DeviceService::getRequiredServices() const {
 }
 
 //------------------------------------------------------------------------------
-DeviceService::~DeviceService() {}
+DeviceService::~DeviceService() = default;
 
 //------------------------------------------------------------------------------
 void DeviceService::detect(const QString &aFilter) {
@@ -240,27 +241,26 @@ DSDK::IDevice *DeviceService::acquireDevice(const QString &aInstancePath) {
 
     if (m_AcquiredDevices.contains(instancePath)) {
         return m_AcquiredDevices.value(instancePath);
-    } else {
-        DSDK::IDevice *device = m_DeviceManager->acquireDevice(instancePath, configInstancePath);
+    }
+    DSDK::IDevice *device = m_DeviceManager->acquireDevice(instancePath, configInstancePath);
 
-        if (device) {
-            m_AcquiredDevices.insert(instancePath, device);
+    if (device) {
+        m_AcquiredDevices.insert(instancePath, device);
 
-            QMap<int, PPSDK::SKeySettings> keys = SettingsService::instance(m_Application)
-                                                      ->getAdapter<PPSDK::TerminalSettings>()
-                                                      ->getKeys();
+        QMap<int, PPSDK::SKeySettings> keys = SettingsService::instance(m_Application)
+                                                  ->getAdapter<PPSDK::TerminalSettings>()
+                                                  ->getKeys();
 
-            if (keys.contains(0)) {
-                QVariantMap configuration;
-                configuration.insert(CFiscalSDK::AutomaticNumber, keys.value(0).ap);
-                device->setDeviceConfiguration(configuration);
-            }
-
-            initializeDevice(instancePath, device);
+        if (keys.contains(0)) {
+            QVariantMap configuration;
+            configuration.insert(CFiscalSDK::AutomaticNumber, keys.value(0).ap);
+            device->setDeviceConfiguration(configuration);
         }
 
-        return device;
+        initializeDevice(instancePath, device);
     }
+
+    return device;
 }
 
 //------------------------------------------------------------------------------
@@ -377,13 +377,13 @@ void DeviceService::setInitParameters(const QString &aDeviceType, const QVariant
 
 //------------------------------------------------------------------------------
 QStringList DeviceService::getConfigurations(bool aAllowOldConfigs) const {
-    PPSDK::TerminalSettings *settings =
+    auto *settings =
         SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
     QStringList configurations = settings->getDeviceList();
 
     if (aAllowOldConfigs) {
-        for (int i = 0; i < configurations.size(); ++i) {
-            m_DeviceManager->checkITInstancePath(configurations[i]);
+        for (auto &configuration : configurations) {
+            m_DeviceManager->checkITInstancePath(configuration);
         }
     }
 
@@ -427,7 +427,7 @@ bool DeviceService::saveConfigurations(const QStringList &aConfigList) {
         }
     }
 
-    PPSDK::TerminalSettings *settings =
+    auto *settings =
         SettingsService::instance(m_Application)->getAdapter<PPSDK::TerminalSettings>();
     settings->setDeviceList(aConfigList);
 
@@ -447,12 +447,11 @@ QVariantMap DeviceService::getDeviceConfiguration(const QString &aConfigName) {
 
     if (device) {
         return m_DeviceManager->getDeviceConfiguration(device);
-    } else {
-        LOG(m_Log,
-            LogLevel::Error,
-            QString("Failed to set device configuration. No such device: %1.").arg(aConfigName));
-        return QVariantMap();
     }
+    LOG(m_Log,
+        LogLevel::Error,
+        QString("Failed to set device configuration. No such device: %1.").arg(aConfigName));
+    return QVariantMap();
 }
 
 //------------------------------------------------------------------------------
@@ -523,7 +522,7 @@ void DeviceService::onDeviceStatus(DSDK::EWarningLevel::Enum aLevel,
         logLevel,
         QString("Received statuses: %1, status %2").arg(aDescription).arg(aStatus));
 
-    DSDK::IDevice *device = dynamic_cast<DSDK::IDevice *>(sender());
+    auto *device = dynamic_cast<DSDK::IDevice *>(sender());
 
     if (device) {
         Status status(aLevel, aDescription, aStatus);
@@ -589,7 +588,7 @@ QSharedPointer<PPSDK::IDeviceStatus> DeviceService::getDeviceStatus(const QStrin
             new Status(m_DeviceStatusCache.value(aConfigName)));
     }
 
-    return QSharedPointer<PPSDK::IDeviceStatus>(nullptr);
+    return {nullptr};
 }
 
 //------------------------------------------------------------------------------

@@ -17,7 +17,7 @@ class AdSourcePlugin : public QObject, public SDK::GUI::IAdSource, public SDK::P
 public:
     //---------------------------------------------------------------------------
     // Конструктор плагина источника рекламы
-    AdSourcePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    AdSourcePlugin(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath);
     virtual ~AdSourcePlugin(void);
 
 #pragma region SDK::Plugin::IPlugin interface

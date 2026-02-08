@@ -53,19 +53,19 @@ const char Control = 0x60;          /// Request CRC, Get Cash in Box, Soft Reset
 const char Extended = 0x70;         /// Extended message set.
 
 /// Для типа Control.
-const QByteArray Reset = QByteArray::from_RawData("\x60\x7F\x7F\x7F", 4); /// Сброс.
+const QByteArray Reset = QByteArray::fromRawData("\x60\x7F\x7F\x7F", 4); /// Сброс.
 const QByteArray GetType =
-    QByteArray::from_RawData("\x60\x00\x00\x04",
+    QByteArray::fromRawData("\x60\x00\x00\x04",
                             4); /// Тип купюроприемника (что это такое - только в MEI знают).
-const QByteArray GetSerialNumber = QByteArray::from_RawData("\x60\x00\x00\x05", 4); /// Серийник.
+const QByteArray GetSerialNumber = QByteArray::fromRawData("\x60\x00\x00\x05", 4); /// Серийник.
 const QByteArray GetBootSoftVersion =
-    QByteArray::from_RawData("\x60\x00\x00\x06", 4); /// Софт загрузчика интерфейсной платы.
+    QByteArray::fromRawData("\x60\x00\x00\x06", 4); /// Софт загрузчика интерфейсной платы.
 const QByteArray GetAppSoftVersion =
-    QByteArray::from_RawData("\x60\x00\x00\x07", 4); /// Софт приложения головы.
+    QByteArray::fromRawData("\x60\x00\x00\x07", 4); /// Софт приложения головы.
 const QByteArray GetVariantName =
-    QByteArray::from_RawData("\x60\x00\x00\x08", 4); /// Название билл-сета (вариант, по-канадски).
+    QByteArray::fromRawData("\x60\x00\x00\x08", 4); /// Название билл-сета (вариант, по-канадски).
 const QByteArray GetVariantVersion =
-    QByteArray::from_RawData("\x60\x00\x00\x09", 4); /// Версия билл-сета.
+    QByteArray::fromRawData("\x60\x00\x00\x09", 4); /// Версия билл-сета.
 
 /// Для типа Extended.
 extern const char GetPar[];
@@ -219,14 +219,14 @@ public:
     bool OpenPort();
     bool isItYou();
     bool CmdGetStatus();
-    bool CmdRestart();
+    static bool CmdRestart();
     void CmdStartPoll();
     void CmdStopPoll();
 
     bool maxSum_Reject;
-    int maxSum;
+    int maxSum{};
 
-    bool stopPoll;
+    bool stopPoll{};
     bool hasDBError;
 
     QString partNumber;
@@ -237,11 +237,11 @@ private slots:
     void toLogingValidator(int status, QByteArray data, QString text);
 
 private:
-    bool sts_animate_dlg;
+    bool sts_animate_dlg{};
     bool m_Enabled;
     bool m_ACK;
 
-    int status;
+    int status{};
     QDateTime preDateTime;
 
     bool execCommand(int cmdType, QByteArray &cmdResponse);
@@ -259,7 +259,7 @@ private:
     int getNominal(QByteArray respData);
 
     int readPollInfo(QByteArray byte);
-    void setBoolingDlgState(bool sts);
+    static void setBoolingDlgState(bool sts);
     void setReturnNominalState(bool sts);
     bool validatorLogEnable;
     bool escrowed;
@@ -268,8 +268,8 @@ private:
     void returnBill();
     void stackBill();
 
-    uchar calcCRC(const QByteArray &aData);
-    bool checkBit(char bytes, int bit);
+    static uchar calcCRC(const QByteArray &aData);
+    static bool checkBit(char bytes, int bit);
 
 signals:
     void emitNominal(int nominal);

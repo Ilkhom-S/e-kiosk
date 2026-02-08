@@ -8,7 +8,7 @@
 //--------------------------------------------------------------------------------
 namespace COSMP {
 /// Проверка на неправильную идентификацию
-const QByteArray WrongDeviceCheck = QByteArray::from_RawData("\xa5\x00\x00\x5b", 4);
+const QByteArray WrongDeviceCheck = QByteArray::fromRawData("\xa5\x00\x00\x5b", 4);
 
 /// Пауза при переоткрытии порта, [мс]
 const int ReopenPortPause = 1000;

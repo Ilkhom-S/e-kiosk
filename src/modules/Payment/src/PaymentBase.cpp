@@ -3,7 +3,7 @@
 #include "PaymentBase.h"
 
 #include <QtCore/QCryptographicHash>
-#include <QtCore/QRandom_Generator>
+#include <QtCore/QRandomGenerator>
 #include <QtCore/QReadLocker>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QWriteLocker>
@@ -61,11 +61,11 @@ PaymentBase::PaymentBase(SDK::PaymentProcessor::IPaymentFactory *aFactory,
 
     if (!states.isEmpty()) {
 #if QT_VERSION < 0x050000
-        QString crc = QString::from_Latin1(
+        QString crc = QString::fromLatin1(
             CCryptographicHash::hash(states.join(";").toLatin1(), CCryptographicHash::Sha256)
                 .toHex());
 #else
-        QString crc = QString::from_Latin1(
+        QString crc = QString::fromLatin1(
             QCryptographicHash::hash(states.join(";").toLatin1(), QCryptographicHash::Sha256)
                 .toHex());
 #endif
@@ -648,7 +648,7 @@ bool PaymentBase::limitsDependOnParameter(const SParameter &aParameter) {
 //------------------------------------------------------------------------------
 QString PaymentBase::createPaymentSession() const {
     return QDateTime::currentDateTime().toString("yyyyMMddhhmmsszzz") +
-           QString("%1").arg(QRandom_Generator::global()->bounded(1000), 3, 10, QChar('0'));
+           QString("%1").arg(QRandomGenerator::global()->bounded(1000), 3, 10, QChar('0'));
 }
 
 //------------------------------------------------------------------------------
@@ -723,7 +723,7 @@ bool PaymentBase::restore(const QList<SParameter> &aParameters) {
 
                 if (cryptEngine->decryptLong(
                         -1, parameter.value.toString().toLatin1(), decryptedValue, error)) {
-                    parameter.value = QString::from_Utf8(decryptedValue);
+                    parameter.value = QString::fromUtf8(decryptedValue);
                 } else {
                     toLog(LogLevel::Error,
                           QString("Payment %1. Failed to decrypt parameter %2 while restoring. "

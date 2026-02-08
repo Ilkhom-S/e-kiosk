@@ -330,7 +330,7 @@ QStringList Packer::pack(const QString &aTargetName,
     }
 
     m_ExitCode = m_ZipProcess.exitCode();
-    m_Messages = QString::from_Local8Bit(m_ZipProcess.readAllStandardOutput()).remove("\r");
+    m_Messages = QString::fromLocal8Bit(m_ZipProcess.readAllStandardOutput()).remove("\r");
 
     if (m_ExitCode == 1) {
         toLog(
@@ -371,11 +371,9 @@ bool Packer::test(const QString &aTargetName) {
 
         return false;
     }
-
-    m_ExitCode = m_ZipProcess.exitCode();
-    m_Messages = QString::from_Local8Bit(m_ZipProcess.readAllStandardOutput()).remove("\r");
-
-    return m_ExitCode == 0;
+    m_ExitCode m_ExitCode = m_ZipProcess.exitCode();
+    m_Messages = QString::fromLocal8Bit(m_ZipProcess.readAllStandardOutput()).remove("\r");
+    m_ExitCode return m_ExitCode == 0;
 }
 
 //------------------------------------------------------------------------------

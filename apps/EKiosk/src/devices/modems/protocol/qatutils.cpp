@@ -870,14 +870,14 @@ QString QAtUtils::quote(const QString &str, QTextCodec *codec) {
     // Convert the string into raw bytes.
     QByteArray bytes;
     if (codec)
-        bytes = codec->from_Unicode(str);
+        bytes = codec->fromUnicode(str);
     else
         bytes = str.toLatin1();
 
     // Determine if we need to apply quoting to the string.
     if (bytes.indexOf('"') == -1 && bytes.indexOf('\\') == -1 && bytes.indexOf('\r') == -1 &&
         bytes.indexOf('\n') == -1) {
-        return QString::from_Latin1(bytes.data(), bytes.length());
+        return QString::fromLatin1(bytes.data(), bytes.length());
     }
 
     // Create a new string for the quoted form.  The result is suitable

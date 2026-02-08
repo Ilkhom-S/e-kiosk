@@ -1,22 +1,19 @@
 #include "MessageQueueServer.h"
 
+#include <utility>
+
 #include "MessageQueue/MessageQueueConstants.h"
 
-MessageQueueServer::MessageQueueServer(const QString &aQueueName) {
-    m_Log = ILog::getInstance(CIMessageQueueServer::DefaultLog);
-
-    m_QueueName = aQueueName;
-}
+MessageQueueServer::MessageQueueServer(QString aQueueName)
+    : m_Log(ILog::getInstance(CIMessageQueueServer::DefaultLog)),
+      m_QueueName(std::move(aQueueName)) {}
 
 //----------------------------------------------------------------------------
-MessageQueueServer::MessageQueueServer(const QString &aQueueName, ILog *aLog) {
-    m_Log = aLog;
-
-    m_QueueName = aQueueName;
-}
+MessageQueueServer::MessageQueueServer(QString aQueueName, ILog *aLog)
+    : m_Log(aLog), m_QueueName(std::move(aQueueName)) {}
 
 //----------------------------------------------------------------------------
-MessageQueueServer::~MessageQueueServer() {}
+MessageQueueServer::~MessageQueueServer() = default;
 
 //----------------------------------------------------------------------------
 bool MessageQueueServer::init() {
@@ -41,13 +38,15 @@ void MessageQueueServer::stop() {
 
 //----------------------------------------------------------------------------
 bool MessageQueueServer::subscribeOnMessageReceived(QObject *aObject) {
-    return connect(
-        this, SIGNAL(onMessageReceived(QByteArray)), aObject, SLOT(onMessageReceived(QByteArray)));
+    return connect(this,
+                   SIGNAL(onMessageReceived(QByteArray)),
+                   aObject,
+                   SLOT(onMessageReceived(QByteArray))) != nullptr;
 }
 
 //----------------------------------------------------------------------------
 bool MessageQueueServer::subscribeOnDisconnected(QObject *aObject) {
-    return connect(this, SIGNAL(onDisconnected()), aObject, SLOT(onDisconnected()));
+    return connect(this, SIGNAL(onDisconnected()), aObject, SLOT(onDisconnected())) != nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -67,7 +66,7 @@ void MessageQueueServer::incomingConnection(int aSocketDescriptor) {
         QString("New incoming connection... Socket with descriptor %1 has been connected.")
             .arg(aSocketDescriptor));
 
-    QTcpSocket *newSocket = new QTcpSocket(this);
+    auto *newSocket = new QTcpSocket(this);
     newSocket->setSocketDescriptor(aSocketDescriptor);
 
     // Use lambda connections instead of QSignalMapper for Qt6 compatibility

@@ -46,16 +46,16 @@ bool IntelHex::parseRecord(const QString &aRecord, SRecordData &aData, QString &
         return false;
     }
 
-    char CRC = data[data.size() - 1];
+    char crc = data[data.size() - 1];
     char recordCRC = ASCII::NUL - std::accumulate(data.begin(), data.end() - 1, ASCII::NUL);
 
-    if (CRC != recordCRC) {
-        aErrorDescription = QString("Invalid CRC %1, need %2").arg(recordCRC).arg(CRC);
+    if (crc != recordCRC) {
+        aErrorDescription = QString("Invalid CRC %1, need %2").arg(recordCRC).arg(crc);
         return false;
     }
 
-    aData.type = EType::Enum(char(data[3]));
-    aData.address = data.mid(1, 2).toHex().toUShort(0, 16);
+    aData.type = EType::Enum(data[3]);
+    aData.address = data.mid(1, 2).toHex().toUShort(nullptr, 16);
     aData.data = data.mid(4, data.size() - 5);
 
     return true;
@@ -69,10 +69,12 @@ bool IntelHex::parseRecords(const QStringList &aRecords,
     aAddressedBlockList.clear();
     QStringList records(aRecords);
 
-    while (records.last().simplified().isEmpty())
+    while (records.last().simplified().isEmpty()) {
         records.removeLast();
-    while (records.first().simplified().isEmpty())
+    }
+    while (records.first().simplified().isEmpty()) {
         records.removeFirst();
+    }
 
     ushort addressShift = 0;
 
@@ -89,7 +91,7 @@ bool IntelHex::parseRecords(const QStringList &aRecords,
             int recordDataSize = recordData.data.size();
             QString messageLog = QString(", message %1 {%2}").arg(i + 1).arg(records[i]);
 
-            if (!recordDataSize) {
+            if (recordDataSize == 0) {
                 aErrorDescription += "Block is empty" + messageLog;
                 return false;
             }
@@ -100,7 +102,8 @@ bool IntelHex::parseRecords(const QStringList &aRecords,
                         .arg(recordDataSize) +
                     messageLog;
                 return false;
-            } else if (aBlockSize % recordDataSize) {
+            }
+            if (aBlockSize % recordDataSize) {
                 aErrorDescription +=
                     QString("Block size = %1 is not divisible by record data size = %2")
                         .arg(aBlockSize)
@@ -184,7 +187,7 @@ bool IntelHex::parseRecords(const QStringList &aRecords,
                 }
             }
 
-            addressShift = recordData.data.toHex().toUShort(0, 16);
+            addressShift = recordData.data.toHex().toUShort(nullptr, 16);
 
             break;
         }

@@ -224,7 +224,7 @@ void API::onResponseFinished() {
                       .arg(response->m_Code));
 
             toLog(LogLevel::Error,
-                  QString("Raw response: %1").arg(QString::from_Latin1(responseBuffer.toHex())));
+                  QString("Raw response: %1").arg(QString::fromLatin1(responseBuffer.toHex())));
         } else {
             foreach (auto handler, responseHandlers) {
                 if (handler(*this, response)) {
@@ -422,8 +422,8 @@ void API::printAllEncashments() {
 //---------------------------------------------------------------------------
 void API::killOldUCSProcess() {
     unsigned long processes[2048];
-    unsigned long cbNeeded;
-    unsigned long cProcesses;
+    unsigned long cbNeeded = 0;
+    unsigned long cProcesses = 0;
     QSet<unsigned long> lprocess;
 
     if (Enum_Processes(processes, sizeof(processes), &cbNeeded)) {
@@ -806,7 +806,7 @@ API::TResponse API::send(const QByteArray &aRequest, bool aWaitOperationComplete
         toLog(LogLevel::Debug, "EFTP Object created.");
     }
 
-    toLog(LogLevel::Debug, QString("REQUEST: %1").arg(QString::from_Latin1(aRequest)));
+    toLog(LogLevel::Debug, QString("REQUEST: %1").arg(QString::fromLatin1(aRequest)));
 
     m_LastError.clear();
 

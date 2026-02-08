@@ -14,8 +14,8 @@ const QString TestRead = QT_TRANSLATE_NOOP("HIDTest", "#test_read");
 } // namespace CHIDTest
 
 //------------------------------------------------------------------------------
-HIDTest::HIDTest(SDK::Driver::IDevice *aDevice, const QString &aInstancePath) {
-    m_HID = dynamic_cast<SDK::Driver::IHID *>(aDevice);
+HIDTest::HIDTest(SDK::Driver::IDevice *aDevice, const QString &aInstancePath)
+    : m_HID(dynamic_cast<SDK::Driver::IHID *>(aDevice)) {
 
     m_TestNames << qMakePair(CHIDTest::TestRead,
                              aInstancePath.contains(SDK::Driver::CComponents::Camera)

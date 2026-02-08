@@ -6,7 +6,7 @@
 std::list<std::wstring> gConnections;
 std::list<std::wstring> gDevices;
 
-void testEnum_PhonebookEntries() {
+void testEnumPhonebookEntries() {
     std::wcout << std::endl << "Enumerating phonebook entries:" << std::endl;
 
     RasApi::PhonebookEntryEnumerator e;
@@ -14,7 +14,7 @@ void testEnum_PhonebookEntries() {
     if (e.isValid()) {
         RasApi::PhonebookEntryName name;
 
-        while (e.getEntry(name)) {
+        while (RasApi::PhonebookEntryEnumerator::getEntry(name)) {
             std::wcout << (name.isSystem() ? "SYSTEM " : "USER ") << name.phonebookPath().c_str()
                        << ": " << name.name().c_str() << std::endl;
         }
@@ -24,7 +24,7 @@ void testEnum_PhonebookEntries() {
     }
 }
 
-void testEnum_Devices(RasApi::EDeviceType::Enum aType) {
+void testEnumDevices(RasApi::EDeviceType::Enum aType) {
     std::wcout << std::endl << "Enumerating devices:" << std::endl;
 
     RasApi::DeviceEnumerator d;
@@ -32,7 +32,7 @@ void testEnum_Devices(RasApi::EDeviceType::Enum aType) {
     if (d.isValid()) {
         RasApi::Device device;
 
-        while (d.getDevice(device)) {
+        while (RasApi::DeviceEnumerator::getDevice(device)) {
             if (RasApi::EDeviceType::ToEnum(device.type()) == aType) {
                 std::wcout << device.type().c_str() << ": " << device.name().c_str() << std::endl;
             }
@@ -46,7 +46,7 @@ void testEnum_Devices(RasApi::EDeviceType::Enum aType) {
     }
 }
 
-void testEnum_Connections() {
+void testEnumConnections() {
     std::wcout << std::endl << "Enumerating connections:" << std::endl;
 
     RasApi::ConnectionEnumerator c;
@@ -54,12 +54,13 @@ void testEnum_Connections() {
     if (c.isValid()) {
         RasApi::Connection cn;
 
-        while (c.getConnection(cn)) {
+        while (RasApi::ConnectionEnumerator::getConnection(cn)) {
             gConnections.push_back(cn.entryName());
 
             std::wcout << cn.entryName().c_str() << " on "
-                       << RasApi::EDeviceType::ToString(cn.deviceType()).c_str() << "("
-                       << cn.deviceName().c_str() << "), GlobalCredsUsed=" << cn.isGlobalCredsUsed()
+                       << RasApi::EDeviceType::ToString(RasApi::Connection::deviceType()).c_str()
+                       << "(" << cn.deviceName().c_str()
+                       << "), GlobalCredsUsed=" << cn.isGlobalCredsUsed()
                        << " System=" << cn.isSystem() << std::endl;
         }
     } else {
@@ -94,7 +95,7 @@ void testCreatePhonebookEntry() {
 
     RasApi::PhonebookEntryName entryName;
     entryName.setIsSystem(false);
-    entryName.setName(L"rasapitest_connection");
+    RasApi::PhonebookEntryName::setName(L"rasapitest_connection");
 
     // Проверяем нет ли уже такой записи
     DWORD raserror = RasApi::ValidatePhonebookEntryName(entryName);
@@ -114,15 +115,15 @@ void testCreatePhonebookEntry() {
         return;
     }
 
-    entry.setLocalPhoneNumber(L"*99***1#");
-    entry.setDeviceName(gDevices.front());
-    entry.setDeviceType(RasApi::EDeviceType::Modem);
+    RasApi::PhonebookEntry::setLocalPhoneNumber(L"*99***1#");
+    RasApi::PhonebookEntry::setDeviceName(gDevices.front());
+    RasApi::PhonebookEntry::setDeviceType(RasApi::EDeviceType::Modem);
     entry.setNetProtocols(RasApi::ENetworkProtocol::Ip);
     entry.setFramingProtocol(RasApi::EFramingProtocol::Ppp);
     entry.setIdleDisconnectSeconds(RasApi::EIdleDisconnect::Disabled);
     entry.setRedialCount(0);
     entry.setPhonebookEntryType(RasApi::EPhonebookEntry::Phone);
-    entry.setEncriptionType(RasApi::EEncryptionType::Optional);
+    entry.setEncryptionType(RasApi::EEncryptionType::Optional);
 
     entry.setOptions(RasApi::EConnectionOption::RemoteDefaultGateway |
                      RasApi::EConnectionOption::DisableLcpExtensions |
@@ -147,9 +148,9 @@ void testCreatePhonebookEntry() {
     // Установка параметров соединения
     RasApi::DialParams dialParams;
 
-    dialParams.setPhoneNumber(L"*99***1#");
-    dialParams.setUserName(L"mts");
-    dialParams.setPassword(L"mts");
+    RasApi::DialParams::setPhoneNumber(L"*99***1#");
+    RasApi::DialParams::setUserName(L"mts");
+    RasApi::DialParams::setPassword(L"mts");
 
     raserror = RasApi::SetEntryDialParams(entryName, dialParams);
 
@@ -164,7 +165,7 @@ void testDial() {
     std::wcout << std::endl << "Testing dialing..." << std::endl;
 
     RasApi::PhonebookEntryName entry;
-    entry.setName(L"rasapitest_connection");
+    RasApi::PhonebookEntryName::setName(L"rasapitest_connection");
 
     DWORD raserror = RasApi::Dial(entry);
 
@@ -188,9 +189,9 @@ void testHangUp() {
 }
 
 int main(int argc, char *argv[]) {
-    testEnum_PhonebookEntries();
-    testEnum_Devices(RasApi::EDeviceType::Modem);
-    testEnum_Connections();
+    testEnumPhonebookEntries();
+    testEnumDevices(RasApi::EDeviceType::Modem);
+    testEnumConnections();
     testConnectionStatus();
     testCreatePhonebookEntry();
     testDial();

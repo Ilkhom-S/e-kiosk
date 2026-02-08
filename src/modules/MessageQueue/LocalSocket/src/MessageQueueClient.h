@@ -44,8 +44,8 @@ private:
 private slots:
     void onSocketReadyRead();
     void onSocketError(QLocalSocket::LocalSocketError aErrorCode);
-    void onSocketDisconnected();
-    void pingServer();
+    static void onSocketDisconnected();
+    static void pingServer();
 
 signals:
     void onMessageReceived(QByteArray aMessage);
@@ -53,11 +53,11 @@ signals:
     void onDisconnected();
 
 private:
-    QLocalSocket m_Socket;
-    QByteArray m_Buffer;
+    QLocalSocket m_Socket{};
+    QByteArray m_Buffer{};
 
     /// Таймер, который будет следить за ответом сервера на пинг.
-    QTimer m_AnswerTimer;
+    QTimer m_AnswerTimer{};
 };
 
 //----------------------------------------------------------------------------

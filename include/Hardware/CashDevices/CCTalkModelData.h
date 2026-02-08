@@ -10,6 +10,7 @@
 
 #include <Hardware/Common/HardwareConstants.h>
 #include <Hardware/Common/Specifications.h>
+#include <utility>
 
 //--------------------------------------------------------------------------------
 namespace CCCTalk {
@@ -19,11 +20,12 @@ struct SVendorData {
     bool complexEnabling;
 
     SVendorData() : complexEnabling(false) {}
-    SVendorData(const QString &aVendor, const QString &aShortVendor, bool aComplexEnabling = false)
-        : vendor(aVendor), shortVendor(aShortVendor), complexEnabling(aComplexEnabling) {}
+    SVendorData(QString aVendor, QString aShortVendor, bool aComplexEnabling = false)
+        : vendor(std::move(aVendor)), shortVendor(std::move(aShortVendor)),
+          complexEnabling(aComplexEnabling) {}
 };
 
-typedef QMap<QString, SVendorData>::iterator TVendorDataIt;
+using TVendorDataIt = QMap<QString, SVendorData>::iterator;
 
 class CVendorData : public CSpecification<QString, SVendorData> {
 public:
@@ -47,8 +49,8 @@ extern const char DeviceNamePostfix[];
 const QStringList WrongFirmwareVendors = QStringList() << "NRI" << "Microcoin" << "ICT";
 
 //--------------------------------------------------------------------------------
-typedef QMap<int, double> TMinVersions;
-typedef QSet<uchar> TUnsupported;
+using TMinVersions = QMap<int, double>;
+using TUnsupported = QSet<uchar>;
 
 struct SModelData {
     TMinVersions minVersions; /// минимальные версии в зависимости от валюты.
@@ -59,13 +61,13 @@ struct SModelData {
     bool verified;            /// модель протестирована.
 
     SModelData() : fault(0), error(0), verified(false) {}
-    SModelData(uchar aFault, uchar aError, const QString &aModel, bool aVerified)
-        : fault(aFault), error(aError), model(aModel), verified(aVerified) {}
+    SModelData(uchar aFault, uchar aError, QString aModel, bool aVerified)
+        : fault(aFault), error(aError), model(std::move(aModel)), verified(aVerified) {}
 };
 
 //--------------------------------------------------------------------------------
-typedef QMap<QString, SModelData> TModelData;
-typedef QMap<QString, TModelData>::iterator TModelDataIt;
+using TModelData = QMap<QString, SModelData>;
+using TModelDataIt = QMap<QString, TModelData>::iterator;
 
 class CModelDataBase : public CSpecification<QString, TModelData> {
 public:

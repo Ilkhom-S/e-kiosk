@@ -15,14 +15,14 @@ namespace PPSDK = SDK::PaymentProcessor;
 
 //------------------------------------------------------------------------
 KeysManager::KeysManager(SDK::PaymentProcessor::ICore *aCore)
-    : m_Core(aCore), m_IsGenerated(false) {
-    m_CryptService = m_Core->getCryptService();
-    m_TerminalSettings = static_cast<PPSDK::TerminalSettings *>(
+    : m_Core(aCore), m_CryptService(m_Core->getCryptService()), m_IsGenerated(false) {
+
+    m_TerminalSettings = dynamic_cast<PPSDK::TerminalSettings *>(
         m_Core->getSettingsService()->getAdapter(PPSDK::CAdapterNames::TerminalAdapter));
 }
 
 //------------------------------------------------------------------------
-KeysManager::~KeysManager() {}
+KeysManager::~KeysManager() = default;
 
 //------------------------------------------------------------------------
 bool KeysManager::generateKey(QVariantMap &aKeysParam) {
@@ -37,7 +37,7 @@ bool KeysManager::generateKey(QVariantMap &aKeysParam) {
         m_IsGenerated = false;
     }
 
-    EKeysUtilsError::Enum result = static_cast<EKeysUtilsError::Enum>(m_CryptService->generateKey(
+    auto result = static_cast<EKeysUtilsError::Enum>(m_CryptService->generateKey(
         keyPairNumber.toInt(), login, password, url, m_SD, m_AP, m_OP, description));
 
     aKeysParam[CServiceTags::Error] = errorToString(result);
@@ -115,7 +115,7 @@ QString KeysManager::getOP() const {
 }
 
 //------------------------------------------------------------------------
-QString KeysManager::errorToString(EKeysUtilsError::Enum aCode) const {
+QString KeysManager::errorToString(EKeysUtilsError::Enum aCode) {
     switch (aCode) {
     case EKeysUtilsError::Ok:
         return tr("#ok");

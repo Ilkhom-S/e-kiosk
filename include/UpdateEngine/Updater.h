@@ -43,22 +43,22 @@ class Updater : public QObject {
     Q_OBJECT
 
 public:
-    bool bitsIsError();
+    static bool bitsIsError();
     typedef QList<QSharedPointer<Component>> TComponentList;
 
     explicit Updater(QObject *aParent);
-    explicit Updater(const QString &aConfigURL,
+    explicit Updater(QString aConfigURL,
                      const QString &aUpdateURL,
-                     const QString &aVersion,
+                     QString aVersion,
                      const QString &aAppId,
                      const QString &aConfiguration,
-                     const QString &aPointId);
+                     QString aPointId);
 
     bool bitsLoadState(QStringList *aParameters = nullptr);
 
-    bool bitsIsComplete();
+    static bool bitsIsComplete();
 
-    void bitsCompleteAllJobs(int &aCount, int &aCountComplete, int &aCountError);
+    static void bitsCompleteAllJobs(int &aCount, int &aCountComplete, int &aCountError);
 
     /// Устанавливает прокси в формате хост:порт:имя пользователя:пароль:тип.
     void setProxy(const QString &aProxy);
@@ -124,23 +124,23 @@ private:
     bool haveSkippedComponents() const;
 
     /// возвращает пересечение первого списка файлов со вторым поиском только по имени
-    TFileList intersectByName(const TFileList &aList1, const TFileList &aList2);
+    static TFileList intersectByName(const TFileList &aList1, const TFileList &aList2);
 
     /// Удаляет из первого списка файлов, второй поиском только по имени
-    void substractByName(TFileList &aList1, const TFileList &aList2);
+    static void substractByName(TFileList &aList1, const TFileList &aList2);
 
 public:
     /// Возвращает список файлов в каталоге aPath.
-    TFileList getWorkingDirStructure(const QString &aPath) const noexcept(false);
+    TFileList getWorkingDirStructure(const QString &aDir) const noexcept(false);
 
     /// Удаляет список файлов.
     void deleteFiles(const TFileList &aFiles, bool aIgnoreError = false) noexcept(false);
 
     /// Делает копирование файловой структуры (папки + каталоги).
-    void copyFiles(const QString &aSrcDir,
-                   const QString &aDstDir,
-                   const TFileList &aFiles,
-                   bool aIgnoreError = false) noexcept(false);
+    static void copyFiles(const QString &aSrcDir,
+                          const QString &aDstDir,
+                          const TFileList &aFiles,
+                          bool aIgnoreError = false) noexcept(false);
 
 signals:
     /// Сигнал прогресса загрузки.
@@ -190,7 +190,7 @@ private:
     bool bitsDownload();
 #endif
 
-    bool bitsInProgress();
+    static bool bitsInProgress();
 
     void bitsCleanupOldTasks();
 
@@ -232,10 +232,10 @@ private:
     QList<NetworkTask *> m_ActiveTasks;
 
     // Размер таска на момент начала загрузки
-    qint64 m_CurrentTaskSize;
+    qint64 m_CurrentTaskSize{};
 
     // При попытке получить обновление сервер просил подождать
-    bool m_WaitUpdateServer;
+    bool m_WaitUpdateServer{};
 
     // Число неудачных попыток скачать файл.
     int m_FailCount;

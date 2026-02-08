@@ -38,11 +38,12 @@ public:
     virtual QStringList getPluginPathList(const QRegularExpression &aFilter) const;
 
     /// Создаёт плагин по заданному пути.
-    virtual IPlugin *createPlugin(const QString &aInstancePath, const QString &aConfigPath = "");
+    virtual IPlugin *createPlugin(const QString &aInstancePath,
+                                  const QString &aConfigInstancePath = "");
 
     /// Создаёт плагин по заданному пути.
     virtual std::weak_ptr<IPlugin> createPluginPtr(const QString &aInstancePath,
-                                                   const QString &aConfigPath = "");
+                                                   const QString &aConfigInstancePath = "");
 
     virtual TParameterList getPluginParametersDescription(const QString &aPath) const;
 

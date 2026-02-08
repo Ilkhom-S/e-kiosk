@@ -144,7 +144,7 @@ private:
     boost::optional<int> m_SignalLevel;
     boost::optional<QString> m_Operator;
 
-    IHardwareDatabaseUtils *m_DatabaseUtils;
+    IHardwareDatabaseUtils *m_DatabaseUtils{};
     IApplication *m_Application;
 };
 

@@ -28,7 +28,7 @@ class AdRemotePlugin : public SDK::PaymentProcessor::IRemoteClient,
 public:
     //---------------------------------------------------------------------------
     // Конструктор плагина
-    AdRemotePlugin(SDK::Plugin::IEnvironment *aFactory, const QString &aInstancePath);
+    AdRemotePlugin(SDK::Plugin::IEnvironment *aFactory, QString aInstancePath);
     virtual ~AdRemotePlugin();
 
 #pragma region SDK::Plugin::IPlugin interface
